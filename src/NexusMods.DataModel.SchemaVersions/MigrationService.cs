@@ -71,30 +71,46 @@ public class MigrationService
         foreach (var definition in _migrations.Where(m => m.Id > currentVersion))
         {
             var instance = (IMigration)_provider.GetRequiredService(definition.Type);
-            
+
             _logger.LogInformation("Running Migration ({Id}){Name}", definition.Id, definition.Name);
+            instance.Prepare(_connection.Db);
 
-            if (instance is IScanningMigration scanningMigration)
+            switch (instance)
             {
-                scanningMigration.Prepare(_connection.Db);
-                await _connection.ScanUpdate(scanningMigration.Update);
-
+                case IScanningMigration scanningMigration:
+                {
+                    await _connection.ScanUpdate(scanningMigration.Update);
+                    using var tx = _connection.BeginTransaction();
+                    _ = new MigrationLogItem.New(tx)
+                    {
+                        RunAt = DateTimeOffset.UtcNow,
+                        MigrationId = definition.Id,
+                        WasRun = true,
+                    };
+                    var id = SchemaVersionEntityId(_connection.Db, tx, definition.Id);
+                    tx.Add(id, SchemaVersion.CurrentVersion, definition.Id);
+                    await tx.Commit();
+                    break;
+                }
+                case ITransactionalMigration transactionalMigration:
+                {
+                    using var tx = _connection.BeginTransaction();
+                    transactionalMigration.Migrate(tx, _connection.Db);
+                    _ = new MigrationLogItem.New(tx)
+                    {
+                        RunAt = DateTimeOffset.UtcNow,
+                        MigrationId = definition.Id,
+                        WasRun = true,
+                    };
+                    
+                    var id = SchemaVersionEntityId(_connection.Db, tx, definition.Id);
+                    tx.Add(id, SchemaVersion.CurrentVersion, definition.Id);
+                    await tx.Commit();
+                    break;
+                }
+                default:
+                    throw new NotImplementedException("No other migration types supported (yet)");
             }
-            else
-            {
-                throw new NotImplementedException("No other migration types supported (yet)");
-            }
-
-            using var tx = _connection.BeginTransaction();
-            _ = new MigrationLogItem.New(tx)
-            {
-                RunAt = DateTimeOffset.UtcNow,
-                MigrationId = definition.Id,
-                WasRun = true,
-            };
-            var id = SchemaVersionEntityId(_connection.Db, tx, definition.Id);
-            tx.Add(id, SchemaVersion.CurrentVersion, definition.Id);
-            await tx.Commit();
         }
     }
 
