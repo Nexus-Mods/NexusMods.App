@@ -81,38 +81,20 @@ public class ModUpdateService : IModUpdateService
         //     - Mods belonging to a collection get auto installed when the collection is fully downloaded, and cannot
         //       be 'uninstalled' back into the library.
         
-        // In this case we're looking for all mods which are [read-write], and
-        // not those which are [read-only].
-        //
-        // Although it is easier to code it, so we look for all mods, and take
-        // away the [read-only] ones, whitelisting [read-write] ones instead
-        // will help us avoid risks.
-        //
-        // It's better to have a false negative (can't update that should be updatable)
-        // than a false positive (can update that shouldn't be updatable); because
-        // the former has no potential negative side effects, while the latter
-        // can potentially cause some level of damage.
-        var loadoutModsInReadWriteCollections = CollectionGroup
+        // In this case we're considering all of the mods as [read-write], removing those in the [read-only] set.
+        var loadoutModsInReadOnlyCollections = CollectionGroup
             .All(_connection.Db)
-            .Where(group => !group.IsReadOnly)
+            .Where(group => group.IsReadOnly)
             .Select(group => group.AsLoadoutItemGroup())
             .SelectMany(loadoutItemGroup => loadoutItemGroup.Children)
             .ToDictionary(x => x.Id);
-
-        // Map of all libraryItemId -> LibraryLinkedLoadoutItem.
-        // i.e. all items linked to a CollectionGroup (loadout).
-        var allLinkedLibraryItemsByItemId = LibraryLinkedLoadoutItem
+        var libraryItemsInReadOnlyCollections = LibraryLinkedLoadoutItem
             .All(_connection.Db)
-            .ToDictionary(x => x.LibraryItemId);
-
-        var libraryItemsInReadWriteCollections = 
-            allLinkedLibraryItemsByItemId
-            .SelectMany(kv =>
+            .SelectMany(linkedLoadoutItem =>
                 {
-                    var linkedLoadoutItem = kv.Value;
                     var isDownloadedFile = linkedLoadoutItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem);
                     if (!isDownloadedFile) return [];
-                    var isInReadOnlyCollection = loadoutModsInReadWriteCollections.ContainsKey(linkedLoadoutItem.Id);
+                    var isInReadOnlyCollection = loadoutModsInReadOnlyCollections.ContainsKey(linkedLoadoutItem.Id);
                     if (!isInReadOnlyCollection) return (NexusModsLibraryItem.ReadOnly[])[];
                     return [nexusLibraryItem]; // (sewer): allocates, bleh, but can live with it for now.
                 }
@@ -121,8 +103,8 @@ public class ModUpdateService : IModUpdateService
 
         var readWritefilesInLibrary = NexusModsLibraryItem
             .All(_connection.Db)
-            // Include only read-write items AND items not linked to a collectiongroup.
-            .Where(libraryItem => libraryItemsInReadWriteCollections.ContainsKey(libraryItem.Id) || !allLinkedLibraryItemsByItemId.ContainsKey(libraryItem.Id))
+            // Exclude read-only items from collections.
+            .Where(libraryItem => !libraryItemsInReadOnlyCollections.ContainsKey(libraryItem.Id))
             .Select(static libraryItem => libraryItem.FileMetadata)
             .DistinctBy(static fileMetadata => fileMetadata.Id)
             .ToDictionary(static x => x.Id, static x => x);
