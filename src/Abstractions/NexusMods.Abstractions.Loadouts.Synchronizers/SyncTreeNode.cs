@@ -15,7 +15,7 @@ public readonly record struct PathPartPair(GamePath Path, SyncNodePart Part);
 /// <summary>
 /// A pairing of a path and a sync tree node.
 /// </summary>
-public readonly record struct PathNodePair(GamePath Path, SynceNode Node);
+public readonly record struct PathNodePair(GamePath Path, SyncNode Node);
 
 /// <summary>
 /// A grouping of (optional) entityId, hash, size. 8bytes for each, so 24 bytes total.
@@ -62,7 +62,7 @@ public readonly struct SyncNodePart
 /// <summary>
 /// A node in the synchronization tree. 24 bytes for each part, and two ushorts for the other fields. So 76 bytes total.
 /// </summary>
-public record struct SynceNode
+public record struct SyncNode
 {
     /// <summary>
     /// The current disk state

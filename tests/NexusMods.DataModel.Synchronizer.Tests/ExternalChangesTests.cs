@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
@@ -46,6 +47,55 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
         loadoutA.GameVersion.Should().Be("1.1.Stubbed");
         
         await Verify(sb.ToString(), extension: "md");
+    }
+
+    [Fact]
+    public async Task ExistingFilesEndUpInOverrides()
+    {
+        // Get the game folder
+        var gameFolder = GameInstallation.LocationsRegister[LocationId.Game];
+        
+        // Extract the game files into the folder so that we trigger a game version update
+        using var zipFile = ZipFile.OpenRead((FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources/StubbedGameState_game_v2.zip").ToString());
+        foreach (var file in zipFile.Entries)
+        {
+            if (!file.FullName.StartsWith("game") || file.Length == 0)
+                continue;
+            var path = RelativePath.FromUnsanitizedInput(string.Join("/", RelativePath.FromUnsanitizedInput(file.FullName).Parts.Skip(1).ToArray()));
+            var gamePath = gameFolder / path;
+            gamePath.Parent.CreateDirectory();
+            await using var stream = gamePath.Create();
+            await using var srcStream = file.Open();
+            await srcStream.CopyToAsync(stream);
+        }
+        
+        var extraFileName = gameFolder / "someFolder/SomeRandomFile.dds";
+        extraFileName.Parent.CreateDirectory();
+        await extraFileName.WriteAllTextAsync("Some content");
+
+        
+        // Create a new loadout
+        var loadoutA = await CreateLoadout();
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        // Check the game version
+        loadoutA.GameVersion.Should().Be("1.1.Stubbed");
+
+        // Check that the extra file is in the overrides folder and there should only be one such file
+        var extraFileGamePath = loadoutA.InstallationInstance.LocationsRegister.ToGamePath(extraFileName);
+        var extraFileRecord = loadoutA.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == extraFileGamePath);
+        extraFileRecord.AsLoadoutItem().Parent.AsLoadoutItem().Name.Should().Be("Overrides", "the file should be in the overrides folder");
+        
+        // Delete the extra file
+        extraFileName.Delete();
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        // Check that the extra file is no longer in the loadout. We can get an error here if reified deletes don't consider that the files they are
+        // deleting may exist only in the overrides mod. In which case they should delete the entry instead.
+        loadoutA.Items.OfTypeLoadoutItemWithTargetPath().Select(f => (GamePath)f.TargetPath)
+            .Should()
+            .NotContain(extraFileGamePath);
+        
     }
     
 }

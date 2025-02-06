@@ -57,6 +57,12 @@ public class StubbedFileHasherService : IFileHashesService
             
             foreach (var entry in zipArchive.Entries)
             {
+                if (!entry.FullName.StartsWith("game"))
+                    continue;
+
+                var relativePath = RelativePath.FromUnsanitizedInput(string.Join("/", RelativePath.FromUnsanitizedInput(entry.FullName).Parts.Skip(1)));
+                var gamePath = new GamePath(LocationId.Game, entry.FullName);
+                
                 if (entry.Length == 0)
                     continue;
 
@@ -79,10 +85,11 @@ public class StubbedFileHasherService : IFileHashesService
                     Size = hashResult.Size,
                     Crc32 = hashResult.Crc32,
                 };
+                
 
                 var path = new PathHashRelation.New(tx)
                 {
-                    Path = entry.FullName,
+                    Path = relativePath,
                     HashId = relation,
                 };
                 pathIds.Add(path.Id);

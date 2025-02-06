@@ -171,15 +171,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
 
 
-    public Dictionary<GamePath, SynceNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
+    public Dictionary<GamePath, SyncNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
     {
         var referenceDb = _fileHashService.Current;
-        Dictionary<GamePath, SynceNode> syncTree = new();
+        Dictionary<GamePath, SyncNode> syncTree = new();
         
         // Add in the game state
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
-            syncTree.Add(gameFile.Path, new SynceNode
+            syncTree.Add(gameFile.Path, new SyncNode
                 {
                     Loadout = new SyncNodePart
                     {
@@ -233,7 +233,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, loadoutItem.TargetPath, out var exists);
             if (!exists)
             {
-                existing = new SynceNode
+                existing = new SyncNode
                 {
                     Loadout = sourceItem,
                     SourceItemType = sourceItemType,
@@ -308,7 +308,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SynceNode> loadoutItems)
+    public void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncNode> loadoutItems)
     {
         foreach (var node in previousTree)
         {
@@ -319,7 +319,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
             else
             {
-                existing = new SynceNode
+                existing = new SyncNode
                 {
                     Previous = node.Part,
                 };
@@ -335,7 +335,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
             else
             {
-                existing = new SynceNode
+                existing = new SyncNode
                 {
                     Disk = node.Part,
                 };
@@ -352,7 +352,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Dictionary<GamePath, SynceNode>> BuildSyncTree(Loadout.ReadOnly loadout)
+    public async Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
         var metadata = await ReindexState(loadout.InstallationInstance, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
@@ -384,7 +384,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public void ProcessSyncTree(Dictionary<GamePath, SynceNode> tree)
+    public void ProcessSyncTree(Dictionary<GamePath, SyncNode> tree)
     {
         foreach (var path in tree.Keys)
         {
@@ -407,13 +407,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout)
     {
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
-        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = new();
-        bool ingestedFiles = false;
+        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = [];
+        EntityId? overridesGroup = null;
         
         foreach (var action in ActionsInOrder)
         {
@@ -427,7 +427,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.IngestFromDisk:
-                    ingestedFiles = ActionIngestFromDisk(syncTree, loadout, tx);
+                    ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup);
                     break;
 
                 case Actions.DeleteFromDisk:
@@ -439,7 +439,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.AddReifiedDelete:
-                    ActionAddReifiedDelete(syncTree, loadout, tx);
+                    ActionAddReifiedDelete(syncTree, loadout, tx, ref overridesGroup);
                     break;
 
                 case Actions.WarnOfUnableToExtract:
@@ -470,8 +470,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             CleanDirectories(foldersWithDeletedFiles, newState, loadout.InstallationInstance);
         }
 
-        if (ingestedFiles) 
-            loadout = await ReprocessOverrides(loadout);
+        loadout = await ReprocessOverrides(loadout);
 
         return loadout;
     }
@@ -535,7 +534,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task RunGroupings(Dictionary<GamePath, SynceNode> syncTree, GameInstallation gameInstallation)
+    public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
     {
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = gameInstallation.GameMetadataId;
@@ -599,7 +598,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
     }
 
-    private void WarnOfConflict(Dictionary<GamePath, SynceNode> tree)
+    private void WarnOfConflict(Dictionary<GamePath, SyncNode> tree)
     {
         
         foreach (var (path, node) in tree)
@@ -610,7 +609,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void WarnOfUnableToExtract(Dictionary<GamePath, SynceNode> groupings)
+    private void WarnOfUnableToExtract(Dictionary<GamePath, SyncNode> groupings)
     {
         foreach (var (path, node) in groupings)
         {
@@ -620,9 +619,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionAddReifiedDelete(Dictionary<GamePath, SynceNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
+    private void ActionAddReifiedDelete(Dictionary<GamePath, SyncNode> groupings, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
     {
-        LoadoutOverridesGroupId? overridesGroup = null;
 
         foreach (var (path, node) in groupings)
         {
@@ -630,6 +628,23 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 continue;
             
             overridesGroup ??= GetOrCreateOverridesGroup(tx, loadout);
+            
+            // If this is not a new entity, we may have a matching file in the overrides group already
+            if (!overridesGroup.Value.InPartition(PartitionId.Temp))
+            {
+                var group = LoadoutOverridesGroup.Load(loadout.Db, overridesGroup.Value);
+                var foundMatch = group.AsLoadoutItemGroup().Children
+                    .OfTypeLoadoutItemWithTargetPath()
+                    .TryGetFirst(p => p.TargetPath == path, out var match);
+                
+                // A delete of a delete does nothing
+                if (foundMatch && match.TryGetAsDeletedFile(out var _))
+                    continue;
+                
+                // If we found a match, we need to remove the entity itself
+                tx.Delete(match, false);
+                continue;
+            }
                 
             _ = new DeletedFile.New(tx, out var id)
             {
@@ -640,7 +655,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     LoadoutItem = new LoadoutItem.New(tx, id)
                     {
                         Name = path.FileName,
-                        ParentId = (EntityId)overridesGroup.Value,
+                        ParentId = overridesGroup.Value,
                         LoadoutId = loadout.Id,
                     },
                 },
@@ -648,7 +663,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(Dictionary<GamePath, SynceNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
+    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
     {
         List<(Hash Hash, AbsolutePath Path)> toExtract = [];
         
@@ -716,7 +731,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionDeleteFromDisk(Dictionary<GamePath, SynceNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
+    private void ActionDeleteFromDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
     {
         // Delete files from disk
         foreach (var (path, node) in groupings)
@@ -748,9 +763,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private bool ActionIngestFromDisk(Dictionary<GamePath, SynceNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx)
+    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
     {
-        var overridesMod = GetOrCreateOverridesGroup(tx, loadout);
+        overridesGroup ??= GetOrCreateOverridesGroup(tx, loadout);
         var ingestedFiles = false;
         
         foreach (var (path, node) in syncTree)
@@ -772,7 +787,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
-                ParentId = overridesMod.Value,
+                ParentId = overridesGroup.Value,
                 LoadoutId = loadout.Id,
                 Name = path.FileName,
             };
@@ -951,7 +966,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Backs up any new files in the loadout.
     ///
     /// </summary>
-    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SynceNode> files)
+    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SyncNode> files)
     {
         // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "LoadoutFile".
@@ -1165,10 +1180,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 // Remap the id
                 var remappedLoadout = result.Remap(loadout);
 
-                // If this is the only loadout, activate it
-                if (isOnlyLoadout)
+                // If there is no currently synced loadout, then we can ingest the game folder
+                if (!remappedLoadout.Installation.Contains(GameInstallMetadata.LastSyncedLoadout))
                 {
-                    await ActivateLoadout(remappedLoadout.Id);
+                    remappedLoadout = await Synchronize(remappedLoadout);
                 }
                 return remappedLoadout;
             }
@@ -1393,7 +1408,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }));
         }
 
-        Dictionary<GamePath, SynceNode> desiredState = new();
+        Dictionary<GamePath, SyncNode> desiredState = new();
 
         foreach (var gameFile in gameState)
         {
@@ -1403,7 +1418,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 Size = gameFile.Size,
                 LastModifiedTicks = 0,
             };
-            var syncNode = new SynceNode
+            var syncNode = new SyncNode
             {
                 Loadout = part,
                 SourceItemType = LoadoutSourceItemType.Game,
@@ -1420,7 +1435,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         ProcessSyncTree(desiredState);
 
         // Run the groupings
-        await RunGroupings(desiredState, installation);
+        await RunActions(desiredState, installation);
     }
 }
 
