@@ -2,6 +2,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
@@ -35,6 +36,7 @@ public class _0002_RemoveGameFiles : ITransactionalMigration
 
     public void Migrate(ITransaction tx, IDb db)
     {
+        var seenGroups = new HashSet<EntityId>();
         
         foreach (var loadout in Loadout.All(db))
         {
@@ -43,14 +45,16 @@ public class _0002_RemoveGameFiles : ITransactionalMigration
                 continue;
             
             // Get groups attached to the loadout that have the game files group attributes
-            var gameFilesGroups = loadout.Items.OfTypeLoadoutItemGroup().Where(grp => _resolvedGroupAttrs.Any(attr => grp.Contains(attr)));
-
+            var gameFilesGroups = loadout.Items
+                .OfTypeLoadoutItemGroup()
+                .Where(grp => _resolvedGroupAttrs.Any(attr => grp.Contains(attr)));
+            
             var files = gameFilesGroups
                 .SelectMany(grp => grp.Children)
                 .OfTypeLoadoutItemWithTargetPath()
                 .OfTypeLoadoutFile()
                 .Select(file => ((GamePath)file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash));
-            
+
             var suggestedVersion = _fileHashesService.SuggestGameVersion(loadout.InstallationInstance, files);
             if (!_fileHashesService.TryGetLocatorIdsForVersion(loadout.InstallationInstance, suggestedVersion, out var locatorIds))
                 throw new Exception("Could not find locatorIds for version, this should never happen");
@@ -61,21 +65,41 @@ public class _0002_RemoveGameFiles : ITransactionalMigration
 
             foreach (var group in gameFilesGroups)
             {
+                seenGroups.Add(group.Id);
                 tx.Delete(group, false);
                 DeleteChildren(tx, group.AsLoadoutItem());
             }
+        }
 
-
-            void DeleteChildren(ITransaction tx, LoadoutItem.ReadOnly item)
+        // Some older groups may be attached to something besides the loadout directly. So delete those too
+        foreach (var attrSym in _resolvedGroupAttrs)
+        {
+            foreach (var eid in db.Datoms(attrSym))
             {
-                if (!item.TryGetAsLoadoutItemGroup(out var group))
-                    return;
+                if (seenGroups.Contains(eid.E))
+                    continue;
                 
-                foreach (var child in group.Children)
-                {
-                    tx.Delete(child, false);
-                    DeleteChildren(tx, child);
-                }
+                tx.Delete(eid.E, false);
+                DeleteChildren(tx, LoadoutItem.ReadOnly.Create(db, eid.E));
+                seenGroups.Add(eid.E);
+            }
+
+        }
+
+        return;
+        
+        void DeleteChildren(ITransaction tx, LoadoutItem.ReadOnly item)
+        {
+            if (!item.IsValid())
+                return;
+            
+            if (!item.TryGetAsLoadoutItemGroup(out var group))
+                return;
+                
+            foreach (var child in group.Children)
+            {
+                tx.Delete(child, false);
+                DeleteChildren(tx, child);
             }
         }
         
