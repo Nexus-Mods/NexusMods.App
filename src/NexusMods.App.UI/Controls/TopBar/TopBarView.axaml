@@ -172,7 +172,7 @@
                                          Size="Small"
                                          ShowIcon="None">
                     <TextBlock
-                        Text="SUPPORTER"
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Supporter}"
                         Theme="{StaticResource TitleSMSemiTheme}"
                         VerticalAlignment="Center"
                         Padding="4,4,4,2" />

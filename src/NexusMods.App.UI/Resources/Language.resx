@@ -144,6 +144,9 @@
     <data name="Nexus_Premium_Status__Free" xml:space="preserve">
         <value>FREE</value>
     </data>
+    <data name="Nexus_Premium_Status__Supporter" xml:space="preserve">
+        <value>SUPPORTER</value>
+    </data>
     <data name="SearchBox__Search" xml:space="preserve">
         <value>Search</value>
     </data>

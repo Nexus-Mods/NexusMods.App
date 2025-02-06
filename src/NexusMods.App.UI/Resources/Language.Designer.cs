@@ -1929,6 +1929,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SUPPORTER.
+        /// </summary>
+        public static string Nexus_Premium_Status__Supporter {
+            get {
+                return ResourceManager.GetString("Nexus_Premium_Status__Supporter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Browser didn&apos;t open automatically?.
         /// </summary>
         public static string NexusLoginOverlayView__BROWSER_DIDNT_OPEN {
