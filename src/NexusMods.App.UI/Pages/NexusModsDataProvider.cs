@@ -123,7 +123,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Update available
         var newestVersionObservable = _modUpdateService
             .GetNewestModPageVersionObservable(modPage)
-            .Select(static optional => optional.Convert(static files => files.First().Version));
+            .Select(static optional => optional.Convert(static files => files.Files.First().Version));
 
         parentItemModel.AddObservable(
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,

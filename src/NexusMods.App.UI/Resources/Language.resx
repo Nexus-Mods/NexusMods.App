@@ -757,13 +757,13 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Ready to play - All required mods installed</value>
     </data>
     <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
-        <value>Update</value>
+        <value>Download update</value>
     </data>
     <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
-        <value>Update ({0})</value>
+        <value>Download update ({0})</value>
     </data>
     <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
-        <value>Update All</value>
+        <value>Download all</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
         <value>All</value>
