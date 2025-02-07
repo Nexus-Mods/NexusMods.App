@@ -94,7 +94,15 @@ public class ModUpdateService : IModUpdateService
             .SelectMany(static kv => kv.Value)
             .DistinctBy(static fileMetadata => fileMetadata.Id)
             .GroupBy(static fileMetadata => fileMetadata.ModPageId)
-            .ToDictionary(static group => group.Key, static group => group.ToArray());
+            .ToDictionary(static group => group.Key, static group =>
+                {
+                    // Sort by date (latest to oldest), as per design.
+                    // https://github.com/Nexus-Mods/NexusMods.App/pull/2559#discussion_r1934250741
+                    var itemsArray = group.ToArray();
+                    Array.Sort(itemsArray, (a, b) => b.UploadedAt.CompareTo(a.UploadedAt));
+                    return itemsArray;
+                }
+            );
 
         foreach (var kv in modPageToNewerFiles)
         {
@@ -111,10 +119,36 @@ public class ModUpdateService : IModUpdateService
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<NexusModsFileMetadata.ReadOnly[]>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    public IObservable<Optional<NewerFilesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
     {
         return _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
-            .QueryWhenChanged(query => query.Lookup(current.Id));
+            .QueryWhenChanged(query =>
+                {
+                    var files = query.Lookup(current.Id);
+                    return files == null
+                        ? Optional<NewerFilesOnModPage>.None
+                           : new NewerFilesOnModPage(files.Value);
+                }
+            );
     }
+}
+
+/// <summary>
+/// Marks all of the files on a mod page that are newer than the current ones.
+/// </summary>
+/// <param name="Files">
+/// All the files on the mod page that are newer, these are sorted by uploaded date, descending,
+/// meaning that the first file in the array is the newest.
+/// </param>
+public readonly record struct NewerFilesOnModPage(NexusModsFileMetadata.ReadOnly[] Files)
+{
+    /// <summary>
+    /// Returns the newest file on the mod page.
+    /// </summary>
+    /// <remarks>
+    /// Note(sewer): We by definition don't create this struct with empty arrays,
+    /// so the first element is always present. 
+    /// </remarks>
+    public NexusModsFileMetadata.ReadOnly NewestFile() => Files[0];
 }

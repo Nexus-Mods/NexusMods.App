@@ -68,14 +68,11 @@
                 <Grid RowDefinitions="Auto, *">
                     <!-- Toolbar -->
                     <Border Grid.Row="0" Classes="Toolbar">
-                        <StackPanel Orientation="Horizontal">
-
-                            <!-- 'Updates' button. -->
-                            <!-- This button's text is updated at runtime to set number of mods -->
-                            <SplitButton x:Name="UpdateAll" IsVisible="False" Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
-                            <controls:StandardButton x:Name="Refresh" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Refresh}" />
-                
-                            <Line />
+                        <!-- Note(sewer): Alignment of toolbars is usually dictated by `Toolbar.xaml` style file, however,
+                             the new library page is a special case. It is the only toolbar in the App to be left aligned,
+                             rather than right aligned. So the alignment is set here directly for the time being.
+                             Whether this will apply to more toolbars in the future remains to be seen -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         
                             <controls:StandardButton x:Name="SwitchView"
                                                      Text="{x:Static resources:Language.FileOriginPage_SwitchView}"
@@ -84,15 +81,6 @@
                                                      Fill="Weak"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginPage_SwitchView_ToolTip}" />
                             <Line />
-
-                            <controls:StandardButton x:Name="RemoveModButton"
-                                                     Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
-                                                     Type="Tertiary"
-                                                     Size="Small"
-                                                     Fill="Weak"
-                                                     ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
-                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
 
                             <controls:StandardButton x:Name="AddModButton"
                                                      Text="{x:Static resources:Language.FileOriginPage_AddMod}"
@@ -112,6 +100,15 @@
                                                      LeftIcon="{x:Static icons:IconValues.PlaylistAdd}"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
 
+                            <controls:StandardButton x:Name="RemoveModButton"
+                                                     Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
+                                                     Type="Tertiary"
+                                                     Size="Small"
+                                                     Fill="Weak"
+                                                     ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
+                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
+                            
                             <Line />
 
                             <!-- Get Mods Section -->
@@ -134,6 +131,14 @@
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Nexus}"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromNexus_ToolTip}" />
+                            
+                            <!-- Updates Section -->
+                            <Line />
+
+                            <!-- 'Updates' button. -->
+                            <!-- This button's text is updated at runtime to set number of mods -->
+                            <SplitButton x:Name="UpdateAll" IsVisible="False" Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
+                            <controls:StandardButton x:Name="Refresh" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Refresh}" />
 
                         </StackPanel>
                     </Border>

@@ -1,8 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
@@ -21,7 +21,7 @@ namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 /// expected to change.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct UidForMod
+public struct UidForMod : IEquatable<UidForMod>
 {
     /// <summary>
     /// Unique identifier for the mod, within the specific <see cref="GameId"/>.
@@ -38,7 +38,7 @@ public struct UidForMod
     /// </summary>
     /// <param name="uid">The 'uid' field of a GraphQL API query. This should be an 8 byte number represented as a string.</param>
     /// <remarks>
-    /// This throws if <param name="uid"/> is not a valid number.
+    /// This throws if <paramref name="uid"/> is not a valid number.
     /// </remarks>
     public static UidForMod FromV2Api(string uid) => FromUlong(ulong.Parse(uid));
     
@@ -56,6 +56,27 @@ public struct UidForMod
     /// Reinterprets a given <see cref="ulong"/> into a <see cref="UidForMod"/>.
     /// </summary>
     public static UidForMod FromUlong(ulong value) => Unsafe.As<ulong, UidForMod>(ref value);
+
+    /// <inheritdoc/>
+    public bool Equals(UidForMod other)
+    {
+        return ModId.Equals(other.ModId) && GameId.Equals(other.GameId);
+    }
+
+    /// <inheritdoc/>
+    public override bool Equals([NotNullWhen(true)] object? obj)
+    {
+        return obj is UidForMod other && Equals(other);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            return (ModId.GetHashCode() * 397) ^ GameId.GetHashCode();
+        }
+    }
 }
 
 /// <summary>

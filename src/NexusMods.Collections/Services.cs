@@ -9,9 +9,12 @@ public static class Services
 {
     public static IServiceCollection AddNexusModsCollections(this IServiceCollection services)
     {
-        return services.AddNexusCollectionLoadoutGroupModel()
+        return services
+            .AddNexusCollectionLoadoutGroupModel()
             .AddDirectDownloadLibraryFileModel()
             .AddNexusCollectionBundledLoadoutGroupModel()
+            .AddNexusCollectionItemLoadoutGroupModel()
+            .AddNexusCollectionReplicatedLoadoutGroupModel()
             .AddCollectionVerbs();
     }
 }
