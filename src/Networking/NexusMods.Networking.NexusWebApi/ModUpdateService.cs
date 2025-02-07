@@ -76,6 +76,7 @@ public class ModUpdateService : IModUpdateService
             {
                 var newerFiles = RunUpdateCheck
                     .GetNewerFilesForExistingFile(kv.Value)
+                    // `!filesInLibrary.ContainsKey(newFile.Id)`: This filters out the case where we already have the latest file version on disk. 
                     .Where(newFile => newFile.IsValid() && !filesInLibrary.ContainsKey(newFile.Id))
                     .ToArray();
 
