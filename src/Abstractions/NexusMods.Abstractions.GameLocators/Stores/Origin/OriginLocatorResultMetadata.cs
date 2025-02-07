@@ -14,5 +14,5 @@ public record OriginLocatorResultMetadata : IGameLocatorResultMetadata
     public required string Id { get; init; }
 
     /// <inheritdoc />
-    public IEnumerable<string> ToCommonStrings() => [Id];
+    public IEnumerable<string> ToLocatorIds() => [Id];
 }

@@ -25,5 +25,5 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     public ulong[] ManifestIds { get; set; } = [];
     
     /// <inheritdoc />
-    public IEnumerable<string> ToCommonStrings() => ManifestIds.Select(m => m.ToString());
+    public IEnumerable<string> ToLocatorIds() => ManifestIds.Select(m => m.ToString());
 }

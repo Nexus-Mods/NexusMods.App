@@ -60,7 +60,11 @@ public static class LoadoutManagementVerbs
         
         // Get the actual version from the ids, so that we can sanitize the version string, and collapse multiple
         // versions into a single version string
-        var actualVersion = hasherService.GetGameVersion(loadout.InstallationInstance, newCommonIds);
+        if (!hasherService.TryGetGameVersion(loadout.InstallationInstance, newCommonIds, out var actualVersion))
+        {
+            await renderer.Error("Version {0} not found", version);
+            return -1;
+        }
         
         using var tx = loadout.Db.Connection.BeginTransaction();
         

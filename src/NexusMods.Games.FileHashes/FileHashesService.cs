@@ -277,14 +277,20 @@ public class FileHashesService : IFileHashesService, IDisposable
     public IDb Current => _currentDb?.Db ?? throw new InvalidOperationException("No database connected");
 
     /// <inheritdoc />
-    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
+    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata, out string version)
     {
-        var definition = GetGameVersionDefinition(installation, locatorMetadata);
-        return definition.Name;
+        if (TryGetGameVersionDefinition(installation, locatorMetadata, out var versionDefinition))
+        {
+            version = versionDefinition.Name;
+            return true;
+        }
+
+        version = string.Empty;
+        return false;
     }
-    private VersionDefinition.ReadOnly GetGameVersionDefinition(GameInstallation installation, IEnumerable<string> locatorMetadata)
+    private bool TryGetGameVersionDefinition(GameInstallation installation, IEnumerable<string> locatorMetadata, out VersionDefinition.ReadOnly versionDefinition)
     {
-        VersionDefinition.ReadOnly versionDefinition;
+        versionDefinition = default(VersionDefinition.ReadOnly);
         if (installation.Store == GameStore.GOG)
         {
             List<GogBuild.ReadOnly> gogBuilds = [];
@@ -298,8 +304,12 @@ public class FileHashesService : IFileHashesService, IDisposable
                     .FirstOrDefault();
                 gogBuilds.Add(gogBuild);
             }
+
             if (gogBuilds.Count == 0)
-                throw new InvalidOperationException("No GOG builds found for locator metadata");
+            {
+                _logger.LogDebug("No GOG builds found for locator metadata");
+                return false;
+            }
 
             var wasFound = VersionDefinition.All(_currentDb!.Db)
                 .Select(version =>
@@ -311,8 +321,12 @@ public class FileHashesService : IFileHashesService, IDisposable
                 .OrderByDescending(row => row.matchingIdCount)
                 .Select(t => t.version)
                 .TryGetFirst(out versionDefinition);
+
             if (!wasFound)
-                throw new InvalidOperationException("No version found for locator metadata");
+            {
+                _logger.LogDebug("No version found for locator metadata");
+                return false;
+            }
         }
         else if (installation.Store == GameStore.Steam)
         {
@@ -321,15 +335,21 @@ public class FileHashesService : IFileHashesService, IDisposable
             foreach (var steamId in locatorMetadata)
             {
                 if (!ulong.TryParse(steamId, out var parsedId))
-                    throw new InvalidOperationException("Steam locator metadata is not a valid ulong");
+                {
+                    _logger.LogDebug("Steam locator {0} metadata is not a valid ulong", steamId);
+                    return false;
+                }
 
                 var steamManifest = SteamManifest.FindByManifestId(Current, ManifestId.From(parsedId))
                     .FirstOrDefault();
                 steamManifests.Add(steamManifest);
             }
-            
+
             if (steamManifests.Count == 0)
-                throw new InvalidOperationException("No Steam manifests found for locator metadata");
+            {
+                _logger.LogDebug("No Steam manifests found for locator metadata");
+                return false;
+            }
             
             var wasFound = VersionDefinition.All(_currentDb!.Db)
                 .Select(version =>
@@ -343,14 +363,18 @@ public class FileHashesService : IFileHashesService, IDisposable
                 .TryGetFirst(out versionDefinition);
 
             if (!wasFound)
-                throw new InvalidOperationException("No version found for locator metadata");
+            {
+                _logger.LogDebug("No version found for locator metadata");
+                return false;
+            }
         }
         else
         {
-            throw new NotImplementedException("No way to get game version for: " + installation.Store);
+            _logger.LogDebug("No way to get game version for: {Store}", installation.Store);
+            return false;
         }
 
-        return versionDefinition;
+        return true;
     }
 
     /// <inheritdoc />

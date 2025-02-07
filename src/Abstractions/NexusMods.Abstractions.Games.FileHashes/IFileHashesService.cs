@@ -36,10 +36,10 @@ public interface IFileHashesService
     public IDb Current { get; }
 
     /// <summary>
-    /// Lookup a game version string from a given game installation and locator Ids
+    /// Try to get the game version for a given game installation and locator IDs
     /// </summary>
-    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorIds);
-
+    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<string> locatorIds, out string version);
+    
     /// <summary>
     /// Get the locator IDs for a specific version of a given game installation
     /// </summary>

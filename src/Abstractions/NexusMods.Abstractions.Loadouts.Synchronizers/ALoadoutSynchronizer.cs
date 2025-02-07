@@ -1170,10 +1170,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 List<string> locatorMetadata = [];
                 if (installation.LocatorResultMetadata != null)
                 {
-                    locatorMetadata.AddRange(installation.LocatorResultMetadata.ToCommonStrings());
+                    locatorMetadata.AddRange(installation.LocatorResultMetadata.ToLocatorIds());
                 }
 
-                var version = _fileHashService.GetGameVersion(installation, locatorMetadata);
+                if (!_fileHashService.TryGetGameVersion(installation, locatorMetadata, out var version))
+                    throw new Exception("Cannot create a loadout for an unknown game version");
 
                 var loadout = new Loadout.New(tx)
                 {
@@ -1228,7 +1229,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Synchronize the last applied loadout, so we don't lose any changes
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
         
-        var commonIds = installation.LocatorResultMetadata?.ToCommonStrings().ToArray() ?? [];
+        var commonIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
         await ResetToOriginalGameState(installation, commonIds);
     }
 
