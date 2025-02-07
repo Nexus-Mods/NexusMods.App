@@ -206,7 +206,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     }
                     else
                     {
-                        await HandleUpdateMessage(updateMessage.NewFile, cancellationToken);
+                        await HandleUpdateMessage(updateMessage.Updates, cancellationToken);
                     }
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -234,7 +234,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private async ValueTask HandleUpdateMessage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
+    private async ValueTask HandleUpdateMessage(ModUpdatesOnModPage updatesOnPage, CancellationToken cancellationToken)
     {
         // Note(sewer)
         // If the user is a free user, they have to go to the website due to API restrictions.
@@ -242,15 +242,31 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
         {
-            var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(fileMetadata.Uid.FileId, fileMetadata.Uid.GameId);
-            var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-            await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+            // If there are multiple mods, we expand the row
+            if (updatesOnPage.NumberOfModFilesToUpdate > 1)
+            {
+                // TODO: Expand the row
+            }
+            else
+            {
+                // Otherwise send them to the download page!!
+                var latestFile = updatesOnPage.NewestFile();
+                var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(latestFile.Uid.FileId, latestFile.Uid.GameId);
+                var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+                await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+            }
+            
         }
         else
         {
-            await using var tempPath = _temporaryFileManager.CreateFile();
-            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, fileMetadata, cancellationToken: cancellationToken);
-            await _libraryService.AddDownload(job);
+            // Note(sewer): There's usually just 1 file in like 99% of the cases here
+            //              so no need to optimize around file reuse and TemporaryFileManager.
+            foreach (var newestFile in updatesOnPage.NewestFileForEachPage())
+            {
+                await using var tempPath = _temporaryFileManager.CreateFile();
+                var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
+                await _libraryService.AddDownload(job);
+            }
         }
     }
 
@@ -346,7 +362,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
-public readonly record struct UpdateMessage(NexusModsFileMetadata.ReadOnly NewFile);
+public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
@@ -407,8 +423,7 @@ public class LibraryTreeDataGridAdapter :
             factory: static (self, itemModel, component) => component.CommandUpdate.Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, _, component) = state;
-                var newFile = component.NewFile.Value;
-
+                var newFile = component.NewFiles.Value;
                 self.MessageSubject.OnNext(new UpdateMessage(newFile));
             })
         );

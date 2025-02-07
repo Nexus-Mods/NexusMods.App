@@ -17,8 +17,8 @@ public class ModUpdateService : IModUpdateService
     private readonly NexusGraphQLClient _gqlClient;
     
     // Use SourceCache to maintain latest values per key
-    private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, NexusModsFileMetadata.ReadOnly>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
-    private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, NexusModsFileMetadata.ReadOnly[]>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
+    private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
+    private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
 
     public ModUpdateService(
         IConnection connection,
@@ -79,39 +79,30 @@ public class ModUpdateService : IModUpdateService
                     .Where(newFile => newFile.IsValid() && !filesInLibrary.ContainsKey(newFile.Id))
                     .ToArray();
 
-                return new KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly[]>(kv.Value, newerFiles);
+                return new ModUpdateOnPage(kv.Value, newerFiles);
             })
-            .Where(static kv => kv.Value.Length > 0)
+            .Where(static kv => kv.NewerFiles.Length > 0)
             .ToArray();
 
         foreach (var kv in existingFileToNewerFiles)
-        {
-            var kvp = new KeyValuePair<NexusModsFileMetadataId, NexusModsFileMetadata.ReadOnly>(kv.Key, kv.Value.First());
-            _newestModVersionCache.AddOrUpdate(kvp);
-        }
+            _newestModVersionCache.AddOrUpdate(new KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>(kv.File.Id, kv));
 
         var modPageToNewerFiles = existingFileToNewerFiles
-            .SelectMany(static kv => kv.Value)
-            .DistinctBy(static fileMetadata => fileMetadata.Id)
-            .GroupBy(static fileMetadata => fileMetadata.ModPageId)
-            .ToDictionary(static group => group.Key, static group =>
-                {
-                    // Sort by date (latest to oldest), as per design.
-                    // https://github.com/Nexus-Mods/NexusMods.App/pull/2559#discussion_r1934250741
-                    var itemsArray = group.ToArray();
-                    Array.Sort(itemsArray, (a, b) => b.UploadedAt.CompareTo(a.UploadedAt));
-                    return itemsArray;
-                }
+            .GroupBy(
+                kv => kv.File.ModPageId,
+                kv => kv
+            )
+            .ToDictionary(
+                group => group.Key,
+                group => (ModUpdatesOnModPage)group.ToArray()
             );
 
         foreach (var kv in modPageToNewerFiles)
-        {
             _newestModOnAnyPageCache.AddOrUpdate(kv);
-        }
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<NexusModsFileMetadata.ReadOnly>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
     {
         return _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
@@ -119,36 +110,80 @@ public class ModUpdateService : IModUpdateService
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<NewerFilesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
     {
         return _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
-            .QueryWhenChanged(query =>
-                {
-                    var files = query.Lookup(current.Id);
-                    return files == null
-                        ? Optional<NewerFilesOnModPage>.None
-                           : new NewerFilesOnModPage(files.Value);
-                }
-            );
+            .QueryWhenChanged(query => query.Lookup(current.Id));
     }
 }
 
 /// <summary>
-/// Marks all of the files on a mod page that are newer than the current ones.
+/// Marks all the files on a mod page that are newer than the current ones.
 /// </summary>
-/// <param name="Files">
-/// All the files on the mod page that are newer, these are sorted by uploaded date, descending,
-/// meaning that the first file in the array is the newest.
+/// <param name="FileMappings">
+/// An array, where each entry is a mapping of a single file (currently in the library) to its newer versions
+/// available on `nexusmods.com`.
 /// </param>
-public readonly record struct NewerFilesOnModPage(NexusModsFileMetadata.ReadOnly[] Files)
+public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings)
 {
     /// <summary>
-    /// Returns the newest file on the mod page.
+    /// This returns the number of mod files to update on this page.
+    /// Given that each array entry represents a single mod file, this is just the count of the internal array.
     /// </summary>
-    /// <remarks>
-    /// Note(sewer): We by definition don't create this struct with empty arrays,
-    /// so the first element is always present. 
-    /// </remarks>
-    public NexusModsFileMetadata.ReadOnly NewestFile() => Files[0];
+    public int NumberOfModFilesToUpdate => FileMappings.Length;
+    
+    /// <summary>
+    /// Returns the newest file across mods on this mod page.
+    /// </summary>
+    public NexusModsFileMetadata.ReadOnly NewestFile()
+    {
+        // Note(sewer): This matches the behaviour established in the design for
+        // the mod update feature. The row should show the details of the newest mod.
+        // In our case, we simply need to select the most recent file across all mods
+        // within this page. In practice, there's usually only one mod, but there can
+        // sometimes be more in some rare cases.
+        
+        // Compare the newest file in all `FileMappings` and return most recent one
+        // (without LINQ, avoid alloc, since every mod row will touch this code in UI).
+        var newestFile = FileMappings[0].NewerFiles[0];
+        for (var x = 1; x < FileMappings.Length; x++)
+        {
+            var newerFile = FileMappings[x].NewerFiles[0];
+            if (newerFile.UploadedAt > newestFile.UploadedAt)
+                newestFile = newerFile;
+        }
+        
+        return newestFile;
+    }
+    
+    /// <summary>
+    /// Returns the newest file from every mod on this page
+    /// </summary>
+    public IEnumerable<NexusModsFileMetadata.ReadOnly> NewestFileForEachPage() => FileMappings.Select(x => x.NewestFile);
+
+    /// <summary/>
+    public static explicit operator ModUpdatesOnModPage(ModUpdateOnPage[] inner) => new(inner);
+    
+    /// <summary/>
+    public static explicit operator ModUpdatesOnModPage(ModUpdateOnPage inner) => new([inner]); // promote single item to array.
+}
+
+/// <summary>
+/// Represents a mapping of a single file (currently in the library) to its newer versions
+/// available on `nexusmods.com`.
+/// </summary>
+/// <param name="File">Unique identifier for the file that's currently in the library.</param>
+/// <param name="NewerFiles">Newer files for this specific library file.</param>
+public readonly record struct ModUpdateOnPage(NexusModsFileMetadata.ReadOnly File, NexusModsFileMetadata.ReadOnly[] NewerFiles)
+{
+    /// <summary>
+    /// The newest update file for this individual mod on a mod page.
+    /// </summary>
+    public NexusModsFileMetadata.ReadOnly NewestFile => NewerFiles[0];
+    
+    /// <summary/>
+    public static implicit operator ModUpdateOnPage(KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly[]> kv) => new(kv.Key, kv.Value);
+    /// <summary/>
+    public static implicit operator KeyValuePair<NexusModsFileMetadata.ReadOnly, NexusModsFileMetadata.ReadOnly[]>(ModUpdateOnPage modUpdateOnPage) => new(modUpdateOnPage.File, modUpdateOnPage.NewerFiles);
 }
