@@ -142,17 +142,27 @@ public class StubbedFileHasherService : IFileHashesService
     }
 
     public IDb Current => _current!;
-    public string GetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata)
+    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata, out string version)
     {
         var firstMetadata = locatorMetadata.First();
         if (firstMetadata is "StubbedGameState.zip")
-            return "1.0.Stubbed";
+        {
+            version = "1.0.Stubbed";
+            return true;
+        }
+
         if (firstMetadata is "StubbedGameState_game_v2.zip")
-            return "1.1.Stubbed";
-        
+        {
+            version = "1.1.Stubbed";
+            return true;
+        }
+
         // The stubbed Steam tests use this unit as the locator metadata
         if (firstMetadata == "3976631895")
-            return "1.0.Stubbed";
+        {
+            version = "1.0.Stubbed";
+            return true;
+        }
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
 
@@ -192,6 +202,8 @@ public class StubbedFileHasherService : IFileHashesService
         
         // Find the version with the most matches
         var bestMatch = versionMatches.OrderByDescending(kv => kv.Value).First();
-        return GetGameVersion(gameInstallation, [bestMatch.Key]);
+        if (!TryGetGameVersion(gameInstallation, [bestMatch.Key], out var version))
+            throw new Exception("Failed to suggest a game version");
+        return version;
     }
 }
