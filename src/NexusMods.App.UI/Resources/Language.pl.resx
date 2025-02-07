@@ -138,6 +138,9 @@
 	<data name="Nexus_Premium_Status__Free" xml:space="preserve">
 		<value>DARMOWE</value>
 	</data>
+	<data name="Nexus_Premium_Status__Supporter" xml:space="preserve">
+		<value>WSPIERAJĄCY</value>
+	</data>
 	<data name="SearchBox__Search" xml:space="preserve">
 		<value>Wyszukaj</value>
 	</data>
@@ -524,6 +527,9 @@
 	<data name="AddPanelToolTip" xml:space="preserve">
 		<value>Kliknij, aby dodać dodatkowy panel na podzielonym ekranie</value>
 	</data>
+	<data name="MaxPanelsAddedToolTip" xml:space="preserve">
+		<value>Osiągnięto maksymalną liczbę paneli</value>
+	</data>
 	<data name="Panel_Add_tab_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby dodać kartę</value>
 	</data>
@@ -713,6 +719,9 @@
 	</data>
 	<data name="TopBar_Back_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby przejść wstecz</value>
+	</data>
+	<data name="TopBar_GiveFeedback_ToolTip" xml:space="preserve">
+		<value>Kliknij, aby przekazać opinię i pomóc nam w ulepszaniu aplikacji</value>
 	</data>
 	<data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby połączyć swoje konto Nexus Mods</value>
