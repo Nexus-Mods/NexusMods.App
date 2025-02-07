@@ -116,4 +116,58 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         await Verify(sb.ToString(), extension: "md");
     }
 
+    [Fact]
+    public async Task SwappingLoadoutsDoesNotLeakFiles()
+    {
+        var sb = new StringBuilder();
+        var loadoutA = await CreateLoadout();
+        var loadoutB = await CreateLoadout();
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 1 - Loadout A Synced",
+            """
+            Loadout A has been synchronized, and the game folder should match the loadout.
+            """, [loadoutA, loadoutB]);
+        
+        var newFileInGameFolderA = new GamePath(LocationId.Game, "bin/newFileInGameFolderA.txt");
+        var newFileFullPathA = GameInstallation.LocationsRegister.GetResolvedPath(newFileInGameFolderA);
+        newFileFullPathA.Parent.CreateDirectory();
+        await newFileFullPathA.WriteAllTextAsync("New File for this loadout");
+
+        await Synchronizer.RescanFiles(loadoutA.InstallationInstance);
+        
+        LogDiskState(sb, "## 2 - New File Added to Game Folder",
+            """
+            A new file has been added to the game folder, and the loadout has been synchronized. The new file should be added to the loadout.
+            """, [loadoutA, loadoutB]);
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 3 - Loadout A Synced with New File",
+            """
+            Loadout A has been synchronized again, and the new file should be added to the disk state.
+            """, [loadoutA, loadoutB]);
+        
+        loadoutB = await Synchronizer.Synchronize(loadoutB);
+        
+        LogDiskState(sb, "## 4 - Loadout B Synced",
+            """
+            Loadout B has been synchronized, the added file should be removed from the disk state, and only exist in loadout A.
+            """, [loadoutA, loadoutB]);
+        
+        
+        var tree = await Synchronizer.BuildSyncTree(loadoutA);
+        Synchronizer.ProcessSyncTree(tree);
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 5 - Loadout A Synced Again",
+            """
+            Loadout A has been synchronized again, and the new file should be added to the disk state.
+            """, [loadoutA, loadoutB]);
+        
+        await Verify(sb.ToString(), extension: "md");
+    }
+
 }
