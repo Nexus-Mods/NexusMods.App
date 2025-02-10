@@ -127,11 +127,10 @@ public class FileHashesService : IFileHashesService, IDisposable
         diskPath.Position = 0;
         return (await JsonSerializer.DeserializeAsync<Manifest>(diskPath, _jsonSerializerOptions))!;
     }
-    
+
+    /// <inheritdoc />
     public async Task CheckForUpdate(bool forceUpdate = false)
     {
-        using var _ = await _lock.LockAsync();
-
         await CheckForUpdateCore(forceUpdate);
     }
 
@@ -146,6 +145,7 @@ public class FileHashesService : IFileHashesService, IDisposable
 
     private async Task CheckForUpdateCore(bool forceUpdate)
     {
+        using var _ = await _lock.LockAsync();
         var gameHashesReleaseFileName = GameHashesReleaseFileName;
         if (!forceUpdate)
         {
@@ -210,7 +210,6 @@ public class FileHashesService : IFileHashesService, IDisposable
     /// <inheritdoc />
     public async ValueTask<IDb> GetFileHashesDb()
     {
-        using var _ = await _lock.LockAsync();
         if (_currentDb is not null)
             return _currentDb.Db;
 

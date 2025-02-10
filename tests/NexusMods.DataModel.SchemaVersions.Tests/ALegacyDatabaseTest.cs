@@ -56,6 +56,9 @@ public abstract class ALegacyDatabaseTest
         if (OSInformation.Shared.IsLinux)
             services.AddSingleton<IGameLocator, GogLocator>();
         
+        const KnownPath baseKnownPath = KnownPath.EntryDirectory;
+        var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
+        
         return services
             .AddLogging(builder => builder.AddXUnit())
             .AddSerializationAbstractions()
@@ -74,6 +77,10 @@ public abstract class ALegacyDatabaseTest
             .AddStubbedStardewValley()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
+            .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
+            {
+                HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
+            })
             .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false, registerWine: false)
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
