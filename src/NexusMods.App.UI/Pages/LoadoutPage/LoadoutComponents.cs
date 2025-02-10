@@ -1,4 +1,5 @@
 using DynamicData;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
@@ -18,7 +19,7 @@ public static class LoadoutComponents
         public ReactiveCommand<Unit> CommandToggle { get; } = new();
 
         private readonly ValueComponent<bool?> _valueComponent;
-        public BindableReactiveProperty<bool?> Value => _valueComponent.Value;
+        public IReadOnlyBindableReactiveProperty<bool?> Value => _valueComponent.Value;
 
         private readonly OneOf<ObservableHashSet<LoadoutItemId>, LoadoutItemId[]> _ids;
         public IEnumerable<LoadoutItemId> ItemIds => _ids.Match(
@@ -61,11 +62,11 @@ public static class LoadoutComponents
             _valueComponent = valueComponent;
             _ids = new ObservableHashSet<LoadoutItemId>();
 
-            _activationDisposable = this.WhenActivated(childrenItemIdsObservable, static (self, state, disposables) =>
+            _activationDisposable = this.WhenActivated((childrenItemIdsObservable), static (self, state, disposables) =>
             {
                 self._valueComponent.Activate().AddTo(disposables);
             });
-            
+
             _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
@@ -85,21 +86,28 @@ public static class LoadoutComponents
             base.Dispose(disposing);
         }
     }
+
+    public sealed class Locked : ReactiveR3Object, IItemModelComponent<Locked>, IComparable<Locked>
+    {
+        public int CompareTo(Locked? other) => 0;
+    }
 }
 
 public static class LoadoutColumns
 {
+    [UsedImplicitly]
     public sealed class IsEnabled : ICompositeColumnDefinition<IsEnabled>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<LoadoutComponents.IsEnabled>(key: ComponentKey);
-            var bValue = a.GetOptional<LoadoutComponents.IsEnabled>(key: ComponentKey);
+            var aValue = a.GetOptional<LoadoutComponents.IsEnabled>(key: IsEnabledComponentKey);
+            var bValue = a.GetOptional<LoadoutComponents.IsEnabled>(key: IsEnabledComponentKey);
             return aValue.Compare(bValue);
         }
 
         public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(IsEnabled);
-        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
+        public static readonly ComponentKey IsEnabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
+        public static readonly ComponentKey LockedComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.Locked));
         public static string GetColumnHeader() => "Enabled";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

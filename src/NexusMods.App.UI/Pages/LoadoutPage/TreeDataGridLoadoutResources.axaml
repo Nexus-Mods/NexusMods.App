@@ -2,17 +2,29 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
-                    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage">
+                    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
-        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:ComponentControl.ComponentTemplate>
+        <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:MultiComponentControl.AvailableTemplates>
+                <!-- Locked (eg: required mods of collections) -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+Locked"
+                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.LockedComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+Locked}">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}"
+                                               Size="20" />
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ComponentKey}">
+                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
                             <ToggleSwitch Classes="Compact"
@@ -29,9 +41,9 @@
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
-            </controls:ComponentControl.ComponentTemplate>
 
-        </controls:ComponentControl>
+            </controls:MultiComponentControl.AvailableTemplates>
+        </controls:MultiComponentControl>
     </DataTemplate>
 </ResourceDictionary>
 
