@@ -1,7 +1,7 @@
 ﻿<reactiveUi:ReactiveUserControl
     d:DataContext=""
-    d:DesignHeight="300"
-    d:DesignWidth="1280"
+    d:DesignHeight="52"
+    d:DesignWidth="1024"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
     x:TypeArguments="topBar:ITopBarViewModel"
@@ -15,120 +15,175 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
+
     <Design.DataContext>
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="Auto, *, Auto" x:Name="MainGrid" Height="56" VerticalAlignment="Top">
+    <Grid x:Name="MainGrid"
+          Height="52"
+          VerticalAlignment="Top"
+          Background="{StaticResource SurfaceBaseBrush}">
 
+        <Grid.ColumnDefinitions>
+            <!-- min width is 232 to never go left of the left menu section -->
+            <ColumnDefinition Width="Auto" MinWidth="230" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- left column (Game and Loadout) -->
         <StackPanel Grid.Column="0"
                     Orientation="Horizontal"
-                    Classes="Spacing-1_5"
+                    Spacing="{StaticResource Spacing-1.5}"
                     Margin="16,0"
                     VerticalAlignment="Center">
-            <TextBlock Classes="HeadingXSSemi ForegroundSubdued"
-                       x:Name="ActiveWorkspaceTitleTextBlock" />
 
-            <TextBlock Classes="BodyMDNormal ForegroundSubdued"
-                       x:Name="ActiveWorkspaceSubtitleTextBlock"
-                       VerticalAlignment="Center" />
+            <TextBlock x:Name="ActiveWorkspaceTitleTextBlock"
+                       Theme="{StaticResource HeadingXSSemiTheme}"
+                       Foreground="{StaticResource NeutralSubduedBrush}" />
+
+            <TextBlock x:Name="ActiveWorkspaceSubtitleTextBlock"
+                       Theme="{StaticResource BodyMDNormalTheme}"
+                       Foreground="{StaticResource NeutralSubduedBrush}"
+                       VerticalAlignment="Center"
+                       IsVisible="False" />
+        </StackPanel>
+
+        <!-- center column -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+            <!-- back / forward buttons -->
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Left"
+                        Margin="4,0"
+                        Spacing="4">
+
+                <controls:StandardButton x:Name="GoBackInHistory"
+                                         ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
+                                         ShowLabel="False"
+                                         ShowIcon="Left"
+                                         Type="Tertiary"
+                                         Fill="Strong"
+                                         LeftIcon="{x:Static icons:IconValues.ArrowBack}" />
+
+                <controls:StandardButton x:Name="GoForwardInHistory"
+                                         ToolTip.Tip="{x:Static resources:Language.TopBar_Forward_ToolTip}"
+                                         ShowLabel="False"
+                                         ShowIcon="Left"
+                                         Type="Tertiary"
+                                         Fill="Strong"
+                                         LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
+            </StackPanel>
+
+            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
         </StackPanel>
 
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-            <controls:StandardButton x:Name="GoBackInHistory"
-                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
-                                     ShowLabel="False"
-                                     ShowIcon="Left"
+        <!-- right column (buttons, settings, login) -->
+        <StackPanel Grid.Column="2" Margin="12 0" Orientation="Horizontal" Spacing="12">
+
+            <!-- feedback button -->
+            <controls:StandardButton x:Name="GiveFeedbackButton"
+                                     Text="Give Feedback"
                                      Type="Tertiary"
-                                     Fill="Strong"
-                                     LeftIcon="{x:Static icons:IconValues.ArrowBack}" />
-            <controls:StandardButton x:Name="GoForwardInHistory"
-                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Forward_ToolTip}"
-                                     ShowLabel="False"
+                                     Fill="None"
+                                     Size="Small"
+                                     LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
                                      ShowIcon="Left"
-                                     Type="Tertiary"
-                                     Fill="Strong"
-                                     LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}" />
+            <!-- help button -->
+            <controls:StandardButton Type="Tertiary"
+                                     Fill="None"
+                                     LeftIcon="{x:Static icons:IconValues.HelpOutline}"
+                                     ShowLabel="False"
+                                     ShowIcon="IconOnly"
+                                     Size="Medium"
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
+                <controls:StandardButton.Flyout>
+                    <MenuFlyout>
+                        <navigation:NavigationMenuItem
+                            Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}"
+                            x:Name="ViewChangelogMenuItem" />
+                        <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}"
+                                  x:Name="ViewAppLogsMenuItem" />
+                        <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}"
+                                  x:Name="GiveFeedbackMenuItem" />
+                    </MenuFlyout>
+                </controls:StandardButton.Flyout>
+            </controls:StandardButton>
+
+            <!-- settings button -->
+            <navigation:NavigationControl x:Name="OpenSettingsButton"
+                                          Type="Tertiary"
+                                          Fill="None"
+                                          LeftIcon="{x:Static icons:IconValues.CogOutline}"
+                                          ShowLabel="False"
+                                          ShowIcon="IconOnly"
+                                          Size="Medium"
+                                          ToolTip.Tip="{x:Static resources:Language.SettingsView_Title}" />
+
+            <StackPanel Orientation="Horizontal" Spacing="0">
+
+                <!-- login button -->
+                <controls:StandardButton x:Name="LoginButton"
+                                         Text="{x:Static resources:Language.TopBarActions__LOG_IN}"
+                                         Type="Primary"
+                                         Fill="Strong"
+                                         Size="Small"
+                                         ToolTip.Tip="{x:Static resources:Language.TopBarActions__LOG_IN_ToolTip}" />
+
+                <!-- avatar button -->
+                <Button x:Name="AvatarMenuItemButton"
+                        ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}"
+                                      x:Name="OpenNexusModsProfileMenuItem" />
+                            <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}"
+                                      x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                            <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}"
+                                      x:Name="SignOutMenuItem" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    <icons:UnifiedIcon x:Name="AvatarUnifiedIcon"
+                                       Value="{x:Static icons:IconValues.AvatarTest}" />
+                </Button>
+
+                <!-- premium label -->
+                <TextBlock x:Name="PremiumTextBlock"
+                           Theme="{StaticResource TitleSMSemiTheme}"
+                           VerticalAlignment="Center"
+                           Margin="12,0,0,0"
+                           Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}" />
+
+                <!-- supporter button -->
+                <controls:StandardButton x:Name="SupporterButton"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         Size="Small"
+                                         ShowIcon="None">
+                    <TextBlock
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Supporter}"
+                        Theme="{StaticResource TitleSMSemiTheme}"
+                        VerticalAlignment="Center"
+                        Padding="4,4,4,2" />
+                </controls:StandardButton>
+
+                <!-- free button -->
+                <controls:StandardButton x:Name="FreeButton"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         Size="Small"
+                                         ShowIcon="None">
+                    <TextBlock
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Free}"
+                        Theme="{StaticResource TitleSMSemiTheme}"
+                        VerticalAlignment="Center"
+                        Padding="4,4,4,2" />
+                </controls:StandardButton>
+            </StackPanel>
         </StackPanel>
-
-        <Menu Grid.Column="2" Margin="12 0">
-            <MenuItem Classes="TopBarNoStyleMenuItem">
-                <MenuItem.Header>
-                    <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
-                </MenuItem.Header>
-            </MenuItem>
-
-            <Separator Width="1" Height="40" />
-
-            <navigation:NavigationMenuItem Classes="TopBarMenuItem" x:Name="OpenSettingsMenuItem"
-                                           ToolTip.Tip="{x:Static resources:Language.SettingsView_Title}">
-                <navigation:NavigationMenuItem.Header>
-                    <icons:UnifiedIcon Classes="Cog" />
-                </navigation:NavigationMenuItem.Header>
-            </navigation:NavigationMenuItem>
-
-            <MenuItem Classes="TopBarMenuItem" Width="64"
-                      ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
-                <MenuItem.Header>
-                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="10, 0 , 10,  0">
-                        <icons:UnifiedIcon Classes="Help" />
-                        <icons:UnifiedIcon Classes="MenuDown" />
-                    </StackPanel>
-                </MenuItem.Header>
-
-                <navigation:NavigationMenuItem Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}"
-                                               x:Name="ViewChangelogMenuItem" />
-
-                <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}"
-                          x:Name="ViewAppLogsMenuItem" />
-                <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}"
-                          x:Name="GiveFeedbackMenuItem" />
-            </MenuItem>
-
-            <MenuItem Classes="TopBarNoStyleMenuItem" x:Name="LoginMenuItem">
-                <MenuItem.Header>
-                    <controls:StandardButton x:Name="LoginButton"
-                                             Text="{x:Static resources:Language.TopBarActions__LOG_IN}"
-                                             Type="Primary"
-                                             Fill="Strong"
-                                             ToolTip.Tip="{x:Static resources:Language.TopBarActions__LOG_IN_ToolTip}" />
-                </MenuItem.Header>
-            </MenuItem>
-
-            <MenuItem Classes="TopBarMenuItem" Width="64" x:Name="AvatarMenuItem">
-                <MenuItem.Header>
-                    <StackPanel Orientation="Horizontal" Spacing="0" Margin="6">
-                        <icons:UnifiedIcon Size="28" x:Name="AvatarIcon" />
-                        <icons:UnifiedIcon Classes="MenuDown" Size="24" />
-                    </StackPanel>
-                </MenuItem.Header>
-
-                <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}" x:Name="OpenNexusModsProfileMenuItem" />
-                <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}"
-                          x:Name="OpenNexusModsAccountSettingsMenuItem" />
-                <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}" x:Name="SignOutMenuItem" />
-            </MenuItem>
-
-            <MenuItem Classes="TopBarLabelMenuItem" x:Name="PremiumLabel" IsEnabled="False">
-                <MenuItem.Header>
-                    <TextBlock
-                        Classes="TitleMDSemi"
-                        VerticalAlignment="Center"
-                        Margin="0"
-                        Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}" />
-                </MenuItem.Header>
-            </MenuItem>
-            <MenuItem Classes="TopBarLabelMenuItem" x:Name="FreeLabel" IsEnabled="False">
-                <MenuItem.Header>
-                    <TextBlock
-                        Classes="TitleMDSemi"
-                        VerticalAlignment="Center"
-                        Margin="0"
-                        Text="{x:Static resources:Language.Nexus_Premium_Status__Free}" />
-                </MenuItem.Header>
-            </MenuItem>
-        </Menu>
-
     </Grid>
 </reactiveUi:ReactiveUserControl>

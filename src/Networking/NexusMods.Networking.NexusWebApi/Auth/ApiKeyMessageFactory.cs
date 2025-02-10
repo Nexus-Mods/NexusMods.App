@@ -64,7 +64,7 @@ public class ApiKeyMessageFactory(IConnection conn) : IAuthenticatingMessageFact
         {
             UserId = result.Data.UserId,
             Name = result.Data.Name,
-            IsPremium = result.Data.IsPremium,
+            UserRole = result.Data.IsPremium ? UserRole.Premium : result.Data.IsSupporter ? UserRole.Supporter : UserRole.Free,
             AvatarUrl = result.Data.ProfileUrl,
         };
     }

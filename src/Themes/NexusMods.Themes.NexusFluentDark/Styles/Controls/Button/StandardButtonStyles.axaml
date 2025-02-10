@@ -175,7 +175,15 @@
 
                         <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
                             <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Tertiary" />
+                            <controls:StandardButton Type="Tertiary">
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem Header="Menu 1"/>
+                                        <MenuItem Header="Menu 2" />
+                                        <MenuItem Header="Menu 3"/>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+                            </controls:StandardButton>
                         </StackPanel>
 
                         <StackPanel Grid.Row="5" Grid.Column="0" Spacing="8">
@@ -279,6 +287,12 @@
             <Setter Property="Background" Value="{DynamicResource ButtonBackgroundDisabled}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
             <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
+        </Style>
+        
+        <Style Selector="^:flyout-open">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPointerOver}" />
         </Style>
         <!-- end of default button styles -->
 
@@ -473,7 +487,11 @@
             </Style>
 
             <Style Selector="^:disabled" />
-
+                
+            <Style Selector="^:flyout-open">
+                <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
+            </Style>
+            
             <!-- fill variants -->
 
             <Style Selector="^[Fill=Weak]">

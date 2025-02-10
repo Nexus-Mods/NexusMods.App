@@ -29,10 +29,9 @@ internal static class NexusApiVerbs
         [
             [
                 userInfo?.Name ?? "<Not logged in>",
-                    userInfo?.IsPremium ?? false,
+                    userInfo?.UserRole == UserRole.Premium,
             ],
-        ]
-        );
+        ]);
 
         return 0;
     }

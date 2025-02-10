@@ -21,7 +21,7 @@ public class EventSenderTests
             UserId = UserId.From(1337),
             Name = "",
             AvatarUrl = null,
-            IsPremium = false,
+            UserRole = UserRole.Free,
         });
 
         var expectedUserAgent = Encoding.UTF8.GetString(EventSender.CreateUserAgent());
