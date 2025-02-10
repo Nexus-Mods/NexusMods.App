@@ -70,8 +70,11 @@ public static class Services
                 if (registerHeroic) 
                     services.AddSingleton<IGameLocator, HeroicGogLocator>();
 
-                services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
-                services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
+                if (registerWine)
+                {
+                    services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
+                    services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
+                }
             },
             onOSX: () =>
             {
