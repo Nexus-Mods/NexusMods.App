@@ -59,42 +59,33 @@
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
-        <StackPanel Orientation="Horizontal">
-            <!-- Current version -->
-            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                <controls:ComponentControl.ComponentTemplate>
-                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                                ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
-                        <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:StringComponent}">
-                                <TextBlock Text="{CompiledBinding Value.Value}"/>
-                            </DataTemplate>
-                        </controls:ComponentTemplate.DataTemplate>
-                    </controls:ComponentTemplate>
-                </controls:ComponentControl.ComponentTemplate>
+        <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:MultiComponentControl.AvailableTemplates>
+                <!-- New version -->
+                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+NewVersionAvailable"
+                                            ComponentKey="{x:Static local:LibraryColumns+ItemVersion.NewVersionComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LibraryComponents+NewVersionAvailable}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{CompiledBinding CurrentVersion.Value.Value}" />
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"/>
+                                <TextBlock Text="{CompiledBinding NewVersion.Value}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
 
-                <controls:ComponentControl.Fallback>
-                    <TextBlock Text="-"/>
-                </controls:ComponentControl.Fallback>
-            </controls:ComponentControl>
-
-            <!-- Newest version -->
-            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                <controls:ComponentControl.ComponentTemplate>
-                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                                ComponentKey="{x:Static local:LibraryColumns+ItemVersion.NewVersionComponentKey}">
-                        <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:StringComponent}">
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"/>
-                                    <TextBlock Text="{CompiledBinding Value.Value}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </controls:ComponentTemplate.DataTemplate>
-                    </controls:ComponentTemplate>
-                </controls:ComponentControl.ComponentTemplate>
-            </controls:ComponentControl>
-        </StackPanel>
+                <!-- Current version -->
+                <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                            ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:StringComponent}">
+                            <TextBlock Text="{CompiledBinding Value.Value}"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:MultiComponentControl.AvailableTemplates>
+        </controls:MultiComponentControl>
 
     </DataTemplate>
 
