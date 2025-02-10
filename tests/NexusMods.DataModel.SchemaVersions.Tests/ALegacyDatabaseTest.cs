@@ -49,6 +49,8 @@ public abstract class ALegacyDatabaseTest
     
     protected virtual IServiceCollection AddServices(IServiceCollection services)
     {
+        
+        
         return services
             .AddLogging(builder => builder.AddXUnit())
             .AddSerializationAbstractions()
@@ -67,7 +69,7 @@ public abstract class ALegacyDatabaseTest
             .AddStubbedStardewValley()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
-            .AddStandardGameLocators(registerConcreteLocators:false)
+            .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false)
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
     }

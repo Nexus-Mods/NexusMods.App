@@ -32,11 +32,15 @@ public static class Services
     /// <summary>
     /// Registers all the services for the standard store locators
     /// </summary>
+    /// <param name="services"></param>
     /// <param name="registerConcreteLocators">if true, will register the concrete locators, set this to false if
     /// you plan on stubbing out these locators for testing</param>
+    /// <param name="registerHeroic">if true, will register the Heroic launcher game locator</param>
+    /// <param name="settings"></param>
     public static IServiceCollection AddStandardGameLocators(
         this IServiceCollection services,
         bool registerConcreteLocators = true,
+        bool registerHeroic = true,
         GameLocatorSettings? settings = null)
     {
         services
@@ -62,7 +66,8 @@ public static class Services
             onLinux: () =>
             {
                 services.AddSingleton<IGameLocator, SteamLocator>();
-                services.AddSingleton<IGameLocator, HeroicGogLocator>();
+                if (registerHeroic) 
+                    services.AddSingleton<IGameLocator, HeroicGogLocator>();
 
                 services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
                 services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
