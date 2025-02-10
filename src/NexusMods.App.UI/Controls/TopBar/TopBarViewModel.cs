@@ -53,7 +53,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
-    [Reactive] public UserRole? UserRole { get; [UsedImplicitly] set; }
+    [Reactive] public UserRole UserRole { get; [UsedImplicitly] set; }
 
     private readonly ObservableAsPropertyHelper<IImage?> _avatar;
     public IImage? Avatar => _avatar.Value;

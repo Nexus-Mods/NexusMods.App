@@ -27,7 +27,7 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     public bool IsLoggedIn { get; }
-    public UserRole? UserRole { get; }
+    public UserRole UserRole { get; }
     public IImage? Avatar { get; }
     public string? Username { get; }
 
