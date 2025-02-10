@@ -52,8 +52,8 @@ public abstract class ALegacyDatabaseTest
         
         // So Gog doesn't exist on linux, but this is a test where we're stubbing out the games
         // so we don't actually need gog, and setting up Heroic and all the other wine stuff 
-        // just to run this test is a pain
-        if (OSInformation.Shared.IsLinux)
+        // just to run this test is a pain. OSX does have GOG but we don't have support for it yet
+        if (OSInformation.Shared.IsLinux || OSInformation.Shared.IsOSX)
             services.AddSingleton<IGameLocator, GogLocator>();
         
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
