@@ -1,0 +1,31 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IObservableInfoPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.ObservableInfo"
+    xmlns:r3="clr-namespace:R3;assembly=R3"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.ObservableInfo.ObservableInfoPageView">
+
+    <Grid RowDefinitions="Auto, *">
+        <StackPanel Grid.Row="0" Spacing="{StaticResource Spacing-2}" Orientation="Horizontal">
+            <TextBlock x:Name="Count" Classes="BodyLGNormal"/>
+        </StackPanel>
+
+        <ListBox Grid.Row="1" x:Name="States" SelectionMode="Single">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="r3:TrackingState">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
+                        <TextBlock Classes="BodyMDNormal ForegroundSubdued" Text="{CompiledBinding TrackingId, Mode=OneTime}"/>
+                        <TextBlock Classes="BodyMDNormal ForegroundModerate" Text="{CompiledBinding FormattedType, Mode=OneTime}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+
+</reactive:ReactiveUserControl>
+
