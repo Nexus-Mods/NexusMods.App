@@ -9,6 +9,7 @@ using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
+using NexusMods.App.UI.Pages.ObservableInfo;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
@@ -45,6 +46,7 @@ internal class TypeFinder : ITypeFinder
         typeof(LoadoutContext),
         typeof(DownloadsContext),
         typeof(CollectionDownloadPageContext),
+        typeof(ObservableInfoPageContext),
 
         // other
         typeof(WindowData),
