@@ -59,8 +59,6 @@ public class FileHashesService : IFileHashesService, IDisposable
         {
             path.DeleteDirectory(true);
         }
-
-
         
         // Open the latest database
         var latest = ExistingDBs().FirstOrDefault();
@@ -154,6 +152,9 @@ public class FileHashesService : IFileHashesService, IDisposable
             if (gameHashesReleaseFileName.FileExists && gameHashesReleaseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
             {
                 _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
+                var latest = ExistingDBs().FirstOrDefault();
+                if (latest.Path != default(AbsolutePath))
+                    _currentDb = OpenDb(latest.PublishTime, latest.Path);
                 return;
             }
         }
