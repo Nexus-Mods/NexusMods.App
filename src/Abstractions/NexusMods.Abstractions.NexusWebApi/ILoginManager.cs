@@ -43,7 +43,7 @@ public interface ILoginManager
     /// <summary>
     /// The user's role
     /// </summary>
-    IObservable<UserRole?> UserRoleObservable => UserInfoObservable.Select(static x => x?.UserRole).DistinctUntilChanged().AsSystemObservable();
+    IObservable<UserRole> UserRoleObservable => UserInfoObservable.WhereNotNull().Select(static x => x.UserRole).DistinctUntilChanged().AsSystemObservable();
     
     /// <summary>
     /// The user's avatar
