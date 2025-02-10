@@ -167,7 +167,8 @@ public class FileHashesService : IFileHashesService, IDisposable
         if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
             return;
 
-        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.tmp.zip";
+        var tmpId = Guid.NewGuid().ToString();
+        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.{tmpId}.zip";
         
         {
             // download the database
@@ -177,9 +178,9 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
 
 
-        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}_tmp";
+        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}_{tmpId}";
         {
-            // extact it 
+            // extract it 
             tempDir.CreateDirectory();
             using var archive = new ZipArchive(tempZipPath.Read(), ZipArchiveMode.Read, leaveOpen: false);
             foreach (var file in archive.Entries)
