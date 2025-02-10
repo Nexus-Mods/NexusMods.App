@@ -1,114 +1,55 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.TopBar;assembly=NexusMods.App.UI"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+    
     <Design.PreviewWith>
-        <Border Width="720" Height="200">
+        <Border Width="1280" Height="52">
             <ui:TopBarView />
         </Border>
     </Design.PreviewWith>
 
-    <Styles.Resources>
-        <SolidColorBrush x:Key="White10" Color="White" Opacity="{StaticResource OpacityWeak}" />
-    </Styles.Resources>
-
     <!-- Style Definitions -->
     <Style Selector="ui|TopBarView">
-        <Style Selector="^ Menu">
-            <Setter Property="Height" Value="40" />
 
-            <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter StackPanel">
-                <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+        <!-- one off avatar button for the top bar -->
+        <Style Selector="^ Button#AvatarMenuItemButton">
+            <Setter Property="CornerRadius" Value="999" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+
+            <Style Selector="^ icons|UnifiedIcon#AvatarUnifiedIcon">
+                <Setter Property="Size" Value="24" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Clip">
+                    <EllipseGeometry Rect="0, 0, 24, 24" />
+                </Setter>
             </Style>
-
-            <Style Selector="^ Separator">
-                <Setter Property="Margin" Value="0" />
-                <Setter Property="Width" Value="1" />
-                <Setter Property="Height" Value="40" />
-                <Setter Property="Background" Value="{StaticResource White10}" />
+            
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             </Style>
-
-            <Style Selector="^ MenuItem.TopBarNoStyleMenuItem">
-                <Setter Property="Padding" Value="0" />
-
-                <Style Selector="^ /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="CornerRadius" Value="0" />
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="BorderBrush" Value="Transparent" />
-                </Style>
-
-                <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-                    <Setter Property="Margin" Value="0" />
-                </Style>
+            
+            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             </Style>
-
-            <Style Selector="^ MenuItem.TopBarLabelMenuItem">
-                <Setter Property="Padding" Value="0" />
-
-                <Style Selector="^ /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="CornerRadius" Value="0" />
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="BorderBrush" Value="Transparent" />
-
-                    <Style Selector="^:disabled">
-                        <Setter Property="Opacity" Value="1" />
-                    </Style>
-                </Style>
-
-                <Style Selector="^ TextBlock">
-                    <Setter Property="Foreground" Value="{StaticResource NeutralStrong}" />
-                </Style>
-            </Style>
-
-            <Style Selector="^ MenuItem.TopBarMenuItem">
-                <Setter Property="Width" Value="40" />
-                <Setter Property="Height" Value="40" />
-                <Setter Property="Padding" Value="0" />
-
-                <Style Selector="^ /template/ Border#PART_LayoutRoot">
-                    <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
-                    <Setter Property="BorderThickness" Value="1" />
-                    <Setter Property="BorderBrush" Value="{StaticResource White10}" />
-                </Style>
-
-                <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-                    <Setter Property="Margin" Value="0" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralSubdued}" />
-                </Style>
-
-                <!-- avatar needs to be round -->
-                <Style Selector="^ icons|UnifiedIcon#AvatarIcon Image">
-                    <Setter Property="Clip">
-                        <Setter.Value>
-                            <EllipseGeometry Center="14,14" RadiusX="14" RadiusY="14" />
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-
-                <!-- Hover state (yes, this is using :selected) -->
-                <Style Selector="^:selected">
-                    <Style Selector="^ /template/ Border#PART_LayoutRoot">
-                        <Setter Property="Background" Value="{StaticResource SurfaceMid}" />
-                        <Setter Property="BorderBrush" Value="Transparent" />
-                    </Style>
-
-                    <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralStrong}" />
-                    </Style>
-                </Style>
-
-                <!-- Pressed state -->
-                <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
-                    <Setter Property="Background" Value="{StaticResource SurfaceLow}" />
-                    <Setter Property="BorderBrush" Value="Transparent" />
-
-                    <Style Selector="^ ContentPresenter#PART_HeaderPresenter">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralWeak}" />
-                    </Style>
-                </Style>
+            
+            <Style Selector="^:flyout-open /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
         </Style>
+        
+        <!-- this specific icon fills the horizontal space a bit too much -->
+        <Style Selector="^ controls|StandardButton#GiveFeedbackButton">
+            <Style Selector="^ icons|UnifiedIcon#PART_LeftIcon">
+                <Setter Property="Margin" Value="0,0,4,0" />
+            </Style>
+        </Style>
+
+        
     </Style>
 </Styles>
