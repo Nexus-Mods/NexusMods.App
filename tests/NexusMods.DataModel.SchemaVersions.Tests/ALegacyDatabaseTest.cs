@@ -50,6 +50,11 @@ public abstract class ALegacyDatabaseTest
     protected virtual IServiceCollection AddServices(IServiceCollection services)
     {
         
+        // So Gog doesn't exist on linux, but this is a test where we're stubbing out the games
+        // so we don't actually need gog, and setting up Heroic and all the other wine stuff 
+        // just to run this test is a pain
+        if (OSInformation.Shared.IsLinux)
+            services.AddSingleton<IGameLocator, GogLocator>();
         
         return services
             .AddLogging(builder => builder.AddXUnit())
