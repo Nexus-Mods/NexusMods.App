@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -13,9 +14,8 @@ namespace NexusMods.App.UI.Controls.TopBar;
 
 public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
-    [Reactive] public bool IsLoggedIn { get; set; } = false;
-    [Reactive] public bool IsPremium { get; set; } = false;
-    [Reactive] public bool IsSupporter { get; set; } = false;
+    [Reactive] public bool IsLoggedIn { get; set; } = true;
+    [Reactive] public UserRole? UserRole { get; set; } = NexusMods.Abstractions.NexusWebApi.Types.UserRole.Premium;
     [Reactive] public string? Username { get; set; } = "insomnious";
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
     [Reactive] public string ActiveWorkspaceTitle { get; set; } = "Home";

@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
 using DynamicData.Binding;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Icons;
 using ReactiveUI;
 
@@ -61,24 +62,27 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.FreeButton)
                     .DisposeWith(d);
-
+                
+                this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.SupporterButton)
+                    .DisposeWith(d);
+                
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsAccountSettingsCommand, view => view.OpenNexusModsAccountSettingsMenuItem)
                     .DisposeWith(d);
 
                 this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
                     .DisposeWith(d);
-
+                
                 this.WhenAnyValue(
-                        x => x.ViewModel!.IsLoggedIn,
-                        x => x.ViewModel!.IsPremium,
-                        x => x.ViewModel!.IsSupporter
+                        view => view.ViewModel!.IsLoggedIn,
+                        view => view.ViewModel!.UserRole
                     )
                     .Subscribe(userinfo =>
                         {
-                            var (isLoggedIn, isPremium, isSupporter) = userinfo;
-                            PremiumTextBlock.IsVisible = isLoggedIn && isPremium;
-                            FreeButton.IsVisible = isLoggedIn && !isPremium && !isSupporter;
-                            SupporterButton.IsVisible = isLoggedIn && !isPremium && isSupporter;
+                            var (isLoggedIn, userRole) = userinfo;
+                            
+                            PremiumTextBlock.IsVisible = isLoggedIn && userRole == UserRole.Premium;
+                            SupporterButton.IsVisible = isLoggedIn && userRole == UserRole.Supporter;
+                            FreeButton.IsVisible = isLoggedIn && userRole == UserRole.Free; 
                         }
                     )
                     .DisposeWith(d);
@@ -86,7 +90,10 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 this.WhenValueChanged(
                         x => x.ViewModel!.Username
                     )
-                    .Subscribe(username => { ToolTip.SetTip(AvatarMenuItemButton, $"Logged in to Nexus Mods as {username}"); })
+                    .Subscribe(username =>
+                    {
+                        ToolTip.SetTip(AvatarMenuItemButton, $"Logged in to Nexus Mods as {username}");
+                    })
                     .DisposeWith(d);
 
                 this.WhenValueChanged(

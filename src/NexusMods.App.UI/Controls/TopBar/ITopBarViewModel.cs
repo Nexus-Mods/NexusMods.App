@@ -1,5 +1,6 @@
 using System.Reactive;
 using Avalonia.Media;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -26,8 +27,7 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     public bool IsLoggedIn { get; }
-    public bool IsPremium { get; }
-    public bool IsSupporter { get; }
+    public UserRole? UserRole { get; }
     public IImage? Avatar { get; }
     public string? Username { get; }
 

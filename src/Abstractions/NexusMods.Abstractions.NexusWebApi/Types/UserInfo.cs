@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.NexusWebApi.Types;
 
 /// <summary>
-/// Information about a logged in user
+/// Information about a logged-in user
 /// </summary>
 [PublicAPI]
 public record UserInfo
@@ -19,15 +19,10 @@ public record UserInfo
     public required string Name { get; init; }
 
     /// <summary>
-    /// Gets the premium status of the user.
+    /// Gets the role of the user.
     /// </summary>
-    public required bool IsPremium { get; init; }
-    
-    /// <summary>
-    /// Gets the supporter status of the user.
-    /// </summary>
-    public required bool IsSupporter { get; init; }
-    
+    public required UserRole UserRole { get; init; }
+
     /// <summary>
     /// Gets the avatar url of the user.
     /// </summary>
