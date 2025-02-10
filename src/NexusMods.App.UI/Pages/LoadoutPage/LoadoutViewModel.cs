@@ -207,7 +207,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
     {
-        return itemModel.Get<LoadoutComponents.IsEnabled>(LoadoutColumns.IsEnabled.ComponentKey).ItemIds;
+        return itemModel.Get<LoadoutComponents.IsEnabled>(LoadoutColumns.IsEnabled.IsEnabledComponentKey).ItemIds;
     }
 }
 
@@ -254,7 +254,7 @@ public class LoadoutTreeDataGridAdapter :
         base.BeforeModelActivationHook(model);
 
         var disposable = model.SubscribeToComponent<LoadoutComponents.IsEnabled, LoadoutTreeDataGridAdapter>(
-            key: LoadoutColumns.IsEnabled.ComponentKey,
+            key: LoadoutColumns.IsEnabled.IsEnabledComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
             {

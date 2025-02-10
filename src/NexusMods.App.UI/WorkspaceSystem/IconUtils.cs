@@ -17,8 +17,8 @@ internal static class IconUtils
 
     private const float Scale = 5f;
 
-    private static readonly SKColor BackgroundColor = SKColor.Parse("#101010");
-    private static readonly SKColor FillColor = SKColor.Parse("#AAA");
+    private static readonly SKColor BackgroundColor = SKColor.Parse("#1D1D21");
+    private static readonly SKColor FillColor = SKColor.Parse("#D4D4D8");
 
     /// <summary>
     /// Generates a <see cref="Bitmap"/> for the given state.

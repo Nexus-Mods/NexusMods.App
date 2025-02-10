@@ -36,10 +36,10 @@ public class ComponentTemplate<TComponent> : IComponentTemplate
     private DataTemplate? _dataTemplate;
     public DataTemplate DataTemplate
     {
-        get => _dataTemplate ?? throw new InvalidOperationException();
+        get => _dataTemplate ?? throw new InvalidOperationException($"Data template hasn't been set yet");
         set
         {
-            if (value.DataType != ComponentType) throw new InvalidOperationException();
+            if (value.DataType != ComponentType) throw new InvalidOperationException($"Mismatch between types, expected `{ComponentType}` got `{value.DataType}`");
             _dataTemplate = value;
         }
     }

@@ -11,13 +11,11 @@ public static class Services
         services.AddMigrationLogItemModel();
         services.AddSingleton<MigrationService>();
 
-
         // Migrations go here:
-        services
+        return services
             .AddMigration<_0001_ConvertTimestamps>()
-            .AddMigration<_0002_NexusCollectionItem>();
-
-        return services;
+            .AddMigration<_0002_NexusCollectionItem>()
+            .AddMigration<_0003_FixDuplicates>();
     }
 
     /// <summary>
