@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
@@ -54,6 +55,7 @@ public abstract class ALegacyDatabaseTest
             .AddHttpDownloader()
             .AddDownloaders()
             .AddSettingsManager()
+            .AddSettings<LoggingSettings>()
             .AddCrossPlatform()
             .AddRocksDbBackend()
             .AddFileHashes()
