@@ -69,7 +69,7 @@ public abstract class ALegacyDatabaseTest
             .AddStubbedStardewValley()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
-            .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false)
+            .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false, registerWine: false)
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
             .Validate();
     }
