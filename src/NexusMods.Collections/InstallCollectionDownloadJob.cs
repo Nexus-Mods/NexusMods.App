@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using System.IO.Hashing;
 using System.Security.Cryptography;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
@@ -81,6 +81,20 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     /// <inheritdoc/>
     public async ValueTask<LoadoutItemGroup.ReadOnly> StartAsync(IJobContext<InstallCollectionDownloadJob> context)
     {
+        var group = await Install(context);
+
+        // Add missing data from the collection to the item
+        using var tx = Connection.BeginTransaction();
+        tx.Add(group.Id, LoadoutItem.Name, CollectionMod.Name);
+        tx.Add(group.Id, NexusCollectionItemLoadoutGroup.Download, Item);
+        tx.Add(group.Id, NexusCollectionItemLoadoutGroup.IsRequired, Item.IsRequired);
+        var result = await tx.Commit();
+
+        return new LoadoutItemGroup.ReadOnly(result.Db, group.Id);
+    }
+
+    private async ValueTask<LoadoutItemGroup.ReadOnly> Install(IJobContext<InstallCollectionDownloadJob> context)
+    {
         if (Item.TryGetAsCollectionDownloadBundled(out var bundledDownload))
         {
             return await InstallBundledMod(bundledDownload);
@@ -121,14 +135,19 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         {
             CollectionLibraryFileId = SourceCollection,
             BundleDownloadId = download,
-            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+            NexusCollectionItemLoadoutGroup = new NexusCollectionItemLoadoutGroup.New(tx, id)
             {
-                IsGroup = true,
-                LoadoutItem = new LoadoutItem.New(tx, id)
+                IsRequired = download.AsCollectionDownload().IsRequired,
+                DownloadId = download.AsCollectionDownload(),
+                LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
                 {
-                    Name = download.AsCollectionDownload().Name,
-                    LoadoutId = TargetLoadout,
-                    ParentId = Group.Id,
+                    IsGroup = true,
+                    LoadoutItem = new LoadoutItem.New(tx, id)
+                    {
+                        Name = download.AsCollectionDownload().Name,
+                        LoadoutId = TargetLoadout,
+                        ParentId = Group.Id,
+                    },
                 },
             },
         };
@@ -157,7 +176,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         }
 
         var result = await tx.Commit();
-        return result.Remap(modGroup).AsLoadoutItemGroup();
+        return result.Remap(modGroup).AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup();
     }
 
     /// <summary>
@@ -181,6 +200,12 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
                 LoadoutId = TargetLoadout,
                 ParentId = Group.Id,
             },
+        };
+
+        _ = new LibraryLinkedLoadoutItem.New(tx, id)
+        {
+            LibraryItemId = libraryFile.AsLibraryItem(),
+            LoadoutItemGroup = group,
         };
 
         var loadout = new Loadout.ReadOnly(Connection.Db, TargetLoadout);
@@ -227,23 +252,30 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
 
         using var tx = Connection.BeginTransaction();
 
-        // Create the group
-        var group = new LoadoutItemGroup.New(tx, out var id)
+        var group = new NexusCollectionReplicatedLoadoutGroup.New(tx, out var id)
         {
-            IsGroup = true,
-            LoadoutItem = new LoadoutItem.New(tx, id)
+            IsReplicated = true,
+            NexusCollectionItemLoadoutGroup = new NexusCollectionItemLoadoutGroup.New(tx, id)
             {
-                Name = Item.Name,
-                LoadoutId = TargetLoadout,
-                ParentId = Group.Id,
+                DownloadId = Item,
+                IsRequired = Item.IsRequired,
+                LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+                {
+                    IsGroup = true,
+                    LoadoutItem = new LoadoutItem.New(tx, id)
+                    {
+                        Name = Item.Name,
+                        LoadoutId = TargetLoadout,
+                        ParentId = Group.Id,
+                    },
+                },
             },
         };
 
-        // Link the group to the loadout
         _ = new LibraryLinkedLoadoutItem.New(tx, id)
         {
             LibraryItemId = libraryFile.AsLibraryItem(),
-            LoadoutItemGroup = group,
+            LoadoutItemGroup = group.GetNexusCollectionItemLoadoutGroup(tx).GetLoadoutItemGroup(tx),
         };
 
         // Now we map the files to their locations based on the hashes
@@ -272,7 +304,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         }
 
         var result = await tx.Commit();
-        return result.Remap(group);
+        return new LoadoutItemGroup.ReadOnly(result.Db, result[group.Id]);
     }
 
     /// <summary>

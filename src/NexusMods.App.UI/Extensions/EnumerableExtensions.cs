@@ -36,6 +36,13 @@ public static class EnumerableExtensions
         where TItem : notnull
         where TValue : IComparable<TValue>
     {
+        return OptionalMaxBy(source, selector, Comparer<TValue>.Default);
+    }
+
+    public static Optional<TItem> OptionalMaxBy<TItem, TValue>(this IEnumerable<TItem> source, Func<TItem, TValue> selector, IComparer<TValue> comparer)
+        where TItem : notnull
+        where TValue : notnull
+    {
         var maxItem = Optional<TItem>.None;
         var maxValue = Optional<TValue>.None;
 
@@ -49,7 +56,7 @@ public static class EnumerableExtensions
             }
 
             var value = selector(item);
-            var result = value.CompareTo(maxValue.Value);
+            var result = comparer.Compare(value, maxValue.Value);
 
             // Greater than zero: value comes after maxValue
             if (result > 0)
@@ -61,7 +68,7 @@ public static class EnumerableExtensions
 
         return maxItem;
     }
-    
+
     public static Optional<TItem> OptionalMinBy<TItem, TValue>(this IEnumerable<TItem> source, Func<TItem, TValue> selector)
         where TItem : notnull
         where TValue : IComparable<TValue>

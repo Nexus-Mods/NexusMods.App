@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x93DB364E6966A6EA
-   - Total attributes: 178
-   - Total namespaces: 64
+   - Fingerprint: 0x7F9642CA1AE1B5E0
+   - Total attributes: 181
+   - Total namespaces: 66
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -40,9 +40,12 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Collections.DirectDownloadLibraryFile/Md5                                | UInt128                 | True    | False | False     | 
 | NexusMods.Collections.NexusCollectionBundledLoadoutGroup/BundleDownload            | Reference               | False   | False | False     | 
 | NexusMods.Collections.NexusCollectionBundledLoadoutGroup/CollectionLibraryFile     | Reference               | False   | False | False     | 
+| NexusMods.Collections.NexusCollectionItemLoadoutGroup/Download                     | Reference               | False   | False | False     | 
+| NexusMods.Collections.NexusCollectionItemLoadoutGroup/IsRequired                   | UInt8                   | True    | False | False     | 
 | NexusMods.Collections.NexusCollectionLoadoutGroup/Collection                       | Reference               | True    | False | False     | 
 | NexusMods.Collections.NexusCollectionLoadoutGroup/LibraryFile                      | Reference               | False   | False | False     | 
 | NexusMods.Collections.NexusCollectionLoadoutGroup/Revision                         | Reference               | True    | False | False     | 
+| NexusMods.Collections.NexusCollectionReplicatedLoadoutGroup/Replicated             | Null                    | True    | False | False     | 
 | NexusMods.DataModel.SchemaVersioning.SchemaVersionModel/CurrentVersion             | UInt16                  | False   | False | False     | 
 | NexusMods.DataModel.SchemaVersions.MigrationLogItem/MigrationId                    | UInt16                  | False   | False | False     | 
 | NexusMods.DataModel.SchemaVersions.MigrationLogItem/RunAt                          | Int64                   | False   | False | False     | 

@@ -1,0 +1,109 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                    xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
+
+    <!-- Actions -->
+    <DataTemplate x:Key="{x:Static local:CollectionColumns+Actions.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:MultiComponentControl.AvailableTemplates>
+                <!-- Nexus Mods download -->
+                <controls:ComponentTemplate x:TypeArguments="local:CollectionComponents+NexusModsDownloadAction"
+                                            ComponentKey="{x:Static local:CollectionColumns+Actions.NexusModsDownloadComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:CollectionComponents+NexusModsDownloadAction}">
+
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{CompiledBinding CommandDownload}"
+                                        Classes="Standard"
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{CompiledBinding !IsDownloading.Value}">
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
+                                </Button>
+
+                                <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+
+                <!-- External download -->
+                <controls:ComponentTemplate x:TypeArguments="local:CollectionComponents+ExternalDownloadAction"
+                                            ComponentKey="{x:Static local:CollectionColumns+Actions.ExternalDownloadComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:CollectionComponents+ExternalDownloadAction}">
+
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{CompiledBinding CommandDownload}"
+                                        Classes="Standard"
+                                        HorizontalAlignment="Center"
+                                        IsVisible="{CompiledBinding !IsDownloading.Value}">
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
+                                </Button>
+
+                                <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+
+                <!-- Manual download -->
+                <controls:ComponentTemplate x:TypeArguments="local:CollectionComponents+ManualDownloadAction"
+                                            ComponentKey="{x:Static local:CollectionColumns+Actions.ManualDownloadComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:CollectionComponents+ManualDownloadAction}">
+
+                            <StackPanel Orientation="Horizontal">
+                                <Button Command="{CompiledBinding CommandOpenUri}">
+                                    <TextBlock Text="Open in browser" />
+                                </Button>
+
+                                <Button Command="{CompiledBinding CommandAddFile}">
+                                    <TextBlock Text="Add downloaded file" />
+                                </Button>
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+
+                <!-- Install -->
+                <controls:ComponentTemplate x:TypeArguments="local:CollectionComponents+InstallAction"
+                                            ComponentKey="{x:Static local:CollectionColumns+Actions.InstallComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:CollectionComponents+InstallAction}">
+
+                            <Button Command="{CompiledBinding CommandInstall}"
+                                    Classes="Standard"
+                                    Classes.Primary="{CompiledBinding !IsInstalled.Value}"
+                                    Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
+                                                       IsVisible="{CompiledBinding IsInstalled.Value}" />
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
+                                </StackPanel>
+                            </Button>
+
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:MultiComponentControl.AvailableTemplates>
+
+            <controls:MultiComponentControl.Fallback>
+                <icons:UnifiedIcon Size="20" Foreground="Red" Value="{x:Static icons:IconValues.Error}"/>
+            </controls:MultiComponentControl.Fallback>
+        </controls:MultiComponentControl>
+    </DataTemplate>
+
+</ResourceDictionary>
+
