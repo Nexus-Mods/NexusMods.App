@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
 
         </xsd:element>
@@ -13,10 +14,14 @@
         <value>1.3</value>
     </resheader>
     <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
     </resheader>
     <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
     </resheader>
     <data name="Newsfeed" xml:space="preserve">
         <value>Newsfeed</value>
@@ -643,8 +648,8 @@
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
         <value>Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play.</value>
     </data>
-    
-    
+
+
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
@@ -745,7 +750,7 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Remove the selected mod(s) from this loadout</value>
     </data>
     <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
         <value>Ready to install - All required mods downloaded</value>
@@ -762,7 +767,8 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="LeftMenu_Label_Utilities" xml:space="preserve">
         <value>UTILITIES</value>
     </data>
-    <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
+    <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed"
+          xml:space="preserve">
         <value>Ready to play - All required mods installed</value>
     </data>
     <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
@@ -776,5 +782,24 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
         <value>All</value>
+    </data>
+
+    <data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
+        <value>Download all required mods</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
+        <value>Install Collection</value>
+    </data>
+    <data name="CollectionDownloadViewModel_ViewCollection" xml:space="preserve">
+        <value>View Installed Collection</value>
+    </data>
+    <data name="CollectionDownloadViewModel_UpdateCollection" xml:space="preserve">
+        <value>Install Update</value>
+    </data>
+    <data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
+        <value>Download all optional mods</value>
+    </data>
+    <data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
+        <value>Install downloaded optional mods</value>
     </data>
 </root>
