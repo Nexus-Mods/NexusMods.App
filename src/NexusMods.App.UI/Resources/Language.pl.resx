@@ -762,4 +762,22 @@
 	<data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
 		<value>Wszystkie</value>
 	</data>
+	<data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
+		<value>Pobierz wszystkie wymagane mody</value>
+	</data>
+	<data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
+		<value>Zainstaluj kolekcję</value>
+	</data>
+	<data name="CollectionDownloadViewModel_ViewCollection" xml:space="preserve">
+		<value>Zobacz zainstalowaną kolekcję</value>
+	</data>
+	<data name="CollectionDownloadViewModel_UpdateCollection" xml:space="preserve">
+		<value>Zainstaluj aktualizację</value>
+	</data>
+	<data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
+		<value>Pobierz wszystkie opcjonalne mody</value>
+	</data>
+	<data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
+		<value>Zainstaluj pobrane opcjonalne mody</value>
+	</data>
 </root>
