@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Compression;
 using FluentAssertions;
 using JetBrains.Annotations;
@@ -113,10 +114,17 @@ public abstract class ALegacyDatabaseTest
 
             static async ValueTask CastAndDispose(IDisposable resource)
             {
-                if (resource is IAsyncDisposable resourceAsyncDisposable)
-                    await resourceAsyncDisposable.DisposeAsync();
-                else
-                    resource.Dispose();
+                try
+                {
+                    if (resource is IAsyncDisposable resourceAsyncDisposable)
+                        await resourceAsyncDisposable.DisposeAsync();
+                    else
+                        resource.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Failed to dispose resource: " + ex);
+                }
             }
         }
     }

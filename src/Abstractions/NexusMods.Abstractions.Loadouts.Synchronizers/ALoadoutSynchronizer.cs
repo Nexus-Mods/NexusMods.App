@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -1087,7 +1086,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         {
                             // No previous entry found, so create a new one
                             var newHash = await MaybeHashFile(hashDb, gamePath, file, file.FileInfo, token);
-                            _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                            var diskState = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                             {
                                 Path = gamePath.ToGamePathParentTuple(metadata.Id),
                                 Hash = newHash,
