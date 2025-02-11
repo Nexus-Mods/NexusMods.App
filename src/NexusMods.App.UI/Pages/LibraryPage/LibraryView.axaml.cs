@@ -16,7 +16,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
     {
         InitializeComponent();
 
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.Adapter);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LibraryView, ILibraryViewModel, CompositeItemModel<EntityId>, EntityId>(this, LibraryTreeDataGrid, vm => vm.Adapter);
 
         this.WhenActivated(disposables =>
         {
@@ -59,7 +59,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.BindCommand(ViewModel, vm => vm.OpenNexusModsCommand, view => view.GetModsFromNexusButton)
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.Adapter.Source.Value, view => view.TreeDataGrid.Source)
+            this.OneWayBind(ViewModel, vm => vm.Adapter.Source.Value, view => view.LibraryTreeDataGrid.Source)
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)

@@ -21,7 +21,7 @@ public static class SharedColumns
         public static readonly ComponentKey StringComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(StringComponent));
         public static readonly ComponentKey ImageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ImageComponent));
 
-        public static string GetColumnHeader() => "Name";
+        public static string GetColumnHeader() => "NAME";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
@@ -37,7 +37,7 @@ public static class SharedColumns
         public const string ColumnTemplateResourceKey = Prefix + "InstalledDate";
         public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(DateComponent));
 
-        public static string GetColumnHeader() => "Installed";
+        public static string GetColumnHeader() => "INSTALLED";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 }

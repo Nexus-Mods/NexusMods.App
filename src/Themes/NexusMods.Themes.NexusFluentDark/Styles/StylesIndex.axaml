@@ -33,6 +33,9 @@
     <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/SharedStyles.axaml" />
+    
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/LibraryTreeDataGridStyles.axaml" />
+    
     <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml" />

@@ -35,7 +35,7 @@ public static class LibraryColumns
         public static readonly ComponentKey CurrentVersionComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ItemVersion) + "_" + "Current");
         public static readonly ComponentKey NewVersionComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ItemVersion) + "_" + "New");
 
-        public static string GetColumnHeader() => "Version";
+        public static string GetColumnHeader() => "VERSION";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
@@ -52,7 +52,7 @@ public static class LibraryColumns
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(DownloadedDate);
         public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(DateComponent));
 
-        public static string GetColumnHeader() => "Downloaded";
+        public static string GetColumnHeader() => "DOWNLOADED";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
@@ -68,7 +68,7 @@ public static class LibraryColumns
 
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(ItemSize);
         public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(SizeComponent));
-        public static string GetColumnHeader() => "Size";
+        public static string GetColumnHeader() => "SIZE";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 
@@ -95,7 +95,7 @@ public static class LibraryColumns
 
         public static readonly ComponentKey InstallComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Install");
         public static readonly ComponentKey UpdateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Update");
-        public static string GetColumnHeader() => "Action";
+        public static string GetColumnHeader() => "ACTIONS";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 }

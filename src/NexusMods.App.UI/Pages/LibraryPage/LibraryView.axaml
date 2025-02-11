@@ -138,7 +138,7 @@
                             <!-- 'Updates' button. -->
                             <!-- This button's text is updated at runtime to set number of mods -->
                             <SplitButton x:Name="UpdateAll" IsVisible="False" Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
-                            <controls:StandardButton x:Name="Refresh" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Refresh}" />
+                            <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small" LeftIcon="{x:Static icons:IconValues.Refresh}" />
 
                         </StackPanel>
                     </Border>
@@ -156,7 +156,7 @@
                             </StackPanel>
                         </controls:EmptyState.Subtitle>
 
-                    <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
+                    <TreeDataGrid Grid.Row="1" x:Name="LibraryTreeDataGrid"
                                   ShowColumnHeaders="True"
                                   CanUserResizeColumns="True"
                                   CanUserSortColumns="True"
