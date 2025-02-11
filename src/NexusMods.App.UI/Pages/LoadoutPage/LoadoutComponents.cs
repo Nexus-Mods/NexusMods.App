@@ -27,6 +27,9 @@ public static class LoadoutComponents
             f1: static x => x.AsEnumerable()
         );
 
+        private readonly ValueComponent<bool> _isLockedComponent;
+        public IReadOnlyBindableReactiveProperty<bool> IsLocked => _isLockedComponent.Value;
+
         public int CompareTo(IsEnabled? other)
         {
             var (a, b) = (Value.Value, other?.Value.Value);
@@ -44,10 +47,12 @@ public static class LoadoutComponents
 
         public IsEnabled(
             ValueComponent<bool?> valueComponent,
-            LoadoutItemId itemId)
+            LoadoutItemId itemId,
+            bool isLocked)
         {
             _valueComponent = valueComponent;
             _ids = new[] { itemId };
+            _isLockedComponent = new ValueComponent<bool>(value: isLocked);
 
             _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {
@@ -57,13 +62,16 @@ public static class LoadoutComponents
 
         public IsEnabled(
             ValueComponent<bool?> valueComponent,
-            IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable)
+            IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable,
+            ValueComponent<bool> isLockedComponent)
         {
             _valueComponent = valueComponent;
             _ids = new ObservableHashSet<LoadoutItemId>();
+            _isLockedComponent = isLockedComponent;
 
             _activationDisposable = this.WhenActivated((childrenItemIdsObservable), static (self, state, disposables) =>
             {
+                self._isLockedComponent.Activate().AddTo(disposables);
                 self._valueComponent.Activate().AddTo(disposables);
             });
 
@@ -77,7 +85,7 @@ public static class LoadoutComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, _valueComponent, _idsObservable ?? Disposable.Empty);
+                    Disposable.Dispose(_activationDisposable, _valueComponent, _isLockedComponent, _idsObservable ?? Disposable.Empty);
                 }
 
                 _isDisposed = true;
@@ -85,11 +93,6 @@ public static class LoadoutComponents
 
             base.Dispose(disposing);
         }
-    }
-
-    public sealed class Locked : ReactiveR3Object, IItemModelComponent<Locked>, IComparable<Locked>
-    {
-        public int CompareTo(Locked? other) => 0;
     }
 }
 
@@ -123,7 +126,7 @@ public static class LoadoutColumns
 
         public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(IsEnabled);
         public static readonly ComponentKey IsEnabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
-        public static readonly ComponentKey LockedComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.Locked));
+        // public static readonly ComponentKey LockedComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.Locked));
         public static string GetColumnHeader() => "Enabled";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

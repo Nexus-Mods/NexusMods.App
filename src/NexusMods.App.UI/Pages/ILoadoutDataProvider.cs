@@ -82,10 +82,10 @@ public static class LoadoutDataProviderHelper
                 initialValue: !loadoutItem.IsDisabled,
                 valueObservable: isEnabledObservable
             ),
-            itemId: loadoutItem.LoadoutItemId
+            itemId: loadoutItem.LoadoutItemId,
+            isLocked: IsLocked(loadoutItem)
         ));
 
-        if (IsLocked(loadoutItem)) itemModel.Add(LoadoutColumns.IsEnabled.LockedComponentKey, new LoadoutComponents.Locked());
         return itemModel;
     }
 
@@ -158,25 +158,22 @@ public static class LoadoutDataProviderHelper
                 return isEnabled.HasValue ? isEnabled.Value : null;
             });
 
+        var isLockedObservable = linkedItemsObservable
+            .TransformImmutable(static item => IsLocked(item))
+            .QueryWhenChanged(static query => query.Items.Any(isLocked => isLocked))
+            .ToObservable();
+
         parentItemModel.Add(LoadoutColumns.IsEnabled.IsEnabledComponentKey, new LoadoutComponents.IsEnabled(
             valueComponent: new ValueComponent<bool?>(
                 initialValue: true,
                 valueObservable: isEnabledObservable
             ),
-            childrenItemIdsObservable: linkedItemsObservable.TransformImmutable(static item => item.LoadoutItemId)
+            childrenItemIdsObservable: linkedItemsObservable.TransformImmutable(static item => item.LoadoutItemId),
+            isLockedComponent: new ValueComponent<bool>(
+                initialValue: false,
+                valueObservable: isLockedObservable
+            )
         ));
-
-        var isLockedObservable = linkedItemsObservable
-            .TransformImmutable(static item => IsLocked(item))
-            .QueryWhenChanged(static query => query.Items.Any(isLocked => isLocked))
-            .ToObservable()
-            .ObserveOnUIThreadDispatcher();
-
-        parentItemModel.AddObservable(
-            key: LoadoutColumns.IsEnabled.LockedComponentKey,
-            shouldAddObservable: isLockedObservable,
-            componentFactory: static () => new LoadoutComponents.Locked()
-        );
     }
 
     public static IObservable<IChangeSet<Datom, EntityId>> FilterInStaticLoadout(
