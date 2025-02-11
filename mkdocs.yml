@@ -72,7 +72,8 @@ nav:
     - System Requirements: users/SystemRequirements.md
     - Getting Started: 
       - users/gettingstarted/index.md
-      - Adding a Game: users/gettingstarted/AddGames.md
+      - Introduction: users/gettingstarted/Introduction.md
+      - Adding a Game: users/gettingstarted/AddGames.md      
       - Downloading a Mod: users/gettingstarted/DownloadAMod.md
       - Downloading a Collection: users/gettingstarted/DownloadACollection.md
     # - Mod Library: users/Library.md

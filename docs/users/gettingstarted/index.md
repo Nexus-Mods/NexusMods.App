@@ -24,9 +24,6 @@ When you first open the app, you will have the option to sign in. If you skipped
 
 On clicking the button, a new page will open in your default web browser where you will be asked to authorise the Nexus Mods app to access your account. 
 
-!!! info "Note"
-    This process will automatically register the app to handle download from the Nexus Mods website. 
-
 ![The OAuth page requesting the user to grant the app access to their account.](../images/OAuthSignIn.webp)
 
 You will then be prompted to open the app to complete the log in process. Most popular browsers have a "don't ask me again" option to avoid having to accept this message each time the website sends data to the app.
