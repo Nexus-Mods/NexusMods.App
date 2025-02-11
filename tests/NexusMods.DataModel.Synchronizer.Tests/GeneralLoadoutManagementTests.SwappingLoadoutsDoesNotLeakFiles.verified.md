@@ -18,11 +18,11 @@ Loadout A has been synchronized, and the game folder should match the loadout.
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 ### Loadout B - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -47,11 +47,11 @@ A new file has been added to the game folder, and the loadout has been synchroni
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 ### Loadout B - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -77,12 +77,12 @@ Loadout A has been synchronized again, and the new file should be added to the d
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
 ### Loadout B - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -106,12 +106,12 @@ Loadout B has been synchronized, the added file should be removed from the disk 
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
 ### Loadout B - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -137,12 +137,12 @@ Loadout A has been synchronized again, and the new file should be added to the d
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
 ### Loadout B - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 

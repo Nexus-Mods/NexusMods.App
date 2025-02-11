@@ -18,8 +18,8 @@ A new loadout has been created
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -45,8 +45,8 @@ The game files have been updated to a new version of the game, they should not m
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 

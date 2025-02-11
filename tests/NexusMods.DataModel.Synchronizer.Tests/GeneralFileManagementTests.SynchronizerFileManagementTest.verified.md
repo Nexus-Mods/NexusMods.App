@@ -18,8 +18,8 @@ Added a new loadout and synced it.
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -45,9 +45,9 @@ Added a new file to the game and synced it.
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 
 
 
@@ -73,9 +73,9 @@ Updated the new file and synced it.
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFile.txt} | 0xB4E7270703F5F646 | 21 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFile.txt} | 0xB4E7270703F5F646 | 21 B |   |   |
 
 
 

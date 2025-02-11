@@ -34,9 +34,9 @@ A new loadout has been created and has been synchronized, so the 'Last Synced St
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 
 
 
@@ -64,9 +64,9 @@ New files have been added to the game folder by the user or the game, but the lo
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 
 
 
@@ -95,10 +95,10 @@ After the loadout has been synchronized, the new file should be added to the loa
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 
 
 
@@ -116,10 +116,10 @@ At this point the loadout is deactivated, and all the files in the current state
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 
 
 
@@ -144,13 +144,13 @@ A new loadout is created, but it has not been synchronized yet. So again the 'La
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 ### Loadout B - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -176,13 +176,13 @@ loadout are different from the previous loadout due to the new file only being i
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 ### Loadout B - (0)
-| Path | Hash | Size |
-| --- | --- | --- |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
 
 
 
@@ -209,14 +209,14 @@ A new file has been added to the game folder and B loadout has been synchronized
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 ### Loadout B - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderB.txt} | 0xC6B738DF31EA91BB | 28 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderB.txt} | 0xC6B738DF31EA91BB | 28 B |   |   |
 
 
 
@@ -245,14 +245,14 @@ Now we switch back to the A loadout, and the new file should be removed from the
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 ### Loadout B - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderB.txt} | 0xC6B738DF31EA91BB | 28 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderB.txt} | 0xC6B738DF31EA91BB | 28 B |   |   |
 
 
 
@@ -281,19 +281,19 @@ Loadout A has been copied to Loadout C, and the contents should match.
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
 ### Loadout A - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 ### Loadout B - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderB.txt} | 0xC6B738DF31EA91BB | 28 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderB.txt} | 0xC6B738DF31EA91BB | 28 B |   |   |
 ### Loadout C - (2)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
+| Path | Hash | Size | Disabled | Deleted |
+| --- | --- | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 
 
 
