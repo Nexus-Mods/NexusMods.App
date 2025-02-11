@@ -14,13 +14,82 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.DependencyInjection;
+using NexusMods.Games.StardewValley;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
+
 public static class Services
 {
+    /// <summary>
+    /// Add a stubbed version of Stardew Valley to the service collection
+    /// </summary>
+    /// <param name="coll"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddStubbedStardewValley(this IServiceCollection coll)
+    {
+        return coll.AddStubbedSteamGameLocator<StardewValley>("Stardew Valley", 413150, 413151, 4278718763097142923)
+            .AddStubbedSteamGOGLocator<StardewValley>("Stardew Valley", 1453375253, 58211152353130355);
+    }
+
+    /// <summary>
+    /// Add a stubbed version of a game to the service collection, with the given locator data
+    /// </summary>
+    public static IServiceCollection AddStubbedSteamGOGLocator<TGame>(this IServiceCollection coll, string name, uint gogGameId, ulong buildId)
+    {
+        coll.AddSingleton<AHandler<GOGGame, GOGGameId>>(s =>
+            new StubbedGameLocator<GOGGame, GOGGameId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm => new GOGGame(GOGGameId.From(gogGameId), name, tfm.CreateFolder("gog_game").Path, buildId.ToString()),
+                game => game.Id));
+        return coll;
+    }
+
+    /// <summary>
+    /// Add a stubbed version of a game to the service collection, with the given locator data
+    /// </summary>
+    public static IServiceCollection AddStubbedSteamGameLocator<TGame>(this IServiceCollection coll, string name, uint appId, uint depotId, ulong manifestId)
+    {
+        coll.AddSingleton<AHandler<SteamGame, AppId>>(s =>
+            new StubbedGameLocator<SteamGame, AppId>(s.GetRequiredService<TemporaryFileManager>(),
+                tfm =>
+                {
+                    var gamePath = tfm.CreateFolder($"steam_folder/SteamApps/common/{name}").Path;
+                    return new SteamGame
+                    {
+                        SteamPath = gamePath.Parent.Parent.Parent,
+                        AppManifest = new AppManifest
+                        {
+                            AppId = AppId.From(appId),
+                            Name = name,
+                            InstallationDirectory = gamePath,
+                            StateFlags = StateFlags.FullyInstalled,
+                            ManifestPath = gamePath.Parent.Parent.Combine($"{name}.acf"),
+                            InstalledDepots = new Dictionary<DepotId, InstalledDepot>
+                            {
+                                {
+                                    DepotId.From(depotId),
+                                    new InstalledDepot
+                                    {
+                                        DepotId = DepotId.From(depotId),
+                                        SizeOnDisk = Size.GB * 2,
+                                        ManifestId = ManifestId.From(manifestId),
+                                    }
+                                },
+                            },
+                        },
+                        LibraryFolder = new LibraryFolder
+                        {
+                            Path = gamePath.Parent.Parent,
+                        },
+                    };
+                },
+                game => game.AppId));
+        return coll;
+    }
+    
     public static IServiceCollection AddStubbedGameLocators(this IServiceCollection coll)
     {
         coll.AddGame<StubbedGame>();
@@ -45,6 +114,7 @@ public static class Services
                 tfm => new GOGGame(GOGGameId.From(42), "Stubbed Game", tfm.CreateFolder("gog_game").Path, "4242"),
                 game => game.Id));
 
+        var steamId = "StubbedGameState.zip".xxHash3AsUtf8().Value;
         coll.AddSingleton<AHandler<SteamGame, AppId>>(s =>
             new StubbedGameLocator<SteamGame, AppId>(s.GetRequiredService<TemporaryFileManager>(),
                 tfm =>
@@ -60,6 +130,18 @@ public static class Services
                             InstallationDirectory = gamePath,
                             StateFlags = StateFlags.FullyInstalled,
                             ManifestPath = gamePath.Parent.Parent.Combine("steam_game.acf"),
+                            InstalledDepots = new Dictionary<DepotId, InstalledDepot>()
+                            {
+                                {
+                                    DepotId.From(uint.CreateTruncating(steamId)),
+                                    new InstalledDepot
+                                    {
+                                        DepotId = DepotId.From(uint.CreateTruncating(steamId)),
+                                        SizeOnDisk = Size.GB * 2,
+                                        ManifestId = ManifestId.From(uint.CreateTruncating(steamId)),
+                                    }
+                                }
+                            }
                         },
                         LibraryFolder = new LibraryFolder
                         {

@@ -37,6 +37,11 @@ public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>, ICompar
         LocationId = locationId;
         Path = path;
     }
+    
+    /// <summary>
+    /// Implicitly converts a tuple of a LocationId and a RelativePath to a GamePath.
+    /// </summary>
+    public static implicit operator GamePath((LocationId LocationId, RelativePath Path) value) => new(value.LocationId, value.Path);
 
     /// <summary/>
     /// <param name="locationId">Id of the game location to be relative to.</param>

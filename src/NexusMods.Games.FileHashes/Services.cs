@@ -14,6 +14,7 @@ public static class Services
     {
         return services.AddFileHashesVerbs()
             .AddPathHashRelationModel()
+            .AddVersionDefinitionModel()
             .AddGogBuildModel()
             .AddSteamManifestModel()
             .AddSingleton<IFileHashesService, FileHashesService>()

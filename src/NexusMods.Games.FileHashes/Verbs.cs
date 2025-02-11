@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Games.FileHashes.VerbImpls;
@@ -22,10 +23,11 @@ public static class Verbs
         [Option("p", "path", "Path to the cloned GitHub hashes repo")] AbsolutePath path,
         [Option("o", "output", "Output path for the built database")] AbsolutePath output,
         [Injected] TemporaryFileManager temporaryFileManager,
+        [Injected] IGameRegistry gameRegistry,
         [Injected] IServiceProvider serviceProvider,
         [Injected] CancellationToken token)
     {
-        await using var builder = new BuildHashesDb(renderer, serviceProvider, temporaryFileManager);
+        await using var builder = new BuildHashesDb(renderer, serviceProvider, temporaryFileManager, gameRegistry);
         
         await builder.BuildFrom(path, output);
         return 0;

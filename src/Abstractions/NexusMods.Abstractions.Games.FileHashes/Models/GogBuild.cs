@@ -30,7 +30,7 @@ public partial class GogBuild : IModelDefinition
     /// <summary>
     /// The version string of the GOG build.
     /// </summary>
-    public static readonly StringAttribute VersionName = new(Namespace, nameof(Version));
+    public static readonly StringAttribute VersionName = new(Namespace, nameof(Version)) { IsIndexed = true };
     
     /// <summary>
     /// Various tags for the build

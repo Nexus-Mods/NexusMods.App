@@ -1,12 +1,11 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Trees;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
@@ -23,6 +22,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -39,6 +39,8 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 [PublicAPI]
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
+ 
+    private readonly ScopedAsyncLock _lock = new();
     private readonly IFileStore _fileStore;
 
     private readonly ILogger _logger;
@@ -95,11 +97,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<IGarbageCollectorRunner>()
     ) { }
 
-    private void CleanDirectories(IEnumerable<GamePath> toDelete, DiskState newState, GameInstallation installation)
+    private void CleanDirectories(IEnumerable<(GamePath GamePath, AbsolutePath ResolvedPath)> toDelete, DiskState newState, GameInstallation installation)
     {
         var seenDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
-
+        
         var newStatePaths = newState.SelectMany(e =>
             {
                 // We need folder paths, so skip first path as it is the file path itself
@@ -107,11 +109,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         ).ToHashSet();
 
-        foreach (var entry in toDelete)
+        foreach (var (gamePath, fullPath) in toDelete)
         {
-            var parentPath = entry.Parent;
+            var parentPath = gamePath.Parent;
             GamePath? emptyStructureRoot = null;
-            while (parentPath != entry.GetRootComponent)
+            while (parentPath != gamePath.GetRootComponent)
             {
                 if (seenDirectories.Contains(parentPath))
                 {
@@ -170,81 +172,176 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
 
 
-    public SyncTree BuildSyncTree(DiskState currentState, DiskState previousTree, IEnumerable<LoadoutItem.ReadOnly> loadoutItems)
+    public Dictionary<GamePath, SyncNode> BuildSyncTree(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousState, Loadout.ReadOnly loadout)
     {
-        var grouped = loadoutItems
-            .OfTypeLoadoutItemWithTargetPath()
-            .Where(x => FileIsEnabled(x.AsLoadoutItem()))
-            .GroupBy(f => (GamePath)f.TargetPath)
-            .Select(group =>
-            {
-                var file = group.First();
-                if (group.Count() > 1)
-                {
-                    file = SelectWinningFile(group);
-                }
-                return file;
-            })
-            .Where(f => !f.TryGetAsDeletedFile(out _))
-            .OfTypeLoadoutFile();
+        var referenceDb = _fileHashService.Current;
+        Dictionary<GamePath, SyncNode> syncTree = new();
         
-        return BuildSyncTree(currentState, previousTree, grouped);
-    }
-
-    /// <inheritdoc />
-    public SyncTree BuildSyncTree<T>(DiskState currentState, DiskState previousTree, IEnumerable<T> loadoutItems)
-        where T : IHavePathHashSizeAndReference
-    {
-        var tree = new Dictionary<GamePath, SyncTreeNode>();
-        
-        foreach (var item in loadoutItems)
+        // Add in the game state
+        foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
-            
-            tree.Add(item.Path, new SyncTreeNode
+            syncTree.Add(gameFile.Path, new SyncNode
                 {
-                    Path = item.Path,
-                    LoadoutFileHash = item.Hash,
-                    LoadoutFileSize = item.Size,
-                    LoadoutFileId = item.Reference,
+                    Loadout = new SyncNodePart
+                    {
+                        Hash = gameFile.Hash,
+                        Size = gameFile.Size,
+                        LastModifiedTicks = 0,
+                    },
+                    SourceItemType = LoadoutSourceItemType.Game,
                 }
             );
         }
+        
+        var disabledGroups = GetDisabledGroups(loadout);
 
+        foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
+        {
+            var targetPath = loadoutItem.TargetPath;
+            // Ignore disabled Items
+            if (disabledGroups.Contains(loadoutItem.AsLoadoutItem().Parent))
+                continue;
+
+            SyncNodePart sourceItem;
+            LoadoutSourceItemType sourceItemType;
+            if (loadoutItem.TryGetAsLoadoutFile(out var loadutFile))
+            {
+                sourceItem = new SyncNodePart
+                {
+                    Size = loadutFile.Size,
+                    Hash = loadutFile.Hash,
+                    EntityId = loadutFile.Id,
+                    LastModifiedTicks = 0,
+                };
+                sourceItemType = LoadoutSourceItemType.Loadout;
+            }
+            else if (loadoutItem.TryGetAsDeletedFile(out var deletedFile))
+            {
+                sourceItem = new SyncNodePart
+                {
+                    Size = Size.Zero,
+                    Hash = Hash.Zero,
+                    EntityId = deletedFile.Id,
+                    LastModifiedTicks = 0,
+                };
+                sourceItemType = LoadoutSourceItemType.Deleted;
+            }
+            else
+            {
+                throw new NotSupportedException("Only files and deleted files are supported");
+            }
+            
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, loadoutItem.TargetPath, out var exists);
+            if (!exists)
+            {
+                existing = new SyncNode
+                {
+                    Loadout = sourceItem,
+                    SourceItemType = sourceItemType,
+                };
+            }
+            else
+            {
+                if (ShouldWinWrapper(loadout.Db, targetPath, existing.Loadout, existing.SourceItemType, sourceItem, sourceItemType))
+                {
+                    existing.Loadout = sourceItem;
+                    existing.SourceItemType = sourceItemType;
+                }
+            }
+        }
+        
+        // Remove deleted files. I'm not super happy with this requiring a full scan of
+        // the loadout, but we have to somehow mark the deleted files and then delete them. 
+        // And we can't modify the dictionary while iterating over it.
+        List<GamePath> deletedFiles = [];
+        foreach (var (key, value) in syncTree)
+        {
+            if (value.SourceItemType == LoadoutSourceItemType.Deleted) 
+                deletedFiles.Add(key);
+        }
+        foreach (var file in deletedFiles)
+        {
+            syncTree.Remove(file);
+        }
+        
+        MergeStates(currentState, previousState, syncTree);
+        return syncTree;
+    }
+
+    /// <summary>
+    /// For a given loadout, get the disabled groups, also any groups in the disabled groups.
+    /// </summary>
+    private HashSet<EntityId> GetDisabledGroups(Loadout.ReadOnly loadout)
+    {
+        var disabledGroups = new HashSet<EntityId>();
+        var firstLevelDisabledGroups = loadout.Db
+            .Datoms((LoadoutItem.LoadoutId, loadout.Id), (LoadoutItem.Disabled, Null.Instance));
+        foreach (var disabledGroup in firstLevelDisabledGroups)
+        {
+            disabledGroups.Add(disabledGroup);
+            MarkChildren(loadout.Db, disabledGroup, disabledGroups);
+        }
+
+        return disabledGroups;
+        
+        void MarkChildren(IDb loadoutDb, EntityId currentItem, HashSet<EntityId> disabledSet)
+        {
+            foreach (var child in loadoutDb.Datoms((LoadoutItem.Parent, currentItem), (LoadoutItemGroup.Group, Null.Instance)))
+            {
+                disabledSet.Add(child);
+                MarkChildren(loadoutDb, child, disabledSet);
+            }
+        }
+    }
+
+    public IEnumerable<LoadoutSourceItem> GetNormalGameState(IDb referenceDb, Loadout.ReadOnly loadout)
+    {
+        foreach (var item in _fileHashService.GetGameFiles(loadout.InstallationInstance, loadout.LocatorIds.ToArray()))
+        {
+            yield return new LoadoutSourceItem
+            {
+                Path = item.Path,
+                Size = item.Size,
+                Hash = item.Hash,
+                Type = LoadoutSourceItemType.Game,
+            };
+        }
+    }
+
+    /// <inheritdoc />
+    public void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncNode> loadoutItems)
+    {
         foreach (var node in previousTree)
         {
-            if (tree.TryGetValue(node.Path, out var found))
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(loadoutItems, node.Path, out var exists);
+            if (exists)
             {
-                found.Previous = node;
+                existing.Previous = node.Part;
             }
             else
             {
-                tree.Add(node.Path, new SyncTreeNode
-                    {
-                        Path = node.Path,
-                        Previous = node,
-                    }
-                );
+                existing = new SyncNode
+                {
+                    Previous = node.Part,
+                };
             }
         }
-
+        
         foreach (var node in currentState)
         {
-            if (tree.TryGetValue(node.Path, out var found))
+            ref var existing = ref CollectionsMarshal.GetValueRefOrAddDefault(loadoutItems, node.Path, out var exists);
+            if (exists)
             {
-                found.Disk = node;
+                existing.Disk = node.Part;
             }
             else
             {
-                tree.Add(node.Path, new SyncTreeNode
-                    {
-                        Path = node.Path,
-                        Disk = node,
-                    }
-                );
+                existing = new SyncNode
+                {
+                    Disk = node.Part,
+                };
             }
         }
-
-        return new SyncTree(tree);
     }
 
     /// <summary>
@@ -256,89 +353,103 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadout)
+    public async Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
         var metadata = await ReindexState(loadout.InstallationInstance, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
-        return BuildSyncTree(metadata.DiskStateEntries, previouslyApplied, loadout.Items);
+        return BuildSyncTree(DiskStateToPathPartPair(metadata.DiskStateEntries), DiskStateToPathPartPair(previouslyApplied), loadout);
+    }
+
+    /// <summary>
+    /// Converts Mnemonic db disk state entries to path part pairs.
+    /// </summary>
+    /// <param name="entries"></param>
+    /// <returns></returns>
+    private IEnumerable<PathPartPair> DiskStateToPathPartPair<T>(T entries) 
+        where T : IEnumerable<DiskStateEntry.ReadOnly>
+    {
+        foreach (var entry in entries)
+        {
+            yield return new PathPartPair
+            {
+                Path = entry.Path,
+                Part = new SyncNodePart
+                {
+                    EntityId = entry.Id,
+                    Hash = entry.Hash,
+                    Size = entry.Size,
+                    LastModifiedTicks = entry.LastModified.UtcTicks,
+                },
+            };
+        }
     }
 
     /// <inheritdoc />
-    public SyncActionGroupings<SyncTreeNode> ProcessSyncTree(SyncTree tree)
+    public void ProcessSyncTree(Dictionary<GamePath, SyncNode> tree)
     {
-        var groupings = new SyncActionGroupings<SyncTreeNode>();
-
-        foreach (var entry in tree.GetAllDescendentFiles())
+        foreach (var path in tree.Keys)
         {
-            var item = entry.Item.Value;
+            // TODO: sucks that we have to do a lookup here, but we have no way to get the ref to the value otherwise
+            ref var item = ref CollectionsMarshal.GetValueRefOrNullRef(tree, path);
+            
+            var signature = SignatureBuilder.Build(
+                diskHash: item.HaveDisk ? item.Disk.Hash : Optional<Hash>.None,
+                prevHash: item.HavePrevious ? item.Previous.Hash : Optional<Hash>.None,
+                loadoutHash: item.HaveLoadout && item.Loadout.Hash != Hash.Zero ? item.Loadout.Hash : Optional<Hash>.None,
+                diskArchived: item.HaveDisk && HaveArchive(item.Disk.Hash),
+                prevArchived: item.HavePrevious && HaveArchive(item.Previous.Hash),
+                loadoutArchived: item.Loadout.Hash != Hash.Zero && HaveArchive(item.Loadout.Hash),
+                pathIsIgnored: IsIgnoredBackupPath(path));
 
-
-            var signature = new SignatureBuilder
-            {
-                DiskHash = item.Disk.HasValue ? item.Disk.Value.Hash : Optional<Hash>.None,
-                PrevHash = item.Previous.HasValue ? item.Previous.Value.Hash : Optional<Hash>.None,
-                LoadoutHash = item.LoadoutFileHash.HasValue ? item.LoadoutFileHash.Value : Optional<Hash>.None,
-                DiskArchived = item.Disk.HasValue && HaveArchive(item.Disk.Value.Hash),
-                PrevArchived = item.Previous.HasValue && HaveArchive(item.Previous.Value.Hash),
-                LoadoutArchived = item.LoadoutFileHash.HasValue && HaveArchive(item.LoadoutFileHash.Value),
-                PathIsIgnored = IsIgnoredBackupPath(item.Path),
-            }.Build();
 
             item.Signature = signature;
             item.Actions = ActionMapping.MapActions(signature);
-            
-            groupings.Add(item);
         }
-
-        return groupings;
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout)
     {
+        using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
-
+        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = [];
+        EntityId? overridesGroup = null;
+        
         foreach (var action in ActionsInOrder)
         {
-            var items = groupings[action];
-            if (items.Count == 0)
-                continue;
-
             switch (action)
             {
                 case Actions.DoNothing:
                     break;
 
                 case Actions.BackupFile:
-                    await ActionBackupFiles(groupings, loadout.InstallationInstance);
+                    await ActionBackupNewFiles(loadout.InstallationInstance, syncTree);
                     break;
 
                 case Actions.IngestFromDisk:
-                    await ActionIngestFromDisk(groupings, loadout, tx);
+                    ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup);
                     break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(groupings, register, tx);
+                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId, foldersWithDeletedFiles);
                     break;
 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(groupings, register, tx,
-                        gameMetadataId
-                    );
+                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId);
                     break;
 
                 case Actions.AddReifiedDelete:
-                    ActionAddReifiedDelete(groupings, loadout, tx);
+                    ActionAddReifiedDelete(syncTree, loadout, tx, ref overridesGroup);
                     break;
 
                 case Actions.WarnOfUnableToExtract:
-                    WarnOfUnableToExtract(groupings);
+                    WarnOfUnableToExtract(syncTree);
                     break;
 
                 case Actions.WarnOfConflict:
-                    WarnOfConflict(groupings);
+                    WarnOfConflict(syncTree);
                     break;
 
                 default:
@@ -356,60 +467,123 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var newState = loadout.Installation.DiskStateEntries;
 
         // Clean up empty directories
-        var deletedFiles = groupings[Actions.DeleteFromDisk];
-        if (deletedFiles.Count > 0)
+        if (foldersWithDeletedFiles.Count > 0)
         {
-            CleanDirectories(deletedFiles.Select(f => f.Path), newState, loadout.InstallationInstance);
+            CleanDirectories(foldersWithDeletedFiles, newState, loadout.InstallationInstance);
         }
+
+        loadout = await ReprocessOverrides(loadout);
 
         return loadout;
     }
-    
-    /// <inheritdoc />
-    public async Task RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, GameInstallation gameInstallation)
+
+    private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
     {
+        loadout = await ReprocessGameUpdates(loadout);
+        return loadout;
+    }
+
+    /// <summary>
+    /// When enough new files show up in overrides, we may need to reprocess them and change out the game version
+    /// to reflect the new files. This will happen when a game store updates the game files, overwriting the existing
+    /// game files.
+    /// </summary>
+    private async ValueTask<Loadout.ReadOnly> ReprocessGameUpdates(Loadout.ReadOnly loadout)
+    {
+        var diskState = loadout.Installation.DiskStateEntries
+            .Select(part => ((GamePath)part.Path, part.Hash));
+        
+        var version = _fileHashService.SuggestGameVersion(loadout.InstallationInstance, diskState);
+        
+        // No reason to change the loadout if the version is the same
+        if (version == loadout.GameVersion)
+            return loadout;
+        
+        // We need to update to the new ids and version
+        if (!_fileHashService.TryGetLocatorIdsForVersion(loadout.InstallationInstance, version, out var newLocatorIds))
+            throw new InvalidOperationException($"Unable to find common ids for version: {version}, this should never happen");
+
+        // Make a lookup set of the new files
+        var versionFiles = _fileHashService
+            .GetGameFiles(loadout.InstallationInstance, newLocatorIds)
+            .Select(file => file.Path)
+            .ToHashSet();
+
+        // Find all files in the overrides that match a path in the new files
+        var toDelete = from grp in loadout.Items.OfTypeLoadoutItemGroup().OfTypeLoadoutOverridesGroup()
+            from item in grp.AsLoadoutItemGroup().Children.OfTypeLoadoutItemWithTargetPath()
+            let path = (GamePath)item.TargetPath
+            where versionFiles.Contains(path)
+            select item;
+
+        using var tx = Connection.BeginTransaction();
+        
+        // Delete all the matching override files
+        foreach (var file in toDelete)
+        {
+            tx.Delete(file, false);
+        }
+        
+        // Update the version and locator ids
+        tx.Add(loadout, Loadout.GameVersion, version);
+        foreach (var id in loadout.LocatorIds) 
+            tx.Retract(loadout, Loadout.LocatorIds, id);
+        foreach (var id in newLocatorIds)
+            tx.Add(loadout, Loadout.LocatorIds, id);
+        
+        var result = await tx.Commit();
+        return loadout.Rebase(result.Db);
+    }
+
+    /// <inheritdoc />
+    public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
+    {
+        using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = gameInstallation.GameMetadataId;
         var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
         var register = gameInstallation.LocationsRegister;
+        var deletedFiles = new HashSet<(GamePath GamePath, AbsolutePath FullPath)>();
 
         foreach (var action in ActionsInOrder)
         {
-            var items = groupings[action];
-            if (items.Count == 0)
-                continue;
-
             switch (action)
             {
                 case Actions.DoNothing:
                     break;
 
                 case Actions.BackupFile:
-                    await ActionBackupFiles(groupings, gameInstallation);
+                    await ActionBackupNewFiles(gameInstallation, syncTree);
                     break;
 
                 case Actions.IngestFromDisk:
-                    throw new InvalidOperationException("Cannot ingest files from disk when not in a loadout context");
+                    #if DEBUG
+                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.IngestFromDisk)))
+                        throw new InvalidOperationException("Cannot ingest files from disk when not in a loadout context");
+                    #endif
+                    break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(groupings, register, tx);
+                    ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, deletedFiles);
                     break;
 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(groupings, register, tx,
-                        gameMetadataId
-                    );
+                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId);
                     break;
 
                 case Actions.AddReifiedDelete:
-                    throw new InvalidOperationException("Cannot add reified deletes when not in a loadout context");
+                    #if DEBUG
+                    if (syncTree.Any(n => n.Value.Actions.HasFlag(Actions.AddReifiedDelete)))
+                        throw new InvalidOperationException("Cannot add reified deletes when not in a loadout context");
+                    #endif
+                    break;
 
                 case Actions.WarnOfUnableToExtract:
-                    WarnOfUnableToExtract(groupings);
+                    WarnOfUnableToExtract(syncTree);
                     break;
 
                 case Actions.WarnOfConflict:
-                    WarnOfConflict(groupings);
+                    WarnOfConflict(syncTree);
                     break;
 
                 default:
@@ -427,46 +601,67 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
     }
 
-    private void WarnOfConflict(SyncActionGroupings<SyncTreeNode> groupings)
+    private void WarnOfConflict(Dictionary<GamePath, SyncNode> tree)
     {
-        var conflicts = groupings[Actions.WarnOfConflict];
-        _logger.LogWarning("Conflict detected in {Count} files", conflicts.Count);
-
-        foreach (var item in conflicts)
+        
+        foreach (var (path, node) in tree)
         {
-            _logger.LogWarning("Conflict in {Path}", item.Path);
+            if (!node.Actions.HasFlag(Actions.WarnOfConflict))
+                continue;
+            _logger.LogWarning("Conflict in {Path}", path);
         }
     }
 
-    private void WarnOfUnableToExtract(SyncActionGroupings<SyncTreeNode> groupings)
+    private void WarnOfUnableToExtract(Dictionary<GamePath, SyncNode> groupings)
     {
-        var unableToExtract = groupings[Actions.WarnOfUnableToExtract];
-        _logger.LogWarning("Unable to extract {Count} files", unableToExtract.Count);
-
-        foreach (var item in unableToExtract)
+        foreach (var (path, node) in groupings)
         {
-            _logger.LogWarning("Unable to extract {Path}", item.Path);
+            if (!node.Actions.HasFlag(Actions.WarnOfUnableToExtract))
+                continue;
+            _logger.LogWarning("Unable to extract {Path}", path);
         }
     }
 
-    private void ActionAddReifiedDelete(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
+    private void ActionAddReifiedDelete(Dictionary<GamePath, SyncNode> groupings, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
     {
-        var toAddDelete = groupings[Actions.AddReifiedDelete];
-        _logger.LogDebug("Adding {Count} reified deletes", toAddDelete.Count);
 
-        var overridesGroup = GetOrCreateOverridesGroup(tx, loadout);
-
-        foreach (var item in toAddDelete)
+        foreach (var (path, node) in groupings)
         {
-            var delete = new DeletedFile.New(tx, out var id)
+            if (!node.Actions.HasFlag(Actions.AddReifiedDelete))
+                continue;
+            
+            overridesGroup ??= GetOrCreateOverridesGroup(tx, loadout);
+            
+            // If this is not a new entity, we may have a matching file in the overrides group already
+            if (!overridesGroup.Value.InPartition(PartitionId.Temp))
+            {
+                var group = LoadoutOverridesGroup.Load(loadout.Db, overridesGroup.Value);
+                var foundMatch = group.AsLoadoutItemGroup().Children
+                    .OfTypeLoadoutItemWithTargetPath()
+                    .TryGetFirst(p => p.TargetPath == path, out var match);
+
+                if (foundMatch)
+                {
+
+                    // A delete of a delete does nothing
+                    if (match.TryGetAsDeletedFile(out var _))
+                        continue;
+
+                    // If we found a match, we need to remove the entity itself
+                    tx.Delete(match, false);
+                    continue;
+                }
+            }
+                
+            _ = new DeletedFile.New(tx, out var id)
             {
                 Reason = "Reified delete",
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
-                    TargetPath = item.Path.ToGamePathParentTuple(loadout.Id),
+                    TargetPath = path.ToGamePathParentTuple(loadout.Id),
                     LoadoutItem = new LoadoutItem.New(tx, id)
                     {
-                        Name = item.Path.FileName,
+                        Name = path.FileName,
                         ParentId = overridesGroup.Value,
                         LoadoutId = loadout.Id,
                     },
@@ -475,49 +670,52 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
+    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
     {
+        List<(Hash Hash, AbsolutePath Path)> toExtract = [];
+        
+        foreach (var (path, node) in groupings)
+        {
+            if (!node.Actions.HasFlag(Actions.ExtractToDisk))
+                continue;
+            
+            Debug.Assert(node.Loadout.Hash != Hash.Zero, "Loadout hash is zero, this should not happen");
+            
+            var gamePath = register.GetResolvedPath(path);
+            toExtract.Add((node.Loadout.Hash, gamePath));
+        }
+        
         // Extract files to disk
-        var toExtract = groupings[Actions.ExtractToDisk];
         _logger.LogDebug("Extracting {Count} files to disk", toExtract.Count);
+        
         if (toExtract.Count > 0)
         {
-            await _fileStore.ExtractFiles(toExtract.Select(item =>
-                    {
-                        var gamePath = register.GetResolvedPath(item.Path);
-                        if (!item.LoadoutFileHash.HasValue)
-                        {
-                            throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
-                        }
-
-                        return (item.LoadoutFileHash.Value, gamePath);
-                    }
-                ), CancellationToken.None
-            );
+            await _fileStore.ExtractFiles(toExtract, CancellationToken.None);
 
             var isUnix = _os.IsUnix();
-            foreach (var entry in toExtract)
+            foreach (var (gamePath, node) in groupings)
             {
-                if (!entry.LoadoutFileHash.HasValue)
-                {
-                    throw new InvalidOperationException("File found in tree processing is not a loadout file, this should not happen (until generated files are implemented)");
-                }
+                if (!node.Actions.HasFlag(Actions.ExtractToDisk))
+                    continue;
 
-                var writeTimeUtc = new DateTimeOffset(register.GetResolvedPath(entry.Path).FileInfo.LastWriteTimeUtc);
+                var resolvedPath = register.GetResolvedPath(gamePath);
+                var writeTimeUtc = new DateTimeOffset(resolvedPath.FileInfo.LastWriteTimeUtc);
+                
                 // Reuse the old disk state entry if it exists
-                if (entry.Disk.HasValue)
+                if (node.HaveDisk)
                 {
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Hash, entry.LoadoutFileHash.Value);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.Size, entry.LoadoutFileSize.Value);
-                    tx.Add(entry.Disk.Value.Id, DiskStateEntry.LastModified, writeTimeUtc);
+                    var id = node.Disk.EntityId;
+                    tx.Add(id, DiskStateEntry.Hash, node.Loadout.Hash);
+                    tx.Add(id, DiskStateEntry.Size, node.Loadout.Size);
+                    tx.Add(id, DiskStateEntry.LastModified, writeTimeUtc);
                 }
                 else
                 {
                     _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                     {
-                        Path = entry.Path.ToGamePathParentTuple(gameMetadataId),
-                        Hash = entry.LoadoutFileHash.Value,
-                        Size = entry.LoadoutFileSize.Value,
+                        Path = gamePath.ToGamePathParentTuple(gameMetadataId),
+                        Hash = node.Loadout.Hash,
+                        Size = node.Loadout.Size,
                         LastModified = writeTimeUtc,
                         GameId = gameMetadataId,
                     };
@@ -528,51 +726,41 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 if (!isUnix)
                     continue;
 
-                var path = register.GetResolvedPath(entry.Path);
-                var ext = path.Extension.ToString().ToLower();
+                var ext = resolvedPath.Extension.ToString().ToLower();
                 if (ext is not ("" or ".sh" or ".bin" or ".run" or ".py" or ".pl" or ".php" or ".rb" or ".out"
                     or ".elf")) continue;
 
                 // Note (Sewer): I don't think we'd ever need anything other than just 'user' execute, but you can never
                 // be sure. Just in case, I'll throw in group and other to match 'chmod +x' behaviour.
-                var currentMode = path.GetUnixFileMode();
-                path.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
+                var currentMode = resolvedPath.GetUnixFileMode();
+                resolvedPath.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
             }
         }
     }
 
-    private void ActionDeleteFromDisk(SyncActionGroupings<SyncTreeNode> groupings, IGameLocationsRegister register, ITransaction tx)
+    private void ActionDeleteFromDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
     {
         // Delete files from disk
-        var toDelete = groupings[Actions.DeleteFromDisk];
-        _logger.LogDebug("Deleting {Count} files from disk", toDelete.Count);
-        foreach (var item in toDelete)
+        foreach (var (path, node) in groupings)
         {
-            var gamePath = register.GetResolvedPath(item.Path);
-            gamePath.Delete();
+            if (!node.Actions.HasFlag(Actions.DeleteFromDisk))
+                continue;
+            var resolvedPath = register.GetResolvedPath(path);
+            resolvedPath.Delete();
+            foldersWithDeletedFiles.Add((path, resolvedPath.Parent));
 
+            
             // Don't delete the entry if we're just going to replace it
-            if (!item.Actions.HasFlag(Actions.ExtractToDisk))
+            if (!node.Actions.HasFlag(Actions.ExtractToDisk))
             {
-                var id = item.Disk.Value.Id;
-                tx.Retract(id, DiskStateEntry.Path, item.Disk.Value.Path);
-                tx.Retract(id, DiskStateEntry.Hash, item.Disk.Value.Hash);
-                tx.Retract(id, DiskStateEntry.Size, item.Disk.Value.Size);
-                tx.Retract(id, DiskStateEntry.LastModified, item.Disk.Value.LastModified);
-                tx.Retract(id, DiskStateEntry.Game, (EntityId)item.Disk.Value.Game);
+                var id = node.Disk.EntityId;
+                tx.Retract(id, DiskStateEntry.Path, ((EntityId)gameMetadataId, path.LocationId, path.Path));
+                tx.Retract(id, DiskStateEntry.Hash, node.Disk.Hash);
+                tx.Retract(id, DiskStateEntry.Size, node.Disk.Size);
+                tx.Retract(id, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
+                tx.Retract(id, DiskStateEntry.Game, (EntityId)gameMetadataId);
             }
         }
-    }
-
-    private async Task ActionBackupFiles(SyncActionGroupings<SyncTreeNode> groupings, GameInstallation gameInstallation)
-    {
-        var toBackup = groupings[Actions.BackupFile];
-        _logger.LogDebug("Backing up {Count} files", toBackup.Count);
-
-        await BackupNewFiles(gameInstallation, toBackup.Select(item =>
-                (item.Path, item.Disk.Value.Hash, item.Disk.Value.Size)
-            )
-        );
     }
 
     public record struct AddedEntry
@@ -582,69 +770,57 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private async Task ActionIngestFromDisk(SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly loadout, ITransaction tx)
+    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
     {
-        var toIngest = groupings[Actions.IngestFromDisk];
-        _logger.LogDebug("Ingesting {Count} files", toIngest.Count);
-        var overridesMod = GetOrCreateOverridesGroup(tx, loadout);
-
-        var added = new List<AddedEntry>();
-
-        foreach (var file in toIngest)
+        overridesGroup ??= GetOrCreateOverridesGroup(tx, loadout);
+        var ingestedFiles = false;
+        
+        foreach (var (path, node) in syncTree)
         {
+            if (!node.Actions.HasFlag(Actions.IngestFromDisk))
+                continue;
+            
             // If the file is already in the loadout, we just need to update entry's hash and size
-            if (file.LoadoutFileId.HasValue)
+            if (node.HaveLoadout && node is { SourceItemType: LoadoutSourceItemType.Loadout, Loadout.HaveEntityId: true })
             {
-                var prevLoadoutFile = LoadoutItemWithTargetPath.Load(Connection.Db, file.LoadoutFileId.Value);
-                if (prevLoadoutFile.IsValid())
-                {
-                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Hash, file.Disk.Value.Hash);
-                    tx.Add(prevLoadoutFile.Id, LoadoutFile.Size, file.Disk.Value.Size);
-                    tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
-                    continue;
-                }
+                var loadoutItemId = node.Loadout.EntityId;
+                tx.Add(loadoutItemId, LoadoutFile.Hash, node.Disk.Hash);
+                tx.Add(loadoutItemId, LoadoutFile.Size, node.Disk.Size);
+                tx.Add(node.Disk.EntityId, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
+                continue;
             }
             
             // If the file is not in the loadout, we need to add it
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
-                ParentId = overridesMod.Value,
+                ParentId = overridesGroup.Value,
                 LoadoutId = loadout.Id,
-                Name = file.Path.FileName,
+                Name = path.FileName,
             };
             var loadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
             {
                 LoadoutItem = loadoutItem,
-                TargetPath = file.Path.ToGamePathParentTuple(loadout.Id),
+                TargetPath = path.ToGamePathParentTuple(loadout.Id),
             };
 
-            var loadoutFile = new LoadoutFile.New(tx, id)
+            _ = new LoadoutFile.New(tx, id)
             {
                 LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
-                Hash = file.Disk.Value.Hash,
-                Size = file.Disk.Value.Size,
+                Hash = node.Disk.Hash,
+                Size = node.Disk.Size,
             };
-
-            added.Add(new AddedEntry
-                {
-                    LoadoutItem = loadoutItem,
-                    LoadoutItemWithTargetPath = loadoutItemWithTargetPath,
-                    LoadoutFileEntry = loadoutFile,
-                }
-            );
-            tx.Add(file.Disk.Value.Id, DiskStateEntry.LastModified, file.Disk.Value.LastModified);
+            tx.Add(node.Disk.EntityId, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
+            ingestedFiles = true;
         }
 
-        if (added.Count > 0)
-        {
-            await MoveNewFilesToMods(loadout, added, tx);
-        }
+        return ingestedFiles;
     }
 
     /// <inheritdoc />
     public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
+        loadout = loadout.Rebase();
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
         // any changes, then we can apply the new loadout.
         if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(loadout.Installation, out var lastAppliedId) && lastAppliedId != loadout.Id)
@@ -660,12 +836,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
 
         var tree = await BuildSyncTree(loadout);
-        var groupings = ProcessSyncTree(tree);
-        return await RunGroupings(tree, groupings, loadout);
+        ProcessSyncTree(tree);
+        return await RunActions(tree, loadout);
     }
 
-    public async Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation)
+    public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation)
     {
+        // Make sure the file hashes are up to date
+        await _fileHashService.GetFileHashesDb();
         return await ReindexState(gameInstallation, Connection);
     }
 
@@ -681,120 +859,122 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         return _fileStore.HaveFile(hash).Result;
     }
-
+    
     /// <summary>
-    /// Given a list of files with duplicate game paths, select the winning file that will be applied to disk.
+    /// Return true if the replacement should win over the existing item.
     /// </summary>
-    protected virtual LoadoutItemWithTargetPath.ReadOnly SelectWinningFile(IEnumerable<LoadoutItemWithTargetPath.ReadOnly> files)
+    private bool ShouldWinWrapper(IDb db, in GamePath path, in SyncNodePart existing, LoadoutSourceItemType existingItemType, in SyncNodePart replacement, LoadoutSourceItemType replacementItemType)
     {
-        return files.MaxBy(GetPriority);
-
-        // Placeholder for a more advanced selection algorithm
-        long GetPriority(LoadoutItemWithTargetPath.ReadOnly item)
-        {
-            foreach (var parent in item.AsLoadoutItem().GetThisAndParents())
-            {
-                if (!parent.TryGetAsLoadoutItemGroup(out var group))
-                    continue;
-                
-                // GameFiles always lose
-                if (group.TryGetAsLoadoutGameFilesGroup(out var gameFilesGroup))
-                    return 0;
-                
-                // Overrides should always win
-                if (group.TryGetAsLoadoutOverridesGroup(out var overridesGroup))
-                    return long.MaxValue;
-                
-                // Return a placeholder priority based on creation time of the LoadoutGroup, newest wins.
-                // This allows for some degree of control and predictability in the selection process.
-                return group.GetCreatedAt().ToUnixTimeSeconds();
-            }
-            
-            // Should not happen
-            Debug.Assert(false, "LoadoutItem is not part of a LoadoutItemGroup");
-            return 0;
-        }
+        // Game files always lose
+        if (existingItemType == LoadoutSourceItemType.Game)
+            return true;
+        
+        // TODO: we don't often have many files that conflict by name, but we should speed this code up at some point
+        var existingLoadoutItem = LoadoutItem.Load(db, existing.EntityId);
+        var existingInOverrides = existingLoadoutItem
+            .GetThisAndParents()
+            .OfTypeLoadoutItemGroup()
+            .OfTypeLoadoutOverridesGroup()
+            .Any();
+        
+        var replacementLoadoutItem = LoadoutItem.Load(db, replacement.EntityId);
+        var replacementInOverrides = replacementLoadoutItem
+            .GetThisAndParents()
+            .OfTypeLoadoutItemGroup()
+            .OfTypeLoadoutOverridesGroup()
+            .Any();
+        
+        // Overrides always win
+        if (existingInOverrides && !replacementInOverrides)
+            return false;
+        else if (!existingInOverrides && replacementInOverrides)
+            return true;
+        else if (existingInOverrides && replacementInOverrides)
+            return false;
+        
+        // Return the newer one
+        return ShouldWin(path, existingLoadoutItem, replacementLoadoutItem);
     }
-
+    
     /// <summary>
-    /// When new files are added to the loadout from disk, this method will be called to move the files from the override mod
-    /// into any other mod they may belong to.
+    /// Override this method to provide custom logic for determining which file should win in a conflict. Return true if the
+    /// replacement should win over the existing item.
     /// </summary>
-    protected virtual ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
+    protected virtual bool ShouldWin(in GamePath path, LoadoutItem.ReadOnly existing, LoadoutItem.ReadOnly replacement)
     {
-        return ValueTask.CompletedTask;
+        return replacement.Id > existing.Id;
     }
-
+    
     /// <inheritdoc />
     public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState)
     {
-        var syncTree = BuildSyncTree(diskState, diskState, loadout.Items);
+        var syncTree = BuildSyncTree(DiskStateToPathPartPair(diskState), DiskStateToPathPartPair(diskState), loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
 
-        List<DiskDiffEntry> diffs = new();
+        List<KeyValuePair<GamePath, DiskDiffEntry>> diffs = [];
 
-        foreach (var node in syncTree.GetAllDescendentFiles())
+        foreach (var (path, node) in syncTree)
         {
-            var syncNode = node.Item.Value;
+            var syncNode = node;
             var actions = syncNode.Actions;
+            DiskDiffEntry entry;
             
             if (actions.HasFlag(Actions.DoNothing))
             {
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
-                    Hash = node.Item.Value.LoadoutFileHash.Value,
-                    Size = node.Item.Value.LoadoutFileSize.Value,
+                    Hash = node.Loadout.Hash,
+                    Size = node.Loadout.Size,
                     ChangeType = FileChangeType.None,
-                    GamePath = node.GamePath(),
+                    GamePath = path,
                 };
-                diffs.Add(entry);
+                diffs.Add(KeyValuePair.Create(path, entry));
             }
             else if (actions.HasFlag(Actions.ExtractToDisk))
             {
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
-                    Hash = node.Item.Value.LoadoutFileHash.Value,
-                    Size = node.Item.Value.LoadoutFileSize.Value,
+                    Hash = node.Loadout.Hash,
+                    Size = node.Loadout.Size,
                     // If paired with a delete action, this is a modified file not a new one
                     ChangeType = actions.HasFlag(Actions.DeleteFromDisk) ? FileChangeType.Modified : FileChangeType.Added,
-                    GamePath = node.GamePath(),
+                    GamePath = path,
                 };
-                diffs.Add(entry);
             }
             else if (actions.HasFlag(Actions.DeleteFromDisk))
             {
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
-                    Hash = node.Item.Value.Disk.Value.Hash,
-                    Size = node.Item.Value.Disk.Value.Size,
+                    Hash = node.Disk.Hash,
+                    Size = node.Disk.Size,
                     ChangeType = FileChangeType.Removed,
-                    GamePath = node.GamePath(),
+                    GamePath = path,
                 };
-                diffs.Add(entry);
             }
             else
             {
                 // This really should become some sort of error state
-                var entry = new DiskDiffEntry
+                entry = new DiskDiffEntry
                 {
                     Hash = Hash.Zero,
                     Size = Size.Zero,
                     ChangeType = FileChangeType.None,
-                    GamePath = node.GamePath(),
+                    GamePath = path,
                 };
-                diffs.Add(entry);
             }
+            
+            diffs.Add(KeyValuePair.Create(path, entry));
         }
 
-        return FileDiffTree.Create(diffs.Select(d => KeyValuePair.Create(d.GamePath, d)));
+        return FileDiffTree.Create(diffs);
     }
 
     /// <summary>
     /// Backs up any new files in the loadout.
     ///
     /// </summary>
-    public virtual async Task BackupNewFiles(GameInstallation installation, IEnumerable<(GamePath To, Hash Hash, Size Size)> files)
+    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SyncNode> files)
     {
         // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "LoadoutFile".
@@ -811,16 +991,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
-        await Parallel.ForEachAsync(files, async (file, _) =>
+        await Parallel.ForEachAsync(files, async (item, _) =>
             {
-                var path = installation.LocationsRegister.GetResolvedPath(file.To);
-                if (await _fileStore.HaveFile(file.Hash))
+                var (gamePath, node) = item;
+                if (!node.Actions.HasFlag(Actions.BackupFile))
+                    return;
+                
+                var path = installation.LocationsRegister.GetResolvedPath(gamePath);
+                Debug.Assert(node.HaveDisk, "Node must have a disk entry to backup");
+                
+                if (await _fileStore.HaveFile(node.Disk.Hash))
                     return;
 
                 var archivedFile = new ArchivedFileEntry
                 {
-                    Size = file.Size,
-                    Hash = file.Hash,
+                    Size = node.Disk.Size,
+                    Hash = node.Disk.Hash,
                     StreamFactory = new NativeFileStreamFactory(path),
                 };
 
@@ -831,35 +1017,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // PERFORMANCE: We deduplicate above with the HaveFile call.
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
     }
-
-    private async Task<DiskState> GetOrCreateInitialDiskState(GameInstallation installation)
-    {
-        // Return any existing state
-        var metadata = installation.GetMetadata(Connection);
-        if (metadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
-        {
-            return metadata.DiskStateAsOf(metadata.InitialDiskStateTransaction);
-        }
-
-        // Or create a new one
-        using var tx = Connection.BeginTransaction();
-        await IndexNewState(installation, tx);
-        tx.Add(metadata.Id, GameInstallMetadata.InitialDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
-        tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
-        await tx.Commit();
-
-        // Rebase the metadata to the new transaction
-        metadata = metadata.Rebase();
-
-        // Return the new state
-        return metadata.DiskStateAsOf(metadata.InitialDiskStateTransaction);
-    }
     
     /// <summary>
     /// Reindex the state of the game, running a transaction if changes are found
     /// </summary>
     private async Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation, IConnection connection)
-    {
+    {        
+        using var _ = await _lock.LockAsync();
         var originalMetadata = installation.GetMetadata(connection);
         using var tx = connection.BeginTransaction();
 
@@ -891,6 +1055,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var inState = metadata.DiskStateEntries.ToDictionary(e => (GamePath)e.Path);
         var changes = false;
         
+        
+        var hashDb = await _fileHashService.GetFileHashesDb();
+        
         foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
         {
             if (!location.Value.DirectoryExists())
@@ -917,7 +1084,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                             // If the files don't match, update the entry
                             if (writeTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
                             {
-                                var newHash = await file.XxHash3Async();
+                                var newHash = await MaybeHashFile(hashDb, gamePath, file, fileInfo, token);
                                 tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
                                 tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
                                 tx.Add(entry.Id, DiskStateEntry.LastModified, writeTimeUtc);
@@ -927,8 +1094,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         else
                         {
                             // No previous entry found, so create a new one
-                            var newHash = await file.XxHash3Async(token: token);
-                            _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                            var newHash = await MaybeHashFile(hashDb, gamePath, file, file.FileInfo, token);
+                            var diskState = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
                             {
                                 Path = gamePath.ToGamePathParentTuple(metadata.Id),
                                 Hash = newHash,
@@ -961,80 +1128,39 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         return changes;
     }
-    
 
-    /// <summary>
-    /// Index the game state and create the initial disk state
-    /// </summary>
-    public async Task IndexNewState(GameInstallation installation, ITransaction tx)
+    private async ValueTask<Hash> MaybeHashFile(IDb hashDb, GamePath gamePath, AbsolutePath file, IFileEntry fileInfo, CancellationToken token)
     {
-        var metaDataId = installation.GameMetadataId;
-
-        var hashDb = await _fileHashService.GetFileHashesDb();
+        Hash? diskMinimalHash = null;
         
-        foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
+        // Look for all known files that match the path
+        foreach (var matchingPath in PathHashRelation.FindByPath(hashDb, gamePath.Path))
         {
-            if (!location.Value.DirectoryExists())
+            // Make sure the size matches
+            var hash = matchingPath.Hash;
+            if (hash.Size.Value != fileInfo.Size)
                 continue;
+            
+            // If the minimal hash matches, then we can use the xxHash3 hash
+            diskMinimalHash ??= await MultiHasher.MinimalHash(file, token);
 
-            await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
-                {
-                    var (gamePath, newHash) = await HashGameFile(hashDb, installation, file, token);
-                    _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
-                    {
-                        Path = gamePath.ToGamePathParentTuple(metaDataId),
-                        Hash = newHash,
-                        Size = file.FileInfo.Size,
-                        LastModified = file.FileInfo.LastWriteTimeUtc,
-                        GameId = metaDataId,
-                    };
-                }
-            );
-        }
-    }
-
-    /// <summary>
-    /// Hash a file but first check the hash database for a matching size and minimal hash, and use that to reduce
-    /// the amount of work needed to produce the hash.
-    /// </summary>
-    private static async ValueTask<(GamePath gamePath, Hash newHash)> HashGameFile(IDb hashDb, GameInstallation installation, AbsolutePath file, CancellationToken token)
-    {
-        var gamePath = installation.LocationsRegister.ToGamePath(file);
-        
-        // It's cheapest to look at the size first, if there's no matching size then we don't do a minimal hash. 
-        // File sizes are actually fairly unique. Of-course they collide a lot, but since most games have different
-        // types of file and pack their assets in archives, the number of collisions are fairly low. Using a path
-        // first is more expensive due to it being a insensitive string comparsion, and we'd have to hash the file
-        // on disk to get the minimal hash. 
-        // So we do size -> minimal hash -> path (path being uses mostly as a doublecheck at the end).
-        var relation = HashRelation.FindBySize(hashDb, file.FileInfo.Size);
-        if (relation.Count != 0)
-        {
-            // We have a size match, so minimal hash it, and see if we have a match
-            var minimalHash = await MultiHasher.MinimalHash(file, token);
-            foreach (var matchingHash in HashRelation.FindByMinimalHash(hashDb, minimalHash))
-            {
-                // Match on the relative path as well as the minimal hash
-                foreach (var path in matchingHash.Paths)
-                {
-                    if (path.Path == gamePath.Path)
-                        return (gamePath, matchingHash.XxHash3);
-                }
-                
-            }
+            if (hash.MinimalHash == diskMinimalHash)
+                return hash.XxHash3;
         }
         
-        // No other matches, so do a full hash
-        var newHash = await file.XxHash3Async(token: token);
-        return (gamePath, newHash);
+        // If we didn't find a match, then we need to hash the file
+        return await file.XxHash3Async(token: token);
     }
 
     /// <inheritdoc />
     public virtual IJobTask<CreateLoadoutJob, Loadout.ReadOnly> CreateLoadout(GameInstallation installation, string? suggestedName = null)
     {
+
         return _jobMonitor.Begin(new CreateLoadoutJob(installation), async ctx =>
             {
-                var initialState = await GetOrCreateInitialDiskState(installation);
+                // Prime the hash database to make sure it's loaded
+                await _fileHashService.GetFileHashesDb();
+                
                 var existingLoadoutNames = Loadout.All(Connection.Db)
                     .Where(l => l.IsVisible()
                                 && l.InstallationInstance.LocationsRegister[LocationId.Game]
@@ -1049,6 +1175,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 using var tx = Connection.BeginTransaction();
 
+                List<string> locatorMetadata = [];
+                if (installation.LocatorResultMetadata != null)
+                {
+                    locatorMetadata.AddRange(installation.LocatorResultMetadata.ToLocatorIds());
+                }
+
+                if (!_fileHashService.TryGetGameVersion(installation, locatorMetadata, out var version))
+                    throw new Exception("Cannot create a loadout for an unknown game version");
+
                 var loadout = new Loadout.New(tx)
                 {
                     Name = suggestedName ?? "Loadout " + shortName,
@@ -1056,41 +1191,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     InstallationId = installation.GameMetadataId,
                     Revision = 0,
                     LoadoutKind = LoadoutKind.Default,
+                    LocatorIds = locatorMetadata,
+                    GameVersion = version,
                 };
-
-                var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-
-                // Backup the files
-                var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-
-                foreach (var file in initialState)
-                {
-                    GamePath path = file.Path;
-
-                    if (!IsIgnoredBackupPath(path))
-                        filesToBackup.Add((path, file.Hash, file.Size));
-
-                    _ = new LoadoutFile.New(tx, out var loadoutFileId)
-                    {
-                        Hash = file.Hash,
-                        Size = file.Size,
-                        LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
-                        {
-                            TargetPath = path.ToGamePathParentTuple(loadout.Id),
-                            LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
-                            {
-                                Name = path.FileName,
-                                LoadoutId = loadout,
-                                ParentId = gameFiles.Id,
-                            },
-                        },
-                    };
-                }
-
-                await ctx.YieldAsync();
-
-                await BackupNewFiles(installation, filesToBackup);
-
+                
+                // Create the user's default collection
                 _ = new CollectionGroup.New(tx, out var userCollectionId)
                 {
                     IsReadOnly = false,
@@ -1108,13 +1213,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 // Commit the transaction as of this point the loadout is live
                 var result = await tx.Commit();
 
-                // Remap the ids
+                // Remap the id
                 var remappedLoadout = result.Remap(loadout);
 
-                // If this is the only loadout, activate it
-                if (isOnlyLoadout)
+                // If there is no currently synced loadout, then we can ingest the game folder
+                if (!remappedLoadout.Installation.Contains(GameInstallMetadata.LastSyncedLoadout))
                 {
-                    await ActivateLoadout(remappedLoadout.Id);
+                    remappedLoadout = await Synchronize(remappedLoadout);
                 }
                 return remappedLoadout;
             }
@@ -1132,7 +1237,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Synchronize the last applied loadout, so we don't lose any changes
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
         
-        await ResetToOriginalGameState(installation);
+        var commonIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
+        await ResetToOriginalGameState(installation, commonIds);
     }
 
     /// <inheritdoc />
@@ -1149,9 +1255,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var reindexed = await ReindexState(loadout.InstallationInstance, Connection);
         
-        var tree = BuildSyncTree(reindexed.DiskStateEntries, reindexed.DiskStateEntries, loadout.Items);
-        var groupings = ProcessSyncTree(tree);
-        await RunGroupings(tree, groupings, loadout);
+        var tree = BuildSyncTree(DiskStateToPathPartPair(reindexed.DiskStateEntries), DiskStateToPathPartPair(reindexed.DiskStateEntries), loadout);
+        ProcessSyncTree(tree);
+        await RunActions(tree, loadout);
     }
 
     private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)
@@ -1317,84 +1423,55 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Execute the garbage collector
         _garbageCollectorRunner.RunWithMode(gcRunMode);
     }
-
-    /// <summary>
-    ///     Creates a 'Vanilla State Loadout', which is a loadout embued with the initial
-    ///     state of the game folder.
-    ///
-    ///     This loadout is created when the last applied loadout for a game
-    ///     is deleted. And is deleted when a non-vanillastate loadout is applied.
-    ///     It should be a singleton.
-    /// </summary>
-    private async Task<Loadout.ReadOnly> CreateVanillaStateLoadout(GameInstallation installation)
-    {
-        var initialState = await GetOrCreateInitialDiskState(installation);
-
-        using var tx = Connection.BeginTransaction();
-        var loadout = new Loadout.New(tx)
-        {
-            Name = $"Vanilla State Loadout for {installation.Game.Name}",
-            ShortName = "-",
-            InstallationId = installation.GameMetadataId,
-            Revision = 0,
-            LoadoutKind = LoadoutKind.VanillaState,
-        };
-
-        var gameFiles = CreateLoadoutGameFilesGroup(loadout, installation, tx);
-
-        // Backup the files
-        // 1. Because we need to backup the files for every created loadout.
-        // 2. Because in practice this is the first loadout created.
-        var filesToBackup = new List<(GamePath To, Hash Hash, Size Size)>();
-        foreach (var file in initialState)
-        {
-            GamePath path = file.Path;
-
-            if (!IsIgnoredBackupPath(path))
-                filesToBackup.Add((path, file.Hash, file.Size));
-
-            _ = new LoadoutFile.New(tx, out var loadoutFileId)
-            {
-                Hash = file.Hash,
-                Size = file.Size,
-                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, loadoutFileId)
-                {
-                    TargetPath = path.ToGamePathParentTuple(loadout.Id),
-                    LoadoutItem = new LoadoutItem.New(tx, loadoutFileId)
-                    {
-                        Name = path.FileName,
-                        LoadoutId = loadout,
-                        ParentId = gameFiles.Id,
-                    },
-                },
-            };
-        }
-
-        await BackupNewFiles(installation, filesToBackup);
-        var result = await tx.Commit();
-
-        return result.Remap(loadout);
-    }
+    
     
     /// <inheritdoc />
-    public async Task ResetToOriginalGameState(GameInstallation installation)
+    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
     {
+        var gameState = _fileHashService.GetGameFiles(installation, commonIds);
         var metaData = await ReindexState(installation, Connection);
-        if (!metaData.Contains(GameInstallMetadata.InitialDiskStateTransaction))
-            throw new InvalidOperationException("No initial state transaction found for game");
         
-        var currentState = metaData.DiskStateEntries;
-        var initialState = metaData.DiskStateAsOf(metaData.InitialDiskStateTransaction);
-        var prevState = metaData.GetLastAppliedDiskState();
-        
-        // Bit strange, but we're setting the "loadout" to the initial state here.
-        // previous state is the last applied state. This then tells the sync system that we don't want integrate any disk changes into the loadout
-        // but instead want a "hard reset" to a previous state. 
-        
-        var syncTree = BuildSyncTree(currentState, prevState, initialState);
-        var groups = ProcessSyncTree(syncTree);
+        List<PathPartPair> diskState = [];
 
-        await RunGroupings(syncTree, groups, installation);
+        foreach (var diskFile in metaData.DiskStateEntries)
+        {
+            diskState.Add(new PathPartPair(diskFile.Path, new SyncNodePart
+            {   
+                EntityId = diskFile.Id,
+                Hash = diskFile.Hash,
+                Size = diskFile.Size,
+                LastModifiedTicks = diskFile.LastModified.UtcTicks,
+            }));
+        }
+
+        Dictionary<GamePath, SyncNode> desiredState = new();
+
+        foreach (var gameFile in gameState)
+        {
+            var part = new SyncNodePart
+            {
+                Hash = gameFile.Hash,
+                Size = gameFile.Size,
+                LastModifiedTicks = 0,
+            };
+            var syncNode = new SyncNode
+            {
+                Loadout = part,
+                SourceItemType = LoadoutSourceItemType.Game,
+            };
+            desiredState.Add(gameFile.Path, syncNode);
+        }
+
+        // Merge the states into a tree. Passing in the current state as the current and previous state. 
+        // This fakes the synchronizer into thinking that there are no changes on disk and we only want to do a
+        // hard reset to the desired state.
+        MergeStates(diskState, diskState, desiredState);
+        
+        // Process the tree
+        ProcessSyncTree(desiredState);
+
+        // Run the groupings
+        await RunActions(desiredState, installation);
     }
 }
 

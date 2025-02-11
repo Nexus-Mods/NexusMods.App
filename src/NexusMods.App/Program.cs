@@ -25,7 +25,6 @@ using NLog.Extensions.Logging;
 using NLog.Targets;
 using ReactiveUI;
 using Spectre.Console;
-using Spectre.Console.Advanced;
 
 namespace NexusMods.App;
 
@@ -62,6 +61,9 @@ public class Program
         );
         var services = host.Services;
 
+        // Okay to do wait here, as we are in the main process thread.
+        host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
+        
         if (startupMode.RunAsMain)
         {
             var dataModelSettings = services.GetRequiredService<ISettingsManager>().Get<DataModelSettings>();
@@ -83,8 +85,6 @@ public class Program
             }
         }
 
-        // Okay to do wait here, as we are in the main process thread.
-        host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
 
         // Start the CLI server if we are the main process.
         var cliServer = services.GetService<CliServer>();

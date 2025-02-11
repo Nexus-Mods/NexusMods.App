@@ -2,16 +2,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.SchemaVersions.Tests;
 
-public class LegacyDatabaseSupportTests(IServiceProvider provider) : ALegacyDatabaseTest(provider)
+public class LegacyDatabaseSupportTests(ITestOutputHelper helper) : ALegacyDatabaseTest(helper)
 {
     [Theory]
     [MemberData(nameof(DatabaseNames))]
     public async Task TestDatabase(string name)
     {
-        using var tempConnection = await ConnectionFor(name);
+        await using var tempConnection = await ConnectionFor(name);
         
         await Verify(GetStatistics(tempConnection.Connection.Db, name, tempConnection.OldId)).UseParameters(name);
     }

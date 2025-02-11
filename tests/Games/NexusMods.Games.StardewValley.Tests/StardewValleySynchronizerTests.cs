@@ -16,7 +16,7 @@ namespace NexusMods.Games.StardewValley.Tests;
 public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : AGameTest<StardewValley>(serviceProvider)
 {
     [Fact]
-    public async Task FilesInModFoldersAreMovedIntoMods()
+    public async Task IngestedFilesStayInOverrides()
     {
         var loadout = await CreateLoadout();
         loadout = await Synchronizer.Synchronize(loadout);
@@ -60,7 +60,6 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         
         var result = await tx.Commit();
 
-        var newModId = result.Remap(smapiMod).Id;
 
         loadout = loadout.Rebase();
         loadout = await Synchronizer.Synchronize(loadout);
@@ -80,8 +79,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
             .Select(f => f.AsLoadoutItem().Parent)
             .First();
 
-        foundMod.AsLoadoutItem().Name.Should().Be("Test Mod", "The file was ingested into the parent mod folder");
-        foundMod.Id.Should().Be(newModId, "The file was ingested into the parent mod folder");
+        foundMod.AsLoadoutItem().Name.Should().Be("Overrides", "The file was put into the overrides folder");
     }
 
     [Fact]
