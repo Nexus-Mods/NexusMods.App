@@ -28,7 +28,8 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
             ShortName = "B",
             InstallationId = GameInstallation.GameMetadataId,
             LoadoutKind = LoadoutKind.Default,
-            Revision = 0
+            Revision = 0,
+            GameVersion = "Unknown",
         };
         
         

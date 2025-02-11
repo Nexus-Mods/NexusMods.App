@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
+using Avalonia.Styling;
 using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Controls;
@@ -231,31 +232,73 @@ public class StandardButton : Button
         get => GetValue(FillProperty);
         set => SetValue(FillProperty, value);
     }
+    
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == LeftIconProperty)
+        {
+            UpdateLeftIcon(change.GetNewValue<IconValue?>());
+        }
+        else if (change.Property == TextProperty)
+        {
+            UpdateLabel(change.GetNewValue<string?>());
+        } 
+    }
 
     /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        base.OnApplyTemplate(e);
-
-        _leftIcon = e.NameScope.Find<UnifiedIcon>("PART_LeftIcon");
         _rightIcon = e.NameScope.Find<UnifiedIcon>("PART_RightIcon");
-        _label = e.NameScope.Find<TextBlock>("PART_Label");
         _content = e.NameScope.Find<ContentPresenter>("PART_ContentPresenter");
         _border = e.NameScope.Find<Border>("PART_Border");
 
-        if (_leftIcon == null || _rightIcon == null || _label == null || _content == null || _border == null) return;
+        if (_rightIcon == null || _content == null || _border == null) return;
+        
+        // label text
+        _label = e.NameScope.Find<TextBlock>("PART_Label");
+        if (_label != null)
+            UpdateLabel(Text);
+        
+        // left icon
+        _leftIcon = e.NameScope.Find<UnifiedIcon>("PART_LeftIcon");
+        if (_leftIcon != null)
+            UpdateLeftIcon(LeftIcon);
 
-        _leftIcon.Value = LeftIcon;
         _rightIcon.Value = RightIcon;
-
-        _label.IsVisible = ShowLabel && ShowIcon != ShowIconOptions.IconOnly;
 
         // if Content is not null, display the Content just like a regular button would (using ContentPresenter).
         // Otherwise, build the button from the set properties
         _content.IsVisible = Content is not null;
         _border.IsVisible = Content is null;
         
-        _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
         _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
+        
+        base.OnApplyTemplate(e);
+    }
+    
+    /// <summary>
+    /// Updates the left icon of the <see cref="StandardButton"/>.
+    /// </summary>
+    /// <param name="newIcon">The new icon value</param>
+    private void UpdateLeftIcon(IconValue? newIcon)
+    {
+        if (_leftIcon == null) return;
+        
+        _leftIcon.Value = newIcon;
+        _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
+    }
+    
+    /// <summary>
+    /// Updates the label text of the <see cref="StandardButton"/>.
+    /// </summary>
+    /// <param name="newLabel">The new text value</param>
+    private void UpdateLabel(string? newLabel)
+    {
+        if (_label == null) return;
+        
+        _label.Text = newLabel;
+        _label.IsVisible = ShowLabel && ShowIcon != ShowIconOptions.IconOnly;
     }
 }

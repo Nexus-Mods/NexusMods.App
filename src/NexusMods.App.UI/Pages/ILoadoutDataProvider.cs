@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
@@ -10,6 +11,8 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
+using NexusMods.MnemonicDB.Abstractions.Models;
+using R3;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -68,13 +71,25 @@ public static class LoadoutDataProviderHelper
         itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: loadoutItem.Name));
         itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: loadoutItem.GetCreatedAt()));
 
+        if (loadoutItem.Parent.TryGetAsCollectionGroup(out var collectionGroup))
+        {
+            itemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(value: collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().Name));
+            var isParentCollectionDisabledObservable = LoadoutItem.Observe(connection, collectionGroup.Id).Select(static item => item.IsDisabled).ToObservable();
+            itemModel.AddObservable(
+                key: LoadoutColumns.IsEnabled.ParentCollectionDisabledComponentKey,
+                shouldAddObservable: isParentCollectionDisabledObservable,
+                componentFactory: () => new LoadoutComponents.ParentCollectionDisabled()
+            );
+        }
+
         var isEnabledObservable = LoadoutItem.Observe(connection, loadoutItem.Id).Select(static item => (bool?)!item.IsDisabled);
-        itemModel.Add(LoadoutColumns.IsEnabled.ComponentKey, new LoadoutComponents.IsEnabled(
+        itemModel.Add(LoadoutColumns.IsEnabled.IsEnabledComponentKey, new LoadoutComponents.IsEnabled(
             valueComponent: new ValueComponent<bool?>(
                 initialValue: !loadoutItem.IsDisabled,
                 valueObservable: isEnabledObservable
             ),
-            itemId: loadoutItem.LoadoutItemId
+            itemId: loadoutItem.LoadoutItemId,
+            isLocked: IsLocked(loadoutItem)
         ));
 
         return itemModel;
@@ -95,6 +110,31 @@ public static class LoadoutDataProviderHelper
         parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(
             initialValue: initialValue,
             valueObservable: dateObservable
+        ));
+    }
+
+    public static void AddCollections(
+        CompositeItemModel<EntityId> parentItemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        var collectionsObservable = linkedItemsObservable
+            .QueryWhenChanged(query => query.Items
+                .Where(static item => item.Parent.IsCollectionGroup())
+                .GroupBy(static item => item.ParentId)
+                .Select(static grouping =>
+                {
+                    var optional = grouping.FirstOrOptional(static _ => true);
+                    return optional.Convert(static item => item.Parent.AsLoadoutItem().Name);
+                })
+                .Where(static optional => optional.HasValue)
+                .Select(static optional => optional.Value)
+                .Order(StringComparer.OrdinalIgnoreCase)
+                .Aggregate(static (a, b) => $"{a}, {b}")
+            );
+
+        parentItemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(
+            initialValue: string.Empty,
+            valueObservable: collectionsObservable
         ));
     }
 
@@ -124,12 +164,21 @@ public static class LoadoutDataProviderHelper
                 return isEnabled.HasValue ? isEnabled.Value : null;
             });
 
-        parentItemModel.Add(LoadoutColumns.IsEnabled.ComponentKey, new LoadoutComponents.IsEnabled(
+        var isLockedObservable = linkedItemsObservable
+            .TransformImmutable(static item => IsLocked(item))
+            .QueryWhenChanged(static query => query.Items.Any(isLocked => isLocked))
+            .ToObservable();
+
+        parentItemModel.Add(LoadoutColumns.IsEnabled.IsEnabledComponentKey, new LoadoutComponents.IsEnabled(
             valueComponent: new ValueComponent<bool?>(
                 initialValue: true,
                 valueObservable: isEnabledObservable
             ),
-            linkedItemsObservable.TransformImmutable(static item => item.LoadoutItemId)
+            childrenItemIdsObservable: linkedItemsObservable.TransformImmutable(static item => item.LoadoutItemId),
+            isLockedComponent: new ValueComponent<bool>(
+                initialValue: false,
+                valueObservable: isLockedObservable
+            )
         ));
     }
 
@@ -147,5 +196,10 @@ public static class LoadoutDataProviderHelper
                 return item.IsChildOf(loadoutFilter.CollectionGroupId.Value);
             return true;
         });
+    }
+
+    private static bool IsLocked<T>(T entity) where T : struct, IReadOnlyModel<T>
+    {
+        return NexusCollectionItemLoadoutGroup.IsRequired.GetOptional(entity).ValueOr(false);
     }
 }

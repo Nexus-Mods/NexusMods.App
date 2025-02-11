@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.FileHashes.Emitters;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
@@ -113,6 +114,8 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [
+        new NoWayToSourceFilesOnDisk(),
+        new UndeployableLoadoutDueToMissingGameFiles(),
         _serviceProvider.GetRequiredService<SMAPIGameVersionDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<MissingSMAPIEmitter>(),

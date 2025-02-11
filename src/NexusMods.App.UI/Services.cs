@@ -50,6 +50,7 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
+using NexusMods.App.UI.Pages.ObservableInfo;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
@@ -221,6 +222,9 @@ public static class Services
             .AddView<CollectionLoadoutView, ICollectionLoadoutViewModel>()
             .AddViewModel<CollectionLoadoutViewModel, ICollectionLoadoutViewModel>()
 
+            .AddView<ObservableInfoPageView, IObservableInfoPageViewModel>()
+            .AddViewModel<ObservableInfoPageViewModel, IObservableInfoPageViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -255,6 +259,7 @@ public static class Services
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
+            .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()

@@ -38,7 +38,7 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
     {
         _serviceProvider = serviceProvider;
 
-        TabIcon = IconValues.Settings;
+        TabIcon = IconValues.CogOutline;
         TabTitle = Language.SettingsView_Title;
 
         var descriptors = settingsManager.GetAllUIProperties();

@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Abstractions.UI;
@@ -19,6 +20,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.DataModel.Extensions;
 using NexusMods.Paths;
 using NexusMods.Telemetry;
 using R3;
@@ -51,7 +53,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
-    [Reactive] public bool IsPremium { get; [UsedImplicitly] set; }
+    [Reactive] public UserRole UserRole { get; [UsedImplicitly] set; }
 
     private readonly ObservableAsPropertyHelper<IImage?> _avatar;
     public IImage? Avatar => _avatar.Value;
@@ -165,16 +167,16 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 .BindToVM(this, vm => vm.IsLoggedIn)
                 .DisposeWith(d);
 
+            _loginManager.UserRoleObservable
+                .OnUI()
+                .BindToVM(this, vm => vm.UserRole)
+                .DisposeWith(d);
+            
             _loginManager.UserInfoObservable
                 .Select(u => u?.Name)
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(name => Username = name ?? "");
             
-            _loginManager.IsPremiumObservable
-                .OnUI()
-                .BindToVM(this, vm => vm.IsPremium)
-                .DisposeWith(d);
-
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.Title)
                 .BindToVM(this, vm => vm.ActiveWorkspaceTitle)
                 .DisposeWith(d);

@@ -20,7 +20,7 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
     [GithubIssue(1925)]
     public async Task EmptyChildFoldersDontDeleteNonEmptyParents()
     {
-        var loadout = await CreateLoadout(false);
+        var loadout = await CreateLoadout();
         
         var parentFile = new GamePath(LocationId.Game, "a/parent.txt");
         var grandChildFile = new GamePath(LocationId.Game, "a/b/c/grandchild.txt");
@@ -53,7 +53,12 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
         
         grandChildFileFullPath.FileExists.Should().BeFalse();
         parentFileFullPath.FileExists.Should().BeTrue();
-        
-        
+    }
+
+    [Fact]
+    public async Task LoadoutsContainLocatorMetadata()
+    {
+        var loadout = await CreateLoadout();
+        loadout.LocatorIds.Should().BeEquivalentTo(["StubbedGameState.zip"]);
     }
 }

@@ -26,6 +26,13 @@
       <None Update="GeneralFileManagementTests.SynchronizerFileManagementTest.verified.md">
         <DependentUpon>GeneralFileManagementTests.cs</DependentUpon>
       </None>
+      <None Update="Resources\TestMod.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Resources\" />
     </ItemGroup>
 
 </Project>

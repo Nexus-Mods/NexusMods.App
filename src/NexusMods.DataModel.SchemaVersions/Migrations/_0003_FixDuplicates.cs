@@ -21,8 +21,9 @@ internal class _0003_FixDuplicates : ITransactionalMigration
     public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0003_FixDuplicates));
 
     private Dictionary<EntityId, EntityId> _mappings = [];
-    public void Prepare(IDb db)
+    public async Task Prepare(IDb db)
     {
+        await Task.Yield();
         var duplicateFiles = NexusModsFileMetadata
             .All(db)
             .GroupBy(static file => file.Uid)

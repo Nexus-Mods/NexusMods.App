@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 public class LeftMenuItemDesignViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMenuItemWithToggleViewModel
 {
     public StringComponent Text { get; init; } = new("Design Item");
-    [Reactive] public IconValue Icon { get; set; } = IconValues.Settings;
+    [Reactive] public IconValue Icon { get; set; } = IconValues.CogOutline;
     public string ToolTipText { get; } = "This is design time ToolTip";
 
     public ReactiveCommand<NavigationInformation, Unit> NavigateCommand { get; } = 

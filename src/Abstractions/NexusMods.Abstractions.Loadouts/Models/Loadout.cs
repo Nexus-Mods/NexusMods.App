@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -28,6 +27,16 @@ public partial class Loadout : IModelDefinition
     /// A capital one-letter name for the loadout, for spine labels and other places where space is limited.
     /// </summary>
     public static readonly StringAttribute ShortName = new(Namespace, nameof(ShortName)) { IsIndexed = true, DefaultValue = "-"};
+    
+    /// <summary>
+    /// The locator ids for the game this loadout is tied to, for gog this will be the build ids, for example. 
+    /// </summary>
+    public static readonly StringsAttribute LocatorIds = new(Namespace, nameof(LocatorIds));
+    
+    /// <summary>
+    /// The game version that this loadout is tied to, based on the LocatorIds.
+    /// </summary>
+    public static readonly StringAttribute GameVersion = new(Namespace, nameof(GameVersion));
     
     /// <summary>
     /// Unique installation of the game this loadout is tied to.

@@ -123,14 +123,19 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Update available
         var newestVersionObservable = _modUpdateService
             .GetNewestModPageVersionObservable(modPage)
-            .Select(static optional => optional.Convert(static files => files.Files.First().Version));
+            .Select(static optional => optional.Convert(static files => files.Files.First().Version))
+            .OnUI();
 
         parentItemModel.AddObservable(
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
-            componentFactory: static (valueObservable, initialValue) => new StringComponent(
-                initialValue,
-                valueObservable
+            componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
+                currentVersion: new StringComponent(
+                    initialValue: string.Empty,
+                    valueObservable: currentVersionObservable
+                ),
+                newVersion: initialValue,
+                newVersionObservable: valueObservable
             )
         );
 
@@ -190,14 +195,16 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Update available
         var newestVersionObservable = _modUpdateService
             .GetNewestFileVersionObservable(fileMetadata)
-            .Select(static optional => optional.Convert(static fileMetadata => fileMetadata.Version));
+            .Select(static optional => optional.Convert(static fileMetadata => fileMetadata.Version))
+            .OnUI();
 
         itemModel.AddObservable(
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
-            componentFactory: static (valueObservable, initialValue) => new StringComponent(
-                initialValue,
-                valueObservable
+            componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
+                currentVersion: new StringComponent(value: libraryItem.FileMetadata.Version),
+                newVersion: initialValue,
+                newVersionObservable: valueObservable
             )
         );
 
@@ -253,6 +260,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
                 LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
+                LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
                 LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
 
                 return parentItemModel;

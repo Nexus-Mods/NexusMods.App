@@ -3,10 +3,14 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Hashes;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Steam.DTOs;
+using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Extensions.Hashing;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
@@ -17,10 +21,14 @@ using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.ProxyConsole.Abstractions;
+using YamlDotNet.Serialization;
 using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
 
 namespace NexusMods.Games.FileHashes.VerbImpls;
+
+// Format is a list of (Game, (OS, (Version, VersionDefinition)))
+using VersionFileFormat = Dictionary<string, Dictionary<string, VersionContribDefinition[]>>;
 
 public class BuildHashesDb : IAsyncDisposable
 {
@@ -32,11 +40,13 @@ public class BuildHashesDb : IAsyncDisposable
     
     private readonly Dictionary<(RelativePath Path, EntityId HashId), EntityId> _knownHashPaths = new();
     private readonly Backend _backend;
+    private readonly IGameRegistry _gameRegistry;
 
-    public BuildHashesDb(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager)
+    public BuildHashesDb(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager, IGameRegistry gameRegistry)
     {
         Provider = provider;
         _renderer = renderer;
+        _gameRegistry = gameRegistry;
         _tempFolder = temporaryFileManager.CreateFolder();
         _jsonOptions = provider.GetRequiredService<JsonSerializerOptions>();
         
@@ -55,10 +65,18 @@ public class BuildHashesDb : IAsyncDisposable
 
     public async Task BuildFrom(AbsolutePath path, AbsolutePath output)
     {
-        await AddHashes(path);
-        await AddGogData(path);
-        await AddSteamData(path);
-        
+        try
+        {
+            await AddHashes(path);
+            await AddGogData(path);
+            await AddSteamData(path);
+            await AddVersions(path);
+        }
+        catch (Exception ex)
+        {
+            await _renderer.Error(ex, "Failed to build database");
+        }
+
         await _renderer.TextLine("Exporting database");
         await _connection.FlushAndCompact();
         
@@ -95,6 +113,70 @@ public class BuildHashesDb : IAsyncDisposable
         await JsonSerializer.SerializeAsync(manifestStream, manifest, _jsonOptions);
 
         await _renderer.TextLine("Database built and exported to {0}. Final size {1}. Hash: {2}", output, hashesDbPath.FileInfo.Size, zipHash);
+    }
+
+    private async Task AddVersions(AbsolutePath path)
+    {
+        var versionsPath = path / "contrib/version_aliases.yaml";
+        await using var versionsStream = versionsPath.Read();
+        var versions = new DeserializerBuilder()
+            .Build()
+            .Deserialize<VersionFileFormat>(new StreamReader(versionsStream));
+
+        var versionData = (from game in versions
+            let gameName = game.Key
+            from os in game.Value
+            let osName = os.Key
+            from definition in os.Value
+            select (gameName, osName, definition)).ToArray();
+        
+        await _renderer.TextLine("Found {0} version mappings", versionData.Length);
+        
+        var referenceDb = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+        foreach (var (gameName, osName, definition) in versionData)
+        {
+            var gameObject = _gameRegistry.SupportedGames.First(g => g.Name == gameName);
+            
+            var os = osName switch
+            {
+                "Windows" => OperatingSystem.Windows,
+                "MacOS" => OperatingSystem.MacOS,
+                "Linux" => OperatingSystem.Linux,
+                _ => throw new Exception("Unknown OS"),
+            };
+
+            var versionDef = new VersionDefinition.New(tx)
+            {
+                Name = definition.Name,
+                OperatingSystem = os,
+                GameId = gameObject.GameId,
+                GOG = definition.GOG ?? [],
+                Steam = definition.Steam ?? [],
+            };
+
+            var productIds = ((IGogGame)gameObject).GogIds.Select(id => ProductId.From((ulong)id));
+
+            // ?? is needed here because the parser 
+            foreach (var id in definition.GOG ?? [])
+            {
+                var build = GogBuild
+                    .FindByVersionName(referenceDb, id)
+                    .Where(g => g.OperatingSystem == os)
+                    .Single(g => productIds.Contains(g.ProductId));
+                tx.Add(versionDef, VersionDefinition.GogBuildsIds, build.Id);
+            }
+
+            foreach (var id in definition.Steam ?? [])
+            {
+                var manifest = SteamManifest
+                    .FindByManifestId(referenceDb, ManifestId.From(ulong.Parse(id)))
+                    .Single();
+                tx.Add(versionDef, VersionDefinition.SteamManifestsIds, manifest.Id);
+            }
+        }
+
+        await tx.Commit();
     }
 
     private async Task AddSteamData(AbsolutePath path)
@@ -134,7 +216,9 @@ public class BuildHashesDb : IAsyncDisposable
                             throw new Exception($"Sha1 not found in the reference database for path {file.Path} and hash {file.Hash}");
                         }
 
-                        var relationId = EnsureHashPathRelation(tx, refDb, file.Path, file.Hash);
+                        // The paths from steam can be in a format that isn't directly valid, so we sanitize them
+                        var sanitizedPath = RelativePath.FromUnsanitizedInput(file.Path.ToString());
+                        var relationId = EnsureHashPathRelation(tx, refDb, sanitizedPath, file.Hash);
                         pathIds.Add(relationId);
                         pathCounts++;
                     }

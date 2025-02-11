@@ -44,6 +44,7 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
         return new SteamLocatorResultMetadata
         {
             AppId = game.AppId.Value,
+            ManifestIds = game.AppManifest.InstalledDepots.Select(x => x.Value.ManifestId.Value).ToArray(),
             CloudSavesDirectory = game.GetCloudSavesDirectoryPath(),
         };
     }

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reactive.Disposables;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
@@ -8,10 +9,13 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
 using OneOf;
 using R3;
+using ReactiveUI;
+using Disposable = R3.Disposable;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -98,6 +102,56 @@ public static class LibraryColumns
 
 public static class LibraryComponents
 {
+    public sealed class NewVersionAvailable : ReactiveR3Object, IItemModelComponent<NewVersionAvailable>, IComparable<NewVersionAvailable>
+    {
+        public StringComponent CurrentVersion { get; }
+
+        private readonly BindableReactiveProperty<string> _newVersion;
+        public IReadOnlyBindableReactiveProperty<string> NewVersion => _newVersion;
+
+        private readonly IDisposable _activationDisposable;
+        public NewVersionAvailable(StringComponent currentVersion, string newVersion, Observable<string> newVersionObservable)
+        {
+            CurrentVersion = currentVersion;
+            _newVersion = new BindableReactiveProperty<string>(value: newVersion);
+
+            _activationDisposable = this.WhenActivated(newVersionObservable, static (self, state, disposables) =>
+            {
+                self.CurrentVersion.Activate().AddTo(disposables);
+
+                var newVersionObservable = state;
+                newVersionObservable
+                    .Subscribe(self, static (newVersion, self) => self._newVersion.Value = newVersion)
+                    .AddTo(disposables);
+            });
+        }
+
+        public int CompareTo(NewVersionAvailable? other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (other is null) return 1;
+            var oldVersionComparison = string.Compare(CurrentVersion.Value.Value, other.CurrentVersion.Value.Value, StringComparison.OrdinalIgnoreCase);
+            if (oldVersionComparison != 0) return oldVersionComparison;
+            return string.Compare(NewVersion.Value, other.NewVersion.Value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(_activationDisposable, CurrentVersion);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
     public sealed class InstallAction : ReactiveR3Object, IItemModelComponent<InstallAction>, IComparable<InstallAction>
     {
         public IReadOnlyBindableReactiveProperty<bool> IsInstalled { get; }
