@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
@@ -15,6 +17,7 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Diagnostics;
+using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
@@ -35,6 +38,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
+    [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
     public IApplyControlViewModel ApplyControlViewModel { get; }
 
@@ -56,6 +60,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
         var gameRunningTracker = serviceProvider.GetRequiredService<GameRunningTracker>();
+        var logger = serviceProvider.GetRequiredService<ILogger<LoadoutLeftMenuViewModel>>();
 
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
         var collectionDownloader = new CollectionDownloader(serviceProvider);
@@ -195,6 +200,44 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         this.WhenActivated(disposable =>
             {
+                // External Changes
+                conn.ObserveDatoms(LoadoutOverridesGroup.OverridesFor, loadoutContext.LoadoutId)
+                    .AsEntityIds()
+                    .Transform(datom => LoadoutOverridesGroup.Load(conn.Db, datom.E))
+                    .QueryWhenChanged(overrides =>
+                    {
+                        if (overrides.Count == 0)
+                        {
+                            return null;
+                        }
+
+                        Debug.Assert(overrides.Count == 1, "There should only be one LoadoutOverridesGroup for a LoadoutId");
+                            
+                        var group = overrides.Items.First().AsLoadoutItemGroup();
+                             
+                        return new LeftMenuItemViewModel(
+                            workspaceController,
+                            WorkspaceId,
+                            new PageData
+                            {
+                                FactoryId = ItemContentsFileTreePageFactory.StaticId,
+                                Context = new ItemContentsFileTreePageContext
+                                {
+                                    GroupId = group.LoadoutItemGroupId,
+                                },
+                            }
+                        )
+                        {
+                            Text = new StringComponent(Language.LoadoutLeftMenuViewModel_External_Changes),
+                            Icon = IconValues.Cog,
+                        };
+
+                    })
+                    .OnUI()
+                    .SubscribeWithErrorLogging(item => LeftMenuItemExternalChanges = item)
+                    .DisposeWith(disposable);
+                
+                
                 collectionItemsObservable
                     .OnUI()
                     .SortAndBind(out _leftMenuCollectionItems, collectionItemComparer)

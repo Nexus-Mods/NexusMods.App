@@ -777,4 +777,7 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
         <value>All</value>
     </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
+        <value>External Changes</value>
+    </data>
 </root>
