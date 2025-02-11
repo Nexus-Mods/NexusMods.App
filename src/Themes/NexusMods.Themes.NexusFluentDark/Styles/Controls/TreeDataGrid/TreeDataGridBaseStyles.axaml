@@ -10,7 +10,7 @@
             <TreeDataGrid Width="400" Height="200" />
         </Border>
     </Design.PreviewWith>
-    
+
 
     <Styles.Resources>
         <SolidColorBrush x:Key="TreeDataGridGridLinesBrush" Color="{StaticResource SurfaceTranslucentMid}" Opacity="1" />
@@ -42,7 +42,6 @@
             </Border>
         </ControlTemplate>
 
-        
 
         <!-- if we have this control theme here, we can override styles properly -->
         <ControlTheme x:Key="TreeDataGridExpandCollapseChevron" TargetType="ToggleButton">
@@ -89,10 +88,6 @@
         <!-- <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" /> -->
         <Setter Property="BorderThickness" Value="0" />
 
-        <Style Selector="^ TextBlock">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        </Style>
 
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
@@ -238,9 +233,7 @@
         <Style Selector="^ :is(TreeDataGridCell)">
             <Setter Property="Padding" Value="8,0" />
 
-            <Style Selector="^ Border#CellBorder > TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            </Style>
+
         </Style>
 
         <!-- first cell  -->
@@ -285,7 +278,7 @@
          for layering translucent colours. -->
 
         <!--     <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" /> -->
-        
+
         <!-- Root rows styling -->
 
         <!-- "RootRow" is a class that was manually added to the TreeDataGridRow that have indent level 0. -->
@@ -312,13 +305,14 @@
     </Style>
 
     <!-- TreeDataGridTemplateCell -->
-
-    <Style Selector="TreeDataGridTemplateCell">
-        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter > TextBlock">
+    
+    <Style Selector="TreeDataGridTemplateCell /template/ ContentPresenter#PART_ContentPresenter">
+        <Style Selector="^ Border > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
     </Style>
-
 
     <!-- TreeDataGridExpanderCell -->
 
@@ -380,8 +374,5 @@
         </Style>
     </Style>
 
-    
 
-
-    
 </Styles>

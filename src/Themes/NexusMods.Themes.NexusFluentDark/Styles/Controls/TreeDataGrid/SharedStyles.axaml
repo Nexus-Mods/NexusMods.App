@@ -31,6 +31,7 @@
 
         <!-- name -->
         <Style Selector="^ Border.SharedColumn_Name_StringComponent TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
 
     </Style>
