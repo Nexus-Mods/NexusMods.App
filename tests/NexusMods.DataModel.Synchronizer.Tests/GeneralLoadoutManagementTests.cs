@@ -1,6 +1,11 @@
 using System.Text;
+using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Paths;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
@@ -168,6 +173,117 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA, loadoutB]);
         
         await Verify(sb.ToString(), extension: "md");
+    }
+
+    [Fact]
+    public async Task DeletedFilesStayDeletedWhenModIsReenabled()
+    {
+        var sb = new StringBuilder();
+        var loadoutA = await CreateLoadout();
+        var loadoutB = await CreateLoadout();
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 1 - Loadout A Synced",
+            """
+            Loadout A has been synchronized, and the game folder should match the loadout.
+            """, [loadoutA, loadoutB]);
+        
+        var modFile = FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources" / "TestMod.zip";
+        var libraryFile = await LibraryService.AddLocalFile(modFile);
+        var mod = await LibraryService.InstallItem(libraryFile.AsLibraryFile().AsLibraryItem(), loadoutA);
+        loadoutA = loadoutA.Rebase();
+        
+        LogDiskState(sb, "## 2 - Loadout A Mod Added",
+            """
+            A mod has been added but not yet synced, so only the loadout has the file.
+            """, [loadoutA, loadoutB]);
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 3 - Loadout A Synced",
+            """
+            Loadout A has been synchronized, and the game folder should match the loadout.
+            """, [loadoutA, loadoutB]);
+
+
+        
+        var testFilePath = new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt");
+        var otherTestFilePath = new GamePath(LocationId.Game, "bin/x64/And Another One.txt");
+        
+        var diskPath = loadoutA.InstallationInstance.LocationsRegister.GetResolvedPath(testFilePath);
+        var otherDiskPath = loadoutA.InstallationInstance.LocationsRegister.GetResolvedPath(otherTestFilePath);
+        diskPath.Delete();
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 4 - Deleted file from disk",
+            """
+            A mod file has been deleted from disk, so that information should be synced to the loadout.
+            """, [loadoutA, loadoutB]);
+        
+
+        using var tx = Connection.BeginTransaction();
+        tx.Add(mod, LoadoutItem.Disabled, Null.Instance);
+        await tx.Commit();
+        
+        loadoutA = loadoutA.Rebase();
+
+        LogDiskState(sb, "## 5 - Disabled the mod group",
+            """
+            The mod has been disabled, but not yet synched
+            """, [loadoutA, loadoutB]);
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 6 - Loadout A Synced",
+            """
+            Loadout A has been synchronized, the mod files shouldn't show back up.
+            """, [loadoutA, loadoutB]);
+        
+        // Re-enable the mod
+        using var tx2 = Connection.BeginTransaction();
+        tx2.Retract(mod, LoadoutItem.Disabled, Null.Instance);
+        await tx2.Commit();
+        
+        loadoutA = loadoutA.Rebase();
+        
+        LogDiskState(sb, "## 6 - Enable the mod group",
+            """
+            Re-enable the mod.
+            """, [loadoutA, loadoutB]);
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 7 - Loadout A Synced",
+            """
+            Re-enable the mod.
+            """, [loadoutA, loadoutB]);
+        
+        diskPath.FileExists.Should().BeFalse("The file should still be deleted");
+        
+        loadoutB = await Synchronizer.Synchronize(loadoutB);
+        
+        LogDiskState(sb, "## 8 - Loadout B Synced",
+            """
+            Loadout B has been synchronized, the file should still be deleted as well as the other mod file.
+            """, [loadoutA, loadoutB]);
+        
+        diskPath.FileExists.Should().BeFalse("The file should still be deleted");
+        otherDiskPath.FileExists.Should().BeFalse("The other file is in a mod not in this loadout");
+        
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+        
+        LogDiskState(sb, "## 9 - Loadout A Synced",
+            """
+            Loadout A has been synchronized, the file should still be deleted but the other file in the mod should be back.
+            """, [loadoutA, loadoutB]);
+        
+        diskPath.FileExists.Should().BeFalse("The file should still be deleted");
+        otherDiskPath.FileExists.Should().BeTrue("This file is not deleted and is in a mod in this loadout");
+        
+        await Verify(sb.ToString(), extension: "md");
+        
     }
 
 }

@@ -639,14 +639,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var foundMatch = group.AsLoadoutItemGroup().Children
                     .OfTypeLoadoutItemWithTargetPath()
                     .TryGetFirst(p => p.TargetPath == path, out var match);
-                
-                // A delete of a delete does nothing
-                if (foundMatch && match.TryGetAsDeletedFile(out var _))
+
+                if (foundMatch)
+                {
+
+                    // A delete of a delete does nothing
+                    if (match.TryGetAsDeletedFile(out var _))
+                        continue;
+
+                    // If we found a match, we need to remove the entity itself
+                    tx.Delete(match, false);
                     continue;
-                
-                // If we found a match, we need to remove the entity itself
-                tx.Delete(match, false);
-                continue;
+                }
             }
                 
             _ = new DeletedFile.New(tx, out var id)

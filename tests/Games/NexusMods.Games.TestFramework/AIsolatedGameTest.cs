@@ -421,14 +421,26 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
                 if (!loadout.Items.Any())
                     continue;
 
-                var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile()
-                    .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
-            
+                var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().ToArray();
+                
                 sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
-                sb.AppendLine("| Path | Hash | Size |");
-                sb.AppendLine("| --- | --- | --- |");
-                foreach (var entry in files.OrderBy(f=> f.AsLoadoutItemWithTargetPath().TargetPath)) 
-                    sb.AppendLine($"| {FmtPath(entry.AsLoadoutItemWithTargetPath().TargetPath)} | {entry.Hash} | {entry.Size} |");
+                sb.AppendLine("| Path | Hash | Size | Disabled | Deleted |");
+                sb.AppendLine("| --- | --- | --- | --- | --- |");
+                foreach (var entry in files.OrderBy(f => f.TargetPath))
+                {
+                    var disabled = entry.AsLoadoutItem().GetThisAndParents().Any(p => p.IsDisabled) ? "Disabled" : " ";
+                    var deleted = entry.TryGetAsDeletedFile(out _) ? "Deleted" : " ";
+
+                    var hash = "";
+                    var size = "";
+                    if (entry.TryGetAsLoadoutFile(out var loadoutFile))
+                    {
+                        hash = loadoutFile.Hash.ToString();
+                        size = loadoutFile.Size.ToString();
+                    }
+                    
+                    sb.AppendLine($"| {FmtPath(entry.TargetPath)} | {hash} | {size} | {disabled} | {deleted} |");
+                }
             }
         }
         
