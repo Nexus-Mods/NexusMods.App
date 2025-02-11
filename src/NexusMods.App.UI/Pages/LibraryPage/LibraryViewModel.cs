@@ -2,18 +2,15 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
-using System.Reflection.Metadata;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
@@ -81,7 +78,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
         IGameDomainToGameIdMappingCache gameIdMappingCache,
-        INexusApiClient nexusApiClient,
         LoadoutId loadoutId) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
@@ -206,7 +202,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     }
                     else
                     {
-                        await HandleUpdateMessage(updateMessage.Updates, cancellationToken);
+                        await HandleUpdateMessage(updateMessage, cancellationToken);
                     }
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -234,8 +230,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private async ValueTask HandleUpdateMessage(ModUpdatesOnModPage updatesOnPage, CancellationToken cancellationToken)
+    private async ValueTask HandleUpdateMessage(UpdateMessage updateMessage, CancellationToken cancellationToken)
     {
+        var updatesOnPage = updateMessage.Updates;
+        var treeNode = updateMessage.TreeNode;
+        
         // Note(sewer)
         // If the user is a free user, they have to go to the website due to API restrictions.
         // For premium, we can start a download directly.
@@ -245,7 +244,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             // If there are multiple mods, we expand the row
             if (updatesOnPage.NumberOfModFilesToUpdate > 1)
             {
-                // TODO: Expand the row
+                treeNode.IsExpanded = true;
             }
             else
             {
@@ -255,7 +254,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
                 await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
             }
-            
         }
         else
         {
@@ -362,7 +360,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
-public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates);
+public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, ITreeDataGridItemModel TreeNode);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
@@ -420,11 +418,13 @@ public class LibraryTreeDataGridAdapter :
         var updateActionDisposable = model.SubscribeToComponent<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
-            factory: static (self, itemModel, component) => component.CommandUpdate.Subscribe((self, itemModel, component), static (_, state) =>
+            factory: static (self, itemModel, component) => component.CommandUpdate
+                .SubscribeOnUIThreadDispatcher()
+                .Subscribe((self, itemModel, component), static (_, state) =>
             {
-                var (self, _, component) = state;
+                var (self, model, component) = state;
                 var newFile = component.NewFiles.Value;
-                self.MessageSubject.OnNext(new UpdateMessage(newFile));
+                self.MessageSubject.OnNext(new UpdateMessage(newFile, model));
             })
         );
 
