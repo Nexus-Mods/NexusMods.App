@@ -1,12 +1,5 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
-
-    <Design.PreviewWith>
-        <Border Classes="Low" Padding="0">
-            <TreeDataGrid Width="600" Height="200" />
-        </Border>
-    </Design.PreviewWith>
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- NOTE (insomnious): this is a quick reset for the basic tree data grids that are being used,
     but we haven't round to iterating on yet properly -->

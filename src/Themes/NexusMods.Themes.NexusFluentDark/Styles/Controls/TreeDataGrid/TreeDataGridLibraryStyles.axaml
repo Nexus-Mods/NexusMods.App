@@ -2,19 +2,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
-    <Design.PreviewWith>
-        <Border Classes="Low" Padding="0">
-            <TreeDataGrid Width="600" Height="200" />
-        </Border>
-    </Design.PreviewWith>
-
     <Style Selector="TreeDataGrid#LibraryTreeDataGrid">
-
+        
         <!-- <Setter Property="Background" Value="DarkGreen"/> -->
 
-        <!-- ROW STUFF -->
+        <!-- ROWS -->
+        
         <Style Selector="^ TreeDataGridRow">
 
+            <!-- child row -->
             <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
             <!-- parent row -->
@@ -22,7 +18,7 @@
                 <!-- <Setter Property="Background" Value="DarkRed" /> -->
             </Style>
 
-            <!-- CELL STUFF -->
+            <!-- CELLS -->
 
             <!-- all of our cells will be a type of this -->
             <Style Selector="^ TreeDataGridTemplateCell">

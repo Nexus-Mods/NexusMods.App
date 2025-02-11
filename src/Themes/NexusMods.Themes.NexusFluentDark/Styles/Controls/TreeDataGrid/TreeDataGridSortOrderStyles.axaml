@@ -2,12 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI">
-
-    <Design.PreviewWith>
-        <Border Classes="Low" Padding="0">
-            <TreeDataGrid Width="600" Height="200" />
-        </Border>
-    </Design.PreviewWith>
     
     <Styles.Resources>
     <!-- this template is solely used for the load order index column which can't use built in sort functionality
