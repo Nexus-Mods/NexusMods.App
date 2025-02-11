@@ -23,7 +23,7 @@ In this guide, we will cover the basics of importing existing mods from other mo
     5. Once the upload has completed, click "Open in Browser" in the notification.
     6. On the collection webpage, set a title, summary, category, image and description. This can be anything as the collection isn't intended to be shared publicly. 
     7. At the top of the page, click "Save & publish revision 1" and in the pop-up select "Unlisted" and click "Publish". 
-    8. Navigate to the "Mods" tab, select all your mods with ++ctrl+"A"++ and click "Disable, then click "Deploy Mods" to confirm the changes. This will remove the mod files from the game.
+    8. Navigate to the "Mods" tab, select all your mods with ++ctrl+"A"++ and click "Disable" on the bottom toolbar, then click "Deploy Mods" on the top toolbar to confirm the changes. This will remove the mod files from the game.
     9. Close Vortex.
     10. Open the app and press the "Add collection" button on the collection page to begin the download/install process.
 

@@ -27,8 +27,8 @@ Below are the common issues users report while downloading mods and the solution
 ### The mod doesn't have the "Mod Manager" buttons
 If a mod page doesn't have the buttons to download directly into the app, this can be for one of two reasons:
 
-1. The game you're trying to download files from is not supported by a mod manager.
-2. The mod author has intentionally disabled the mod manager download options - check the mod page for more information.
+1. The game you're trying to download files from is not supported by a mod manager that integrates with Nexus Mods.
+2. The mod author has intentionally disabled the mod manager download options, this might be because the file cannot be installed with a mod manager - check the mod page for more information.
 
 In both cases, you can still add mods to the Library as explained in [Adding a mod to the Library manually](#adding-a-mod-to-the-library-manually) above.
 
@@ -36,6 +36,6 @@ In both cases, you can still add mods to the Library as explained in [Adding a m
 
 If the buttons on the mod page do not trigger a download, check the following:
 
-- Another mod manager is handling downloads
-- NXM handler issue
-- Website issue
+- **Check other mod managers:** It's only possible for one application to handle downloads from Nexus Mods at once. Some applications automatically re-register to handle download links when starting up. Check if any other applications open when clicking the buttons on the website. The app will re-register as the primary download handler on startup, so restarting the app should fix this association. 
+- **Troubleshoot common set up issues:** The common use cases for downloads not starting are covered [in the FAQ](../faq/NexusModsDownloads.md).
+- **Still having issues?:** If your downloads still aren't working, consult the [Troubleshooting Website Issues](https://help.nexusmods.com/article/113-troubleshooting-website-issues) guide or reach out on the [forums](https://forums.nexusmods.com/) for additional support.
