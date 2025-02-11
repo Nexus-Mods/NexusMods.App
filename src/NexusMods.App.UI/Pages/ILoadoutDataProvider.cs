@@ -74,6 +74,12 @@ public static class LoadoutDataProviderHelper
         if (loadoutItem.Parent.TryGetAsCollectionGroup(out var collectionGroup))
         {
             itemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(value: collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().Name));
+            var isParentCollectionDisabledObservable = LoadoutItem.Observe(connection, collectionGroup.Id).Select(static item => item.IsDisabled).ToObservable();
+            itemModel.AddObservable(
+                key: LoadoutColumns.IsEnabled.ParentCollectionDisabledComponentKey,
+                shouldAddObservable: isParentCollectionDisabledObservable,
+                componentFactory: () => new LoadoutComponents.ParentCollectionDisabled()
+            );
         }
 
         var isEnabledObservable = LoadoutItem.Observe(connection, loadoutItem.Id).Select(static item => (bool?)!item.IsDisabled);

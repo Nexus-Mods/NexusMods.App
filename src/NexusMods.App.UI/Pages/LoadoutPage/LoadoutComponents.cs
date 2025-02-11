@@ -14,6 +14,11 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public static class LoadoutComponents
 {
+    public sealed class ParentCollectionDisabled : ReactiveR3Object, IItemModelComponent<ParentCollectionDisabled>, IComparable<ParentCollectionDisabled>
+    {
+        public int CompareTo(ParentCollectionDisabled? other) => 0;
+    }
+
     public sealed class IsEnabled : ReactiveR3Object, IItemModelComponent<IsEnabled>, IComparable<IsEnabled>
     {
         public ReactiveCommand<Unit> CommandToggle { get; } = new();
@@ -126,7 +131,7 @@ public static class LoadoutColumns
 
         public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(IsEnabled);
         public static readonly ComponentKey IsEnabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
-        // public static readonly ComponentKey LockedComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.Locked));
+        public static readonly ComponentKey ParentCollectionDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.ParentCollectionDisabled));
         public static string GetColumnHeader() => "Enabled";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

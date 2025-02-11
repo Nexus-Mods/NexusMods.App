@@ -33,13 +33,33 @@
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
+                <!-- parent collection disabled -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+ParentCollectionDisabled"
+                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ParentCollectionDisabledComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
+                            <StackPanel Orientation="Horizontal">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" Size="20"/>
+                                <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" IsEnabled="false" IsChecked="False">
+                                    <ToggleSwitch.OnContent>
+                                        <ContentControl />
+                                    </ToggleSwitch.OnContent>
+                                    <ToggleSwitch.OffContent>
+                                        <ContentControl />
+                                    </ToggleSwitch.OffContent>
+                                </ToggleSwitch>
+                            </StackPanel>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
 
+                <!-- normal toggle -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
                                             ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="20" IsVisible="{CompiledBinding IsLocked.Value}"/>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="18" IsVisible="{CompiledBinding IsLocked.Value}"/>
 
                                 <ToggleSwitch Classes="Compact"
                                               HorizontalAlignment="Center"
