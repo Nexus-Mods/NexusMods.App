@@ -123,7 +123,7 @@
     <Style Selector="TreeDataGridColumnHeader">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="MinHeight" Value="25" />
-        <Setter Property="Padding" Value="8,0,0,0" />
+        <Setter Property="Padding" Value="10,0,0,0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         <Setter Property="BorderThickness" Value="0,0,1,0" />
@@ -140,7 +140,7 @@
                             <Rectangle Fill="{StaticResource TreeDataGridGridLinesBrush}"
                                        HorizontalAlignment="Center"
                                        Width="1"
-                                       Height="24"
+                                       Height="16"
                                        Margin="0,0,-6,0" />
                             <!-- negative margin to bump the vertical line to the right -->
                             <Thumb Name="PART_Resizer"

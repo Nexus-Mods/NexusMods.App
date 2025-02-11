@@ -108,7 +108,7 @@ public static class LoadoutColumns
         public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(IsEnabled);
         public static readonly ComponentKey IsEnabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
         public static readonly ComponentKey LockedComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.Locked));
-        public static string GetColumnHeader() => "Enabled";
+        public static string GetColumnHeader() => "ACTIONS";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 }
