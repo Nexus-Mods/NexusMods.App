@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GOG.Values;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Extensions.BCL;

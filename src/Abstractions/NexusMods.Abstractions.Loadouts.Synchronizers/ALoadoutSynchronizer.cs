@@ -39,6 +39,8 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 [PublicAPI]
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
+ 
+    private readonly ScopedAsyncLock _lock = new();
     private readonly IFileStore _fileStore;
 
     private readonly ILogger _logger;
@@ -408,6 +410,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout)
     {
+        using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
@@ -535,6 +538,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
     {
+        using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = gameInstallation.GameMetadataId;
         var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
@@ -1014,7 +1018,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Reindex the state of the game, running a transaction if changes are found
     /// </summary>
     private async Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation, IConnection connection)
-    {
+    {        
+        using var _ = await _lock.LockAsync();
         var originalMetadata = installation.GetMetadata(connection);
         using var tx = connection.BeginTransaction();
 
