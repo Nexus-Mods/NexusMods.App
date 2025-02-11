@@ -71,6 +71,11 @@ public static class LoadoutDataProviderHelper
         itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: loadoutItem.Name));
         itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: loadoutItem.GetCreatedAt()));
 
+        if (loadoutItem.Parent.TryGetAsCollectionGroup(out var collectionGroup))
+        {
+            itemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(value: collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().Name));
+        }
+
         var isEnabledObservable = LoadoutItem.Observe(connection, loadoutItem.Id).Select(static item => (bool?)!item.IsDisabled);
         itemModel.Add(LoadoutColumns.IsEnabled.IsEnabledComponentKey, new LoadoutComponents.IsEnabled(
             valueComponent: new ValueComponent<bool?>(
@@ -99,6 +104,31 @@ public static class LoadoutDataProviderHelper
         parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(
             initialValue: initialValue,
             valueObservable: dateObservable
+        ));
+    }
+
+    public static void AddCollections(
+        CompositeItemModel<EntityId> parentItemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        var collectionsObservable = linkedItemsObservable
+            .QueryWhenChanged(query => query.Items
+                .Where(static item => item.Parent.IsCollectionGroup())
+                .GroupBy(static item => item.ParentId)
+                .Select(static grouping =>
+                {
+                    var optional = grouping.FirstOrOptional(static _ => true);
+                    return optional.Convert(static item => item.Parent.AsLoadoutItem().Name);
+                })
+                .Where(static optional => optional.HasValue)
+                .Select(static optional => optional.Value)
+                .Order(StringComparer.OrdinalIgnoreCase)
+                .Aggregate(static (a, b) => $"{a}, {b}")
+            );
+
+        parentItemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(
+            initialValue: string.Empty,
+            valueObservable: collectionsObservable
         ));
     }
 

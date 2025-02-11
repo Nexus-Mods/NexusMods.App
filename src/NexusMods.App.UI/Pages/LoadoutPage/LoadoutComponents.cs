@@ -96,6 +96,22 @@ public static class LoadoutComponents
 public static class LoadoutColumns
 {
     [UsedImplicitly]
+    public sealed class Collections : ICompositeColumnDefinition<Collections>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<StringComponent>(key: ComponentKey);
+            var bValue = a.GetOptional<StringComponent>(key: ComponentKey);
+            return aValue.Compare(bValue);
+        }
+
+        public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(Collections);
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(StringComponent));
+        public static string GetColumnHeader() => "Collections";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
+
+    [UsedImplicitly]
     public sealed class IsEnabled : ICompositeColumnDefinition<IsEnabled>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
