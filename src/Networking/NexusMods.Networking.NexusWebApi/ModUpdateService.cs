@@ -48,12 +48,49 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private IDisposable ObserveUpdates()
     {
         return NexusModsLibraryItem.ObserveAll(_connection)
-            .Subscribe(_ =>
+            .Subscribe(changes =>
             {
-                // Note(sewer): I'm not particularly happy about this, as this fires once at startup.
-                // DynamicData however has no API to determine if there are any listeners.
-                // We could PR that in, it's just exposing the `_changes` field from the inner ObservableCache.
-                NotifyForUpdates();
+                // Note(sewer): I'm not particularly happy about this, as this
+                // fires once at startup. DynamicData however has no API to
+                // determine if there are any listeners. If we could determine
+                // that, we could no-op here, which would be useful if the user
+                // doesn't have a listener like the library page open.
+                //
+                // We could PR that in, it's just exposing the `_changes` field
+                // from the inner ObservableCache.
+                //
+                // For now I just wrote an optimized routine that only updates
+                // the parts that concern us.
+
+                // Note(sewer): Due to the nature of how MnemonicDB works
+                // (snapshots et al.), we can access the details of the items
+                // that were removed as the `ReadOnly` objects we get were part
+                // of a snapshot/point in time where they were still available.
+                //
+                // This is convenient, because we extract all the mod pages that
+                // were affected, and scope the update notifications to just
+                // those, meaning fast operations in the presence of 1000s of mods.
+                //
+                // Any changes in individual mods may ripple through onto mod pages,
+                // e.g. if you install a new mod with the newest version, other
+                // existing file(s) [different versions] are now 'up to date',
+                // even they themselves not part of the actual changeset in any
+                // way.
+                //
+                // In the App, we only ripple down to the mod pages, right now,
+                // as far as these details go, therefore we will update isolated
+                // to the level of all mod pages affected by the changeset.
+                // This should make for a 'fast' update.
+                
+                // We grab entityID(s) because we want to query the DB for the
+                // latest info of the affected mod pages, not a possible snapshot.
+                var affectedModPage = new List<EntityId>();
+                
+                // Accept all events; Add, Update, Remove, Refresh, Reset
+                foreach (var change in changes)
+                    affectedModPage.Add(change.Current.ModPageMetadataId);
+                
+                NotifyForUpdatesOfSpecificModPages(affectedModPage);
             });
     }
 
@@ -89,12 +126,18 @@ public class ModUpdateService : IModUpdateService, IDisposable
     /// <inheritdoc />
     public void NotifyForUpdates()
     {
+        // Check for updates of all files in library.
         var filesInLibrary = NexusModsLibraryItem
             .All(_connection.Db)
             .Select(static libraryItem => libraryItem.FileMetadata)
             .DistinctBy(static fileMetadata => fileMetadata.Id)
             .ToDictionary(static x => x.Id, static x => x);
 
+        NotifyForUpdatesOfSpecificFiles(filesInLibrary);
+    }
+    
+    private void NotifyForUpdatesOfSpecificFiles(Dictionary<EntityId, NexusModsFileMetadata.ReadOnly> filesInLibrary)
+    {
         var existingFileToNewerFiles = filesInLibrary
             .Select(kv =>
             {
@@ -122,24 +165,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
             );
 
         UpdateNewestModOnAnyPageCache(modPageToNewerFiles);
-    }
-    private void UpdateNewestModOnAnyPageCache(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> modPageToNewerFiles)
-    {
-        // First remove any invalid mod pages, and then add any newer files.
-        _newestModOnAnyPageCache.Edit(updater =>
-        {
-            // Remove any currently known mod pages from _newestModOnAnyPageCache
-            // that no longer require to be updated.
-            foreach (var existingKey in updater.Keys)
-            {
-                if (!modPageToNewerFiles.ContainsKey(existingKey))
-                    updater.Remove(existingKey);
-            }
-            
-            // Add any newer files.
-            foreach (var kv in modPageToNewerFiles)
-                updater.AddOrUpdate(kv);
-        });
     }
 
     /// <inheritdoc />
@@ -183,6 +208,58 @@ public class ModUpdateService : IModUpdateService, IDisposable
             foreach (var kv in existingFileToNewerFiles)
                 updater.AddOrUpdate(new KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>(kv.Key, kv.Value));
         });
+    }
+    
+    private void UpdateNewestModOnAnyPageCache(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> modPageToNewerFiles)
+    {
+        // First remove any invalid mod pages, and then add any newer files.
+        _newestModOnAnyPageCache.Edit(updater =>
+        {
+            // Remove any currently known mod pages from _newestModOnAnyPageCache
+            // that no longer require to be updated.
+            foreach (var existingKey in updater.Keys)
+            {
+                if (!modPageToNewerFiles.ContainsKey(existingKey))
+                    updater.Remove(existingKey);
+            }
+            
+            // Add any newer files.
+            foreach (var kv in modPageToNewerFiles)
+                updater.AddOrUpdate(kv);
+        });
+    }
+
+    private void NotifyForUpdatesOfSpecificModPages(List<EntityId> modPageIds)
+    {
+        // Note(sewer): Change to generic inheriting IEnumerable if ever making this public.
+        var filesInLibrary = new Dictionary<EntityId, NexusModsFileMetadata.ReadOnly>();
+        var db = _connection.Db;
+        
+        // Anyway, just grab all mods on a given mod page that we have in the library.
+        foreach (var pageId in modPageIds)
+        {
+            var page = NexusModsModPageMetadata.Load(db, pageId);
+            
+            // Note(sewer): This can be slow-ish if a mod page has many files.
+            // Like SMAPI. But those are very few and far between in practice.
+            // When we have the Query System, it may be worth changing this to
+            // a more optimal query, because what we want may be expressed
+            // as a nicer query.
+            foreach (var file in page.Files)
+            {
+                // Not all files we store will have an associated library file,
+                // we actually fetch info for entire mod pages when downloading
+                // an item from a mod page.
+
+                // Only add a file as one that we have if an associated library file,
+                // exists.
+                if (file.LibraryFiles.Count > 0) // Note(sewer): Avoiding IEnumerable to not allocate on Gen0
+                    filesInLibrary.Add(file.Id, file);
+            }
+        }
+
+        // And now beam the update stuff, brrr!!
+        NotifyForUpdatesOfSpecificFiles(filesInLibrary);
     }
 }
 
