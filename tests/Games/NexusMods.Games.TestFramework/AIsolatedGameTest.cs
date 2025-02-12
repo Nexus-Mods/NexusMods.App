@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
@@ -21,6 +22,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
@@ -281,6 +283,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     {
         FileName = fileName,
         Hash = fileName.xxHash3AsUtf8(),
+        Md5 = Md5HashValue.From(MD5.HashData(Encoding.UTF8.GetBytes(fileName))),
         Size = Size.FromLong(fileName.Length),
         LibraryItem = new LibraryItem.New(tx, entityId)
         {

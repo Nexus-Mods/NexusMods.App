@@ -1,11 +1,13 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Extensions.Hashing;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
@@ -61,9 +63,20 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
     private async Task<LibraryFile.New> AnalyzeFile(IJobContext<AddLibraryFileJob> context, AbsolutePath filePath, bool isNestedFile = false)
     {
         var isArchive = isNestedFile ? await CheckIfNestedArchiveAsync(filePath) : await CheckIfArchiveAsync(filePath);
-        var hash = await filePath.XxHash3Async();
 
-        var libraryFile = CreateLibraryFile(Transaction, filePath, hash);
+        // TODO: generate both hashes at once
+        var hash = await filePath.XxHash3Async(token: context.CancellationToken);
+
+        Md5HashValue md5;
+        await using (var fileStream = FilePath.Read())
+        {
+            using var algo = MD5.Create();
+            var rawHash = await algo.ComputeHashAsync(fileStream, cancellationToken: context.CancellationToken);
+            md5 = Md5HashValue.From(rawHash);
+        }
+
+        Debug.Assert(!md5.Equals(default(Md5HashValue)));
+        var libraryFile = CreateLibraryFile(Transaction, filePath, hash, md5);
 
         if (isArchive)
         {
@@ -76,7 +89,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
             var extractionFolder = TemporaryFileManager.CreateFolder();
             // Add the temp folder for later
             ExtractionDirectories.Add(extractionFolder);
-            await FileExtractor.ExtractAllAsync(filePath, extractionFolder);
+            await FileExtractor.ExtractAllAsync(filePath, extractionFolder, token: context.CancellationToken);
 
             var extractedFiles = extractionFolder.Path.EnumerateFiles();
 
@@ -102,7 +115,6 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         return libraryFile;
     }
 
-
     /// <summary>
     /// Returns true if the file can be considered an archive and extracted.
     /// </summary>
@@ -125,12 +137,13 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         return false;
     }
 
-    private static LibraryFile.New CreateLibraryFile(ITransaction tx, AbsolutePath filePath, Hash hash)
+    private static LibraryFile.New CreateLibraryFile(ITransaction tx, AbsolutePath filePath, Hash hash, Md5HashValue md5)
     {
         var libraryFile = new LibraryFile.New(tx, out var id)
         {
             FileName = filePath.FileName,
             Hash = hash,
+            Md5 = md5,
             Size = filePath.FileInfo.Size,
             LibraryItem = new LibraryItem.New(tx, id)
             {

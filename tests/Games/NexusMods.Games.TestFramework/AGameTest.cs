@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 using DynamicData;
 using FluentAssertions;
@@ -16,6 +17,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.DataModel;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
@@ -232,6 +234,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
     {
         FileName = fileName,
         Hash = fileName.xxHash3AsUtf8(),
+        Md5 = Md5HashValue.From(MD5.HashData(Encoding.UTF8.GetBytes(fileName))),
         Size = Size.FromLong(fileName.Length),
         LibraryItem = new LibraryItem.New(tx, entityId)
         {
