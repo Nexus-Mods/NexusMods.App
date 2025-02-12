@@ -31,7 +31,7 @@ public class ModRule
     /// Other item.
     /// </summary>
     [JsonPropertyName("reference")]
-    public required VortexModReference Reference { get; init; }
+    public required VortexModReference Other { get; init; }
 }
 
 /// <summary>
