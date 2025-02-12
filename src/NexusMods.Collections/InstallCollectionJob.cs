@@ -152,7 +152,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         {
             foreach (var (tuple, modGroup) in installed)
             {
-                tx.Add(modGroup.Id, LoadoutItem.Name, tuple.Mod.Name);
+                tx.Add(modGroup.Id, LoadoutItem.Name, tuple.Mod.Source.LogicalFilename ?? tuple.Mod.Name);
             }
 
             tx.Retract(collectionGroup.Id, LoadoutItem.Disabled, Null.Instance);
