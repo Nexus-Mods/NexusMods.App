@@ -762,6 +762,12 @@
 	<data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
 		<value>Wszystkie</value>
 	</data>
+	<data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
+		<value>Zewnętrzne zmiany</value>
+	</data>
+	<data name="LoadoutLeftMenuViewModel_External_Changes_ToolTip" xml:space="preserve">
+		<value>Przejrzyj, usuń lub przywróć zmiany wprowadzone poza aplikacją</value>
+	</data>
 	<data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
 		<value>Pobierz wszystkie wymagane mody</value>
 	</data>
