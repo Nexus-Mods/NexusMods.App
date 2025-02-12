@@ -1358,7 +1358,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update All.
+        ///   Looks up a localized string similar to Download all.
         /// </summary>
         public static string LibraryItemButtonUpdate_All {
             get {
@@ -1367,7 +1367,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update ({0}).
+        ///   Looks up a localized string similar to Download update ({0}).
         /// </summary>
         public static string LibraryItemButtonUpdate_CounterInBracket {
             get {
@@ -1376,7 +1376,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update.
+        ///   Looks up a localized string similar to Download update.
         /// </summary>
         public static string LibraryItemButtonUpdate_Single {
             get {
@@ -1597,6 +1597,24 @@ namespace NexusMods.App.UI.Resources {
         public static string LoadoutLeftMenuViewModel_Diagnostics_ToolTip {
             get {
                 return ResourceManager.GetString("LoadoutLeftMenuViewModel_Diagnostics_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External Changes.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_External_Changes {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_External_Changes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Review, remove, or restore changes made outside the app..
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_External_Changes_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_External_Changes_ToolTip", resourceCulture);
             }
         }
         

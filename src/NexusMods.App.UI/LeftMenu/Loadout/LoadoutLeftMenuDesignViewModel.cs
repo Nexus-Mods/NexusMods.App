@@ -29,6 +29,12 @@ public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewMod
         Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
         Icon = IconValues.Cardiology,
     };
+    
+    public ILeftMenuItemViewModel LeftMenuItemExternalChanges { get; } = new LeftMenuItemDesignViewModel
+    {
+        Text = new StringComponent(Language.LoadoutLeftMenuViewModel_External_Changes),
+        Icon = IconValues.Cog,
+    };
 
     public LoadoutLeftMenuDesignViewModel()
     {

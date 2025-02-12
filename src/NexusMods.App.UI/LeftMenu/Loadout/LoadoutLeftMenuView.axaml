@@ -37,6 +37,7 @@
             </StackPanel>
             
             <items:LeftMenuItemView x:Name="HealthCheckItem" />
+            <items:LeftMenuItemView x:Name="ExternalChangesItem" />
         </StackPanel>
 
         <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="ApplyControlViewHost" />
