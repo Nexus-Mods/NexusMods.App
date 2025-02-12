@@ -26,7 +26,7 @@
                                     Command="{CompiledBinding CommandDownload}"
                                                          Size="Small"
                                                          Type="Tertiary"
-                                                         Fill="None"
+                                                         Fill="Weak"
                                                          HorizontalAlignment="Center"
                                                          IsVisible="{CompiledBinding !IsDownloading.Value}"
                                                          Text="{CompiledBinding ButtonText.Value}"/>
@@ -50,6 +50,8 @@
                             <Panel>
                                 <controls:StandardButton Command="{CompiledBinding CommandDownload}"
                                                          Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="Weak"
                                                          HorizontalAlignment="Center"
                                                          IsVisible="{CompiledBinding !IsDownloading.Value}"
                                                          Text="{CompiledBinding ButtonText.Value}"/>
@@ -67,9 +69,13 @@
                             <StackPanel Orientation="Horizontal">
                                 <controls:StandardButton Command="{CompiledBinding CommandOpenUri}"
                                                          Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="Weak"
                                                          Text="Open in browser"/>
                                 <controls:StandardButton Command="{CompiledBinding CommandAddFile}"
                                                          Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="Weak"
                                                          Text="Add downloaded file"/>
                             </StackPanel>
                         </DataTemplate>
