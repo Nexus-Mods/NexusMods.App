@@ -783,6 +783,12 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
         <value>All</value>
     </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
+        <value>External Changes</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes_ToolTip" xml:space="preserve">
+        <value>Review, remove, or restore changes made outside the app.</value>
+    </data>
 
     <data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
         <value>Download all required mods</value>

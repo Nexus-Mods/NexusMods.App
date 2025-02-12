@@ -54,6 +54,7 @@
                     <icons:UnifiedIcon Classes="ChevronRight" />
                     <icons:UnifiedIcon Classes="FolderOutline" />
                     <icons:UnifiedIcon Classes="FolderOpenOutline" />
+                    <icons:UnifiedIcon Classes="FolderEditOutline" />
                     <icons:UnifiedIcon Classes="File" />
                     <icons:UnifiedIcon Classes="Check" />
                     <icons:UnifiedIcon Classes="CheckCircle" />
@@ -350,6 +351,10 @@
 
     <Style Selector="icons|UnifiedIcon.FolderOpenOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderOpen}" />
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.FolderEditOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEditOutline}" />
     </Style>
 
     <Style Selector="icons|UnifiedIcon.File">
