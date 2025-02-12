@@ -22,7 +22,7 @@ public partial class LibraryFile : IModelDefinition
     /// <summary>
     /// MD5 hash for compatibility with bad systems.
     /// </summary>
-    public static readonly Md5Attribute Md5 = new(Namespace, nameof(Md5)) { IsIndexed = true };
+    public static readonly Md5Attribute Md5 = new(Namespace, nameof(Md5)) { IsIndexed = true, IsOptional = true };
 
     /// <summary>
     /// Size of the file.

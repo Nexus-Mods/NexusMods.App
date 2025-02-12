@@ -6,28 +6,23 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
 /// <summary>
-/// Adds MD5 hashes on all LibraryFile entities. Previously, MD5 hashes were only on locally added files or
-/// on external collection downloads that the app downloaded directly.
+/// Moves existing MD5 hashes to LibraryFile.Md5.
 /// </summary>
 internal class _0005_MD5Hashes : ITransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0005_MD5Hashes));
 
-    private readonly IFileStore _fileStore;
-    public _0005_MD5Hashes(IServiceProvider serviceProvider)
-    {
-        _fileStore = serviceProvider.GetRequiredService<IFileStore>();
-    }
-
-    private (LibraryFile.ReadOnly entity, Md5HashValue)[] _entitiesToUpdate = [];
+    private LibraryFile.ReadOnly[] _entitiesToUpdate = [];
     private HashSet<AttributeId> _attributesToRemove = [];
 
-    public async Task Prepare(IDb db)
+    public Task Prepare(IDb db)
     {
         _attributesToRemove = db.AttributeCache.AllAttributeIds
             .Where(sym =>
@@ -40,40 +35,38 @@ internal class _0005_MD5Hashes : ITransactionalMigration
             .Select(sym => db.AttributeCache.GetAttributeId(sym))
             .ToHashSet();
 
-        _entitiesToUpdate = await LibraryFile
+        _entitiesToUpdate = LibraryFile
             .All(db)
-            .SelectAsync(async entity =>
+            .Where(entity =>
             {
-                var hasFile = await _fileStore.HaveFile(entity.Hash);
-                if (!hasFile)
+                foreach (var datom in entity.IndexSegment)
                 {
-                    // TODO: not sure what's going on here, some library files had no associated file
-                    return (entity, default(Md5HashValue));
+                    if (_attributesToRemove.Contains(datom.A)) return true;
                 }
 
-                using var algo = MD5.Create();
-                await using var stream = await _fileStore.GetFileStream(entity.Hash);
-                var rawHash = await algo.ComputeHashAsync(stream);
-                return (entity, Md5HashValue.From(rawHash));
+                return true;
             })
-            .ToArrayAsync();
+            .ToArray();
+
+        return Task.CompletedTask;
     }
 
     public void Migrate(ITransaction tx, IDb db)
     {
-        foreach (var tuple in _entitiesToUpdate)
+        foreach (var entity in _entitiesToUpdate)
         {
-            var (entity, md5) = tuple;
+            Md5HashValue md5 = default(Md5HashValue);
 
             // NOTE(erri120): need to use the IndexSegment because we don't want resolved datoms for removed attributes
             foreach (var datom in entity.IndexSegment)
             {
                 if (!_attributesToRemove.TryGetValue(datom.A, out var attributeToRemove)) continue;
                 tx.Add(datom.Retract());
+
+                md5 = Md5HashValue.From(UInt128Serializer.Read(datom.ValueSpan));
             }
 
-            if (md5 == default(Md5HashValue)) continue;
-            tx.Add(entity.Id, LibraryFile.Md5, md5);
+            if (md5 != default(Md5HashValue)) tx.Add(entity.Id, LibraryFile.Md5, md5);
         }
     }
 }
