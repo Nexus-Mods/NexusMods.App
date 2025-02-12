@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Collections.Json;
@@ -45,7 +45,7 @@ public class VortexModReference
 #region Vortex IReference
 
     [JsonPropertyName("fileMD5")]
-    public Md5 FileMD5 { get; init; }
+    public Md5HashValue FileMD5 { get; init; }
 
     [JsonPropertyName("fileSize")]
     public Size FileSize { get; init; }
@@ -57,11 +57,17 @@ public class VortexModReference
     /// See this shit: https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/testModReference.ts#L102-L125
     /// </remarks>
     [JsonPropertyName("versionMatch")]
-    public string? VersionMatch { get; init; }
+    public string VersionMatch { get; init; } = string.Empty;
 
     [JsonPropertyName("logicalFileName")]
     public string? LogicalFileName { get; init; }
 
+    /// <summary>
+    /// Either an exact match against a mod name or a glob match against the archive name without the file extension.
+    /// </summary>
+    /// <remarks>
+    /// https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/testModReference.ts#L226-L240
+    /// </remarks>
     [JsonPropertyName("fileExpression")]
     public string? FileExpression { get; init; }
 
@@ -81,7 +87,7 @@ public class VortexModReference
     /// Vortex also does some really questionable stuff: https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/dependencies.ts#L37-L47
     /// This is likely never included in any JSON files.
     /// </summary>
-    public Md5 MD5Hint { get; init; }
+    public Md5HashValue MD5Hint { get; init; }
 
     /// <summary>
     /// Corresponds to <see cref="ModSource.Tag"/>.
@@ -98,12 +104,12 @@ public class VortexModReference
 [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public enum VortexModRuleType
 {
-    /// Source comes before Reference.
+    /// <see cref="ModRule.Source"/> comes before <see cref="ModRule.Other"/>.
     [JsonStringEnumMemberName("before")]
     Before,
 
     /// <summary>
-    /// Source comes after Reference.
+    /// <see cref="ModRule.Source"/> comes after <see cref="ModRule.Other"/>.
     /// </summary>
     [JsonStringEnumMemberName("after")]
     After,
@@ -114,7 +120,7 @@ public enum VortexModRuleType
     [JsonStringEnumMemberName("requires")]
     Requires,
 
-    /// Source conflicts with Reference.
+    /// <see cref="ModRule.Source"/> conflicts with <see cref="ModRule.Other"/>.
     [JsonStringEnumMemberName("conflicts")]
     Conflicts,
 
