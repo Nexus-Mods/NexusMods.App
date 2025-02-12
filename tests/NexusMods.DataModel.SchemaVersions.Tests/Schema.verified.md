@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xF126261354E61B2D
-   - Total attributes: 189
-   - Total namespaces: 67
+   - Fingerprint: 0x67D1122E715F4C48
+   - Total attributes: 193
+   - Total namespaces: 68
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -144,6 +144,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionDownloadNexusMods/FileMetadata                | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadNexusMods/FileUid                     | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadNexusMods/ModUid                      | UInt64                  | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadRules/ArrayIndex                      | Int32                   | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadRules/Other                           | Reference               | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadRules/RuleType                        | Int32                   | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadRules/Source                          | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Author                               | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageResource              | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageUri                   | Utf8                    | False   | False | False     | 
