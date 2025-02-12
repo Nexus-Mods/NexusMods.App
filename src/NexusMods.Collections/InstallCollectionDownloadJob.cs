@@ -85,7 +85,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
 
         // Add missing data from the collection to the item
         using var tx = Connection.BeginTransaction();
-        tx.Add(group.Id, LoadoutItem.Name, CollectionMod.Name);
+        tx.Add(group.Id, LoadoutItem.Name, CollectionMod.Source.LogicalFilename ?? CollectionMod.Name);
         tx.Add(group.Id, NexusCollectionItemLoadoutGroup.Download, Item);
         tx.Add(group.Id, NexusCollectionItemLoadoutGroup.IsRequired, Item.IsRequired);
         var result = await tx.Commit();

@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,7 +12,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Networking.NexusWebApi;
 
 namespace NexusMods.Collections;
@@ -133,31 +131,18 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
         var game = (loadout.InstallationInstance.Game as IGame)!;
         var fallbackInstaller = FallbackCollectionDownloadInstaller.Create(ServiceProvider, game);
 
-        var installed = new ConcurrentBag<(ModAndDownload, LoadoutItemGroup.ReadOnly)>();
         await Parallel.ForEachAsync(modsAndDownloads, context.CancellationToken, async (modAndDownload, _) =>
         {
             try
             {
                 Logger.LogDebug("Installing `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
-                var result = await InstallMod(modAndDownload, collectionGroup, fallbackInstaller);
-                installed.Add((modAndDownload, result));
+                await InstallMod(modAndDownload, collectionGroup, fallbackInstaller);
             }
             catch (Exception e)
             {
                 Logger.LogError(e, "Failed to install `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
             }
         });
-
-        using (var tx = Connection.BeginTransaction())
-        {
-            foreach (var (tuple, modGroup) in installed)
-            {
-                tx.Add(modGroup.Id, LoadoutItem.Name, tuple.Mod.Source.LogicalFilename ?? tuple.Mod.Name);
-            }
-
-            tx.Retract(collectionGroup.Id, LoadoutItem.Disabled, Null.Instance);
-            await tx.Commit();
-        }
 
         return collectionGroup;
     }
