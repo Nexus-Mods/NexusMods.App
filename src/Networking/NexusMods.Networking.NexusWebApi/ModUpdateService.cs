@@ -254,7 +254,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 // Only add a file as one that we have if an associated library file,
                 // exists.
                 if (file.LibraryFiles.Count > 0) // Note(sewer): Avoiding IEnumerable to not allocate on Gen0
-                    filesInLibrary.Add(file.Id, file);
+                    filesInLibrary[file.Id] = file;
             }
         }
 
