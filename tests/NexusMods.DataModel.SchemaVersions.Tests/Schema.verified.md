@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x418B30142A27D652
-   - Total attributes: 190
+   - Fingerprint: 0xF126261354E61B2D
+   - Total attributes: 189
    - Total namespaces: 67
    
 ## Attributes
@@ -44,7 +44,6 @@ models in the app, then validate the tests to update this file.
 | NexusMods.ArchivedFile/Hash                                                        | UInt64                  | True    | False | False     | 
 | NexusMods.ArchivedFile/NxFileEntry                                                 | Blob                    | False   | False | False     | 
 | NexusMods.Collections.DirectDownloadLibraryFile/LogicalFileName                    | Utf8                    | False   | False | False     | 
-| NexusMods.Collections.DirectDownloadLibraryFile/Md5                                | UInt128                 | True    | False | False     | 
 | NexusMods.Collections.NexusCollectionBundledLoadoutGroup/BundleDownload            | Reference               | False   | False | False     | 
 | NexusMods.Collections.NexusCollectionBundledLoadoutGroup/CollectionLibraryFile     | Reference               | False   | False | False     | 
 | NexusMods.Collections.NexusCollectionItemLoadoutGroup/Download                     | Reference               | False   | False | False     | 
@@ -70,9 +69,9 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Library.LibraryArchiveFileEntry/Path                                     | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.Library.LibraryFile/FileName                                             | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.Library.LibraryFile/Hash                                                 | UInt64                  | True    | False | False     | 
+| NexusMods.Library.LibraryFile/Md5                                                  | UInt128                 | True    | False | False     | 
 | NexusMods.Library.LibraryFile/Size                                                 | UInt64                  | False   | False | False     | 
 | NexusMods.Library.LibraryItem/Name                                                 | Utf8                    | False   | False | False     | 
-| NexusMods.Library.LocalFile/Md5                                                    | UInt128                 | True    | False | False     | 
 | NexusMods.Library.LocalFile/OriginalPath                                           | Utf8                    | False   | False | False     | 
 | NexusMods.Loadouts.CollectionGroup/IsReadOnly                                      | UInt8                   | True    | False | False     | 
 | NexusMods.Loadouts.DeletedFile/Reason                                              | Utf8                    | False   | False | False     | 
