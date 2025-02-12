@@ -31,6 +31,7 @@ public class GogLocator : AGameLocator<GOGGame, GOGGameId, IGogGame, GogLocator>
         return new GOGLocatorResultMetadata
         {
             Id = game.Id.Value,
+            BuildId = game.BuildId,
         };
     }
 }

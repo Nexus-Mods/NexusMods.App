@@ -14,7 +14,7 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
 {
     
     [Reactive]
-    public GameInstallation Installation { get; set; } = new GameInstallation() { Store = GameStore.XboxGamePass, Version = new Version(1,0,0) };
+    public GameInstallation Installation { get; set; } = new() { Store = GameStore.XboxGamePass};
     public string Name { get; } = "Cyberpunk 2077";
     public string Version { get; set; }
     public string Store { get; set; }
@@ -34,7 +34,7 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
         Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
         State = GameWidgetState.DetectedGame;
         
-        Version = $"Version: {Installation.Version}";
+        Version = $"Version: 1.5.6";
         Store = Installation.Store.Value;
         GameStoreIcon = GameWidgetViewModel.MapGameStoreToIcon(Installation.Store);
     }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
@@ -27,13 +28,14 @@ public class SynchronizerService : ISynchronizerService
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry)
+    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService)
     {
         _logger = logger;
         _conn = conn;
         _gameRegistry = gameRegistry;
         _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
+        _fileHashesService = fileHashesService;
     }
     
     /// <inheritdoc />
@@ -137,6 +139,7 @@ public class SynchronizerService : ISynchronizerService
     
     private readonly Dictionary<LoadoutId, Observable<LoadoutSynchronizerState>> _statusObservables = new();
     private readonly SemaphoreSlim _statusSemaphore = new(1, 1);
+    private readonly IFileHashesService _fileHashesService;
 
     /// <inheritdoc />
     public async Task<IObservable<LoadoutSynchronizerState>> StatusForLoadout(LoadoutId loadoutId)
@@ -182,6 +185,9 @@ public class SynchronizerService : ISynchronizerService
             .SelectAwait(
                 async (tuple, cancellationToken) =>
                 {
+                    // To make sure the DB is loaded, before we start diffing
+                    await _fileHashesService.GetFileHashesDb();
+                 
                     var (busy, last, rev, revDbTx) = tuple;
                     
                     // if the loadout is not found, it means it was deleted

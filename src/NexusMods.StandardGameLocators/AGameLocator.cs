@@ -30,7 +30,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
 {
     private readonly ILogger _logger;
 
-    private readonly AHandler<TGameType, TId> _handler;
+    private readonly AHandler<TGameType, TId>? _handler;
     private IReadOnlyDictionary<TId, TGameType>? _cachedGames;
 
     /// <summary>
@@ -40,7 +40,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     protected AGameLocator(IServiceProvider provider)
     {
         _logger = provider.GetRequiredService<ILogger<TParent>>();
-        _handler = provider.GetRequiredService<AHandler<TGameType, TId>>();
+        _handler = provider.GetService<AHandler<TGameType, TId>>();
     }
 
     /// <summary>
@@ -53,8 +53,12 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     /// <returns>List of found game installations.</returns>
     public IEnumerable<GameLocatorResult> Find(ILocatableGame game)
     {
-        if (game is not TGame tg) yield break;
+        if (game is not TGame tg) 
+            yield break;
 
+        if (_handler == null)
+            yield break;
+        
         if (_cachedGames is null)
         {
             _cachedGames = _handler.FindAllGamesById(out var errors);

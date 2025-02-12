@@ -23,13 +23,13 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         originalFileFullPath.Parent.CreateDirectory();
         await originalFileFullPath.WriteAllTextAsync("Hello World!");
         
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         
         LogDiskState(sb, "## 1 - Initial State",
             """
             The initial state of the game, no loadout has been created yet.
             """);
-        var loadoutA = await CreateLoadout(false);
+        var loadoutA = await CreateLoadout();
 
         LogDiskState(sb, "## 2 - Loadout Created (A) - Synced",
             """
@@ -49,7 +49,7 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         Refresh(ref loadoutA);
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         
         LogDiskState(sb, "## 3 - Added ModA to Loadout(A) - Synced",
             """
@@ -66,7 +66,7 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         Refresh(ref loadoutA);
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         
         LogDiskState(sb, "## 4 - Added ModB to Loadout(A) - Synced",
             """
@@ -84,7 +84,7 @@ public class GeneralModManagementTests(ITestOutputHelper helper) : ACyberpunkIso
         Refresh(ref loadoutA);
         
         loadoutA = await Synchronizer.Synchronize(loadoutA);
-        await Synchronizer.RescanGameFiles(GameInstallation);
+        await Synchronizer.RescanFiles(GameInstallation);
         Refresh(ref loadoutA);
         
         LogDiskState(sb, "## 5 - Disabled ModB in Loadout(A) - Synced",
