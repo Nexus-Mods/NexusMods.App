@@ -1,14 +1,20 @@
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 namespace NexusMods.Networking.NexusWebApi;
 
-public class ModUpdateService : IModUpdateService
+/// <summary>
+///     Provides services related to updating of mods.
+///     Namely updating mod page info, and beaming update notifications to relevant receivers.
+/// </summary>
+public class ModUpdateService : IModUpdateService, IDisposable
 {
     private readonly IConnection _connection;
     private readonly INexusApiClient _nexusApiClient;
@@ -19,7 +25,9 @@ public class ModUpdateService : IModUpdateService
     // Use SourceCache to maintain latest values per key
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
+    private readonly IDisposable _updateObserver;
 
+    /// <summary/>
     public ModUpdateService(
         IConnection connection,
         INexusApiClient nexusApiClient,
@@ -32,8 +40,24 @@ public class ModUpdateService : IModUpdateService
         _gameIdMappingCache = gameIdMappingCache;
         _logger = logger;
         _gqlClient = gqlClient;
+        // Note(sewer): This is a singleton, so we don't actually need to dispose, that said
+        // I'm opting to for the sake of following good practices.
+        _updateObserver = ObserveUpdates();
     }
 
+    private IDisposable ObserveUpdates()
+    {
+        return NexusModsLibraryItem.ObserveAll(_connection)
+            .Subscribe(_ =>
+            {
+                // Note(sewer): I'm not particularly happy about this, as this fires once at startup.
+                // DynamicData however has no API to determine if there are any listeners.
+                // We could PR that in, it's just exposing the `_changes` field from the inner ObservableCache.
+                NotifyForUpdates();
+            });
+    }
+
+    /// <inheritdoc />
     public async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true)
     {
         // Identify all mod pages needing a refresh
@@ -83,23 +107,39 @@ public class ModUpdateService : IModUpdateService
                 return new ModUpdateOnPage(kv.Value, newerFiles);
             })
             .Where(static kv => kv.NewerFiles.Length > 0)
-            .ToArray();
+            .ToDictionary(page => page.File.Id);
 
-        foreach (var kv in existingFileToNewerFiles)
-            _newestModVersionCache.AddOrUpdate(new KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>(kv.File.Id, kv));
+        UpdateNewestModVersionCache(existingFileToNewerFiles);
 
         var modPageToNewerFiles = existingFileToNewerFiles
             .GroupBy(
-                kv => kv.File.ModPageId,
-                kv => kv
+                kv => kv.Value.File.ModPageId, // 👈 mod page ID, NOT entity id.
+                kv => kv.Value
             )
             .ToDictionary(
                 group => group.Key,
                 group => (ModUpdatesOnModPage)group.ToArray()
             );
 
-        foreach (var kv in modPageToNewerFiles)
-            _newestModOnAnyPageCache.AddOrUpdate(kv);
+        UpdateNewestModOnAnyPageCache(modPageToNewerFiles);
+    }
+    private void UpdateNewestModOnAnyPageCache(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> modPageToNewerFiles)
+    {
+        // First remove any invalid mod pages, and then add any newer files.
+        _newestModOnAnyPageCache.Edit(updater =>
+        {
+            // Remove any currently known mod pages from _newestModOnAnyPageCache
+            // that no longer require to be updated.
+            foreach (var existingKey in updater.Keys)
+            {
+                if (!modPageToNewerFiles.ContainsKey(existingKey))
+                    updater.Remove(existingKey);
+            }
+            
+            // Add any newer files.
+            foreach (var kv in modPageToNewerFiles)
+                updater.AddOrUpdate(kv);
+        });
     }
 
     /// <inheritdoc />
@@ -116,6 +156,33 @@ public class ModUpdateService : IModUpdateService
         return _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        _newestModVersionCache.Dispose();
+        _newestModOnAnyPageCache.Dispose();
+        _updateObserver.Dispose();
+    }
+    
+    private void UpdateNewestModVersionCache(Dictionary<EntityId, ModUpdateOnPage> existingFileToNewerFiles)
+    {
+        // First remove any invalid files, and then add any newer files.
+        _newestModVersionCache.Edit(updater =>
+        {
+            // Remove any currently known files from _newestModVersionCache
+            // that no longer require to be updated.
+            foreach (var existingKey in updater.Keys)
+            {
+                if (!existingFileToNewerFiles.ContainsKey(existingKey))
+                    updater.Remove(existingKey);
+            }
+            
+            // Add any newer files.
+            foreach (var kv in existingFileToNewerFiles)
+                updater.AddOrUpdate(new KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>(kv.Key, kv.Value));
+        });
     }
 }
 
