@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="80" d:DesignHeight="150"
+                                mc:Ignorable="d" d:DesignHeight="150"
                                 x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelDropDownView">
     <Design.DataContext>
         <workspaceSystem:AddPanelDropDownDesignViewModel />

@@ -64,7 +64,7 @@
                                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
                                 </ContentControl>
                                 <icons:UnifiedIcon x:Name="PlaceholderIcon"
-                                                   Size="28"
+                                                   Size="24"
                                                    Value="{x:Static icons:IconValues.PanelAllFull}"
                                                    IsVisible="False"/>
                             </Grid>
