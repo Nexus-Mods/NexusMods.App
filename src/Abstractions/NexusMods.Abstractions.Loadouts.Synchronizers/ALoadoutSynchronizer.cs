@@ -5,6 +5,7 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
@@ -17,6 +18,7 @@ using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
@@ -895,13 +897,76 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Return the newer one
         return ShouldWin(path, existingLoadoutItem, replacementLoadoutItem);
     }
-    
+
+    /// <summary>
+    /// Returns true if <paramref name="a"/> should win over <paramref name="b"/> based
+    /// on rules defined in a collection.
+    /// </summary>
+    protected Optional<bool> ShouldOtherWinWithCollectionRules(LoadoutItem.ReadOnly a, LoadoutItem.ReadOnly b)
+    {
+        var hasDownloadA = a
+            .GetThisAndParents()
+            .OfTypeLoadoutItemGroup()
+            .OfTypeNexusCollectionItemLoadoutGroup()
+            .Select(static item => item.Download)
+            .TryGetFirst(out var downloadA);
+
+        if (!hasDownloadA) return Optional<bool>.None;
+;
+        var hasDownloadB = b
+            .GetThisAndParents()
+            .OfTypeLoadoutItemGroup()
+            .OfTypeNexusCollectionItemLoadoutGroup()
+            .Select(static item => item.Download)
+            .TryGetFirst(out var downloadB);
+
+        if (!hasDownloadB) return Optional<bool>.None;
+        if (downloadA.CollectionRevisionId != downloadB.CollectionRevisionId) return Optional<bool>.None;
+
+        var db = downloadA.Db;
+
+        // use `downloadA` as `source` and `downloadB` as `other`
+        var ids = db.Datoms(
+            (CollectionDownloadRules.Source, downloadA),
+            (CollectionDownloadRules.Other, downloadB)
+        );
+
+        foreach (var id in ids)
+        {
+            var rule = CollectionDownloadRules.Load(db, id);
+            if (!rule.IsValid()) continue;
+
+            // `source` goes before `other`, meaning `a` doesn't win over `b`
+            if (rule.RuleType == CollectionDownloadRuleType.Before) return false;
+        }
+
+        // use `downloadB` as `source` and `downloadA` as `other`
+        ids = db.Datoms(
+            (CollectionDownloadRules.Source, downloadB),
+            (CollectionDownloadRules.Other, downloadA)
+        );
+
+        foreach (var id in ids)
+        {
+            var rule = CollectionDownloadRules.Load(db, id);
+            if (!rule.IsValid()) continue;
+
+            // `source` goes after `other`, meaning `b` wins over `a`
+            if (rule.RuleType == CollectionDownloadRuleType.After) return true;
+        }
+
+        return Optional<bool>.None;
+    }
+
     /// <summary>
     /// Override this method to provide custom logic for determining which file should win in a conflict. Return true if the
     /// replacement should win over the existing item.
     /// </summary>
     protected virtual bool ShouldWin(in GamePath path, LoadoutItem.ReadOnly existing, LoadoutItem.ReadOnly replacement)
     {
+        var optional = ShouldOtherWinWithCollectionRules(existing, replacement);
+        if (optional.HasValue) return optional.Value;
+
         return replacement.Id > existing.Id;
     }
     
