@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.Library;
@@ -112,12 +113,26 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var library = _serviceProvider.GetRequiredService<ILibraryService>();
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
         var connection = _serviceProvider.GetRequiredService<IConnection>();
-        if (!gameRegistry.InstalledGames.TryGetFirst(g => g.Game.GameId == gameId, out var game))
-            return;
-                    
         var syncService = _serviceProvider.GetRequiredService<ISynchronizerService>();
-        if (!syncService.TryGetLastAppliedLoadout(game, out var loadout))
+
+        GameInstallation? game = null;
+        Loadout.ReadOnly loadout = default;
+        foreach (var installedGame in gameRegistry.InstalledGames)
+        {
+            if (installedGame.Game.GameId == gameId)
+            {
+                if (syncService.TryGetLastAppliedLoadout(installedGame, out loadout))
+                {
+                    game = installedGame;
+                    break;
+                }
+            }
+        }
+        if (game is null)
+        {
+            _logger.LogError("No game {Game} installed with an active loadout", collectionUrl.Game);
             return;
+        }
                     
         var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
         await using var destination = temporaryFileManager.CreateFile();

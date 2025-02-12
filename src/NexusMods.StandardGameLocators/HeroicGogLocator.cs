@@ -54,6 +54,7 @@ public class HeroicGogLocator : IGameLocator
             yield return new GameLocatorResult(found.Path, fs, GameStore.GOG, new HeroicGOGLocatorResultMetadata
             {
                 Id = id,
+                BuildId = found.BuildId,
             });
         }
     }

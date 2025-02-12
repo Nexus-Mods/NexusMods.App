@@ -23,7 +23,7 @@ public class _0001_ConvertTimestamps : IScanningMigration
     public static (MigrationId Id, string Name) IdAndName => MigrationId.ParseNameAndId(nameof(_0001_ConvertTimestamps));
 
     /// <inheritdoc />
-    public void Prepare(IDb db)
+    public async Task Prepare(IDb db)
     {
         _attrIds = db.Connection.AttributeResolver.DefinedAttributes.Where(a => a is TimestampAttribute)
             .Select(a => db.AttributeCache.GetAttributeId(a.Id))

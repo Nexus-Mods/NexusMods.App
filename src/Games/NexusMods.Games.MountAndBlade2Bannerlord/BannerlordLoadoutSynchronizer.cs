@@ -124,6 +124,9 @@ public class BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         return false;
     }
 
+    // The apis for this are removed for now. Post-beta we will update the structure of the app to support updating config files
+    // in read-only collections as overlay mods.
+    /*
     protected override ValueTask MoveNewFilesToMods(Loadout.ReadOnly loadout, IEnumerable<AddedEntry> newFiles, ITransaction tx)
     {
         var modDirectoryNameToModel = new Dictionary<RelativePath, BannerlordModuleLoadoutItem.ReadOnly>();
@@ -144,11 +147,12 @@ public class BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
 
                 modDirectoryNameToModel[modDirectoryName] = mod;
             }
-            
+
             newFile.LoadoutItem.ParentId = mod.Id;
         }
         return ValueTask.CompletedTask;
     }
+    */
 
     private static bool TryGetMod(RelativePath modDirectoryName, Loadout.ReadOnly loadout, IDb db, out BannerlordModuleLoadoutItem.ReadOnly mod)
     {

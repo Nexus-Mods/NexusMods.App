@@ -16,5 +16,5 @@ public interface IMigration
     /// <summary>
     /// Perform initial lookups and prepare for the migration
     /// </summary>
-    void Prepare(IDb db);
+    Task Prepare(IDb db);
 }

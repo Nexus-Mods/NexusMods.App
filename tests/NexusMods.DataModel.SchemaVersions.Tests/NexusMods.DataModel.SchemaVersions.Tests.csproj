@@ -6,6 +6,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.DataModel.SchemaVersions\NexusMods.DataModel.SchemaVersions.csproj" />
+      <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
     
     <ItemGroup>

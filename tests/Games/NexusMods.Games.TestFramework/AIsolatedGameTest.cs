@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -48,6 +49,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     protected readonly TemporaryFileManager TemporaryFileManager;
     protected readonly ILibraryService LibraryService;
     protected readonly IFileStore FileStore;
+    protected readonly IFileExtractor FileExtractor;
     protected readonly IGameRegistry GameRegistry;
     protected readonly NexusModsLibrary NexusModsLibrary;
 
@@ -89,6 +91,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
         FileSystem = ServiceProvider.GetRequiredService<IFileSystem>();
         FileStore = ServiceProvider.GetRequiredService<IFileStore>();
+        FileExtractor = ServiceProvider.GetRequiredService<IFileExtractor>();
         TemporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
         Connection = ServiceProvider.GetRequiredService<IConnection>();
 
@@ -118,7 +121,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         if (ConfigOptions.RegisterNullGuidedInstaller)
             services.AddSingleton<IGuidedInstaller, NullGuidedInstaller>();
         
-        return services.AddDefaultServicesForTesting()
+        return services
+            .AddDefaultServicesForTesting()
             .AddFomod()
             .AddLogging(builder => builder.AddXUnit())
             .AddGames()
@@ -303,16 +307,14 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// <summary>
     /// Creates a new loadout and returns the <see cref="Loadout.ReadOnly"/> of it.
     /// </summary>
-    protected async Task<Loadout.ReadOnly> CreateLoadout(bool indexGameFiles = true)
+    protected async Task<Loadout.ReadOnly> CreateLoadout()
     {
-        if (!_gameFilesWritten)
-        {
-            await GenerateGameFiles();
-            _gameFilesWritten = true;
-        }
-        return await GameInstallation.GetGame().Synchronizer.CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
+        return await GameInstallation
+            .GetGame()
+            .Synchronizer
+            .CreateLoadout(GameInstallation, Guid.NewGuid().ToString());
     }
-    
+
     /// <summary>
     /// Deletes a loadout with a given ID.
     /// </summary>
@@ -419,18 +421,32 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
                 if (!loadout.Items.Any())
                     continue;
 
-                var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().OfTypeLoadoutFile()
-                    .Where(item=> item.AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled()).ToArray();
-            
+                var files = loadout.Items.OfTypeLoadoutItemWithTargetPath().ToArray();
+                
                 sb.AppendLine($"### Loadout {loadout.ShortName} - ({files.Length})");
-                sb.AppendLine("| Path | Hash | Size |");
-                sb.AppendLine("| --- | --- | --- |");
-                foreach (var entry in files.OrderBy(f=> f.AsLoadoutItemWithTargetPath().TargetPath)) 
-                    sb.AppendLine($"| {FmtPath(entry.AsLoadoutItemWithTargetPath().TargetPath)} | {entry.Hash} | {entry.Size} |");
+                sb.AppendLine("| Path | Hash | Size | Disabled | Deleted |");
+                sb.AppendLine("| --- | --- | --- | --- | --- |");
+                foreach (var entry in files.OrderBy(f => f.TargetPath))
+                {
+                    var disabled = entry.AsLoadoutItem().GetThisAndParents().Any(p => p.IsDisabled) ? "Disabled" : " ";
+                    var deleted = entry.TryGetAsDeletedFile(out _) ? "Deleted" : " ";
+
+                    var hash = "";
+                    var size = "";
+                    if (entry.TryGetAsLoadoutFile(out var loadoutFile))
+                    {
+                        hash = loadoutFile.Hash.ToString();
+                        size = loadoutFile.Size.ToString();
+                    }
+                    
+                    sb.AppendLine($"| {FmtPath(entry.TargetPath)} | {hash} | {size} | {disabled} | {deleted} |");
+                }
             }
         }
         
         sb.AppendLine("\n\n");
+
+        
         
         void Section(string sectionName, Transaction.ReadOnly asOf)
         {

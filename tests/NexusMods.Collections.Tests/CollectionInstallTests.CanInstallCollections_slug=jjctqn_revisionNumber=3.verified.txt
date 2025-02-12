@@ -1,8 +1,8 @@
 ﻿{
   mods: [
-    Game Files,
     Halgari's Helper,
-    My Mods
+    My Mods,
+    Overrides
   ],
   files: {
     (Appearance Menu Mod, {Game}/archive/pc/mod/_1_Ves_HanakoFixedBodyNaked.archive): 0xBB5F35096990DEBD,

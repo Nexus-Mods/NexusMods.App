@@ -85,16 +85,15 @@ public class SynchronizerRuleTests
             from isIgnored in new[] { false, true }
             from archivedState in new Hash[][] { [], [Hash1], [Hash2], [Hash3], [Hash1, Hash2], [Hash1, Hash3], [Hash2, Hash3], [Hash1, Hash2, Hash3] }
             where disk.HasValue || prev.HasValue || loadout.HasValue
-            let sig = new SignatureBuilder
-            {
-                DiskHash = disk,
-                PrevHash = prev,
-                LoadoutHash = loadout,
-                DiskArchived = disk.HasValue && archivedState.Contains(disk.Value),
-                PrevArchived = prev.HasValue && archivedState.Contains(prev.Value),
-                LoadoutArchived = loadout.HasValue && archivedState.Contains(loadout.Value),
-                PathIsIgnored = isIgnored,
-            }.Build()
+            let sig = SignatureBuilder.Build(
+            
+                diskHash: disk,
+                prevHash: prev,
+                loadoutHash: loadout,
+                diskArchived: disk.HasValue && archivedState.Contains(disk.Value),
+                prevArchived: prev.HasValue && archivedState.Contains(prev.Value),
+                loadoutArchived: loadout.HasValue && archivedState.Contains(loadout.Value),
+                pathIsIgnored: isIgnored)
             let enumShorthand = MakeShorthand(sig, disk, prev, loadout)
             select (sig, enumShorthand, disk, prev, loadout);
 
