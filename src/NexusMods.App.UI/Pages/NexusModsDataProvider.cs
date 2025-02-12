@@ -260,6 +260,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
                 LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
+                LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
                 LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
 
                 return parentItemModel;

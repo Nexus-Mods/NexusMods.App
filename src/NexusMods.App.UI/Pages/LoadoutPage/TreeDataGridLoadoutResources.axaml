@@ -5,6 +5,27 @@
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
+    <!-- Collections -->
+    <DataTemplate x:Key="{x:Static local:LoadoutColumns+Collections.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                            ComponentKey="{x:Static local:LoadoutColumns+Collections.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:StringComponent}">
+                            <TextBlock Text="{CompiledBinding Value.Value}" TextTrimming="CharacterEllipsis"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <!-- Enabled -->
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
@@ -12,32 +33,47 @@
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
-                <!-- Locked (eg: required mods of collections) -->
-                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+Locked"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.LockedComponentKey}">
+                <!-- parent collection disabled -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+ParentCollectionDisabled"
+                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ParentCollectionDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LoadoutComponents+Locked}">
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}"
-                                               Size="20" />
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
+                            <StackPanel Orientation="Horizontal">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" Size="20"/>
+                                <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" IsEnabled="false" IsChecked="False">
+                                    <ToggleSwitch.OnContent>
+                                        <ContentControl />
+                                    </ToggleSwitch.OnContent>
+                                    <ToggleSwitch.OffContent>
+                                        <ContentControl />
+                                    </ToggleSwitch.OffContent>
+                                </ToggleSwitch>
+                            </StackPanel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
 
+                <!-- normal toggle -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
                                             ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
-                            <ToggleSwitch Classes="Compact"
-                                          HorizontalAlignment="Center"
-                                          Command="{CompiledBinding CommandToggle}"
-                                          IsChecked="{CompiledBinding Value.Value, Mode=OneWay}">
-                                <ToggleSwitch.OnContent>
-                                    <ContentControl />
-                                </ToggleSwitch.OnContent>
-                                <ToggleSwitch.OffContent>
-                                    <ContentControl />
-                                </ToggleSwitch.OffContent>
-                            </ToggleSwitch>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="18" IsVisible="{CompiledBinding IsLocked.Value}"/>
+
+                                <ToggleSwitch Classes="Compact"
+                                              HorizontalAlignment="Center"
+                                              Command="{CompiledBinding CommandToggle}"
+                                              IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
+                                              IsEnabled="{CompiledBinding !IsLocked.Value}">
+                                    <ToggleSwitch.OnContent>
+                                        <ContentControl />
+                                    </ToggleSwitch.OnContent>
+                                    <ToggleSwitch.OffContent>
+                                        <ContentControl />
+                                    </ToggleSwitch.OffContent>
+                                </ToggleSwitch>
+                            </StackPanel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>

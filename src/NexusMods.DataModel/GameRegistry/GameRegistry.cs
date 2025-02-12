@@ -95,9 +95,8 @@ public class GameRegistry : IGameRegistry, IHostedService
     /// </summary>
     private static bool TryGetLocatorResultId(IDb db, ILocatableGame locatableGame, GameLocatorResult result, [NotNullWhen(true)] out EntityId? id)
     {
-        var wasFound = GameInstallMetadata.FindByPath(db, result.Path.ToString())
-            .Select(id => GameInstallMetadata.Load(db, id))
-            .TryGetFirst(m => m.GameId == locatableGame.GameId && m.Store == result.Store, out var found);
+        var wasFound = GameInstallMetadata.FindByGameId(db, locatableGame.GameId)
+            .TryGetFirst(m => m.Store == result.Store, out var found);
         if (!wasFound)
         {
             id = null;

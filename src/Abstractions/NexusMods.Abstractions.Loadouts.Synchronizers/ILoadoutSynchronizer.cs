@@ -16,29 +16,27 @@ public interface ILoadoutSynchronizer
 {
     
     #region Synchronization Methods
-    
+
     /// <summary>
     /// Creates a new sync tree from the current state of the game folder, the loadout and the previous state. This
     /// sync tree contains a matching of all the files in all 3 sources based on their path.
     /// </summary>
-    SyncTree BuildSyncTree(DiskState currentState, DiskState previousTree, IEnumerable<LoadoutItem.ReadOnly> loadoutTree);
+    void MergeStates(IEnumerable<PathPartPair> currentState, IEnumerable<PathPartPair> previousTree, Dictionary<GamePath, SyncNode> loadoutItems);
     
     /// <summary>
     /// Builds a sync tree from a loadout and the current state of the game folder.
     /// </summary>
-    /// <param name="loadoutTree"></param>
-    /// <returns></returns>
-    Task<SyncTree> BuildSyncTree(Loadout.ReadOnly loadoutTree);
+    Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadoutTree);
     
     /// <summary>
-    /// Processes the sync tree to create the signature and actions for each file, return a groupings object for the tree
+    /// Processes the sync tree to create the signature and actions for each file, changes are made in-place on the tree.
     /// </summary>
-    SyncActionGroupings<SyncTreeNode> ProcessSyncTree(SyncTree syncTree);
+    void ProcessSyncTree(Dictionary<GamePath, SyncNode> syncTree);
     
     /// <summary>
     /// Run the groupings on the game folder and return a new loadout with the changes applied.
     /// </summary>
-    Task<Loadout.ReadOnly> RunGroupings(SyncTree tree, SyncActionGroupings<SyncTreeNode> groupings, Loadout.ReadOnly install);
+    Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout);
     
     /// <summary>
     /// Synchronizes the loadout with the game folder, any changes in the game folder will be added to the loadout, and any
@@ -48,9 +46,10 @@ public interface ILoadoutSynchronizer
     
     
     /// <summary>
-    /// Rescan the game files, bringing the current cached state up to date.
+    /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
+    /// whatever is on disk.
     /// </summary>
-    Task<GameInstallMetadata.ReadOnly> RescanGameFiles(GameInstallation gameInstallation);
+    Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation);
     
     #endregion
     
@@ -59,7 +58,7 @@ public interface ILoadoutSynchronizer
     
     /// <summary>
     /// Computes the difference between a loadout and a disk state, assuming the loadout to be the newer state.
-    /// </summary>
+    /// </summary>x
     /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
     /// <param name="diskState">The old state, e.g. last applied DiskState</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>

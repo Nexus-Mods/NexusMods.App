@@ -12,4 +12,7 @@ public record XboxLocatorResultMetadata : IGameLocatorResultMetadata
     /// The specific ID of the found game.
     /// </summary>
     public required string Id { get; init; }
+
+    /// <inheritdoc />
+    public IEnumerable<string> ToLocatorIds() => [Id];
 }

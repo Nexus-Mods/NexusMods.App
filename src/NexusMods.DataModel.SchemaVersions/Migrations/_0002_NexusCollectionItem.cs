@@ -15,8 +15,9 @@ internal class _0002_NexusCollectionItem : ITransactionalMigration
     public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0002_NexusCollectionItem));
 
     private Data[] _data = [];
-    public void Prepare(IDb db)
+    public async Task Prepare(IDb db)
     {
+        await Task.Yield();
         _data = NexusCollectionLoadoutGroup
             .All(db)
             .Select(collectionGroup =>

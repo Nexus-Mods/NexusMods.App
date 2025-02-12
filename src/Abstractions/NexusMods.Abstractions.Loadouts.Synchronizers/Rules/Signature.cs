@@ -66,79 +66,44 @@ public enum Signature : ushort
 /// <summary>
 /// A builder for creating a <see cref="Signature"/> from its components, assign the properties and call <see cref="Build"/> to get the final <see cref="Signature"/>.
 /// </summary>
-public readonly struct SignatureBuilder
+public static class SignatureBuilder
 {
     /// <summary>
-    /// The hash of the file on disk.
-    /// </summary>
-    public Optional<Hash> DiskHash { get; init; }
-    
-    /// <summary>
-    /// The hash of the file in the previous state.
-    /// </summary>
-    public Optional<Hash> PrevHash { get; init; }
-    
-    /// <summary>
-    /// The hash of the file in the loadout.
-    /// </summary>
-    public Optional<Hash> LoadoutHash { get; init; }
-    
-    /// <summary>
-    /// True if the file on disk is already archived.
-    /// </summary>
-    public bool DiskArchived { get; init; }
-    
-    /// <summary>
-    /// True if the file in the previous state is archived.
-    /// </summary>
-    public bool PrevArchived { get; init; }
-    
-    /// <summary>
-    /// True if the file in the loadout is archived.
-    /// </summary>
-    public bool LoadoutArchived { get; init; }
-    
-    /// <summary>
-    /// True if the path is ignored, i.e. it is on a game-specific ignore list.
-    /// </summary>
-    public bool PathIsIgnored { get; init; }
-
-    /// <summary>
-    /// Builds the final <see cref="Signature"/> from the properties.
+    /// Builds the final <see cref="Signature"/> from the arguments.
     /// </summary>
     /// <returns></returns>
-    public Signature Build()
+    public static Signature Build(Optional<Hash> diskHash, Optional<Hash> prevHash, Optional<Hash> loadoutHash, bool diskArchived, bool prevArchived, bool loadoutArchived, bool pathIsIgnored)
     {
         var sig = Signature.Empty;
 
-        if (DiskHash.HasValue)
+        if (diskHash.HasValue)
             sig |= Signature.DiskExists;
         
-        if (PrevHash.HasValue)
+        if (prevHash.HasValue)
             sig |= Signature.PrevExists;
         
-        if (LoadoutHash.HasValue)
+        if (loadoutHash.HasValue)
             sig |= Signature.LoadoutExists;
 
-        if (DiskHash.HasValue && PrevHash.HasValue && DiskHash.Value == PrevHash.Value)
+        if (diskHash.HasValue && prevHash.HasValue && diskHash.Value == prevHash.Value)
             sig |= Signature.DiskEqualsPrev;
         
-        if (PrevHash.HasValue && LoadoutHash.HasValue && PrevHash.Value == LoadoutHash.Value)
+        if (prevHash.HasValue && loadoutHash.HasValue && prevHash.Value == loadoutHash.Value)
             sig |= Signature.PrevEqualsLoadout;
         
-        if (DiskHash.HasValue && LoadoutHash.HasValue && DiskHash.Value == LoadoutHash.Value)
+        if (diskHash.HasValue && loadoutHash.HasValue && diskHash.Value == loadoutHash.Value)
             sig |= Signature.DiskEqualsLoadout;
 
-        if (DiskArchived)
+        if (diskArchived)
             sig |= Signature.DiskArchived;
         
-        if (PrevArchived)
+        if (prevArchived)
             sig |= Signature.PrevArchived;
         
-        if (LoadoutArchived)
+        if (loadoutArchived)
             sig |= Signature.LoadoutArchived;
 
-        if (PathIsIgnored)
+        if (pathIsIgnored)
             sig |= Signature.PathIsIgnored;
 
         return sig;

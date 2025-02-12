@@ -1,6 +1,7 @@
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
@@ -23,18 +24,21 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     private readonly IOSInformation _osInformation;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IFileStore _fileStore;
+    private readonly IFileHashesService _fileHashesService;
 
     public SMAPIInstaller(
         IServiceProvider serviceProvider,
         ILogger<SMAPIInstaller> logger,
         IOSInformation osInformation,
         TemporaryFileManager temporaryFileManager,
+        IFileHashesService fileHashesService,
         IFileStore fileStore)
         : base(serviceProvider, logger)
     {
         _osInformation = osInformation;
         _temporaryFileManager = temporaryFileManager;
         _fileStore = fileStore;
+        _fileHashesService = fileHashesService;
     }
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
@@ -154,45 +158,35 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
 
         // copy the game file "Stardew Valley.deps.json" to "StardewModdingAPI.deps.json"
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
-        var foundGameFilesGroup = LoadoutGameFilesGroup
-            .FindByGameMetadata(loadout.Db, loadout.Installation.GameInstallMetadataId)
-            .TryGetFirst(x => x.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId, out var gameFilesGroup);
+        var srcPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
+        await _fileHashesService.GetFileHashesDb();
+        var foundRecord = _fileHashesService.GetGameFiles(loadout.InstallationInstance, loadout.LocatorIds)
+            .Where(f => f.Path == srcPath)
+            .TryGetFirst(out var gameFileRecord);
+        
 
-        if (!foundGameFilesGroup)
+        if (!foundRecord)
         {
-            Logger.LogError("Unable to find game files group!");
+            Logger.LogError("Can't find the game file record for `{Path}`", srcPath);
         }
         else
         {
-            var targetPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
-            var foundGameDepsFile = gameFilesGroup.AsLoadoutItemGroup().Children
-                .TryGetFirst(gameFile => gameFile.TryGetAsLoadoutItemWithTargetPath(out var targeted) && targeted.TargetPath == targetPath,
-                    out var gameDepsFile);
-            if (!foundGameDepsFile)
+            var to = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json");
+            _ = new LoadoutFile.New(transaction, out var id)
             {
-                Logger.LogError("Unable to find `{Path}` in game files group!", targetPath);
-            }
-            else
-            {
-                var gameFile = LoadoutFile.Load(gameDepsFile.Db, gameDepsFile.Id);
-                
-                var to = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json");
-                _ = new LoadoutFile.New(transaction, out var id)
+                Hash = gameFileRecord.Hash,
+                Size = gameFileRecord.Size,
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
                 {
-                    Hash = gameFile.Hash,
-                    Size = gameFile.Size,
-                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
+                    TargetPath = to.ToGamePathParentTuple(loadout.Id),
+                    LoadoutItem = new LoadoutItem.New(transaction, id)
                     {
-                        TargetPath = to.ToGamePathParentTuple(loadout.Id),
-                        LoadoutItem = new LoadoutItem.New(transaction, id)
-                        {
-                            Name = to.FileName,
-                            LoadoutId = loadout,
-                            ParentId = loadoutGroup,
-                        },
+                        Name = to.FileName,
+                        LoadoutId = loadout,
+                        ParentId = loadoutGroup,
                     },
-                };
-            }
+                },
+            };
         }
 
         _ = new SMAPILoadoutItem.New(transaction, loadoutGroup.Id)

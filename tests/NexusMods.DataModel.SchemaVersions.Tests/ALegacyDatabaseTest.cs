@@ -1,51 +1,138 @@
+using System.Diagnostics;
+using System.IO.Compression;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.Settings;
+using NexusMods.App.BuildInfo;
+using NexusMods.Collections;
+using NexusMods.CrossPlatform;
+using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.FileSignatures;
+using NexusMods.Games.FileHashes;
+using NexusMods.Games.Generic;
+using NexusMods.Games.StardewValley;
+using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
+using NexusMods.Networking.Downloaders;
+using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.Steam;
 using NexusMods.Paths;
+using NexusMods.Settings;
+using NexusMods.StandardGameLocators;
+using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
 namespace NexusMods.DataModel.SchemaVersions.Tests;
 
 public abstract class ALegacyDatabaseTest
 {
     private readonly SignatureChecker _zipSignatureChecker = new(FileType.ZIP);
-    protected readonly IServiceProvider ServiceProvider;
-    protected readonly IFileExtractor Extractor;
+    private readonly ITestOutputHelper _helper;
 
-    protected ALegacyDatabaseTest(IServiceProvider provider)
+    protected ALegacyDatabaseTest(ITestOutputHelper helper)
     {
-        ServiceProvider = provider;
-        Extractor = provider.GetRequiredService<IFileExtractor>();
+        _helper = helper;
+    }
+    
+    protected virtual IServiceCollection AddServices(IServiceCollection services)
+    {
+        
+        // So Gog doesn't exist on linux, but this is a test where we're stubbing out the games
+        // so we don't actually need gog, and setting up Heroic and all the other wine stuff 
+        // just to run this test is a pain. OSX does have GOG but we don't have support for it yet
+        if (OSInformation.Shared.IsLinux || OSInformation.Shared.IsOSX)
+            services.AddSingleton<IGameLocator, GogLocator>();
+        
+        const KnownPath baseKnownPath = KnownPath.EntryDirectory;
+        var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
+        
+        return services
+            .AddLogging(builder => builder.AddXUnit())
+            .AddSerializationAbstractions()
+            .AddHttpDownloader()
+            .AddDownloaders()
+            .AddSettingsManager()
+            .AddSettings<LoggingSettings>()
+            .AddCrossPlatform()
+            .AddRocksDbBackend()
+            .AddFileHashes()
+            .AddFileSystem()
+            .AddDataModel()
+            .AddStardewValley()
+            .AddLoadoutAbstractions()
+            .AddFileExtractors()
+            .AddStubbedStardewValley()
+            .AddNexusModsCollections()
+            .AddNexusModsLibraryModels()
+            .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
+            {
+                HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
+            })
+            .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false, registerWine: false)
+            .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
+            .Validate();
+    }
+    
+    private class Accessor : ITestOutputHelperAccessor
+    {
+        public ITestOutputHelper? Output { get; set; }
     }
 
-    public record TempConnection : IDisposable
+    public record TempConnection : IAsyncDisposable
     {
-        public required IStoreBackend Backend { get; init; }
+        public required IHost Host { get; init; }
         public required TemporaryFileManager TemporaryFileManager { get; init; }
-        public required DatomStore DatomStore { get; init; }
-        
         public required IConnection Connection { get; init; }
         public required MigrationId OldId { get; init; }
         
         public void Dispose()
         {
-            DatomStore.Dispose();
-            Backend.Dispose();
+            Host.StopAsync().GetAwaiter().GetResult();
             TemporaryFileManager.Dispose();
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await CastAndDispose(Host);
+            await CastAndDispose(TemporaryFileManager);
+
+            return;
+
+            static async ValueTask CastAndDispose(IDisposable resource)
+            {
+                try
+                {
+                    if (resource is IAsyncDisposable resourceAsyncDisposable)
+                        await resourceAsyncDisposable.DisposeAsync();
+                    else
+                        resource.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Failed to dispose resource: " + ex);
+                }
+            }
         }
     }
     
     [MustDisposeResource]
     public async Task<TempConnection> ConnectionFor(string name)
     {
+        
         var path = DatabaseFolder().Combine(name); 
         path.FileExists.Should().BeTrue("the database file should exist");
         
@@ -62,32 +149,43 @@ public abstract class ALegacyDatabaseTest
         var temporaryFileManager = new TemporaryFileManager(FileSystem.Shared, basePath: basePath);
 
         var workingFolder = temporaryFileManager.CreateFolder();
-        await Extractor.ExtractAllAsync(path, workingFolder.Path);
-
+        
+        ZipFile.ExtractToDirectory(path.ToString(), workingFolder.Path.ToString());
+        
         var datamodelFolder = workingFolder.Path.Combine("MnemonicDB.rocksdb");
         datamodelFolder.DirectoryExists().Should().BeTrue("the extracted database folder should exist");
         datamodelFolder.EnumerateFiles().Should().NotBeEmpty("the extracted database folder should contain files");
-
-        var backend = new Backend();
-        var settings = new DatomStoreSettings
-        {
-            Path = datamodelFolder,
-        };
-        var datomStore = new DatomStore(ServiceProvider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-        var connection = new Connection(ServiceProvider.GetRequiredService<ILogger<Connection>>(), datomStore, ServiceProvider, ServiceProvider.GetServices<IAnalyzer>());
+        
+        var host = new HostBuilder()
+            .ConfigureServices(s =>
+                {
+                    AddServices(s);
+                    s.AddDatomStoreSettings(new DatomStoreSettings
+                        {
+                            Path = datamodelFolder
+                        }
+                    );
+                }
+            )
+            .Build();
+        
+        await host.StartAsync();
+        
+        var services = host.Services;
+        
+        var connection = services.GetRequiredService<IConnection>();
         
         var oldMigrationId = RecordedVersion(connection.Db);
-        
-        var migrationService = new MigrationService(ServiceProvider.GetRequiredService<ILogger<MigrationService>>(), connection, ServiceProvider, ServiceProvider.GetServices<MigrationDefinition>());
+
+        var migrationService = services.GetRequiredService<MigrationService>();
         await migrationService.MigrateAll();
 
-        return new TempConnection()
+        return new TempConnection
         {
+            Host = host,
             OldId = oldMigrationId,
             Connection = connection,
-            DatomStore = datomStore,
-            Backend = backend,
-            TemporaryFileManager = temporaryFileManager
+            TemporaryFileManager = temporaryFileManager,
         };
     }
 
