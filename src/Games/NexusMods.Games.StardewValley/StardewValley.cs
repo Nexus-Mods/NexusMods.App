@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -27,6 +28,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public static GameDomain DomainStatic => GameDomain.From("stardewvalley");
     private readonly IOSInformation _osInformation;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IFileSystem _fs;
     public IEnumerable<uint> SteamIds => new[] { 413150u };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
@@ -50,6 +52,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     {
         _osInformation = osInformation;
         _serviceProvider = provider;
+        _fs = provider.GetRequiredService<IFileSystem>();
     }
 
     public override GamePath GetPrimaryFile(GameStore store)
@@ -74,7 +77,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         return Optional<GamePath>.Create(path);
     }
 
-    protected override Version GetVersion(GameLocatorResult installation)
+    public override Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
     {
         try
         {
@@ -84,7 +87,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
                 onOSX: () => "Contents/MacOS/Stardew Valley.dll"
             );
 
-            var fileInfo = installation.Path.Combine(path).FileInfo;
+            var fileInfo = _fs.FromUnsanitizedFullPath(installation.Path).Combine(path).FileInfo;
             return fileInfo.GetFileVersionInfo().FileVersion;
         }
         catch (Exception)
