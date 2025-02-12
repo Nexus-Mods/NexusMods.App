@@ -44,8 +44,20 @@ public class SynchronizerService : ISynchronizerService
         var loadout = Loadout.Load(_conn.Db, loadoutId);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
         var metaData = GameInstallMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
-        var diskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
-        return synchronizer.LoadoutToDiskDiff(loadout, diskState);
+        var previousDiskState   = metaData.DiskStateAsOf(metaData.LastSyncedLoadoutTransaction);
+        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
+        return synchronizer.LoadoutToDiskDiff(loadout, previousDiskState, lastScannedDiskState);
+    }
+    
+    /// <inheritdoc />
+    public bool GetShouldSynchronize(LoadoutId loadoutId)
+    {
+        var loadout = Loadout.Load(_conn.Db, loadoutId);
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        var metaData = GameInstallMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
+        var previousDiskState   = metaData.DiskStateAsOf(metaData.LastSyncedLoadoutTransaction);
+        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
+        return synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState);
     }
     
     /// <inheritdoc />
@@ -208,8 +220,7 @@ public class SynchronizerService : ISynchronizerService
                     var diffFound = await Task.Run(() =>
                         {
                             _logger.LogTrace("Checking for changes in loadout {LoadoutId}", loadoutId);
-                            var diffTree = GetApplyDiffTree(loadoutId);
-                            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
+                            var diffFound = GetShouldSynchronize(loadoutId);
                             _logger.LogTrace("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
                             return diffFound;
                         }, cancellationToken);
