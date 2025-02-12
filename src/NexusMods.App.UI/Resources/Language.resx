@@ -780,4 +780,7 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
         <value>External Changes</value>
     </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes_ToolTip" xml:space="preserve">
+        <value>Review, remove, or restore changes made outside the app.</value>
+    </data>
 </root>

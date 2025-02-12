@@ -230,6 +230,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         {
                             Text = new StringComponent(Language.LoadoutLeftMenuViewModel_External_Changes),
                             Icon = IconValues.FolderEditOutline,
+                            ToolTip = new StringComponent(Language.LoadoutLeftMenuViewModel_External_Changes_ToolTip),
                         };
 
                     })

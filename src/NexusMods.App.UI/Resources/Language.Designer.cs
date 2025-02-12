@@ -1610,6 +1610,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Review, remove, or restore changes made outside the app..
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_External_Changes_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_External_Changes_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Health Check.
         /// </summary>
         public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
