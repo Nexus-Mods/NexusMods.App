@@ -63,6 +63,7 @@ theme:
 
 plugins:
   - search
+  # - open-in-new-tab
   # - social
   # - mkdocs-video
 

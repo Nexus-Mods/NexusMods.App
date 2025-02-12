@@ -5,7 +5,7 @@ In this guide, we'll cover adding a mod to the Library by downloading it from Ne
 ## Downloading directly from Nexus Mods
 Mods shared on the Nexus Mods website can be downloaded quickly and easily into the app. On a Nexus Mods page for a supported game, look for the "Mod Manager" button in the top-right of the page and the "Mod Manager Download" button on each file in the files tab. Clicking these buttons will pass a the mod to the app and begin the download. 
 
-![The Nexus Mods website with the top-right "Vortex" button highlighted and the "Mod Manager Download" button in the Files tab](../images/DownloadButtonsNexusMods.webp)
+![The Nexus Mods website with the top-right "Vortex" button highlighted and the "Mod Manager Download" button in the Files tab](../images/NexusModsModDownloadButtons.webp)
 
 Once the mod is downloaded, it will appear in the Library for the relevant game. 
 
