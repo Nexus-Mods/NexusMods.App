@@ -14,4 +14,6 @@ public interface ILoadoutLeftMenuViewModel : ILeftMenuViewModel
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
     
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
+    
+    public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; }
 }

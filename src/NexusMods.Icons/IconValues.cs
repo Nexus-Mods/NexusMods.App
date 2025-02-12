@@ -264,6 +264,12 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/check-underline/
     public static readonly IconValue FolderOpen = new ProjektankerIcon("mdi-folder-open-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/folder-edit-outline/
+    public static readonly IconValue FolderEditOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M160-240v-480 480Zm0 80q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v132q-19-8-39.5-10.5t-40.5.5v-122H447l-80-80H160v480h324l-4 4v76H160Zm400 80v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm300-263-37-37 37 37ZM620-140h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z",
+        new Rect(0, -960, 960, 960)
+    ));
 
     // https://pictogrammers.com/library/mdi/icon/file-edit/
     public static readonly IconValue FileEdit = new ProjektankerIcon("mdi-file-edit");
