@@ -743,9 +743,6 @@
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\OverridesDataProvider.cs">
-          <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
-        </Compile>
     </ItemGroup>
 
     <ItemGroup>
