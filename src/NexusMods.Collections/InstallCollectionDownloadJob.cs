@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.IO.Hashing;
 using System.Security.Cryptography;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
@@ -44,6 +45,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     public required ILibraryService LibraryService { get; init; }
 
     public ILibraryItemInstaller? FallbackInstaller { get; init; }
+    public Optional<GamePath> FallbackCollectionInstallDirectory { get; init; }
 
     public static async ValueTask<InstallCollectionDownloadJob> Create(
         IServiceProvider serviceProvider,
@@ -152,6 +154,9 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             },
         };
 
+        // NOTE(erri120): for details see https://github.com/Nexus-Mods/NexusMods.App/issues/2630#issuecomment-2653787872
+        var parentPath = FallbackCollectionInstallDirectory.ValueOr(() => new GamePath(LocationId.Game, ""));
+
         foreach (var file in prefixFiles)
         {
             // Remove the prefix path from the file path
@@ -164,7 +169,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
                 Size = file.AsLibraryFile().Size,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, fileId)
                 {
-                    TargetPath = (fileId, LocationId.Game, fixedPath),
+                    TargetPath = (fileId, parentPath.LocationId, parentPath.Path.Join(fixedPath)),
                     LoadoutItem = new LoadoutItem.New(tx, fileId)
                     {
                         Name = file.Path,

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
@@ -136,7 +137,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             try
             {
                 Logger.LogDebug("Installing `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
-                await InstallMod(modAndDownload, collectionGroup, fallbackInstaller);
+                await InstallMod(modAndDownload, collectionGroup, fallbackInstaller, game.GetFallbackCollectionInstallDirectory());
             }
             catch (Exception e)
             {
@@ -150,7 +151,8 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
     private IJobTask<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly> InstallMod(
         ModAndDownload modAndDownload,
         NexusCollectionLoadoutGroup.ReadOnly collectionGroup,
-        ILibraryItemInstaller? fallbackInstaller)
+        ILibraryItemInstaller? fallbackInstaller,
+        Optional<GamePath> fallbackCollectionInstallDirectory)
     {
         var monitor = ServiceProvider.GetRequiredService<IJobMonitor>();
 
@@ -168,6 +170,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             LibraryService = LibraryService,
 
             FallbackInstaller = fallbackInstaller,
+            FallbackCollectionInstallDirectory = fallbackCollectionInstallDirectory,
         };
 
         return monitor.Begin<InstallCollectionDownloadJob, LoadoutItemGroup.ReadOnly>(job);
