@@ -21,12 +21,22 @@
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:CollectionComponents+NexusModsDownloadAction}">
                             <Panel>
-                                <controls:StandardButton Command="{CompiledBinding CommandDownload}"
+                                
+                                <controls:StandardButton x:Name="DownloadButton"
+                                    Command="{CompiledBinding CommandDownload}"
                                                          Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="None"
                                                          HorizontalAlignment="Center"
                                                          IsVisible="{CompiledBinding !IsDownloading.Value}"
                                                          Text="{CompiledBinding ButtonText.Value}"/>
-                                <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
+                                <StackPanel x:Name="DownloadingStack" 
+                                            Orientation="Horizontal" 
+                                            IsVisible="{CompiledBinding IsDownloading.Value}">
+                                    <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}"/>
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}"/>
+                                </StackPanel>
+                                
                             </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
