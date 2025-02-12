@@ -12,6 +12,7 @@ using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.BCL;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -32,6 +33,9 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
         IWindowManager windowManager,
         IConnection connection) : base(windowManager)
     {
+        TabIcon = IconValues.FolderOpen;
+        TabTitle = "File Tree";
+        
         OpenEditorCommand = ReactiveCommand.Create<NavigationInformation>(info =>
         {
             var gamePath = SelectedItem!.Key;
@@ -71,6 +75,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                 .WhereNotNull()
                 .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupId))
                 .Where(group => group.IsValid())
+                .Do(group => TabTitle = group.AsLoadoutItem().Name)
                 .Select(group => new LoadoutItemGroupFileTreeViewModel(group))
                 .BindToVM(this, vm => vm.FileTreeViewModel)
                 .DisposeWith(disposables);
