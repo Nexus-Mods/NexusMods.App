@@ -67,7 +67,11 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
             var workspaceId = workspaceController.ActiveWorkspaceId;
             workspaceController.OpenPage(workspaceId, pageData, behavior);
-        }, this.WhenAnyValue(vm => vm.SelectedItem).WhereNotNull().Select(x => x.IsFile));
+        },
+        this.WhenAnyValue(vm => vm.SelectedItem)
+            .WhereNotNull()
+            .Select(item => item is { IsFile: true, IsDeletion: false })
+        );
 
         this.WhenActivated(disposables =>
         {
