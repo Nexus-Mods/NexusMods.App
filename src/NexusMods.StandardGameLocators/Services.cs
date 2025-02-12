@@ -32,11 +32,16 @@ public static class Services
     /// <summary>
     /// Registers all the services for the standard store locators
     /// </summary>
+    /// <param name="services"></param>
     /// <param name="registerConcreteLocators">if true, will register the concrete locators, set this to false if
     /// you plan on stubbing out these locators for testing</param>
+    /// <param name="registerHeroic">if true, will register the Heroic launcher game locator</param>
+    /// <param name="settings"></param>
     public static IServiceCollection AddStandardGameLocators(
         this IServiceCollection services,
         bool registerConcreteLocators = true,
+        bool registerHeroic = true,
+        bool registerWine = true,
         GameLocatorSettings? settings = null)
     {
         services
@@ -62,10 +67,14 @@ public static class Services
             onLinux: () =>
             {
                 services.AddSingleton<IGameLocator, SteamLocator>();
-                services.AddSingleton<IGameLocator, HeroicGogLocator>();
+                if (registerHeroic) 
+                    services.AddSingleton<IGameLocator, HeroicGogLocator>();
 
-                services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
-                services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
+                if (registerWine)
+                {
+                    services.AddSingleton<IGameLocator, DefaultWineGameLocator>();
+                    services.AddSingleton<IGameLocator, BottlesWineGameLocator>();
+                }
             },
             onOSX: () =>
             {
@@ -96,33 +105,41 @@ public static class Services
                 services.AddSingleton<AHandler<SteamGame, AppId>>(provider => new SteamHandler(provider.GetRequiredService<IFileSystem>(), registry: null));
                 services.AddSingleton<HeroicGOGHandler>(provider => new HeroicGOGHandler(provider.GetRequiredService<IFileSystem>()));
 
-                services.AddSingleton<IWinePrefixManager<WinePrefix>>(provider => new DefaultWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
-                services.AddSingleton<IWinePrefixManager<BottlesWinePrefix>>(provider => new BottlesWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
+                if (registerWine)
+                {
+                    services.AddSingleton<IWinePrefixManager<WinePrefix>>(provider => new DefaultWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
+                    services.AddSingleton<IWinePrefixManager<BottlesWinePrefix>>(provider => new BottlesWinePrefixManager(provider.GetRequiredService<IFileSystem>()));
 
-                services.AddSingleton(provider => new WineStoreHandlerWrapper(
-                    provider.GetRequiredService<IFileSystem>(),
-                    new WineStoreHandlerWrapper.CreateHandler[]
-                    {
-                        (_, wineRegistry, wineFileSystem) => new GOGHandler(wineRegistry, wineFileSystem),
-                        (_, wineRegistry, wineFileSystem) => new EGSHandler(wineRegistry, wineFileSystem),
-                        (_, _, wineFileSystem) => new OriginHandler(wineFileSystem),
-                    },
-                    new[]
-                    {
-                        CreateDelegateFor<GOGGame, IGogGame>(
-                            (foundGame, requestedGame) => requestedGame.GogIds.Any(x => foundGame.Id.Equals(x)),
-                            game => new GameLocatorResult(game.Path, game.Path.FileSystem, GameStore.GOG, GogLocator.CreateMetadataCore(game))
-                        ),
-                        CreateDelegateFor<EGSGame, IEpicGame>(
-                            (foundGame, requestedGame) => requestedGame.EpicCatalogItemId.Any(x => foundGame.CatalogItemId.Equals(x)),
-                            game => new GameLocatorResult(game.InstallLocation, game.InstallLocation.FileSystem, GameStore.EGS, EpicLocator.CreateMetadataCore(game))
-                        ),
-                        CreateDelegateFor<OriginGame, IOriginGame>(
-                            (foundGame, requestedGame) => requestedGame.OriginGameIds.Any(x => foundGame.Id.Equals(x)),
-                            game => new GameLocatorResult(game.InstallPath, game.InstallPath.FileSystem, GameStore.Origin, OriginLocator.CreateMetadataCore(game))
-                        ),
-                    }
-                ));
+                    services.AddSingleton(provider => new WineStoreHandlerWrapper(
+                            provider.GetRequiredService<IFileSystem>(),
+                            [
+                                (_, wineRegistry, wineFileSystem) => new GOGHandler(wineRegistry, wineFileSystem),
+                                (_, wineRegistry, wineFileSystem) => new EGSHandler(wineRegistry, wineFileSystem),
+                                (_, _, wineFileSystem) => new OriginHandler(wineFileSystem),
+                            ],
+                            [
+                                CreateDelegateFor<GOGGame, IGogGame>(
+                                    (foundGame, requestedGame) => requestedGame.GogIds.Any(x => foundGame.Id.Equals(x)),
+                                    game => new GameLocatorResult(game.Path, game.Path.FileSystem, GameStore.GOG,
+                                        GogLocator.CreateMetadataCore(game)
+                                    )
+                                ),
+                                CreateDelegateFor<EGSGame, IEpicGame>(
+                                    (foundGame, requestedGame) => requestedGame.EpicCatalogItemId.Any(x => foundGame.CatalogItemId.Equals(x)),
+                                    game => new GameLocatorResult(game.InstallLocation, game.InstallLocation.FileSystem, GameStore.EGS,
+                                        EpicLocator.CreateMetadataCore(game)
+                                    )
+                                ),
+                                CreateDelegateFor<OriginGame, IOriginGame>(
+                                    (foundGame, requestedGame) => requestedGame.OriginGameIds.Any(x => foundGame.Id.Equals(x)),
+                                    game => new GameLocatorResult(game.InstallPath, game.InstallPath.FileSystem, GameStore.Origin,
+                                        OriginLocator.CreateMetadataCore(game)
+                                    )
+                                ),
+                            ]
+                        )
+                    );
+                }
             },
         onOSX: () =>
             {

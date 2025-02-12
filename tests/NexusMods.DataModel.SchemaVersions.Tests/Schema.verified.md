@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x7F9642CA1AE1B5E0
-   - Total attributes: 181
-   - Total namespaces: 66
+   - Fingerprint: 0x418B30142A27D652
+   - Total attributes: 190
+   - Total namespaces: 67
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -16,7 +16,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/ProductId                         | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/Public                            | UInt8                   | False   | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/Tags                              | Utf8                    | False   | True  | False     | 
-| NexusMods.Abstractions.Games.FileHashes.GogBuild/Version                           | Utf8                    | False   | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.GogBuild/Version                           | Utf8                    | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.HashRelation/Crc32                         | UInt32                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.HashRelation/Md5                           | UInt128                 | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.HashRelation/MinimalHash                   | UInt64                  | True    | False | False     | 
@@ -31,6 +31,13 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/Files                        | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/ManifestId                   | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/Name                         | Utf8                    | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GOG                      | Utf8                    | True    | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GameId                   | UInt32                  | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GogBuilds                | Reference               | False   | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/Name                     | Utf8                    | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/OperatingSystem          | UInt8                   | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/Steam                    | Utf8                    | True    | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/SteamManifests           | Reference               | False   | True  | False     | 
 | NexusMods.App.UI.Windows.WindowData/Data                                           | Utf8                    | False   | False | False     | 
 | NexusMods.ArchiveContents.ArchivedFileContainer/Path                               | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.ArchivedFile/Container                                                   | Reference               | False   | False | False     | 
@@ -74,7 +81,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.DiskStateEntry/LastModified                                     | Int64                   | False   | False | False     | 
 | NexusMods.Loadouts.DiskStateEntry/Path                                             | Tuple3_Ref_UShort_Utf8I | False   | False | False     | 
 | NexusMods.Loadouts.DiskStateEntry/Size                                             | UInt64                  | False   | False | False     | 
-| NexusMods.Loadouts.GameMetadata/GameId                                             | UInt32                  | False   | False | False     | 
+| NexusMods.Loadouts.GameMetadata/GameId                                             | UInt32                  | True    | False | False     | 
 | NexusMods.Loadouts.GameMetadata/InitialDiskStateTransaction                        | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.GameMetadata/LastScannedDiskStateTransaction                    | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.GameMetadata/LastSyncedLoadout                                  | Reference               | False   | False | False     | 
@@ -83,16 +90,18 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.GameMetadata/Path                                               | Utf8                    | True    | False | False     | 
 | NexusMods.Loadouts.GameMetadata/Store                                              | Ascii                   | False   | False | False     | 
 | NexusMods.Loadouts.LibraryLinkedLoadoutItem/LibraryItem                            | Reference               | True    | False | False     | 
+| NexusMods.Loadouts.Loadout/GameVersion                                             | Utf8                    | False   | False | False     | 
 | NexusMods.Loadouts.Loadout/Installation                                            | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.Loadout/LastAppliedDateTime                                     | Int64                   | False   | False | False     | 
 | NexusMods.Loadouts.Loadout/LoadoutKind                                             | UInt8                   | False   | False | False     | 
+| NexusMods.Loadouts.Loadout/LocatorIds                                              | Utf8                    | False   | True  | False     | 
 | NexusMods.Loadouts.Loadout/Name                                                    | Utf8                    | True    | False | False     | 
 | NexusMods.Loadouts.Loadout/Revision                                                | UInt64                  | False   | False | False     | 
 | NexusMods.Loadouts.Loadout/ShortName                                               | Utf8                    | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutFile/Hash                                                | UInt64                  | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutFile/Size                                                | UInt64                  | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutGameFilesGroup/GameMetadata                              | Reference               | False   | False | False     | 
-| NexusMods.Loadouts.LoadoutItem/Disabled                                            | Null                    | False   | False | False     | 
+| NexusMods.Loadouts.LoadoutItem/Disabled                                            | Null                    | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutItem/Loadout                                             | Reference               | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutItem/Name                                                | Utf8                    | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutItem/Parent                                              | Reference               | True    | False | False     | 

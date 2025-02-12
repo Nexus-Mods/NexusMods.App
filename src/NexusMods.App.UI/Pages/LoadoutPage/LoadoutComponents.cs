@@ -14,6 +14,11 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public static class LoadoutComponents
 {
+    public sealed class ParentCollectionDisabled : ReactiveR3Object, IItemModelComponent<ParentCollectionDisabled>, IComparable<ParentCollectionDisabled>
+    {
+        public int CompareTo(ParentCollectionDisabled? other) => 0;
+    }
+
     public sealed class IsEnabled : ReactiveR3Object, IItemModelComponent<IsEnabled>, IComparable<IsEnabled>
     {
         public ReactiveCommand<Unit> CommandToggle { get; } = new();
@@ -26,6 +31,9 @@ public static class LoadoutComponents
             f0: static x => x.AsEnumerable(),
             f1: static x => x.AsEnumerable()
         );
+
+        private readonly ValueComponent<bool> _isLockedComponent;
+        public IReadOnlyBindableReactiveProperty<bool> IsLocked => _isLockedComponent.Value;
 
         public int CompareTo(IsEnabled? other)
         {
@@ -44,10 +52,12 @@ public static class LoadoutComponents
 
         public IsEnabled(
             ValueComponent<bool?> valueComponent,
-            LoadoutItemId itemId)
+            LoadoutItemId itemId,
+            bool isLocked)
         {
             _valueComponent = valueComponent;
             _ids = new[] { itemId };
+            _isLockedComponent = new ValueComponent<bool>(value: isLocked);
 
             _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {
@@ -57,13 +67,16 @@ public static class LoadoutComponents
 
         public IsEnabled(
             ValueComponent<bool?> valueComponent,
-            IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable)
+            IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable,
+            ValueComponent<bool> isLockedComponent)
         {
             _valueComponent = valueComponent;
             _ids = new ObservableHashSet<LoadoutItemId>();
+            _isLockedComponent = isLockedComponent;
 
             _activationDisposable = this.WhenActivated((childrenItemIdsObservable), static (self, state, disposables) =>
             {
+                self._isLockedComponent.Activate().AddTo(disposables);
                 self._valueComponent.Activate().AddTo(disposables);
             });
 
@@ -77,7 +90,7 @@ public static class LoadoutComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, _valueComponent, _idsObservable ?? Disposable.Empty);
+                    Disposable.Dispose(_activationDisposable, _valueComponent, _isLockedComponent, _idsObservable ?? Disposable.Empty);
                 }
 
                 _isDisposed = true;
@@ -86,15 +99,26 @@ public static class LoadoutComponents
             base.Dispose(disposing);
         }
     }
-
-    public sealed class Locked : ReactiveR3Object, IItemModelComponent<Locked>, IComparable<Locked>
-    {
-        public int CompareTo(Locked? other) => 0;
-    }
 }
 
 public static class LoadoutColumns
 {
+    [UsedImplicitly]
+    public sealed class Collections : ICompositeColumnDefinition<Collections>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<StringComponent>(key: ComponentKey);
+            var bValue = a.GetOptional<StringComponent>(key: ComponentKey);
+            return aValue.Compare(bValue);
+        }
+
+        public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(Collections);
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(StringComponent));
+        public static string GetColumnHeader() => "Collections";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
+
     [UsedImplicitly]
     public sealed class IsEnabled : ICompositeColumnDefinition<IsEnabled>
     {
@@ -107,7 +131,7 @@ public static class LoadoutColumns
 
         public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(IsEnabled);
         public static readonly ComponentKey IsEnabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
-        public static readonly ComponentKey LockedComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.Locked));
+        public static readonly ComponentKey ParentCollectionDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.ParentCollectionDisabled));
         public static string GetColumnHeader() => "ACTIONS";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

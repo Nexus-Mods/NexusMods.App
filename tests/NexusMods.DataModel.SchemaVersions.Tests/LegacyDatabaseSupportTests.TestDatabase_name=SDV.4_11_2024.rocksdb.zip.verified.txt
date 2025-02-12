@@ -1,7 +1,7 @@
-{
+﻿{
   Name: SDV.4_11_2024.rocksdb.zip,
-  NewId: 3,
-  LoadoutItemGroups: 201,
-  Files: 16729,
+  NewId: 4,
+  LoadoutItemGroups: 200,
+  Files: 12932,
   Created: 2024-11-04 17:45:27
 }

@@ -5,6 +5,7 @@ using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.Icons;
@@ -17,7 +18,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
 {
     private readonly ILogger<GameWidgetViewModel> _logger;
 
-    public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger, ISettingsManager settingsManager)
+    public GameWidgetViewModel(ILogger<GameWidgetViewModel> logger, ISettingsManager settingsManager, IFileHashesService fileHashesService)
     {
         _logger = logger;
 
@@ -41,7 +42,15 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
                     .DisposeWith(disposables);
 
                 this.WhenAnyValue(vm => vm.Installation)
-                    .Select(inst => $"Version: {inst.Version}")
+                    .SelectMany(async inst =>
+                        {
+                            await fileHashesService.GetFileHashesDb();
+                            var ids = inst.LocatorResultMetadata?.ToLocatorIds() ?? [];
+                            if (!fileHashesService.TryGetGameVersion(inst, ids, out var version))
+                                return $"Version: Unknown";
+                            return $"Version: {version}";
+                        }
+                    )
                     .BindToVM(this, vm => vm.Version)
                     .DisposeWith(disposables);
 
@@ -75,9 +84,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "While loading game image for {GameName} v{Version}", source.Game.Name,
-                source.Version
-            );
+            _logger.LogError(ex, "While loading game image for {GameName}", source.Game.Name);
             return null;
         }
     }

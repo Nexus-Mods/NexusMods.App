@@ -12,4 +12,7 @@ public record EpicLocatorResultMetadata : IGameLocatorResultMetadata
     /// The specific ID of the found game.
     /// </summary>
     public required string CatalogItemId { get; init; }
+
+    /// <inheritdoc />
+    public IEnumerable<string> ToLocatorIds() => [CatalogItemId];
 }
