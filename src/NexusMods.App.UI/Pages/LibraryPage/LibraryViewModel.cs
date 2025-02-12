@@ -419,7 +419,7 @@ public class LibraryTreeDataGridAdapter :
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandUpdate
-                .SubscribeOnUIThreadDispatcher()
+                .SubscribeOnUIThreadDispatcher() // Update payload may expand row for free users, requiring UI thread.
                 .Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, model, component) = state;
