@@ -94,7 +94,7 @@ public class ReactiveR3Object : IReactiveR3Object
             return;
 
         if (propertyName is null)
-            ThrowHelpers.ArgumentNullException(nameof(propertyName));
+            ArgumentNullException.ThrowIfNull(propertyName, nameof(propertyName));
 
         // Note(sewer): The fact events as simple as this allocate is a crime against humanity.
         // .NET should have had this be a struct reference.
