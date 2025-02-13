@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.Generic.Installers;
@@ -22,6 +23,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOSInformation _osInformation;
+    private readonly IFileSystem _fs;
     public override string Name => "Baldur's Gate 3";
 
     public IEnumerable<uint> SteamIds => [1086940u];
@@ -41,9 +43,10 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     {
         _serviceProvider = provider;
         _osInformation = provider.GetRequiredService<IOSInformation>();
+        _fs = provider.GetRequiredService<IFileSystem>();
     }
     
-    protected override Version GetVersion(GameLocatorResult locatorResult)
+    public override Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
     {
         try
         {
@@ -53,7 +56,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
                 : new GamePath(LocationId.Game, "bin/bg3.exe");
 
             var fvi = executableGamePath
-                .Combine(locatorResult.Path).FileInfo
+                .Combine(_fs.FromUnsanitizedFullPath(installation.Path)).FileInfo
                 .GetFileVersionInfo();
             return fvi.ProductVersion;
         }
