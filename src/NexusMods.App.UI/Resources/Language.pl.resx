@@ -634,6 +634,9 @@
 	<data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
 		<value>Twórz zestawy dla gier, które będą zawierały ustawienia i mody.&#xA;Przełączaj się między zestawami i wybierz swój ulubiony, aby zagrać.</value>
 	</data>
+	<data name="SettingsView_Description" xml:space="preserve">
+		<value>Zarządzaj swoimi preferencjami</value>
+	</data>
 	<data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
 		<value>Zestawy {0}</value>
 		<comment>Where {0} is the name of the game</comment>
