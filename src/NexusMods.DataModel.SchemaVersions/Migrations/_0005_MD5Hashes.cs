@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Models;
@@ -19,12 +20,11 @@ internal class _0005_MD5Hashes : ITransactionalMigration
 {
     public static (MigrationId Id, string Name) IdAndName { get; } = MigrationId.ParseNameAndId(nameof(_0005_MD5Hashes));
 
-    private LibraryFile.ReadOnly[] _entitiesToUpdate = [];
-    private HashSet<AttributeId> _attributesToRemove = [];
+    private Datom[] _datoms = [];
 
     public Task Prepare(IDb db)
     {
-        _attributesToRemove = db.AttributeCache.AllAttributeIds
+        var attributesToRemove = db.AttributeCache.AllAttributeIds
             .Where(sym =>
             {
                 // NOTE(erri120): These attributes have been removed
@@ -35,17 +35,20 @@ internal class _0005_MD5Hashes : ITransactionalMigration
             .Select(sym => db.AttributeCache.GetAttributeId(sym))
             .ToHashSet();
 
-        _entitiesToUpdate = LibraryFile
+        _datoms = LibraryFile
             .All(db)
-            .Where(entity =>
+            .Select(entity =>
             {
+                // NOTE(erri120): need to use the IndexSegment because we don't want resolved datoms for removed attributes
                 foreach (var datom in entity.IndexSegment)
                 {
-                    if (_attributesToRemove.Contains(datom.A)) return true;
+                    if (attributesToRemove.Contains(datom.A)) return datom;
                 }
 
-                return false;
+                return Optional<Datom>.None;
             })
+            .Where(static optional => optional.HasValue)
+            .Select(static optional => optional.Value)
             .ToArray();
 
         return Task.CompletedTask;
@@ -53,20 +56,14 @@ internal class _0005_MD5Hashes : ITransactionalMigration
 
     public void Migrate(ITransaction tx, IDb db)
     {
-        foreach (var entity in _entitiesToUpdate)
+        foreach (var datom in _datoms)
         {
-            Md5HashValue md5 = default(Md5HashValue);
-
-            // NOTE(erri120): need to use the IndexSegment because we don't want resolved datoms for removed attributes
-            foreach (var datom in entity.IndexSegment)
+            tx.Add(datom.Retract());
+            var md5 = Md5HashValue.From(UInt128Serializer.Read(datom.ValueSpan));
+            if (md5 != default(Md5HashValue))
             {
-                if (!_attributesToRemove.TryGetValue(datom.A, out var attributeToRemove)) continue;
-                tx.Add(datom.Retract());
-
-                md5 = Md5HashValue.From(UInt128Serializer.Read(datom.ValueSpan));
+                tx.Add(datom.E, LibraryFile.Md5, md5);
             }
-
-            if (md5 != default(Md5HashValue)) tx.Add(entity.Id, LibraryFile.Md5, md5);
         }
     }
 }
