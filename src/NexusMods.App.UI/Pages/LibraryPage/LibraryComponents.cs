@@ -95,7 +95,7 @@ public static class LibraryColumns
 
         public static readonly ComponentKey InstallComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Install");
         public static readonly ComponentKey UpdateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Update");
-        public static string GetColumnHeader() => "Action";
+        public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 }

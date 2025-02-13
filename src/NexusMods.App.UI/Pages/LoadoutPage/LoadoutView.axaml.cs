@@ -19,9 +19,6 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
         this.WhenActivated(disposables =>
         {
-            this.BindCommand(ViewModel, vm => vm.SwitchViewCommand, view => view.SwitchView)
-                .AddTo(disposables);
-
             this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
                 .AddTo(disposables);
             

@@ -11,8 +11,10 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
+    
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
     </Design.DataContext>
@@ -58,26 +60,33 @@
                 <panels:FlexPanel x:Name="ListHeaderRow">
                     <TextBlock x:Name="TextCollectionStatus" />
                     <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
-                    <controls:StandardButton x:Name="ButtonDownloadRequiredItems" Text="Download all required mods"
+                    <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
+                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadRequired}"
                                              Size="Small"
                                              Type="Secondary"
                                              Fill="Strong" />
-                    <controls:StandardButton x:Name="ButtonInstallRequiredItems" Text="Install Collection"
+                    <controls:StandardButton x:Name="ButtonInstallRequiredItems"
+                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallCollection}"
                                              Size="Small"
                                              Type="Primary"
                                              Fill="Strong" />
-                    <navigation:NavigationControl x:Name="ButtonViewCollection" Text="View Installed Collection"
+                    <navigation:NavigationControl x:Name="ButtonViewCollection"
+                                                  Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
                                                   Size="Small" />
 
-                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection" Text="Install Update"
-                                             Size="Small" />
+                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
+                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
+                                             Size="Small"
+                                             Type="Primary"
+                                             Fill="Strong" />
 
-                    <controls:StandardButton x:Name="ButtonDownloadOptionalItems" Text="Download all optional mods"
+                    <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
+                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
                                              Size="Small"
                                              Type="Secondary"
                                              Fill="Strong" />
                     <controls:StandardButton x:Name="ButtonInstallOptionalItems"
-                                             Text="Install downloaded optional mods"
+                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
                                              Size="Small" />
                     <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" Text="..."
                                              Size="Small" />

@@ -14,23 +14,30 @@
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
+                
                 <!-- Nexus Mods download -->
                 <controls:ComponentTemplate x:TypeArguments="local:CollectionComponents+NexusModsDownloadAction"
                                             ComponentKey="{x:Static local:CollectionColumns+Actions.NexusModsDownloadComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:CollectionComponents+NexusModsDownloadAction}">
-
-                            <StackPanel Orientation="Horizontal">
-                                <Button Command="{CompiledBinding CommandDownload}"
-                                        Classes="Standard"
-                                        HorizontalAlignment="Center"
-                                        IsVisible="{CompiledBinding !IsDownloading.Value}">
-                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
-                                </Button>
-
-                                <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
-                            </StackPanel>
-
+                            <Panel>
+                                
+                                <controls:StandardButton x:Name="DownloadButton"
+                                    Command="{CompiledBinding CommandDownload}"
+                                                         Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="Weak"
+                                                         HorizontalAlignment="Center"
+                                                         IsVisible="{CompiledBinding !IsDownloading.Value}"
+                                                         Text="{CompiledBinding ButtonText.Value}"/>
+                                <StackPanel x:Name="DownloadingStack" 
+                                            Orientation="Horizontal" 
+                                            IsVisible="{CompiledBinding IsDownloading.Value}">
+                                    <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}"/>
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}"/>
+                                </StackPanel>
+                                
+                            </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
@@ -40,18 +47,16 @@
                                             ComponentKey="{x:Static local:CollectionColumns+Actions.ExternalDownloadComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:CollectionComponents+ExternalDownloadAction}">
-
-                            <StackPanel Orientation="Horizontal">
-                                <Button Command="{CompiledBinding CommandDownload}"
-                                        Classes="Standard"
-                                        HorizontalAlignment="Center"
-                                        IsVisible="{CompiledBinding !IsDownloading.Value}">
-                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
-                                </Button>
-
+                            <Panel>
+                                <controls:StandardButton Command="{CompiledBinding CommandDownload}"
+                                                         Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="Weak"
+                                                         HorizontalAlignment="Center"
+                                                         IsVisible="{CompiledBinding !IsDownloading.Value}"
+                                                         Text="{CompiledBinding ButtonText.Value}"/>
                                 <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
-                            </StackPanel>
-
+                            </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
@@ -61,17 +66,18 @@
                                             ComponentKey="{x:Static local:CollectionColumns+Actions.ManualDownloadComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:CollectionComponents+ManualDownloadAction}">
-
                             <StackPanel Orientation="Horizontal">
-                                <Button Command="{CompiledBinding CommandOpenUri}">
-                                    <TextBlock Text="Open in browser" />
-                                </Button>
-
-                                <Button Command="{CompiledBinding CommandAddFile}">
-                                    <TextBlock Text="Add downloaded file" />
-                                </Button>
+                                <controls:StandardButton Command="{CompiledBinding CommandOpenUri}"
+                                                         Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="Weak"
+                                                         Text="Open in browser"/>
+                                <controls:StandardButton Command="{CompiledBinding CommandAddFile}"
+                                                         Size="Small"
+                                                         Type="Tertiary"
+                                                         Fill="Weak"
+                                                         Text="Add downloaded file"/>
                             </StackPanel>
-
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
@@ -81,19 +87,20 @@
                                             ComponentKey="{x:Static local:CollectionColumns+Actions.InstallComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:CollectionComponents+InstallAction}">
-
-                            <Button Command="{CompiledBinding CommandInstall}"
-                                    Classes="Standard"
-                                    Classes.Primary="{CompiledBinding !IsInstalled.Value}"
-                                    Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
-                                    HorizontalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
-                                                       IsVisible="{CompiledBinding IsInstalled.Value}" />
-                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
+                            <Panel>
+                                <controls:StandardButton Command="{CompiledBinding CommandInstall}"
+                                                         Text="{CompiledBinding ButtonText.Value}"
+                                                         Size="Small"
+                                                         Type="Primary"
+                                                         Fill="Strong"
+                                                         IsVisible="{CompiledBinding !IsInstalled.Value}"/>
+                                <StackPanel x:Name="DownloadedStack" 
+                                            Orientation="Horizontal" 
+                                            IsVisible="{CompiledBinding IsInstalled.Value}">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"/>
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}"/>
                                 </StackPanel>
-                            </Button>
-
+                            </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>

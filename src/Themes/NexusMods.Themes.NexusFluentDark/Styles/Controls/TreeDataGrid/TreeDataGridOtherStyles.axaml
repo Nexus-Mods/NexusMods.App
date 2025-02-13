@@ -1,0 +1,21 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- NOTE (insomnious): this is a quick reset for the basic tree data grids that are being used,
+    but we haven't round to iterating on yet properly -->
+    
+    <!-- No backgrounds for the advanced installer TreeDataGrid's -->
+
+    <Style Selector="TreeDataGrid#SelectTreeDataGrid">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+
+    <Style Selector="TreeDataGrid#ModContentTreeDataGrid">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+
+    <Style Selector="TreeDataGrid#LocationPreviewTreeDataGrid">
+        <Setter Property="Background" Value="{x:Null}" />
+    </Style>
+
+</Styles>
