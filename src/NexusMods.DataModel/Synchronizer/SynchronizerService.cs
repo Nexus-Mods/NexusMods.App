@@ -55,8 +55,16 @@ public class SynchronizerService : ISynchronizerService
         var loadout = Loadout.Load(_conn.Db, loadoutId);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
         var metaData = GameInstallMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
+
+        if (!metaData.Contains(GameInstallMetadata.LastSyncedLoadoutTransaction) ||
+            !metaData.Contains(GameInstallMetadata.LastScannedDiskStateTransaction))
+        {
+            return true;
+        }
+        
         var previousDiskState   = metaData.DiskStateAsOf(metaData.LastSyncedLoadoutTransaction);
         var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
+        
         return synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState);
     }
     
