@@ -937,7 +937,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!rule.IsValid()) continue;
 
             // `source` goes before `other`, meaning `a` doesn't win over `b`
-            if (rule.RuleType == CollectionDownloadRuleType.Before) return false;
+            if (rule.RuleType == CollectionDownloadRuleType.Before) return true;
+
+            // `source` goes after `other`, meaning `a` wins over `b`
+            if (rule.RuleType == CollectionDownloadRuleType.After) return false;
         }
 
         // use `downloadB` as `source` and `downloadA` as `other`
@@ -953,6 +956,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             // `source` goes after `other`, meaning `b` wins over `a`
             if (rule.RuleType == CollectionDownloadRuleType.After) return true;
+
+            // `source` goes before `other`, meaning `b` doesn't win over `a`
+            if (rule.RuleType == CollectionDownloadRuleType.Before) return false;
         }
 
         return Optional<bool>.None;
