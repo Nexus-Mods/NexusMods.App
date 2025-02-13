@@ -24,8 +24,8 @@ public class Session : ISteamSession
 {
     private bool _isConnected = false;
     private bool _isLoggedOn = false;
-    
-    private readonly ILogger<Session> _logger;
+
+    internal readonly ILogger<Session> _logger;
     private readonly IAuthInterventionHandler _handler;
 
     /// <summary>
@@ -137,6 +137,29 @@ public class Session : ISteamSession
                 {
                     Username = authData.Username,
                     AccessToken = authData.RefreshToken,
+                }
+            );
+        }
+        else if (Environment.GetEnvironmentVariable("STEAM_USER") != null)
+        {
+            _logger.LogInformation("Using environment variables to log in.");
+            var authSession = await _steamClient.Authentication.BeginAuthSessionViaCredentialsAsync(new AuthSessionDetails
+            {
+                Username = Environment.GetEnvironmentVariable("STEAM_USER"),
+                Password = Environment.GetEnvironmentVariable("STEAM_PASS"),
+            });
+            
+            var pollResponse = await authSession.PollingWaitForResultAsync();
+            await _authStorage.SaveAsync(new AuthData
+            {
+                Username = pollResponse.AccountName,
+                RefreshToken = pollResponse.RefreshToken,
+            }.Save());
+            
+            _steamUser.LogOn(new SteamUser.LogOnDetails
+                {
+                    Username = pollResponse.AccountName,
+                    AccessToken = pollResponse.RefreshToken,
                 }
             );
         }
@@ -265,6 +288,7 @@ public class Session : ISteamSession
         var chunkedProvider = new DepotChunkProvider(this, appId, manifest.DepotId,
             manifest, file
         );
-        return new ChunkedStream<DepotChunkProvider>(chunkedProvider);
+        // 48 1MB chunks, 32 preloaded
+        return new ChunkedStream<DepotChunkProvider>(chunkedProvider, capacity: 48, preLoad: 32);
     }
 }

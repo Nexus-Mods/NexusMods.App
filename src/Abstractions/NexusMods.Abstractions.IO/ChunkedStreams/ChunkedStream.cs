@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace NexusMods.Abstractions.IO.ChunkedStreams;
@@ -13,16 +14,19 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
     private readonly T _source;
     private LightweightLRUCache<ulong, IMemoryOwner<byte>> _cache;
     private readonly MemoryPool<byte> _pool;
+    private Dictionary<ulong, Task<IMemoryOwner<byte>>> _preloadingTasks = new();
+    private readonly int _preLoad;
 
     /// <summary>
     /// Main constructor, creates a new Chunked stream from the given source, and with a LRU cache of the given size
     /// </summary>
-    public ChunkedStream(T source, int capacity = 16)
+    public ChunkedStream(T source, int capacity = 16, int preLoad = 0)
     {
         _position = 0;
         _source = source;
         _pool = MemoryPool<byte>.Shared;
         _cache = new LightweightLRUCache<ulong, IMemoryOwner<byte>>(capacity);
+        _preLoad = preLoad;
     }
 
     /// <inheritdoc />
@@ -92,16 +96,44 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 
     private async ValueTask<Memory<byte>> GetChunkAsync(ulong index, CancellationToken token)
     {
+        for (ulong i = index + 1; i < index + (ulong)_preLoad ; i++)
+        {
+            if (i >= _source.ChunkCount)
+                break;
+            
+            if (_cache.TryGet(i, out var _))
+                continue;
+
+            if (_preloadingTasks.ContainsKey(i))
+                continue;
+
+            _preloadingTasks[i] = AllocateAndGetChunk(i, token);
+        }
+        
         if (_cache.TryGet(index, out var memory))
         {
             return memory!.Memory;
         }
+        
+        if (_preloadingTasks.TryGetValue(index, out var task))
+        {
+            var chunk = await task;
+            _cache.Add(index, chunk);
+            _preloadingTasks.Remove(index);
+            return chunk.Memory;
+        }
 
+        var memoryOwner = await AllocateAndGetChunk(index, token);
+        _cache.Add(index, memoryOwner);
+        return memoryOwner.Memory;
+    }
+
+    private async Task<IMemoryOwner<byte>> AllocateAndGetChunk(ulong index, CancellationToken token)
+    {
         var chunkSize = _source.GetChunkSize(index);
         var memoryOwner = _pool.Rent(chunkSize);
         await _source.ReadChunkAsync(memoryOwner.Memory[..chunkSize], index, token);
-        _cache.Add(index, memoryOwner);
-        return memoryOwner.Memory;
+        return memoryOwner;
     }
 
     private Memory<byte> GetChunk(ulong index)
