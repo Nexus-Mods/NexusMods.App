@@ -24,6 +24,8 @@ internal class _0005_MD5Hashes : ITransactionalMigration
 
     public Task Prepare(IDb db)
     {
+        var hasAttribute = db.AttributeCache.TryGetAttributeId(LibraryFile.Md5.Id, out var attributeId);
+
         _attributesToRemove = db.AttributeCache.AllAttributeIds
             .Where(sym =>
             {
@@ -44,7 +46,7 @@ internal class _0005_MD5Hashes : ITransactionalMigration
                     if (_attributesToRemove.Contains(datom.A)) return true;
                 }
 
-                return true;
+                return false;
             })
             .ToArray();
 
@@ -66,7 +68,10 @@ internal class _0005_MD5Hashes : ITransactionalMigration
                 md5 = Md5HashValue.From(UInt128Serializer.Read(datom.ValueSpan));
             }
 
-            if (md5 != default(Md5HashValue)) tx.Add(entity.Id, LibraryFile.Md5, md5);
+            if (md5 != default(Md5HashValue))
+            {
+                tx.Add(entity.Id, LibraryFile.Md5, md5);
+            }
         }
     }
 }
