@@ -1,25 +1,24 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+
     <!-- Preview -->
     <Design.PreviewWith>
         <StackPanel Margin="20" Width="300">
-
             <Border Classes="Footer">
                 <StackPanel>
-                    <Button Classes="Standard Tertiary">
-                        <StackPanel>
-                            <TextBlock Text="CANCEL" />
-                        </StackPanel>
-                    </Button>
-                    <Button Classes="Standard Primary">
-                        <StackPanel>
-                            <TextBlock Text="SAVE" />
-                        </StackPanel>
-                    </Button>
+                    <controls:StandardButton x:Name="CancelButton"
+                                             Text="Cancel"
+                                             Type="Tertiary"
+                                             Fill="Weak"
+                                             Size="Small" />
+                    <controls:StandardButton x:Name="SaveButton"
+                                             Text="Save"
+                                             Type="Primary"
+                                             Fill="Strong"
+                                             Size="Small" />
                 </StackPanel>
             </Border>
-
         </StackPanel>
     </Design.PreviewWith>
 
@@ -31,9 +30,9 @@
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="HorizontalAlignment" Value="Right" />
-            <Setter Property="Margin" Value="24, 24, 24, 24" />
+            <Setter Property="Margin" Value="18, 18" />
             <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
         </Style>
     </Style>
-    
+
 </Styles>

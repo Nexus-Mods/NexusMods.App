@@ -10,10 +10,13 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Controls.Settings.Section.SettingSectionView">
 
-    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1.5}" Margin="0 24 0 8">
-        <icons:UnifiedIcon x:Name="Icon" Size="20"/>
-        <TextBlock Classes="BodyXLBold" x:Name="Text"/>
+    <StackPanel Orientation="Horizontal"
+                Spacing="{StaticResource Spacing-2}"
+                Margin="0,24,0,8">
+        <icons:UnifiedIcon x:Name="Icon" Size="20" />
+        <TextBlock x:Name="Text"
+                   Theme="{StaticResource BodyMDNormalTheme}"
+                   Foreground="{StaticResource NeutralModerateBrush}"/>
     </StackPanel>
 
 </reactive:ReactiveUserControl>
-

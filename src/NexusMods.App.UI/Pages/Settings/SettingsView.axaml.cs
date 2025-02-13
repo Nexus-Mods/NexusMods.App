@@ -20,8 +20,8 @@ public partial class SettingsView : ReactiveUserControl<ISettingsPageViewModel>
                 this.BindCommand(ViewModel,viewModel => viewModel.CancelCommand,view => view.CancelButton)
                     .DisposeWith(d);
 
-                this.BindCommand(ViewModel,viewModel => viewModel.CloseCommand,view => view.CloseButton)
-                    .DisposeWith(d);
+                // this.BindCommand(ViewModel,viewModel => viewModel.CloseCommand,view => view.CloseButton)
+                //     .DisposeWith(d);
 
                 this.WhenAnyValue(
                     view => view.ViewModel!.SettingEntries,
