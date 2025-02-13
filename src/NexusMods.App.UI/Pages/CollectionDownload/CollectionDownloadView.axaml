@@ -24,9 +24,7 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
-                    <panels:FlexPanel>
-                        <TextBlock>View on Nexus Mods</TextBlock>
-                    </panels:FlexPanel>
+                    <TextBlock>View on Nexus Mods</TextBlock>
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem x:Name="MenuItemOpenJsonFile">
@@ -34,9 +32,7 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.LibraryOutline}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
-                    <panels:FlexPanel>
-                        <TextBlock>Open JSON file</TextBlock>
-                    </panels:FlexPanel>
+                    <TextBlock>Open JSON file</TextBlock>
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem x:Name="MenuItemDeleteAllDownloads" Classes="Critical">
@@ -44,9 +40,7 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
-                    <panels:FlexPanel>
-                        <TextBlock>Delete all downloads</TextBlock>
-                    </panels:FlexPanel>
+                    <TextBlock>Delete all downloads</TextBlock>
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem x:Name="MenuItemDeleteCollectionRevision" Classes="Critical">
@@ -54,9 +48,7 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
-                    <panels:FlexPanel>
-                        <TextBlock>Delete collection revision</TextBlock>
-                    </panels:FlexPanel>
+                    <TextBlock>Delete collection revision</TextBlock>
                 </MenuItem.Header>
             </MenuItem>
         </MenuFlyout>
@@ -235,7 +227,8 @@
                             </Grid>
                         </Expander>
 
-                        <Expander Header="Optional Mod Instructions" x:Name="OptionalModsInstructionsExpander" IsVisible="False"
+                        <Expander Header="Optional Mod Instructions" x:Name="OptionalModsInstructionsExpander"
+                                  IsVisible="False"
                                   IsExpanded="True">
                             <Grid>
                                 <Grid.ColumnDefinitions>
