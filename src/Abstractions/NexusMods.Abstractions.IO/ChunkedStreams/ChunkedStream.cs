@@ -14,19 +14,21 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
     private readonly T _source;
     private LightweightLRUCache<ulong, IMemoryOwner<byte>> _cache;
     private readonly MemoryPool<byte> _pool;
-    private Dictionary<ulong, Task<IMemoryOwner<byte>>> _preloadingTasks = new();
-    private readonly int _preLoad;
+    private readonly Dictionary<ulong, Task<IMemoryOwner<byte>>> _preFetchingTasks = new();
+    private readonly int _preFetch;
 
     /// <summary>
-    /// Main constructor, creates a new Chunked stream from the given source, and with a LRU cache of the given size
+    /// Main constructor, creates a new Chunked stream from the given source, and with an LRU cache of the given size. If preFetch is greater than 0,
+    /// the stream will attempt to read ahead of any read requests by the given amount of chunks, this can be useful when the chunk source is slow or bursty,
+    /// and chunks are small.
     /// </summary>
-    public ChunkedStream(T source, int capacity = 16, int preLoad = 0)
+    public ChunkedStream(T source, int capacity = 16, int preFetch = 0)
     {
         _position = 0;
         _source = source;
         _pool = MemoryPool<byte>.Shared;
         _cache = new LightweightLRUCache<ulong, IMemoryOwner<byte>>(capacity);
-        _preLoad = preLoad;
+        _preFetch = preFetch;
     }
 
     /// <inheritdoc />
@@ -96,33 +98,41 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
 
     private async ValueTask<Memory<byte>> GetChunkAsync(ulong index, CancellationToken token)
     {
-        for (ulong i = index + 1; i < index + (ulong)_preLoad ; i++)
+        // Prefetch code
+        // If _preLoad is 0 here, then this block is skipped and we never pre-fetch anything
+        for (var i = index + 1; i < index + (ulong)_preFetch ; i++)
         {
             if (i >= _source.ChunkCount)
                 break;
             
-            if (_cache.TryGet(i, out var _))
+            // If we already have this chunk cached, move on
+            if (_cache.TryGet(i, out _))
                 continue;
 
-            if (_preloadingTasks.ContainsKey(i))
+            // If we're already preloading this chunk, move on
+            if (_preFetchingTasks.ContainsKey(i))
                 continue;
 
-            _preloadingTasks[i] = AllocateAndGetChunk(i, token);
+            // Create the chunk task. It begins executing here
+            _preFetchingTasks[i] = AllocateAndGetChunk(i, token);
         }
         
+        // If the chunk is cached, use it
         if (_cache.TryGet(index, out var memory))
         {
             return memory!.Memory;
         }
         
-        if (_preloadingTasks.TryGetValue(index, out var task))
+        // If the chunk is being preloaded (could have been in a previous run of this method) use that
+        if (_preFetchingTasks.TryGetValue(index, out var task))
         {
             var chunk = await task;
             _cache.Add(index, chunk);
-            _preloadingTasks.Remove(index);
+            _preFetchingTasks.Remove(index);
             return chunk.Memory;
         }
 
+        // Otherwise load the chunk
         var memoryOwner = await AllocateAndGetChunk(index, token);
         _cache.Add(index, memoryOwner);
         return memoryOwner.Memory;
