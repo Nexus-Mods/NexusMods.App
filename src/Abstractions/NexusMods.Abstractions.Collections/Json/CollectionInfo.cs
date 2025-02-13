@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
+[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public class CollectionInfo
 {
     [JsonPropertyName("author")]

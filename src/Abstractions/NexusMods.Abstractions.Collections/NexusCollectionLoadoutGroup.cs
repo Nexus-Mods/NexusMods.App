@@ -28,4 +28,15 @@ public partial class NexusCollectionLoadoutGroup : IModelDefinition
     /// The collection library file.
     /// </summary>
     public static readonly ReferenceAttribute<NexusModsCollectionLibraryFile> LibraryFile = new(Namespace, nameof(LibraryFile));
+
+    public partial struct ReadOnly
+    {
+        public IEnumerable<NexusCollectionItemLoadoutGroup.ReadOnly> GetCollectionItems()
+        {
+            return Db
+                .GetBackRefs(LoadoutItem.Parent, Id)
+                .AsModels<NexusCollectionItemLoadoutGroup.ReadOnly>(Db)
+                .Where(static model => model.IsValid());
+        }
+    }
 }
