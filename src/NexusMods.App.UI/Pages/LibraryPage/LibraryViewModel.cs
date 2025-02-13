@@ -241,16 +241,31 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
         {
-            // If there are multiple mods, we expand the row
-            if (updatesOnPage.NumberOfModFilesToUpdate > 1)
+            /*
+               // Note(sewer): The commented code here is the correct behaviour
+               // as intended per the phase one design. We temporarily need to alter
+               // this behaviour due to the TreeDataGrid bug. When TreeDataGrid
+               // is fixed, we can revert.
+
+               // If there are multiple mods, we expand the row
+               if (updatesOnPage.NumberOfModFilesToUpdate > 1)
+               {
+                   treeNode.IsExpanded = true; // 👈 TreeDataGrid bug. Doesn't handle PropertyChanged right.
+               }
+               else
+               {
+                   // Otherwise send them to the download page!!
+                   var latestFile = updatesOnPage.NewestFile();
+                   var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(latestFile.Uid.FileId, latestFile.Uid.GameId);
+                   var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+                   await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+               }
+            */
+
+            // Open download page for every unique file.
+            foreach (var file in updatesOnPage.NewestUniqueFileForEachMod())
             {
-                treeNode.IsExpanded = true;
-            }
-            else
-            {
-                // Otherwise send them to the download page!!
-                var latestFile = updatesOnPage.NewestFile();
-                var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(latestFile.Uid.FileId, latestFile.Uid.GameId);
+                var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(file.Uid.FileId, file.Uid.GameId);
                 var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
                 await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
             }
@@ -259,7 +274,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         {
             // Note(sewer): There's usually just 1 file in like 99% of the cases here
             //              so no need to optimize around file reuse and TemporaryFileManager.
-            foreach (var newestFile in updatesOnPage.NewestFileForEachPage())
+            foreach (var newestFile in updatesOnPage.NewestUniqueFileForEachMod())
             {
                 await using var tempPath = _temporaryFileManager.CreateFile();
                 var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
