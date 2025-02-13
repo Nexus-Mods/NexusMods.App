@@ -535,8 +535,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout.Rebase(result.Db);
     }
 
-    /// <inheritdoc />
-    public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
+    /// <summary>
+    /// Alternative to <see cref="RunActions"/> that ignores changes and optionally clears the last sync loadout metadata
+    /// </summary>
+    public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation, bool clearLastSyncedLoadout = true)
     {
         using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
@@ -591,7 +593,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        if (clearLastSyncedLoadout && gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
             tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, (EntityId)gameMetadata.LastSyncedLoadout);
             tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, (EntityId)gameMetadata.LastSyncedLoadoutTransaction);
@@ -829,7 +831,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (prevLoadout.IsValid())
             {
                 await Synchronize(prevLoadout);
-                await DeactivateCurrentLoadout(loadout.InstallationInstance);
+                await DeactivateCurrentLoadout(loadout.InstallationInstance, clearLastSyncedLoadout: false);
                 await ActivateLoadout(loadout);
                 return loadout.Rebase();
             }
@@ -1253,9 +1255,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         );
     }
+    
 
     /// <inheritdoc />
-    public async Task DeactivateCurrentLoadout(GameInstallation installation)
+    public async Task DeactivateCurrentLoadout(GameInstallation installation, bool clearLastSyncedLoadout = true)
     {
         var metadata = installation.GetMetadata(Connection);
         
@@ -1266,7 +1269,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
         
         var commonIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
-        await ResetToOriginalGameState(installation, commonIds);
+        await ResetToOriginalGameState(installation, commonIds, clearLastSyncedLoadout);
     }
 
     /// <inheritdoc />
@@ -1454,7 +1457,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     
     /// <inheritdoc />
-    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
+    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds, bool clearLastSyncedLoadout = true)
     {
         var gameState = _fileHashService.GetGameFiles(installation, commonIds);
         var metaData = await ReindexState(installation, Connection);
@@ -1499,7 +1502,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         ProcessSyncTree(desiredState);
 
         // Run the groupings
-        await RunActions(desiredState, installation);
+        await RunActions(desiredState, installation, clearLastSyncedLoadout);
     }
 }
 

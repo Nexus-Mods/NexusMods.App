@@ -81,8 +81,9 @@ public interface ILoadoutSynchronizer
 
     /// <summary>
     /// Resets a game back to it's initial state, any applied loadouts will be unapplied.
+    /// Last synced loadout should be cleared if the game is being reset
     /// </summary>
-    public Task DeactivateCurrentLoadout(GameInstallation installation);
+    public Task DeactivateCurrentLoadout(GameInstallation installation, bool clearLastSyncedLoadout = true);
     
     /// <summary>
     /// Gets the currently active loadout for the game, if any.
