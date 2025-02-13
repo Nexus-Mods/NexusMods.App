@@ -1,4 +1,5 @@
 using System.Buffers;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
@@ -52,11 +53,25 @@ public class DepotChunkProvider : IChunkedStreamSource
                 );
                 var server = await _session.CDNPool.GetServer();
                 var depotKey = await _session.GetDepotKey(_appId, _depotId);
-                var cdnAuthToken = await _session.CDNPool.GetCDNAuthTokenAsync(_appId, _depotId, server);
+                string? cdnAuthToken = null;
+
                 var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
-                var read = await _session.CDNClient.DownloadDepotChunkAsync(_depotId.Value, chunkData, server,
-                    rented, depotKey, cdnAuthToken: cdnAuthToken
-                );
+                var read = 0;
+                try
+                {
+                    if (server.Type == "CDN")
+                        cdnAuthToken = await _session.CDNPool.GetCDNAuthTokenAsync(_appId, _depotId, server);
+
+                    read = await _session.CDNClient.DownloadDepotChunkAsync(_depotId.Value, chunkData, server,
+                        rented, depotKey, cdnAuthToken: cdnAuthToken
+                    );
+                }
+                catch (Exception)
+                {
+                    _session.CDNPool.FailServer();
+                    throw;
+                }
+
                 if (read != chunkData.UncompressedLength)
                     throw new InvalidOperationException("Failed to read the entire chunk");
                 rented.AsMemory(0, buffer.Length).CopyTo(buffer);
