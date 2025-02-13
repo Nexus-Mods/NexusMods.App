@@ -1,5 +1,4 @@
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -13,11 +12,6 @@ public partial class DirectDownloadLibraryFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Collections.DirectDownloadLibraryFile";
 
-    /// <summary>
-    /// The MD5 hash value of the downloaded file.
-    /// </summary>
-    public static readonly Md5Attribute Md5 = new(Namespace, nameof(Md5)) { IsIndexed = true };
-    
     /// <summary>
     /// A user-friendly name of the file.
     /// </summary>

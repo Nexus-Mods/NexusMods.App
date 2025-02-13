@@ -55,18 +55,21 @@
 
     <!-- Version -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemVersion.ColumnTemplateResourceKey}">
+        
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
+                
                 <!-- New version -->
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+NewVersionAvailable"
                                             ComponentKey="{x:Static local:LibraryColumns+ItemVersion.NewVersionComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LibraryComponents+NewVersionAvailable}">
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel x:Name="NewVersionStack"
+                                        Orientation="Horizontal">
                                 <TextBlock Text="{CompiledBinding CurrentVersion.Value.Value}" />
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"/>
                                 <TextBlock Text="{CompiledBinding NewVersion.Value}" />
@@ -97,18 +100,18 @@
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
+                
                 <!-- Update -->
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
-
-                            <Button Command="{CompiledBinding CommandUpdate}"
-                                    Classes="Standard"
-                                    HorizontalAlignment="Center">
-                                <TextBlock Text="{CompiledBinding ButtonText}"/>
-                            </Button>
-
+                            
+                            <controls:StandardButton Command="{CompiledBinding CommandUpdate}"
+                                                     Text="{CompiledBinding ButtonText}"
+                                                     Size="Small"
+                                                     Type="Primary"
+                                                     Fill="Weak" />
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
@@ -118,19 +121,20 @@
                                             ComponentKey="{x:Static local:LibraryColumns+Actions.InstallComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LibraryComponents+InstallAction}">
-
-                            <Button Command="{CompiledBinding CommandInstall}"
-                                    Classes="Standard"
-                                    Classes.Primary="{CompiledBinding !IsInstalled.Value}"
-                                    Classes.Tertiary="{CompiledBinding IsInstalled.Value}"
-                                    HorizontalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
-                                                       IsVisible="{CompiledBinding IsInstalled.Value}" />
-                                    <TextBlock Text="{CompiledBinding ButtonText.Value}" />
+                            <Panel>
+                                <controls:StandardButton Command="{CompiledBinding CommandInstall}"
+                                                         Text="{CompiledBinding ButtonText.Value}"
+                                                         Size="Small"
+                                                         Type="Primary"
+                                                         Fill="Strong"
+                                                         IsVisible="{CompiledBinding !IsInstalled.Value}"/>
+                                <StackPanel x:Name="InstalledStack" 
+                                            Orientation="Horizontal" 
+                                            IsVisible="{CompiledBinding IsInstalled.Value}">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"/>
+                                    <TextBlock Text="{CompiledBinding ButtonText.Value}"/>
                                 </StackPanel>
-                            </Button>
-
+                            </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -26,6 +27,7 @@ public class Md5Attribute(string ns, string name) : ScalarAttribute<Md5HashValue
 /// </summary>
 [JsonConverter(typeof(Md5HashValueConverter))]
 [ValueObject<UInt128>]
+[DebuggerDisplay("{Hex}")]
 public readonly partial struct Md5HashValue
 {
     /// <summary>
@@ -45,6 +47,11 @@ public readonly partial struct Md5HashValue
             Array.Reverse(bytes);
         return From(MemoryMarshal.Read<UInt128>(bytes));
     }
+
+    /// <summary>
+    /// Hex representation.
+    /// </summary>
+    public string Hex => Value.ToString("x8");
 
     /// <inheritdoc />
     public override string ToString() => Value.ToString("x8");

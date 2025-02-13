@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
@@ -21,6 +22,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;

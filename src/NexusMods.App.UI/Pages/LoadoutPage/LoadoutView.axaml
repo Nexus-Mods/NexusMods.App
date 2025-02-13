@@ -59,15 +59,6 @@
 
             <Border Classes="Toolbar">
                 <StackPanel>
-
-                    <controls:StandardButton x:Name="SwitchView"
-                                             Text="{x:Static resources:Language.FileOriginPage_SwitchView}"
-                                             Type="Tertiary"
-                                             Size="Small"
-                                             Fill="Weak"
-                                             ToolTip.Tip="{x:Static resources:Language.FileOriginPage_SwitchView_ToolTip}" />
-                    <Line />
-
                     <navigation:NavigationControl x:Name="ViewFilesButton"
                                                   Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
                                                   Type="Tertiary"

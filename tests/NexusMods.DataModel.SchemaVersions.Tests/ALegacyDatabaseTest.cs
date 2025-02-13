@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.Serialization;
@@ -72,6 +73,7 @@ public abstract class ALegacyDatabaseTest
             .AddFileHashes()
             .AddFileSystem()
             .AddDataModel()
+            .AddLibraryModels()
             .AddStardewValley()
             .AddLoadoutAbstractions()
             .AddFileExtractors()

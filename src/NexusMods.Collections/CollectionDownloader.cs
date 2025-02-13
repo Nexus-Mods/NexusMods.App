@@ -334,43 +334,25 @@ public class CollectionDownloader
 
     private static CollectionDownloadStatus GetStatus(CollectionDownloadExternal.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)
     {
-        var libraryFile = default(LibraryFile.ReadOnly);
+        var datoms = db.Datoms(LibraryFile.Md5, download.Md5);
+        if (datoms.Count == 0) return new CollectionDownloadStatus.NotDownloaded();
 
-        var directDownloadDatoms = db.Datoms(DirectDownloadLibraryFile.Md5, download.Md5);
-        if (directDownloadDatoms.Count > 0)
+        foreach (var datom in datoms)
         {
-            foreach (var datom in directDownloadDatoms)
-            {
-                libraryFile = DirectDownloadLibraryFile.Load(db, datom.E).AsLibraryFile();
-                if (libraryFile.IsValid()) break;
-            }
+            var libraryFile = DirectDownloadLibraryFile.Load(db, datom.E).AsLibraryFile();
+            if (libraryFile.IsValid()) return GetStatus(libraryFile.AsLibraryItem(), collectionGroup, db);
         }
 
-        if (!libraryFile.IsValid())
-        {
-            var locallyAddedDatoms = db.Datoms(LocalFile.Md5, download.Md5);
-            if (locallyAddedDatoms.Count > 0)
-            {
-                foreach (var datom in locallyAddedDatoms)
-                {
-                    libraryFile = LocalFile.Load(db, datom.E).AsLibraryFile();
-                    if (libraryFile.IsValid()) break;
-                }
-            }
-        }
-
-        if (!libraryFile.IsValid()) return new CollectionDownloadStatus.NotDownloaded();
-        return GetStatus(libraryFile.AsLibraryItem(), collectionGroup, db);
+        return new CollectionDownloadStatus.NotDownloaded();
     }
 
     private IObservable<CollectionDownloadStatus> GetStatusObservable(
         CollectionDownloadExternal.ReadOnly download,
         IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
     {
-        var directDownloads = _connection.ObserveDatoms(SliceDescriptor.Create(DirectDownloadLibraryFile.Md5, download.Md5, _connection.AttributeCache));
-        var locallyAdded = _connection.ObserveDatoms(SliceDescriptor.Create(LocalFile.Md5, download.Md5, _connection.AttributeCache));
+        var observable = _connection.ObserveDatoms(SliceDescriptor.Create(LibraryFile.Md5, download.Md5, _connection.AttributeCache));
 
-        return directDownloads.MergeChangeSets(locallyAdded, equalityComparer: DatomEntityIdEqualityComparer.Instance)
+        return observable
             .QueryWhenChanged(query => query.Items.FirstOrOptional(static _ => true))
             .Prepend(Optional<Datom>.None)
             .DistinctUntilChanged(OptionalDatomComparer.Instance)
