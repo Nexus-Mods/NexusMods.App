@@ -91,6 +91,7 @@
     <Style Selector="TreeDataGrid">
         <!-- <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" /> -->
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
 
 
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
@@ -227,7 +228,9 @@
 
         <Setter Property="Height" Value="52" />
         <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
 
+        
         <!-- needed to override the default coloring of this element -->
         <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
             <Setter Property="Background" Value="{x:Null}" />
