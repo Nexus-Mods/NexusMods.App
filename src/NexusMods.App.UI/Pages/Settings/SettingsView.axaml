@@ -42,25 +42,35 @@
             </StackPanel>
         </Border>
 
+
         <!-- expand to fill the remaining space -->
         <Border x:Name="BodySectionBorder"
                 Margin="0">
             <Border Margin="40,0" x:Name="ContentBorder">
                 <ScrollViewer>
-                    <ItemsControl x:Name="SettingEntriesItemsControl"
-                                  Margin="0,0,0,24">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Spacing="{StaticResource Spacing-2}" Margin="0 0 12 0" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                    <!-- NOTE(insomnious): Using a single column grid to limit the max width of the content while still letting it stretch.
+        HorizontalAlignment is ignored on a control when numerical entries are set on 
+        Width/Height/MaxWidth/MaxHeight etc.
+        -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MaxWidth="1024" />
+                        </Grid.ColumnDefinitions>
+                        <ItemsControl x:Name="SettingEntriesItemsControl"
+                                      Margin="0,0,0,24">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="{StaticResource Spacing-2}" Margin="0 0 12 0" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type ui1:IViewModelInterface}">
-                                <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type ui1:IViewModelInterface}">
+                                    <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
                 </ScrollViewer>
             </Border>
         </Border>
