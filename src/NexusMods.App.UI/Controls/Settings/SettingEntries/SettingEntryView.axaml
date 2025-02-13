@@ -18,7 +18,7 @@
         <Grid RowDefinitions="Auto, Auto">
             <Grid Grid.Row="0" 
                 ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="0" Orientation="Vertical">
+                <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left">
                     <TextBlock x:Name="EntryName" 
                                Theme="{StaticResource BodyMDNormalTheme}" 
                                Foreground="{StaticResource NeutralStrongBrush}"
@@ -27,7 +27,7 @@
                                Theme="{StaticResource BodySMNormalTheme}"
                                Foreground="{StaticResource NeutralSubduedBrush}"
                                TextWrapping="Wrap" />
-                    <reactiveUi:ViewModelViewHost x:Name="LinkViewModel" IsVisible="False" />
+                    <reactiveUi:ViewModelViewHost x:Name="LinkViewModel" IsVisible="True" Margin="0,8,0,0" />
                 </StackPanel>
 
                 <Border Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Top">
