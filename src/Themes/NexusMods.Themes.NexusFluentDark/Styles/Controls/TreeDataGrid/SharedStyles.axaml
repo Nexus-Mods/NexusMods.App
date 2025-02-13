@@ -27,10 +27,37 @@
             <Style Selector="^ > Panel > Image">
                 <Setter Property="Stretch" Value="UniformToFill" />
             </Style>
+            
+            <!-- The below aren't used yet but thought I'd placeholder it for future -->
+            <Style Selector="^ Border#ModFileCountBadgeBorder">
+                <Setter Property="Width" Value="14" />
+                <Setter Property="Height" Value="14" />
+                <Setter Property="Background" Value="{StaticResource BrandTranslucentDark600Brush}" />
+                <Setter Property="CornerRadius" Value="0,0,4,0" />
+                
+                <Style Selector="^ > TextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                </Style>
+            </Style>
+            
+            <Style Selector="^ Border#UpdateAvailableBadgeBorder">
+                <Setter Property="Width" Value="14" />
+                <Setter Property="Height" Value="14" />
+                <Setter Property="Background" Value="{StaticResource InfoModerateBrush}" />
+                <Setter Property="CornerRadius" Value="0,0,0,4" />
+                
+                <Style Selector="^ > icons|UnifiedIcon">
+                    <Setter Property="Size" Value="12" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                </Style>
+            </Style>
         </Style>
 
         <!-- name -->
         <Style Selector="^ Border.SharedColumn_Name_StringComponent TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
 
     </Style>

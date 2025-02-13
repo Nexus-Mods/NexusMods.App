@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.MnemonicDB.Abstractions;
@@ -67,13 +68,24 @@ public class MigrationService
     /// </summary>
     public async Task MigrateAll()
     {
+        var totalStopWatch = Stopwatch.StartNew();
+        var numMigrations = 0;
+
         var currentVersion = GetCurrentMigrationId(_connection.Db);
         foreach (var definition in _migrations.Where(m => m.Id > currentVersion))
         {
+            numMigrations++;
+
             var instance = (IMigration)_provider.GetRequiredService(definition.Type);
 
-            _logger.LogInformation("Running Migration ({Id}){Name}", definition.Id, definition.Name);
+            _logger.LogInformation("Running Migration `{Id}: {Name}`", definition.Id, definition.Name);
+
+            var prepareStopWatch = Stopwatch.StartNew();
             await instance.Prepare(_connection.Db);
+            var prepareDuration = prepareStopWatch.Elapsed;
+
+            var runStopWatch = Stopwatch.StartNew();
+
             switch (instance)
             {
                 case IScanningMigration scanningMigration:
@@ -110,7 +122,15 @@ public class MigrationService
                 default:
                     throw new NotImplementedException("No other migration types supported (yet)");
             }
+
+            var runDuration = runStopWatch.Elapsed;
+            var migrationDuration = prepareDuration + runDuration;
+
+            _logger.LogDebug("Migration `{Id}: {Name}` took `{PrepareDuration}` ms to prepare, `{RunDuration}` ms to run for a total of `{MigrationDuration}` ms", definition.Id, definition.Name, prepareDuration.TotalMilliseconds, runDuration.TotalMilliseconds, migrationDuration.TotalMilliseconds);
         }
+
+        var totalDuration = totalStopWatch.Elapsed;
+        _logger.LogInformation("Ran `{Count}` migration(s) in `{Duration}` seconds", numMigrations, totalDuration.TotalSeconds);
     }
 
     private EntityId SchemaVersionEntityId(IDb db, ITransaction tx, MigrationId definitionId)

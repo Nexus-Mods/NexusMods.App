@@ -31,8 +31,14 @@
     <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/LeftMenuNavButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml" />
-    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridBaseStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/SharedStyles.axaml" />
+    
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridLibraryStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridSortOrderStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridCollectionDownloadStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridOtherStyles.axaml" />
+    
     <StyleInclude Source="/Styles/Controls/TextBox/TextBoxStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml" />

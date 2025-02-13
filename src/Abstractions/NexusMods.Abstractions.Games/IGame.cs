@@ -66,6 +66,9 @@ public interface IGame : ILocatableGame
     /// <summary>
     /// Gets the fallback directory for mods in collections that don't have matching installers.
     /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2553 for details.
+    ///
+    /// Also is used for bundled mods.
+    /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2630 for details.
     /// </summary>
     Optional<GamePath> GetFallbackCollectionInstallDirectory();
 }

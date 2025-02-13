@@ -16,7 +16,8 @@ public static class Services
             .AddMigration<_0001_ConvertTimestamps>()
             .AddMigration<_0002_NexusCollectionItem>()
             .AddMigration<_0003_FixDuplicates>()
-            .AddMigration<_0004_RemoveGameFiles>();
+            .AddMigration<_0004_RemoveGameFiles>()
+            .AddMigration<_0005_MD5Hashes>();
     }
 
     /// <summary>
