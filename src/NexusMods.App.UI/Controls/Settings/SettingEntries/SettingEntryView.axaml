@@ -12,24 +12,31 @@
         <settingEntries:SettingEntryDesignViewModel />
     </Design.DataContext>
 
-    <Border Classes="Mid Rounded-lg"
-            Padding="24,12">
+    <Border Padding="16,12"
+            Background="{StaticResource SurfaceMidBrush}"
+            CornerRadius="{StaticResource Rounded-lg}">
         <Grid RowDefinitions="Auto, Auto">
             <Grid Grid.Row="0" 
                 ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <TextBlock x:Name="EntryName" Classes="BodyXLNormal" TextWrapping="Wrap" />
-                    <TextBlock x:Name="EntryDescription" Classes="BodyMDNormal ForegroundSubdued" TextWrapping="Wrap" />
-                    <reactiveUi:ViewModelViewHost x:Name="LinkViewModel" IsVisible="False" />
+                <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left">
+                    <TextBlock x:Name="EntryName" 
+                               Theme="{StaticResource BodyMDNormalTheme}" 
+                               Foreground="{StaticResource NeutralStrongBrush}"
+                               TextWrapping="Wrap" />
+                    <TextBlock x:Name="EntryDescription" 
+                               Theme="{StaticResource BodySMNormalTheme}"
+                               Foreground="{StaticResource NeutralSubduedBrush}"
+                               TextWrapping="Wrap" />
+                    <reactiveUi:ViewModelViewHost x:Name="LinkViewModel" IsVisible="True" Margin="0,8,0,0" />
                 </StackPanel>
 
-                <Border Grid.Column="1" Margin="8,0,0,0">
+                <Border Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Top">
                     <reactiveUi:ViewModelViewHost x:Name="InteractionControl" ClipToBounds="False" />
                 </Border>
             </Grid>
 
             <Border Grid.Row="1" 
-                    Classes="Rounded-lg"
+                    CornerRadius="{StaticResource Rounded-lg}"
                     x:Name="RequiresRestartBanner"
                     Padding="12"
                     Margin="0,6,0,0">
@@ -38,11 +45,14 @@
                                      Opacity="{StaticResource OpacityWeak}" />
                 </Border.Background>
 
-                <StackPanel Orientation="Horizontal"
-                            Classes="Spacing-2">
-
-                    <icons:UnifiedIcon Classes="Alert ForegroundWarningStrong" />
-                    <TextBlock Classes="BodyMDBold ForegroundWarningStrong" x:Name="RequiresRestartMessage" />
+                <StackPanel Orientation="Horizontal" 
+                            Spacing="{StaticResource Spacing-2}">
+                    <icons:UnifiedIcon 
+                        Value="{x:Static icons:IconValues.Warning}"
+                        Foreground="{StaticResource WarningStrongBrush}"/>
+                    <TextBlock x:Name="RequiresRestartMessage"
+                               Theme="{StaticResource BodyMDBoldTheme}"
+                               Foreground="{StaticResource WarningStrongBrush}"  />
                 </StackPanel>
 
             </Border>

@@ -10,7 +10,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.SettingComboBoxView">
 
-    <ComboBox HorizontalAlignment="Center" x:Name="ComboBox" Classes="Secondary">
+    <ComboBox HorizontalAlignment="Center" x:Name="ComboBox" Classes="Compact Secondary">
         <ComboBox.DataTemplates>
             <DataTemplate DataType="{x:Type system:String}">
                 <TextBlock Text="{CompiledBinding}"/>

@@ -648,8 +648,10 @@
     <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
         <value>Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play.</value>
     </data>
-
-
+    <data name="SettingsView_Description" xml:space="preserve">
+        <value>Manage your preferences.</value>
+    </data>
+    
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
