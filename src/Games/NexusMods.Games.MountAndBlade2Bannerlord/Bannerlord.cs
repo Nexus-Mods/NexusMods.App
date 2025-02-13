@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -36,6 +37,7 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
 
     private readonly IServiceProvider _serviceProvider;
     private readonly LauncherManagerFactory _launcherManagerFactory;
+    private readonly IFileSystem _fs;
 
     public override string Name => DisplayName;
     public override GameId GameId => GameIdStatic;
@@ -75,15 +77,16 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
     {
         _serviceProvider = serviceProvider;
         _launcherManagerFactory = launcherManagerFactory;
+        _fs = serviceProvider.GetRequiredService<IFileSystem>();
     }
 
     public override GamePath GetPrimaryFile(GameStore store) => GamePathProvier.PrimaryLauncherFile(store);
 
-    protected override Version GetVersion(GameLocatorResult installation)
+    public override Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
     {
         // Note(sewer): Bannerlord can use prefixes on versions etc. ,we want to strip them out
         // so we sanitize/parse with `ApplicationVersion`.
-        var bannerlordVerStr = Fetcher.GetVersion(installation.Path.ToString(), "TaleWorlds.Library.dll");
+        var bannerlordVerStr = Fetcher.GetVersion(installation.Path, "TaleWorlds.Library.dll");
         var versionStr = ApplicationVersion.TryParse(bannerlordVerStr, out var av) ? $"{av.Major}.{av.Minor}.{av.Revision}.{av.ChangeSet}" : "0.0.0.0";
         return Version.TryParse(versionStr, out var val) ? val : new Version();
     }
