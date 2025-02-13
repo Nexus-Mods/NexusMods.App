@@ -1,11 +1,9 @@
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 namespace NexusMods.Networking.NexusWebApi;
@@ -26,6 +24,8 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
     private readonly IDisposable _updateObserver;
+    private const int UpdateCheckCooldownSeconds = 30;
+    private DateTimeOffset _lastUpdateCheckTime = DateTimeOffset.MinValue;
 
     /// <summary/>
     public ModUpdateService(
@@ -95,8 +95,33 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
-    public async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true)
+    public async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true, bool throttle = true)
     {
+        // Note(sewer): There's no need for a lock here; in practice, only 1 API
+        // call is fired per method call. We just want to make sure we don't let users
+        // spam the Nexus API too much by putting an autoclicker on a refresh button.
+        //
+        // The code is generally fairly short running, less than 100ms with
+        // >1000 mods for most people (mostly dependent on ping to Nexus).
+        //
+        // There are no undesireable side effects when ran concurrently, even if
+        // hypothetically there can be multiple calls due to the tiny gap until the
+        // _lastUpdateCheckTime is updated.
+        if (throttle)
+        {
+            var timeLeft = UpdateCheckCooldownSeconds - (int)(DateTimeOffset.UtcNow - _lastUpdateCheckTime).TotalSeconds;
+            if (timeLeft > 0)
+            {
+                _logger.LogInformation("Skipping update check due to rate limit ({cooldown} seconds). Time left: {timeLeft} seconds.", UpdateCheckCooldownSeconds, timeLeft);
+                return PerFeedCacheUpdaterResult<PageMetadataMixin>.WithStatus(CacheUpdaterResultStatus.RateLimited);
+            }
+            _lastUpdateCheckTime = DateTimeOffset.UtcNow;
+        }
+        else
+        {
+            _lastUpdateCheckTime = DateTimeOffset.UtcNow;
+        }
+
         // Identify all mod pages needing a refresh
         var updateCheckResult = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(
             _connection.Db, 

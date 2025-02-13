@@ -16,8 +16,12 @@ public interface IModUpdateService
     /// </summary>
     /// <param name="token">Cancellation token</param>
     /// <param name="notify">True if external listeners should be notified after an update check.</param>
-    /// <returns>Updated mod information</returns>
-    Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true);
+    /// <param name="throttle">Whether to throttle the update check to specific intervals.</param>
+    /// <returns>
+    ///     Updated mod page information.
+    ///     Calls to this method may be throttled if <paramref name="throttle"/> is set to false.
+    /// </returns>
+    Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true, bool throttle = true);
 
     /// <summary>
     /// Notifies of updates to mod files and mod pages based on our existing metadata.
