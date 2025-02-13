@@ -899,7 +899,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <summary>
-    /// Returns true if <paramref name="a"/> should win over <paramref name="b"/> based
+    /// Returns true if <paramref name="b"/> should win over <paramref name="a"/> based
     /// on rules defined in a collection.
     /// </summary>
     protected Optional<bool> ShouldOtherWinWithCollectionRules(LoadoutItem.ReadOnly a, LoadoutItem.ReadOnly b)
