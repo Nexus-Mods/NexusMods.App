@@ -1,10 +1,7 @@
-using System.Diagnostics;
-using System.Security.Cryptography;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
@@ -32,17 +29,6 @@ internal class AddLocalFileJob : IJobDefinitionWithStart<AddLocalFileJob, LocalF
     {
         using var tx = Connection.BeginTransaction();
         var libraryFile = await AddLibraryFileJob.Create(ServiceProvider, tx, FilePath, doCommit: true, doBackup: false);
-
-        Md5HashValue md5;
-        await using (var fileStream = FilePath.Read())
-        {
-            using var algo = MD5.Create();
-            var rawHash = await algo.ComputeHashAsync(fileStream, cancellationToken: context.CancellationToken);
-            md5 = Md5HashValue.From(rawHash);
-        }
-
-        Debug.Assert(!md5.Equals(default(Md5HashValue)));
-        tx.Add(libraryFile.LibraryFileId, LibraryFile.Md5, md5);
 
         var localFile = new LocalFile.New(tx, libraryFile.LibraryFileId)
         {
