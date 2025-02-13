@@ -241,6 +241,42 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download all optional mods.
+        /// </summary>
+        public static string CollectionDownloadViewModel_DownloadOptional {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_DownloadOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download all required mods.
+        /// </summary>
+        public static string CollectionDownloadViewModel_DownloadRequired {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_DownloadRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install Collection.
+        /// </summary>
+        public static string CollectionDownloadViewModel_InstallCollection {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_InstallCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install downloaded optional mods.
+        /// </summary>
+        public static string CollectionDownloadViewModel_InstallOptional {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_InstallOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} of {1} required mods downloaded.
         /// </summary>
         public static string CollectionDownloadViewModel_Num_required_mods_downloaded {
@@ -255,6 +291,24 @@ namespace NexusMods.App.UI.Resources {
         public static string CollectionDownloadViewModel_Ready_to_install {
             get {
                 return ResourceManager.GetString("CollectionDownloadViewModel_Ready_to_install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install Update.
+        /// </summary>
+        public static string CollectionDownloadViewModel_UpdateCollection {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_UpdateCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View Installed Collection.
+        /// </summary>
+        public static string CollectionDownloadViewModel_ViewCollection {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_ViewCollection", resourceCulture);
             }
         }
         
@@ -2024,6 +2078,15 @@ namespace NexusMods.App.UI.Resources {
         public static string SettingEntryView_NeedRestartMessage {
             get {
                 return ResourceManager.GetString("SettingEntryView_NeedRestartMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage your preferences..
+        /// </summary>
+        public static string SettingsView_Description {
+            get {
+                return ResourceManager.GetString("SettingsView_Description", resourceCulture);
             }
         }
         

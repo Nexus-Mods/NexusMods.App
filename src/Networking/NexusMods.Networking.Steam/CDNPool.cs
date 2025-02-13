@@ -13,7 +13,7 @@ public class CDNPool
     /// <summary>
     /// CDN servers that we can use to download content.
     /// </summary>
-    private ConcurrentBag<Server> _servers = [];
+    private ConcurrentQueue<Server> _servers = [];
     private Server? _currentServer = null;
     
     /// <summary>
@@ -31,17 +31,33 @@ public class CDNPool
         if (_servers.IsEmpty)
         {
             var servers = await _session.Content.GetServersForSteamPipe();
+            servers = servers
+                .Where(c => c.Type is ("CDN" or "SteamCache"))
+                .OrderBy(c => c.Type == "CDN" ? 1 : 0)
+                .ThenBy(c => c.WeightedLoad)
+                .ToList();
             foreach (var server in servers)
             {
-                if (server.Type != "CDN")
-                    continue;
-                _servers.Add(server);
+                _servers.Enqueue(server);
             }
         }
+
+        var newServer = _currentServer;
         if (_currentServer == null)
-            _currentServer = _servers.First();
-        return _currentServer;
+        {
+            if (!_servers.TryDequeue(out newServer))
+                throw new Exception("No servers available");
+            _currentServer = newServer;
+        }
+        return newServer!;
     }
+    
+    internal void FailServer()
+    {
+        _currentServer = null;
+    }
+    
+    
 
     /// <summary>
     /// Get a CDN auth token for a given depot on a given server.
@@ -65,8 +81,13 @@ public class CDNPool
         var requestCode = await _session.GetManifestRequestCodeAsync(appId, depotId, manifestId, branch);
         var depotKey = await _session.GetDepotKey(appId, depotId);
         var server = await GetServer();
-        var cdnAuthToken = await GetCDNAuthTokenAsync(appId, depotId, server);
         
+        string? cdnAuthToken = null;
+        if (server.Type == "CDN")
+        {
+            cdnAuthToken = await GetCDNAuthTokenAsync(appId, depotId, server);
+        }
+
         var manifest = await _session.CDNClient.DownloadManifestAsync(depotId.Value, manifestId.Value, requestCode, server, depotKey, cdnAuthToken: cdnAuthToken);
         var parsed = ManifestParser.Parse(manifest);
         return parsed;

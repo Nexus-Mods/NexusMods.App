@@ -21,6 +21,17 @@
                                         <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
                                         <Image Source="{CompiledBinding Value.Value}" />
+                                        
+                                        <!-- The below grid is used to overlay the badge icons on top of the image.
+                                        This is not used yet but thought I'd placeholder it for future -->
+                                        <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Top" IsVisible="False">
+                                            <Border x:Name="ModFileCountBadgeBorder" Grid.Column="0">
+                                                <TextBlock Text="3"/>
+                                            </Border>
+                                            <Border x:Name="UpdateAvailableBadgeBorder" Grid.Column="2">
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}"/>
+                                            </Border>
+                                        </Grid>
                                     </Panel>
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>

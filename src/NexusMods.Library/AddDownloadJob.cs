@@ -26,6 +26,7 @@ internal class AddDownloadJob : IJobDefinitionWithStart<AddDownloadJob, LibraryF
         };
         return monitor.Begin<AddDownloadJob, LibraryFile.ReadOnly>(job);
     }
+
     public async ValueTask<LibraryFile.ReadOnly> StartAsync(IJobContext<AddDownloadJob> context)
     {
         await context.YieldAsync();

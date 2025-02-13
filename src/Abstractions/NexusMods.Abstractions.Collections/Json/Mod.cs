@@ -6,6 +6,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
+[UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
 public class Mod
 {
     /// <summary>

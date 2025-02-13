@@ -80,13 +80,18 @@ public static class Verbs
                     );
                 }
 
-                // For each depot and each manifest, download the manifest and index the files
-                await foreach (var depot in productInfo.Depots.WithProgress(renderer, "Indexing Depot").WithCancellation(token))
+                var options = new ParallelOptions
                 {
-                    await foreach (var (branch, manifestInfo) in depot.Manifests.WithProgress(renderer, "Indexing Manifest").WithCancellation(token))
+                    MaxDegreeOfParallelism = 4,
+                    CancellationToken = token,
+                };
+                // For each depot and each manifest, download the manifest and index the files
+                await Parallel.ForEachAsync(productInfo.Depots, options, async (depot, token) =>
+                {
+                    await Parallel.ForEachAsync(depot.Manifests, options, async (manifestInfo, token) =>
                     {
-                        var manifest = await steamSession.GetManifestContents(appId, depot.DepotId, manifestInfo.ManifestId,
-                            branch, token
+                        var manifest = await steamSession.GetManifestContents(appId, depot.DepotId, manifestInfo.Value.ManifestId,
+                            manifestInfo.Key, token
                         );
 
                         var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
@@ -100,10 +105,9 @@ public static class Verbs
 
                         await IndexManifest(steamSession, renderer, appId,
                             output, manifest, indentedOptions,
-                            existingHashes, token
-                        );
-                    }
-                }
+                            existingHashes, options);
+                    });
+                });
             }
         }
 
@@ -125,10 +129,10 @@ public static class Verbs
         return bag;
     }
 
-    private static async Task IndexManifest(ISteamSession session, IRenderer renderer, AppId appId, AbsolutePath output, Manifest manifest, JsonSerializerOptions indentedOptions, ConcurrentBag<Sha1> existingHashes, CancellationToken token)
+    private static async Task IndexManifest(ISteamSession session, IRenderer renderer, AppId appId, AbsolutePath output, Manifest manifest, JsonSerializerOptions indentedOptions, ConcurrentBag<Sha1> existingHashes, ParallelOptions options)
     {
         var writeLock = new SemaphoreSlim(1, 1);
-        await Parallel.ForEachAsync(manifest.Files, token, async (file, token) =>
+        await Parallel.ForEachAsync(manifest.Files, options, async (file, token) =>
             {
                 if (file.Size == Size.Zero)
                     return;

@@ -75,6 +75,7 @@ public class BuildHashesDb : IAsyncDisposable
         catch (Exception ex)
         {
             await _renderer.Error(ex, "Failed to build database");
+            throw;
         }
 
         await _renderer.TextLine("Exporting database");
@@ -160,19 +161,33 @@ public class BuildHashesDb : IAsyncDisposable
             // ?? is needed here because the parser 
             foreach (var id in definition.GOG ?? [])
             {
-                var build = GogBuild
-                    .FindByVersionName(referenceDb, id)
-                    .Where(g => g.OperatingSystem == os)
-                    .Single(g => productIds.Contains(g.ProductId));
-                tx.Add(versionDef, VersionDefinition.GogBuildsIds, build.Id);
+                try
+                {
+                    var build = GogBuild
+                        .FindByVersionName(referenceDb, id)
+                        .Where(g => g.OperatingSystem == os)
+                        .Single(g => productIds.Contains(g.ProductId));
+                    tx.Add(versionDef, VersionDefinition.GogBuildsIds, build.Id);
+                }
+                catch (InvalidOperationException _)
+                {
+                    await _renderer.TextLine("Failed to find GOG build for {0} {1} {2}", gameName, osName, id);
+                }
             }
 
             foreach (var id in definition.Steam ?? [])
             {
-                var manifest = SteamManifest
-                    .FindByManifestId(referenceDb, ManifestId.From(ulong.Parse(id)))
-                    .Single();
-                tx.Add(versionDef, VersionDefinition.SteamManifestsIds, manifest.Id);
+                try
+                {
+                    var manifest = SteamManifest
+                        .FindByManifestId(referenceDb, ManifestId.From(ulong.Parse(id)))
+                        .Single();
+                    tx.Add(versionDef, VersionDefinition.SteamManifestsIds, manifest.Id);
+                }
+                catch (InvalidOperationException _)
+                {
+                    await _renderer.TextLine("Failed to find Steam manifest for {0} {1} {2}", gameName, osName, id);
+                }
             }
         }
 
