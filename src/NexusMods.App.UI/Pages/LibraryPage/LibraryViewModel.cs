@@ -233,7 +233,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private async ValueTask HandleUpdateMessage(UpdateMessage updateMessage, CancellationToken cancellationToken)
     {
         var updatesOnPage = updateMessage.Updates;
-        var treeNode = updateMessage.TreeNode;
         
         // Note(sewer)
         // If the user is a free user, they have to go to the website due to API restrictions.
@@ -248,6 +247,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                // is fixed, we can revert.
 
                // If there are multiple mods, we expand the row
+               var treeNode = updateMessage.TreeNode;
                if (updatesOnPage.NumberOfModFilesToUpdate > 1)
                {
                    treeNode.IsExpanded = true; // 👈 TreeDataGrid bug. Doesn't handle PropertyChanged right.
@@ -375,7 +375,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
-public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, ITreeDataGridItemModel TreeNode);
+public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
