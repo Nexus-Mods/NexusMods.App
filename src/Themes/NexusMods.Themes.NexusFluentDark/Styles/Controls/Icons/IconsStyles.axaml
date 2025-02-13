@@ -152,6 +152,11 @@
                     <icons:UnifiedIcon Classes="PictogramBox2" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramBox2" Size="48" />
                 </WrapPanel>
+                <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramSettings" />
+                    <icons:UnifiedIcon Classes="PictogramSettings" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramSettings" Size="48" />
+                </WrapPanel>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -611,6 +616,9 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramHealth">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramHealth}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramSettings">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramSettings}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.Cardiology">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Cardiology}" />

@@ -8,98 +8,62 @@
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                                mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="550"
+                                xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
     <Design.DataContext>
         <settings:SettingsPageDesignViewModel />
     </Design.DataContext>
 
-    <Border Classes="Rounded-lg Low">
-        <Grid RowDefinitions="Auto, *, Auto">
-            <!-- TODO: use -->
-            <Border Grid.Row="0"
-                    IsVisible="False"
-                    x:Name="HeaderSectionBorder"
-                    Padding="24"
-                    HorizontalAlignment="Stretch">
+    <DockPanel>
+        <!-- header -->
+        <pageHeader:PageHeader DockPanel.Dock="Top"
+                               Margin="24,24,24,12"
+                               Title="{x:Static resources:Language.SettingsView_Title}"
+                               Description="{x:Static resources:Language.SettingsView_Description}"
+                               Icon="{x:Static icons:IconValues.PictogramSettings}" />
+        <!-- footer -->
+        <Border x:Name="FooterBorder"
+                DockPanel.Dock="Bottom"
+                BorderThickness="0,1,0,0"
+                BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+                Classes="Footer">
+            <StackPanel>
+                <controls:StandardButton x:Name="CancelButton"
+                                         Text="{x:Static resources:Language.DialogButton_Discard}"
+                                         Type="Tertiary"
+                                         Fill="Weak"
+                                         Size="Small" />
+                <controls:StandardButton x:Name="SaveButton"
+                                         Text="{x:Static resources:Language.DialogButton_SAVE}"
+                                         Type="Primary"
+                                         Fill="Strong"
+                                         Size="Small" />
+            </StackPanel>
+        </Border>
 
-                <Grid ColumnDefinitions="Auto, *, Auto">
+        <!-- expand to fill the remaining space -->
+        <Border x:Name="BodySectionBorder"
+                Margin="0">
+            <Border Margin="40,0" x:Name="ContentBorder">
+                <ScrollViewer>
+                    <ItemsControl x:Name="SettingEntriesItemsControl"
+                                  Margin="0,0,0,24">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="{StaticResource Spacing-2}" Margin="0 0 12 0" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                    <StackPanel Grid.Column="0"
-                                Orientation="Horizontal"
-                                Spacing="{StaticResource Spacing-2}">
-
-                        <icons:UnifiedIcon Classes="Cog ForegroundSubdued" Size="24" />
-                        <TextBlock Classes="BodyLGBold ForegroundSubdued"
-                                   Text="{x:Static resources:Language.SettingsView_Title}" />
-
-                    </StackPanel>
-
-                    <Button Grid.Column="2"
-                            Classes="BareIcon WindowClose ForegroundSubdued"
-                            x:Name="CloseButton">
-                    </Button>
-                </Grid>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type ui1:IViewModelInterface}">
+                                <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
             </Border>
-
-
-            <Border Grid.Row="1"
-                    x:Name="BodySectionBorder"
-                    Classes="Rounded-t-lg"
-                    Margin="0,0,12,0">
-
-                <Grid ColumnDefinitions="Auto, *">
-                    <!-- TODO: implement -->
-                    <Border Grid.Column="0"
-                            IsVisible="False"
-                            x:Name="SideBarBorder"
-                            Width="216">
-
-                        <!-- Add Filter Box here -->
-                        <ScrollViewer>
-                            <!-- Add category items here -->
-                        </ScrollViewer>
-                    </Border>
-
-                    <Border Grid.Column="1" Margin="24 12 12 12" x:Name="ContentBorder">
-                        
-                        <ScrollViewer>
-                            <ItemsControl x:Name="SettingEntriesItemsControl">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Classes="Spacing-1_5" Margin="0 0 12 0" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate DataType="{x:Type ui1:IViewModelInterface}">
-                                        <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}"/>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Border>
-                </Grid>
-            </Border>
-
-
-            <Border Grid.Row="2"
-                    x:Name="FooterBorder"
-                    BorderThickness="0,1,0,0"
-                    Classes="Footer OutlineWeak">
-                <StackPanel>
-                    <controls:StandardButton x:Name="CancelButton"
-                                    Text="{x:Static resources:Language.DialogButton_Discard}"
-                                    />
-                    <controls:StandardButton x:Name="SaveButton"
-                                             Text="{x:Static resources:Language.DialogButton_SAVE}"
-                                             Type="Primary"
-                                             Fill="Strong"
-                    />
-                    
-                </StackPanel>
-            </Border>
-        </Grid>
-    </Border>
+        </Border>
+    </DockPanel>
 
 </reactiveUi:ReactiveUserControl>

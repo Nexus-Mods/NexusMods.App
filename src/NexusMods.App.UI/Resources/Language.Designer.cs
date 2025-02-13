@@ -2028,6 +2028,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manage your preferences..
+        /// </summary>
+        public static string SettingsView_Description {
+            get {
+                return ResourceManager.GetString("SettingsView_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         public static string SettingsView_Title {

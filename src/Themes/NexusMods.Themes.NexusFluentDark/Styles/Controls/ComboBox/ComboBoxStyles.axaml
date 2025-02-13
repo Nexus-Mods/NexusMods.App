@@ -6,25 +6,22 @@
     <StyleInclude Source="ComboBoxStyles.addPanelDropDown.axaml" />
 
     <Design.PreviewWith>
-        <Border Padding="20" Height="400" Width="440">
-            <StackPanel Orientation="Vertical" Spacing="30">
-                <StackPanel Spacing="20" Orientation="Horizontal">
+        <Border Padding="8">
+            <StackPanel Orientation="Vertical" Spacing="16">
+                <StackPanel Spacing="8" Orientation="Horizontal">
                     <ComboBox Classes="Primary" PlaceholderText="Placeholder Text">
                         <ComboBoxItem>Item 1</ComboBoxItem>
                         <ComboBoxItem>Item 2</ComboBoxItem>
                     </ComboBox>
-
                     <ComboBox Classes="Primary" SelectedIndex="0">
                         <ComboBoxItem>Item 1</ComboBoxItem>
                         <ComboBoxItem>Item 2</ComboBoxItem>
                     </ComboBox>
-
                     <ComboBox Classes="Primary" IsEnabled="False" SelectedIndex="0">
                         <ComboBoxItem>Item 1</ComboBoxItem>
                         <ComboBoxItem>Item 2</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
-
                 <StackPanel Spacing="20" Orientation="Horizontal">
                     <ComboBox Classes="Secondary" PlaceholderText="Placeholder Text">
                         <ComboBoxItem>Item 1</ComboBoxItem>
@@ -66,7 +63,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Classes="ColorLens" Size="20" />
-                                    <TextBlock Text="Item" Classes="BodyLGNormalTheme" />
+                                    <TextBlock Text="Item" Theme="{StaticResource BodyLGNormalTheme}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -79,7 +76,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Classes="ColorLens" Size="20" />
-                                    <TextBlock Text="Item" Classes="BodyLGNormalTheme" />
+                                    <TextBlock Text="Item" Theme="{StaticResource BodyLGNormalTheme}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -92,7 +89,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <icons:UnifiedIcon Classes="ColorLens" Size="20" />
-                                    <TextBlock Text="Item" Classes="BodyLGNormalTheme" />
+                                    <TextBlock Text="Item" Theme="{StaticResource BodyLGNormalTheme}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
@@ -136,12 +133,10 @@
             <Thickness x:Key="ComboBoxDropdownContentMargin">4</Thickness>
         </Style.Resources>
         
-        
-        
         <Style Selector="^ /template/ ContentControl#ContentPresenter">
-            <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="FontSize" Value="16" />
+            <Style Selector="^ > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+            </Style>
         </Style>
 
         <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
@@ -309,7 +304,7 @@
     
     <Style Selector="ComboBox.Compact">
         
-        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+        <!-- <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" /> -->
         <Setter Property="Padding" Value="6,0,0,0"/>
 
         <Style Selector="^ PathIcon#DropDownGlyph">
@@ -318,16 +313,26 @@
         </Style>
 
         <Style Selector="^ /template/ Border#Background">
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <!-- <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" /> -->
+            <!-- <Setter Property="BorderThickness" Value="1" /> -->
             <Setter Property="Height" Value="28" />
+        </Style>
+        
+        <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        </Style>
+        
+        <Style Selector="^ /template/ ContentControl#ContentPresenter">
+            <Style Selector="^ > TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            </Style>
         </Style>
         
         <!-- pointerover -->
         <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentHighBrush}" />
+            <!-- <Setter Property="Background" Value="{StaticResource SurfaceTranslucentHighBrush}" /> -->
             <Style Selector="^ /template/ Border#Background">
-                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentStrongBrush}" />
+                <!-- <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentStrongBrush}" /> -->
             </Style>
         </Style>
     </Style>
