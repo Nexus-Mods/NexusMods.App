@@ -61,6 +61,14 @@ public record ExternalDownloadJob : HttpDownloadJob
                 throw new InvalidOperationException($"MD5 hash mismatch. Expected: {ExpectedMd5}, Actual: {md5Actual}");
         }
 
-        tx.Add(libraryFile, DirectDownloadLibraryFile.LogicalFileName, LogicalFileName);
+        _ = new DirectDownloadLibraryFile.New(tx, libraryFile.Id)
+        {
+            LocalFile = new LocalFile.New(tx, libraryFile.Id)
+            {
+                LibraryFile = libraryFile,
+                OriginalPath = LogicalFileName,
+            },
+            LogicalFileName = LogicalFileName,
+        };
     }
 }

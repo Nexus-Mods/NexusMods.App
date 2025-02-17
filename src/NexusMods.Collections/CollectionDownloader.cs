@@ -339,7 +339,7 @@ public class CollectionDownloader
 
         foreach (var datom in datoms)
         {
-            var libraryFile = DirectDownloadLibraryFile.Load(db, datom.E).AsLibraryFile();
+            var libraryFile = DirectDownloadLibraryFile.Load(db, datom.E).AsLocalFile().AsLibraryFile();
             if (libraryFile.IsValid()) return GetStatus(libraryFile.AsLibraryItem(), collectionGroup, db);
         }
 
