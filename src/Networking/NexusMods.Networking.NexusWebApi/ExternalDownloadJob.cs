@@ -70,5 +70,7 @@ public record ExternalDownloadJob : HttpDownloadJob
             },
             LogicalFileName = LogicalFileName,
         };
+
+        tx.Add(libraryFile.Id, LibraryItem.Name, LogicalFileName);
     }
 }

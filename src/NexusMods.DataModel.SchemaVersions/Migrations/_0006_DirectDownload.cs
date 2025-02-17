@@ -6,6 +6,7 @@ namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
 /// <summary>
 /// Turns all DirectDownloadLibraryFile entities into LocalFile entities by adding the LocalFile.OriginalPath attribute.
+/// Also updates the LibraryItem.Name attribute to use the provided LogicalFileName instead of the temporary file name.
 /// </summary>
 internal class _0006_DirectDownload : ITransactionalMigration
 {
@@ -24,6 +25,7 @@ internal class _0006_DirectDownload : ITransactionalMigration
         foreach (var entity in _entitiesToUpdate)
         {
             tx.Add(entity.Id, LocalFile.OriginalPath, entity.LogicalFileName);
+            tx.Add(entity.Id, LibraryItem.Name, entity.LogicalFileName);
         }
     }
 }
