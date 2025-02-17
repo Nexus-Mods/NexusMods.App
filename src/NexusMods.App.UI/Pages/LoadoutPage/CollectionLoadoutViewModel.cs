@@ -94,14 +94,10 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         CommandDeleteCollection = new ReactiveCommand(
             executeAsync: async (_, _) =>
             {
-                var db = connection.Db;
                 using var tx = connection.BeginTransaction();
-
-                var groupDatoms = db.Datoms(NexusCollectionLoadoutGroup.Revision, nexusCollectionGroup.RevisionId);
-                foreach (var datom in groupDatoms)
-                {
-                    tx.Delete(datom.E, recursive: true);
-                }
+                
+                // Delete collection loadout group and all installed mods inside it
+                tx.Delete(nexusCollectionGroup.Id, recursive: true);
 
                 await tx.Commit();
             },
