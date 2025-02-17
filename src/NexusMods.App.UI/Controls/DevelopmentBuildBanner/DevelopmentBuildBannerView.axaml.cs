@@ -22,11 +22,13 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
         InitializeComponent();
 
         var appVersion = GetAppVersion();
-        Text = $"{appVersion} - Stardew Valley Preview Build";
+        var prefix = CompileConstants.IsDebug ? "DEVELOPMENT USE ONLY" : "Stardew Valley Beta";
+        Text = $"{prefix} - {appVersion}";
     }
 
     private static string GetAppVersion()
     {
-        return CompileConstants.IsDebug ? "Debug build" : ApplicationConstants.Version.ToString();
+        var prefix = CompileConstants.IsDebug ? "Debug build" : ApplicationConstants.Version.ToString();
+        return $"{prefix} - {ApplicationConstants.CommitHash}";
     }
 }
