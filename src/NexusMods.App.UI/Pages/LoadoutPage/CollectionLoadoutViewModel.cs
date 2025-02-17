@@ -10,6 +10,10 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using System.Reactive.Linq;
+using NexusMods.Abstractions.Collections;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -31,8 +35,9 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         var tilePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundPipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
-
-        var group = CollectionGroup.Load(connection.Db, pageContext.GroupId);
+        
+        var nexusCollectionGroup = NexusCollectionLoadoutGroup.Load(connection.Db, pageContext.GroupId);
+        var group = nexusCollectionGroup.AsCollectionGroup();
         TabIcon = IconValues.CollectionsOutline;
         TabTitle = group.AsLoadoutItemGroup().AsLoadoutItem().Name;
 
@@ -84,6 +89,43 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
+        );
+        
+        CommandDeleteCollection = new ReactiveCommand(
+            executeAsync: async (_, _) =>
+            {
+                var db = connection.Db;
+                using var tx = connection.BeginTransaction();
+
+                var groupDatoms = db.Datoms(NexusCollectionLoadoutGroup.Revision, nexusCollectionGroup.RevisionId);
+                foreach (var datom in groupDatoms)
+                {
+                    tx.Delete(datom.E, recursive: true);
+                }
+
+                await tx.Commit();
+            },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
+
+        CommandViewCollectionDownloadPage = new ReactiveCommand<NavigationInformation>(
+            info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = CollectionDownloadPageFactory.StaticId,
+                    Context = new CollectionDownloadPageContext()
+                    {
+                        TargetLoadout = pageContext.LoadoutId,
+                        CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+            }
         );
 
         this.WhenActivated(disposables =>
@@ -137,4 +179,6 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
     public ReactiveCommand<Unit> CommandToggle { get; }
+    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    public ReactiveCommand<NavigationInformation> CommandViewCollectionDownloadPage { get; }
 }

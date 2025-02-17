@@ -124,6 +124,7 @@
                     <icons:UnifiedIcon Classes="FormatListCheckbox" />
                     <icons:UnifiedIcon Classes="DotsGrid" />
                     <icons:UnifiedIcon Classes="FormatAlignJustify" />
+                    <icons:UnifiedIcon Classes="MoreVertical" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -658,5 +659,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PanelAllFull">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PanelAllFull}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.MoreVertical">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.MoreVertical}" />
     </Style>
 </Styles>

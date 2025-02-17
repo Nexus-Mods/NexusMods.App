@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
 using R3;
 
@@ -37,4 +38,8 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
     Bitmap? BackgroundImage { get; }
 
     ReactiveCommand<Unit> CommandToggle { get; }
+    
+    ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    
+    ReactiveCommand<NavigationInformation> CommandViewCollectionDownloadPage { get; }
 }
