@@ -1,0 +1,20 @@
+    <reactive:ReactiveUserControl
+        x:TypeArguments="local:IDebugControlsPageViewModel"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:reactive="http://reactiveui.net"
+        xmlns:local="clr-namespace:NexusMods.App.UI.Pages.DebugControls"
+        xmlns:r3="clr-namespace:R3;assembly=R3"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
+    
+        <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-2}">
+            <ComboBox/>
+            <controls:StandardComboBox/>
+        </StackPanel>
+        
+</reactive:ReactiveUserControl>
+
