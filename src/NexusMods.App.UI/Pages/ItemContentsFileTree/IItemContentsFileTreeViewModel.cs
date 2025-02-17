@@ -1,8 +1,6 @@
-using System.Reactive;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.WorkspaceSystem;
-using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
 
@@ -12,5 +10,7 @@ public interface IItemContentsFileTreeViewModel : IPageViewModelInterface
 
     IFileTreeViewModel? FileTreeViewModel { get; }
 
-    ReactiveCommand<NavigationInformation, Unit> OpenEditorCommand { get; }
+    R3.ReactiveCommand<NavigationInformation> OpenEditorCommand { get; }
+    
+    R3.ReactiveCommand<R3.Unit> RemoveCommand { get; }
 }
