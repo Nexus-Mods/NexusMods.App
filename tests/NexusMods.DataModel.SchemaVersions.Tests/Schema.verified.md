@@ -3,7 +3,7 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x67D1122E715F4C48
+   - Fingerprint: 0x35A9F548B32E2CF0
    - Total attributes: 193
    - Total namespaces: 68
    
@@ -113,10 +113,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.SortableEntry/SortIndex                                         | Int32                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                      | Utf8                    | False   | False | False     | 
-| NexusMods.MnemonicDB.DatomStore/Indexed                                            | Null                    | False   | False | False     | 
+| NexusMods.MnemonicDB.DatomStore/Indexed                                            | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/NoHistory                                          | Null                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Optional                                           | Null                    | False   | False | False     | 
-| NexusMods.MnemonicDB.DatomStore/UniqueId                                           | Ascii                   | True    | False | False     | 
+| NexusMods.MnemonicDB.DatomStore/UniqueId                                           | Ascii                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/ValueType                                          | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/ExcisedDatoms                                     | UInt64                  | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/Timestamp                                         | Int64                   | False   | False | False     | 
