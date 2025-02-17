@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths.Extensions;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley.Installers;
@@ -37,6 +38,7 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller
         {
             var (manifestFileEntry, manifest) = tuple;
             var parent = manifestFileEntry.Path.Parent;
+            var isParentEmpty = parent.Length == 0;
 
             var smapiModGroup = new LoadoutItemGroup.New(transaction, out var smapiModEntityId)
             {
@@ -52,7 +54,11 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller
             var manifestLoadoutItemId = Optional<EntityId>.None;
             foreach (var fileEntry in libraryArchive.Children.Where(x => x.Path.InFolder(parent)))
             {
-                var to = new GamePath(LocationId.Game, Constants.ModsFolder.Join(fileEntry.Path.DropFirst(parent.Depth - 1)));
+                var path = isParentEmpty
+                    ? manifest.Name.ToRelativePath().Join(fileEntry.Path)
+                    : fileEntry.Path.DropFirst(parent.Depth - 1);
+
+                var to = new GamePath(LocationId.Game, Constants.ModsFolder.Join(path));
 
                 var loadoutFile = new LoadoutFile.New(transaction, out var entityId)
                 {
