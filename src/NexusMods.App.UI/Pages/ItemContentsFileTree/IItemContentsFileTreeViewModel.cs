@@ -13,4 +13,6 @@ public interface IItemContentsFileTreeViewModel : IPageViewModelInterface
     IFileTreeViewModel? FileTreeViewModel { get; }
 
     ReactiveCommand<NavigationInformation, Unit> OpenEditorCommand { get; }
+    
+    ReactiveCommand<Unit, Unit> RemoveCommand { get; }
 }

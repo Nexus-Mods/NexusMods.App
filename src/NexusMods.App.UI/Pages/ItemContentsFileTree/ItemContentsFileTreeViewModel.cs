@@ -14,6 +14,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.BCL;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -27,6 +28,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
     [Reactive] public FileTreeNodeViewModel? SelectedItem { get; [UsedImplicitly] private set; }
 
     public ReactiveCommand<NavigationInformation, Unit> OpenEditorCommand { get; }
+    public ReactiveCommand<Unit, Unit> RemoveCommand { get; }
 
     public ItemContentsFileTreeViewModel(
         ILogger<ItemContentsFileTreeViewModel> logger,
@@ -73,6 +75,39 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             .Select(item => item is { IsFile: true, IsDeletion: false })
         );
 
+        RemoveCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                var gamePath = SelectedItem!.Key;
+                var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
+                var loadoutItemsToDelete = group
+                    .Children
+                    .OfTypeLoadoutItemWithTargetPath()
+                    .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path))
+                    .ToArray();
+                    
+                if (loadoutItemsToDelete.Length == 0)
+                {
+                    logger.LogError("Unable to find Loadout files with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
+                    return;
+                }
+
+                using var tx = connection.BeginTransaction();
+                
+                foreach (var loadoutItem in loadoutItemsToDelete)
+                {
+                    tx.Delete(loadoutItem, recursive: false);
+                }
+
+                await tx.Commit();
+                
+                // Refresh the file tree, currently by re-creating it which isn't super great
+                FileTreeViewModel = new LoadoutItemGroupFileTreeViewModel(group.Rebase());
+            },
+            this.WhenAnyValue(vm => vm.SelectedItem)
+                .WhereNotNull()
+                .Select(_ => true)
+        );
+
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(vm => vm.Context)
@@ -81,7 +116,8 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                 .Where(group => group.IsValid())
                 .Do(group => TabTitle = group.AsLoadoutItem().Name)
                 .Select(group => new LoadoutItemGroupFileTreeViewModel(group))
-                .BindToVM(this, vm => vm.FileTreeViewModel)
+                .Do(viewModel => FileTreeViewModel = viewModel)
+                .Subscribe()
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(vm => vm.FileTreeViewModel!.TreeSource.Selection)
