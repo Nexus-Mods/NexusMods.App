@@ -1,6 +1,4 @@
-using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls.Selection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -17,6 +15,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using R3;
 
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
 
@@ -27,8 +26,10 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
     [Reactive] public IFileTreeViewModel? FileTreeViewModel { get; [UsedImplicitly] private set; }
     [Reactive] public FileTreeNodeViewModel? SelectedItem { get; [UsedImplicitly] private set; }
 
-    public ReactiveCommand<NavigationInformation, Unit> OpenEditorCommand { get; }
-    public ReactiveCommand<Unit, Unit> RemoveCommand { get; }
+    public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; }
+    public ReactiveCommand<Unit> RemoveCommand { get; }
+    
+    private DisposableBag _disposables;
 
     public ItemContentsFileTreeViewModel(
         ILogger<ItemContentsFileTreeViewModel> logger,
@@ -37,80 +38,81 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
     {
         TabIcon = IconValues.FolderOpen;
         TabTitle = "File Tree";
-        
-        OpenEditorCommand = ReactiveCommand.Create<NavigationInformation>(info =>
-        {
-            var gamePath = SelectedItem!.Key;
-            var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
-            var found = group
-                .Children
-                .OfTypeLoadoutItemWithTargetPath()
-                .OfTypeLoadoutFile()
-                .TryGetFirst(x => x.AsLoadoutItemWithTargetPath().TargetPath == gamePath, out var loadoutFile);
 
-            if (!found)
-            {
-                logger.LogError("Unable to find Loadout File with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
-                return;
-            }
-
-            var pageData = new PageData
-            {
-                FactoryId = TextEditorPageFactory.StaticId,
-                Context = new TextEditorPageContext
-                {
-                    FileId = loadoutFile.LoadoutFileId,
-                    FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3,
-                },
-            };
-
-            var workspaceController = windowManager.ActiveWorkspaceController;
-
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-            var workspaceId = workspaceController.ActiveWorkspaceId;
-            workspaceController.OpenPage(workspaceId, pageData, behavior);
-        },
-        this.WhenAnyValue(vm => vm.SelectedItem)
-            .WhereNotNull()
+        OpenEditorCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
             .Select(item => item is { IsFile: true, IsDeletion: false })
-        );
-
-        RemoveCommand = ReactiveCommand.CreateFromTask(async () =>
+            .ToReactiveCommand<NavigationInformation>(info =>
             {
                 var gamePath = SelectedItem!.Key;
                 var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
-                var loadoutItemsToDelete = group
+                var found = group
                     .Children
                     .OfTypeLoadoutItemWithTargetPath()
-                    .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path))
-                    .ToArray();
-                    
-                if (loadoutItemsToDelete.Length == 0)
+                    .OfTypeLoadoutFile()
+                    .TryGetFirst(x => x.AsLoadoutItemWithTargetPath().TargetPath == gamePath, out var loadoutFile);
+
+                if (!found)
                 {
-                    logger.LogError("Unable to find Loadout files with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
+                    logger.LogError("Unable to find Loadout File with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
                     return;
                 }
 
-                using var tx = connection.BeginTransaction();
-                
-                foreach (var loadoutItem in loadoutItemsToDelete)
+                var pageData = new PageData
                 {
-                    tx.Delete(loadoutItem, recursive: false);
-                }
+                    FactoryId = TextEditorPageFactory.StaticId,
+                    Context = new TextEditorPageContext
+                    {
+                        FileId = loadoutFile.LoadoutFileId,
+                        FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3,
+                    },
+                };
 
-                await tx.Commit();
+                var workspaceController = windowManager.ActiveWorkspaceController;
+
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                var workspaceId = workspaceController.ActiveWorkspaceId;
+                workspaceController.OpenPage(workspaceId, pageData, behavior);
+            })
+            .AddTo(ref _disposables);
+
+        RemoveCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
+            .WhereNotNull()
+            .Select(_ => true)
+            .ToReactiveCommand<R3.Unit>(async (_, cancellationToken) =>
+                {
+                    var gamePath = SelectedItem!.Key;
+                    var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
+                    var loadoutItemsToDelete = group
+                        .Children
+                        .OfTypeLoadoutItemWithTargetPath()
+                        .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path))
+                        .ToArray();
+                    
+                    if (loadoutItemsToDelete.Length == 0)
+                    {
+                        logger.LogError("Unable to find Loadout files with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
+                        return;
+                    }
+
+                    using var tx = connection.BeginTransaction();
                 
-                // Refresh the file tree, currently by re-creating it which isn't super great
-                FileTreeViewModel = new LoadoutItemGroupFileTreeViewModel(group.Rebase());
-            },
-            this.WhenAnyValue(vm => vm.SelectedItem)
-                .WhereNotNull()
-                .Select(_ => true)
-        );
+                    foreach (var loadoutItem in loadoutItemsToDelete)
+                    {
+                        tx.Delete(loadoutItem, recursive: false);
+                    }
+                    
+                    await tx.Commit();
+                
+                    // Refresh the file tree, currently by re-creating it which isn't super great
+                    FileTreeViewModel = new LoadoutItemGroupFileTreeViewModel(group.Rebase());
+                }
+            )
+            .AddTo(ref _disposables);
 
         this.WhenActivated(disposables =>
         {
-            this.WhenAnyValue(vm => vm.Context)
+            // Populate the file tree
+            this.ObservePropertyChanged(vm => vm.Context)
                 .WhereNotNull()
                 .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupId))
                 .Where(group => group.IsValid())
@@ -119,16 +121,23 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                 .Do(viewModel => FileTreeViewModel = viewModel)
                 .Subscribe()
                 .DisposeWith(disposables);
-
+            
+            // Observe selected items
             this.WhenAnyValue(vm => vm.FileTreeViewModel!.TreeSource.Selection)
+                .ToObservable()
                 .WhereNotNull()
-                .OfType<ITreeDataGridRowSelectionModel>()
-                .Select(selectionModel => selectionModel.WhenAnyValue(x => x.SelectedItem))
+                .OfType<ITreeDataGridSelection, ITreeDataGridRowSelectionModel>()
+                .Select(selectionModel => selectionModel.ObservePropertyChanged(model => model.SelectedItem))
                 .Switch()
                 .WhereNotNull()
-                .OfType<FileTreeNodeViewModel>()
-                .BindToVM(this, vm => vm.SelectedItem)
+                .OfType<object, FileTreeNodeViewModel>()
+                .Subscribe(item => SelectedItem = item)
                 .DisposeWith(disposables);
         });
+    }
+    
+    public void Dispose()
+    {
+        _disposables.Dispose();
     }
 }
