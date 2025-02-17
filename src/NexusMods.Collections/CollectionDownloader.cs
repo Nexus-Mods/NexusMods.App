@@ -401,8 +401,16 @@ public class CollectionDownloader
             .FilterOnObservable(item =>
             {
                 return groupObservable
-                    .Select(optional => optional.Convert(static group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId))
-                    .Select(loadoutId => loadoutId.HasValue && item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId.Value);
+                    .Select(group =>
+                    {
+                        if (!group.HasValue) return false;
+                        var itemLoadoutId = LoadoutItem.LoadoutId.Get(item);
+                        var groupLoadoutId = LoadoutItem.LoadoutId.Get(group.Value);
+                        var parentId = LoadoutItem.ParentId.Get(item);
+                        var id = group.Value.Id;
+
+                        return itemLoadoutId == groupLoadoutId && parentId == id;
+                    });
             })
             .QueryWhenChanged(query =>
             {
