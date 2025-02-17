@@ -1,4 +1,20 @@
-# v0.7.3 - 2024-02-03
+# v0.7.4 - 2025-02-XX
+This build is the first release candidate for the Stardew Valley Preview! It features an improved game version detection system, additional UI refinements 
+
+Features
+- External Changes tab - view and delete additional files in the loadout which are no part of the game or any mods.
+- Indexed Games - Stardew Valley on Steam/GOG has been indexed and allows the app to know if your game folder is clean on first managing it. It also now supports game updates. Backups and restore from GOG/Steam coming in the future. 
+- Instructions for collections
+- Fallback installer for SDV collections (default to Mods folder)
+- New Compact Header 
+- Locked/Read-only Mods when installed via a Collection
+
+Bug Fixes
+- Can now install SMAPI mods without a top level folder. 
+- When installing a collection the app now differentiates between a mod install via a collection or manually
+
+
+# v0.7.3 - 2025-02-03
 The release adds collections to the Library, introduces thumbnails for mods, and includes significant usability improvements for the left menu. 
 
 ## Collections in the Library
@@ -46,7 +62,7 @@ We've added the mod page image as a thumbnail in the Library, My Mods, and Colle
 * The "Load Order" heading toggle does not persist in the Load Order view. 
 
 
-# v0.7.2 - 2024-01-21
+# v0.7.2 - 2025-01-21
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
 
 ## UI Improvements 
