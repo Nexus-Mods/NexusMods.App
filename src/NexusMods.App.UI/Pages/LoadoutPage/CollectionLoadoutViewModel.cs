@@ -13,6 +13,7 @@ using System.Reactive.Linq;
 using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using R3;
 using ReactiveUI;
@@ -94,11 +95,26 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         CommandDeleteCollection = new ReactiveCommand(
             executeAsync: async (_, _) =>
             {
+                // Switch away from this page since its collection will be deleted
+                var pageData = new PageData
+                {
+                    FactoryId = LibraryPageFactory.StaticId,
+                    Context = new LibraryPageContext()
+                    {
+                        LoadoutId = pageContext.LoadoutId,
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                
+                
                 using var tx = connection.BeginTransaction();
                 
                 // Delete collection loadout group and all installed mods inside it
                 tx.Delete(nexusCollectionGroup.Id, recursive: true);
-
+                
                 await tx.Commit();
             },
             awaitOperation: AwaitOperation.Drop,
