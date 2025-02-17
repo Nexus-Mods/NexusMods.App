@@ -23,13 +23,12 @@
 
             <!-- all of our cells will be a type of this -->
             <Style Selector="^ TreeDataGridTemplateCell">
-                <!-- <Setter Property="Background" Value="Blue" /> -->
-                
+
                 <!-- collections download -> actions cell -->
                 <Style Selector="^.CollectionColumns_Actions">
                     <Setter Property="HorizontalAlignment" Value="Right" />
 
-                    <Style Selector="^ StackPanel#DownloadingStack">
+                    <Style Selector="^ StackPanel#DownloadedStack">
                         <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
                         <Style Selector="^ > spinner|Spinner">
@@ -37,7 +36,7 @@
                             <Setter Property="Height" Value="16" />
                             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         </Style>
-                        
+
                         <Style Selector="^ > icons|UnifiedIcon">
                             <Setter Property="Size" Value="16" />
                             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
