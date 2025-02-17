@@ -46,7 +46,6 @@
       <AdditionalFiles Include="Styles\Controls\RadioButton\RadioButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\TextBlock\TextBlockStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\TextBox\TextBoxStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\TreeDataGrid\TreeDataGridStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Window\DialogStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LaunchButton\LaunchButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LoadoutBadge\LoadoutBadgeStyles.axaml" />
