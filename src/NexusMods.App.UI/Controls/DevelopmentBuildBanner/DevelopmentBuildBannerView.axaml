@@ -18,7 +18,7 @@
     
     <alert:Alert
         Title="{Binding Text, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
-        Severity="Error"
+        Severity="Warning"
         ShowDismiss="False"
         ShowBody="False"
         CornerRadius="0"
