@@ -84,13 +84,11 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
             .Where(item => !CollectionDownloader.GetStatus(item, g, Connection.Db).IsInstalled(out _))
             .ToArray();
 
-        if (items.Length == 0) return Group.Value;
-
         var skipCount = Items.Length - items.Length;
         if (skipCount > 0) Logger.LogInformation("Skipping `{Count}` already installed items for `{CollectionName}/{RevisionNumber}`", skipCount, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
 
-        var isReady = CollectionDownloader.IsFullyDownloaded(items, db: Connection.Db);
-        if (!isReady) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
+        var isFullyDownloaded = CollectionDownloader.IsFullyDownloaded(items, db: Connection.Db);
+        if (!isFullyDownloaded) throw new InvalidOperationException("The collection hasn't fully been downloaded!");
 
         var root = await NexusModsLibrary.ParseCollectionJsonFile(SourceCollection, context.CancellationToken);
         var modsAndDownloads = GatherDownloads(items, root);
