@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Text.Json;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -141,6 +142,13 @@ public class FileHashesService : IFileHashesService, IDisposable
         return VersionDefinition.All(Current)
             .Where(v => v.GameId == installation.Game.GameId)
             .Select(v => v.Name)
+            .ToList();
+    }
+    
+    public IEnumerable<VersionDefinition.ReadOnly> GetVersionDefinitions(GameInstallation installation)
+    {
+        return VersionDefinition.All(Current)
+            .Where(v => v.GameId == installation.Game.GameId)
             .ToList();
     }
 
@@ -410,6 +418,23 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
     }
 
+    public string[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
+    {
+        if (gameInstallation.Store == GameStore.GOG)
+        {
+            return versionDefinition.GogBuilds.Select(build => build.BuildId.ToString()).ToArray();
+        }
+        else if (gameInstallation.Store == GameStore.Steam)
+        {
+            return versionDefinition.SteamManifests.Select(manifest => manifest.ManifestId.ToString()).ToArray();
+        }
+        else
+        {
+            throw new NotImplementedException("No way to get common IDs for: " + gameInstallation.Store);
+        }
+    }
+
+
     /// <inheritdoc />
     public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
     {
@@ -430,7 +455,29 @@ public class FileHashesService : IFileHashesService, IDisposable
         return versionMatches
             .OrderByDescending(t => t.Matches)
             .Select(t => t.Version)
-            .FirstOrDefault()!;
+            .FirstOrDefault() ?? string.Empty;
+    }
+
+    /// <inheritdoc />
+    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    {
+        var filesSet = files.ToHashSet();
+        
+        List<(VersionData VersionData, int Matches)> versionMatches = [];
+        foreach (var versionDefinition in GetVersionDefinitions(gameInstallation))
+        {
+            var commonIds = GetLocatorIdsForVersionDefinition(gameInstallation, versionDefinition);
+
+            var matchingCount = GetGameFiles(gameInstallation, commonIds)
+                .Count(file => filesSet.Contains((file.Path, file.Hash)));
+            
+            versionMatches.Add((new VersionData(commonIds, versionDefinition.Name), matchingCount));
+        }
+        
+        return versionMatches
+            .OrderByDescending(t => t.Matches)
+            .Select(t => t.VersionData)
+            .FirstOrOptional(item => true);
     }
 
     public void Dispose()
