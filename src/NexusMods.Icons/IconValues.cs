@@ -368,6 +368,10 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/swap-vertical"/
     public static readonly IconValue Swap = new ProjektankerIcon("mdi-swap-vertical");
+    
+    // https://pictogrammers.com/library/mdi/icon/dots-vertical/
+    public static readonly IconValue MoreVertical = new ProjektankerIcon("mdi-dots-vertical");
+    
 
 #endregion
     
