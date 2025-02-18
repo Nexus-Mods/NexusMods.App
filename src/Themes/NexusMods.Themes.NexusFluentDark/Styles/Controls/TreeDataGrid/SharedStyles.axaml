@@ -11,6 +11,7 @@
         
         <!-- fallback icon -->
         <Style Selector="^ icons|UnifiedIcon#FallbackIcon">
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
             <Setter Property="Size" Value="20" />
             <Setter Property="Margin" Value="2,0,0,0" />
         </Style>
