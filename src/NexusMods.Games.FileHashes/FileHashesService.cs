@@ -300,7 +300,10 @@ public class FileHashesService : IFileHashesService, IDisposable
             foreach (var gogId in locatorMetadata)
             {
                 if (!ulong.TryParse(gogId, out var parsedId))
-                    throw new InvalidOperationException("GOG locator metadata is not a valid ulong");
+                {
+                    _logger.LogWarning("Unable to parse `{Raw}` as ulong", gogId);
+                    return false;
+                }
 
                 var gogBuild = GogBuild.FindByBuildId(Current, BuildId.From(parsedId))
                     .FirstOrDefault();
