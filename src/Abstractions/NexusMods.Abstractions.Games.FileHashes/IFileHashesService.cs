@@ -60,6 +60,8 @@ public interface IFileHashesService
     /// <summary>
     /// Suggest a version definition for a given game installation
     /// </summary>
-    public Optional<VersionDefinition.ReadOnly> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
+    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
 
 }
+
+public record struct VersionData(string[] LocatorIds, string VersionName);

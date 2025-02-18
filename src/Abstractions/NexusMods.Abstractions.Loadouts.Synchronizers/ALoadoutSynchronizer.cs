@@ -499,7 +499,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         if (!suggestedVersionDefinition.HasValue)
             return loadout;
         
-        var newLocatorIds = _fileHashService.GetLocatorIdsForVersionDefinition(loadout.InstallationInstance, suggestedVersionDefinition.Value);
+        var newLocatorIds = suggestedVersionDefinition.Value.LocatorIds;
 
         var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds, StringComparer.OrdinalIgnoreCase).Count();
         var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds, StringComparer.OrdinalIgnoreCase).Count();
@@ -532,7 +532,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         
         // Update the version and locator ids
-        tx.Add(loadout, Loadout.GameVersion, suggestedVersionDefinition.Value.Name);
+        tx.Add(loadout, Loadout.GameVersion, suggestedVersionDefinition.Value.VersionName);
         foreach (var id in loadout.LocatorIds) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
         foreach (var id in newLocatorIds)

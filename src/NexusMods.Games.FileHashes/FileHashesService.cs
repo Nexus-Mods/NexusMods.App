@@ -459,11 +459,11 @@ public class FileHashesService : IFileHashesService, IDisposable
     }
 
     /// <inheritdoc />
-    public Optional<VersionDefinition.ReadOnly> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
     {
         var filesSet = files.ToHashSet();
         
-        List<(VersionDefinition.ReadOnly VersionDefinition, int Matches)> versionMatches = [];
+        List<(VersionData VersionData, int Matches)> versionMatches = [];
         foreach (var versionDefinition in GetVersionDefinitions(gameInstallation))
         {
             var commonIds = GetLocatorIdsForVersionDefinition(gameInstallation, versionDefinition);
@@ -471,12 +471,12 @@ public class FileHashesService : IFileHashesService, IDisposable
             var matchingCount = GetGameFiles(gameInstallation, commonIds)
                 .Count(file => filesSet.Contains((file.Path, file.Hash)));
             
-            versionMatches.Add((versionDefinition, matchingCount));
+            versionMatches.Add((new VersionData(commonIds, versionDefinition.Name), matchingCount));
         }
         
         return versionMatches
             .OrderByDescending(t => t.Matches)
-            .Select(t => t.VersionDefinition)
+            .Select(t => t.VersionData)
             .FirstOrOptional(item => true);
     }
 

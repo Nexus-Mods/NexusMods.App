@@ -215,8 +215,28 @@ public class StubbedFileHasherService : IFileHashesService
         return [];
     }
 
-    public Optional<VersionDefinition.ReadOnly> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
     {
-        throw new NotImplementedException();
+        var filesSet = files.ToHashSet();
+        
+        List<(VersionData VersionData, int Matches)> versionMatches = [];
+        foreach (var versionDefinition in _versionFiles)
+        {
+            var (locatorIds , versionFiles) = versionDefinition;
+            var matchingCount = GetGameFiles(gameInstallation, [locatorIds])
+                .Count(file => filesSet.Contains((file.Path, file.Hash)));
+            
+            if (!TryGetGameVersion(gameInstallation, [locatorIds], out var version))
+            {
+                throw new Exception("Failed to suggest a game version");
+            }
+            
+            versionMatches.Add((new VersionData([locatorIds], version), matchingCount));
+        }
+        
+        return versionMatches
+            .OrderByDescending(t => t.Matches)
+            .Select(t => t.VersionData)
+            .FirstOrOptional(item => true);
     }
 }
