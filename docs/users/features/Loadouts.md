@@ -2,7 +2,7 @@
 
 Loadouts offer a convenient way to manage several different mod setups for a single game. Players can easily swap between simple or complex mod setups by creating multiple loadouts. Some examples of why you would use loadouts are:
 
-- A single player and multiplayer loadout for Stardew Valley or Bannerlord. 
+- A single player and multiplayer loadout for Stardew Valley or Mount & Blade II: Bannerlord. 
 - Different loadouts for different characters in Cyberpunk 2077.
 - Separated loadouts for total conversion mods in Elder Scrolls or Fallout games. 
 - Testing a new setup without impacting your stable mod setup. 
