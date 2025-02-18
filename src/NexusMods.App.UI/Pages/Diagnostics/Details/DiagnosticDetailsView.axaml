@@ -55,32 +55,6 @@
                 </StackPanel>
             </DockPanel>
 
-            <Border DockPanel.Dock="Top" Classes="Toolbar"
-                    Background="Transparent"
-                    BorderThickness="0">
-
-                <StackPanel HorizontalAlignment="Left"
-                            Margin="0,20,0,0">
-                    <controls:StandardButton x:Name="SwitchView"
-                                             Text="Back"
-                                             Type="Tertiary"
-                                             Size="Small"
-                                             Fill="Weak"
-                                             ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.ArrowBack}"
-                                             IsEnabled="False" />
-
-                    <controls:StandardButton x:Name="DeleteButton"
-                                             Type="Tertiary"
-                                             Size="Small"
-                                             Fill="Weak"
-                                             ShowIcon="Left"
-                                             ShowLabel="False"
-                                             LeftIcon="{x:Static icons:IconValues.Copy}"
-                                             IsEnabled="False" />
-                </StackPanel>
-            </Border>
-
             <Border
                 x:Name="MarkdownWrapperBorder"
                 VerticalAlignment="Top"

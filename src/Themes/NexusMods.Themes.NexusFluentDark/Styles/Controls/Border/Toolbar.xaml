@@ -120,7 +120,6 @@
     <!-- Only applied when no grid -->
     <Style Selector="Border.Toolbar > StackPanel">
         <Setter Property="Margin" Value="24, 0" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
 
     <Style Selector="Border.Toolbar StackPanel">
