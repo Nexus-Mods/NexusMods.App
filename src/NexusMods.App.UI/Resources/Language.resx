@@ -410,7 +410,7 @@
         <value>View</value>
     </data>
     <data name="GameWidget__RemoveGame_ToolTip" xml:space="preserve">
-        <value>Removes the game and all mods managed by the app</value>
+        <value>Removes the game and all mods installed by the app</value>
     </data>
     <data name="GameWidget__Removing_game" xml:space="preserve">
         <value>Removing game</value>

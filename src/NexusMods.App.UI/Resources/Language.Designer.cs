@@ -1070,7 +1070,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Removes the game and all mods managed by the app.
+        ///   Looks up a localized string similar to Removes the game and all mods installed by the app.
         /// </summary>
         public static string GameWidget__RemoveGame_ToolTip {
             get {
