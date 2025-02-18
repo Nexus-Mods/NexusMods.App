@@ -13,7 +13,6 @@ using System.Reactive.Linq;
 using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.CollectionDownload;
-using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using R3;
 using ReactiveUI;
@@ -98,17 +97,17 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 // Switch away from this page since its collection will be deleted
                 var pageData = new PageData
                 {
-                    FactoryId = LibraryPageFactory.StaticId,
-                    Context = new LibraryPageContext()
+                    FactoryId = CollectionDownloadPageFactory.StaticId,
+                    Context = new CollectionDownloadPageContext()
                     {
-                        LoadoutId = pageContext.LoadoutId,
+                        TargetLoadout = pageContext.LoadoutId,
+                        CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
                     },
                 };
 
                 var workspaceController = GetWorkspaceController();
                 var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
-                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
-                
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
                 
                 using var tx = connection.BeginTransaction();
                 
@@ -121,7 +120,8 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             configureAwait: false
         );
 
-        CommandViewCollectionDownloadPage = new ReactiveCommand<NavigationInformation>(
+        CommandViewCollectionDownloadPage = ReactiveUI.ReactiveCommand.Create<NavigationInformation, System.Reactive.Unit>
+        (
             info =>
             {
                 var pageData = new PageData
@@ -137,6 +137,8 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 var workspaceController = GetWorkspaceController();
                 var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
                 workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                
+                return System.Reactive.Unit.Default;
             }
         );
 
@@ -192,5 +194,5 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
     [Reactive] public bool IsCollectionEnabled { get; private set; }
     public ReactiveCommand<Unit> CommandToggle { get; }
     public ReactiveCommand<Unit> CommandDeleteCollection { get; }
-    public ReactiveCommand<NavigationInformation> CommandViewCollectionDownloadPage { get; }
+    public ReactiveUI.ReactiveCommand<NavigationInformation, System.Reactive.Unit> CommandViewCollectionDownloadPage { get; }
 }
