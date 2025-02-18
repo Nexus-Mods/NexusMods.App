@@ -39,7 +39,7 @@
                 </controls:ComponentControl.ComponentTemplate>
 
                 <controls:ComponentControl.Fallback>
-                    <icons:UnifiedIcon Size="20" Value="{x:Static icons:IconValues.Mods}" />
+                    <icons:UnifiedIcon Size="20" Value="{x:Static icons:IconValues.ModsOutline}" />
                 </controls:ComponentControl.Fallback>
             </controls:ComponentControl>
 
