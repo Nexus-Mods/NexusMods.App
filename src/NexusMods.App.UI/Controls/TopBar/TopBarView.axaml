@@ -84,15 +84,6 @@
         <!-- right column (buttons, settings, login) -->
         <StackPanel Grid.Column="2" Margin="12 0" Orientation="Horizontal" Spacing="12">
 
-            <!-- feedback button -->
-            <controls:StandardButton x:Name="GiveFeedbackButton"
-                                     Text="Give Feedback"
-                                     Type="Tertiary"
-                                     Fill="None"
-                                     Size="Small"
-                                     LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
-                                     ShowIcon="Left"
-                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}" />
             <!-- help button -->
             <controls:StandardButton Type="Tertiary"
                                      Fill="None"
