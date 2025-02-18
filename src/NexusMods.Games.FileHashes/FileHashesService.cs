@@ -112,7 +112,9 @@ public class FileHashesService : IFileHashesService, IDisposable
             .Where(d => !d.FileName.EndsWith("_tmp"))
             .Select(d =>
                 {
-                    if (!ulong.TryParse(d.FileName, out var timestamp))
+                    // Format is "{guid}_{timestamp}"
+                    var parts = d.FileName.Split('_');
+                    if (parts.Length != 2 || !ulong.TryParse(parts[1], out var timestamp))
                         return default((DateTimeOffset, AbsolutePath));
                     return (DateTimeOffset.FromUnixTimeSeconds((long)timestamp), d);
                 })
@@ -169,8 +171,8 @@ public class FileHashesService : IFileHashesService, IDisposable
         if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
             return;
 
-        var tmpId = Guid.NewGuid().ToString();
-        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.{tmpId}.zip";
+        var guid = Guid.NewGuid().ToString();
+        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{guid}.{release.CreatedAt.ToUnixTimeSeconds()}.zip";
         
         {
             // download the database
@@ -180,7 +182,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
 
 
-        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}_{tmpId}";
+        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{guid}_{release.CreatedAt.ToUnixTimeSeconds()}_tmp";
         {
             // extract it 
             tempDir.CreateDirectory();
@@ -196,7 +198,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
 
         // rename the temp folder
-        var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / release.CreatedAt.ToUnixTimeSeconds().ToString();
+        var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / (guid + "_" + release.CreatedAt.ToUnixTimeSeconds());
         Directory.Move(tempDir.ToString(), finalDir.ToString());
 
         // delete the temp files
