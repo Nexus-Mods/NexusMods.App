@@ -274,8 +274,8 @@ public static class LibraryComponents
     {
         public ReactiveCommand<Unit> CommandUpdate { get; } = new();
 
-        private readonly BindableReactiveProperty<NexusModsFileMetadata.ReadOnly> _newFile;
-        public IReadOnlyBindableReactiveProperty<NexusModsFileMetadata.ReadOnly> NewFile => _newFile;
+        private readonly BindableReactiveProperty<ModUpdatesOnModPage> _newFiles;
+        public IReadOnlyBindableReactiveProperty<ModUpdatesOnModPage> NewFiles => _newFiles;
 
         private readonly BindableReactiveProperty<string> _buttonText;
         public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
@@ -283,39 +283,39 @@ public static class LibraryComponents
         public int CompareTo(UpdateAction? other)
         {
             if (other is null) return 1;
-            return NewFile.Value.UploadedAt.CompareTo(other.NewFile.Value.UploadedAt);
+            return NewFiles.Value.NewestFile().UploadedAt.CompareTo(other.NewFiles.Value.NewestFile().UploadedAt);
         }
 
         private readonly IDisposable _activationDisposable;
         
         // Single mod (row)
         public UpdateAction(
-            NexusModsFileMetadata.ReadOnly initialValue,
-            Observable<NexusModsFileMetadata.ReadOnly> valueObservable)
+            ModUpdateOnPage initialValue,
+            Observable<ModUpdateOnPage> valueObservable)
         {
-            _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue);
+            _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: (ModUpdatesOnModPage)initialValue);
             _buttonText = new BindableReactiveProperty<string>(value: Resources.Language.LibraryItemButtonUpdate_Single);
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, observable, disposables) =>
             {
-                observable.Subscribe(self, static (value, self) => self._newFile.Value = value).AddTo(disposables);
+                observable.Subscribe(self, static (value, self) => self._newFiles.Value = (ModUpdatesOnModPage)value).AddTo(disposables);
             });
         }
 
         // Mod page (row)
         public UpdateAction(
-            NewerFilesOnModPage initialValue,
-            Observable<NewerFilesOnModPage> valuesObservable)
+            ModUpdatesOnModPage initialValue,
+            Observable<ModUpdatesOnModPage> valuesObservable)
         {
-            _newFile = new BindableReactiveProperty<NexusModsFileMetadata.ReadOnly>(value: initialValue.NewestFile());
-            _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.Files.Length));
+            _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: initialValue);
+            _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.NumberOfModFilesToUpdate));
 
             _activationDisposable = this.WhenActivated(valuesObservable, static (self, observable, disposables) =>
             {
                 observable.Subscribe(self, static (values, self) =>
                 {
-                    self._newFile.Value = values.NewestFile();
-                    self._buttonText.Value = GetButtonText(values.Files.Length);
+                    self._newFiles.Value = values;
+                    self._buttonText.Value = GetButtonText(values.NumberOfModFilesToUpdate);
                 }).AddTo(disposables);
             });
         }

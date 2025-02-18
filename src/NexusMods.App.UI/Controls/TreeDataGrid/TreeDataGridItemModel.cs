@@ -14,6 +14,10 @@ namespace NexusMods.App.UI.Controls;
 public interface ITreeDataGridItemModel : IReactiveR3Object
 {
     ReactiveProperty<bool> IsSelected { get; }
+
+    bool IsExpanded { get; [UsedImplicitly] set; }
+    
+    IReadOnlyBindableReactiveProperty<bool> HasChildren { get; }
 }
 
 /// <summary>
@@ -21,18 +25,57 @@ public interface ITreeDataGridItemModel : IReactiveR3Object
 /// </summary>
 public class TreeDataGridItemModel : ReactiveR3Object, ITreeDataGridItemModel
 {
+    protected readonly BehaviorSubject<bool> ChildrenCollectionInitialization = new(initialValue: false);
+    protected readonly BindableReactiveProperty<bool> HasChildrenInternal = new();
+    private bool _isExpanded;
+    
     public ReactiveProperty<bool> IsSelected { get; } = new(value: false);
+    
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            if (_isExpanded && !value) ChildrenCollectionInitialization.OnNext(false);
+            RaiseAndSetIfChanged(ref _isExpanded, value);
+        }
+    }
+
+    public IObservable<bool> HasChildrenObservable { protected get; init; }
+    public IReadOnlyBindableReactiveProperty<bool> HasChildren => HasChildrenInternal;
+
+    protected TreeDataGridItemModel(IObservable<bool>? hasChildrenObservable)
+    {
+        HasChildrenObservable = hasChildrenObservable ?? Observable.Return(false);
+    }
+    
+    private bool _isDisposed;
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                Disposable.Dispose(
+                    ChildrenCollectionInitialization,
+                    HasChildrenInternal,
+                    IsSelected
+                );
+            }
+
+            _isDisposed = true;
+        }
+
+        base.Dispose(disposing);
+    }
 }
 
 public interface ITreeDataGridItemModel<out TModel, TKey> : ITreeDataGridItemModel
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
-    IReadOnlyBindableReactiveProperty<bool> HasChildren { get; }
 
     IEnumerable<TModel> Children { get; }
-
-    bool IsExpanded { get; [UsedImplicitly] set; }
 
     public static HierarchicalExpanderColumn<TModel> CreateExpanderColumn(IColumn<TModel> innerColumn)
     {
@@ -55,36 +98,18 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
-    public IObservable<bool> HasChildrenObservable { private get; init; }
-
-    private readonly BindableReactiveProperty<bool> _hasChildren = new();
-    public IReadOnlyBindableReactiveProperty<bool> HasChildren => _hasChildren;
-
     public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { private get; init; }
 
     private ObservableList<TModel> _children = [];
     private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
-
-    private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);
 
     [DebuggerBrowsable(state: DebuggerBrowsableState.Never)]
     public IEnumerable<TModel> Children
     {
         get
         {
-            _childrenCollectionInitialization.OnNext(true);
+            ChildrenCollectionInitialization.OnNext(true);
             return _childrenView;
-        }
-    }
-
-    private bool _isExpanded;
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set
-        {
-            if (_isExpanded && !value) _childrenCollectionInitialization.OnNext(false);
-            RaiseAndSetIfChanged(ref _isExpanded, value);
         }
     }
 
@@ -94,9 +119,8 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     private readonly SerialDisposable _childrenObservableSerialDisposable = new();
 
     protected TreeDataGridItemModel(IObservable<bool>? hasChildrenObservable = null,
-        IObservable<IChangeSet<TModel, TKey>>? childrenObservable = null)
+        IObservable<IChangeSet<TModel, TKey>>? childrenObservable = null) : base(hasChildrenObservable)
     {
-        HasChildrenObservable = hasChildrenObservable ?? Observable.Return(false);
         ChildrenObservable = childrenObservable ?? Observable.Empty<IChangeSet<TModel, TKey>>();
         _childrenView = _children.ToNotifyCollectionChanged();
 
@@ -105,7 +129,7 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
             // NOTE(erri120): TreeDataGrid uses `HasChildren` to show/hide the expander.
             model.HasChildrenObservable
                 .OnUI()
-                .SubscribeWithErrorLogging(hasChildren => model._hasChildren.Value = hasChildren)
+                .SubscribeWithErrorLogging(hasChildren => model.HasChildrenInternal.Value = hasChildren)
                 .AddTo(disposables);
 
             // NOTE(erri120): We only do this once. If you have an expanded parent and scroll
@@ -126,7 +150,7 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
                 // mostly out of our control.
                 // Additionally, subscribing to `ChildrenObservable` has to return at least one item immediately,
                 // otherwise we return an empty collection.
-                model._childrenCollectionInitializationSerialDisposable.Disposable = model._childrenCollectionInitialization
+                model._childrenCollectionInitializationSerialDisposable.Disposable = model.ChildrenCollectionInitialization
                     .DistinctUntilChanged()
                     .Subscribe(model, onNext: static (isInitializing, model) =>
                     {
@@ -164,12 +188,9 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
             if (disposing)
             {
                 Disposable.Dispose(
-                    _childrenCollectionInitialization,
                     _modelActivationDisposable,
                     _childrenObservableSerialDisposable,
-                    _childrenCollectionInitializationSerialDisposable,
-                    _hasChildren,
-                    IsSelected
+                    _childrenCollectionInitializationSerialDisposable
                 );
             }
 
