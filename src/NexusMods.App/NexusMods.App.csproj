@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <!-- Target WinExe so that a console isn't automatically created on Windows -->
+        <OutputType>WinExe</OutputType>
         <ApplicationIcon>icon.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
