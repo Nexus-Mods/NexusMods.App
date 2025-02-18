@@ -1,4 +1,6 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -49,5 +51,15 @@ public interface IFileHashesService
     /// Suggest a game version based on the files in a game installation
     /// </summary>
     public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
+
+    /// <summary>
+    /// Return the locator IDs for a specific version definition given a game installation
+    /// </summary>
+    public string[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition);
+
+    /// <summary>
+    /// Suggest a version definition for a given game installation
+    /// </summary>
+    public Optional<VersionDefinition.ReadOnly> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
 
 }
