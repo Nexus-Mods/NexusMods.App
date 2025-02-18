@@ -149,7 +149,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
                 var workspaceController = GetWorkspaceController();
                 var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
-                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
 
                 await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken: CancellationToken.None);
                 await collectionDownloader.DeleteRevision(_revision);
