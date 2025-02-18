@@ -95,16 +95,46 @@
                     <MenuFlyout>
                         <navigation:NavigationMenuItem
                             Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}"
-                            x:Name="ViewChangelogMenuItem" />
+                            x:Name="ViewChangelogMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ListBoxOutline}" />
+                            </MenuItem.Icon>
+                        </navigation:NavigationMenuItem>
                         <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}"
-                                  x:Name="ViewAppLogsMenuItem" />
-                        <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}"
-                                  x:Name="GiveFeedbackMenuItem" />
+                                  x:Name="ViewAppLogsMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="{x:Static resources:Language.ShowWelcomeMessageMenuItem_Header}"
+                                  x:Name="ShowWelcomeMessageMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.PartyPopper}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Discord"
+                                  x:Name="OpenDiscordMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Discord}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="GitHub"
+                                  x:Name="OpenGitHubMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.GitHub}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Nexus Mods Forums"
+                                  x:Name="OpenForumsMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Forum}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuFlyout>
                 </controls:StandardButton.Flyout>
             </controls:StandardButton>
 
-            <!-- settings button -->
+            <!-- settings button menu -->
             <navigation:NavigationControl x:Name="OpenSettingsButton"
                                           Type="Tertiary"
                                           Fill="None"
@@ -130,11 +160,23 @@
                     <Button.Flyout>
                         <MenuFlyout>
                             <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}"
-                                      x:Name="OpenNexusModsProfileMenuItem" />
+                                      x:Name="OpenNexusModsProfileMenuItem">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}"
-                                      x:Name="OpenNexusModsAccountSettingsMenuItem" />
+                                      x:Name="OpenNexusModsAccountSettingsMenuItem">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}"
-                                      x:Name="SignOutMenuItem" />
+                                      x:Name="SignOutMenuItem">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Logout}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuFlyout>
                     </Button.Flyout>
                     <icons:UnifiedIcon x:Name="AvatarUnifiedIcon"

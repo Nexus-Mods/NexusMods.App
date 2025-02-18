@@ -16,7 +16,6 @@ namespace NexusMods.App.UI.Overlays.AlphaWarning;
 [UsedImplicitly]
 public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, IAlphaWarningViewModel
 {
-    
     // NOTE(erri120): from https://github.com/Nexus-Mods/NexusMods.App/issues/1376
     private static readonly Uri DiscordUri = new("https://discord.gg/y7NfQWyRkj");
     private static readonly Uri ForumsUri = new("https://forums.nexusmods.com/forum/9052-nexus-mods-app/");

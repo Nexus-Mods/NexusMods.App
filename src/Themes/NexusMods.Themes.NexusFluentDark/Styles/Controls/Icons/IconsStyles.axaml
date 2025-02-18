@@ -125,6 +125,10 @@
                     <icons:UnifiedIcon Classes="DotsGrid" />
                     <icons:UnifiedIcon Classes="FormatAlignJustify" />
                     <icons:UnifiedIcon Classes="MoreVertical" />
+                    <icons:UnifiedIcon Classes="ListBoxOutline" />
+                    <icons:UnifiedIcon Classes="PartyPopper" />
+                    <icons:UnifiedIcon Classes="Logout" />
+                    <icons:UnifiedIcon Classes="AccountCog" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -134,6 +138,7 @@
                     <icons:UnifiedIcon Classes="GOG" />
                     <icons:UnifiedIcon Classes="Xbox" />
                     <icons:UnifiedIcon Classes="Epic" />
+                    <icons:UnifiedIcon Classes="GitHub" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="PanelAllFull" />
@@ -664,5 +669,20 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.MoreVertical">
         <Setter Property="Value" Value="{x:Static icons:IconValues.MoreVertical}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.ListBoxOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ListBoxOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PartyPopper">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PartyPopper}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.AccountCog">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.AccountCog}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Logout">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Logout}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.GitHub">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.GitHub}" />
     </Style>
 </Styles>

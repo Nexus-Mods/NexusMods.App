@@ -1097,15 +1097,6 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Give feedback.
-        /// </summary>
-        public static string GiveFeedbackMenuItem_Header {
-            get {
-                return ResourceManager.GetString("GiveFeedbackMenuItem.Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
         public static string Helpers_ERROR {
@@ -2109,6 +2100,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show welcome.
+        /// </summary>
+        public static string ShowWelcomeMessageMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ShowWelcomeMessageMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloads.
         /// </summary>
         public static string SpineDownloadButton_ToolTip {
@@ -2307,7 +2307,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View App logs.
+        ///   Looks up a localized string similar to View app logs.
         /// </summary>
         public static string ViewAppLogsMenuItem_Header {
             get {

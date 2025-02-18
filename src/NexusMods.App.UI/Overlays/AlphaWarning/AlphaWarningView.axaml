@@ -19,16 +19,14 @@
             Padding="24">
 
         <StackPanel HorizontalAlignment="Center" Spacing="32">
-
             <StackPanel Spacing="8">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}"
+                <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}"
                                    Size="56" />
 
                 <TextBlock Theme="{StaticResource BodyXLBoldTheme}"
                            TextAlignment="Center"
                            Foreground="{StaticResource NeutralStrongBrush}">
-                    Welcome to the
-                    <Span Foreground="{StaticResource StardewLinearGradientBrush}">Stardew Valley Preview</Span>
+                    Welcome to the <Span Foreground="{StaticResource StardewLinearGradientBrush}">Stardew Valley Preview</Span>
                 </TextBlock>
 
                 <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
@@ -50,16 +48,16 @@
                                              Text="Discord"
                                              Type="Tertiary"
                                              Fill="Weak"
-                                             Size="Medium"
+                                             Size="Small"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Discord}"
                                              ToolTip.Tip="Open Discord" />
 
                     <controls:StandardButton x:Name="OpenForumsButton"
-                                             Text="Forum"
+                                             Text="Nexus Mods Forums"
                                              Type="Tertiary"
                                              Fill="Weak"
-                                             Size="Medium"
+                                             Size="Small"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Forum}"
                                              ToolTip.Tip="Open Forums at Nexus Mods" />
@@ -68,9 +66,9 @@
                                              Text="GitHub"
                                              Type="Tertiary"
                                              Fill="Weak"
-                                             Size="Medium"
+                                             Size="Small"
                                              ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.Code}"
+                                             LeftIcon="{x:Static icons:IconValues.GitHub}"
                                              ToolTip.Tip="Open GitHub" />
                 </StackPanel>
             </StackPanel>

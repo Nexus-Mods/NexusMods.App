@@ -5,7 +5,7 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
     
     <Design.PreviewWith>
-        <Border Width="1280" Height="52">
+        <Border Width="1280" Height="200">
             <ui:TopBarView />
         </Border>
     </Design.PreviewWith>
@@ -19,19 +19,19 @@
             <Setter Property="Height" Value="32" />
             <Setter Property="Width" Value="32" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
 
             <Style Selector="^ icons|UnifiedIcon#AvatarUnifiedIcon">
-                <Setter Property="Size" Value="24" />
+                <Setter Property="Size" Value="26" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="Clip">
-                    <EllipseGeometry Rect="0, 0, 24, 24" />
+                    <EllipseGeometry Rect="0, 0, 26, 26" />
                 </Setter>
             </Style>
             
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             </Style>
             
             <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
@@ -39,7 +39,11 @@
             </Style>
             
             <Style Selector="^:flyout-open /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            </Style>
+            
+            <Style Selector="^:flyout-open icons|UnifiedIcon#AvatarUnifiedIcon">
+                <Setter Property="Opacity" Value="0.7" />
             </Style>
         </Style>
         
