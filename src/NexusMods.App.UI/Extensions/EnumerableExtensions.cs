@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using DynamicData.Kernel;
 
 namespace NexusMods.App.UI.Extensions;
@@ -97,5 +98,22 @@ public static class EnumerableExtensions
         }
 
         return minItem;
+    }
+
+    /// <summary>
+    /// Custom aggregation method that doesn't throw if the source is empty but instead returns a default value.
+    /// </summary>
+    public static T SafeAggregate<T>(this IEnumerable<T> source, T defaultValue, Func<T, T, T> func)
+    {
+        using var enumerator = source.GetEnumerator();
+        if (!enumerator.MoveNext()) return defaultValue;
+
+        var result = enumerator.Current;
+        while (enumerator.MoveNext())
+        {
+            result = func(result, enumerator.Current);
+        }
+
+        return result;
     }
 }

@@ -20,12 +20,6 @@ using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages;
 
-public enum CollectionDownloadsFilter
-{
-    OnlyRequired,
-    OnlyOptional,
-}
-
 public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;

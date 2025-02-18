@@ -105,10 +105,6 @@
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
             </controls:MultiComponentControl.AvailableTemplates>
-
-            <controls:MultiComponentControl.Fallback>
-                <icons:UnifiedIcon Size="20" Foreground="Red" Value="{x:Static icons:IconValues.Error}"/>
-            </controls:MultiComponentControl.Fallback>
         </controls:MultiComponentControl>
     </DataTemplate>
 
