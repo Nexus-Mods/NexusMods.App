@@ -24,7 +24,7 @@ Diagnostics are shown in the following situations and uses the SubModule.xml fil
 
 
 ### Selective Game Backup
-When managing Bannerlord the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
+When managing Mount & Blade II: Bannerlord, the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
 
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 

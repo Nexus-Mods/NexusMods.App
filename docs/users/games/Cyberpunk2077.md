@@ -42,7 +42,7 @@ Changes in REDmods are always overwritten by similar changes inside archive mods
 When mods using the official REDmod system are installed, it may be necessary to run the the REDmod tool. The app will detect when this is necessary and run it automatically before starting the game. 
 
 ### Selective Game Backup
-When managing Cyberpunk 2077 the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
+When managing Cyberpunk 2077, the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
 
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 
