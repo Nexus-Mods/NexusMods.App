@@ -1,6 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DataContext=""
-    d:DesignHeight="52"
+    d:DesignHeight="250"
     d:DesignWidth="1024"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"

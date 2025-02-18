@@ -1,6 +1,6 @@
 <reactiveUi:ReactiveUserControl
     d:DesignHeight="48"
-    d:DesignWidth="800"
+    d:DesignWidth="1000"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.DevelopmentBuildBanner.DevelopmentBuildBannerView"
     x:TypeArguments="developmentBuildBanner:IDevelopmentBuildBannerViewModel"
@@ -31,11 +31,22 @@
                 Theme="{StaticResource BodyMDBoldTheme}"
                 Foreground="{StaticResource StardewLinearGradientBrush}"
                 VerticalAlignment="Center"/>
+            
             <TextBlock
                 Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
                 Theme="{StaticResource BodyMDBoldTheme}"
                 Foreground="{StaticResource NeutralModerateBrush}"
                 VerticalAlignment="Center" />
+            
+            <!-- feedback button -->
+            <controls:StandardButton x:Name="GiveFeedbackButton"
+                                     Text="Give Feedback"
+                                     Type="Secondary"
+                                     Fill="Strong"
+                                     Size="Small"
+                                     LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
+                                     ShowIcon="Left"
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}" />
         </StackPanel>
 
     </Border>
