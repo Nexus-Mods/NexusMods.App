@@ -88,6 +88,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """, [loadoutA, loadoutB]
         );
         
+        await Synchronizer.DeactivateCurrentLoadout(loadoutA.InstallationInstance);
         await Synchronizer.ActivateLoadout(loadoutA);
         
         LogDiskState(sb, "## 9 - Switch back to Loadout A",

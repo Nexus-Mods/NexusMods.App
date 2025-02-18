@@ -538,7 +538,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Alternative to <see cref="RunActions"/> that ignores changes and optionally clears the last sync loadout metadata
     /// </summary>
-    public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation, bool clearLastSyncedLoadout = true)
+    public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
     {
         using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
@@ -593,7 +593,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        if (clearLastSyncedLoadout && gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
             tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, (EntityId)gameMetadata.LastSyncedLoadout);
             tx.Retract(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, (EntityId)gameMetadata.LastSyncedLoadoutTransaction);
@@ -831,7 +831,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (prevLoadout.IsValid())
             {
                 await Synchronize(prevLoadout);
-                await DeactivateCurrentLoadout(loadout.InstallationInstance, clearLastSyncedLoadout: false);
+                await DeactivateCurrentLoadout(loadout.InstallationInstance);
                 await ActivateLoadout(loadout);
                 return loadout.Rebase();
             }
@@ -1258,7 +1258,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
 
     /// <inheritdoc />
-    public async Task DeactivateCurrentLoadout(GameInstallation installation, bool clearLastSyncedLoadout = true)
+    public async Task DeactivateCurrentLoadout(GameInstallation installation)
     {
         var metadata = installation.GetMetadata(Connection);
         
@@ -1269,7 +1269,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
         
         var commonIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
-        await ResetToOriginalGameState(installation, commonIds, clearLastSyncedLoadout);
+        await ResetToOriginalGameState(installation, commonIds);
     }
 
     /// <inheritdoc />
@@ -1457,7 +1457,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     
     /// <inheritdoc />
-    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds, bool clearLastSyncedLoadout = true)
+    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
     {
         var gameState = _fileHashService.GetGameFiles(installation, commonIds);
         var metaData = await ReindexState(installation, Connection);
@@ -1502,7 +1502,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         ProcessSyncTree(desiredState);
 
         // Run the groupings
-        await RunActions(desiredState, installation, clearLastSyncedLoadout);
+        await RunActions(desiredState, installation);
     }
 }
 
