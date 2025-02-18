@@ -136,7 +136,7 @@
     <PackageVersion Include="BitFaster.Caching" Version="2.5.2" />
     <PackageVersion Include="CliWrap" Version="3.6.7" />
     <PackageVersion Include="DynamicData" Version="9.0.4" />
-    <PackageVersion Include="GameFinder" Version="4.4.0" />
+    <PackageVersion Include="GameFinder" Version="4.5.0" />
     <PackageVersion Include="Humanizer" Version="2.14.1" />
     <PackageVersion Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageVersion Include="Mutagen.Bethesda.Skyrim" Version="0.44.0" />

@@ -46,9 +46,14 @@ public class HeroicGogLocator : IGameLocator
             if (!_cachedGames.TryGetValue(GOGGameId.From(id), out var found)) continue;
             var fs = found.Path.FileSystem;
 
-            if (found is HeroicGOGGame heroicGOGGame && heroicGOGGame.WinePrefixPath.DirectoryExists())
+            if (found is HeroicGOGGame heroicGOGGame)
             {
-                fs = heroicGOGGame.GetWinePrefix().CreateOverlayFileSystem(fs);
+                var wineData = heroicGOGGame.WineData;
+                if (wineData is not null)
+                {
+                    if (wineData.WinePrefixPath.DirectoryExists())
+                        fs = heroicGOGGame.GetWinePrefix()!.CreateOverlayFileSystem(fs);
+                }
             }
 
             yield return new GameLocatorResult(found.Path, fs, GameStore.GOG, new HeroicGOGLocatorResultMetadata
