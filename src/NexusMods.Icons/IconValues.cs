@@ -600,6 +600,10 @@ public static class IconValues
     /// </summary>
     public static readonly IconValue PictogramSettings = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/settings.svg"));
 
+    /// <summary>
+    /// Brand pictogram for Celebrate
+    /// </summary>
+    public static readonly IconValue PictogramCelebrate = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg"));
 #endregion
     
 }

@@ -1,4 +1,4 @@
-﻿<reactiveUi:ReactiveUserControl
+<reactiveUi:ReactiveUserControl
     d:DesignHeight="48"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -18,44 +18,24 @@
         <developmentBuildBanner:DevelopmentBuildBannerDesignViewModel />
     </Design.DataContext>
 
-    <reactiveUi:ReactiveUserControl.Resources>
-        <LinearGradientBrush x:Key="RainbowBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-            <GradientStop Color="#4ade80" Offset="0" />
-            <GradientStop Color="#2563eb" Offset="1" />
-        </LinearGradientBrush>
-    </reactiveUi:ReactiveUserControl.Resources>
-
     <Border
         Padding=" 12, 10"
         BorderThickness="0,1,0,0"
         BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
         Background="{StaticResource SurfaceBaseBrush}"
         CornerRadius="0">
-
-        <StackPanel Orientation="Horizontal" Spacing="16">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBlock
-                    Text="{Binding AppName, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
-                    Theme="{StaticResource BodyMDBoldTheme}"
-                    Foreground="{StaticResource RainbowBrush}"
-                    VerticalAlignment="Center" />
-
-                <TextBlock
-                    Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
-                    Theme="{StaticResource BodyMDBoldTheme}"
-                    Foreground="{StaticResource NeutralModerateBrush}"
-                    VerticalAlignment="Center" />
-            </StackPanel>
-
-            <!-- feedback button -->
-            <controls:StandardButton x:Name="GiveFeedbackButton"
-                                     Text="Give Feedback"
-                                     Type="Secondary"
-                                     Fill="Strong"
-                                     Size="Small"
-                                     LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
-                                     ShowIcon="Left"
-                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}" />
+        
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock
+                Text="{Binding AppName, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
+                Theme="{StaticResource BodyMDBoldTheme}"
+                Foreground="{StaticResource StardewLinearGradientBrush}"
+                VerticalAlignment="Center"/>
+            <TextBlock
+                Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
+                Theme="{StaticResource BodyMDBoldTheme}"
+                Foreground="{StaticResource NeutralModerateBrush}"
+                VerticalAlignment="Center" />
         </StackPanel>
 
     </Border>

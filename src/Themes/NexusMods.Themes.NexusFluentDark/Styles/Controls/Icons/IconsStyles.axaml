@@ -139,24 +139,23 @@
                     <icons:UnifiedIcon Classes="PanelAllFull" />
                 </WrapPanel>
                 <WrapPanel>
-                    <icons:UnifiedIcon Classes="PictogramHealth" />
-                    <icons:UnifiedIcon Classes="PictogramHealth" Size="32" />
-                    <icons:UnifiedIcon Classes="PictogramHealth" Size="48" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="32" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" IsEnabled="False" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" Opacity="0.4" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramHealth" Classes="PictogramHealth" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramHealth" Classes="PictogramHealth" Size="32" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramHealth" Classes="PictogramHealth" Size="48" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramGame3D" Classes="PictogramGame3D" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramGame3D" Classes="PictogramGame3D" Size="32" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramGame3D" Classes="PictogramGame3D" Size="48" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramBox2" Classes="PictogramBox2" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramBox2" Classes="PictogramBox2" Size="32" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramBox2" Classes="PictogramBox2" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
-                    <icons:UnifiedIcon Classes="PictogramBox2" />
-                    <icons:UnifiedIcon Classes="PictogramBox2" Size="32" />
-                    <icons:UnifiedIcon Classes="PictogramBox2" Size="48" />
-                </WrapPanel>
-                <WrapPanel>
-                    <icons:UnifiedIcon Classes="PictogramSettings" />
-                    <icons:UnifiedIcon Classes="PictogramSettings" Size="32" />
-                    <icons:UnifiedIcon Classes="PictogramSettings" Size="48" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramSettings" Classes="PictogramSettings" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramSettings" Classes="PictogramSettings" Size="32" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramSettings" Classes="PictogramSettings" Size="48" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramCelebrate" Classes="PictogramCelebrate" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramCelebrate" Classes="PictogramCelebrate" Size="32" />
+                    <icons:UnifiedIcon ToolTip.Tip="PictogramCelebrate" Classes="PictogramCelebrate" Size="48" />
                 </WrapPanel>
             </StackPanel>
         </Border>
@@ -358,7 +357,7 @@
     <Style Selector="icons|UnifiedIcon.FolderOpenOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderOpen}" />
     </Style>
-    
+
     <Style Selector="icons|UnifiedIcon.FolderEditOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEditOutline}" />
     </Style>
@@ -659,6 +658,9 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PanelAllFull">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PanelAllFull}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramCelebrate">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramCelebrate}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.MoreVertical">
         <Setter Property="Value" Value="{x:Static icons:IconValues.MoreVertical}" />
