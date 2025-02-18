@@ -19,6 +19,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
+using ScopedAsyncLock = NexusMods.Abstractions.Jobs.ScopedAsyncLock;
 
 namespace NexusMods.Games.FileHashes;
 
