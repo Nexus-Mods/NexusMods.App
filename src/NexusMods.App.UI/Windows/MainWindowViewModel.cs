@@ -19,6 +19,7 @@ using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Tmds.DBus.Protocol;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -118,6 +119,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         return source.Exceptions
             .Subscribe(msg =>
                 {
+                    if (!ShouldShowError(msg))
+                        return;
+                    
                     var title = "Unhandled Exception";
                     var description = msg.Message;
                     string? details = null;
@@ -133,6 +137,31 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     Task.Run(() => MessageBoxOkViewModel.Show(provider, title, description, details));
                 }
             );
+    }
+
+    private static bool ShouldShowError(LogMessage msg)
+    {
+        // Note(sewer): On some Wayland compositors on Linux, there is currently a bug 
+        // where showing tooltips can trigger an exception dialog.
+        //
+        //   System.AggregateException: A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread. (org.freedesktop.DBus.Error.ServiceUnknown: The name is not activatable)
+        //    ---> Tmds.DBus.Protocol.DBusException: org.freedesktop.DBus.Error.ServiceUnknown: The name is not activatable
+        //      at Tmds.DBus.Protocol.DBusConnection.MyValueTaskSource`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+        //      at Tmds.DBus.Protocol.DBusConnection.CallMethodAsync(MessageBuffer message)
+        //      at Tmds.DBus.Protocol.Connection.CallMethodAsync(MessageBuffer message)
+        //      --- End of inner exception stack trace ---
+        //
+        // This needs to be fixed on Avalonia's end, unfortunately, which may take a while
+        // and wouldn't quite cut it for Stardew Valley Beta.
+        //
+        // For now, we opt to ignore this exception for the time being, while either us
+        // or the Avalonia folks come up with a solution. Whichever is first.
+        // ReSharper disable once MergeIntoPattern
+        if (msg.Exception is AggregateException aggregateException 
+            && aggregateException.InnerException is DBusException)
+            return false;
+
+        return true;
     }
 
     internal void OnClose()
