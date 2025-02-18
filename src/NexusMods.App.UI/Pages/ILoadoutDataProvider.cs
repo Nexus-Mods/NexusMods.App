@@ -129,7 +129,7 @@ public static class LoadoutDataProviderHelper
                 .Where(static optional => optional.HasValue)
                 .Select(static optional => optional.Value)
                 .Order(StringComparer.OrdinalIgnoreCase)
-                .Aggregate(static (a, b) => $"{a}, {b}")
+                .Aggregate(string.Empty, static (a, b) => $"{a}, {b}")
             );
 
         parentItemModel.Add(LoadoutColumns.Collections.ComponentKey, new StringComponent(

@@ -149,7 +149,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
                 var workspaceController = GetWorkspaceController();
                 var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
-                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
 
                 await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken: CancellationToken.None);
                 await collectionDownloader.DeleteRevision(_revision);
@@ -302,11 +302,13 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                         }
                         else
                         {
+                            IsInstalled.Value = false;
                             CollectionStatusText = Language.CollectionDownloadViewModel_Ready_to_install;
                         }
                     }
                     else
                     {
+                        IsInstalled.Value = false;
                         CollectionStatusText = string.Format(Language.CollectionDownloadViewModel_Num_required_mods_downloaded, numDownloadedRequiredItems, RequiredDownloadsCount);
                     }
                 }).AddTo(disposables);

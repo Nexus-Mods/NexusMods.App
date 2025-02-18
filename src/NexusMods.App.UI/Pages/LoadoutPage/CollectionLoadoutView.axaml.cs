@@ -41,6 +41,10 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .AddTo(disposables);
             this.BindCommand(ViewModel, vm => vm.CommandToggle, view => view.CollectionToggle)
                 .AddTo(disposables);
+            this.BindCommand(ViewModel, vm => vm.CommandDeleteCollection, view => view.RemoveCollectionMenuItem)
+                .AddTo(disposables);
+            this.BindCommand(ViewModel, vm => vm.CommandViewCollectionDownloadPage, view => view.ViewCollectionDownloadMenuItem)
+                .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.IsLocalCollection, view => view.NexusModsLogo.IsVisible, static b => !b)
                 .AddTo(disposables);
