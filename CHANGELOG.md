@@ -1,17 +1,34 @@
 # v0.7.4 - 2025-02-XX
-This build is the first release candidate for the Stardew Valley Preview! It features an improved game version detection system, additional UI refinements 
+This build is the first release candidate for the Stardew Valley Preview! It features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
+
+## Better game versioning
+We've make some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed in the backend of the 
+
+## External Changes
+fdsfds
+
+## More Features
+- Collections from Nexus Mods are now installed in a read-only state to ensure the collection as the curator intended it. Cloning and editing collections will be added in future.  
+- The Collection Download page now includes an Instructions tab which includes both collection and mod instructions. 
+- The header has been redesigned to be more compact. 
+- The Settings UI has been updated to match the latest brand guidelines.
+- Stardew Valley mods that are packaged without a top-level folder will now install correctly. 
+- Collections can now be removed from the loadout using the menu option in the header. 
+
+## Technical Changes
+- The app can now differentiate between a mod installed as part of a collection and the same mod installed directly from the Library. 
+- When installing collections for Stardew Valley, an unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
+- Conflicting mods within a collection are now installed in an order that respects the rules set by the curator. 
+
+## Bug Fixes
+- A Command Prompt window will no longer be open behind the app on Windows. 
+
+## Known Issues
+
 
 Features
 - External Changes tab - view and delete additional files in the loadout which are no part of the game or any mods.
 - Indexed Games - Stardew Valley on Steam/GOG has been indexed and allows the app to know if your game folder is clean on first managing it. It also now supports game updates. Backups and restore from GOG/Steam coming in the future. 
-- Instructions for collections
-- Fallback installer for SDV collections (default to Mods folder)
-- New Compact Header 
-- Locked/Read-only Mods when installed via a Collection
-
-Bug Fixes
-- Can now install SMAPI mods without a top level folder. 
-- When installing a collection the app now differentiates between a mod install via a collection or manually
 
 
 # v0.7.3 - 2025-02-03
