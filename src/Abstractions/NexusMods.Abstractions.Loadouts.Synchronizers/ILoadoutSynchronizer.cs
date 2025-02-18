@@ -56,13 +56,16 @@ public interface ILoadoutSynchronizer
     
     #region High Level Methods
     
+    public bool ShouldSynchronize(Loadout.ReadOnly loadout, DiskState previousState, DiskState lastScannedState);
+    
     /// <summary>
     /// Computes the difference between a loadout and a disk state, assuming the loadout to be the newer state.
     /// </summary>x
     /// <param name="loadout">Newer state, e.g. unapplied loadout</param>
-    /// <param name="diskState">The old state, e.g. last applied DiskState</param>
+    /// <param name="previousState">The old state, e.g. last applied DiskState</param>
+    /// <param name="lastScannedState">The last scanned state, e.g. the last time the game folder was scanned</param>
     /// <returns>A tree of all the files with associated <see cref="FileChangeType"/></returns>
-    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState);
+    FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState previousState, DiskState lastScannedState);
     
     /// <summary>
     /// Creates a loadout for a game, managing the game if it has not previously
@@ -78,6 +81,7 @@ public interface ILoadoutSynchronizer
 
     /// <summary>
     /// Resets a game back to it's initial state, any applied loadouts will be unapplied.
+    /// Last synced loadout should be cleared if the game is being reset
     /// </summary>
     public Task DeactivateCurrentLoadout(GameInstallation installation);
     

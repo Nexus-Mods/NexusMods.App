@@ -537,7 +537,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout.Rebase(result.Db);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Alternative to <see cref="RunActions"/> that ignores changes and optionally clears the last sync loadout metadata
+    /// </summary>
     public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
     {
         using var _ = await _lock.LockAsync();
@@ -976,10 +978,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return replacement.Id > existing.Id;
     }
     
-    /// <inheritdoc />
-    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState)
+    /// <summary>
+    /// Returns true if the loadout state doesn't match the last scanned disk state.
+    /// </summary>
+    public bool ShouldSynchronize(Loadout.ReadOnly loadout, DiskState previousDiskState, DiskState lastScannedDiskState)
     {
-        var syncTree = BuildSyncTree(DiskStateToPathPartPair(diskState), DiskStateToPathPartPair(diskState), loadout);
+        var syncTree = BuildSyncTree(DiskStateToPathPartPair(lastScannedDiskState), DiskStateToPathPartPair(previousDiskState), loadout);
+        // Process the sync tree to get the actions populated in the nodes
+        ProcessSyncTree(syncTree);
+        
+        return syncTree.Any(n => n.Value.Actions != Actions.DoNothing);
+    }
+    
+    /// <inheritdoc />
+    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState previousDiskState, DiskState lastScannedDiskState)
+    {
+        var syncTree = BuildSyncTree(DiskStateToPathPartPair(lastScannedDiskState), DiskStateToPathPartPair(previousDiskState), loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
 
@@ -1022,6 +1036,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     ChangeType = FileChangeType.Removed,
                     GamePath = path,
                 };
+            }
+            else if (actions.HasFlag(Actions.IngestFromDisk))
+            {
+                // File is already on disk and will not be changed
+                entry = new DiskDiffEntry
+                {
+                    Hash = node.Disk.Hash,
+                    Size = node.Disk.Size,
+                    ChangeType = FileChangeType.None,
+                    GamePath = path,
+                };
+            }
+            else if (actions.HasFlag(Actions.AddReifiedDelete))
+            {
+                // File is not on disk and will not end up on disk, so don't show it
+                continue;
             }
             else
             {
@@ -1296,6 +1326,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         );
     }
+    
 
     /// <inheritdoc />
     public async Task DeactivateCurrentLoadout(GameInstallation installation)
