@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Networking.NexusWebApi;
 
 namespace NexusMods.Collections;
@@ -144,6 +145,27 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                 Logger.LogError(e, "Failed to install `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
             }
         });
+
+        var allRequiredItems = CollectionDownloader.GetItems(RevisionMetadata, CollectionDownloader.ItemType.Required);
+        var allRequiredItemsInstalled = allRequiredItems.All(item => CollectionDownloader
+            .GetStatus(item, collectionGroup.AsCollectionGroup(), db: Connection.Db)
+            .IsInstalled(out _));
+
+        {
+            using var tx = Connection.BeginTransaction();
+
+            if (allRequiredItemsInstalled)
+            {
+                tx.Retract(collectionGroup.Id, LoadoutItem.Disabled, Null.Instance);
+            }
+            else
+            {
+                tx.Add(collectionGroup.Id, LoadoutItem.Disabled, Null.Instance);
+            }
+
+            var result = await tx.Commit();
+            collectionGroup = NexusCollectionLoadoutGroup.Load(result.Db, collectionGroup.Id);
+        }
 
         return collectionGroup;
     }
