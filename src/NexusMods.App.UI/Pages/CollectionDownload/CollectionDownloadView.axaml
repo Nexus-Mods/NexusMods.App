@@ -31,7 +31,7 @@
             </MenuItem>
             <MenuItem x:Name="MenuItemOpenJsonFile">
                 <MenuItem.Icon>
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
                     <TextBlock>Open JSON file</TextBlock>
