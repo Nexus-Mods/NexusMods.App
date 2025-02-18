@@ -35,6 +35,10 @@ public class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        // This code will not work properly if it comes after anything that uses the console. So we need to do this first.
+        if (OperatingSystem.IsWindows())
+            ConsoleHelper.EnsureConsole();
+        
         MainThreadData.SetMainThread();
 
         TelemetrySettings telemetrySettings;
@@ -106,9 +110,6 @@ public class Program
 
         try
         {
-            if (OperatingSystem.IsWindows())
-                ConsoleHelper.EnsureConsole();
-            
             if (startupMode.RunAsMain)
             {
                 LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
