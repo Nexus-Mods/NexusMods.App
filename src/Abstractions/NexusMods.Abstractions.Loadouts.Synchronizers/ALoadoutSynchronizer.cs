@@ -1283,7 +1283,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 }
 
                 if (!_fileHashService.TryGetGameVersion(installation, locatorMetadata, out var version))
-                    throw new Exception("Cannot create a loadout for an unknown game version");
+                    _logger.LogWarning("Unable to find game version for {Game}", installation.GameMetadataId);
 
                 var loadout = new Loadout.New(tx)
                 {

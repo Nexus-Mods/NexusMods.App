@@ -430,7 +430,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         return versionMatches
             .OrderByDescending(t => t.Matches)
             .Select(t => t.Version)
-            .FirstOrDefault()!;
+            .FirstOrDefault() ?? string.Empty;
     }
 
     public void Dispose()
