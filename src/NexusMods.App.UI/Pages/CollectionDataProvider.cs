@@ -21,6 +21,12 @@ using R3;
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
 
+public enum CollectionDownloadsFilter
+{
+    OnlyRequired,
+    OnlyOptional,
+}
+
 public class CollectionDataProvider
 {
     private readonly IConnection _connection;
