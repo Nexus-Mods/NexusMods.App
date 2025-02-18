@@ -3,7 +3,7 @@
 In this guide, we'll cover adding a mod to the Library by downloading it from Nexus Mods or importing a file from your PC. 
 
 ## Downloading directly from Nexus Mods
-Mods shared on the Nexus Mods website can be downloaded quickly and easily into the app. On a Nexus Mods page for a supported game, look for the "Mod Manager" button in the top-right of the page and the "Mod Manager Download" button on each file in the files tab. Clicking these buttons will pass a the mod to the app and begin the download. 
+Mods shared on the Nexus Mods website can be downloaded quickly and easily with the app. On a Nexus Mods page for a supported game, look for the "Mod Manager" button in the top-right of the page or the "Mod Manager Download" button on each file in the files tab. Clicking these buttons will pass the mod to the app and begin the download. 
 
 ![The Nexus Mods website with the top-right "Vortex" button highlighted and the "Mod Manager Download" button in the Files tab](../images/NexusModsModDownloadButtons.webp)
 
@@ -19,7 +19,7 @@ To add the file to the app, click the "From Drive" option on the Library page. Y
 
 ![The "From Drive" option highlighted in the Library to show how to add manually added archives.](../images/0.7.3/AddFromDrive.webp)
 
-Each imported file will be "grouped" as it's own mod and does not have any Nexus Mods metadata associated with it. 
+Each imported file will be "grouped" as its own mod and does not have any Nexus Mods metadata associated with it. 
 
 ## Troubleshooting
 Below are the common issues users report while downloading mods and the solutions.
@@ -27,7 +27,7 @@ Below are the common issues users report while downloading mods and the solution
 ### The mod doesn't have the "Mod Manager" buttons
 If a mod page doesn't have the buttons to download directly into the app, this can be for one of two reasons:
 
-1. The game you're trying to download files from is not supported by a mod manager that integrates with Nexus Mods.
+1. The game you're trying to download files for is not supported by a mod manager that integrates with Nexus Mods.
 2. The mod author has intentionally disabled the mod manager download options, this might be because the file cannot be installed with a mod manager - check the mod page for more information.
 
 In both cases, you can still add mods to the Library as explained in [Adding a mod to the Library manually](#adding-a-mod-to-the-library-manually) above.
