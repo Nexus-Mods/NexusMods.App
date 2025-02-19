@@ -15,11 +15,27 @@ internal static partial class Diagnostics
     internal static IDiagnosticTemplate MissingRequiredDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 1))
-        .WithTitle("Missing required dependency")
+        .WithTitle("Missing Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {SMAPIMod} is missing required dependency '{MissingDependencyModName}'")
+        .WithSummary("'{SMAPIMod}' requires '{MissingDependencyModName}' which is not installed")
         .WithDetails("""
-You can download the latest version of '{MissingDependencyModName}' (`{MissingDependencyModId}`) at {NexusModsDependencyUri}.
+The mod **{SMAPIMod}** requires **{MissingDependencyModName}** to function, but **{MissingDependencyModName}** is not installed.
+
+
+### How to Resolve
+1. Download and install **{MissingDependencyModName}** from {NexusModsDependencyUri}
+2. Add **{MissingDependencyModName}** to the loadout. 
+
+### Technical Details
+The `manifest.json` file included with **{SMAPIMod}** lists a mod with the ID `{MissingDependencyModId}` as a requirement or is using it as a framework in order function. 
+
+The issue can arise in these scenarios:
+
+1. **Missing Installation**: The required mod is not installed
+2. **Disabled Mod**: The required mod exists but isn't enabled in the loadout
+3. **Incorrect Mod ID**: The manifest data for **{MissingDependencyModName}** might be incorrect
+
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
