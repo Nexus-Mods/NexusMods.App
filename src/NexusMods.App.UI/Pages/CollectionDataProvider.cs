@@ -38,7 +38,7 @@ public class CollectionDataProvider
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-        _collectionDownloader = new CollectionDownloader(serviceProvider);
+        _collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
     }
 

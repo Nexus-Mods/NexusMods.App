@@ -63,7 +63,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var logger = serviceProvider.GetRequiredService<ILogger<LoadoutLeftMenuViewModel>>();
 
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
-        var collectionDownloader = new CollectionDownloader(serviceProvider);
+        var collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         
         // Library
         LeftMenuItemLibrary = new LeftMenuItemWithCountBadgeViewModel(
