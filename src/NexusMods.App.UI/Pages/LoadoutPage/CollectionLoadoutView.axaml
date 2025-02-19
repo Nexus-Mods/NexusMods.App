@@ -17,10 +17,10 @@
     </Design.DataContext>
 
     <!-- header, treedatagrid -->
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *">
 
         <!-- header -->
-        <Border x:Name="HeaderBorderBackground">
+        <Border Grid.Row="0" x:Name="HeaderBorderBackground">
             <Border x:Name="HeaderBorder">
 
                 <Border.Background>
@@ -30,7 +30,7 @@
                     </LinearGradientBrush>
                 </Border.Background>
 
-                <Grid RowDefinitions="Auto,Auto">
+                <Grid RowDefinitions="Auto,Auto,Auto">
 
                     <!-- first row (image and title) -->
                     <Border Grid.Row="0" x:Name="MainContentBorder" Padding="24">
@@ -203,9 +203,22 @@
                 </Grid>
             </Border>
         </Border>
+        
+        <!-- toolbar -->
+        <Border Grid.Row="1" Classes="Toolbar"
+                Padding="24,0"
+                Height="52">
+            <controls:StandardButton
+                Size="Small"
+                Type="Tertiary"
+                Fill="Weak"
+                LeftIcon="{x:Static icons:IconValues.FolderEyeOutline}"
+                ShowIcon="Left"
+                Text="View Mod Files"/>
+        </Border>
 
         <!-- tree data grid -->
-        <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
+        <TreeDataGrid Grid.Row="2" x:Name="TreeDataGrid"
                       ShowColumnHeaders="True"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="True"

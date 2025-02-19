@@ -125,6 +125,7 @@
                     <icons:UnifiedIcon Classes="DotsGrid" />
                     <icons:UnifiedIcon Classes="FormatAlignJustify" />
                     <icons:UnifiedIcon Classes="MoreVertical" />
+                    <icons:UnifiedIcon Classes="FolderEyeOutline" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -662,5 +663,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.MoreVertical">
         <Setter Property="Value" Value="{x:Static icons:IconValues.MoreVertical}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FolderEyeOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEyeOutline}" />
     </Style>
 </Styles>

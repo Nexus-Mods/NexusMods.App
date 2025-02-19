@@ -54,19 +54,6 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .SubscribeWithErrorLogging(value =>
                     {
                         CollectionToggle.IsChecked = value;
-                        ReadOnlyPillStack.IsVisible = value;
-                        //ToolbarDisabled.IsVisible = !value;
-
-                        if (value)
-                        {
-                            //ToolbarBorder.Classes.Add("Info");
-                            //ToolbarBorder.Classes.Remove("Warning");
-                        }
-                        else
-                        {
-                            //ToolbarBorder.Classes.Remove("Info");
-                            //ToolbarBorder.Classes.Add("Warning");
-                        }
                     }
                 )
                 .DisposeWith(disposables);

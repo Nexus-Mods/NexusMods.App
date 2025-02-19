@@ -261,6 +261,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/folder-outline/
     public static readonly IconValue Folder = new ProjektankerIcon("mdi-folder-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/folder-eye-outline/
+    public static readonly IconValue FolderEyeOutline = new ProjektankerIcon("mdi-folder-eye-outline");
 
     // https://pictogrammers.com/library/mdi/icon/check-underline/
     public static readonly IconValue FolderOpen = new ProjektankerIcon("mdi-folder-open-outline");
