@@ -32,7 +32,7 @@ The `manifest.json` file included with **{SMAPIMod}** lists a mod with the ID `{
 The issue can arise in these scenarios:
 
 1. **Missing Installation**: The required mod is not installed
-2. **Incorrect Mod ID**: The manifest data for **{MissingDependencyModName}** might be incorrect
+2. **Incorrect Mod ID**: The manifest data for **{SMAPIMod}** might be incorrect
 
 
 """)
@@ -60,7 +60,7 @@ The mod **{Dependent}** requires **{Dependency}** version {MinimumVersion} or hi
 2. Add the latest version of **{Dependency}** to the loadout
 3. Remove version {CurrentVersion} of **{Dependency}** from the loadout
 
-## Technical Details
+### Technical Details
 The `manifest.json` file included with **{Dependent}** lists **{Dependency}** as a requirement with a minimum version of {MinimumVersion}. 
 
 """
@@ -81,8 +81,18 @@ The `manifest.json` file included with **{Dependent}** lists **{Dependency}** as
         .WithId(new DiagnosticId(Source, number: 3))
         .WithTitle("SMAPI is not installed")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("SMAPI is required for {ModCount} Mod(s) but it's not installed")
-        .WithDetails("You can install the latest SMAPI version at {NexusModsSMAPIUri}.")
+        .WithSummary("Stardew Modding API (SMAPI) is required for {ModCount} mod(s) but is not installed")
+        .WithDetails("""
+Stardew Modding API (SMAPI) is the mod loader required to run mods for Stardew Valley. The loadout contains {ModCount} mod(s) that require SMAPI to work, but it is not installed.
+
+### How to Resolve
+1. Download Stardew Modding API (SMAPI) from {NexusModsSMAPIUri}
+2. Add SMAPI to the loadout
+
+### Technical Details
+Stardew Modding API (SMAPI) is required for most types of Stardew Valley mod as it provides core features that allow mod content to be loaded into the game.
+"""
+    )
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<int>("ModCount")
             .AddValue<NamedLink>("NexusModsSMAPIUri")
@@ -96,8 +106,17 @@ The `manifest.json` file included with **{Dependent}** lists **{Dependency}** as
         .WithId(new DiagnosticId(Source, number: 4))
         .WithTitle("SMAPI is not enabled")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("SMAPI is required for {ModCount} Mod(s) but it's not enabled")
-        .WithoutDetails()
+        .WithSummary("Stardew Modding API (SMAPI) is required for {ModCount} mod(s) but it's not enabled")
+        .WithDetails("""
+Stardew Modding API (SMAPI) is the mod loader required to run mods for Stardew Valley. The loadout contains {ModCount} mod(s) that require SMAPI to work, but it is not enabled.
+
+### How to Resolve
+1. Enable SMAPI in "Installed Mods".
+
+### Technical Details
+Stardew Modding API (SMAPI) is required for most types of Stardew Valley mod as it provides core features that allow mod content to be loaded into the game.    
+"""
+    )
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<int>("ModCount")
         )
@@ -108,10 +127,26 @@ The `manifest.json` file included with **{Dependent}** lists **{Dependency}** as
     internal static IDiagnosticTemplate DisabledRequiredDependencyTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 5))
-        .WithTitle("Required dependency is disabled")
+        .WithTitle("Disabled Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {SMAPIMod} requires {Dependency} to be enabled")
-        .WithoutDetails()
+        .WithSummary("'{SMAPIMod}' requires '{Dependency}' but it is disabled")
+        .WithDetails("""
+The mod **{SMAPIMod}** requires **{Dependency}** to function, but **{Dependency}** is not enabled.
+
+
+### How to Resolve
+1. Enable **{Dependency}** in "Installed Mods"
+
+### Technical Details
+The `manifest.json` file included with **{SMAPIMod}** lists **{Dependency}** as a requirement in order function. 
+
+The issue can arise in these scenarios:
+
+1. **Disabled Mod**: The required mod is disabled in the loadout
+2. **Incorrect Mod ID**: The manifest data for **{SMAPIMod}** might be incorrect
+
+"""
+    )
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
             .AddDataReference<LoadoutItemGroupReference>("Dependency")
@@ -123,15 +158,22 @@ The `manifest.json` file included with **{Dependent}** lists **{Dependency}** as
     internal static IDiagnosticTemplate ModCompatabilityObsoleteTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 6))
-        .WithTitle("Mod is obsolete")
+        .WithTitle("Obsolete Mod")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {SMAPIModName} is obsolete")
+        .WithSummary("'{SMAPIModName}' is reported as obsolete by SMAPI")
         .WithDetails("""
-Mod {SMAPIMod} has been made obsolete:
+The Stardew Modding API (SMAPI) mod compatibility list reports **{SMAPIMod}** as obsolete. This information is sourced from a combination of automated and community-submitted reports. 
+
+### How to Resolve
+1. Remove **{SMAPIMod}** from the loadout
+
+### Technical Details
+The Stardew Modding API (SMAPI) mod compatibility list has given the following information about the broken state of **{SMAPIMod}**:
 
 > {SMAPIModName} is obsolete because {ReasonPhrase}
 
-The compatibility status was extracted from the internal SMAPI metadata file.
+You may be able to find further information about this on the [SMAPI website](https://smapi.io/mods).
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
@@ -145,17 +187,25 @@ The compatibility status was extracted from the internal SMAPI metadata file.
     internal static IDiagnosticTemplate ModCompatabilityAssumeBrokenTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 7))
-        .WithTitle("Mod is assumed broken")
+        .WithTitle("Broken Mod")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {SMAPIModName} is assumed broken")
+        .WithSummary("'{SMAPIModName}' is reported as broken by SMAPI")
         .WithDetails("""
-Mod {SMAPIMod} is marked as broken by SMAPI:
+The Stardew Modding API (SMAPI) mod compatibility list reports **{SMAPIMod}** as broken. This information is sourced from a combination of automated and community-submitted reports. 
+
+### How to Resolve
+1. Check for a version of **{SMAPIMod}** newer than {ModVersion} on {ModLink}
+
+OR
+
+1. Remove **{SMAPIMod}** from the loadout
+
+### Technical Details
+The Stardew Modding API (SMAPI) mod compatibility list has given the following information about the broken state of **{SMAPIMod}**:
 
 > {ReasonPhrase}
 
-Please check for a version newer than {ModVersion} at {ModLink}.
-
-The compatibility status was extracted from the internal SMAPI metadata file.
+You may be able to find further information about this on the [SMAPI website](https://smapi.io/mods).
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
