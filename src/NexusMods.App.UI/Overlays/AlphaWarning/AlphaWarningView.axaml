@@ -10,44 +10,54 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+    mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Overlays.AlphaWarning.AlphaWarningView">
 
-    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
-        <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="24" Classes="Spacing-3_5">
+    <Border MinWidth="576" MaxWidth="576"
+            Background="{StaticResource SurfaceLowBrush}"
+            CornerRadius="8"
+            Padding="24">
 
-                <TextBlock Theme="{StaticResource HeadingXSSemiTheme}"
-                           Text="Thank you for joining the Nexus Mods app alpha test" />
+        <StackPanel HorizontalAlignment="Center" Spacing="32">
+            <StackPanel Spacing="8">
+                <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}"
+                                   Size="56" />
 
-                <alerts:Alert Title="Important"
-                              Body="This app is still very early in development and currently only supports a small set of games. Please ensure no mods are installed in your game folder before testing."
-                              ShowDismiss="False"
-                              Severity="Info" />
-
-                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
-                           TextWrapping="Wrap">
-                    Congratulations on being one of the first to dive into the Alpha test version of the Nexus Mods App!
-                    <LineBreak />
-                    <LineBreak />
-                    Your feedback is our compass. So, if you encounter any bugs, quirks, or have suggestions for improvement, don't hesitate to reach out.
+                <TextBlock Theme="{StaticResource BodyXLBoldTheme}"
+                           TextAlignment="Center"
+                           Foreground="{StaticResource NeutralStrongBrush}">
+                    Welcome to the <Span Foreground="{StaticResource StardewLinearGradientBrush}">Stardew Valley Preview</Span>
                 </TextBlock>
 
-                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource NeutralModerateBrush}"
+                           Text="Currently, the app supports Stardew Valley, with more games coming soon. Share your feedback anytime using the 'Give Feedback' button in the footer." />
+            </StackPanel>
+
+            <StackPanel Spacing="8">
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource NeutralModerateBrush}"
+                           Text="Join the discussion on:" />
+
+                <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
                     <controls:StandardButton x:Name="OpenDiscordButton"
                                              Text="Discord"
                                              Type="Tertiary"
                                              Fill="Weak"
-                                             Size="Medium"
+                                             Size="Small"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Discord}"
                                              ToolTip.Tip="Open Discord" />
 
                     <controls:StandardButton x:Name="OpenForumsButton"
-                                             Text="Forum"
+                                             Text="Nexus Mods Forums"
                                              Type="Tertiary"
                                              Fill="Weak"
-                                             Size="Medium"
+                                             Size="Small"
                                              ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Forum}"
                                              ToolTip.Tip="Open Forums at Nexus Mods" />
@@ -56,39 +66,27 @@
                                              Text="GitHub"
                                              Type="Tertiary"
                                              Fill="Weak"
-                                             Size="Medium"
+                                             Size="Small"
                                              ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.Code}"
+                                             LeftIcon="{x:Static icons:IconValues.GitHub}"
                                              ToolTip.Tip="Open GitHub" />
                 </StackPanel>
-
-                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
-                           Text="Thank you for embarking on this exciting journey with us. Happy modding!" />
-
             </StackPanel>
 
-        </base:MessageBoxBackground.TopContent>
-
-        <base:MessageBoxBackground.BottomContent>
-            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right"
-                        Spacing="{StaticResource Spacing-3}">
-                <controls:StandardButton x:Name="ViewChangelogInAppButton"
-                                         Text="Changelog"
-                                         Type="Tertiary"
-                                         Fill="Strong"
-                                         Size="Medium"
-                                         ShowIcon="None"
-                                         LeftIcon="{x:Static icons:IconValues.FileEdit}"
-                                         ToolTip.Tip="View the changelog in app (closes this message)" />
+            <StackPanel Spacing="16">
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource NeutralModerateBrush}"
+                           Text="Enjoy the preview, and happy modding!" />
 
                 <controls:StandardButton x:Name="DoneButton"
-                                         HorizontalAlignment="Right"
+                                         HorizontalAlignment="Center"
                                          Type="Primary"
                                          Fill="Strong"
                                          Text="Let's Go" />
             </StackPanel>
-
-        </base:MessageBoxBackground.BottomContent>
-    </base:MessageBoxBackground>
+        </StackPanel>
+    </Border>
 
 </reactive:ReactiveUserControl>

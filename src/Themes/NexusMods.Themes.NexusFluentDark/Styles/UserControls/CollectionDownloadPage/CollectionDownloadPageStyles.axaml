@@ -231,7 +231,7 @@
                     <Setter Property="ColumnSpacing" Value="8" />
 
                     <Style Selector="^ TextBlock#TextCollectionStatus">
-                        <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                     </Style>
 

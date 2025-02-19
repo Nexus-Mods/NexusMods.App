@@ -553,15 +553,31 @@
     <data name="TopBar_AccountSettings" xml:space="preserve">
         <value>Account settings</value>
     </data>
+    <data name="TopBar_GetPremiumMenuItem" xml:space="preserve">
+        <value>Upgrade to Premium</value>
+    </data>
     <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
         <value>View changelog</value>
     </data>
     <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
-        <value>View App logs</value>
+        <value>View app logs</value>
     </data>
-    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
-        <value>Give feedback</value>
+    <data name="ShowWelcomeMessageMenuItem.Header" xml:space="preserve">
+        <value>About</value>
     </data>
+
+    <data name="OpenDiscordMenuItem.Header" xml:space="preserve">
+        <value>Discord</value>
+    </data>
+    <data name="OpenGitHubMenuItem.Header" xml:space="preserve">
+        <value>GitHub</value>
+    </data>
+    <data name="OpenForumsMenuItem.Header" xml:space="preserve">
+        <value>Nexus Mods forums</value>
+    </data>
+    <data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
+        <value>Status page</value>
+    </data> 
     <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
         <value>Open in new tab</value>
     </data>

@@ -23,9 +23,6 @@ public partial class AlphaWarningView : ReactiveUserControl<IAlphaWarningViewMod
             this.BindCommand(ViewModel, vm => vm.OpenGitHubCommand, view => view.OpenGitHubButton)
                 .DisposeWith(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.ViewChangelogInAppCommand, view => view.ViewChangelogInAppButton)
-                .DisposeWith(disposables);
-
             this.BindCommand(ViewModel, vm => vm.CloseCommand, view => view.DoneButton)
                 .DisposeWith(disposables);
         });

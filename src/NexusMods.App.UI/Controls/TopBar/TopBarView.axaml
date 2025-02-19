@@ -1,6 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DataContext=""
-    d:DesignHeight="52"
+    d:DesignHeight="400"
     d:DesignWidth="1024"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
@@ -84,15 +83,6 @@
         <!-- right column (buttons, settings, login) -->
         <StackPanel Grid.Column="2" Margin="12 0" Orientation="Horizontal" Spacing="12">
 
-            <!-- feedback button -->
-            <controls:StandardButton x:Name="GiveFeedbackButton"
-                                     Text="Give Feedback"
-                                     Type="Tertiary"
-                                     Fill="None"
-                                     Size="Small"
-                                     LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
-                                     ShowIcon="Left"
-                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}" />
             <!-- help button -->
             <controls:StandardButton Type="Tertiary"
                                      Fill="None"
@@ -105,16 +95,55 @@
                     <MenuFlyout>
                         <navigation:NavigationMenuItem
                             Header="{x:Static resources:Language.ViewChangelogMenuItem_Header}"
-                            x:Name="ViewChangelogMenuItem" />
+                            x:Name="ViewChangelogMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ListBoxOutline}" />
+                            </MenuItem.Icon>
+                        </navigation:NavigationMenuItem>
                         <MenuItem Header="{x:Static resources:Language.ViewAppLogsMenuItem_Header}"
-                                  x:Name="ViewAppLogsMenuItem" />
-                        <MenuItem Header="{x:Static resources:Language.GiveFeedbackMenuItem_Header}"
-                                  x:Name="GiveFeedbackMenuItem" />
+                                  x:Name="ViewAppLogsMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="{x:Static resources:Language.OpenStatusPageMenuItem_Header}"
+                                  x:Name="OpenStatusPageMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Broadcast}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{x:Static resources:Language.OpenDiscordMenuItem_Header}"
+                                  x:Name="OpenDiscordMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Discord}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="{x:Static resources:Language.OpenGitHubMenuItem_Header}"
+                                  x:Name="OpenGitHubMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.GitHub}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="{x:Static resources:Language.OpenForumsMenuItem_Header}"
+                                  x:Name="OpenForumsMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Forum}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{x:Static resources:Language.ShowWelcomeMessageMenuItem_Header}"
+                                  x:Name="ShowWelcomeMessageMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Info}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
                     </MenuFlyout>
                 </controls:StandardButton.Flyout>
             </controls:StandardButton>
 
-            <!-- settings button -->
+            <!-- settings button menu -->
             <navigation:NavigationControl x:Name="OpenSettingsButton"
                                           Type="Tertiary"
                                           Fill="None"
@@ -139,12 +168,32 @@
                         ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}"
-                                      x:Name="OpenNexusModsProfileMenuItem" />
-                            <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}"
-                                      x:Name="OpenNexusModsAccountSettingsMenuItem" />
-                            <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}"
-                                      x:Name="SignOutMenuItem" />
+                            <MenuItem x:Name="OpenNexusModsProfileMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_MyProfile}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="OpenNexusModsAccountSettingsMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_AccountSettings}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem x:Name="OpenGetPremiumMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_GetPremiumMenuItem}"
+                                      Classes="Premium">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Premium}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="-" />
+                            <MenuItem x:Name="SignOutMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_SignOut}">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Logout}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuFlyout>
                     </Button.Flyout>
                     <icons:UnifiedIcon x:Name="AvatarUnifiedIcon"
