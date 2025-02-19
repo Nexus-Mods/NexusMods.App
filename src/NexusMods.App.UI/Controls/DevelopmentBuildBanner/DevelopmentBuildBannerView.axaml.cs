@@ -43,8 +43,6 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
 
         AppVersion = GetAppVersion();
         AppName = $"{appName}:";
-        
-        // GiveFeedbackButton
     }
 
     private static string GetAppVersion()
