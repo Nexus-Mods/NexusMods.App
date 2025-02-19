@@ -100,26 +100,27 @@
                                                VerticalAlignment="Center" />
                                 </StackPanel>
 
-                                <StackPanel x:Name="ReadOnlyPillStack" 
+                                <!-- read only pill -->
+                                <StackPanel x:Name="ReadOnlyPillStack"
                                             Orientation="Horizontal"
                                             Spacing="8">
-                                    
+
                                     <Ellipse Fill="{StaticResource NeutralSubduedBrush}" Width="4" Height="4" />
 
-                                <!-- read only pill? -->
-                                <Border Background="{StaticResource BrandInfo900Brush}" 
-                                        CornerRadius="999" 
-                                        Height="18"
-                                        Padding="6,0">
-                                    <StackPanel Orientation="Horizontal" Spacing="2">
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="12"
-                                                           Foreground="{StaticResource InfoStrongBrush}" />
-                                        <TextBlock Text="Read only"
-                                                   Theme="{StaticResource BodySMNormalTheme}"
-                                                   Foreground="{StaticResource InfoStrongBrush}"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
-                                </Border>
+                                    <Border Background="{StaticResource BrandInfo900Brush}"
+                                            CornerRadius="999"
+                                            Height="18"
+                                            Padding="6,0"
+                                            ToolTip.Tip="Collections downloaded from Nexus Mods are currently not editable. However, the ability to create local, editable copies will be available soon.">
+                                        <StackPanel Orientation="Horizontal" Spacing="2">
+                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="12"
+                                                               Foreground="{StaticResource InfoStrongBrush}" />
+                                            <TextBlock Text="Read only"
+                                                       Theme="{StaticResource BodySMNormalTheme}"
+                                                       Foreground="{StaticResource InfoStrongBrush}"
+                                                       VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
 
                                 <Ellipse Fill="{StaticResource NeutralSubduedBrush}" Width="4" Height="4" />
@@ -161,7 +162,8 @@
                                 <Separator Width="1" Margin="0,0" Height="18"
                                            Background="{StaticResource SurfaceTranslucentMidBrush}" />
 
-                                <TextBlock Text="10 MODS"
+                                <TextBlock x:Name="TotalModsTextBlock"
+                                           Text="10 MODS"
                                            Theme="{StaticResource TitleSMSemiTheme}"
                                            VerticalAlignment="Center" />
 
@@ -203,18 +205,18 @@
                 </Grid>
             </Border>
         </Border>
-        
+
         <!-- toolbar -->
         <Border Grid.Row="1" Classes="Toolbar"
                 Padding="24,0"
                 Height="52">
-            <controls:StandardButton
+            <controls:StandardButton x:Name="ViewModFilesButton"
                 Size="Small"
                 Type="Tertiary"
                 Fill="Weak"
                 LeftIcon="{x:Static icons:IconValues.FolderEyeOutline}"
                 ShowIcon="Left"
-                Text="View Mod Files"/>
+                Text="View Mod Files" />
         </Border>
 
         <!-- tree data grid -->
