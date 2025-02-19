@@ -165,11 +165,13 @@ public class FileHashesService : IFileHashesService, IDisposable
                 _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
                 var latest = ExistingDBs().FirstOrDefault();
                 if (latest.Path != default(AbsolutePath))
+                {
                     _currentDb = OpenDb(latest.PublishTime, latest.Path);
-                return;
+                    return;
+                }
             }
         }
-        
+
         var release = await GetRelease(gameHashesReleaseFileName);
         
         _logger.LogTrace("Checking for new hash database release");
@@ -227,7 +229,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         // Call core since we're already inside a lock
         await CheckForUpdateCore(false);
 
-        return _currentDb!.Db;
+        return Current;
     }
     public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds)
     {
