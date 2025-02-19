@@ -19,6 +19,8 @@ namespace NexusMods.App.UI.Pages;
 public interface ILoadoutDataProvider
 {
     IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter);
+
+    IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter);
 }
 
 public class LoadoutFilter

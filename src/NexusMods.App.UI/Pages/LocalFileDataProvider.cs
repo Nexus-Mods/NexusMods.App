@@ -75,16 +75,26 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, localFile.AsLibraryFile().AsLibraryItem(), linkedLoadoutItemsObservable);
     }
 
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    private IObservable<IChangeSet<LocalFile.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)
     {
-        return LocalFile.ObserveAll(_connection)
+        return LocalFile
+            .ObserveAll(_connection)
             .FilterOnObservable((_, entityId) => _connection
                 .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, entityId)
                 .AsEntityIds()
                 .FilterInStaticLoadout(_connection, loadoutFilter)
                 .IsNotEmpty()
-            )
-            .Transform(localFile => ToLoadoutItemModel(loadoutFilter, localFile));
+            );
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return FilterLoadoutItems(loadoutFilter).Transform(localFile => ToLoadoutItemModel(loadoutFilter, localFile));
+    }
+
+    public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return FilterLoadoutItems(loadoutFilter).Count();
     }
 
     private CompositeItemModel<EntityId> ToLoadoutItemModel(LoadoutFilter loadoutFilter, LocalFile.ReadOnly localFile)
