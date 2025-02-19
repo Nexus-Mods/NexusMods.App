@@ -23,7 +23,7 @@ The mod **{SMAPIMod}** requires **{MissingDependencyModName}** to function, but 
 
 
 ### How to Resolve
-1. Download and install **{MissingDependencyModName}** from {NexusModsDependencyUri}
+1. Download **{MissingDependencyModName}** from {NexusModsDependencyUri}
 2. Add **{MissingDependencyModName}** to the loadout. 
 
 ### Technical Details
@@ -32,8 +32,7 @@ The `manifest.json` file included with **{SMAPIMod}** lists a mod with the ID `{
 The issue can arise in these scenarios:
 
 1. **Missing Installation**: The required mod is not installed
-2. **Disabled Mod**: The required mod exists but isn't enabled in the loadout
-3. **Incorrect Mod ID**: The manifest data for **{MissingDependencyModName}** might be incorrect
+2. **Incorrect Mod ID**: The manifest data for **{MissingDependencyModName}** might be incorrect
 
 
 """)
@@ -50,10 +49,22 @@ The issue can arise in these scenarios:
     internal static IDiagnosticTemplate RequiredDependencyIsOutdatedTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 2))
-        .WithTitle("Required dependency is outdated")
+        .WithTitle("Outdated Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("Mod {Dependent} requires at least version {MinimumVersion} of {Dependency} but installed is {CurrentVersion}")
-        .WithDetails("You can download the latest version at {NexusModsDependencyUri}")
+        .WithSummary("'{Dependent}' requires an updated version of '{Dependency}'")
+        .WithDetails("""
+The mod **{Dependent}** requires **{Dependency}** version {MinimumVersion} or higher to function, but an older version of **{Dependency}** ({CurrentVersion}) is installed.
+
+### How to Resolve
+1. Download the latest version of **{Dependency}** from {NexusModsDependencyUri}
+2. Add the latest version of **{Dependency}** to the loadout
+3. Remove version {CurrentVersion} of **{Dependency}** from the loadout
+
+## Technical Details
+The `manifest.json` file included with **{Dependent}** lists **{Dependency}** as a requirement with a minimum version of {MinimumVersion}. 
+
+"""
+        )
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("Dependent")
             .AddDataReference<LoadoutItemGroupReference>("Dependency")

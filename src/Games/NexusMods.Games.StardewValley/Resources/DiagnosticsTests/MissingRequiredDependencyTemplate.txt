@@ -1,0 +1,2 @@
+1. Install SMAPI
+2. Install a mod that requires the Content Patcher, e.g. https://www.nexusmods.com/Core/Libs/Common/Widgets/DownloadPopUp?id=117244&game_id=1303
