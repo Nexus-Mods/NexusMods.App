@@ -31,7 +31,7 @@
             </MenuItem>
             <MenuItem x:Name="MenuItemOpenJsonFile">
                 <MenuItem.Icon>
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.LibraryOutline}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" />
                 </MenuItem.Icon>
                 <MenuItem.Header>
                     <TextBlock>Open JSON file</TextBlock>
@@ -88,7 +88,10 @@
                     <controls:StandardButton x:Name="ButtonInstallOptionalItems"
                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
                                              Size="Small" />
-                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" Text="..."
+                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" 
+                                             ShowLabel="False"
+                                             LeftIcon="{x:Static icons:IconValues.MoreVertical}"
+                                             ShowIcon="Left"
                                              Size="Small" />
                 </panels:FlexPanel>
             </Border>

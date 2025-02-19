@@ -1,0 +1,15 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="8" Classes="Low" Width="250">
+            <Separator />
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}"/>
+    </Style>
+</Styles>
+

@@ -115,6 +115,8 @@ public class StubbedFileHasherService : IFileHashesService
 
     public async ValueTask<IDb> GetFileHashesDb()
     {
+        if (_current is not null)
+            return _current;
         await SetupDb();
         return _current!;
     }

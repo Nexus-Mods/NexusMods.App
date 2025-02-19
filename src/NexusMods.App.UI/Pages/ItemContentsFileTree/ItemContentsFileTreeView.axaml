@@ -9,6 +9,7 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:reactive="http://reactiveui.net"
     xmlns:itemContentsFileTree="clr-namespace:NexusMods.App.UI.Pages.ItemContentsFileTree"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.ItemContentsFileTree.ItemContentsFileTreeView">
 
@@ -20,6 +21,12 @@
                                               LeftIcon="{x:Static icons:IconValues.FileEdit}"
                                               ShowIcon="Left"
                                               Size="Small"/>
+                
+                <controls:StandardButton x:Name="RemoveButton" 
+                                         Text="Delete"
+                                         LeftIcon="{x:Static icons:IconValues.DeleteForever}"
+                                         ShowIcon="Left"
+                                         Size="Small"/>
             </StackPanel>
         </Border>
 

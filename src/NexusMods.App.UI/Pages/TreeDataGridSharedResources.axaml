@@ -38,8 +38,8 @@
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
 
-                <controls:ComponentControl.Fallback>
-                    <icons:UnifiedIcon Size="20" Value="{x:Static icons:IconValues.Mods}" />
+                <controls:ComponentControl.Fallback >
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" x:Name="FallbackIcon" />
                 </controls:ComponentControl.Fallback>
             </controls:ComponentControl>
 

@@ -17,6 +17,9 @@ public partial class ItemContentsFileTreeView : ReactiveUserControl<IItemContent
 
             this.BindCommand(ViewModel, vm => vm.OpenEditorCommand, view => view.OpenEditorMenuItem)
                 .DisposeWith(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.RemoveCommand, view => view.RemoveButton)
+                .DisposeWith(disposables);
         });
     }
 }

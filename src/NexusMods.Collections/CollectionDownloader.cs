@@ -85,7 +85,14 @@ public class CollectionDownloader
         return revision;
     }
 
-    private async ValueTask<bool> CanDirectDownload(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)
+    record DirectDownloadResult(bool CanDownload, Optional<RelativePath> FileName = default)
+    {
+        public static readonly DirectDownloadResult Unable = new(CanDownload: false);
+    };
+
+    private async ValueTask<DirectDownloadResult> CanDirectDownload(
+        CollectionDownloadExternal.ReadOnly download,
+        CancellationToken cancellationToken)
     {
         _logger.LogDebug("Testing if `{Uri}` can be downloaded directly", download.Uri);
 
@@ -93,34 +100,37 @@ public class CollectionDownloader
         {
             using var request = new HttpRequestMessage(HttpMethod.Head, download.Uri);
             using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken: cancellationToken);
-            if (!response.IsSuccessStatusCode) return false;
+            if (!response.IsSuccessStatusCode) return DirectDownloadResult.Unable;
 
             var contentType = response.Content.Headers.ContentType?.MediaType;
             if (contentType is null || !contentType.StartsWith("application/"))
             {
                 _logger.LogInformation("Download at `{Uri}` can't be downloaded automatically because Content-Type `{ContentType}` doesn't indicate a binary download", download.Uri, contentType);
-                return false;
+                return DirectDownloadResult.Unable;
             }
 
             if (!response.Content.Headers.ContentLength.HasValue)
             {
                 _logger.LogInformation("Download at `{Uri}` can't be downloaded automatically because the response doesn't have a Content-Length", download.Uri);
-                return false;
+                return DirectDownloadResult.Unable;
             }
 
             var size = Size.FromLong(response.Content.Headers.ContentLength.Value);
             if (size != download.Size)
             {
                 _logger.LogWarning("Download at `{Uri}` can't be downloaded automatically because the Content-Length `{ContentLength}` doesn't match the expected size `{ExpectedSize}`", download.Uri, size, download.Size);
-                return false;
+                return DirectDownloadResult.Unable;
             }
 
-            return true;
+            var contentDispositionFileName = response.Content.Headers.ContentDisposition?.FileName;
+            var fileName = contentDispositionFileName is null ? Optional<RelativePath>.None : RelativePath.FromUnsanitizedInput(contentDispositionFileName);
+
+            return new DirectDownloadResult(CanDownload: true, FileName: fileName);
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Exception while checking if `{Uri}` can be downloaded directly", download.Uri);
-            return false;
+            return DirectDownloadResult.Unable;
         }
     }
 
@@ -129,10 +139,18 @@ public class CollectionDownloader
     /// </summary>
     public async ValueTask Download(CollectionDownloadExternal.ReadOnly download, bool onlyDirectDownloads, CancellationToken cancellationToken)
     {
-        if (await CanDirectDownload(download, cancellationToken))
+        var result = await CanDirectDownload(download, cancellationToken);
+        if (result.CanDownload)
         {
             _logger.LogInformation("Downloading external file at `{Uri}` directly", download.Uri);
-            var job = ExternalDownloadJob.Create(_serviceProvider, download.Uri, download.Md5, download.AsCollectionDownload().Name);
+            var job = ExternalDownloadJob.Create(
+                _serviceProvider,
+                download.Uri,
+                download.Md5,
+                logicalFileName: download.AsCollectionDownload().Name,
+                fileName: result.FileName
+            );
+
             await _libraryService.AddDownload(job);
         }
         else
@@ -252,8 +270,10 @@ public class CollectionDownloader
     {
         var observables = revision.Downloads
             .Where(download => DownloadMatchesItemType(download, itemType))
-            .Select(download => GetStatusObservable(download, groupObservable).Select(static status => status.IsInstalled(out _)));
+            .Select(download => GetStatusObservable(download, groupObservable).Select(static status => status.IsInstalled(out _)))
+            .ToArray();
 
+        if (observables.Length == 0) return groupObservable.Select(static optional => optional.HasValue);
         return observables.CombineLatest(static list => list.All(static installed => installed));
     }
 
@@ -339,7 +359,7 @@ public class CollectionDownloader
 
         foreach (var datom in datoms)
         {
-            var libraryFile = DirectDownloadLibraryFile.Load(db, datom.E).AsLibraryFile();
+            var libraryFile = DirectDownloadLibraryFile.Load(db, datom.E).AsLocalFile().AsLibraryFile();
             if (libraryFile.IsValid()) return GetStatus(libraryFile.AsLibraryItem(), collectionGroup, db);
         }
 
@@ -401,8 +421,16 @@ public class CollectionDownloader
             .FilterOnObservable(item =>
             {
                 return groupObservable
-                    .Select(optional => optional.Convert(static group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId))
-                    .Select(loadoutId => loadoutId.HasValue && item.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId.Value);
+                    .Select(group =>
+                    {
+                        if (!group.HasValue) return false;
+                        var itemLoadoutId = LoadoutItem.LoadoutId.Get(item);
+                        var groupLoadoutId = LoadoutItem.LoadoutId.Get(group.Value);
+                        var parentId = LoadoutItem.ParentId.Get(item);
+                        var id = group.Value.Id;
+
+                        return itemLoadoutId == groupLoadoutId && parentId == id;
+                    });
             })
             .QueryWhenChanged(query =>
             {
