@@ -541,14 +541,12 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             if (data.Panels.Length == 0)
             {
                 _logger.LogWarning("Workspace gets loaded with no panels!");
-                var addPanelBehavior = new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab());
 
                 AddPanel(
-                    WorkspaceGridState.From(new[]
-                    {
+                    newWorkspaceState: WorkspaceGridState.From([
                         new PanelGridState(PanelId.DefaultValue, MathUtils.One),
-                    }, isHorizontal: IsHorizontal),
-                    addPanelBehavior
+                    ], isHorizontal: IsHorizontal),
+                    behavior: new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab())
                 );
 
                 return;
