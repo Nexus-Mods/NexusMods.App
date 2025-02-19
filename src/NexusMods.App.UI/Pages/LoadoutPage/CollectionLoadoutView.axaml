@@ -206,7 +206,8 @@
         </Border>
 
         <!-- toolbar -->
-        <Border Grid.Row="1" Classes="Toolbar"
+        <!-- TODO: wire up View Mod Files button -->
+        <Border Grid.Row="1" IsVisible="False" Classes="Toolbar"
                 Padding="24,0"
                 Height="52">
             <controls:StandardButton x:Name="ViewModFilesButton"
