@@ -89,9 +89,11 @@ public class NavigationControl : StandardButton
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         // NOTE(erri120): Can't get the input in this event, we'll just re-use
-        // the value set in OnPointerPressed. This assumes that OnPointerPressed
-        // always gets called before OnPointerReleased.
+        // the value set in OnPointerPressed.
+        // NOTE(Al12rs): It's somehow possible that OnPointerPressed was not called before OnPointerReleased.
+        // Happens very rarely, not sure how or why, but we should just ignore it if it happens.
         Debug.Assert(_wasOnPointerPressedCalled);
+        if (!_wasOnPointerPressedCalled) return;
         _wasOnPointerPressedCalled = false;
 
         base.OnPointerReleased(e);
