@@ -256,7 +256,7 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
             }
         });
 
-        if (data.Tabs.Length == 0)
+        if (_tabsList.Count == 0)
         {
             AddDefaultTab();
         }

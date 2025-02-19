@@ -14,6 +14,7 @@ public class CollectionLoadoutDesignViewModel : APageViewModel<ICollectionLoadou
 
     public LoadoutTreeDataGridAdapter Adapter { get; } = null!;
     public bool IsCollectionEnabled => true;
+    public int InstalledModsCount { get; } = 10;
     public string Name => "Vanilla+ [Quality of Life]";
     public RevisionNumber RevisionNumber { get; } = RevisionNumber.From(6);
     public string AuthorName => "Lowtonotolerance";

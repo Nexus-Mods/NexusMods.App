@@ -2,8 +2,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
@@ -13,17 +13,17 @@ namespace NexusMods.App.UI.Windows;
 internal sealed class WindowManager : ReactiveObject, IWindowManager
 {
     private readonly ILogger<WindowManager> _logger;
-    private readonly IConnection _conn;
+    private readonly IConnection _connection;
 
     private readonly Dictionary<WindowId, WeakReference<IWorkspaceWindow>> _windows = new();
     private readonly SourceList<WindowId> _allWindowIdSource = new();
 
     public WindowManager(
         ILogger<WindowManager> logger,
-        IConnection conn)
+        IConnection connection)
     {
         _logger = logger;
-        _conn = conn;
+        _connection = connection;
         _allWindowIdSource.Connect().OnUI().Bind(out _allWindowIds);
     }
 
@@ -102,18 +102,18 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         {
             var data = window.WorkspaceController.ToData();
 
-            using var tx = _conn.BeginTransaction();
-            var found = WindowDataAttributes.All(_conn.Db).FirstOrDefault();
+            using var tx = _connection.BeginTransaction();
+            var found = WindowDataAttributes.All(_connection.Db).FirstOrDefault();
             if (!found.IsValid())
             {
                 _ = new WindowDataAttributes.New(tx)
                 {
-                    Data = WindowDataAttributes.Encode(_conn.Db, data),
+                    Data = WindowDataAttributes.Encode(_connection.Db, data),
                 };
             }
             else
             {
-                tx.Add(found.Id, WindowDataAttributes.Data, WindowDataAttributes.Encode(_conn.Db, data));
+                tx.Add(found.Id, WindowDataAttributes.Data, WindowDataAttributes.Encode(_connection.Db, data));
             }
             tx.Commit();
         }
@@ -125,35 +125,48 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     public bool RestoreWindowState(IWorkspaceWindow window)
     {
+        Optional<WindowDataAttributes.ReadOnly> optionalWindowData;
+
         try
         {
-            if (!WindowDataAttributes.All(_conn.Db).TryGetFirst(out var found))
-                return false;
+            optionalWindowData = WindowDataAttributes.All(_connection.Db).FirstOrOptional(static data => data.IsValid());
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception loading saved window state");
+            ResetSavedData();
+            return false;
+        }
 
-            window.WorkspaceController.FromData(found.WindowData);
+        if (!optionalWindowData.HasValue)
+        {
+            ResetSavedData();
+            return false;
+        }
+
+        try
+        {
+            window.WorkspaceController.FromData(optionalWindowData.Value.WindowData);
             return true;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception while loading window state");
+            _logger.LogError(e, "Exception restoring saved window state");
+            ResetSavedData();
+            return false;
+        }
+    }
 
-            _logger.LogInformation("Removing possible broken window state from the DataStore");
+    private void ResetSavedData()
+    {
+        _logger.LogInformation("Removing possible broken window state from the DB");
+        using var tx = _connection.BeginTransaction();
 
-            try
-            {
-                using var tx = _conn.BeginTransaction();
-                var found = WindowDataAttributes.All(_conn.Db).First();
-                if (!found.IsValid())
-                    return false;
-                tx.Delete(found.Id, true);
-                tx.Commit();
-            }
-            catch (Exception otherException)
-            {
-                _logger.LogError(otherException, "Exception while retracting window state");
-            }
+        foreach (var datom in _connection.Db.Datoms(WindowDataAttributes.PrimaryAttribute))
+        {
+            tx.Delete(datom.E, recursive: true);
         }
 
-        return false;
+        tx.Commit();
     }
 }

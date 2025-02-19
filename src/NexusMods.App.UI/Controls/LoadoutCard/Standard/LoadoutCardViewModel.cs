@@ -5,6 +5,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.Kernel;
 using Humanizer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
@@ -87,13 +89,13 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
                 .BindToVM(this, x => x.HumanizedLoadoutLastApplyTime)
                 .DisposeWith(d);
 
-            Loadout.Observe(conn, loadout.Id)
-            	.OffUi()
-                .Select(l => FormatNumMods(LoadoutUserFilters.GetItems(l).Count()))
+            LoadoutDataProviderHelper
+                .CountAllLoadoutItems(serviceProvider, loadout.LoadoutId)
+                .Select(FormatNumMods)
                 .OnUI()
                 .BindToVM(this, x => x.LoadoutModCount)
                 .DisposeWith(d);
-            
+
             Loadout.ObserveAll(conn)
                 .Filter(l => l.IsVisible() && l.Installation.Path == loadout.Installation.Path && l.LoadoutId != loadout.LoadoutId)
                 .Count()

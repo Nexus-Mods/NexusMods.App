@@ -130,6 +130,7 @@
                     <icons:UnifiedIcon Classes="Logout" />
                     <icons:UnifiedIcon Classes="AccountCog" />
                     <icons:UnifiedIcon Classes="Broadcast" />
+                    <icons:UnifiedIcon Classes="FolderEyeOutline" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -692,5 +693,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.Premium">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Premium}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FolderEyeOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEyeOutline}" />
     </Style>
 </Styles>

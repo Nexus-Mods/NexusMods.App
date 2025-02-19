@@ -21,6 +21,12 @@ using R3;
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
 
+public enum CollectionDownloadsFilter
+{
+    OnlyRequired,
+    OnlyOptional,
+}
+
 public class CollectionDataProvider
 {
     private readonly IConnection _connection;
@@ -32,7 +38,7 @@ public class CollectionDataProvider
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-        _collectionDownloader = new CollectionDownloader(serviceProvider);
+        _collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
     }
 
@@ -63,6 +69,11 @@ public class CollectionDataProvider
                     return ToItemModel(externalDownload, collectionGroupObservable);
                 }
 
+                if (downloadEntity.TryGetAsCollectionDownloadBundled(out var bundledDownload))
+                {
+                    return ToItemModel(bundledDownload, collectionGroupObservable);
+                }
+
                 throw new UnreachableException();
             });
     }
@@ -71,7 +82,7 @@ public class CollectionDataProvider
     {
         return filterObservable.Select(filter =>
         {
-            if (!downloadEntity.IsCollectionDownloadNexusMods() && !downloadEntity.IsCollectionDownloadExternal()) return false;
+            if (!downloadEntity.IsCollectionDownloadNexusMods() && !downloadEntity.IsCollectionDownloadExternal() && !downloadEntity.IsCollectionDownloadBundled()) return false;
 
             return filter switch
             {
@@ -147,6 +158,21 @@ public class CollectionDataProvider
         return itemModel;
     }
 
+    private CompositeItemModel<EntityId> ToItemModel(
+        CollectionDownloadBundled.ReadOnly download,
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
+    {
+        var itemModel = new CompositeItemModel<EntityId>(download.Id);
+
+        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: download.AsCollectionDownload().Name));
+        itemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
+
+        var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();
+        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable, groupObservable.ToObservable());
+
+        return itemModel;
+    }
+
     private static Observable<bool> ShouldAddObservable(
         CollectionDownloadEntity.ReadOnly downloadEntity,
         Observable<CollectionDownloadStatus> statusObservable,
@@ -191,7 +217,6 @@ public class CollectionDataProvider
         Func<TComponent> componentFactory)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-
         itemModel.AddObservable(
             key: key,
             shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable, groupObservable).Select(static b => !b),

@@ -10,9 +10,11 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using System.Reactive.Linq;
+using DynamicData;
 using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using R3;
 using ReactiveUI;
@@ -145,7 +147,13 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         this.WhenActivated(disposables =>
         {
             Adapter.Activate().AddTo(disposables);
-
+            
+            connection.ObserveDatoms(LoadoutItem.ParentId, pageContext.GroupId)
+                .QueryWhenChanged(datoms => datoms.Count)
+                .OnUI()
+                .Subscribe(count => InstalledModsCount = count)
+                .AddTo(disposables);
+            
             LoadoutItem
                 .Observe(connection, pageContext.GroupId)
                 .Select(static item => !item.IsDisabled)
@@ -192,6 +200,9 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
     [Reactive] public Bitmap? TileImage { get; private set; }
 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
+    
+    [Reactive] public int InstalledModsCount { get; private set; }
+    
     public ReactiveCommand<Unit> CommandToggle { get; }
     public ReactiveCommand<Unit> CommandDeleteCollection { get; }
     public ReactiveUI.ReactiveCommand<NavigationInformation, System.Reactive.Unit> CommandViewCollectionDownloadPage { get; }

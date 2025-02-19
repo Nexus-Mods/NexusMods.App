@@ -34,6 +34,7 @@ internal static class Verbs
         [Injected] NexusModsLibrary nexusModsLibrary,
         [Injected] IServiceProvider serviceProvider,
         [Injected] IConnection connection,
+        [Injected] CollectionDownloader collectionDownloader,
         [Injected] CancellationToken token)
     {
         await using var destination = temporaryFileManager.CreateFile();
@@ -46,7 +47,6 @@ internal static class Verbs
 
         var revisionMetadata = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
 
-        var collectionDownloader = new CollectionDownloader(serviceProvider);
         await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: token);
 
         var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
