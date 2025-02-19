@@ -102,43 +102,26 @@ After the loadout has been synchronized, the new file should be added to the loa
 
 
 
-## 6 - Loadout Deactivated:
-At this point the loadout is deactivated, and all the files in the current state should match the initial state.
-### Initial State - (1)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
-### Current State - (4)
-| Path | Hash | Size |
-| --- | --- | --- |
-| {Game, config.ini} | 0xB4108DF91E677789 | 33 B |
-| {Game, Data/image.dds} | 0x9829BF9CBC5991D2 | 85.484 KB |
-| {Game, README.txt} | 0x284B31336E242FFA | 26 B |
-| {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
-### Loadout A - (2)
-| Path | Hash | Size | Disabled | Deleted |
-| --- | --- | --- | --- | --- |
-| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |   |   |
-| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
-
-
-
-## 7 - New Loadout (B) Created - No Sync:
+## 6 - New Loadout (B) Created - No Sync:
 A new loadout is created, but it has not been synchronized yet. So again the 'Last Synced State' is not set.
 ### Initial State - (1)
 | Path | Hash | Size |
 | --- | --- | --- |
 | {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
-### Last Synced State - (4)
+### Last Synced State - (6)
 | Path | Hash | Size |
 | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
 | {Game, config.ini} | 0xB4108DF91E677789 | 33 B |
 | {Game, Data/image.dds} | 0x9829BF9CBC5991D2 | 85.484 KB |
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
-### Current State - (4)
+### Current State - (6)
 | Path | Hash | Size |
 | --- | --- | --- |
+| {Game, bin/newFileInGameFolderA.txt} | 0x3FB1DBAC894B6380 | 25 B |
+| {Game, bin/originalGameFile.txt} | 0x673E3C493921A2D5 | 12 B |
 | {Game, config.ini} | 0xB4108DF91E677789 | 33 B |
 | {Game, Data/image.dds} | 0x9829BF9CBC5991D2 | 85.484 KB |
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
@@ -154,7 +137,7 @@ A new loadout is created, but it has not been synchronized yet. So again the 'La
 
 
 
-## 8 - New Loadout (B) Synced:
+## 7 - New Loadout (B) Synced:
 After the new loadout has been synchronized, the 'Last Synced State' should match the 'Current State' as the loadout has been applied to the game folder. Note that the contents of this 
 loadout are different from the previous loadout due to the new file only being in the previous loadout.
 ### Initial State - (1)
@@ -186,7 +169,7 @@ loadout are different from the previous loadout due to the new file only being i
 
 
 
-## 9 - New File Added to Game Folder (B):
+## 8 - New File Added to Game Folder (B):
 A new file has been added to the game folder and B loadout has been synchronized. The new file should be added to the B loadout.
 ### Initial State - (1)
 | Path | Hash | Size |
@@ -220,7 +203,7 @@ A new file has been added to the game folder and B loadout has been synchronized
 
 
 
-## 10 - Switch back to Loadout A:
+## 9 - Switch back to Loadout A:
 Now we switch back to the A loadout, and the new file should be removed from the game folder.
 ### Initial State - (1)
 | Path | Hash | Size |
@@ -256,7 +239,7 @@ Now we switch back to the A loadout, and the new file should be removed from the
 
 
 
-## 11 - Loadout A Copied to Loadout C:
+## 10 - Loadout A Copied to Loadout C:
 Loadout A has been copied to Loadout C, and the contents should match.
 ### Initial State - (1)
 | Path | Hash | Size |
@@ -297,7 +280,7 @@ Loadout A has been copied to Loadout C, and the contents should match.
 
 
 
-## 12 - Game Unmanaged:
+## 11 - Game Unmanaged:
 The loadouts have been deleted and the game folder should be back to its initial state.
 ### Initial State - (1)
 | Path | Hash | Size |

@@ -60,6 +60,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     protected readonly NexusApiClient NexusNexusApiClient;
     protected ILoadoutSynchronizer Synchronizer => GameInstallation.GetGame().Synchronizer;
+    protected ISynchronizerService SynchronizerService;
     
     private bool _gameFilesWritten = false;
     private readonly IHost _host;
@@ -103,6 +104,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         Logger = ServiceProvider.GetRequiredService<ILogger<TTest>>();
         LibraryService = ServiceProvider.GetRequiredService<ILibraryService>();
         NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
+        SynchronizerService = ServiceProvider.GetRequiredService<ISynchronizerService>();
     }
     
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
