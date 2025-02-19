@@ -270,8 +270,10 @@ public class CollectionDownloader
     {
         var observables = revision.Downloads
             .Where(download => DownloadMatchesItemType(download, itemType))
-            .Select(download => GetStatusObservable(download, groupObservable).Select(static status => status.IsInstalled(out _)));
+            .Select(download => GetStatusObservable(download, groupObservable).Select(static status => status.IsInstalled(out _)))
+            .ToArray();
 
+        if (observables.Length == 0) return groupObservable.Select(static optional => optional.HasValue);
         return observables.CombineLatest(static list => list.All(static installed => installed));
     }
 
