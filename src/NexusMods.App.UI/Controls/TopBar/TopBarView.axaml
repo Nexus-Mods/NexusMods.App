@@ -112,19 +112,19 @@
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.PartyPopper}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Discord"
+                        <MenuItem Header="{x:Static resources:Language.OpenDiscordMenuItem_Header}"
                                   x:Name="OpenDiscordMenuItem">
                             <MenuItem.Icon>
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Discord}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="GitHub"
+                        <MenuItem Header="{x:Static resources:Language.OpenGitHubMenuItem_Header}"
                                   x:Name="OpenGitHubMenuItem">
                             <MenuItem.Icon>
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.GitHub}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Nexus Mods Forums"
+                        <MenuItem Header="{x:Static resources:Language.OpenForumsMenuItem_Header}"
                                   x:Name="OpenForumsMenuItem">
                             <MenuItem.Icon>
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Forum}" />
@@ -159,20 +159,20 @@
                         ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
                     <Button.Flyout>
                         <MenuFlyout>
-                            <MenuItem Header="{x:Static resources:Language.TopBar_MyProfile}"
-                                      x:Name="OpenNexusModsProfileMenuItem">
+                            <MenuItem x:Name="OpenNexusModsProfileMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_MyProfile}">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="{x:Static resources:Language.TopBar_AccountSettings}"
-                                      x:Name="OpenNexusModsAccountSettingsMenuItem">
+                            <MenuItem x:Name="OpenNexusModsAccountSettingsMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_AccountSettings}">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="{x:Static resources:Language.TopBar_SignOut}"
-                                      x:Name="SignOutMenuItem">
+                            <MenuItem x:Name="SignOutMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_SignOut}">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Logout}" />
                                 </MenuItem.Icon>

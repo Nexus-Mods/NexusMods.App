@@ -2037,6 +2037,33 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discord.
+        /// </summary>
+        public static string OpenDiscordMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenDiscordMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nexus Mods Forums.
+        /// </summary>
+        public static string OpenForumsMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenForumsMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GitHub.
+        /// </summary>
+        public static string OpenGitHubMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenGitHubMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add tab.
         /// </summary>
         public static string Panel_Add_tab_ToolTip {

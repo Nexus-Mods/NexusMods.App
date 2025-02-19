@@ -16,11 +16,6 @@ namespace NexusMods.App.UI.Overlays.AlphaWarning;
 [UsedImplicitly]
 public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, IAlphaWarningViewModel
 {
-    // NOTE(erri120): from https://github.com/Nexus-Mods/NexusMods.App/issues/1376
-    private static readonly Uri DiscordUri = new("https://discord.gg/y7NfQWyRkj");
-    private static readonly Uri ForumsUri = new("https://forums.nexusmods.com/forum/9052-nexus-mods-app/");
-    private static readonly Uri GitHubUri = new("https://github.com/Nexus-Mods/NexusMods.App");
-
     public ReactiveCommand<Unit, Unit> ViewChangelogInAppCommand { get; }
     public ReactiveCommand<Unit, Uri> OpenDiscordCommand { get; }
     public ReactiveCommand<Unit, Uri> OpenForumsCommand { get; }
@@ -38,9 +33,9 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
     {
         _settingsManager = settingsManager;
 
-        OpenDiscordCommand = ReactiveCommand.Create(() => DiscordUri);
-        OpenForumsCommand = ReactiveCommand.Create(() => ForumsUri);
-        OpenGitHubCommand = ReactiveCommand.Create(() => GitHubUri);
+        OpenDiscordCommand = ReactiveCommand.Create(() => ConstantLinks.DiscordUri);
+        OpenForumsCommand = ReactiveCommand.Create(() => ConstantLinks.ForumsUri);
+        OpenGitHubCommand = ReactiveCommand.Create(() => ConstantLinks.GitHubUri);
 
         ViewChangelogInAppCommand = ReactiveCommand.Create(() =>
         {

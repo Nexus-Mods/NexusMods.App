@@ -37,10 +37,6 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
     
-    private static readonly Uri DiscordUri = new("https://discord.gg/y7NfQWyRkj");
-    private static readonly Uri ForumsUri = new("https://forums.nexusmods.com/forum/9052-nexus-mods-app/");
-    private static readonly Uri GitHubUri = new("https://github.com/Nexus-Mods/NexusMods.App");
-
     [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
     [Reactive] public string ActiveWorkspaceSubtitle { get; [UsedImplicitly] set; } = string.Empty;
 
@@ -135,9 +131,9 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         });
         
         
-        OpenDiscordCommand = ReactiveCommand.Create(() => DiscordUri);
-        OpenForumsCommand = ReactiveCommand.Create(() => ForumsUri);
-        OpenGitHubCommand = ReactiveCommand.Create(() => GitHubUri);
+        OpenDiscordCommand = ReactiveCommand.Create(() => ConstantLinks.DiscordUri);
+        OpenForumsCommand = ReactiveCommand.Create(() => ConstantLinks.ForumsUri);
+        OpenGitHubCommand = ReactiveCommand.Create(() => ConstantLinks.GitHubUri);
 
         var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
         LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin);
