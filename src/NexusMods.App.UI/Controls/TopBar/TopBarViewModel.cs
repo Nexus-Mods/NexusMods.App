@@ -45,9 +45,9 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> ShowWelcomeMessageCommand { get; }    
-    public ReactiveUI.ReactiveCommand<Unit, Uri> OpenDiscordCommand { get; }
-    public ReactiveUI.ReactiveCommand<Unit, Uri> OpenForumsCommand { get; }
-    public ReactiveUI.ReactiveCommand<Unit, Uri> OpenGitHubCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenDiscordCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenForumsCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenGitHubCommand { get; }
 
     public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
@@ -130,11 +130,6 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
         });
         
-        
-        OpenDiscordCommand = ReactiveCommand.Create(() => ConstantLinks.DiscordUri);
-        OpenForumsCommand = ReactiveCommand.Create(() => ConstantLinks.ForumsUri);
-        OpenGitHubCommand = ReactiveCommand.Create(() => ConstantLinks.GitHubUri);
-
         var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
         LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin);
 
@@ -167,6 +162,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
             await osInterop.OpenUrl(uri);
         });
+        
+        OpenDiscordCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.DiscordUri); });
+
+        OpenForumsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.ForumsUri); });
+
+        OpenGitHubCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.GitHubUri); });
 
         this.WhenActivated(d =>
         {
@@ -195,19 +196,6 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.SelectedTab)
                 .BindToVM(this, vm => vm.SelectedTab)
-                .DisposeWith(d);
-            
-            this.WhenAnyObservable(
-                    vm => vm.OpenDiscordCommand,
-                    vm => vm.OpenForumsCommand,
-                    vm => vm.OpenGitHubCommand)
-                .SubscribeWithErrorLogging(uri =>
-                {
-                    _ = Task.Run(async () =>
-                    {
-                        await osInterop.OpenUrl(uri);
-                    });
-                })
                 .DisposeWith(d);
         });
     }

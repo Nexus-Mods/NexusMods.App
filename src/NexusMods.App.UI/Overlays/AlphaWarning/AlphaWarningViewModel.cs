@@ -17,9 +17,9 @@ namespace NexusMods.App.UI.Overlays.AlphaWarning;
 public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, IAlphaWarningViewModel
 {
     public ReactiveCommand<Unit, Unit> ViewChangelogInAppCommand { get; }
-    public ReactiveCommand<Unit, Uri> OpenDiscordCommand { get; }
-    public ReactiveCommand<Unit, Uri> OpenForumsCommand { get; }
-    public ReactiveCommand<Unit, Uri> OpenGitHubCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenDiscordCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenForumsCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenGitHubCommand { get; }
 
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
 
@@ -33,55 +33,44 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
     {
         _settingsManager = settingsManager;
 
-        OpenDiscordCommand = ReactiveCommand.Create(() => ConstantLinks.DiscordUri);
-        OpenForumsCommand = ReactiveCommand.Create(() => ConstantLinks.ForumsUri);
-        OpenGitHubCommand = ReactiveCommand.Create(() => ConstantLinks.GitHubUri);
-
         ViewChangelogInAppCommand = ReactiveCommand.Create(() =>
-        {
-            var workspaceController = WorkspaceController;
-            if (workspaceController is null) return;
-
-            var pageData = new PageData
             {
-                Context = new ChangelogPageContext
+                var workspaceController = WorkspaceController;
+                if (workspaceController is null) return;
+
+                var pageData = new PageData
                 {
-                    TargetVersion = null,
-                },
-                FactoryId = ChangelogPageFactory.StaticId,
-            };
+                    Context = new ChangelogPageContext
+                    {
+                        TargetVersion = null,
+                    },
+                    FactoryId = ChangelogPageFactory.StaticId,
+                };
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, new NavigationInformation(NavigationInput.Default, Optional<OpenPageBehaviorType>.None));
-            workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, new NavigationInformation(NavigationInput.Default, Optional<OpenPageBehaviorType>.None));
+                workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
 
-            Close();
-        });
+                Close();
+            }
+        );
 
         CloseCommand = ReactiveCommand.Create(() =>
-        {
-            _settingsManager.Update<AlphaSettings>(settings => settings with
             {
-                HasShownModal = true,
-            });
-
-            Close();
-        });
-
-        this.WhenActivated(disposables =>
-        {
-            this.WhenAnyObservable(
-                vm => vm.OpenDiscordCommand,
-                vm => vm.OpenForumsCommand,
-                vm => vm.OpenGitHubCommand)
-                .SubscribeWithErrorLogging(uri =>
-                {
-                    _ = Task.Run(async () =>
+                _settingsManager.Update<AlphaSettings>(settings => settings with
                     {
-                        await osInterop.OpenUrl(uri);
-                    });
-                })
-                .DisposeWith(disposables);
-        });
+                        HasShownModal = true,
+                    }
+                );
+
+                Close();
+            }
+        );
+
+        OpenDiscordCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.DiscordUri); });
+
+        OpenForumsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.ForumsUri); });
+
+        OpenGitHubCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.GitHubUri); });
     }
 
     public bool MaybeShow()

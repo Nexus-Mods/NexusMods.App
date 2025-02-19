@@ -28,9 +28,9 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     public ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand => ReactiveCommand.Create<NavigationInformation, Unit>(_ => Unit.Default);
     public ReactiveCommand<Unit, Unit> ViewAppLogsCommand => Initializers.DisabledReactiveCommand;
     public ReactiveCommand<Unit, Unit> ShowWelcomeMessageCommand => Initializers.EnabledReactiveCommand;
-    public ReactiveCommand<Unit, Uri> OpenDiscordCommand => ReactiveCommand.Create(() => ConstantLinks.DiscordUri);
-    public ReactiveCommand<Unit, Uri> OpenForumsCommand => ReactiveCommand.Create(() => ConstantLinks.ForumsUri);
-    public ReactiveCommand<Unit, Uri> OpenGitHubCommand => ReactiveCommand.Create(() => ConstantLinks.GitHubUri);
+    public ReactiveCommand<Unit, Unit> OpenDiscordCommand => ReactiveCommand.Create(() => {});
+    public ReactiveCommand<Unit, Unit> OpenForumsCommand => ReactiveCommand.Create(() => {});
+    public ReactiveCommand<Unit, Unit> OpenGitHubCommand => ReactiveCommand.Create(() => {});
 
     public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }
