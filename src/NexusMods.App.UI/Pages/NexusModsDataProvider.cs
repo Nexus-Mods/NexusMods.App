@@ -117,7 +117,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Update available
         var newestVersionObservable = _modUpdateService
             .GetNewestModPageVersionObservable(modPage)
-            .Select(static optional => optional.Convert(static files => files.Files.First().Version))
+            .Select(static optional => optional.Convert(static updatesOnPage => updatesOnPage.NewestFile().Version))
             .OnUI();
 
         parentItemModel.AddObservable(
@@ -189,7 +189,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Update available
         var newestVersionObservable = _modUpdateService
             .GetNewestFileVersionObservable(fileMetadata)
-            .Select(static optional => optional.Convert(static fileMetadata => fileMetadata.Version))
+            .Select(static optional => optional.Convert(static updateOnPage => updateOnPage.NewestFile.Version))
             .OnUI();
 
         itemModel.AddObservable(
