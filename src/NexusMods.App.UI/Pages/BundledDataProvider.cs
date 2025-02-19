@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 
 namespace NexusMods.App.UI.Pages;
@@ -19,13 +20,23 @@ public class BundledDataProvider : ILoadoutDataProvider
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    private IObservable<IChangeSet<Datom, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)
     {
         return _connection.ObserveDatoms(NexusCollectionBundledLoadoutGroup.PrimaryAttribute)
             .AsEntityIds()
-            .FilterInStaticLoadout(_connection, loadoutFilter)
+            .FilterInStaticLoadout(_connection, loadoutFilter);
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return FilterLoadoutItems(loadoutFilter)
             .TransformImmutable(datom => NexusCollectionBundledLoadoutGroup.Load(_connection.Db, datom.E))
-            .Transform(item => ToLoadoutItemModel(item));
+            .Transform(ToLoadoutItemModel);
+    }
+
+    public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return FilterLoadoutItems(loadoutFilter).QueryWhenChanged(static query => query.Count).Prepend(0);
     }
 
     private CompositeItemModel<EntityId> ToLoadoutItemModel(NexusCollectionBundledLoadoutGroup.ReadOnly item)
