@@ -8,9 +8,11 @@ using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.Paths;
 using ReactiveUI;
 using R3;
+using Reloaded.Memory.Utilities;
 
 namespace NexusMods.DataModel.Synchronizer;
 
@@ -41,11 +43,31 @@ public class SynchronizerService : ISynchronizerService
     /// <inheritdoc />
     public FileDiffTree GetApplyDiffTree(LoadoutId loadoutId)
     {
-        var loadout = Loadout.Load(_conn.Db, loadoutId);
+        var db = _conn.Db;
+        var loadout = Loadout.Load(db, loadoutId);
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        var metaData = GameInstallMetadata.Load(_conn.Db, loadout.InstallationInstance.GameMetadataId);
-        var diskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
-        return synchronizer.LoadoutToDiskDiff(loadout, diskState);
+        var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
+        var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
+
+        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
+        var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+        
+        return synchronizer.LoadoutToDiskDiff(loadout, previousDiskState, lastScannedDiskState);
+    }
+    
+    /// <inheritdoc />
+    public bool GetShouldSynchronize(LoadoutId loadoutId)
+    {
+        var db = _conn.Db;
+        var loadout = Loadout.Load(db, loadoutId);
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
+        var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
+
+        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
+        var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+        
+        return synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState);
     }
     
     /// <inheritdoc />
@@ -208,8 +230,7 @@ public class SynchronizerService : ISynchronizerService
                     var diffFound = await Task.Run(() =>
                         {
                             _logger.LogTrace("Checking for changes in loadout {LoadoutId}", loadoutId);
-                            var diffTree = GetApplyDiffTree(loadoutId);
-                            var diffFound = diffTree.GetAllDescendentFiles().Any(f => f.Item.Value.ChangeType != FileChangeType.None);
+                            var diffFound = GetShouldSynchronize(loadoutId);
                             _logger.LogTrace("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
                             return diffFound;
                         }, cancellationToken);
