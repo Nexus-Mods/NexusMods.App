@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="250"
+    d:DesignHeight="400"
     d:DesignWidth="1024"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
@@ -106,12 +106,13 @@
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="{x:Static resources:Language.ShowWelcomeMessageMenuItem_Header}"
-                                  x:Name="ShowWelcomeMessageMenuItem">
+                        <MenuItem Header="{x:Static resources:Language.OpenStatusPageMenuItem_Header}"
+                                  x:Name="OpenStatusPageMenuItem">
                             <MenuItem.Icon>
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.PartyPopper}" />
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Broadcast}" />
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="-" />
                         <MenuItem Header="{x:Static resources:Language.OpenDiscordMenuItem_Header}"
                                   x:Name="OpenDiscordMenuItem">
                             <MenuItem.Icon>
@@ -130,6 +131,14 @@
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Forum}" />
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="-" />
+                        <MenuItem Header="{x:Static resources:Language.ShowWelcomeMessageMenuItem_Header}"
+                                  x:Name="ShowWelcomeMessageMenuItem">
+                            <MenuItem.Icon>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Info}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        
                     </MenuFlyout>
                 </controls:StandardButton.Flyout>
             </controls:StandardButton>
@@ -171,6 +180,14 @@
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem x:Name="OpenGetPremiumMenuItem"
+                                      Header="{x:Static resources:Language.TopBar_GetPremiumMenuItem}"
+                                      Classes="Premium">
+                                <MenuItem.Icon>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Premium}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="-" />
                             <MenuItem x:Name="SignOutMenuItem"
                                       Header="{x:Static resources:Language.TopBar_SignOut}">
                                 <MenuItem.Icon>

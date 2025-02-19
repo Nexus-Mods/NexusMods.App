@@ -55,6 +55,9 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 this.BindCommand(ViewModel, vm => vm.OpenGitHubCommand, view => view.OpenGitHubMenuItem)
                     .DisposeWith(d);
 
+                this.BindCommand(ViewModel, vm => vm.OpenStatusPageCommand, view => view.OpenStatusPageMenuItem)
+                    .DisposeWith(d);
+                
                 this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
                     .DisposeWith(d);
 
@@ -65,7 +68,10 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsProfileCommand, view => view.OpenNexusModsProfileMenuItem)
                     .DisposeWith(d);
-
+                
+                this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.OpenGetPremiumMenuItem)
+                    .DisposeWith(d);
+                
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.FreeButton)
                     .DisposeWith(d);
                 
@@ -89,6 +95,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                             PremiumTextBlock.IsVisible = isLoggedIn && userRole == UserRole.Premium;
                             SupporterButton.IsVisible = isLoggedIn && userRole == UserRole.Supporter;
                             FreeButton.IsVisible = isLoggedIn && userRole == UserRole.Free; 
+                            OpenGetPremiumMenuItem.IsVisible = isLoggedIn && userRole != UserRole.Premium; 
                         }
                     )
                     .DisposeWith(d);

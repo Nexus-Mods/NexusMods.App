@@ -48,7 +48,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenDiscordCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenForumsCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenGitHubCommand { get; }
-
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenStatusPageCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
@@ -168,6 +168,8 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         OpenForumsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.ForumsUri); });
 
         OpenGitHubCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.GitHubUri); });
+        
+        OpenStatusPageCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.StatusPageUri); });
 
         this.WhenActivated(d =>
         {

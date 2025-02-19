@@ -15,7 +15,7 @@ namespace NexusMods.App.UI.Controls.TopBar;
 public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     [Reactive] public bool IsLoggedIn { get; set; } = true;
-    [Reactive] public UserRole UserRole { get; set; } = UserRole.Premium;
+    [Reactive] public UserRole UserRole { get; set; } = UserRole.Free;
     [Reactive] public string? Username { get; set; } = "insomnious";
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
     [Reactive] public string ActiveWorkspaceTitle { get; set; } = "Home";
@@ -31,6 +31,7 @@ public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewMo
     public ReactiveCommand<Unit, Unit> OpenDiscordCommand => ReactiveCommand.Create(() => {});
     public ReactiveCommand<Unit, Unit> OpenForumsCommand => ReactiveCommand.Create(() => {});
     public ReactiveCommand<Unit, Unit> OpenGitHubCommand => ReactiveCommand.Create(() => {});
+    public ReactiveCommand<Unit, Unit> OpenStatusPageCommand => ReactiveCommand.Create(() => {});
 
     public ReactiveCommand<Unit, Unit> LoginCommand { get; set; }
     public ReactiveCommand<Unit, Unit> LogoutCommand { get; set; }

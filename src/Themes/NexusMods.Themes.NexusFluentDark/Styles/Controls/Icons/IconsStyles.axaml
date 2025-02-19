@@ -129,6 +129,7 @@
                     <icons:UnifiedIcon Classes="PartyPopper" />
                     <icons:UnifiedIcon Classes="Logout" />
                     <icons:UnifiedIcon Classes="AccountCog" />
+                    <icons:UnifiedIcon Classes="Broadcast" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -139,6 +140,7 @@
                     <icons:UnifiedIcon Classes="Xbox" />
                     <icons:UnifiedIcon Classes="Epic" />
                     <icons:UnifiedIcon Classes="GitHub" />
+                    <icons:UnifiedIcon Classes="Premium" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="PanelAllFull" />
@@ -684,5 +686,11 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.GitHub">
         <Setter Property="Value" Value="{x:Static icons:IconValues.GitHub}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Broadcast">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Broadcast}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Premium">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Premium}" />
     </Style>
 </Styles>
