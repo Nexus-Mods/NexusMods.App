@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -48,13 +49,7 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
 
                 foreach (var kv in query.KeyValues)
                 {
-                    var loadout = Loadout.Load(_connection.Db, kv.Key);
-                    if (!loadout.IsValid()) continue;
-
-                    var gameName = loadout.Installation.Name;
-                    _loadoutCounts.TryGetValue(gameName, out var counts);
-
-                    _loadoutCounts[gameName] = counts + kv.Value;
+                    _loadoutCounts[kv.Key] = kv.Value;
                 }
 
                 return 0;
@@ -88,8 +83,17 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             .Count();
     }
 
-    private readonly ConcurrentDictionary<string, int> _loadoutCounts = [];
-    private Counters.LoadoutModCount[] GetModsPerLoadout() => _loadoutCounts.Select(static kv => new Counters.LoadoutModCount(kv.Key, kv.Value)).ToArray();
+    private readonly ConcurrentDictionary<EntityId, int> _loadoutCounts = [];
+    private Counters.LoadoutModCount[] GetModsPerLoadout()
+    {
+        return _loadoutCounts.Select(kv =>
+        {
+            var loadout = Loadout.Load(_connection.Db, kv.Key);
+            if (!loadout.IsValid()) return Optional<Counters.LoadoutModCount>.None;
+
+            return new Counters.LoadoutModCount(loadout.Installation.Name, kv.Value);
+        }).Where(static optional => optional.HasValue).Select(static optional => optional.Value).ToArray();
+    }
 
     private Size _downloadSize = Size.Zero;
 
