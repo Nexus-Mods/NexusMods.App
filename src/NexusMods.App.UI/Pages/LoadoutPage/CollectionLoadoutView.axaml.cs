@@ -48,6 +48,8 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
 
             this.OneWayBind(ViewModel, vm => vm.IsLocalCollection, view => view.NexusModsLogo.IsVisible, static b => !b)
                 .AddTo(disposables);
+            this.OneWayBind(ViewModel, vm => vm.IsReadOnly, view => view.ReadOnlyPillStack.IsVisible)
+                .AddTo(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.IsCollectionEnabled)
                 .WhereNotNull()
