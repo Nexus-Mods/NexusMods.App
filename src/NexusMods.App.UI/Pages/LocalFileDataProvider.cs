@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
@@ -94,7 +95,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
     public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)
     {
-        return FilterLoadoutItems(loadoutFilter).Count();
+        return FilterLoadoutItems(loadoutFilter).QueryWhenChanged(static query => query.Count).Prepend(0);
     }
 
     private CompositeItemModel<EntityId> ToLoadoutItemModel(LoadoutFilter loadoutFilter, LocalFile.ReadOnly localFile)

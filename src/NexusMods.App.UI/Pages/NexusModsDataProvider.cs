@@ -24,14 +24,14 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
     private readonly IModUpdateService _modUpdateService;
-    private readonly IResourceLoader<EntityId, Bitmap> _thumbnailLoader;
+    private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
 
-        _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+        _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
@@ -68,7 +68,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         };
 
         parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
-        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
         // Size: sum of library files
         var sizeObservable = libraryItems
@@ -255,7 +255,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             };
 
             parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
-            parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+            parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
             LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
             LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
@@ -267,7 +267,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)
     {
-        return FilterLoadoutItems(loadoutFilter).Count();
+        return FilterLoadoutItems(loadoutFilter).QueryWhenChanged(static query => query.Count).Prepend(0);
     }
 }
 

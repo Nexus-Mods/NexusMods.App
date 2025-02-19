@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -31,6 +32,23 @@ public class LoadoutFilter
 
 public static class LoadoutDataProviderHelper
 {
+    public static IObservable<int> CountAllLoadoutItems(IServiceProvider serviceProvider, LoadoutId loadoutId)
+    {
+        return CountAllLoadoutItems(serviceProvider, new LoadoutFilter
+        {
+            LoadoutId = loadoutId,
+            CollectionGroupId = Optional<LoadoutItemGroupId>.None,
+        });
+    }
+
+    public static IObservable<int> CountAllLoadoutItems(IServiceProvider serviceProvider, LoadoutFilter loadoutFilter)
+    {
+        var loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>();
+        return loadoutDataProviders
+            .Select(provider => provider.CountLoadoutItems(loadoutFilter))
+            .CombineLatest(static counts => counts.Sum());
+    }
+
     public static ChangeSet<LoadoutItem.ReadOnly, EntityId> GetLinkedLoadoutItems(
         IDb db,
         LoadoutFilter loadoutFilter,

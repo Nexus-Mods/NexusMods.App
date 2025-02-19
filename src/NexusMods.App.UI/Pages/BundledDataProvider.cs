@@ -36,7 +36,7 @@ public class BundledDataProvider : ILoadoutDataProvider
 
     public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)
     {
-        return FilterLoadoutItems(loadoutFilter).Count();
+        return FilterLoadoutItems(loadoutFilter).QueryWhenChanged(static query => query.Count).Prepend(0);
     }
 
     private CompositeItemModel<EntityId> ToLoadoutItemModel(NexusCollectionBundledLoadoutGroup.ReadOnly item)

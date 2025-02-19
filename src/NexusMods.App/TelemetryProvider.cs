@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Pages;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -35,6 +37,30 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
             .QueryWhenChanged(datoms => datoms.Sum(d => d.V))
             .SubscribeWithErrorLogging(totalDownloadSize => _downloadSize = Size.From((ulong)totalDownloadSize))
             .DisposeWith(_disposable);
+
+        Loadout
+            .ObserveAll(_connection)
+            .FilterImmutable(static loadout => loadout.IsVisible())
+            .TransformOnObservable(loadout => LoadoutDataProviderHelper.CountAllLoadoutItems(serviceProvider, loadout.LoadoutId))
+            .QueryWhenChanged(query =>
+            {
+                _loadoutCounts.Clear();
+
+                foreach (var kv in query.KeyValues)
+                {
+                    var loadout = Loadout.Load(_connection.Db, kv.Key);
+                    if (!loadout.IsValid()) continue;
+
+                    var gameName = loadout.Installation.Name;
+                    _loadoutCounts.TryGetValue(gameName, out var counts);
+
+                    _loadoutCounts[gameName] = counts + kv.Value;
+                }
+
+                return 0;
+            })
+            .SubscribeWithErrorLogging()
+            .DisposeWith(_disposable);
     }
 
     public void ConfigureMetrics(IMeterConfig meterConfig)
@@ -58,25 +84,12 @@ internal sealed class TelemetryProvider : ITelemetryProvider, IDisposable
     {
         return Loadout.All(_connection.Db)
             .Where(x => x.IsVisible())
-            .Select(x => x.Installation.GameId)
-            .Distinct()
+            .DistinctBy(static x => x.Installation.GameId)
             .Count();
     }
 
-    private Counters.LoadoutModCount[] GetModsPerLoadout()
-    {
-        var db = _connection.Db;
-        var dict = db
-            .Datoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
-            .Select(datom => LoadoutItem.Load(db, datom.E))
-            .GroupBy(static item => item.LoadoutId)
-            .ToDictionary(static grouping => grouping.Key, static grouping => grouping.Count());
-
-        return Loadout.All(db)
-            .Where(static loadout => loadout.IsVisible())
-            .Select(loadout => new Counters.LoadoutModCount(loadout.Installation.Name, dict.GetValueOrDefault(loadout.LoadoutId, 0)))
-            .ToArray();
-    }
+    private readonly ConcurrentDictionary<string, int> _loadoutCounts = [];
+    private Counters.LoadoutModCount[] GetModsPerLoadout() => _loadoutCounts.Select(static kv => new Counters.LoadoutModCount(kv.Key, kv.Value)).ToArray();
 
     private Size _downloadSize = Size.Zero;
 
