@@ -22,6 +22,8 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.Name, view => view.CollectionName.Text)
                 .AddTo(disposables);
+            this.OneWayBind(ViewModel, vm => vm.InstalledModsCount, view => view.TotalModsTextBlock.Text, count => $"{count} MODS")
+                .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.TileImage, view => view.CollectionImage.Source)
                 .AddTo(disposables);
             

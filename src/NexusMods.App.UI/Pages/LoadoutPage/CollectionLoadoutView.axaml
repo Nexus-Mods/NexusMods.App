@@ -163,7 +163,6 @@
                                            Background="{StaticResource SurfaceTranslucentMidBrush}" />
 
                                 <TextBlock x:Name="TotalModsTextBlock"
-                                           Text="10 MODS"
                                            Theme="{StaticResource TitleSMSemiTheme}"
                                            VerticalAlignment="Center" />
 
