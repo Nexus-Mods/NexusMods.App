@@ -200,6 +200,19 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace.SelectedTab)
                 .BindToVM(this, vm => vm.SelectedTab)
                 .DisposeWith(d);
+            
+            this.WhenAnyObservable(
+                    vm => vm.OpenDiscordCommand,
+                    vm => vm.OpenForumsCommand,
+                    vm => vm.OpenGitHubCommand)
+                .SubscribeWithErrorLogging(uri =>
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        await osInterop.OpenUrl(uri);
+                    });
+                })
+                .DisposeWith(d);
         });
     }
 
