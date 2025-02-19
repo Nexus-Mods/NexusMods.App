@@ -15,7 +15,6 @@ using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.Extensions.BCL;
 using NexusMods.Telemetry;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 
@@ -116,6 +115,12 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             if (isActiveWorkspace) activeWorkspace = vm;
         }
 
+        if (_workspaces.Count == 0)
+        {
+            _logger.LogInformation("Restored zero workspaces, creating default workspace");
+            CreateWorkspace(context: new HomeContext(), pageData: Optional<PageData>.None);
+        }
+
         ChangeActiveWorkspace(activeWorkspace?.Id ?? _workspaces.Keys.First());
     }
 
@@ -151,21 +156,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
 
         return vm;
     }
-    
 
-    private void AddDefaultPanel(WorkspaceViewModel vm)
-    {
-        var addPanelBehavior = new AddPanelBehavior(new AddPanelBehavior.WithDefaultTab());
-
-        vm.AddPanel(
-            WorkspaceGridState.From(new[]
-            {
-                new PanelGridState(PanelId.DefaultValue, MathUtils.One),
-            }, isHorizontal: vm.IsHorizontal),
-            addPanelBehavior
-        );
-    }
-    
     public void UnregisterWorkspaceByContext<TContext>(Func<TContext, bool> predicate)
         where TContext : IWorkspaceContext
     {

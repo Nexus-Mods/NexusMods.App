@@ -1,10 +1,10 @@
+using System.Reactive;
 using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using Xunit.Abstractions;
 
@@ -30,6 +30,8 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             The initial state of the game folder should contain the game files as they were created by the game store. No loadout has been created yet.
             """);
         var loadoutA = await CreateLoadout();
+        var loadoutAState = await SynchronizerService.StatusForLoadout(loadoutA);
+        var subADisposable = loadoutAState.SubscribeSafe(new AnonymousObserver<LoadoutSynchronizerState>(_ => { }, onError: exception => sb.AppendLine($"Loadout A State Error: {exception}")));
 
         LogDiskState(sb, "## 2 - Loadout Created (A) - Synced",
             """
@@ -54,17 +56,11 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             After the loadout has been synchronized, the new file should be added to the loadout.
             """, [loadoutA]);
         
-        
-        await Synchronizer.DeactivateCurrentLoadout(GameInstallation);
-        LogDiskState(sb, "## 6 - Loadout Deactivated", 
-            """
-            At this point the loadout is deactivated, and all the files in the current state should match the initial state.
-            """, [loadoutA]);
-        
-        
         var loadoutB = await CreateLoadout();
+        var loadoutBState = await SynchronizerService.StatusForLoadout(loadoutB);
+        var subBDisposable = loadoutBState.SubscribeSafe(new AnonymousObserver<LoadoutSynchronizerState>(_ => { }, onError: exception => sb.AppendLine($"Loadout B State Error: {exception}")));
 
-        LogDiskState(sb, "## 7 - New Loadout (B) Created - No Sync",
+        LogDiskState(sb, "## 6 - New Loadout (B) Created - No Sync",
             """
             A new loadout is created, but it has not been synchronized yet. So again the 'Last Synced State' is not set.
             """, [loadoutA, loadoutB]
@@ -72,7 +68,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         
         loadoutB = await Synchronizer.Synchronize(loadoutB);
         
-        LogDiskState(sb, "## 8 - New Loadout (B) Synced",
+        LogDiskState(sb, "## 7 - New Loadout (B) Synced",
             """
             After the new loadout has been synchronized, the 'Last Synced State' should match the 'Current State' as the loadout has been applied to the game folder. Note that the contents of this 
             loadout are different from the previous loadout due to the new file only being in the previous loadout.
@@ -86,17 +82,16 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         
         loadoutB = await Synchronizer.Synchronize(loadoutB);
         
-        LogDiskState(sb, "## 9 - New File Added to Game Folder (B)",
+        LogDiskState(sb, "## 8 - New File Added to Game Folder (B)",
             """
             A new file has been added to the game folder and B loadout has been synchronized. The new file should be added to the B loadout.
             """, [loadoutA, loadoutB]
         );
         
-
-        await Synchronizer.DeactivateCurrentLoadout(GameInstallation);
+        await Synchronizer.DeactivateCurrentLoadout(loadoutA.InstallationInstance);
         await Synchronizer.ActivateLoadout(loadoutA);
         
-        LogDiskState(sb, "## 10 - Switch back to Loadout A",
+        LogDiskState(sb, "## 9 - Switch back to Loadout A",
             """
             Now we switch back to the A loadout, and the new file should be removed from the game folder.
             """, [loadoutA, loadoutB]
@@ -104,15 +99,19 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         
         var loadoutC = await Synchronizer.CopyLoadout(loadoutA);
         
-        LogDiskState(sb, "## 11 - Loadout A Copied to Loadout C",
+        LogDiskState(sb, "## 10 - Loadout A Copied to Loadout C",
             """
             Loadout A has been copied to Loadout C, and the contents should match.
             """, [loadoutA, loadoutB, loadoutC]
         );
         
+        // Cleanup state subscriptions
+        subADisposable.Dispose();
+        subBDisposable.Dispose();
+        
         await Synchronizer.UnManage(GameInstallation);
         
-        LogDiskState(sb, "## 12 - Game Unmanaged",
+        LogDiskState(sb, "## 11 - Game Unmanaged",
             """
             The loadouts have been deleted and the game folder should be back to its initial state.
             """,

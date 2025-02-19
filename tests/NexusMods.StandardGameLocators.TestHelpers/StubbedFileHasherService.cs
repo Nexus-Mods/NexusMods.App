@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -115,6 +116,8 @@ public class StubbedFileHasherService : IFileHashesService
 
     public async ValueTask<IDb> GetFileHashesDb()
     {
+        if (_current is not null)
+            return _current;
         await SetupDb();
         return _current!;
     }
@@ -205,5 +208,35 @@ public class StubbedFileHasherService : IFileHashesService
         if (!TryGetGameVersion(gameInstallation, [bestMatch.Key], out var version))
             throw new Exception("Failed to suggest a game version");
         return version;
+    }
+
+    public string[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
+    {
+        return [];
+    }
+
+    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    {
+        var filesSet = files.ToHashSet();
+        
+        List<(VersionData VersionData, int Matches)> versionMatches = [];
+        foreach (var versionDefinition in _versionFiles)
+        {
+            var (locatorIds , versionFiles) = versionDefinition;
+            var matchingCount = GetGameFiles(gameInstallation, [locatorIds])
+                .Count(file => filesSet.Contains((file.Path, file.Hash)));
+            
+            if (!TryGetGameVersion(gameInstallation, [locatorIds], out var version))
+            {
+                throw new Exception("Failed to suggest a game version");
+            }
+            
+            versionMatches.Add((new VersionData([locatorIds], version), matchingCount));
+        }
+        
+        return versionMatches
+            .OrderByDescending(t => t.Matches)
+            .Select(t => t.VersionData)
+            .FirstOrOptional(item => true);
     }
 }

@@ -495,15 +495,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var diskState = loadout.Installation.DiskStateEntries
             .Select(part => ((GamePath)part.Path, part.Hash));
         
-        var version = _fileHashService.SuggestGameVersion(loadout.InstallationInstance, diskState);
-        
-        // No reason to change the loadout if the version is the same
-        if (version == loadout.GameVersion)
+        var suggestedVersionDefinition = _fileHashService.SuggestVersionDefinitions(loadout.InstallationInstance, diskState);
+        if (!suggestedVersionDefinition.HasValue)
             return loadout;
         
-        // We need to update to the new ids and version
-        if (!_fileHashService.TryGetLocatorIdsForVersion(loadout.InstallationInstance, version, out var newLocatorIds))
-            throw new InvalidOperationException($"Unable to find common ids for version: {version}, this should never happen");
+        var newLocatorIds = suggestedVersionDefinition.Value.LocatorIds;
+
+        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds, StringComparer.OrdinalIgnoreCase).Count();
+        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds, StringComparer.OrdinalIgnoreCase).Count();
+        
+        // No reason to change the loadout if the version is the same
+        if (locatorRemovals == 0 && locatorAdditions == 0)
+            return loadout;
 
         // Make a lookup set of the new files
         var versionFiles = _fileHashService
@@ -526,8 +529,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             tx.Delete(file, false);
         }
         
+        
+        
         // Update the version and locator ids
-        tx.Add(loadout, Loadout.GameVersion, version);
+        tx.Add(loadout, Loadout.GameVersion, suggestedVersionDefinition.Value.VersionName);
         foreach (var id in loadout.LocatorIds) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
         foreach (var id in newLocatorIds)
@@ -537,7 +542,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return loadout.Rebase(result.Db);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Alternative to <see cref="RunActions"/> that ignores changes and optionally clears the last sync loadout metadata
+    /// </summary>
     public async Task RunActions(Dictionary<GamePath, SyncNode> syncTree, GameInstallation gameInstallation)
     {
         using var _ = await _lock.LockAsync();
@@ -976,10 +983,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return replacement.Id > existing.Id;
     }
     
-    /// <inheritdoc />
-    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState diskState)
+    /// <summary>
+    /// Returns true if the loadout state doesn't match the last scanned disk state.
+    /// </summary>
+    public bool ShouldSynchronize(Loadout.ReadOnly loadout, DiskState previousDiskState, DiskState lastScannedDiskState)
     {
-        var syncTree = BuildSyncTree(DiskStateToPathPartPair(diskState), DiskStateToPathPartPair(diskState), loadout);
+        var syncTree = BuildSyncTree(DiskStateToPathPartPair(lastScannedDiskState), DiskStateToPathPartPair(previousDiskState), loadout);
+        // Process the sync tree to get the actions populated in the nodes
+        ProcessSyncTree(syncTree);
+        
+        return syncTree.Any(n => n.Value.Actions != Actions.DoNothing);
+    }
+    
+    /// <inheritdoc />
+    public FileDiffTree LoadoutToDiskDiff(Loadout.ReadOnly loadout, DiskState previousDiskState, DiskState lastScannedDiskState)
+    {
+        var syncTree = BuildSyncTree(DiskStateToPathPartPair(lastScannedDiskState), DiskStateToPathPartPair(previousDiskState), loadout);
         // Process the sync tree to get the actions populated in the nodes
         ProcessSyncTree(syncTree);
 
@@ -1022,6 +1041,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     ChangeType = FileChangeType.Removed,
                     GamePath = path,
                 };
+            }
+            else if (actions.HasFlag(Actions.IngestFromDisk))
+            {
+                // File is already on disk and will not be changed
+                entry = new DiskDiffEntry
+                {
+                    Hash = node.Disk.Hash,
+                    Size = node.Disk.Size,
+                    ChangeType = FileChangeType.None,
+                    GamePath = path,
+                };
+            }
+            else if (actions.HasFlag(Actions.AddReifiedDelete))
+            {
+                // File is not on disk and will not end up on disk, so don't show it
+                continue;
             }
             else
             {
@@ -1253,7 +1288,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 }
 
                 if (!_fileHashService.TryGetGameVersion(installation, locatorMetadata, out var version))
-                    throw new Exception("Cannot create a loadout for an unknown game version");
+                    _logger.LogWarning("Unable to find game version for {Game}", installation.GameMetadataId);
 
                 var loadout = new Loadout.New(tx)
                 {
@@ -1296,6 +1331,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         );
     }
+    
 
     /// <inheritdoc />
     public async Task DeactivateCurrentLoadout(GameInstallation installation)
