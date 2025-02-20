@@ -327,7 +327,7 @@ The current SMAPI version is {CurrentSMAPIVersion}.
 
 OR
 
-1. Download an older version of **{SMAPIMod}** from {NexusModsLink} that works with SMAPI versions older than {MinimumAPIVersion}
+1. Download an older version of **{SMAPIMod}** from {NexusModsLink} that works with SMAPI version {CurrentSMAPIVersion}
 
 ### Technical Details
 The `manifest.json` file included with **{SMAPIMod}** lists the `MinimumApiVersion` as {MinimumAPIVersion}. 
