@@ -5,4 +5,6 @@ namespace NexusMods.App.UI;
 public static class UiMessages
 {
     public record AddedCollection(CollectionRevisionMetadata.ReadOnly Revision) : IEventBusMessage;
+
+    public record AddedDownload() : IEventBusMessage;
 }

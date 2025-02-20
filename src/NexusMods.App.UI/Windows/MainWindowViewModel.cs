@@ -130,6 +130,15 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 })
                 .DisposeWith(d);
 
+            eventBus
+                .ObserveMessages<UiMessages.AddedDownload>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                })
+                .DisposeWith(d);
+
             R3.Disposable.Create(this, vm =>
             {
                 vm._windowManager.UnregisterWindow(vm);
