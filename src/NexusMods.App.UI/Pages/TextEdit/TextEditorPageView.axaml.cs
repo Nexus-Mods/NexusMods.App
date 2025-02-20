@@ -23,7 +23,13 @@ public partial class TextEditorPageView : ReactiveUserControl<ITextEditorPageVie
         var copyCommand = ReactiveCommand.Create(() => TextEditor.Copy(), this.WhenAnyValue(view => view.TextEditor.CanCopy));
         CopyButton.Command = copyCommand;
 
-        var pasteCommand = ReactiveCommand.Create(() => TextEditor.Paste(), this.WhenAnyValue(view => view.TextEditor.CanPaste));
+        var pasteCommand = ReactiveCommand.Create(() => TextEditor.Paste(),
+            this.WhenAnyValue(
+                view => view.TextEditor.CanPaste,
+                view => view.ViewModel!.IsReadOnly,
+                (canPaste, isReadOnly) => canPaste && !isReadOnly
+            )
+        );
         PasteButton.Command = pasteCommand;
 
         TextEditor.Options = new TextEditorOptions
