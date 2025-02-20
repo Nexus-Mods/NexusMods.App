@@ -41,7 +41,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
     private readonly ISMAPIWebApi _smapiWebApi;
     private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
 
-    private static readonly NamedLink DefaultWikiLink = new("SMAPI Wiki", new Uri("https://smapi.io/mods"));
+    private static readonly NamedLink SMAPIModCompatibilityLink = new("SMAPI website", new Uri("https://smapi.io/mods"));
 
     public SMAPIModDatabaseCompatibilityDiagnosticEmitter(
         IServiceProvider serviceProvider,
@@ -116,7 +116,8 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
                 yield return Diagnostics.CreateModCompatabilityObsolete(
                     SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
                     SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
-                    ReasonPhrase: reasonPhrase ?? "the feature/fix has been integrated into SMAPI or Stardew Valley or has otherwise been made obsolete."
+                    ReasonPhrase: reasonPhrase ?? "the feature/fix has been integrated into SMAPI or Stardew Valley or has otherwise been made obsolete.",
+                    SMAPIModList: SMAPIModCompatibilityLink
                 );
             } else if (versionedFields.Status == ModStatus.AssumeBroken)
             {
@@ -124,7 +125,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
                     SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
                     SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
                     ReasonPhrase: reasonPhrase ?? "it's no longer compatible",
-                    ModLink:apiMods.GetLink(manifest.UniqueID, defaultValue: DefaultWikiLink),
+                    ModLink:apiMods.GetLink(manifest.UniqueID, defaultValue: SMAPIModCompatibilityLink),
                     ModVersion: manifest.Version.ToString()
                 );
             }

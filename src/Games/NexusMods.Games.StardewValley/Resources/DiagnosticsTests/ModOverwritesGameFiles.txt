@@ -1,0 +1,2 @@
+1. Install https://www.nexusmods.com/stardewvalley/mods/1090?tab=files&file_id=4275&nmm=1
+2. Using the advanced installed, map the "Maps" folder to Game/Content.
