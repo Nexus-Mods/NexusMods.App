@@ -1,2 +1,0 @@
-1. Install SMAPI 4.0.8 https://www.nexusmods.com/stardewvalley/mods/2400?tab=files&file_id=94412&nmm=1
-2. Install Content Patcher 2.5.3 https://www.nexusmods.com/stardewvalley/mods/1915?tab=files&file_id=124659&nmm=1
