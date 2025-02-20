@@ -1,7 +1,9 @@
-﻿using Avalonia;
+﻿using System.Reactive.Disposables;
+using Avalonia;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.BuildInfo;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 
@@ -29,6 +31,13 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
     public DevelopmentBuildBannerView()
     {
         InitializeComponent();
+
+        this.WhenActivated(d =>
+            {
+                this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackButton)
+                    .DisposeWith(d);
+            }
+        );
         
         var appName = CompileConstants.IsDebug ? "DEVELOPMENT USE ONLY" : "Stardew Valley Preview";
 

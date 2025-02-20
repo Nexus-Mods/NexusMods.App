@@ -50,6 +50,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
             this.WhenAnyObservable(view => view.ViewModel!.BringWindowToFront)
                 .OnUI()
+                .Where(static shouldBringToFront => shouldBringToFront)
                 .Subscribe(_ => {
                     if (WindowState == WindowState.Minimized)
                         WindowState = WindowState.Normal;

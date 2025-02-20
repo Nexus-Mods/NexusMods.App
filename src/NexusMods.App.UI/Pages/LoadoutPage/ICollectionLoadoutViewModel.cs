@@ -25,6 +25,11 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
     /// Gets whether the collection is enabled.
     /// </summary>
     bool IsCollectionEnabled { get; }
+    
+    /// <summary>
+    /// Gets the number of mods installed in the collection, both required and optional.
+    /// </summary>
+    int InstalledModsCount { get; }
 
     string Name { get; }
 

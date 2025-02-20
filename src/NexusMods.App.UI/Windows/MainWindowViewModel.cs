@@ -1,9 +1,10 @@
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
@@ -16,9 +17,15 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
+using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CLI;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Disposable = System.Reactive.Disposables.Disposable;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
 
 namespace NexusMods.App.UI.Windows;
 
@@ -26,13 +33,15 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 {
     private readonly IWindowManager _windowManager;
     
-    public ReactiveCommand<Unit, Unit> BringWindowToFront { get; } = ReactiveCommand.Create(() => { });
+    public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
         IWindowManager windowManager,
         IOverlayController overlayController,
-        ILoginManager loginManager)
+        ILoginManager loginManager,
+        IEventBus eventBus,
+        ISettingsManager settingsManager)
     {
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -50,7 +59,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         Spine = serviceProvider.GetRequiredService<ISpineViewModel>();
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
-        
+
+        BringWindowToFront = ReactiveCommand.Create(() => settingsManager.Get<BehaviorSettings>().BringWindowToFront);
+
         this.WhenActivated(d =>
         {
             ConnectErrors(serviceProvider)
@@ -74,7 +85,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             loginManager.IsLoggedInObservable
                 .DistinctUntilChanged()
                 .Where(isSignedIn => isSignedIn)
-                .Select(_ => Unit.Default)
+                .Select(_ => System.Reactive.Unit.Default)
                 .InvokeReactiveCommand(BringWindowToFront)
                 .DisposeWith(d);
             
@@ -96,7 +107,41 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .BindTo(this, vm => vm.CurrentOverlay)
                 .DisposeWith(d);
 
-            Disposable.Create(this, vm =>
+            eventBus
+                .ObserveMessages<CliMessages.AddedCollection>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    var workspaceController = self.WorkspaceController;
+                    if (workspaceController.ActiveWorkspace.Context is not LoadoutContext loadoutContext) return;
+
+                    var pageData = new PageData
+                    {
+                        FactoryId = CollectionDownloadPageFactory.StaticId,
+                        Context = new CollectionDownloadPageContext
+                        {
+                            TargetLoadout = loadoutContext.LoadoutId,
+                            CollectionRevisionMetadataId = message.Revision,
+                        },
+                    };
+
+                    var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, NavigationInput.Default);
+                    workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+
+                    using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                })
+                .DisposeWith(d);
+
+            eventBus
+                .ObserveMessages<CliMessages.AddedDownload>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                })
+                .DisposeWith(d);
+
+            R3.Disposable.Create(this, vm =>
             {
                 vm._windowManager.UnregisterWindow(vm);
             }).DisposeWith(d);
@@ -152,7 +197,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     /// <inheritdoc/>
     public IWorkspaceController WorkspaceController { get; }
-
 
     [Reactive] public ISpineViewModel Spine { get; set; }
 

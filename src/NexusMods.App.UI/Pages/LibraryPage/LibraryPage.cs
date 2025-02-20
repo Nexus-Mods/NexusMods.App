@@ -31,7 +31,6 @@ public class LibraryPageFactory : APageFactory<ILibraryViewModel, LibraryPageCon
             ServiceProvider.GetRequiredService<IWindowManager>(), 
             ServiceProvider,
             ServiceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>(),
-            ServiceProvider.GetRequiredService<INexusApiClient>(),
             context.LoadoutId);
         return vm;
     }

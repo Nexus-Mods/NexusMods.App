@@ -85,6 +85,19 @@
     <Color x:Key="PrimitiveBlue200">#BFDBFE</Color>
     <Color x:Key="PrimitiveBlue100">#DBEAFE</Color>
     <Color x:Key="PrimitiveBlue50">#EFF6FF</Color>
+    
+    <!-- Violet -->
+    <Color x:Key="PrimitiveViolet950">#2E1065</Color>
+    <Color x:Key="PrimitiveViolet900">#4C1D95</Color>
+    <Color x:Key="PrimitiveViolet800">#5B21B6</Color>
+    <Color x:Key="PrimitiveViolet700">#6D28D9</Color>
+    <Color x:Key="PrimitiveViolet600">#7C3AED</Color>
+    <Color x:Key="PrimitiveViolet500">#8B5CF6</Color>
+    <Color x:Key="PrimitiveViolet400">#A78BFA</Color>
+    <Color x:Key="PrimitiveViolet300">#C4B5FD</Color>
+    <Color x:Key="PrimitiveViolet200">#DDD6FE</Color>
+    <Color x:Key="PrimitiveViolet100">#EDE9FE</Color>
+    <Color x:Key="PrimitiveViolet50">#F5F3FF</Color>
 
     <!-- TranslucentWhite -->
     <!-- NOTE: Avalonia uses ARGB, while figma uses RGBA -->

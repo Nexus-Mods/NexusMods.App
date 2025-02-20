@@ -136,6 +136,22 @@
     <SolidColorBrush x:Key="InfoModerateBrush" Color="{StaticResource InfoModerate}" />
     <SolidColorBrush x:Key="InfoStrongBrush" Color="{StaticResource InfoStrong}" />
 
+    
+    
+    <!-- Premium -->
+    
+    <!-- Colors -->
+    <StaticResource x:Key="PremiumWeak" ResourceKey="BrandPremium950" />
+    <StaticResource x:Key="PremiumSubdued" ResourceKey="BrandPremium800" />
+    <StaticResource x:Key="PremiumModerate" ResourceKey="BrandPremium600" />
+    <StaticResource x:Key="PremiumStrong" ResourceKey="BrandPremium400" />
+    
+    <!-- SolidColorBrushes -->
+    <SolidColorBrush x:Key="PremiumWeakBrush" Color="{StaticResource PremiumWeak}" />
+    <SolidColorBrush x:Key="PremiumSubduedBrush" Color="{StaticResource PremiumSubdued}" />
+    <SolidColorBrush x:Key="PremiumModerateBrush" Color="{StaticResource PremiumModerate}" />
+    <SolidColorBrush x:Key="PremiumStrongBrush" Color="{StaticResource PremiumStrong}" />
+    
 
     <!-- Focus -->
 
@@ -175,5 +191,14 @@
     <SolidColorBrush x:Key="StrokeTranslucentSubduedBrush" Color="{StaticResource StrokeTranslucentSubdued}" />
     <SolidColorBrush x:Key="StrokeTranslucentModerateBrush" Color="{StaticResource StrokeTranslucentModerate}" />
     <SolidColorBrush x:Key="StrokeTranslucentStrongBrush" Color="{StaticResource StrokeTranslucentStrong}" />
-
+    
+    <!-- Special Brushes -->
+    
+    <!-- LinearGradientBrushes -->
+    <LinearGradientBrush x:Key="StardewLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+        <GradientStop Color="#4ade80" Offset="0" />
+        <GradientStop Color="#2563eb" Offset="1" />
+    </LinearGradientBrush>
+    
+    
 </ResourceDictionary>
