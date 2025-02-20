@@ -20,6 +20,7 @@
                                              LeftIcon="{x:Static icons:IconValues.PlayArrow}" />
                     <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
                     <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="Left" ShowLabel="True" Size="Small"  />
                     <controls:StandardButton Text="This is WeakAlt" Type="Tertiary" Fill="WeakAlt" />
                 </StackPanel>
                 <!-- <StackPanel> -->
@@ -197,7 +198,10 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" 
+                                    VerticalAlignment="Center" 
+                                    HorizontalAlignment="Center"
+                                    Spacing="4">
                             <icons:UnifiedIcon Name="PART_LeftIcon" />
                             <TextBlock Name="PART_Label" Text="{TemplateBinding Text}" />
                             <icons:UnifiedIcon Name="PART_RightIcon" />
@@ -286,7 +290,7 @@
             <Setter Property="Padding" Value="{DynamicResource ButtonPaddingSmall}" />
 
             <Style Selector="^ StackPanel">
-                <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}"></Setter>
+                <Setter Property="Spacing" Value="{StaticResource Spacing-1}"></Setter>
             </Style>
 
             <Style Selector="^ /template/ Border">
