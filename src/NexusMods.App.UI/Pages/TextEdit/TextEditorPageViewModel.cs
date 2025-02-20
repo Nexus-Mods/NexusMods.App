@@ -144,7 +144,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
                     };
 
                     Document = document;
-                    IsReadOnly = context.FileId.IsT1;
+                    IsReadOnly = context.IsReadOnly || context.FileId.IsT1;
                 })
                 .DisposeWith(disposables);
 

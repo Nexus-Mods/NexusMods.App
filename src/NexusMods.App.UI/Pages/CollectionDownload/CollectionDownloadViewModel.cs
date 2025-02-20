@@ -184,6 +184,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                     {
                         FileId = collectionJsonFile.AsLibraryFile().LibraryFileId,
                         FilePath = collectionJsonFile.AsLibraryFile().FileName,
+                        IsReadOnly = true,
                     },
                 };
 
