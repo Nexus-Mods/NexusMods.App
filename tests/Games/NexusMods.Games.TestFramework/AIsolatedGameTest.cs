@@ -18,6 +18,7 @@ using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
@@ -116,10 +117,10 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         return await LibraryService.AddDownload(downloadJob);
     }
 
-    public async Task<LoadoutItemGroup.ReadOnly> InstallModFromNexusMods(Loadout.ReadOnly loadout, ModId modId, FileId fileId)
+    public async Task<LoadoutItemGroup.ReadOnly> InstallModFromNexusMods(LoadoutId loadoutId, ModId modId, FileId fileId, ILibraryItemInstaller? installer = null)
     {
         var libraryFile = await DownloadModFromNexusMods(modId, fileId);
-        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadout);
+        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, installer: installer);
     }
 
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
