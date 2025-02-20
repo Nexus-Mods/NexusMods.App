@@ -172,13 +172,14 @@ The Stardew Modding API (SMAPI) mod compatibility list has given the following i
 
 > {SMAPIModName} is obsolete because {ReasonPhrase}
 
-You may be able to find further information about this on the [SMAPI website](https://smapi.io/mods).
+You may be able to find further information about this on the {SMAPIModList}.
 
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
             .AddValue<string>("SMAPIModName")
             .AddValue<string>("ReasonPhrase")
+            .AddValue<NamedLink>("SMAPIModList")
         )
         .Finish();
 
@@ -221,18 +222,24 @@ You may be able to find further information about this on the [SMAPI website](ht
     internal static IDiagnosticTemplate GameVersionOlderThanMinimumGameVersionTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 8))
-        .WithTitle("Game Version older than supported by SMAPI")
+        .WithTitle("Game Update required")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("The minimum supported game version of SMAPI {SMAPIVersion} is {MinimumGameVersion}")
+        .WithSummary("Stardew Modding API (SMAPI) {SMAPIVersion} requires Stardew Valley {MinimumGameVersion}+")
         .WithDetails("""
-SMAPI version {SMAPIVersion} requires the game version to be at least {MinimumGameVersion}.
-The current game version is {CurrentGameVersion}.
+The installed version of Stardew Modding API (SMAPI) will not work correctly for game versions older than {MinimumGameVersion}. The current game version is {CurrentGameVersion}.
 
-Due to this version mismatch, the game will **crash** on startup.
-You can solve this issue by either updating your game or downgrading SMAPI.
+The game may crash or fail to launch if this issue remains unresolved.
 
-The newest supported SMAPI version for game version {CurrentGameVersion} is {NewestSupportedSMAPIVersionForCurrentGameVersion}.
-You can download this SMAPI version from {SMAPINexusModsLink}.
+### How to Resolve
+1. Update Stardew Valley to {MinimumGameVersion} or higher (the latest version is {NewestSupportedSMAPIVersionForCurrentGameVersion})
+
+OR
+
+1. Download an version of SMAPI compatible with Stardew Valley {CurrentGameVersion} from {SMAPINexusModsLink}
+
+### Technical Details
+Stardew Valley version {SMAPIVersion} is listed as requiring Stardew Valley {MinimumGameVersion} or newer in the compatibility data on {GitHubData}.
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPI")
@@ -241,6 +248,7 @@ You can download this SMAPI version from {SMAPINexusModsLink}.
             .AddValue<string>("CurrentGameVersion")
             .AddValue<string>("NewestSupportedSMAPIVersionForCurrentGameVersion")
             .AddValue<NamedLink>("SMAPINexusModsLink")
+            .AddValue<NamedLink>("GitHubData")
         )
         .Finish();
 
@@ -249,18 +257,23 @@ You can download this SMAPI version from {SMAPINexusModsLink}.
     internal static IDiagnosticTemplate GameVersionNewerThanMaximumGameVersionTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 9))
-        .WithTitle("Game Version newer than supported by SMAPI")
+        .WithTitle("SMAPI Update Required")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("The maximum supported game version of SMAPI {SMAPIVersion} is {MaximumGameVersion}")
+        .WithSummary("Stardew Modding API (SMAPI) {SMAPIVersion} requires Stardew Valley {MaximumGameVersion} or older")
         .WithDetails("""
-SMAPI version {SMAPIVersion} requires the game version to be lower than {MaximumGameVersion}.
-The current game version is {CurrentGameVersion}.
+The installed version of Stardew Modding API (SMAPI) will not work correctly for game versions newer than {MaximumGameVersion}. The current game version is {CurrentGameVersion}.
 
-Due to this version mismatch, the game will **crash** on startup.
-You can solve this issue by either downgrading your game to {MaximumGameVersion} or updating SMAPI.
+The game may crash or fail to launch if this issue remains unresolved.
 
-The newest supported SMAPI version for game version {CurrentGameVersion} is {NewestSupportedSMAPIVersionForCurrentGameVersion}.
-You can download this SMAPI version from {SMAPINexusModsLink}.
+### How to Resolve
+1. Download the latest version of **SMAPI** ({NewestSupportedSMAPIVersionForCurrentGameVersion}) from {SMAPINexusModsLink}
+
+OR
+
+1. Downgrade your installation of Stardew Valley to version {MaximumGameVersion}
+
+### Technical Details
+SMAPI {SMAPIVersion} is listed as requiring a maximum Stardew Valley version of {MaximumGameVersion} in the compatibility data on {GitHubData}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPI")
@@ -269,6 +282,7 @@ You can download this SMAPI version from {SMAPINexusModsLink}.
             .AddValue<string>("CurrentGameVersion")
             .AddValue<string>("NewestSupportedSMAPIVersionForCurrentGameVersion")
             .AddValue<NamedLink>("SMAPINexusModsLink")
+            .AddValue<NamedLink>("GitHubData")
         )
         .Finish();
 
@@ -333,7 +347,7 @@ The `manifest.json` file included with **{SMAPIMod}** lists the `MinimumApiVersi
     internal static IDiagnosticTemplate GameVersionOlderThanModMinimumGameVersionTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 12))
-        .WithTitle("Game Update Required")
+        .WithTitle("Some Mods Require a Game Update")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("'{SMAPIModName}' requires Stardew Valley {MinimumGameVersion}+")
         .WithDetails("""

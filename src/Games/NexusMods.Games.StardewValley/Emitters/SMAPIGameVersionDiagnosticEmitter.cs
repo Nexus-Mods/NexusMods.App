@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
+using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.BCL;
@@ -113,6 +114,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         );
     }
 
+    private static readonly NamedLink GitHubDataLink = new("GitHub", new Uri("https://github.com/erri120/smapi-versions/blob/main/data/smapi-game-versions.json"));
+
     private Diagnostic? GameVersionNewerThanMaximumGameVersion(
         GameToSMAPIMapping gameToSMAPIMappings,
         Loadout.ReadOnly loadout,
@@ -142,7 +145,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             MaximumGameVersion: maximumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
             NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
-            SMAPINexusModsLink: Helpers.SMAPILink
+            SMAPINexusModsLink: Helpers.SMAPILink,
+            GitHubData: GitHubDataLink
         );
     }
 
@@ -175,7 +179,8 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             MinimumGameVersion: minimumGameVersion.ToString(),
             CurrentGameVersion: gameVersion.ToString(),
             NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
-            SMAPINexusModsLink: Helpers.SMAPILink
+            SMAPINexusModsLink: Helpers.SMAPILink,
+            GitHubData: GitHubDataLink
         );
     }
 
