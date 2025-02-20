@@ -299,7 +299,7 @@
                 <Style Selector="^ TextBlock">
                     <!-- needs a little horizontal padding to fully match figma -->
                     <Setter Property="Padding" Value="1 0" />
-                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                 </Style>
             </Style>
 
