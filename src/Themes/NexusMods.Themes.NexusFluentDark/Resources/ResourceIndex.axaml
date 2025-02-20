@@ -14,5 +14,6 @@
         <ResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
+        <ResourceInclude Source="/Resources/ControlThemes/SplitButton.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

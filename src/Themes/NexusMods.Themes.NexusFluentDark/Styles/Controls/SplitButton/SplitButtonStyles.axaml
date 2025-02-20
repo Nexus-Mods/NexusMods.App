@@ -1,0 +1,68 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    <Design.PreviewWith>
+        <Border Padding="16">
+            <StackPanel>
+                <SplitButton Content="Medium">
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <SplitButton>
+                    <TextBlock Text="Medium TextBlock" />
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <SplitButton Content="Compact" Classes="Compact">
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="SplitButton">
+
+        <Style Selector="^/template/ Button#PART_PrimaryButton">
+            <Style Selector="^ > AccessText">
+                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            </Style>
+        </Style>
+        
+        <Style Selector="^ > TextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        </Style>
+
+        <Style Selector="^.Compact">
+            <Setter Property="MinHeight" Value="28" />
+            <Setter Property="Height" Value="28" />
+
+            <Style Selector="^/template/ Button#PART_PrimaryButton">
+                <Style Selector="^ AccessText">
+                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^ /template/ Button#PART_SecondaryButton">
+                <Setter Property="MinWidth" Value="28" />
+                <Style Selector="^ icons|UnifiedIcon">
+                    <Setter Property="Size" Value="16" />
+                </Style>
+            </Style>
+        </Style>
+
+    </Style>
+</Styles>

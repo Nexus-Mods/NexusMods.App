@@ -52,6 +52,7 @@
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/SplitButton/SplitButtonStyles.axaml" />
 
     <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml" />
 
