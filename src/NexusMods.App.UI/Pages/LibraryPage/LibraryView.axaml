@@ -65,88 +65,100 @@
                 </StackPanel>
             </Expander.Header>
             <!-- Empty State -->
-                <Grid RowDefinitions="Auto, *">
-                    <!-- Toolbar -->
-                    <Border Grid.Row="0" Classes="Toolbar">
-                        
-                        <StackPanel>
-                        
-                            <controls:StandardButton x:Name="AddModButton"
-                                                     Text="{x:Static resources:Language.FileOriginPage_AddMod}"
-                                                     Type="Primary"
-                                                     Size="Small"
-                                                     Fill="WeakAlt"
-                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
+            <Grid RowDefinitions="Auto, *">
+                <!-- Toolbar -->
+                <Border Grid.Row="0" Classes="Toolbar">
 
-                            <controls:StandardButton x:Name="AddModAdvancedButton"
-                                                     Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced}"
-                                                     Type="Primary"
-                                                     Size="Small"
-                                                     Fill="WeakAlt"
-                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
+                    <StackPanel>
 
-                            <controls:StandardButton x:Name="RemoveModButton"
-                                                     Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
-                                                     Type="Tertiary"
-                                                     Size="Small"
-                                                     Fill="WeakAlt"
-                                                     ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
-                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
-                            
-                            <Separator />
+                        <controls:StandardButton x:Name="AddModButton"
+                                                 Text="{x:Static resources:Language.FileOriginPage_AddMod}"
+                                                 Type="Primary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
 
-                            <!-- Get Mods Section -->
-                            <TextBlock Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
+                        <controls:StandardButton x:Name="AddModAdvancedButton"
+                                                 Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced}"
+                                                 Type="Primary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
 
-                            <controls:StandardButton x:Name="GetModsFromDriveButton"
-                                                     Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"
-                                                     Type="Tertiary"
-                                                     Size="Small"
-                                                     Fill="WeakAlt"
-                                                     ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.HardDrive}"
-                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromDrive_ToolTip}" />
+                        <!-- <SplitButton Content="Install" Height="28" MinHeight="28" CornerRadius="4"> -->
+                        <!--     <SplitButton.Flyout> -->
+                        <!--         <MenuFlyout> -->
+                        <!--             <MenuItem Header="Install" /> -->
+                        <!--             <MenuItem Header="Advanced Install" /> -->
+                        <!--         </MenuFlyout> -->
+                        <!--     </SplitButton.Flyout> -->
+                        <!-- </SplitButton> -->
 
-                            <controls:StandardButton x:Name="GetModsFromNexusButton"
-                                                     Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"
-                                                     Type="Tertiary"
-                                                     Size="Small"
-                                                     Fill="WeakAlt"
+                        <controls:StandardButton x:Name="RemoveModButton"
+                                                 Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
+
+                        <Separator />
+
+                        <!-- Get Mods Section -->
+                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
+
+                        <controls:StandardButton x:Name="GetModsFromDriveButton"
+                                                 Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromDrive_ToolTip}" />
+
+                        <controls:StandardButton x:Name="GetModsFromNexusButton"
+                                                 Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromNexus_ToolTip}" />
+
+                        <!-- Updates Section -->
+                        <Separator />
+
+                        <!-- 'Updates' button. -->
+                        <!-- This button's text is updated at runtime to set number of mods -->
+                        <SplitButton x:Name="UpdateAll" IsVisible="False"
+                                     Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
+                        <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small"
+                                                 Type="Tertiary" Fill="WeakAlt"
+                                                 LeftIcon="{x:Static icons:IconValues.Refresh}" />
+                    </StackPanel>
+                </Border>
+
+                <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
+                                     Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+                    <controls:EmptyState.Subtitle>
+                        <StackPanel Orientation="Vertical" Spacing="16">
+                            <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
+                            <controls:StandardButton x:Name="EmptyLibraryLinkButton"
+                                                     Text="Open Nexus Mods"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Nexus}"
-                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromNexus_ToolTip}" />
-                            
-                            <!-- Updates Section -->
-                            <Separator />
-
-                            <!-- 'Updates' button. -->
-                            <!-- This button's text is updated at runtime to set number of mods -->
-                            <SplitButton x:Name="UpdateAll" IsVisible="False" Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
-                            <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small" Type="Tertiary" Fill="WeakAlt" LeftIcon="{x:Static icons:IconValues.Refresh}" />
+                                                     HorizontalAlignment="Center" />
                         </StackPanel>
-                    </Border>
-                    
-                    <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
-                                         Header="{x:Static resources:Language.EmptyLibraryTitleText}">
-                        <controls:EmptyState.Subtitle>
-                            <StackPanel Orientation="Vertical" Spacing="16">
-                                <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
-                                <controls:StandardButton x:Name="EmptyLibraryLinkButton"
-                                                         Text="Open Nexus Mods"
-                                                         ShowIcon="Left"
-                                                         LeftIcon="{x:Static icons:IconValues.Nexus}"
-                                                         HorizontalAlignment="Center" />
-                            </StackPanel>
-                        </controls:EmptyState.Subtitle>
+                    </controls:EmptyState.Subtitle>
 
                     <TreeDataGrid Grid.Row="1" x:Name="TreeDataGridLibrary"
                                   ShowColumnHeaders="True"
                                   CanUserResizeColumns="True"
                                   CanUserSortColumns="True"
                                   HorizontalAlignment="Stretch" />
-                    </controls:EmptyState>
-                </Grid>
+                </controls:EmptyState>
+            </Grid>
         </Expander>
     </Grid>
 

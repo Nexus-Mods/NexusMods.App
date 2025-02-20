@@ -15,9 +15,9 @@
 
     <Grid RowDefinitions="Auto, *">
         <StackPanel Grid.Row="0" Orientation="Vertical">
+            
             <!-- toolbar -->
-            <Border x:Name="CollectionToolbar"
-                    Classes="Toolbar">
+            <Border x:Name="CollectionToolbar" Classes="Toolbar">
 
                 <Grid ColumnDefinitions="*,*">
 
@@ -54,7 +54,6 @@
                                       OffContent="{x:Null}" />
                     </StackPanel>
                 </Grid>
-
             </Border>
 
             <Border Classes="Toolbar">
@@ -63,7 +62,7 @@
                                                   Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
                                                   Type="Tertiary"
                                                   Size="Small"
-                                                  Fill="Weak"
+                                                  Fill="WeakAlt"
                                                   ShowIcon="Left"
                                                   LeftIcon="{x:Static icons:IconValues.Folder}"
                                                   ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}" />

@@ -231,10 +231,10 @@
         <value>Delete</value>
     </data>
     <data name="FileOriginPage_AddMod" xml:space="preserve">
-        <value>Add</value>
+        <value>Install</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
-        <value>Advanced add</value>
+        <value>Advanced Install</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>

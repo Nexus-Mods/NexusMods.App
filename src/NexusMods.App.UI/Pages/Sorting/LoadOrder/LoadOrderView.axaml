@@ -27,9 +27,9 @@
             <!-- NOTE(insomnious): I've not stripped these styles into a styles file
             as this toolbar is only temporary and mostly for show -->
             <Border x:Name="ToolbarBorder" Grid.Row="0" Classes="Toolbar">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <StackPanel>
                     <CheckBox Content="Hide Disabled Collections" IsEnabled="False" />
-                    <Border Width="1" Height="28" Margin="4,0" Background="{StaticResource StrokeTranslucentWeakBrush}" />
+                    <Separator />
                     <controls:StandardButton
                         Size="Small"
                         Text="Add to group"

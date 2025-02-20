@@ -836,7 +836,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add.
+        ///   Looks up a localized string similar to Install.
         /// </summary>
         public static string FileOriginPage_AddMod {
             get {
@@ -854,7 +854,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Advanced add.
+        ///   Looks up a localized string similar to Advanced Install.
         /// </summary>
         public static string FileOriginPage_AddModAdvanced {
             get {
