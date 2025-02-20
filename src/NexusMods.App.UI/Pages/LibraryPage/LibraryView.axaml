@@ -68,31 +68,16 @@
             <Grid RowDefinitions="Auto, *">
                 <!-- Toolbar -->
                 <Border Grid.Row="0" Classes="Toolbar">
-
                     <StackPanel>
 
-                        <controls:StandardButton x:Name="AddModButton"
-                                                 Text="{x:Static resources:Language.FileOriginPage_AddMod}"
-                                                 Type="Primary"
-                                                 Size="Small"
-                                                 Fill="WeakAlt"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
-
-                        <controls:StandardButton x:Name="AddModAdvancedButton"
-                                                 Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced}"
-                                                 Type="Primary"
-                                                 Size="Small"
-                                                 Fill="WeakAlt"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
-
-                        <!-- <SplitButton Content="Install" Height="28" MinHeight="28" CornerRadius="4"> -->
-                        <!--     <SplitButton.Flyout> -->
-                        <!--         <MenuFlyout> -->
-                        <!--             <MenuItem Header="Install" /> -->
-                        <!--             <MenuItem Header="Advanced Install" /> -->
-                        <!--         </MenuFlyout> -->
-                        <!--     </SplitButton.Flyout> -->
-                        <!-- </SplitButton> -->
+                        <SplitButton x:Name="InstallModSplitButton" Classes="Compact" Content="{x:Static resources:Language.FileOriginPage_AddMod}">
+                            <SplitButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem x:Name="InstallModMenuItem" Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
+                                    <MenuItem x:Name="AdvancedInstallModMenuItem" Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
+                                </MenuFlyout>
+                            </SplitButton.Flyout>
+                        </SplitButton>
 
                         <controls:StandardButton x:Name="RemoveModButton"
                                                  Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
@@ -131,11 +116,13 @@
 
                         <!-- 'Updates' button. -->
                         <!-- This button's text is updated at runtime to set number of mods -->
-                        <SplitButton x:Name="UpdateAll" IsVisible="False"
-                                     Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
+                        <SplitButton x:Name="UpdateAll" IsVisible="False">
+                            <TextBlock Text="{x:Static resources:Language.FileOriginPage_UpdateAll}"/>
+                        </SplitButton>
                         <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small"
                                                  Type="Tertiary" Fill="WeakAlt"
-                                                 LeftIcon="{x:Static icons:IconValues.Refresh}" />
+                                                 LeftIcon="{x:Static icons:IconValues.Refresh}" 
+                                                 ToolTip.Tip="Refresh" />
                     </StackPanel>
                 </Border>
 
