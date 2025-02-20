@@ -116,7 +116,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
                 yield return Diagnostics.CreateModCompatabilityObsolete(
                     SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
                     SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
-                    ReasonPhrase: reasonPhrase ?? "the feature/fix has been integrated into SMAPI or Stardew Valley or has otherwise been made obsolete."
+                    ReasonPhrase: reasonPhrase ?? "the feature/fix has been integrated into SMAPI or Stardew Valley or has otherwise been made obsolete.",
                     SMAPIModList: SMAPIModCompatibilityLink
                 );
             } else if (versionedFields.Status == ModStatus.AssumeBroken)
