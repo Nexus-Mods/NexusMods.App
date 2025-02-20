@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
@@ -41,6 +42,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         if (gameToSMAPIMappings is null) yield break;
 
         var gameVersion = new SemanticVersion((loadout.InstallationInstance.Game as AGame)!.GetLocalVersion(loadout.Installation));
+        // var gameVersion = new SemanticVersion("1.6.12");
 
         if (!Helpers.TryGetSMAPI(loadout, out var smapi))
         {
@@ -64,14 +66,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             _logger.LogError("Unable to get the version of the SMAPI mod");
             yield break;
         }
-        
+
         if (!SemanticVersion.TryParse(smapiVersionString, out var smapiVersion))
         {
             _logger.LogError("Unable to parse `{Version}` as a semantic version", smapiVersionString);
             yield break;
         }
 
-        // var smapiVersion = SimplifyVersion(new Version("4.0.6.1254"));
+        // var smapiVersion = new SemanticVersion("4.1.10");
 
         if (!TryGetValue(smapiToGameMappings, smapiVersion, useEquals: true, out var supportedGameVersions))
         {
@@ -127,8 +129,11 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: false, out var supportedSMAPIVersion))
         {
-            _logger.LogWarning("Found details for game version {GameVersion}", gameVersion);
-            return null;
+            if (!TryGetLastSupportedSMAPIVersion(gameToSMAPIMappings, gameVersion, out supportedSMAPIVersion))
+            {
+                _logger.LogWarning("No data to recommend latest supported SMAPI version for `{GameVersion}`", gameVersion);
+                return null;
+            }
         }
 
         return Diagnostics.CreateGameVersionNewerThanMaximumGameVersion(
@@ -157,8 +162,11 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         if (!TryGetValue(gameToSMAPIMappings, gameVersion, useEquals: true, out var supportedSMAPIVersion))
         {
-            _logger.LogWarning("Found details for game version {GameVersion}", gameVersion);
-            return null;
+            if (!TryGetLastSupportedSMAPIVersion(gameToSMAPIMappings, gameVersion, out supportedSMAPIVersion))
+            {
+                _logger.LogWarning("No data to recommend latest supported SMAPI version for `{GameVersion}`", gameVersion);
+                return null;
+            }
         }
 
         return Diagnostics.CreateGameVersionOlderThanMinimumGameVersion(
@@ -169,6 +177,29 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
             NewestSupportedSMAPIVersionForCurrentGameVersion: supportedSMAPIVersion.ToString(),
             SMAPINexusModsLink: Helpers.SMAPILink
         );
+    }
+
+    /// <summary>
+    /// Returns the latest supported SMAPI version for <paramref name="gameVersion"/>.
+    /// </summary>
+    private static bool TryGetLastSupportedSMAPIVersion(
+        GameToSMAPIMapping gameToSmapiMappings,
+        ISemanticVersion gameVersion,
+        [NotNullWhen(true)] out ISemanticVersion? supportedSMAPIVersion)
+    {
+        var found = gameToSmapiMappings
+            .OrderByDescending(static kv => kv.Key)
+            .SkipWhile(current => current.Key.CompareTo(gameVersion) >= 0)
+            .TryGetFirst(out var mapping);
+
+        if (!found)
+        {
+            supportedSMAPIVersion = null;
+            return false;
+        }
+
+        supportedSMAPIVersion = mapping.Value;
+        return true;
     }
 
     private static bool TryGetValue<T>(
