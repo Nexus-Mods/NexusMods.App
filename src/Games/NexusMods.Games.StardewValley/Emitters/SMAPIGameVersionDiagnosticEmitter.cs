@@ -187,14 +187,14 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
     /// <summary>
     /// Returns the latest supported SMAPI version for <paramref name="gameVersion"/>.
     /// </summary>
-    private static bool TryGetLastSupportedSMAPIVersion(
+    internal static bool TryGetLastSupportedSMAPIVersion(
         GameToSMAPIMapping gameToSmapiMappings,
         ISemanticVersion gameVersion,
         [NotNullWhen(true)] out ISemanticVersion? supportedSMAPIVersion)
     {
         var found = gameToSmapiMappings
             .OrderByDescending(static kv => kv.Key)
-            .SkipWhile(current => current.Key.CompareTo(gameVersion) >= 0)
+            .SkipWhile(current => current.Key.CompareTo(gameVersion) > 0)
             .TryGetFirst(out var mapping);
 
         if (!found)
@@ -245,7 +245,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
     private SMAPIToGameMapping? _smapiToGameMappings;
     private GameToSMAPIMapping? _gameToSMAPIMappings;
 
-    private async Task<SMAPIToGameMapping?> FetchSMAPIToGameMappings(CancellationToken cancellationToken)
+    internal async Task<SMAPIToGameMapping?> FetchSMAPIToGameMappings(CancellationToken cancellationToken)
     {
         if (_smapiToGameMappings is not null) return _smapiToGameMappings;
 
@@ -276,7 +276,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     }
 
-    private async Task<GameToSMAPIMapping?> FetchGameToSMAPIMappings(CancellationToken cancellationToken)
+    internal async Task<GameToSMAPIMapping?> FetchGameToSMAPIMappings(CancellationToken cancellationToken)
     {
         if (_gameToSMAPIMappings is not null) return _gameToSMAPIMappings;
 
@@ -319,7 +319,6 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
             _logger.LogWarning("Serialization of JSON data at {Uri} failed and returned null", dataUri);
             return null;
-
         }
         catch (Exception e)
         {
