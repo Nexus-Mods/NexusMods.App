@@ -6,6 +6,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.UI.Extensions;
@@ -105,12 +106,17 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     var group = viewModFilesArgumentsSubject.Value;
                     if (!group.HasValue) return;
 
+                    var isReadonly = group.Value.AsLoadoutItem()
+                        .GetThisAndParents()
+                        .Any(item => NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired);
+
                     var pageData = new PageData
                     {
                         FactoryId = ItemContentsFileTreePageFactory.StaticId,
                         Context = new ItemContentsFileTreePageContext
                         {
                             GroupId = group.Value.Id,
+                            IsReadOnly = isReadonly,
                         },
                     };
                     var workspaceController = GetWorkspaceController();
