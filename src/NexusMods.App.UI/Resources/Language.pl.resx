@@ -313,7 +313,7 @@
 		<value>Aktywuj zestaw</value>
 	</data>
 	<data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
-		<value>Zastosuj</value>
+		<value>Aktywuj i zastosuj</value>
 	</data>
 	<data name="ApplyControlViewModel__APPLY" xml:space="preserve">
 		<value>ZASTOSUJ</value>
@@ -545,14 +545,29 @@
 	<data name="TopBar_AccountSettings" xml:space="preserve">
 		<value>Ustawienia konta</value>
 	</data>
+	<data name="TopBar_GetPremiumMenuItem" xml:space="preserve">
+		<value>Ulepsz do Premium</value>
+	</data>
 	<data name="ViewChangelogMenuItem.Header" xml:space="preserve">
 		<value>Pokaż dziennik zmian</value>
 	</data>
 	<data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
 		<value>Pokaż logi aplikacji</value>
 	</data>
-	<data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
-		<value>Przekaż opinię</value>
+	<data name="ShowWelcomeMessageMenuItem.Header" xml:space="preserve">
+		<value>Informacje</value>
+	</data>
+	<data name="OpenDiscordMenuItem.Header" xml:space="preserve">
+		<value>Discord</value>
+	</data>
+	<data name="OpenGitHubMenuItem.Header" xml:space="preserve">
+		<value>GitHub</value>
+	</data>
+	<data name="OpenForumsMenuItem.Header" xml:space="preserve">
+		<value>Fora Nexus Mods</value>
+	</data>
+	<data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
+		<value>Stan strony</value>
 	</data>
 	<data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
 		<value>Otwórz w nowej karcie</value>
