@@ -1,52 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.EventBus;
 using R3;
 
 namespace NexusMods.App.UI;
-
-[PublicAPI]
-public interface IEventBusMessage;
-
-[PublicAPI]
-public interface IEventBusRequest<TResult> : IEventBusMessage
-    where TResult : notnull;
-
-[PublicAPI]
-public interface IEventBusRequestHandler<in TRequest, TResult>
-    where TRequest : IEventBusRequest<TResult>
-    where TResult : notnull
-{
-    Task<TResult> Handle(TRequest request, CancellationToken cancellationToken);
-}
-
-[PublicAPI]
-public interface IEventBus
-{
-    /// <summary>
-    /// Sends a message.
-    /// </summary>
-    void Send<T>(T message) where T : IEventBusMessage;
-
-    /// <summary>
-    /// Sends a request as a message and returns task that completes when a handler responds with a result.
-    /// </summary>
-    Task<Optional<TResult>> SendAndReceive<TRequest, TResult>(TRequest request, CancellationToken cancellationToken)
-        where TRequest : IEventBusRequest<TResult>
-        where TResult : notnull;
-
-    /// <summary>
-    /// Observes incoming messages of type <typeparamref name="T"/>.
-    /// </summary>
-    Observable<T> ObserveMessages<T>() where T : IEventBusMessage;
-
-    /// <summary>
-    /// Observes all incoming messages.
-    /// </summary>
-    Observable<IEventBusMessage> ObserveAllMessages();
-}
 
 public sealed class EventBus : IEventBus, IDisposable
 {

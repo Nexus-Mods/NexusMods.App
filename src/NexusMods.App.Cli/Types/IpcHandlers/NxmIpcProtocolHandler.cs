@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.Library;
@@ -7,7 +8,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.App.UI;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -153,7 +153,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         }
 
         var collectionRevision = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
-        _eventBus.Send(new UiMessages.AddedCollection(collectionRevision));
+        _eventBus.Send(new CliMessages.AddedCollection(collectionRevision));
     }
 
     private async Task HandleModUrl(CancellationToken cancel, NXMModUrl modUrl)
@@ -170,7 +170,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var library = _serviceProvider.GetRequiredService<ILibraryService>();
         var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
 
-        _eventBus.Send(new UiMessages.AddedDownload());
+        _eventBus.Send(new CliMessages.AddedDownload());
 
         await using var destination = temporaryFileManager.CreateFile();
         var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);

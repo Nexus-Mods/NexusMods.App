@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
@@ -19,6 +20,7 @@ using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CLI;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -106,7 +108,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .DisposeWith(d);
 
             eventBus
-                .ObserveMessages<UiMessages.AddedCollection>()
+                .ObserveMessages<CliMessages.AddedCollection>()
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (message, self) =>
                 {
@@ -131,7 +133,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .DisposeWith(d);
 
             eventBus
-                .ObserveMessages<UiMessages.AddedDownload>()
+                .ObserveMessages<CliMessages.AddedDownload>()
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (message, self) =>
                 {

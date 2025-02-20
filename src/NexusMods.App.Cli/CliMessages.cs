@@ -1,8 +1,9 @@
+using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.CLI;
 
-public static class UiMessages
+public static class CliMessages
 {
     public record AddedCollection(CollectionRevisionMetadata.ReadOnly Revision) : IEventBusMessage;
 
