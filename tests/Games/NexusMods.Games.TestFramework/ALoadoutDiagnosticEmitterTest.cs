@@ -1,20 +1,22 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using Xunit.Abstractions;
 
 namespace NexusMods.Games.TestFramework;
 
-public class ALoadoutDiagnosticEmitterTest<TGame, TEmitter> : AGameTest<TGame>
+public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGameTest<TTest, TGame>
     where TGame : AGame
     where TEmitter : ILoadoutDiagnosticEmitter
 {
     protected readonly TEmitter Emitter;
 
-    protected ALoadoutDiagnosticEmitterTest(IServiceProvider serviceProvider) : base(serviceProvider)
+    protected ALoadoutDiagnosticEmitterTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
-        Emitter = serviceProvider.FindImplementationInContainer<TEmitter, ILoadoutDiagnosticEmitter>();
+        Emitter = ServiceProvider.FindImplementationInContainer<TEmitter, ILoadoutDiagnosticEmitter>();
     }
 
     protected async ValueTask<Diagnostic[]> GetAllDiagnostics(Loadout.ReadOnly loadout)
@@ -27,5 +29,11 @@ public class ALoadoutDiagnosticEmitterTest<TGame, TEmitter> : AGameTest<TGame>
         var diagnostics = await GetAllDiagnostics(loadout);
         diagnostics.Should().ContainSingle();
         return diagnostics.First();
+    }
+
+    protected async ValueTask ShouldHaveNoDiagnostics(Loadout.ReadOnly loadout)
+    {
+        var diagnostics = await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
+        diagnostics.Should().BeEmpty();
     }
 }
