@@ -7,7 +7,11 @@
         <Border Width="1000" Height="300">
             <Menu VerticalAlignment="Top">
                 <MenuItem Header="First" IsSubMenuOpen="True">
-                    <MenuItem Header="Item" />
+                    <MenuItem Header="Item">
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <MenuItem Header="Disabled" IsEnabled="False" />
                     <Separator />
                     <MenuItem Header="Selected" IsSelected="True" />
@@ -48,6 +52,14 @@
                             </panels:FlexPanel>
                         </MenuItem.Header>
                     </MenuItem>
+                    <MenuItem Classes="Premium">
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Premium}" />
+                        </MenuItem.Icon>
+                        <MenuItem.Header>
+                            <TextBlock>Get Premium</TextBlock>
+                        </MenuItem.Header>
+                    </MenuItem>
                 </MenuItem>
 
                 <MenuItem>
@@ -86,9 +98,19 @@
 
         <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Setter Property="Padding" Value="12,6,12,6" />
 
         <Style Selector="^ TextBlock,^ AccessText">
             <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+        </Style>
+
+        <Style Selector="^ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        </Style>
+
+        <Style Selector="^:icon /template/ ContentControl#PART_IconPresenter">
+            <Setter Property="IsVisible" Value="True" />
+            <Setter Property="Margin" Value="0,1,12,0" />
         </Style>
 
         <!-- Hover state (yes, this is using :selected) -->
@@ -125,10 +147,6 @@
             <Setter Property="Height" Value="1" />
         </Style>
 
-        <Style Selector="^ /template/ ContentControl#PART_IconPresenter">
-            <Setter Property="IsVisible" Value="True" />
-        </Style>
-
         <Style Selector="^ /template/ Border#PART_LayoutRoot">
             <Setter Property="Background" Value="{StaticResource SurfaceMid}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
@@ -144,6 +162,29 @@
                 <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
             </Style>
         </Style>
+        
+        <Style Selector="^.Premium">
+            <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
+
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+            
+            <Style Selector="^ /template/ ContentControl#PART_IconPresenter">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+            
+            <!-- Hover state (yes, this is using :selected) -->
+            <Style Selector="^:selected /template/ Border#PART_LayoutRoot">
+                <Setter Property="Background" Value="{StaticResource PremiumModerateBrush}" />
+            </Style>
+            
+            <!-- Pressed state -->
+            <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
+                <Setter Property="Background" Value="{StaticResource PremiumWeakBrush}" />
+            </Style>
+        </Style>
+
     </Style>
 
 </Styles>

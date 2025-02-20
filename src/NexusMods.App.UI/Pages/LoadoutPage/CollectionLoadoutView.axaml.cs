@@ -22,6 +22,8 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.Name, view => view.CollectionName.Text)
                 .AddTo(disposables);
+            this.OneWayBind(ViewModel, vm => vm.InstalledModsCount, view => view.TotalModsTextBlock.Text, count => $"{count} MODS")
+                .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.TileImage, view => view.CollectionImage.Source)
                 .AddTo(disposables);
             
@@ -48,25 +50,14 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
 
             this.OneWayBind(ViewModel, vm => vm.IsLocalCollection, view => view.NexusModsLogo.IsVisible, static b => !b)
                 .AddTo(disposables);
+            this.OneWayBind(ViewModel, vm => vm.IsReadOnly, view => view.ReadOnlyPillStack.IsVisible)
+                .AddTo(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.IsCollectionEnabled)
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(value =>
                     {
                         CollectionToggle.IsChecked = value;
-                        ToolbarReadOnly.IsVisible = value;
-                        ToolbarDisabled.IsVisible = !value;
-
-                        if (value)
-                        {
-                            ToolbarBorder.Classes.Add("Info");
-                            ToolbarBorder.Classes.Remove("Warning");
-                        }
-                        else
-                        {
-                            ToolbarBorder.Classes.Remove("Info");
-                            ToolbarBorder.Classes.Add("Warning");
-                        }
                     }
                 )
                 .DisposeWith(disposables);
