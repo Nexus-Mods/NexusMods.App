@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
@@ -42,7 +43,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var gameToSMAPIMappings = await FetchGameToSMAPIMappings(cancellationToken);
         if (gameToSMAPIMappings is null) yield break;
 
-        var gameVersion = new SemanticVersion((loadout.InstallationInstance.Game as AGame)!.GetLocalVersion(loadout.Installation));
+        var gameVersion = Helpers.GetGameVersion(loadout);
         // var gameVersion = new SemanticVersion("1.6.12");
 
         if (!Helpers.TryGetSMAPI(loadout, out var smapi))
