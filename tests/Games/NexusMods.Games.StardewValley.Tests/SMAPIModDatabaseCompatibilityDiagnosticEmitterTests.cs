@@ -36,6 +36,8 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
 
         modCompatabilityObsoleteMessageData.SMAPIModName.Should().Be("Extra Map Layers");
         modCompatabilityObsoleteMessageData.ReasonPhrase.Should().Be("extra map layer support was added in Stardew Valley 1.6. You can delete this mod.");
+
+        await VerifyDiagnostic(diagnostic);
     }
 
     [Fact]
@@ -55,5 +57,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
         modCompatabilityAssumeBrokenMessageData.SMAPIModName.Should().Be("Persistent Mines");
         modCompatabilityAssumeBrokenMessageData.ReasonPhrase.Should().Be("affected by breaking changes in the SpaceCore mod API");
         modCompatabilityAssumeBrokenMessageData.ModVersion.Should().Be("1.0.1");
+
+        await VerifyDiagnostic(diagnostic);
     }
 }

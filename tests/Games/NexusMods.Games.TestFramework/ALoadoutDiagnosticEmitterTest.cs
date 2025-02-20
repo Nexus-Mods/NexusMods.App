@@ -1,9 +1,11 @@
+using System.Runtime.CompilerServices;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.DiagnosticSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using Xunit.Abstractions;
@@ -19,6 +21,11 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
     protected ALoadoutDiagnosticEmitterTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
         Emitter = ServiceProvider.FindImplementationInContainer<TEmitter, ILoadoutDiagnosticEmitter>();
+    }
+
+    protected override IServiceCollection AddServices(IServiceCollection services)
+    {
+        return base.AddServices(services).AddDiagnosticWriter();
     }
 
     protected async ValueTask<Diagnostic[]> GetAllDiagnostics(LoadoutId loadoutId)
@@ -54,5 +61,18 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
         using var tx = Connection.BeginTransaction();
         tx.Add(entityId, LoadoutItem.Disabled, Null.Instance);
         await tx.Commit();
+    }
+
+    protected async ValueTask VerifyDiagnostic(Diagnostic diagnostic, [CallerFilePath] string sourceFile = "")
+    {
+        var diagnosticWriter = ServiceProvider.GetRequiredService<IDiagnosticWriter>();
+
+        var summary = diagnostic.FormatSummary(diagnosticWriter);
+        var details = diagnostic.FormatDetails(diagnosticWriter);
+
+        var text = $"[Id] {diagnostic.Id}\n[Title] {diagnostic.Title}\n[Summary] {summary}\n[Details]\n{details}";
+
+        // ReSharper disable once ExplicitCallerInfoArgument
+        await Verify(text, sourceFile: sourceFile);
     }
 }

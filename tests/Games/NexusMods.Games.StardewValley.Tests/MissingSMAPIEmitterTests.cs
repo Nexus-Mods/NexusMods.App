@@ -41,6 +41,8 @@ public class MissingSMAPIEmitterTests : ALoadoutDiagnosticEmitterTest<Dependency
         await InstallModFromNexusMods(loadout, ModId.From(2400), FileId.From(119630));
 
         await ShouldHaveNoDiagnostics(loadout, because: "SMAPI is now installed");
+
+        await VerifyDiagnostic(diagnostic);
     }
 
     [Fact]
@@ -65,5 +67,7 @@ public class MissingSMAPIEmitterTests : ALoadoutDiagnosticEmitterTest<Dependency
         var smapiRequiredButDisabledMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.SMAPIRequiredButDisabledMessageData>>(because: "SMAPI is required for 2 mods but disabled").Which.MessageData;
 
         smapiRequiredButDisabledMessageData.ModCount.Should().Be(2, because: "the loadout contains 2 SMAPI mods");
+
+        await VerifyDiagnostic(diagnostic);
     }
 }

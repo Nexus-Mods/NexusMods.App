@@ -42,6 +42,8 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await InstallModFromNexusMods(loadout, ModId.From(1915), FileId.From(124659));
 
         await ShouldHaveNoDiagnostics(loadout, because: "The required dependency Content Patcher has been installed");
+
+        await VerifyDiagnostic(diagnostic);
     }
 
     [Fact]
@@ -70,6 +72,8 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
 
         var dependent = disabledRequiredDependencyMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
         dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
+
+        await VerifyDiagnostic(diagnostic);
     }
 
     [Fact]
@@ -97,5 +101,7 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
 
         var dependent = requiredDependencyIsOutdatedMessageData.Dependent.ResolveData(ServiceProvider, Connection);
         dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
+
+        await VerifyDiagnostic(diagnostic);
     }
 }

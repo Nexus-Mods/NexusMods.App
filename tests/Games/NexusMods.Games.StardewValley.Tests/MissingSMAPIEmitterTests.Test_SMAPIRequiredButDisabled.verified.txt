@@ -1,0 +1,11 @@
+﻿[Id] NexusMods.Games.StardewValley: 4
+[Title] SMAPI is not enabled
+[Summary] Stardew Modding API (SMAPI) is required for 2 mod(s) but it's not enabled
+[Details]
+Stardew Modding API (SMAPI) is the mod loader required to run mods for Stardew Valley. The loadout contains 2 mod(s) that require SMAPI to work, but it is not enabled.
+
+### How to Resolve
+1. Enable SMAPI in "Installed Mods".
+
+### Technical Details
+Stardew Modding API (SMAPI) is required for most types of Stardew Valley mod as it provides core features that allow mod content to be loaded into the game.    

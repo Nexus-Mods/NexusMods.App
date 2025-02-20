@@ -41,6 +41,8 @@ public class ModOverwritesGameFilesEmitterTests : ALoadoutDiagnosticEmitterTest<
 
         modOverwritesGameFilesMessageData.GroupName.Should().Be("TileFile");
         modOverwritesGameFilesMessageData.Group.DataId.Should().Be(mod.LoadoutItemGroupId);
+
+        await VerifyDiagnostic(diagnostic);
     }
 }
 
