@@ -56,7 +56,7 @@ The issue can arise in these scenarios:
 The mod **{Dependent}** requires **{Dependency}** version {MinimumVersion} or higher to function, but an older version of **{Dependency}** ({CurrentVersion}) is installed.
 
 ### How to Resolve
-1. Download the latest version of **{Dependency}** from {NexusModsDependencyUri}
+1. Download the latest version of **{Dependency}** (version {MinimumVersion} or newer) from {NexusModsDependencyUri}
 2. Add the latest version of **{Dependency}** to the loadout
 3. Remove version {CurrentVersion} of **{Dependency}** from the loadout
 
