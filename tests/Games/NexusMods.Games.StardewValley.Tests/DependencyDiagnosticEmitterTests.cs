@@ -60,11 +60,7 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
 
         await ShouldHaveNoDiagnostics(loadout, because: "All required dependencies are installed and enabled");
 
-        {
-            using var tx = Connection.BeginTransaction();
-            tx.Add(contentPatcher.Id, LoadoutItem.Disabled, Null.Instance);
-            await tx.Commit();
-        }
+        await DisabledMod(contentPatcher);
 
         var diagnostic = await GetSingleDiagnostic(loadout);
         var disabledRequiredDependencyMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher is disabled and required by Farm Type Manager").Which.MessageData;

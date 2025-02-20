@@ -4,6 +4,8 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.TestFramework;
@@ -38,5 +40,19 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var diagnostics = await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
         diagnostics.Should().BeEmpty(because: because);
+    }
+
+    protected async ValueTask EnableMod(EntityId entityId)
+    {
+        using var tx = Connection.BeginTransaction();
+        tx.Retract(entityId, LoadoutItem.Disabled, Null.Instance);
+        await tx.Commit();
+    }
+
+    protected async ValueTask DisabledMod(EntityId entityId)
+    {
+        using var tx = Connection.BeginTransaction();
+        tx.Add(entityId, LoadoutItem.Disabled, Null.Instance);
+        await tx.Commit();
     }
 }
