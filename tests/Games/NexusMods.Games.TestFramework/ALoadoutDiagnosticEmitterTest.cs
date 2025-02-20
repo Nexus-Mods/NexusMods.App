@@ -19,21 +19,24 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
         Emitter = ServiceProvider.FindImplementationInContainer<TEmitter, ILoadoutDiagnosticEmitter>();
     }
 
-    protected async ValueTask<Diagnostic[]> GetAllDiagnostics(Loadout.ReadOnly loadout)
+    protected async ValueTask<Diagnostic[]> GetAllDiagnostics(LoadoutId loadoutId)
     {
+        var loadout = Loadout.Load(Connection.Db, loadoutId);
         return await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
     }
 
-    protected async ValueTask<Diagnostic> GetSingleDiagnostic(Loadout.ReadOnly loadout)
+    protected async ValueTask<Diagnostic> GetSingleDiagnostic(LoadoutId loadoutId)
     {
+        var loadout = Loadout.Load(Connection.Db, loadoutId);
         var diagnostics = await GetAllDiagnostics(loadout);
         diagnostics.Should().ContainSingle();
         return diagnostics.First();
     }
 
-    protected async ValueTask ShouldHaveNoDiagnostics(Loadout.ReadOnly loadout)
+    protected async ValueTask ShouldHaveNoDiagnostics(LoadoutId loadoutId, string because = "")
     {
+        var loadout = Loadout.Load(Connection.Db, loadoutId);
         var diagnostics = await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
-        diagnostics.Should().BeEmpty();
+        diagnostics.Should().BeEmpty(because: because);
     }
 }
