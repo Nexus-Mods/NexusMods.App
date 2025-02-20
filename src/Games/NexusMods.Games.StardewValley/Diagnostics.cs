@@ -231,11 +231,11 @@ The installed version of Stardew Modding API (SMAPI) will not work correctly for
 The game may crash or fail to launch if this issue remains unresolved.
 
 ### How to Resolve
-1. Update Stardew Valley to {MinimumGameVersion} or higher (the latest version is {NewestSupportedSMAPIVersionForCurrentGameVersion})
+1. Update Stardew Valley to {MinimumGameVersion} or higher
 
 OR
 
-1. Download an version of SMAPI compatible with Stardew Valley {CurrentGameVersion} from {SMAPINexusModsLink}
+1. Download SMAPI version {NewestSupportedSMAPIVersionForCurrentGameVersion} from {SMAPINexusModsLink}
 
 ### Technical Details
 Stardew Valley version {SMAPIVersion} is listed as requiring Stardew Valley {MinimumGameVersion} or newer in the compatibility data on {GitHubData}.
