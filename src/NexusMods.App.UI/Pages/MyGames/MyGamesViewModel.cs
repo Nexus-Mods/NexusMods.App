@@ -28,6 +28,7 @@ using System.Reactive.Linq;
 using DynamicData.Aggregation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Telemetry;
 
@@ -101,8 +102,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 vm.State = GameWidgetState.AddingGame;
                                 await Task.Run(async () => await ManageGame(installation));
                                 vm.State = GameWidgetState.ManagedGame;
-
+                                
                                 Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: installation.Game.Name));
+                                
+                                NavigateToFirstLoadoutLibrary(conn, installation);
                             });
 
                             vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -194,33 +197,63 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     {
         await installation.GetGame().Synchronizer.CreateLoadout(installation);
     }
-
-    private void NavigateToFirstLoadout(IConnection conn, GameInstallation installation)
+    
+    private Optional<LoadoutId> GetFirstLoadoutId(IConnection conn, GameInstallation installation)
     {
         var db = conn.Db;
 
-        var loadout = Loadout.All(db).FirstOrOptional(loadout => loadout.IsVisible()
-                                                                 && loadout.InstallationInstance.Equals(installation)
-        );
-        if (!loadout.HasValue)
-        {
-            return;
-        }
+        var loadout = Loadout.All(db).FirstOrOptional(loadout => 
+            loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
+        
+        return loadout.HasValue ? loadout.Value.LoadoutId : Optional<LoadoutId>.None;
+    }
 
-        var loadoutId = loadout.Value.LoadoutId;
+    private void NavigateToFirstLoadout(IConnection conn, GameInstallation installation)
+    {
+        var fistLoadout = GetFirstLoadoutId(conn, installation);
+        if (!fistLoadout.HasValue) return;
+        var loadoutId = fistLoadout.Value;
         Dispatcher.UIThread.Invoke(() =>
             {
                 var workspaceController = _windowManager.ActiveWorkspaceController;
-
+                
                 workspaceController.ChangeOrCreateWorkspaceByContext(
                     context => context.LoadoutId == loadoutId,
                     () => new PageData
                     {
                         FactoryId = LoadoutPageFactory.StaticId,
-                        Context = new LoadoutPageContext
+                        Context = new LoadoutPageContext()
                         {
                             LoadoutId = loadoutId,
                             GroupScope = Optional<LoadoutItemGroupId>.None,
+                        },
+                    },
+                    () => new LoadoutContext
+                    {
+                        LoadoutId = loadoutId,
+                    }
+                );
+            }
+        );
+    }
+    
+    private void NavigateToFirstLoadoutLibrary(IConnection conn, GameInstallation installation)
+    {
+        var fistLoadout = GetFirstLoadoutId(conn, installation);
+        if (!fistLoadout.HasValue) return;
+        var loadoutId = fistLoadout.Value;
+        Dispatcher.UIThread.Invoke(() =>
+            {
+                var workspaceController = _windowManager.ActiveWorkspaceController;
+                
+                workspaceController.ChangeOrCreateWorkspaceByContext(
+                    context => context.LoadoutId == loadoutId,
+                    () => new PageData
+                    {
+                        FactoryId = LibraryPageFactory.StaticId,
+                        Context = new LibraryPageContext()
+                        {
+                            LoadoutId = loadoutId,
                         },
                     },
                     () => new LoadoutContext
