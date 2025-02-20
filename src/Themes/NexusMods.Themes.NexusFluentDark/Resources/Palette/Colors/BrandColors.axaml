@@ -185,7 +185,34 @@
     <SolidColorBrush x:Key="BrandInfo100Brush" Color="{StaticResource BrandInfo100}" />
     <SolidColorBrush x:Key="BrandInfo50Brush" Color="{StaticResource BrandInfo50}" />
 
+    <!-- Premium -->
+    
+    <!-- Colors -->
+    <StaticResource x:Key="BrandPremium950" ResourceKey="PrimitiveViolet950" />
+    <StaticResource x:Key="BrandPremium900" ResourceKey="PrimitiveViolet900" />
+    <StaticResource x:Key="BrandPremium800" ResourceKey="PrimitiveViolet800" />
+    <StaticResource x:Key="BrandPremium700" ResourceKey="PrimitiveViolet700" />
+    <StaticResource x:Key="BrandPremium600" ResourceKey="PrimitiveViolet600" />
+    <StaticResource x:Key="BrandPremium500" ResourceKey="PrimitiveViolet500" />
+    <StaticResource x:Key="BrandPremium400" ResourceKey="PrimitiveViolet400" />
+    <StaticResource x:Key="BrandPremium300" ResourceKey="PrimitiveViolet300" />
+    <StaticResource x:Key="BrandPremium200" ResourceKey="PrimitiveViolet200" />
+    <StaticResource x:Key="BrandPremium100" ResourceKey="PrimitiveViolet100" />
+    <StaticResource x:Key="BrandPremium50" ResourceKey="PrimitiveViolet50" />
 
+    <!-- SolidColorBrushes -->
+    <SolidColorBrush x:Key="BrandPremium950Brush" Color="{StaticResource BrandPremium950}" />
+    <SolidColorBrush x:Key="BrandPremium900Brush" Color="{StaticResource BrandPremium900}" />
+    <SolidColorBrush x:Key="BrandPremium800Brush" Color="{StaticResource BrandPremium800}" />
+    <SolidColorBrush x:Key="BrandPremium700Brush" Color="{StaticResource BrandPremium700}" />
+    <SolidColorBrush x:Key="BrandPremium600Brush" Color="{StaticResource BrandPremium600}" />
+    <SolidColorBrush x:Key="BrandPremium500Brush" Color="{StaticResource BrandPremium500}" />
+    <SolidColorBrush x:Key="BrandPremium400Brush" Color="{StaticResource BrandPremium400}" />
+    <SolidColorBrush x:Key="BrandPremium300Brush" Color="{StaticResource BrandPremium300}" />
+    <SolidColorBrush x:Key="BrandPremium200Brush" Color="{StaticResource BrandPremium200}" />
+    <SolidColorBrush x:Key="BrandPremium100Brush" Color="{StaticResource BrandPremium100}" />
+    <SolidColorBrush x:Key="BrandPremium50Brush" Color="{StaticResource BrandPremium50}" />
+    
     <!-- TranslucentLight -->
 
     <!-- Colors -->

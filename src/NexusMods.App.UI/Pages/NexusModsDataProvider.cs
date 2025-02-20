@@ -20,24 +20,18 @@ using NexusMods.Paths;
 
 namespace NexusMods.App.UI.Pages;
 
-public enum CollectionDownloadsFilter
-{
-    OnlyRequired,
-    OnlyOptional,
-}
-
 public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
     private readonly IModUpdateService _modUpdateService;
-    private readonly IResourceLoader<EntityId, Bitmap> _thumbnailLoader;
+    private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
 
-        _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
+        _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
@@ -74,7 +68,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         };
 
         parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
-        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+        parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
         // Size: sum of library files
         var sizeObservable = libraryItems
@@ -123,7 +117,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Update available
         var newestVersionObservable = _modUpdateService
             .GetNewestModPageVersionObservable(modPage)
-            .Select(static optional => optional.Convert(static files => files.Files.First().Version))
+            .Select(static optional => optional.Convert(static updatesOnPage => updatesOnPage.NewestFile().Version))
             .OnUI();
 
         parentItemModel.AddObservable(
@@ -195,7 +189,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         // Update available
         var newestVersionObservable = _modUpdateService
             .GetNewestFileVersionObservable(fileMetadata)
-            .Select(static optional => optional.Convert(static fileMetadata => fileMetadata.Version))
+            .Select(static optional => optional.Convert(static updateOnPage => updateOnPage.NewestFile.Version))
             .OnUI();
 
         itemModel.AddObservable(
@@ -223,7 +217,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         return itemModel;
     }
 
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    private IObservable<IChangeSet<NexusModsModPageMetadata.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)
     {
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
@@ -235,36 +229,45 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                     .FilterInStaticLoadout(_connection, loadoutFilter)
                     .IsNotEmpty())
                 .IsNotEmpty()
-            )
-            .Transform(modPage =>
+            );
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return FilterLoadoutItems(loadoutFilter).Transform(modPage =>
+        {
+            var linkedItemsObservable = _connection
+                .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPage.Id).AsEntityIds()
+                .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
+                // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
+                .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
+                .FilterInStaticLoadout(_connection, loadoutFilter)
+                .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E))
+                .RefCount();
+
+            var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
+            var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+
+            var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
             {
-                var linkedItemsObservable = _connection
-                    .ObserveDatoms(NexusModsLibraryItem.ModPageMetadataId, modPage.Id).AsEntityIds()
-                    .FilterOnObservable((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).IsNotEmpty())
-                    // NOTE(erri120): DynamicData 9.0.4 is broken for value types because it uses ReferenceEquals. Temporary workaround is a custom equality comparer.
-                    .MergeManyChangeSets((_, e) => _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, e).AsEntityIds(), equalityComparer: DatomEntityIdEqualityComparer.Instance)
-                    .FilterInStaticLoadout(_connection, loadoutFilter)
-                    .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E))
-                    .RefCount();
+                HasChildrenObservable = hasChildrenObservable,
+                ChildrenObservable = childrenObservable,
+            };
 
-                var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
-                var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+            parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+            parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
-                var parentItemModel = new CompositeItemModel<EntityId>(modPage.Id)
-                {
-                    HasChildrenObservable = hasChildrenObservable,
-                    ChildrenObservable = childrenObservable,
-                };
+            LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
+            LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
 
-                parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
-                parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
+            return parentItemModel;
+        });
+    }
 
-                LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
-                LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
-                LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
-
-                return parentItemModel;
-            });
+    public IObservable<int> CountLoadoutItems(LoadoutFilter loadoutFilter)
+    {
+        return FilterLoadoutItems(loadoutFilter).QueryWhenChanged(static query => query.Count).Prepend(0);
     }
 }
 

@@ -1,6 +1,6 @@
-﻿<reactiveUi:ReactiveUserControl
+<reactiveUi:ReactiveUserControl
     d:DesignHeight="48"
-    d:DesignWidth="500"
+    d:DesignWidth="1000"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.DevelopmentBuildBanner.DevelopmentBuildBannerView"
     x:TypeArguments="developmentBuildBanner:IDevelopmentBuildBannerViewModel"
@@ -9,18 +9,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner">
-    
-    <Design.DataContext>
-        <developmentBuildBanner:DevelopmentBuildBannerViewModel />
-    </Design.DataContext>
+    xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
-    <reactiveUi:ReactiveUserControl.Resources>
-        <LinearGradientBrush x:Key="RainbowBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-            <GradientStop Color="#4ade80" Offset="0" />
-            <GradientStop Color="#2563eb" Offset="1" />
-        </LinearGradientBrush>
-    </reactiveUi:ReactiveUserControl.Resources>
+    <Design.DataContext>
+        <developmentBuildBanner:DevelopmentBuildBannerDesignViewModel />
+    </Design.DataContext>
 
     <Border
         Padding=" 12, 10"
@@ -33,15 +29,26 @@
             <TextBlock
                 Text="{Binding AppName, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
                 Theme="{StaticResource BodyMDBoldTheme}"
-                Foreground="{StaticResource RainbowBrush}"
+                Foreground="{StaticResource StardewLinearGradientBrush}"
                 VerticalAlignment="Center"/>
+            
             <TextBlock
                 Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
                 Theme="{StaticResource BodyMDBoldTheme}"
                 Foreground="{StaticResource NeutralModerateBrush}"
                 VerticalAlignment="Center" />
+            
+            <!-- feedback button -->
+            <controls:StandardButton x:Name="GiveFeedbackButton"
+                                     Text="Give Feedback"
+                                     Type="Secondary"
+                                     Fill="Strong"
+                                     Size="Small"
+                                     LeftIcon="{x:Static icons:IconValues.ThumbsUpDownOutline}"
+                                     ShowIcon="Left"
+                                     ToolTip.Tip="{x:Static resources:Language.TopBar_GiveFeedback_ToolTip}" />
         </StackPanel>
-        
+
     </Border>
 
 </reactiveUi:ReactiveUserControl>

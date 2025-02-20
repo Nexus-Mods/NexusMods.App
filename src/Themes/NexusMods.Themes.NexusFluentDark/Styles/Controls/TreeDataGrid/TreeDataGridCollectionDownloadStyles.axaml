@@ -28,7 +28,7 @@
                 <Style Selector="^.CollectionColumns_Actions">
                     <Setter Property="HorizontalAlignment" Value="Right" />
 
-                    <Style Selector="^ StackPanel#DownloadedStack">
+                    <Style Selector="^ StackPanel#DownloadingStack,^ StackPanel#DownloadedStack">
                         <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
                         <Style Selector="^ > spinner|Spinner">

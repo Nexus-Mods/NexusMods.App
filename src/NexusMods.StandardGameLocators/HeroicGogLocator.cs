@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using GameFinder.Launcher.Heroic;
 using GameFinder.StoreHandlers.GOG;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,13 +46,25 @@ public class HeroicGogLocator : IGameLocator
         {
             if (!_cachedGames.TryGetValue(GOGGameId.From(id), out var found)) continue;
             var fs = found.Path.FileSystem;
+            var gamePath = found.Path;
 
-            if (found is HeroicGOGGame heroicGOGGame && heroicGOGGame.WinePrefixPath.DirectoryExists())
+            if (found is HeroicGOGGame heroicGOGGame)
             {
-                fs = heroicGOGGame.GetWinePrefix().CreateOverlayFileSystem(fs);
+                var wineData = heroicGOGGame.WineData;
+                if (wineData is not null)
+                {
+                    if (wineData.WinePrefixPath.DirectoryExists())
+                        fs = heroicGOGGame.GetWinePrefix()!.CreateOverlayFileSystem(fs);
+                }
+
+                // NOTE(erri120): GOG builds for Linux are whack, the installer Heroic uses is whack,
+                // and this is a complete hack. See comments on https://github.com/Nexus-Mods/NexusMods.App/pull/2653
+                // for details.
+                if (heroicGOGGame.Platform == OSPlatform.Linux)
+                    gamePath = gamePath.Combine("game");
             }
 
-            yield return new GameLocatorResult(found.Path, fs, GameStore.GOG, new HeroicGOGLocatorResultMetadata
+            yield return new GameLocatorResult(gamePath, fs, GameStore.GOG, new HeroicGOGLocatorResultMetadata
             {
                 Id = id,
                 BuildId = found.BuildId,

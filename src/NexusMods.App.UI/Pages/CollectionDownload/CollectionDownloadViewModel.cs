@@ -60,7 +60,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
-        var collectionDownloader = new CollectionDownloader(serviceProvider);
+        var collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
         var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();

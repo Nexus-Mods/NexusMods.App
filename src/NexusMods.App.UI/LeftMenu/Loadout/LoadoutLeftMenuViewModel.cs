@@ -16,6 +16,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -63,7 +64,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var logger = serviceProvider.GetRequiredService<ILogger<LoadoutLeftMenuViewModel>>();
 
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
-        var collectionDownloader = new CollectionDownloader(serviceProvider);
+        var collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         
         // Library
         LeftMenuItemLibrary = new LeftMenuItemWithCountBadgeViewModel(
@@ -86,18 +87,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         };
         
         // Loadout
-        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
-            .Filter(datom =>
-                {
-                    var item = LoadoutItem.Load(conn.Db, datom.E);
-                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
-                }
-            )
-            .QueryWhenChanged(datoms => datoms.Count);
-
-        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
-            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
-        );
+        var loadoutLabelObservable = LoadoutDataProviderHelper
+            .CountAllLoadoutItems(serviceProvider, loadoutContext.LoadoutId)
+            .Select(count => string.Format(Language.LoadoutView_Title_Installed_Mods, count));
 
         LeftMenuItemLoadout = new LeftMenuItemViewModel(
             workspaceController,

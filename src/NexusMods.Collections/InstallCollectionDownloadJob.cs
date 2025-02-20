@@ -59,7 +59,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         if (!optionalCollectionGroup.HasValue) throw new InvalidOperationException("Collection must exist!");
         var collectionGroup = optionalCollectionGroup.Value.AsCollectionGroup();
 
-        var sourceCollection = new CollectionDownloader(serviceProvider).GetLibraryFile(download.CollectionRevision);
+        var sourceCollection = serviceProvider.GetRequiredService<CollectionDownloader>().GetLibraryFile(download.CollectionRevision);
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
 
         var root = await nexusModsLibrary.ParseCollectionJsonFile(sourceCollection, cancellationToken);

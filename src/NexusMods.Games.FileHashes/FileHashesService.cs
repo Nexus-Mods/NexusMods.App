@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Text.Json;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -112,7 +113,9 @@ public class FileHashesService : IFileHashesService, IDisposable
             .Where(d => !d.FileName.EndsWith("_tmp"))
             .Select(d =>
                 {
-                    if (!ulong.TryParse(d.FileName, out var timestamp))
+                    // Format is "{guid}_{timestamp}"
+                    var parts = d.FileName.Split('_');
+                    if (parts.Length != 2 || !ulong.TryParse(parts[1], out var timestamp))
                         return default((DateTimeOffset, AbsolutePath));
                     return (DateTimeOffset.FromUnixTimeSeconds((long)timestamp), d);
                 })
@@ -143,6 +146,13 @@ public class FileHashesService : IFileHashesService, IDisposable
             .Select(v => v.Name)
             .ToList();
     }
+    
+    public IEnumerable<VersionDefinition.ReadOnly> GetVersionDefinitions(GameInstallation installation)
+    {
+        return VersionDefinition.All(Current)
+            .Where(v => v.GameId == installation.Game.GameId)
+            .ToList();
+    }
 
     private async Task CheckForUpdateCore(bool forceUpdate)
     {
@@ -155,11 +165,13 @@ public class FileHashesService : IFileHashesService, IDisposable
                 _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
                 var latest = ExistingDBs().FirstOrDefault();
                 if (latest.Path != default(AbsolutePath))
+                {
                     _currentDb = OpenDb(latest.PublishTime, latest.Path);
-                return;
+                    return;
+                }
             }
         }
-        
+
         var release = await GetRelease(gameHashesReleaseFileName);
         
         _logger.LogTrace("Checking for new hash database release");
@@ -169,8 +181,8 @@ public class FileHashesService : IFileHashesService, IDisposable
         if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
             return;
 
-        var tmpId = Guid.NewGuid().ToString();
-        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}.{tmpId}.zip";
+        var guid = Guid.NewGuid().ToString();
+        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{guid}.{release.CreatedAt.ToUnixTimeSeconds()}.zip";
         
         {
             // download the database
@@ -180,7 +192,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
 
 
-        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{release.CreatedAt.ToUnixTimeSeconds()}_{tmpId}";
+        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{guid}_{release.CreatedAt.ToUnixTimeSeconds()}_tmp";
         {
             // extract it 
             tempDir.CreateDirectory();
@@ -196,7 +208,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
 
         // rename the temp folder
-        var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / release.CreatedAt.ToUnixTimeSeconds().ToString();
+        var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / (guid + "_" + release.CreatedAt.ToUnixTimeSeconds());
         Directory.Move(tempDir.ToString(), finalDir.ToString());
 
         // delete the temp files
@@ -217,7 +229,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         // Call core since we're already inside a lock
         await CheckForUpdateCore(false);
 
-        return _currentDb!.Db;
+        return Current;
     }
     public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds)
     {
@@ -300,7 +312,10 @@ public class FileHashesService : IFileHashesService, IDisposable
             foreach (var gogId in locatorMetadata)
             {
                 if (!ulong.TryParse(gogId, out var parsedId))
-                    throw new InvalidOperationException("GOG locator metadata is not a valid ulong");
+                {
+                    _logger.LogWarning("Unable to parse `{Raw}` as ulong", gogId);
+                    return false;
+                }
 
                 var gogBuild = GogBuild.FindByBuildId(Current, BuildId.From(parsedId))
                     .FirstOrDefault();
@@ -410,6 +425,23 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
     }
 
+    public string[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
+    {
+        if (gameInstallation.Store == GameStore.GOG)
+        {
+            return versionDefinition.GogBuilds.Select(build => build.BuildId.ToString()).ToArray();
+        }
+        else if (gameInstallation.Store == GameStore.Steam)
+        {
+            return versionDefinition.SteamManifests.Select(manifest => manifest.ManifestId.ToString()).ToArray();
+        }
+        else
+        {
+            throw new NotImplementedException("No way to get common IDs for: " + gameInstallation.Store);
+        }
+    }
+
+
     /// <inheritdoc />
     public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
     {
@@ -430,7 +462,29 @@ public class FileHashesService : IFileHashesService, IDisposable
         return versionMatches
             .OrderByDescending(t => t.Matches)
             .Select(t => t.Version)
-            .FirstOrDefault()!;
+            .FirstOrDefault() ?? string.Empty;
+    }
+
+    /// <inheritdoc />
+    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    {
+        var filesSet = files.ToHashSet();
+        
+        List<(VersionData VersionData, int Matches)> versionMatches = [];
+        foreach (var versionDefinition in GetVersionDefinitions(gameInstallation))
+        {
+            var commonIds = GetLocatorIdsForVersionDefinition(gameInstallation, versionDefinition);
+
+            var matchingCount = GetGameFiles(gameInstallation, commonIds)
+                .Count(file => filesSet.Contains((file.Path, file.Hash)));
+            
+            versionMatches.Add((new VersionData(commonIds, versionDefinition.Name), matchingCount));
+        }
+        
+        return versionMatches
+            .OrderByDescending(t => t.Matches)
+            .Select(t => t.VersionData)
+            .FirstOrOptional(item => true);
     }
 
     public void Dispose()
