@@ -121,7 +121,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() =>
                             {
-                                NavigateToFirstLoadout(conn, installation);
+                                NavigateToFirstLoadoutLibrary(conn, installation);
                                 Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: installation.Game.Name));
                             });
 
@@ -206,35 +206,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
             loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
         
         return loadout.HasValue ? loadout.Value.LoadoutId : Optional<LoadoutId>.None;
-    }
-
-    private void NavigateToFirstLoadout(IConnection conn, GameInstallation installation)
-    {
-        var fistLoadout = GetFirstLoadoutId(conn, installation);
-        if (!fistLoadout.HasValue) return;
-        var loadoutId = fistLoadout.Value;
-        Dispatcher.UIThread.Invoke(() =>
-            {
-                var workspaceController = _windowManager.ActiveWorkspaceController;
-                
-                workspaceController.ChangeOrCreateWorkspaceByContext(
-                    context => context.LoadoutId == loadoutId,
-                    () => new PageData
-                    {
-                        FactoryId = LoadoutPageFactory.StaticId,
-                        Context = new LoadoutPageContext()
-                        {
-                            LoadoutId = loadoutId,
-                            GroupScope = Optional<LoadoutItemGroupId>.None,
-                        },
-                    },
-                    () => new LoadoutContext
-                    {
-                        LoadoutId = loadoutId,
-                    }
-                );
-            }
-        );
     }
     
     private void NavigateToFirstLoadoutLibrary(IConnection conn, GameInstallation installation)
