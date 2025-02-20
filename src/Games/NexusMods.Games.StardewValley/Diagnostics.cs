@@ -301,16 +301,22 @@ Once downloaded, add SMAPI to your mod list from the Library.
     internal static IDiagnosticTemplate SMAPIVersionOlderThanMinimumAPIVersion = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 11))
-        .WithTitle("SMAPI Version newer than supported Mod")
+        .WithTitle("SMAPI Update Required")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The minimum supported SMAPI version of {SMAPIModName} is {MinimumAPIVersion}")
+        .WithSummary("'{SMAPIModName}' requires SMAPI version {MinimumAPIVersion}+")
         .WithDetails("""
-Mod {SMAPIMod} requires the SMAPI version to be at least {MinimumAPIVersion}.
+The mod **{SMAPIMod}** requires the Stardew Modding API (SMAPI) version {MinimumAPIVersion} or higher to function. 
 The current SMAPI version is {CurrentSMAPIVersion}.
 
-You can solve this issue by either updating SMAPI or download an older version
-of the mod from {NexusModsLink}. The latest SMAPI version can be downloaded
-from {SMAPINexusModsLink}.
+### How to Resolve
+1. Download the latest version of SMAPI ({CurrentSMAPIVersion}) from {SMAPINexusModsLink}
+
+OR
+
+1. Download an older version of **{SMAPIMod}** from {NexusModsLink} that works with SMAPI versions older than {MinimumAPIVersion}
+
+### Technical Details
+The `manifest.json` file included with **{SMAPIMod}** lists the `MinimumApiVersion` as {MinimumAPIVersion}. 
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
@@ -327,15 +333,21 @@ from {SMAPINexusModsLink}.
     internal static IDiagnosticTemplate GameVersionOlderThanModMinimumGameVersionTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 12))
-        .WithTitle("Game Version newer than supported by Mod")
+        .WithTitle("Game Update Required")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The minimum supported game version of {SMAPIModName} is {MinimumGameVersion}")
+        .WithSummary("'{SMAPIModName}' requires Stardew Valley {MinimumGameVersion}+")
         .WithDetails("""
-Mod {SMAPIMod} requires the game version to be at least {MinimumGameVersion}.
-The current game version is {CurrentGameVersion}.
+The mod **{SMAPIMod}** requires the Stardew Valley version {MinimumGameVersion} or higher to function. The current game version is {CurrentGameVersion}.
 
-You can solve this issue by either updating your game or download an older version
-of the mod from {NexusModsLink}.
+### How to Resolve
+1. Update Stardew Valley to {MinimumGameVersion} or higher
+
+OR
+
+1. Download an older version of **{SMAPIModName}** from {NexusModsLink} that works with game versions older than {MinimumGameVersion}
+
+### Technical Details
+The `manifest.json` file included with **{SMAPIModName}** lists the `MinimumGameVersion` as {MinimumGameVersion}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("SMAPIMod")
@@ -352,14 +364,21 @@ of the mod from {NexusModsLink}.
         .Start()
         .WithId(new DiagnosticId(Source, number: 13))
         .WithTitle("Mod overwrites game files")
-        .WithSeverity(DiagnosticSeverity.Suggestion)
-        .WithSummary("Mod {GroupName} overwrites game files")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("'{GroupName}' overwrites game files")
         .WithDetails("""
-Mod {GroupName} overwrites game files. This can cause compatibility issues and have other
-unintended side-effects. See the {SMAPIWikiLink} for details.
+The mod **{GroupName}** appears to be an "XNB mod" which overwrites game files directly rather than using a content patcher. 
 
-You can resolve this diagnostic by replacing {Group} with a SMAPI mod that doesn't
-overwrite game files. See the {SMAPIWikiTableLink} for a list of alternatives.
+### How to Resolve
+1. Check the {SMAPIWikiTableLink} for SMAPI or Content Patcher alternatives to **{GroupName}**
+
+OR
+
+1. Remove **{GroupName}** from the loadout
+
+
+### Why are XNB mods discouraged?
+XNB mods have a lot of limitations. They often conflict with each other, usually break when the game updates, and in rare cases can even corrupt your saved games. You can learn more about XNB mods on the {SMAPIWikiLink}.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("Group")
