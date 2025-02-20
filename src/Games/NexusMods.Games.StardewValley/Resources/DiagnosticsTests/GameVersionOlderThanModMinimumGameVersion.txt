@@ -1,3 +1,0 @@
-1. Install Stardew Valley 1.6.13 or older
-1. Install SMAPI.
-2. Install Generic Mod Config Menu 1.14.1 https://www.nexusmods.com/stardewvalley/mods/5098?tab=files&file_id=117566&nmm=1

@@ -77,7 +77,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         return Optional<GamePath>.Create(path);
     }
 
-    public override Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+    public override Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
     {
         try
         {
@@ -92,7 +92,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         }
         catch (Exception)
         {
-            return new Version(0, 0, 0, 0);
+            return Optional<Version>.None;
         }
     }
 

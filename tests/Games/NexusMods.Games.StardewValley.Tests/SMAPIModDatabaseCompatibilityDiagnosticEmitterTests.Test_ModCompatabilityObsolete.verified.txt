@@ -1,0 +1,15 @@
+﻿[Id] NexusMods.Games.StardewValley: 6
+[Title] Obsolete Mod
+[Summary] 'Extra Map Layers' is reported as obsolete by SMAPI
+[Details]
+The Stardew Modding API (SMAPI) mod compatibility list reports **Extra Map Layers** as obsolete. This information is sourced from a combination of automated and community-submitted reports. 
+
+### How to Resolve
+1. Remove **Extra Map Layers** from the loadout
+
+### Technical Details
+The Stardew Modding API (SMAPI) mod compatibility list has given the following information about the broken state of **Extra Map Layers**:
+
+> Extra Map Layers is obsolete because extra map layer support was added in Stardew Valley 1.6. You can delete this mod.
+
+You may be able to find further information about this on the [SMAPI website](https://smapi.io/mods).

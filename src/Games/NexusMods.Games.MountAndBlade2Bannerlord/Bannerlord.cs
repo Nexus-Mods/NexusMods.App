@@ -1,4 +1,5 @@
 using Bannerlord.ModuleManager;
+using DynamicData.Kernel;
 using FetchBannerlordVersion;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -82,7 +83,7 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
 
     public override GamePath GetPrimaryFile(GameStore store) => GamePathProvier.PrimaryLauncherFile(store);
 
-    public override Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+    public override Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
     {
         // Note(sewer): Bannerlord can use prefixes on versions etc. ,we want to strip them out
         // so we sanitize/parse with `ApplicationVersion`.
