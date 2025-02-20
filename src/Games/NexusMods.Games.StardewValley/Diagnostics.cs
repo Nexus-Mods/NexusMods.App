@@ -358,7 +358,7 @@ The mod **{SMAPIMod}** requires the Stardew Valley version {MinimumGameVersion} 
 
 OR
 
-1. Download an older version of **{SMAPIModName}** from {NexusModsLink} that works with game versions older than {MinimumGameVersion}
+1. Download an older version of **{SMAPIModName}** from {NexusModsLink} that works with game version {CurrentGameVersion}
 
 ### Technical Details
 The `manifest.json` file included with **{SMAPIModName}** lists the `MinimumGameVersion` as {MinimumGameVersion}.
