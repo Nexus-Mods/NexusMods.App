@@ -363,9 +363,9 @@ The `manifest.json` file included with **{SMAPIModName}** lists the `MinimumGame
     internal static IDiagnosticTemplate ModOverwritesGameFilesTemplate = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 13))
-        .WithTitle("Mod overwrites game files")
+        .WithTitle("Overwritten Game Files")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("'{GroupName}' overwrites game files")
+        .WithSummary("'{GroupName}' overwrites game files directly which can cause issues")
         .WithDetails("""
 The mod **{GroupName}** appears to be an "XNB mod" which overwrites game files directly rather than using a content patcher. 
 
