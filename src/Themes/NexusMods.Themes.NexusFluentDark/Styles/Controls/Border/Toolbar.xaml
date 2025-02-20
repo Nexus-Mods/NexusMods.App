@@ -3,7 +3,7 @@
 <Border Classes="Toolbar">
     <StackPanel>
         Controls go here. 
-        Generally Size=Small control variants are used.
+        Generally Small or Compact control variants are used.
         TextBlock's can be used to Label sections, theme and colors are automatically set
         <Separator /> can also be used to separate sections, style is automatically set.
         <controls:StandardButton Size="Small" Text="Button 1" />
@@ -111,9 +111,10 @@
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
             
-            <Style Selector="^ Separator">
+            <Style Selector="^ > Separator">
                 <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}" />
                 <Setter Property="Margin" Value="6,2" />
+                <Setter Property="Height" Value="{Binding $parent}" />
                 <Setter Property="Width" Value="1" />
             </Style>
             
