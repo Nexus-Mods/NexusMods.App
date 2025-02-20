@@ -10,6 +10,8 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
 public record ItemContentsFileTreePageContext : IPageFactoryContext
 {
     public required LoadoutItemGroupId GroupId { get; init; }
+    
+    public required bool IsReadOnly { get; init; }
 }
 
 [UsedImplicitly]
