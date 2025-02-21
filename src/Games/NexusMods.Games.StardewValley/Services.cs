@@ -31,6 +31,7 @@ public static class Services
             .AddSingleton<SMAPIGameVersionDiagnosticEmitter>()
             .AddSingleton<VersionDiagnosticEmitter>()
             .AddSingleton<ModOverwritesGameFilesEmitter>()
+            .AddSingleton<SMAPILogDiagnosticEmitter>()
 
             // Attributes
             .AddSMAPILoadoutItemModel()

@@ -125,6 +125,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         _serviceProvider.GetRequiredService<SMAPIModDatabaseCompatibilityDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<VersionDiagnosticEmitter>(),
         _serviceProvider.GetRequiredService<ModOverwritesGameFilesEmitter>(),
+        _serviceProvider.GetRequiredService<SMAPILogDiagnosticEmitter>(),
     ];
 
     public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations) => ModInstallDestinationHelpers.GetCommonLocations(locations);

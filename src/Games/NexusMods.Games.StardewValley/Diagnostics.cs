@@ -401,4 +401,35 @@ XNB mods have a lot of limitations. They often conflict with each other, usually
             .AddValue<NamedLink>("SMAPIWikiTableLink")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate GameRecentlyCrashed = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 14))
+        .WithTitle("Stardew Valley Crashed")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("SMAPI reported a game crash recently")
+        .WithDetails("""
+The latest log file from Stardew Modding API (SMAPI) indicates that Stardew Valley crashed.
+
+### How to Resolve
+1. Check the crash log located at `{LogPath}` for details
+2. Disable any mods reporting errors
+3. Try starting the game again
+
+For additional help solving game crashes, upload your log file using the {SMAPILogLink} and share the link with the community on the {SDVDiscordLink} or {NexusModsForumsLink}.
+
+### Technical Details
+The latest log file from **{CrashTime}** indicates that Stardew Valley either failed to start or crashed during gameplay. The full log can be found at and located at `{LogPath}`.
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<string>("CrashTime")
+            .AddValue<string>("LogPath")
+            .AddValue<NamedLink>("SMAPILogLink")
+            .AddValue<NamedLink>("NexusModsForumsLink")
+            .AddValue<NamedLink>("SDVDiscordLink")
+        )
+        .Finish();
+        
 }
