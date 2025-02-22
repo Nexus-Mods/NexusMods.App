@@ -125,11 +125,7 @@ public static class CollectionComponents
 
     public sealed class ManualDownloadAction : ReactiveR3Object, IItemModelComponent<ManualDownloadAction>, IComparable<ManualDownloadAction>
     {
-        public int CompareTo(ManualDownloadAction? other)
-        {
-            if (other is null) return 1;
-            return 0;
-        }
+        public int CompareTo(ManualDownloadAction? other) => other is null ? 1 : 0;
 
         public ManualDownloadAction(CollectionDownloadExternal.ReadOnly downloadEntity)
         {
@@ -147,6 +143,7 @@ public static class CollectionComponents
             {
                 if (disposing)
                 {
+                    Disposable.Dispose(CommandOpenUri, CommandAddFile);
                 }
 
                 _isDisposed = true;
