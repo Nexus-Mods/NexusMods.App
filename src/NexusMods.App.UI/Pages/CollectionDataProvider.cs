@@ -140,16 +140,33 @@ public class CollectionDataProvider
         var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();
         var downloadJobStatusObservable = GetJobStatusObservable<ExternalDownloadJob>(job => job.ExpectedMd5 == download.Md5);
 
-        AddDownloadAction(
-            itemModel: itemModel,
+        var baseShouldAddDownloadObservable = ShouldAddObservable(
             downloadEntity: download.AsCollectionDownload(),
             statusObservable: statusObservable,
-            groupObservable: groupObservable.ToObservable(),
+            groupObservable: groupObservable.ToObservable()
+        ).Select(static b => !b);
+
+        var isManualOnlyObservable = CollectionDownloadExternal
+            .Observe(_connection, download.Id)
+            .Prepend(download)
+            .Select(static download => download.IsManualOnly)
+            .ToObservable();
+
+        itemModel.AddObservable(
             key: CollectionColumns.Actions.ExternalDownloadComponentKey,
+            shouldAddObservable: baseShouldAddDownloadObservable.CombineLatest(isManualOnlyObservable, static (shouldAddDownload, isManualOnly) => shouldAddDownload && !isManualOnly),
             componentFactory: () => new CollectionComponents.ExternalDownloadAction(
                 downloadEntity: download,
                 downloadJobStatusObservable: downloadJobStatusObservable,
                 isDownloadedObservable: statusObservable.Select(status => status.IsDownloaded())
+            )
+        );
+
+        itemModel.AddObservable(
+            key: CollectionColumns.Actions.ManualDownloadComponentKey,
+            shouldAddObservable: baseShouldAddDownloadObservable.CombineLatest(isManualOnlyObservable, static (shouldAddDownload, isManualOnly) => shouldAddDownload && isManualOnly),
+            componentFactory: () => new CollectionComponents.ManualDownloadAction(
+                downloadEntity: download
             )
         );
 
