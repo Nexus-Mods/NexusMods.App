@@ -415,13 +415,13 @@ The latest log file from Stardew Modding API (SMAPI) indicates that Stardew Vall
 
 ### How to Resolve
 1. Check the crash log located at `{LogPath}` for details
-2. Disable any mods reporting errors
+2. Disable or update any mods reporting errors
 3. Try starting the game again
 
 For additional help solving game crashes, upload your log file using the {SMAPILogLink} and share the link with the community on the {SDVDiscordLink} or {NexusModsForumsLink}.
 
 ### Technical Details
-The latest log file from **{CrashTime}** indicates that Stardew Valley either failed to start or crashed during gameplay. The full log can be found at and located at `{LogPath}`.
+The latest log file from **{CrashTime}** indicates that Stardew Valley either failed to start or crashed during gameplay. The full log can be found at `{LogPath}`.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("CrashTime")
