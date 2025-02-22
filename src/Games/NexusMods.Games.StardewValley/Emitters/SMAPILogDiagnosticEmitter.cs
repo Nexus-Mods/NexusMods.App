@@ -32,7 +32,7 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         await Task.Yield();
 
-        string? latestLog = GetLatestSMAPILogFile(_logger);
+        LogFilePathWithEditTime? latestLog = GetLatestSMAPILogFile(_logger);
 
         _logger.LogDebug($"Latest SMAPI Log {latestLog}");
 
@@ -42,17 +42,24 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        if (!latestLog.EndsWith(SMAPIErrorFileName))
+        // Ignore the regular logs, we're only interested in crashes.
+        if (!latestLog.FilePath.EndsWith(SMAPIErrorFileName))
         {
             _logger.LogDebug("Last SMAPI run did not produce an error");
             yield break;
         }
 
-        DateTime EditTime = File.GetLastWriteTime(latestLog);
+        // Check if the last update was more than 12 hours ago. We can ignore it if so.
+        TimeSpan timeAgo = DateTime.Now - latestLog.EditTime;
+        if (timeAgo.TotalHours > 12)
+        {
+            _logger.LogDebug("Last SMAPI log was a crash, but it was over 12 hours ago so a diagnostic message was not raised.");
+            yield break;
+        }
 
         yield return Diagnostics.CreateGameRecentlyCrashed(
-            LogPath: latestLog,
-            CrashTime: EditTime.ToString(),
+            LogPath: latestLog.FilePath,
+            CrashTime: latestLog.EditTime.ToString(),
             SMAPILogLink: SMAPILogsLink,
             SDVDiscordLink: SDVDiscordLink,
             NexusModsForumsLink: NexusModsForumsLink
@@ -60,7 +67,7 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     }
 
-    public static string? GetLatestSMAPILogFile(ILogger _logger)
+    public static LogFilePathWithEditTime? GetLatestSMAPILogFile(ILogger _logger)
     {
         // Check if the SMAPI logs folder exists (may require the game to be run at least once with SMAPI)
         if (!Directory.Exists(SMAPILogsFolder))
@@ -74,20 +81,14 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
         // Find any SMAPI log files and sort by creation time.
         var logFiles = files
             .Where(file => file.EndsWith(SMAPILogFileName) || file.EndsWith(SMAPIErrorFileName))
-            .Select(file => new
-            {
-                FilePath = file,
-                EditTime = File.GetLastWriteTime(file)
-            })
+            .Select(file => new LogFilePathWithEditTime(file, File.GetLastWriteTime(file)))
             .OrderBy(file => file.EditTime)
             .ToList();
-
-        _logger.LogDebug($"Found SMAPI Log files {string.Join(Environment.NewLine, files)}");
 
         if (logFiles.Any())
         {
             // Return the newest log file.
-            return logFiles.Last().FilePath;
+            return logFiles.Last();
 
         }
         else
@@ -98,3 +99,14 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
 }
 
+[UsedImplicitly]
+public class LogFilePathWithEditTime(string filePath, DateTime editTime)
+{
+    public string FilePath { get; set; } = filePath;
+    public DateTime EditTime { get; set; } = editTime;
+
+    public override string ToString()
+    {
+        return $"File: {FilePath}, Last Edited: {EditTime}";
+    }
+}
