@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
+using DynamicData.PLinq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library.Models;
@@ -18,10 +19,12 @@ namespace NexusMods.App.UI.Pages;
 internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
+    private readonly EntityCache<EntityId, LibraryLinkedLoadoutItem.ReadOnly, LibraryLinkedLoadoutItemId> _linkedItemsCache;
 
     public LocalFileDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
+        _linkedItemsCache = serviceProvider.GetRequiredService<EntityCache<EntityId, LibraryLinkedLoadoutItem.ReadOnly, LibraryLinkedLoadoutItemId>>();
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
@@ -34,7 +37,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
     private CompositeItemModel<EntityId> ToLibraryItemModel(LibraryFilter libraryFilter, LocalFile.ReadOnly localFile)
     {
         var linkedLoadoutItemsObservable = LibraryDataProviderHelper
-            .GetLinkedLoadoutItems(_connection, libraryFilter, localFile.Id)
+            .GetLinkedLoadoutItems(_connection, libraryFilter, localFile.Id, _linkedItemsCache)
             .RefCount();
 
         var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
@@ -100,10 +103,9 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
     private CompositeItemModel<EntityId> ToLoadoutItemModel(LoadoutFilter loadoutFilter, LocalFile.ReadOnly localFile)
     {
-        var linkedItemsObservable = _connection.ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItem, localFile)
-            .AsEntityIds()
-            .FilterInStaticLoadout(_connection, loadoutFilter)
-            .Transform(datom => LoadoutItem.Load(_connection.Db, datom.E))
+        var linkedItemsObservable = _linkedItemsCache.Get(localFile.Id)
+            .Filter(linkedItem => linkedItem.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutFilter.LoadoutId)
+            .Transform(linkedItem => linkedItem.AsLoadoutItemGroup().AsLoadoutItem())
             .RefCount();
 
         var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();

@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.EventBus;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls.DataGrid;
@@ -59,6 +62,7 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 using DownloadGameNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
@@ -97,7 +101,7 @@ public static class Services
             .AddTransient(typeof(DataGridViewModelColumn<,>))
             .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
-            
+
             .AddViewModel<CollectionCardDesignViewModel, ICollectionCardViewModel>()
 
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
@@ -161,13 +165,13 @@ public static class Services
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
-            
+
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
             .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
             .AddView<LoadoutCardView, ILoadoutCardViewModel>()
             .AddView<CreateNewLoadoutCardView, ICreateNewLoadoutCardViewModel>()
             .AddViewModel<LoadoutBadgeViewModel, ILoadoutBadgeViewModel>()
-            
+
             .AddView<SettingsView, ISettingsPageViewModel>()
             .AddViewModel<SettingsPageViewModel, ISettingsPageViewModel>()
 
@@ -198,7 +202,7 @@ public static class Services
 
             .AddView<LibraryItemDeleteConfirmationView, ILibraryItemDeleteConfirmationViewModel>()
             .AddViewModel<LibraryItemDeleteConfirmationViewModel, ILibraryItemDeleteConfirmationViewModel>()
-            
+
             .AddView<AlphaWarningView, IAlphaWarningViewModel>()
             .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
 
@@ -210,11 +214,11 @@ public static class Services
 
             .AddView<CollectionDownloadView, ICollectionDownloadViewModel>()
             .AddViewModel<CollectionDownloadViewModel, ICollectionDownloadViewModel>()
-            
+
             .AddView<LoadOrderView, ILoadOrderViewModel>()
             .AddViewModel<LoadOrderViewModel, ILoadOrderViewModel>()
-            
-            .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
+
+            .AddView<LoadOrdersWIPPageView, ILoadOrdersWIPPageViewModel>()
             .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
 
             .AddView<UpgradeToPremiumView, IUpgradeToPremiumViewModel>()
@@ -291,7 +295,21 @@ public static class Services
             .AddSingleton<ILoadoutDataProvider, BundledDataProvider>()
             .AddSingleton<IEventBus, EventBus>()
             .AddFileSystem()
-            .AddImagePipelines();
+            .AddImagePipelines()
+
+            // TODO: These are going to be deprecated soon, and replaced with a better query system
+            .AddSingleton<EntityCache<EntityId, NexusModsLibraryItem.ReadOnly, NexusModsModPageMetadataId>>(s =>
+                new EntityCache<EntityId, NexusModsLibraryItem.ReadOnly, NexusModsModPageMetadataId>(
+                    s.GetRequiredService<IConnection>(), l => l.ModPageMetadataId.Value, NexusModsLibraryItem.ObserveAll
+                )
+            )
+
+            .AddSingleton<EntityCache<EntityId, LibraryLinkedLoadoutItem.ReadOnly, LibraryLinkedLoadoutItemId>>(s =>
+                new EntityCache<EntityId, LibraryLinkedLoadoutItem.ReadOnly, LibraryLinkedLoadoutItemId>(
+                    s.GetRequiredService<IConnection>(), l => l.LibraryLinkedLoadoutItemId.Value, LibraryLinkedLoadoutItem.ObserveAll
+                )
+            );
+
     }
 
 }

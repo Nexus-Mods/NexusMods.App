@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using DynamicData.PLinq;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -36,12 +37,11 @@ public static class LibraryDataProviderHelper
     public static IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> GetLinkedLoadoutItems(
         IConnection connection,
         LibraryFilter libraryFilter,
-        LibraryItemId libraryItemId)
+        LibraryItemId libraryItemId,
+        EntityCache<EntityId, LibraryLinkedLoadoutItem.ReadOnly, LibraryLinkedLoadoutItemId> linkedItemsCache)
     {
-        return connection
-            .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryItemId)
-            .AsEntityIds()
-            .Transform(datom => LoadoutItem.Load(connection.Db, datom.E))
+        return linkedItemsCache.Get(libraryItemId.Value)
+            .Transform(itm => itm.AsLoadoutItemGroup().AsLoadoutItem())
             .FilterOnObservable(loadoutItem =>
                 libraryFilter.LoadoutObservable.Select(loadoutId =>
                     loadoutItem.LoadoutId.Equals(loadoutId)
@@ -53,6 +53,7 @@ public static class LibraryDataProviderHelper
         CompositeItemModel<EntityId> itemModel,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
     {
+        
         var dateObservable = linkedItemsObservable
             .QueryWhenChanged(query =>
             {
@@ -62,6 +63,7 @@ public static class LibraryDataProviderHelper
                         .Select(static item => item.GetCreatedAt())
                         .OptionalMinBy(item => item);
             });
+            
 
         itemModel.AddObservable(
             key: SharedColumns.InstalledDate.ComponentKey,

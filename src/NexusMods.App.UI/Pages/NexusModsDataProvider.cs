@@ -25,6 +25,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     private readonly IConnection _connection;
     private readonly IModUpdateService _modUpdateService;
     private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader;
+    private readonly EntityCache<EntityId, NexusModsLibraryItem.ReadOnly, NexusModsModPageMetadataId> _libraryItemCache;
+    private readonly EntityCache<EntityId, LibraryLinkedLoadoutItem.ReadOnly, LibraryLinkedLoadoutItemId> _linkedItemsCache;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
@@ -32,6 +34,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
 
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
+
+        _libraryItemCache = serviceProvider.GetRequiredService<EntityCache<EntityId, NexusModsLibraryItem.ReadOnly, NexusModsModPageMetadataId>>();
+        _linkedItemsCache = serviceProvider.GetRequiredService<EntityCache<EntityId, LibraryLinkedLoadoutItem.ReadOnly, LibraryLinkedLoadoutItemId>>();
     }
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
@@ -50,13 +55,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
     private CompositeItemModel<EntityId> ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPage, LibraryFilter libraryFilter)
     {
-        var libraryItems = _connection
-            .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)
-            .AsEntityIds()
-            .Transform(datom => NexusModsLibraryItem.Load(_connection.Db, datom.E))
-            .RefCount();
+        var libraryItems = _libraryItemCache.Get(modPage.Id);
 
-        var linkedLoadoutItemsObservable = libraryItems.MergeManyChangeSets(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id));
+        var linkedLoadoutItemsObservable = libraryItems
+            .MergeManyChangeSets(libraryItem => _linkedItemsCache.Get(libraryItem.Id))
+            .Transform(item => item.AsLoadoutItemGroup().AsLoadoutItem());
 
         var hasChildrenObservable = libraryItems.IsNotEmpty();
         var childrenObservable = libraryItems.Transform(libraryItem => ToLibraryItemModel(libraryItem, libraryFilter));
@@ -81,12 +84,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             initialValue: Size.Zero,
             valueObservable: sizeObservable
         ));
-
-        // Downloaded date: most recent downloaded file date
+        
         var downloadedDateObservable = libraryItems
             .TransformImmutable(static item => item.GetCreatedAt())
             .QueryWhenChanged(query => query.Items.OptionalMaxBy(item => item).ValueOr(DateTimeOffset.MinValue));
-
+        
         parentItemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(
             initialValue: modPage.GetCreatedAt(),
             valueObservable: downloadedDateObservable
@@ -148,7 +150,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddInstalledDateComponent(parentItemModel, linkedLoadoutItemsObservable);
 
         var matchesObservable = libraryItems
-            .TransformOnObservable(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id).IsNotEmpty())
+            .TransformOnObservable(libraryItem => LibraryDataProviderHelper.GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id, _linkedItemsCache).IsNotEmpty())
             .QueryWhenChanged(query =>
             {
                 var (numInstalled, numTotal) = (0, 0);
@@ -169,7 +171,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
     private CompositeItemModel<EntityId> ToLibraryItemModel(NexusModsLibraryItem.ReadOnly libraryItem, LibraryFilter libraryFilter)
     {
         var linkedLoadoutItemsObservable = LibraryDataProviderHelper
-            .GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id)
+            .GetLinkedLoadoutItems(_connection, libraryFilter, libraryItem.Id, _linkedItemsCache)
             .RefCount();
 
         var fileMetadata = libraryItem.FileMetadata;
