@@ -13,11 +13,7 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
     private readonly ILogger _logger;
 
-    public static readonly string SMAPILogsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StardewValley", "ErrorLogs");
-    public static readonly string SMAPILogFileName = "SMAPI-latest.txt";
-    public static readonly string SMAPIErrorFileName = "SMAPI-crash.txt";
-    public static readonly Uri LogUploadURL = new("https://smapi.io/log");
-    public static readonly NamedLink SMAPILogsLink = new("SMAPI Log Uploader", LogUploadURL);
+    public static readonly NamedLink SMAPILogsLink = new("SMAPI Log Uploader", Constants.LogUploadURL);
     public static readonly NamedLink NexusModsForumsLink = new("Nexus Mods forums", new Uri("https://forums.nexusmods.com/games/19-stardew-valley/"));
     public static readonly NamedLink SDVDiscordLink = new("Stardew Valley Discord server", new Uri("https://discord.gg/stardewvalley"));
 
@@ -32,7 +28,7 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         await Task.Yield();
 
-        LogFilePathWithEditTime? latestLog = GetLatestSMAPILogFile(_logger);
+        LogFilePathWithEditTime? latestLog = Helpers.GetLatestSMAPILogFile(_logger);
 
         _logger.LogDebug($"Latest SMAPI Log {latestLog}");
 
@@ -43,7 +39,7 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
 
         // Ignore the regular logs, we're only interested in crashes.
-        if (!latestLog.FilePath.EndsWith(SMAPIErrorFileName))
+        if (!latestLog.FilePath.EndsWith(Constants.SMAPIErrorFileName))
         {
             _logger.LogDebug("Last SMAPI run did not produce an error");
             yield break;
@@ -67,46 +63,4 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     }
 
-    public static LogFilePathWithEditTime? GetLatestSMAPILogFile(ILogger _logger)
-    {
-        // Check if the SMAPI logs folder exists (may require the game to be run at least once with SMAPI)
-        if (!Directory.Exists(SMAPILogsFolder))
-        {
-            return null;
-        }
-
-        // Get all files in the folder
-        string[] files = Directory.GetFiles(SMAPILogsFolder);
-
-        // Find any SMAPI log files and sort by creation time.
-        var logFiles = files
-            .Where(file => file.EndsWith(SMAPILogFileName) || file.EndsWith(SMAPIErrorFileName))
-            .Select(file => new LogFilePathWithEditTime(file, File.GetLastWriteTime(file)))
-            .OrderBy(file => file.EditTime)
-            .ToList();
-
-        if (logFiles.Any())
-        {
-            // Return the newest log file.
-            return logFiles.Last();
-
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-}
-
-[UsedImplicitly]
-public class LogFilePathWithEditTime(string filePath, DateTime editTime)
-{
-    public string FilePath { get; set; } = filePath;
-    public DateTime EditTime { get; set; } = editTime;
-
-    public override string ToString()
-    {
-        return $"File: {FilePath}, Last Edited: {EditTime}";
-    }
 }
