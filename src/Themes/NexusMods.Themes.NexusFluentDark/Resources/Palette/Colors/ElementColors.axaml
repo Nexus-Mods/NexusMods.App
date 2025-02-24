@@ -192,13 +192,5 @@
     <SolidColorBrush x:Key="StrokeTranslucentModerateBrush" Color="{StaticResource StrokeTranslucentModerate}" />
     <SolidColorBrush x:Key="StrokeTranslucentStrongBrush" Color="{StaticResource StrokeTranslucentStrong}" />
     
-    <!-- Special Brushes -->
-    
-    <!-- LinearGradientBrushes -->
-    <LinearGradientBrush x:Key="StardewLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-        <GradientStop Color="#4ade80" Offset="0" />
-        <GradientStop Color="#2563eb" Offset="1" />
-    </LinearGradientBrush>
-    
     
 </ResourceDictionary>

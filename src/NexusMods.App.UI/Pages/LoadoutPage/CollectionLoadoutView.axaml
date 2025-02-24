@@ -16,20 +16,12 @@
         <loadoutPage:CollectionLoadoutDesignViewModel />
     </Design.DataContext>
 
-    <!-- header, treedatagrid -->
+    <!-- header, toolbar, treedatagrid -->
     <Grid RowDefinitions="Auto, Auto, *">
 
         <!-- header -->
         <Border Grid.Row="0" x:Name="HeaderBorderBackground">
             <Border x:Name="HeaderBorder">
-
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                        <GradientStop Offset="0" Color="#BF0F0F10" />
-                        <GradientStop Offset="1" Color="#F20F0F10" />
-                    </LinearGradientBrush>
-                </Border.Background>
-
                 <Grid RowDefinitions="Auto,Auto,Auto">
 
                     <!-- first row (image and title) -->
