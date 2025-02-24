@@ -290,6 +290,7 @@ public static class Services
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, BundledDataProvider>()
             .AddSingleton<IEventBus, EventBus>()
+            .AddSingleton<IAvaloniaInterop, AvaloniaInterop>()
             .AddFileSystem()
             .AddImagePipelines();
     }
