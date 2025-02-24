@@ -1,0 +1,16 @@
+﻿[Id] NexusMods.Games.StardewValley: 13
+[Title] Overwritten Game Files
+[Summary] 'TileFile' overwrites game files directly which can cause issues
+[Details]
+The mod **TileFile** appears to be an "XNB mod" which overwrites game files directly rather than using a content patcher. 
+
+### How to Resolve
+1. Check the [SMAPI Wiki](https://stardewvalleywiki.com/Modding:Using_XNB_mods#Alternatives_using_Content_Patcher) for SMAPI or Content Patcher alternatives to **TileFile**
+
+OR
+
+1. Remove **TileFile** from the loadout
+
+
+### Why are XNB mods discouraged?
+XNB mods have a lot of limitations. They often conflict with each other, usually break when the game updates, and in rare cases can even corrupt your saved games. You can learn more about XNB mods on the [SMAPI Wiki](https://stardewvalleywiki.com/Modding:Using_XNB_mods).

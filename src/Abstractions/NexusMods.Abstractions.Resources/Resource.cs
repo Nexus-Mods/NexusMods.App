@@ -32,3 +32,20 @@ public record Resource<TData> where TData : notnull
         };
     }
 }
+
+public static partial class Extensions
+{
+    /// <summary>
+    /// Cast the data from <typeparamref name="TCurrent"/> to <typeparamref name="TOther"/>.
+    /// </summary>
+    public static Resource<TOther> Cast<TCurrent, TOther>(this Resource<TCurrent> resource)
+        where TCurrent : TOther
+        where TOther : notnull
+    {
+        return new Resource<TOther>
+        {
+            Data = resource.Data,
+            ExpiresAt = resource.ExpiresAt,
+        };
+    }
+}

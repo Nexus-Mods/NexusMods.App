@@ -1,9 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
@@ -16,6 +14,7 @@ public record TextEditorPageContext : IPageFactoryContext
 {
     public required OneOf<LoadoutFileId, LibraryFileId> FileId { get; init; }
     public required RelativePath FilePath { get; init; }
+    public required bool IsReadOnly { get; init; }
 }
 
 [UsedImplicitly]
