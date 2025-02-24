@@ -17,19 +17,13 @@
 
     <Style Selector="collections|CollectionDownloadView">
 
-        <Style.Resources>
-            <LinearGradientBrush x:Key="HeaderImageLinearGradientBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-                <GradientStop Offset="0" Color="#BF0F0F10" />
-                <GradientStop Offset="1" Color="#F20F0F10" />
-            </LinearGradientBrush>
-        </Style.Resources>
-
         <Style Selector="^ DockPanel#Body">
             <Style Selector="^ Border#HeaderBorderBackground">
+                
                 <Style Selector="^ Border#HeaderBorder">
                     <Setter Property="HorizontalAlignment" Value="Stretch" />
                     <Setter Property="Padding" Value="24,24,24,16" />
-                    <Setter Property="Background" Value="{StaticResource HeaderImageLinearGradientBrush}" />
+                    <Setter Property="Background" Value="{StaticResource CollectionHeaderImageLinearGradientBrush}" />
 
                     <!-- NOTE(insomnious): Some weird stuff happening here with max width and backgrounds. Layout wise
                     it's working, as things are aligned correctly, but the background is not being applied correctly. 
