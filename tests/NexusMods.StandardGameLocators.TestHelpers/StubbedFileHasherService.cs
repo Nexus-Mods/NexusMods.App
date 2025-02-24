@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
@@ -25,14 +26,14 @@ public class StubbedFileHasherService : IFileHashesService
     private IDb? _current;
     private readonly IFileStore _fileStore;
     private readonly TemporaryFileManager _temporaryFileManager;
-    private readonly Dictionary<string,EntityId[]> _versionFiles;
+    private readonly Dictionary<LocatorId, EntityId[]> _versionFiles;
 
     public StubbedFileHasherService(IServiceProvider provider, IFileStore fileStore, TemporaryFileManager temporaryFileManager)
     {
         _provider = provider;
         _fileStore = fileStore;
         _temporaryFileManager = temporaryFileManager;
-        _versionFiles = new Dictionary<string, EntityId[]>();
+        _versionFiles = new Dictionary<LocatorId, EntityId[]>();
     }
 
     private async Task SetupDb()
@@ -97,9 +98,9 @@ public class StubbedFileHasherService : IFileHashesService
             }
 
             await _fileStore.BackupFiles(archiveFiles);
-
             var results = await tx.Commit();
-            _versionFiles[file] = pathIds.Select(id => results[id]).ToArray();
+
+            _versionFiles[LocatorId.From(file)] = pathIds.Select(id => results[id]).ToArray();
             _current = results.Db;
         }
     }
@@ -109,9 +110,9 @@ public class StubbedFileHasherService : IFileHashesService
         return Task.CompletedTask;
     }
 
-    public IEnumerable<string> GetGameVersions(GameInstallation installation)
+    public IEnumerable<VanityVersion> GetGameVersions(GameInstallation installation)
     {
-        return ["1.0.Stubbed", "1.1.Stubbed"];
+        return [VanityVersion.From("1.0.Stubbed"), VanityVersion.From("1.1.Stubbed")];
     }
 
     public async ValueTask<IDb> GetFileHashesDb()
@@ -121,14 +122,14 @@ public class StubbedFileHasherService : IFileHashesService
         await SetupDb();
         return _current!;
     }
-    
-    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds)
+
+    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<LocatorId> locatorIds)
     {
         var firstLocatorId = locatorIds.First();
         if (!_versionFiles.TryGetValue(firstLocatorId, out var fileIds))
         {
             if (firstLocatorId == "3976631895")
-                fileIds = _versionFiles["StubbedGameState.zip"];
+                fileIds = _versionFiles[LocatorId.From("StubbedGameState.zip")];
         }
         
         foreach (var fileId in fileIds!)
@@ -145,39 +146,40 @@ public class StubbedFileHasherService : IFileHashesService
     }
 
     public IDb Current => _current!;
-    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata, out string version)
+    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<LocatorId> locatorMetadata, out VanityVersion version)
     {
         var firstMetadata = locatorMetadata.First();
-        if (firstMetadata is "StubbedGameState.zip")
+        if (firstMetadata == "StubbedGameState.zip")
         {
-            version = "1.0.Stubbed";
+            version = VanityVersion.From("1.0.Stubbed");
             return true;
         }
 
-        if (firstMetadata is "StubbedGameState_game_v2.zip")
+        if (firstMetadata == "StubbedGameState_game_v2.zip")
         {
-            version = "1.1.Stubbed";
+            version = VanityVersion.From("1.1.Stubbed");
             return true;
         }
 
         // The stubbed Steam tests use this unit as the locator metadata
         if (firstMetadata == "3976631895")
         {
-            version = "1.0.Stubbed";
+            version = VanityVersion.From("1.0.Stubbed");
             return true;
         }
+
         throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
     }
 
-    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
+    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, VanityVersion version, out LocatorId[] commonIds)
     {
-        switch (version)
+        switch (version.Value)
         {
             case "1.0.Stubbed":
-                commonIds = ["StubbedGameState.zip"];
+                commonIds = [LocatorId.From("StubbedGameState.zip")];
                 return true;
             case "1.1.Stubbed":
-                commonIds = ["StubbedGameState_game_v2.zip"];
+                commonIds = [LocatorId.From("StubbedGameState_game_v2.zip")];
                 return true;
             default:
                 commonIds = [];
@@ -185,12 +187,12 @@ public class StubbedFileHasherService : IFileHashesService
         }
     }
 
-    public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    public VanityVersion SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
     {
         var pathAndHashes = files.ToHashSet();
         
-        Dictionary<string, int> versionMatches = new();
-        foreach (var (versionName, fileIds) in _versionFiles)
+        Dictionary<LocatorId, int> versionMatches = new();
+        foreach (var (locatorId, fileIds) in _versionFiles)
         {
             // Count the number of matches
             var matches = 0;
@@ -200,7 +202,8 @@ public class StubbedFileHasherService : IFileHashesService
                 if (pathAndHashes.Contains((new GamePath(LocationId.Game, pathHash.Path), pathHash.Hash.XxHash3)))
                     matches++;
             }
-            versionMatches[versionName] = matches;
+
+            versionMatches[locatorId] = matches;
         }
         
         // Find the version with the most matches
@@ -210,7 +213,7 @@ public class StubbedFileHasherService : IFileHashesService
         return version;
     }
 
-    public string[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
+    public LocatorId[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
     {
         return [];
     }

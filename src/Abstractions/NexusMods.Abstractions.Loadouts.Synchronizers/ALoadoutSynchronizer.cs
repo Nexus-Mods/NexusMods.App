@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
@@ -501,9 +502,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         var newLocatorIds = suggestedVersionDefinition.Value.LocatorIds;
 
-        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds, StringComparer.OrdinalIgnoreCase).Count();
-        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds, StringComparer.OrdinalIgnoreCase).Count();
-        
+        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds).Count();
+        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds).Count();
+
         // No reason to change the loadout if the version is the same
         if (locatorRemovals == 0 && locatorAdditions == 0)
             return loadout;
@@ -1281,7 +1282,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 using var tx = Connection.BeginTransaction();
 
-                List<string> locatorMetadata = [];
+                List<LocatorId> locatorMetadata = [];
                 if (installation.LocatorResultMetadata != null)
                 {
                     locatorMetadata.AddRange(installation.LocatorResultMetadata.ToLocatorIds());
@@ -1343,7 +1344,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         // Synchronize the last applied loadout, so we don't lose any changes
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
-        
+
         var commonIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
         await ResetToOriginalGameState(installation, commonIds);
     }
@@ -1533,7 +1534,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     
     
     /// <inheritdoc />
-    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
+    public async Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] commonIds)
     {
         var gameState = _fileHashService.GetGameFiles(installation, commonIds);
         var metaData = await ReindexState(installation, Connection);

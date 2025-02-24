@@ -31,13 +31,13 @@ public partial class Loadout : IModelDefinition
     /// <summary>
     /// The locator ids for the game this loadout is tied to, for gog this will be the build ids, for example. 
     /// </summary>
-    public static readonly StringsAttribute LocatorIds = new(Namespace, nameof(LocatorIds));
-    
+    public static readonly LocatorIdsAttribute LocatorIds = new(Namespace, nameof(LocatorIds));
+
     /// <summary>
     /// The game version that this loadout is tied to, based on the LocatorIds.
     /// </summary>
-    public static readonly StringAttribute GameVersion = new(Namespace, nameof(GameVersion));
-    
+    public static readonly VanityVersionAttribute GameVersion = new(Namespace, nameof(GameVersion));
+
     /// <summary>
     /// Unique installation of the game this loadout is tied to.
     /// </summary>

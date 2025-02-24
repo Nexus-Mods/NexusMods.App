@@ -8,6 +8,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Settings;
@@ -139,14 +140,14 @@ public class FileHashesService : IFileHashesService, IDisposable
     }
 
     /// <inheritdoc />
-    public IEnumerable<string> GetGameVersions(GameInstallation installation)
+    public IEnumerable<VanityVersion> GetGameVersions(GameInstallation installation)
     {
         return VersionDefinition.All(Current)
             .Where(v => v.GameId == installation.Game.GameId)
-            .Select(v => v.Name)
+            .Select(v => VanityVersion.From(v.Name))
             .ToList();
     }
-    
+
     public IEnumerable<VersionDefinition.ReadOnly> GetVersionDefinitions(GameInstallation installation)
     {
         return VersionDefinition.All(Current)
@@ -231,15 +232,15 @@ public class FileHashesService : IFileHashesService, IDisposable
 
         return Current;
     }
-    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<string> locatorIds)
+    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<LocatorId> locatorIds)
     {
         if (installation.Store == GameStore.GOG)
         {
             foreach (var id in locatorIds)
             {
-                if (!ulong.TryParse(id, out var parsedId))
+                if (!ulong.TryParse(id.Value, out var parsedId))
                     continue;
-                
+
                 var gogId = BuildId.From(parsedId);
 
                 if (!GogBuild.FindByBuildId(Current, gogId).TryGetFirst(out var firstBuild))
@@ -261,7 +262,7 @@ public class FileHashesService : IFileHashesService, IDisposable
         {
             foreach (var id in locatorIds)
             {
-                if (!ulong.TryParse(id, out var parsedId))
+                if (!ulong.TryParse(id.Value, out var parsedId))
                     continue;
                 
                 var manifestId = ManifestId.From(parsedId);
@@ -291,18 +292,19 @@ public class FileHashesService : IFileHashesService, IDisposable
     public IDb Current => _currentDb?.Db ?? throw new InvalidOperationException("No database connected");
 
     /// <inheritdoc />
-    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<string> locatorMetadata, out string version)
+    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<LocatorId> locatorMetadata, out VanityVersion version)
     {
         if (TryGetGameVersionDefinition(installation, locatorMetadata, out var versionDefinition))
         {
-            version = versionDefinition.Name;
+            version = VanityVersion.From(versionDefinition.Name);
             return true;
         }
 
-        version = string.Empty;
+        version = VanityVersion.DefaultValue;
         return false;
     }
-    private bool TryGetGameVersionDefinition(GameInstallation installation, IEnumerable<string> locatorMetadata, out VersionDefinition.ReadOnly versionDefinition)
+
+    private bool TryGetGameVersionDefinition(GameInstallation installation, IEnumerable<LocatorId> locatorMetadata, out VersionDefinition.ReadOnly versionDefinition)
     {
         versionDefinition = default(VersionDefinition.ReadOnly);
         if (installation.Store == GameStore.GOG)
@@ -311,7 +313,7 @@ public class FileHashesService : IFileHashesService, IDisposable
 
             foreach (var gogId in locatorMetadata)
             {
-                if (!ulong.TryParse(gogId, out var parsedId))
+                if (!ulong.TryParse(gogId.Value, out var parsedId))
                 {
                     _logger.LogWarning("Unable to parse `{Raw}` as ulong", gogId);
                     return false;
@@ -351,7 +353,7 @@ public class FileHashesService : IFileHashesService, IDisposable
             
             foreach (var steamId in locatorMetadata)
             {
-                if (!ulong.TryParse(steamId, out var parsedId))
+                if (!ulong.TryParse(steamId.Value, out var parsedId))
                 {
                     _logger.LogDebug("Steam locator {0} metadata is not a valid ulong", steamId);
                     return false;
@@ -395,28 +397,28 @@ public class FileHashesService : IFileHashesService, IDisposable
     }
 
     /// <inheritdoc />
-    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, string version, out string[] commonIds)
+    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, VanityVersion version, out LocatorId[] commonIds)
     {
         if (gameInstallation.Store == GameStore.GOG)
         {
-            if (!VersionDefinition.FindByName(Current, version).TryGetFirst(out var versionDef))
+            if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
             {
                 commonIds = [];
                 return false;
             }
 
-            commonIds = versionDef.GogBuilds.Select(build => build.BuildId.ToString()).ToArray();
+            commonIds = GetLocatorIdsForVersionDefinition(gameInstallation, versionDef);
             return true;
         }
         else if (gameInstallation.Store == GameStore.Steam)
         {
-            if (!VersionDefinition.FindByName(Current, version).TryGetFirst(out var versionDef))
+            if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
             {
                 commonIds = [];
                 return false;
             }
 
-            commonIds = versionDef.SteamManifests.Select(manifest => manifest.ManifestId.ToString()).ToArray();
+            commonIds = GetLocatorIdsForVersionDefinition(gameInstallation, versionDef);
             return true;
         }
         else
@@ -425,44 +427,46 @@ public class FileHashesService : IFileHashesService, IDisposable
         }
     }
 
-    public string[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
+    public LocatorId[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
     {
         if (gameInstallation.Store == GameStore.GOG)
         {
-            return versionDefinition.GogBuilds.Select(build => build.BuildId.ToString()).ToArray();
+            return versionDefinition.GogBuilds.Select(build => LocatorId.From(build.BuildId.ToString())).ToArray();
         }
-        else if (gameInstallation.Store == GameStore.Steam)
+
+        if (gameInstallation.Store == GameStore.Steam)
         {
-            return versionDefinition.SteamManifests.Select(manifest => manifest.ManifestId.ToString()).ToArray();
+            return versionDefinition.SteamManifests.Select(manifest => LocatorId.From(manifest.ManifestId.ToString())).ToArray();
         }
-        else
-        {
-            throw new NotImplementedException("No way to get common IDs for: " + gameInstallation.Store);
-        }
+
+        throw new NotImplementedException("No way to get common IDs for: " + gameInstallation.Store);
     }
 
 
     /// <inheritdoc />
-    public string SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    public VanityVersion SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
     {
         var filesSet = files.ToHashSet();
 
-        List<(string Version, int Matches)> versionMatches = [];
-        foreach (var version in GetGameVersions(gameInstallation))
+        List<(VanityVersion VanityVersion, int Matches)> versionMatches = [];
+        foreach (var vanityVersion in GetGameVersions(gameInstallation))
         {
-            if (!TryGetLocatorIdsForVersion(gameInstallation, version, out var commonIds))
+            if (!TryGetLocatorIdsForVersion(gameInstallation, vanityVersion, out var commonIds))
                 continue;
 
             var matchingCount = GetGameFiles(gameInstallation, commonIds)
                 .Count(file => filesSet.Contains((file.Path, file.Hash)));
-            
-            versionMatches.Add((version, matchingCount));
+
+            versionMatches.Add((vanityVersion, matchingCount));
         }
-        
-        return versionMatches
+
+        var hasVersion = versionMatches
             .OrderByDescending(t => t.Matches)
-            .Select(t => t.Version)
-            .FirstOrDefault() ?? string.Empty;
+            .Select(t => t.VanityVersion)
+            .TryGetFirst(out var result);
+
+        if (hasVersion) return result;
+        return VanityVersion.DefaultValue;
     }
 
     /// <inheritdoc />
@@ -477,8 +481,8 @@ public class FileHashesService : IFileHashesService, IDisposable
 
             var matchingCount = GetGameFiles(gameInstallation, commonIds)
                 .Count(file => filesSet.Contains((file.Path, file.Hash)));
-            
-            versionMatches.Add((new VersionData(commonIds, versionDefinition.Name), matchingCount));
+
+            versionMatches.Add((new VersionData(commonIds, VanityVersion.From(versionDefinition.Name)), matchingCount));
         }
         
         return versionMatches

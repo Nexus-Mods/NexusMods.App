@@ -38,7 +38,8 @@ internal static class Helpers
         if (localVersion.HasValue) return localVersion.Value;
 
         // NOTE(erri120): should only be hit during tests
-        var rawVersion = loadout.GameVersion;
+        var vanityVersion = loadout.GameVersion;
+        var rawVersion = vanityVersion.Value;
 
 #if DEBUG
         // NOTE(erri120): dumb hack for tests
