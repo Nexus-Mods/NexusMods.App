@@ -186,12 +186,13 @@
                                                                        Value="{x:Static icons:IconValues.Downloading}" />
                                                 </MenuItem.Icon>
                                             </navigation:NavigationMenuItem>
-                                            <MenuItem Header="Remove Collection"
+                                            <MenuItem Header="Uninstall Collection"
                                                       x:Name="RemoveCollectionMenuItem"
-                                                      Classes="Critical">
+                                                      Classes="Critical"
+                                                      ToolTip.Tip="Uninstall this collection from loadout. (Collection will remain in library)">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon Size="16"
-                                                                       Value="{x:Static icons:IconValues.DeleteOutline}" />
+                                                                       Value="{x:Static icons:IconValues.PlaylistRemove}" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                         </MenuFlyout>
