@@ -23,8 +23,11 @@ internal static class Helpers
     public static ISemanticVersion GetGameVersion(Loadout.ReadOnly loadout)
     {
         var game = (loadout.InstallationInstance.Game as AGame)!;
-        var localVersion = game.GetLocalVersion(loadout.Installation).Convert(static v => v.ToString());
-        var rawVersion = localVersion.ValueOr(() => loadout.GameVersion);
+        var localVersion = game.GetLocalVersion(loadout.Installation).Convert(static version => new SemanticVersion(version));
+        if (localVersion.HasValue) return localVersion.Value;
+
+        // NOTE(erri120): should only be hit during tests
+        var rawVersion = loadout.GameVersion;
 
 #if DEBUG
         // NOTE(erri120): dumb hack for tests
