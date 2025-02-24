@@ -70,7 +70,10 @@
                 <Border Grid.Row="0" Classes="Toolbar">
                     <StackPanel>
 
-                        <SplitButton x:Name="InstallModSplitButton" Classes="Compact" Content="{x:Static resources:Language.FileOriginPage_AddMod}">
+                        <SplitButton x:Name="InstallModSplitButton" 
+                                     Classes="Compact" 
+                                     Content="{x:Static resources:Language.FileOriginPage_AddMod}"
+                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
                             <SplitButton.Flyout>
                                 <MenuFlyout>
                                     <MenuItem x:Name="InstallModMenuItem" Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
