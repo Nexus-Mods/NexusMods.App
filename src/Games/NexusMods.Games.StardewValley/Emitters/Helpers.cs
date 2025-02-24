@@ -35,7 +35,7 @@ internal static class Helpers
         }
 #endif
 
-        var gameVersion = new SemanticVersion(rawVersion);
+        var gameVersion = new SemanticVersion(rawVersion, allowNonStandard: true);
         return gameVersion;
     }
 
