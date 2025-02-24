@@ -33,8 +33,19 @@ public partial class CollectionDownload : IModelDefinition
     /// </summary>
     public static readonly Int32Attribute ArrayIndex = new(Namespace, nameof(ArrayIndex)) { IsIndexed = true };
 
+    /// <summary>
+    /// Written instructions by the collection author.
+    /// </summary>
+    /// <remarks>
+    /// This is raw text.
+    /// </remarks>
+    public static readonly StringAttribute Instructions = new(Namespace, nameof(Instructions)) { IsOptional = true };
+
     public partial struct ReadOnly
     {
+        /// <summary>
+        /// Inverse of <see cref="IsOptional"/>
+        /// </summary>
         public bool IsRequired => !IsOptional;
     }
 }

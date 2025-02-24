@@ -298,6 +298,9 @@ public partial class NexusModsLibrary
                 Name = collectionMod.Name,
             };
 
+            if (!string.IsNullOrWhiteSpace(collectionMod.Instructions))
+                downloadEntity.Instructions = collectionMod.Instructions;
+
             var source = collectionMod.Source;
             switch (source.Type)
             {
