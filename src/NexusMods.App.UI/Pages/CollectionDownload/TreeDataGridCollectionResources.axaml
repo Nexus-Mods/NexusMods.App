@@ -50,8 +50,8 @@
                             <Panel>
                                 <controls:StandardButton Command="{CompiledBinding CommandDownload}"
                                                          Size="Small"
-                                                         Type="Tertiary"
-                                                         Fill="Weak"
+                                                         Type="Secondary"
+                                                         Fill="Strong"
                                                          HorizontalAlignment="Center"
                                                          IsVisible="{CompiledBinding !IsDownloading.Value}"
                                                          Text="{CompiledBinding ButtonText.Value}"/>
@@ -67,16 +67,12 @@
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:CollectionComponents+ManualDownloadAction}">
                             <StackPanel Orientation="Horizontal">
-                                <controls:StandardButton Command="{CompiledBinding CommandOpenUri}"
+                                <controls:StandardButton Command="{CompiledBinding CommandOpenModal}"
                                                          Size="Small"
-                                                         Type="Tertiary"
-                                                         Fill="Weak"
-                                                         Text="Open in browser"/>
-                                <controls:StandardButton Command="{CompiledBinding CommandAddFile}"
-                                                         Size="Small"
-                                                         Type="Tertiary"
-                                                         Fill="Weak"
-                                                         Text="Add downloaded file"/>
+                                                         Type="Secondary"
+                                                         Fill="Strong"
+                                                         LeftIcon="{x:Static icons:IconValues.Save}"
+                                                         Text="Manual download"/>
                             </StackPanel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>

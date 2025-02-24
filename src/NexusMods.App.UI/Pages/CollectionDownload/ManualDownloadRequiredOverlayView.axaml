@@ -1,0 +1,50 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IManualDownloadRequiredOverlayViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
+    xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.CollectionDownload.ManualDownloadRequiredOverlayView">
+
+    <Border>
+        <Grid RowDefinitions="*, Auto">
+            <StackPanel Grid.Row="0">
+                <StackPanel x:Name="InfoPanel" Orientation="Horizontal">
+                    <TextBlock x:Name="DownloadName"/>
+                    <TextBlock x:Name="ExpectedHash"/>
+                    <TextBlock x:Name="ExpectedSize"/>
+                    <TextBlock x:Name="Instructions" IsVisible="False"/>
+                </StackPanel>
+
+                <StackPanel x:Name="CheckingPanel" Orientation="Horizontal" IsVisible="False">
+                    <spinner:Spinner x:Name="Spinner"/>
+                </StackPanel>
+
+                <StackPanel x:Name="ErrorPanel" Orientation="Horizontal" IsVisible="False">
+                    <TextBlock x:Name="ReceivedHash" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <Button x:Name="ButtonCancel">
+                    <TextBlock Text="Cancel"/>
+                </Button>
+                <Button x:Name="ButtonOpenBrowser">
+                    <TextBlock Text="Open browser"/>
+                </Button>
+                <Button x:Name="ButtonAddFile">
+                    <TextBlock Text="Add file"/>
+                </Button>
+                <Button x:Name="ButtonTryAgain" IsVisible="False">
+                    <TextBlock Text="Try again"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+
+</reactive:ReactiveUserControl>
+

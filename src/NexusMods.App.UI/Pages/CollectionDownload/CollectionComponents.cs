@@ -60,7 +60,7 @@ public static class CollectionComponents
                     var (downloadStatus, isDownloaded) = tuple;
                     self._canDownload.OnNext(!isDownloaded && downloadStatus < JobStatus.Running);
                     self._downloadStatus.Value = downloadStatus;
-                    self._buttonText.Value = GetButtonText(isDownloading: downloadStatus == JobStatus.Running, isDownloaded);
+                    self._buttonText.Value = self.GetButtonText(isDownloading: downloadStatus == JobStatus.Running, isDownloaded);
                 }).AddTo(disposables);
             });
 
@@ -79,10 +79,10 @@ public static class CollectionComponents
 
         public IReadOnlyBindableReactiveProperty<bool> IsDownloading { get; }
 
-        private readonly BindableReactiveProperty<string> _buttonText = new(value: GetButtonText(isDownloading: false, isDownloaded: false));
+        private readonly BindableReactiveProperty<string> _buttonText = new(value: "");
         public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
 
-        internal static string GetButtonText(bool isDownloading, bool isDownloaded)
+        protected virtual string GetButtonText(bool isDownloading, bool isDownloaded)
         {
             if (isDownloaded) return "Downloaded";
             return isDownloading ? "Downloading" : "Download";
@@ -121,6 +121,12 @@ public static class CollectionComponents
             Observable<JobStatus> downloadJobStatusObservable,
             Observable<bool> isDownloadedObservable)
             : base(downloadEntity, downloadJobStatusObservable, isDownloadedObservable) { }
+
+        protected override string GetButtonText(bool isDownloading, bool isDownloaded)
+        {
+            if (isDownloading || isDownloaded) return base.GetButtonText(isDownloading, isDownloaded);
+            return "Check external asset";
+        }
     }
 
     public sealed class ManualDownloadAction : ReactiveR3Object, IItemModelComponent<ManualDownloadAction>, IComparable<ManualDownloadAction>
@@ -129,12 +135,10 @@ public static class CollectionComponents
 
         public ManualDownloadAction(CollectionDownloadExternal.ReadOnly downloadEntity)
         {
-            CommandOpenUri = new ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
-            CommandAddFile = new ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
+            CommandOpenModal = new ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
         }
 
-        public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandOpenUri { get; }
-        public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandAddFile { get; }
+        public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandOpenModal { get; }
 
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
@@ -143,7 +147,7 @@ public static class CollectionComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandOpenUri, CommandAddFile);
+                    CommandOpenModal.Dispose();
                 }
 
                 _isDisposed = true;

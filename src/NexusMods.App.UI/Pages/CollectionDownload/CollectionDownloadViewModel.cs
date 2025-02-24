@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
@@ -45,6 +44,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     private readonly CollectionMetadata.ReadOnly _collection;
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly IOverlayController _overlayController;
     private readonly LoadoutId _targetLoadout;
 
     public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
@@ -56,13 +56,14 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         LoadoutId targetLoadout) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
+        _overlayController = serviceProvider.GetRequiredService<IOverlayController>();
+
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
         var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
-        var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
         var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
 
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
@@ -92,7 +93,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 
                 if (!loginManager.IsPremium)
                 {
-                    overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());
+                    _overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());
                     return;
                 }
    
@@ -106,7 +107,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             executeAsync: async (_, cancellationToken) =>
             {
                 if (loginManager.IsPremium) await collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db, cancellationToken: cancellationToken);
-                else overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());
+                else _overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -346,12 +347,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             TreeDataGridAdapter.MessageSubject.SubscribeAwait(
                 onNextAsync: (message, cancellationToken) =>
                 {
-                    return message.Match<ValueTask>(
+                    return message.Match(
                         f0: installMessage => InstallItem(installMessage.DownloadEntity, cancellationToken),
                         f1: downloadNexusMods => collectionDownloader.Download(downloadNexusMods.DownloadEntity, cancellationToken),
                         f2: downloadExternal => collectionDownloader.Download(downloadExternal.DownloadEntity, cancellationToken),
-                        f3: async manualDownloadOpenUri => await osInterop.OpenUrl(manualDownloadOpenUri.DownloadEntity.Uri, cancellationToken: cancellationToken),
-                        f4: manualDownloadAddFile => AddManualFile(manualDownloadAddFile.DownloadEntity, cancellationToken)
+                        f3: manualDownloadOpenModal => OpenManualDownloadModal(manualDownloadOpenModal.DownloadEntity)
                     );
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -400,13 +400,13 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         });
     }
 
-    private ValueTask AddManualFile(CollectionDownloadExternal.ReadOnly downloadEntity, CancellationToken cancellationToken)
+    private ValueTask OpenManualDownloadModal(CollectionDownloadExternal.ReadOnly downloadEntity)
     {
-        // TODO:
+        _overlayController.Enqueue(new ManualDownloadRequiredOverlayViewModel(_serviceProvider, downloadEntity));
         return ValueTask.CompletedTask;
     }
 
-    private async ValueTask InstallItem(NexusMods.Abstractions.NexusModsLibrary.Models.CollectionDownload.ReadOnly download, CancellationToken cancellationToken)
+    private async ValueTask InstallItem(CollectionDownloadEntity.ReadOnly download, CancellationToken cancellationToken)
     {
         var monitor = _serviceProvider.GetRequiredService<IJobMonitor>();
 
@@ -482,12 +482,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 public readonly record struct InstallMessage(CollectionDownloadEntity.ReadOnly DownloadEntity);
 public readonly record struct DownloadNexusModsMessage(CollectionDownloadNexusMods.ReadOnly DownloadEntity);
 public readonly record struct DownloadExternalMessage(CollectionDownloadExternal.ReadOnly DownloadEntity);
-public readonly record struct ManualDownloadOpenUri(CollectionDownloadExternal.ReadOnly DownloadEntity);
-public readonly record struct ManualDownloadAddFile(CollectionDownloadExternal.ReadOnly DownloadEntity);
+public readonly record struct ManualDownloadOpenModal(CollectionDownloadExternal.ReadOnly DownloadEntity);
 
 public class CollectionDownloadTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, DownloadNexusModsMessage, DownloadExternalMessage, ManualDownloadOpenUri, ManualDownloadAddFile>>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, DownloadNexusModsMessage, DownloadExternalMessage, ManualDownloadOpenModal>>
 {
     private readonly CollectionRevisionMetadata.ReadOnly _revisionMetadata;
     private readonly LoadoutId _targetLoadout;
@@ -495,7 +494,7 @@ public class CollectionDownloadTreeDataGridAdapter :
 
     public R3.ReactiveProperty<CollectionDownloadsFilter> Filter { get; } = new(value: CollectionDownloadsFilter.OnlyRequired);
 
-    public Subject<OneOf<InstallMessage, DownloadNexusModsMessage, DownloadExternalMessage, ManualDownloadOpenUri, ManualDownloadAddFile>> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, DownloadNexusModsMessage, DownloadExternalMessage, ManualDownloadOpenModal>> MessageSubject { get; } = new();
 
     private readonly IDisposable _activationDisposable;
     private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
@@ -563,20 +562,10 @@ public class CollectionDownloadTreeDataGridAdapter :
         var downloadManualActionDisposable = model.SubscribeToComponent<CollectionComponents.ManualDownloadAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.ManualDownloadComponentKey,
             state: this,
-            factory: static (self, _, component) =>
+            factory: static (self, _, component) => component.CommandOpenModal.Subscribe(self, static (downloadEntity, self) =>
             {
-                var a = component.CommandOpenUri.Subscribe(self, static (downloadEntity, self) =>
-                {
-                    self.MessageSubject.OnNext(new ManualDownloadOpenUri(downloadEntity));
-                });
-
-                var b = component.CommandOpenUri.Subscribe(self, static (downloadEntity, self) =>
-                {
-                    self.MessageSubject.OnNext(new ManualDownloadAddFile(downloadEntity));
-                });
-
-                return Disposable.Combine(a, b);
-            }
+                self.MessageSubject.OnNext(new ManualDownloadOpenModal(downloadEntity));
+            })
         );
 
         var disposable = Disposable.Combine(installActionDisposable, downloadNexusModsActionDisposable, downloadExternalActionDisposable, downloadManualActionDisposable);
