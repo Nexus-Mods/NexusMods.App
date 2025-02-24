@@ -1,2 +1,0 @@
-1. Install Content Patcher https://www.nexusmods.com/stardewvalley/mods/1915
-2. Ensure SMAPI is not present in any collections.

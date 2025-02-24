@@ -1,2 +1,0 @@
-1. Install Stardew Valley 1.6.13 or older.
-2. Install SMAPI 4.1.10 https://www.nexusmods.com/stardewvalley/mods/2400?tab=files&file_id=119630&nmm=1

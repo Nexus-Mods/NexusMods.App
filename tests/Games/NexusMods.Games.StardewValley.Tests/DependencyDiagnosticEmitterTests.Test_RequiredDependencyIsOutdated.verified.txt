@@ -1,0 +1,13 @@
+﻿[Id] NexusMods.Games.StardewValley: 2
+[Title] Outdated Dependency
+[Summary] 'Farm Type Manager' requires an updated version of 'Content Patcher'
+[Details]
+The mod **Farm Type Manager** requires **Content Patcher** version 2.0.0 or higher to function, but an older version of **Content Patcher** (1.30.4) is installed.
+
+### How to Resolve
+1. Download the latest version of **Content Patcher** (version 2.0.0 or newer) from [Nexus Mods](https://nexusmods.com/stardewvalley/mods/1915?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
+2. Add the latest version of **Content Patcher** to the loadout
+3. Remove version 1.30.4 of **Content Patcher** from the loadout
+
+### Technical Details
+The `manifest.json` file included with **Farm Type Manager** lists **Content Patcher** as a requirement with a minimum version of 2.0.0. 

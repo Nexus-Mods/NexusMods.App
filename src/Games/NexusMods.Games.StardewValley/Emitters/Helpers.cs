@@ -1,12 +1,16 @@
 using System.Runtime.CompilerServices;
+using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
+using StardewModdingAPI;
+using StardewModdingAPI.Toolkit;
 using StardewModdingAPI.Toolkit.Serialization.Models;
 
 namespace NexusMods.Games.StardewValley.Emitters;
@@ -15,6 +19,25 @@ internal static class Helpers
 {
     public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/stardewvalley"));
     public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.DomainStatic.Value, "2400"));
+
+    public static ISemanticVersion GetGameVersion(Loadout.ReadOnly loadout)
+    {
+        var game = (loadout.InstallationInstance.Game as AGame)!;
+        var localVersion = game.GetLocalVersion(loadout.Installation).Convert(static v => v.ToString());
+        var rawVersion = localVersion.ValueOr(() => loadout.GameVersion);
+
+#if DEBUG
+        // NOTE(erri120): dumb hack for tests
+        var index = rawVersion.IndexOf(".stubbed", StringComparison.OrdinalIgnoreCase);
+        if (index != -1)
+        {
+            rawVersion = rawVersion.AsSpan()[..index].ToString();
+        }
+#endif
+
+        var gameVersion = new SemanticVersion(rawVersion);
+        return gameVersion;
+    }
 
     public static bool TryGetSMAPI(Loadout.ReadOnly loadout, out SMAPILoadoutItem.ReadOnly smapi)
     {

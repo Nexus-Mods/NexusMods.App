@@ -18,11 +18,13 @@ using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
@@ -106,7 +108,21 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
         SynchronizerService = ServiceProvider.GetRequiredService<ISynchronizerService>();
     }
-    
+
+    public async Task<LibraryFile.ReadOnly> DownloadModFromNexusMods(ModId modId, FileId fileId)
+    {
+        await using var destination = TemporaryFileManager.CreateFile();
+
+        var downloadJob = await NexusModsLibrary.CreateDownloadJob(destination.Path, Game.GameId, modId, fileId);
+        return await LibraryService.AddDownload(downloadJob);
+    }
+
+    public async Task<LoadoutItemGroup.ReadOnly> InstallModFromNexusMods(LoadoutId loadoutId, ModId modId, FileId fileId, ILibraryItemInstaller? installer = null)
+    {
+        var libraryFile = await DownloadModFromNexusMods(modId, fileId);
+        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, installer: installer);
+    }
+
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
     {
         var libraryFile = await LibraryService.AddLocalFile(file);

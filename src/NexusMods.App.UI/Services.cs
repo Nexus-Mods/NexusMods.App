@@ -273,11 +273,8 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
             // Diagnostics
-            .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
-            .AddSingleton<IValueFormatter, NamedLinkFormatter>()
-            .AddSingleton<IValueFormatter, LoadoutItemGroupFormatter>()
-            .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
-            
+            .AddDiagnosticWriter()
+
             // Overlay Helpers
             .AddHostedService<NexusLoginOverlayService>()
 
