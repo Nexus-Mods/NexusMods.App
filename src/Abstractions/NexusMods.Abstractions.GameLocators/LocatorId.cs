@@ -1,3 +1,4 @@
+using System.Collections;
 using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
@@ -21,6 +22,24 @@ public readonly partial struct LocatorId : IAugmentWith<JsonAugment, DefaultValu
 
     /// <inheritdoc/>
     public static IEqualityComparer<string> InnerValueDefaultEqualityComparer { get; } = StringComparer.OrdinalIgnoreCase;
+}
+
+/// <summary>
+/// Tuple of <see cref="GameStore"/> and multiple <see cref="LocatorId"/>.
+/// </summary>
+[PublicAPI]
+public record struct LocatorIdsWithGameStore(GameStore GameStore, LocatorId[] LocatorIds) : IEnumerable<LocatorId>
+{
+    /// <inheritdoc/>
+    public IEnumerator<LocatorId> GetEnumerator() => LocatorIds.AsEnumerable().GetEnumerator();
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator LocatorIdsWithGameStore((GameStore, LocatorId[]) tuple) => new(tuple.Item1, tuple.Item2);
 }
 
 /// <summary>

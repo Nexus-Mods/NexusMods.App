@@ -1,7 +1,8 @@
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.Games.FileHashes.Values;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -10,58 +11,56 @@ namespace NexusMods.Abstractions.Games.FileHashes;
 /// <summary>
 /// Interface for the file hashes service, which provides a way to download and update the file hashes database
 /// </summary>
+[PublicAPI]
 public interface IFileHashesService
 {
-    /// <summary>
-    /// Force an update of the file hashes database
-    /// </summary>
-    public Task CheckForUpdate(bool forceUpdate = false);
-    
-    /// <summary>
-    /// Get all the supported game versions for a given game installation
-    /// </summary>
-    public IEnumerable<VanityVersion> GetGameVersions(GameInstallation installation);
-    
-    /// <summary>
-    /// Get the file hashes database, downloading it if necessary
-    /// </summary>
-    public ValueTask<IDb> GetFileHashesDb();
-
-    /// <summary>
-    /// Get the files associated with a specific game. The LocatorIds are opaque ids that come from a game locator.
-    /// For steam these will be manifestIDs, for GOG they will be buildIDs, etc.
-    /// </summary>
-    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<LocatorId> locatorIds);
-
     /// <summary>
     /// The current file hashes database, will throw an error if not initialized via GetFileHashesDb first.
     /// </summary>
     public IDb Current { get; }
 
     /// <summary>
-    /// Try to get the game version for a given game installation and locator IDs
+    /// Get the file hashes database, downloading it if necessary
     /// </summary>
-    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<LocatorId> locatorIds, out VanityVersion version);
-    
-    /// <summary>
-    /// Get the locator IDs for a specific version of a given game installation
-    /// </summary>
-    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, VanityVersion version, out LocatorId[] commonIds);
-    
-    /// <summary>
-    /// Suggest a game version based on the files in a game installation
-    /// </summary>
-    public VanityVersion SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
+    public ValueTask<IDb> GetFileHashesDb();
 
     /// <summary>
-    /// Return the locator IDs for a specific version definition given a game installation
+    /// Force an update of the file hashes database
     /// </summary>
-    public LocatorId[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition);
+    public Task CheckForUpdate(bool forceUpdate = false);
 
     /// <summary>
-    /// Suggest a version definition for a given game installation
+    /// Gets all known vanity versions for a given game.
     /// </summary>
-    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
+    public IEnumerable<VanityVersion> GetKnownVanityVersions(GameId gameId);
+
+    /// <summary>
+    /// Gets all game files associated with the provided locator IDs.
+    /// </summary>
+    public IEnumerable<GameFileRecord> GetGameFiles(LocatorIdsWithGameStore locatorIdsWithGameStore);
+
+    /// <summary>
+    /// Tries to get a vanity version based on the locator IDs.
+    /// </summary>
+    public bool TryGetVanityVersion(LocatorIdsWithGameStore locatorIdsWithGameStore, out VanityVersion version);
+
+    /// <summary>
+    /// Tries to get all locator IDs for the given store and vanity version.
+    /// </summary>
+    public bool TryGetLocatorIdsForVanityVersion(GameStore gameStore, VanityVersion version, out LocatorId[] locatorIds);
+
+    /// <summary>
+    /// Gets all locator IDs for a given store and <see cref="VersionDefinition"/>.
+    /// </summary>
+    public LocatorId[] GetLocatorIdsForVersionDefinition(GameStore gameStore, VersionDefinition.ReadOnly versionDefinition);
+
+    /// <summary>
+    /// Suggest version data for a given game installation and files.
+    /// </summary>
+    public Optional<VersionData> SuggestVersionData(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files);
 }
 
-public record struct VersionData(LocatorId[] LocatorIds, VanityVersion VersionName);
+/// <summary>
+/// Tuple of many <see cref="LocatorId"/> and <see cref="GameLocators.VanityVersion"/>.
+/// </summary>
+public record struct VersionData(LocatorId[] LocatorIds, VanityVersion VanityVersion);

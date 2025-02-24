@@ -42,15 +42,14 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
                     .DisposeWith(disposables);
 
                 this.WhenAnyValue(vm => vm.Installation)
-                    .SelectMany(async inst =>
-                        {
-                            await fileHashesService.GetFileHashesDb();
-                            var ids = inst.LocatorResultMetadata?.ToLocatorIds() ?? [];
-                            if (!fileHashesService.TryGetGameVersion(inst, ids, out var version))
-                                return $"Version: Unknown";
-                            return $"Version: {version}";
-                        }
-                    )
+                    .SelectMany(async installation =>
+                    {
+                        await fileHashesService.GetFileHashesDb();
+                        var locatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
+                        if (!fileHashesService.TryGetVanityVersion((installation.Store, locatorIds), out var vanityVersion))
+                            return "Version: Unknown";
+                        return $"Version: {vanityVersion.Value}";
+                    })
                     .BindToVM(this, vm => vm.Version)
                     .DisposeWith(disposables);
 

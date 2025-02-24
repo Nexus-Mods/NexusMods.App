@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
@@ -110,7 +111,7 @@ public class StubbedFileHasherService : IFileHashesService
         return Task.CompletedTask;
     }
 
-    public IEnumerable<VanityVersion> GetGameVersions(GameInstallation installation)
+    public IEnumerable<VanityVersion> GetKnownVanityVersions(GameId gameId)
     {
         return [VanityVersion.From("1.0.Stubbed"), VanityVersion.From("1.1.Stubbed")];
     }
@@ -123,8 +124,10 @@ public class StubbedFileHasherService : IFileHashesService
         return _current!;
     }
 
-    public IEnumerable<GameFileRecord> GetGameFiles(GameInstallation installation, IEnumerable<LocatorId> locatorIds)
+    public IEnumerable<GameFileRecord> GetGameFiles(LocatorIdsWithGameStore locatorIdsWithGameStore)
     {
+        var (_, locatorIds) = locatorIdsWithGameStore;
+
         var firstLocatorId = locatorIds.First();
         if (!_versionFiles.TryGetValue(firstLocatorId, out var fileIds))
         {
@@ -146,32 +149,37 @@ public class StubbedFileHasherService : IFileHashesService
     }
 
     public IDb Current => _current!;
-    public bool TryGetGameVersion(GameInstallation installation, IEnumerable<LocatorId> locatorMetadata, out VanityVersion version)
+
+    public bool TryGetVanityVersion(LocatorIdsWithGameStore locatorIdsWithGameStore, out VanityVersion version)
     {
-        var firstMetadata = locatorMetadata.First();
-        if (firstMetadata == "StubbedGameState.zip")
+        var (_, locatorIds) = locatorIdsWithGameStore;
+
+        var locatorId = locatorIds.First();
+        if (locatorId == "StubbedGameState.zip")
         {
             version = VanityVersion.From("1.0.Stubbed");
             return true;
         }
 
-        if (firstMetadata == "StubbedGameState_game_v2.zip")
+        if (locatorId == "StubbedGameState_game_v2.zip")
         {
             version = VanityVersion.From("1.1.Stubbed");
             return true;
         }
 
         // The stubbed Steam tests use this unit as the locator metadata
-        if (firstMetadata == "3976631895")
+        if (locatorId == "3976631895")
         {
             version = VanityVersion.From("1.0.Stubbed");
             return true;
         }
 
-        throw new NotSupportedException($"Unknown locator metadata: {firstMetadata}");
+        throw new NotSupportedException($"Unknown locator metadata: {locatorId}");
     }
 
-    public bool TryGetLocatorIdsForVersion(GameInstallation gameInstallation, VanityVersion version, out LocatorId[] commonIds)
+    public LocatorId[] GetLocatorIdsForVersionDefinition(GameStore gameStore, VersionDefinition.ReadOnly versionDefinition) => [];
+
+    public bool TryGetLocatorIdsForVanityVersion(GameStore gameStore, VanityVersion version, out LocatorId[] commonIds)
     {
         switch (version.Value)
         {
@@ -187,59 +195,28 @@ public class StubbedFileHasherService : IFileHashesService
         }
     }
 
-    public VanityVersion SuggestGameVersion(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
-    {
-        var pathAndHashes = files.ToHashSet();
-        
-        Dictionary<LocatorId, int> versionMatches = new();
-        foreach (var (locatorId, fileIds) in _versionFiles)
-        {
-            // Count the number of matches
-            var matches = 0;
-            foreach (var fileId in fileIds)
-            {
-                var pathHash = PathHashRelation.Load(Current, fileId);
-                if (pathAndHashes.Contains((new GamePath(LocationId.Game, pathHash.Path), pathHash.Hash.XxHash3)))
-                    matches++;
-            }
-
-            versionMatches[locatorId] = matches;
-        }
-        
-        // Find the version with the most matches
-        var bestMatch = versionMatches.OrderByDescending(kv => kv.Value).First();
-        if (!TryGetGameVersion(gameInstallation, [bestMatch.Key], out var version))
-            throw new Exception("Failed to suggest a game version");
-        return version;
-    }
-
-    public LocatorId[] GetLocatorIdsForVersionDefinition(GameInstallation gameInstallation, VersionDefinition.ReadOnly versionDefinition)
-    {
-        return [];
-    }
-
-    public Optional<VersionData> SuggestVersionDefinitions(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
+    public Optional<VersionData> SuggestVersionData(GameInstallation gameInstallation, IEnumerable<(GamePath Path, Hash Hash)> files)
     {
         var filesSet = files.ToHashSet();
-        
+
         List<(VersionData VersionData, int Matches)> versionMatches = [];
         foreach (var versionDefinition in _versionFiles)
         {
-            var (locatorIds , versionFiles) = versionDefinition;
-            var matchingCount = GetGameFiles(gameInstallation, [locatorIds])
+            var (locatorIds , _) = versionDefinition;
+            var matchingCount = GetGameFiles((gameInstallation.Store, [locatorIds]))
                 .Count(file => filesSet.Contains((file.Path, file.Hash)));
-            
-            if (!TryGetGameVersion(gameInstallation, [locatorIds], out var version))
+
+            if (!TryGetVanityVersion((gameInstallation.Store, [locatorIds]), out var version))
             {
                 throw new Exception("Failed to suggest a game version");
             }
             
             versionMatches.Add((new VersionData([locatorIds], version), matchingCount));
         }
-        
+
         return versionMatches
             .OrderByDescending(t => t.Matches)
             .Select(t => t.VersionData)
-            .FirstOrOptional(item => true);
+            .FirstOrOptional(_ => true);
     }
 }
