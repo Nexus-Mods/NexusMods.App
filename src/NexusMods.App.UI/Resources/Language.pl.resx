@@ -507,7 +507,7 @@
 		<value>Pokaż w bibliotece</value>
 	</data>
 	<data name="LoadoutGridView__Remove" xml:space="preserve">
-		<value>Usuń</value>
+		<value>Odinstaluj</value>
 	</data>
 	<data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
 		<value>Zaloguj się na swoje konto, aby pobierać mody z Nexus Mods!&#x0a;&#x0a;Zawsze możesz ręcznie dodawać mody z dysku bez logowania.</value>
@@ -579,7 +579,7 @@
 		<value>Kliknij, aby sprawdzić pomoc i opinie</value>
 	</data>
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-		<value>Kliknij, aby dodać wybrany mod do tego zestawu</value>
+		<value>Kliknij, aby zainstalować wybrany mod do tego zestawu</value>
 	</data>
 	<data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby trwale usunąć ten mod ze swojej biblioteki</value>
@@ -748,7 +748,7 @@
 		<value>Kliknij, aby połączyć swoje konto Nexus Mods</value>
 	</data>
 	<data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
-		<value>Kliknij, aby usunąć wybrany mod z tego zestawu</value>
+		<value>Kliknij, aby odinstalować wybrany mod z tego zestawu</value>
 	</data>
 	<data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
 		<value/>
