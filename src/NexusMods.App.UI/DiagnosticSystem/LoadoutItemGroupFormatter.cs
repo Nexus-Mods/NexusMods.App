@@ -12,6 +12,6 @@ internal sealed class LoadoutItemGroupFormatter(IConnection conn) : IValueFormat
     {
         // TODO: custom markdown control
         var mod = LoadoutItemGroup.Load(conn.Db, value.DataId);
-        writer.Write(ref state, $"'{mod.AsLoadoutItem().Name}'");
+        writer.Write(ref state, $"{mod.AsLoadoutItem().Name}");
     }
 }

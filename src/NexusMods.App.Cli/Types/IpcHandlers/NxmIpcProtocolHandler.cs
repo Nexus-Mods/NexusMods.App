@@ -1,23 +1,18 @@
-using System.Reactive.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GOG;
-using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Collections;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
-using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
-using NexusMods.Networking.NexusWebApi.V1Interop;
 using NexusMods.Paths;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
@@ -38,6 +33,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IClient _client;
+    private readonly IEventBus _eventBus;
 
     /// <summary>
     /// constructor
@@ -51,6 +47,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         ILoginManager loginManager)
     {
         _serviceProvider = serviceProvider;
+        _eventBus = serviceProvider.GetRequiredService<IEventBus>();
 
         _logger = logger;
         _oauth = oauth;
@@ -156,7 +153,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         }
 
         var collectionRevision = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
-        // var installJob = await InstallCollectionJob.Create(_serviceProvider, loadout, collectionFile);
+        _eventBus.Send(new CliMessages.AddedCollection(collectionRevision));
     }
 
     private async Task HandleModUrl(CancellationToken cancel, NXMModUrl modUrl)
@@ -172,6 +169,8 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
 
         var library = _serviceProvider.GetRequiredService<ILibraryService>();
         var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
+
+        _eventBus.Send(new CliMessages.AddedDownload());
 
         await using var destination = temporaryFileManager.CreateFile();
         var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);

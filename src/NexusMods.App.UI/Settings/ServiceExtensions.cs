@@ -12,6 +12,7 @@ public static class ServiceExtensions
             .AddSettings<TextEditorSettings>()
             .AddSettings<AlphaSettings>()
             .AddSettings<LoginSettings>()
-            .AddSettings<AlertSettings>();
+            .AddSettings<AlertSettings>()
+            .AddSettings<BehaviorSettings>();
     }
 }
