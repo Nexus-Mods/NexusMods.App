@@ -72,7 +72,7 @@
                                                          Type="Secondary"
                                                          Fill="Strong"
                                                          LeftIcon="{x:Static icons:IconValues.Save}"
-                                                         Text="Manual download"/>
+                                                         Text="{CompiledBinding ButtonText.Value}"/>
                             </StackPanel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>

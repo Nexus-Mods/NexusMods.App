@@ -133,21 +133,38 @@ public static class CollectionComponents
     {
         public int CompareTo(ManualDownloadAction? other) => other is null ? 1 : 0;
 
-        public ManualDownloadAction(CollectionDownloadExternal.ReadOnly downloadEntity)
+        private readonly IDisposable _activationDisposable;
+        public ManualDownloadAction(CollectionDownloadExternal.ReadOnly downloadEntity, Observable<bool> isDownloadedObservable)
         {
-            CommandOpenModal = new ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
+            CommandOpenModal = isDownloadedObservable.Select(static isDownloaded => !isDownloaded).ToReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
+
+            _activationDisposable = this.WhenActivated((downloadEntity, isDownloadedObservable), static (self, state, disposables) =>
+            {
+                var (_, isDownloadedObservable) = state;
+
+                isDownloadedObservable.Subscribe(self, static (isDownloaded, self) =>
+                {
+                    self._buttonText.Value = GetButtonText(isDownloaded);
+                }).AddTo(disposables);
+            });
         }
+
+        private readonly BindableReactiveProperty<string> _buttonText = new(value: "");
+        public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
 
         public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandOpenModal { get; }
 
+        private static string GetButtonText(bool isDownloaded) => isDownloaded ? "Downloaded" : "Manual download";
+
         private bool _isDisposed;
+
         protected override void Dispose(bool disposing)
         {
             if (!_isDisposed)
             {
                 if (disposing)
                 {
-                    CommandOpenModal.Dispose();
+                    Disposable.Dispose(CommandOpenModal, ButtonText, _activationDisposable);
                 }
 
                 _isDisposed = true;

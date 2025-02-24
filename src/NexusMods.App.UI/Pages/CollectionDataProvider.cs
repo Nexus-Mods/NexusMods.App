@@ -166,7 +166,8 @@ public class CollectionDataProvider
             key: CollectionColumns.Actions.ManualDownloadComponentKey,
             shouldAddObservable: baseShouldAddDownloadObservable.CombineLatest(isManualOnlyObservable, static (shouldAddDownload, isManualOnly) => shouldAddDownload && isManualOnly),
             componentFactory: () => new CollectionComponents.ManualDownloadAction(
-                downloadEntity: download
+                downloadEntity: download,
+                isDownloadedObservable: statusObservable.Select(status => status.IsDownloaded())
             )
         );
 
