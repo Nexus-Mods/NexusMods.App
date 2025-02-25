@@ -32,6 +32,6 @@ public partial class ManuallyAddedGame : IModelDefinition
     public partial struct ReadOnly : IGameLocatorResultMetadata
     {
         /// <inheritdoc />
-        public IEnumerable<string> ToLocatorIds() => ["NONE"];
+        public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From("NONE")];
     }
 }

@@ -5,219 +5,82 @@
 
     <!-- Preview -->
     <Design.PreviewWith>
-        <StackPanel Orientation="Vertical">
 
-            <!-- StandardButton control styles -->
-            <Border Padding="16">
-                <StackPanel Orientation="Horizontal" Spacing="36">
-                    <StackPanel Spacing="4">
-                        <Button IsEnabled="False">Test</Button>
-                        <controls:StandardButton IsEnabled="False" />
-                        <StackPanel Orientation="Horizontal">
-                            <controls:StandardButton ShowIcon="IconOnly" />
-                            <controls:StandardButton ShowIcon="IconOnly" Size="Small" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <controls:StandardButton ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Close}" />
-                            <controls:StandardButton ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Close}" Size="Small" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <controls:StandardButton ShowIcon="IconOnly" Type="Primary" Fill="Strong" />
-                            <controls:StandardButton ShowIcon="IconOnly" Type="Primary" Size="Small" />
-                        </StackPanel>
-                        <controls:StandardButton>
-                            <StackPanel>
-                                <TextBlock Text="Test 1"/>
-                                <StackPanel Orientation="Horizontal" Background="Chocolate">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
-                                </StackPanel>
-                                <TextBlock Background="DarkRed" Text="Test 2"/>
-                                <TextBlock Text="Test 3"/>
-                            </StackPanel>
-                        </controls:StandardButton>
-                        <controls:StandardButton IsEnabled="False" ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                        <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                        <controls:StandardButton ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
-                        <controls:StandardButton IsEnabled="False" ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.AvatarTest}" />
-                    </StackPanel>
-
-                    <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
-                        <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Text="Default"
-                                   Theme="{StaticResource TitleMDSemiTheme}" />
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
-
-                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                                <controls:StandardButton IsEnabled="True" Text="Enabled" ShowIcon="Left"
-                                                         LeftIcon="{x:Static icons:IconValues.Check}" />
-                                <controls:StandardButton IsEnabled="False" Text="Disabled" ShowIcon="Left"
-                                                         LeftIcon="{x:Static icons:IconValues.Close}" />
-                                <controls:StandardButton ShowIcon="Both" />
-                                <controls:StandardButton />
-                                <controls:StandardButton ShowIcon="Left" Text="Something" HorizontalAlignment="Stretch"
-                                                         LeftIcon="{x:Static icons:IconValues.PlayArrow}" />
-                                <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
-                                <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
-                            </StackPanel>
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
-
-                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                                <controls:StandardButton Size="Small" />
-                                <controls:StandardButton Size="Small" />
-                                <controls:StandardButton Size="Small" ShowIcon="Both" />
-                                <controls:StandardButton Size="Small" IsEnabled="False" ShowIcon="Right" />
-                                <controls:StandardButton Size="Small" IsEnabled="False" ShowIcon="Both" />
-                                <controls:StandardButton Size="Small" ShowIcon="Both" ShowLabel="False" />
-                                <controls:StandardButton Size="Small" ShowIcon="Left" ShowLabel="False" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid ColumnDefinitions="*,12,*" RowDefinitions="32,Auto,10,Auto,Auto,Auto" ShowGridLines="False">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Primary"
-                                   Theme="{StaticResource TitleMDSemiTheme}" />
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
-
-                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="24">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                                <controls:StandardButton Type="Primary" Text="Primary" />
-                                <controls:StandardButton Type="Primary" Text="Primary" IsEnabled="False" ShowIcon="Left" />
-                                <controls:StandardButton Type="Primary" ShowIcon="Right" />
-                                <controls:StandardButton Type="Primary" ShowIcon="Both" />
-                            </StackPanel>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="5" Grid.Column="0" Spacing="8">
-                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton IsEnabled="True" Type="Primary" Fill="Weak" />
-                            <controls:StandardButton IsEnabled="False" Type="Primary" Fill="Weak" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="24">
-                            <StackPanel Spacing="8">
-                                <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                                <controls:StandardButton Type="Primary" Size="Small" />
-                                <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Left" />
-                                <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Right" />
-                                <controls:StandardButton Type="Primary" Size="Small" ShowIcon="Both" />
-                            </StackPanel>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
-                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton IsEnabled="True" Type="Primary" Size="Small" Fill="Weak"
-                                                     ShowIcon="Right" />
-                            <controls:StandardButton IsEnabled="False" Type="Primary" Size="Small" Fill="Weak"
-                                                     ShowIcon="Right" />
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid ColumnDefinitions="Auto,12,Auto" RowDefinitions="32,Auto,10,Auto,10,Auto,10,Auto"
-                          ShowGridLines="False">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Secondary"
-                                   Theme="{StaticResource TitleMDSemiTheme}" />
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
-
-                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
-                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Secondary" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="5" Grid.Column="0" Spacing="8">
-                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton IsEnabled="True" Type="Secondary" Fill="Weak" />
-                            <controls:StandardButton IsEnabled="False" Type="Secondary" Fill="Weak" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="7" Grid.Column="0" Spacing="8">
-                            <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Secondary" Fill="Strong" Text="Play" ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
-
-                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
-                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Secondary" Size="Small" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
-                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Secondary" Size="Small" Fill="Weak" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="7" Grid.Column="2" Spacing="8">
-                            <TextBlock Text="Fill: Strong" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Secondary" Size="Small" Fill="Strong" ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                            <controls:StandardButton Type="Secondary" IsEnabled="False" Size="Small" Fill="Strong"
-                                                     ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid ColumnDefinitions="Auto,12,Auto" RowDefinitions="32,Auto,10,Auto,10,Auto,10,Auto"
-                          ShowGridLines="False">
-                        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="Tertiary"
-                                   Theme="{StaticResource TitleMDSemiTheme}" />
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Medium" Theme="{StaticResource BodyMDNormalTheme}" />
-
-                        <StackPanel Grid.Row="3" Grid.Column="0" Spacing="8">
-                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Tertiary">
-                                <controls:StandardButton.Flyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="Menu 1"/>
-                                        <MenuItem Header="Menu 2" />
-                                        <MenuItem Header="Menu 3"/>
-                                    </MenuFlyout>
-                                </controls:StandardButton.Flyout>
-                            </controls:StandardButton>
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="5" Grid.Column="0" Spacing="8">
-                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Tertiary" Fill="Weak" />
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="1" Grid.Column="2" Text="Small" Theme="{StaticResource BodyMDNormalTheme}" />
-
-                        <StackPanel Grid.Row="3" Grid.Column="2" Spacing="8">
-                            <TextBlock Text="Fill: None" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Tertiary" Size="Small" ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="5" Grid.Column="2" Spacing="8">
-                            <TextBlock Text="Fill: Weak" Theme="{StaticResource BodyMDNormalTheme}" />
-                            <controls:StandardButton Type="Tertiary" Size="Small" Fill="Weak" ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.Nexus}" />
-                        </StackPanel>
-                    </Grid>
+        <Border Padding="16" Classes="Low">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Test Area" Theme="{StaticResource HeadingMDSemiTheme}" />
+                <StackPanel>
+                    <controls:StandardButton IsEnabled="True" Text="Enabled" ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Check}" />
+                    <controls:StandardButton IsEnabled="False" Text="Disabled" ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Close}" />
+                    <controls:StandardButton ShowIcon="Both" />
+                    <controls:StandardButton />
+                    <controls:StandardButton ShowIcon="Left" Text="Something" HorizontalAlignment="Stretch"
+                                             LeftIcon="{x:Static icons:IconValues.PlayArrow}" />
+                    <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="Left" ShowLabel="True" Size="Small"  />
+                    <controls:StandardButton Text="This is WeakAlt" Type="Tertiary" Fill="WeakAlt" />
                 </StackPanel>
-            </Border>
-        </StackPanel>
+                <TextBlock Text="System" Theme="{StaticResource HeadingMDSemiTheme}" />
+                <StackPanel Orientation="Horizontal" Spacing="24">
+                    <StackPanel>
+                        <TextBlock Text="Primary" Theme="{StaticResource HeadingSMSemiTheme}" />
+                        <StackPanel>
+                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <controls:StandardButton Text="Strong" Type="Primary" Fill="Strong" />
+                            <controls:StandardButton Text="Weak" Type="Primary" Fill="Weak" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <controls:StandardButton Text="Strong" Type="Primary" Fill="Strong" Size="Small" />
+                            <controls:StandardButton Text="Weak" Type="Primary" Fill="Weak" Size="Small" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Secondary" Theme="{StaticResource HeadingSMSemiTheme}" />
+                        <StackPanel>
+                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <controls:StandardButton Text="Strong" Type="Secondary" Fill="Strong" />
+                            <controls:StandardButton Text="Weak" Type="Secondary" Fill="Weak" />
+                            <controls:StandardButton Text="None" Type="Secondary" Fill="None" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <controls:StandardButton Text="Strong" Type="Secondary" Fill="Strong" Size="Small" />
+                            <controls:StandardButton Text="Weak" Type="Secondary" Fill="Weak" Size="Small" />
+                            <controls:StandardButton Text="None" Type="Secondary" Fill="None" Size="Small" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Tertiary" Theme="{StaticResource HeadingSMSemiTheme}" />
+                        <StackPanel>
+                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <controls:StandardButton Text="WeakAlt" Type="Tertiary" Fill="WeakAlt" />
+                            <controls:StandardButton Text="Weak" Type="Tertiary" Fill="Weak" />
+                            <controls:StandardButton Text="None" Type="Tertiary" Fill="None" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <controls:StandardButton Text="WeakAlt" Type="Tertiary" Fill="WeakAlt" Size="Small" />
+                            <controls:StandardButton Text="Weak" Type="Tertiary" Fill="Weak" Size="Small" />
+                            <controls:StandardButton Text="None" Type="Tertiary" Fill="None" Size="Small" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
     </Design.PreviewWith>
 
     <!-- Style Definitions-->
-    
+
     <Style Selector=":is(controls|StandardButton)">
         <!-- Use `:is(controls|StandardButton)` to match StandardButton and all its subclasses, -->
         <!-- otherwise all subclasses would need to have the style key override set to `StandardButton`. -->
         <!-- If StyleKeyOverride of a subclass is set, it becomes impossible to select that specific subclass, -->
         <!-- to add more specific styles to it.  -->
-        
+
         <!-- start of default button styles to match avalonia's default
         https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/Button.xaml-->
         <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
@@ -260,7 +123,10 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" 
+                                    VerticalAlignment="Center" 
+                                    HorizontalAlignment="Center"
+                                    Spacing="4">
                             <icons:UnifiedIcon Name="PART_LeftIcon" />
                             <TextBlock Name="PART_Label" Text="{TemplateBinding Text}" />
                             <icons:UnifiedIcon Name="PART_RightIcon" />
@@ -288,7 +154,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
             <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
         </Style>
-        
+
         <Style Selector="^:flyout-open">
             <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
@@ -349,7 +215,7 @@
             <Setter Property="Padding" Value="{DynamicResource ButtonPaddingSmall}" />
 
             <Style Selector="^ StackPanel">
-                <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}"></Setter>
+                <Setter Property="Spacing" Value="{StaticResource Spacing-1}"></Setter>
             </Style>
 
             <Style Selector="^ /template/ Border">
@@ -362,7 +228,7 @@
                 <Style Selector="^ TextBlock">
                     <!-- needs a little horizontal padding to fully match figma -->
                     <Setter Property="Padding" Value="1 0" />
-                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                 </Style>
             </Style>
 
@@ -471,7 +337,8 @@
             </Style>
         </Style>
 
-        <!-- tertiary button -->
+        <!-- TERTIARY -->
+
         <Style Selector="^[Type=Tertiary]">
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
@@ -487,11 +354,11 @@
             </Style>
 
             <Style Selector="^:disabled" />
-                
+
             <Style Selector="^:flyout-open">
                 <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
             </Style>
-            
+
             <!-- fill variants -->
 
             <Style Selector="^[Fill=Weak]">
@@ -509,10 +376,27 @@
 
                 <Style Selector="^:disabled" />
             </Style>
+
+            <Style Selector="^[Fill=WeakAlt]">
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource NeutralModerateBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
+                    <Setter Property="Opacity" Value="0.8" />
+                </Style>
+
+                <Style Selector="^:disabled" />
+            </Style>
         </Style>
 
     </Style>
-    
+
     <!-- Obsolete Button.Standard class styles, use StandardButton instead -->
     <!-- Base Standard Button (only use with additional qualifiers)-->
     <Style Selector="Button.Standard">

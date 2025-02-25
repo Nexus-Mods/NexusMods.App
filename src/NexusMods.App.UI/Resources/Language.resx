@@ -231,10 +231,10 @@
         <value>Delete</value>
     </data>
     <data name="FileOriginPage_AddMod" xml:space="preserve">
-        <value>Add</value>
+        <value>Install</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
-        <value>Advanced add</value>
+        <value>Advanced Install</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>
@@ -515,7 +515,7 @@
         <value>View in library</value>
     </data>
     <data name="LoadoutGridView__Remove" xml:space="preserve">
-        <value>Remove</value>
+        <value>Uninstall</value>
     </data>
     <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
         <value>To easily download mods from Nexus Mods you will need to log in with your Nexus Mods account.  To add mods manually from your drive, you do not need to log in.</value>
@@ -588,7 +588,7 @@
         <value>Help and feedback</value>
     </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-        <value>Add the selected mod(s) to this loadout</value>
+        <value>Install the selected mod(s) to this loadout</value>
     </data>
     <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
         <value>Permanently remove this mod from your Library</value>
@@ -768,7 +768,7 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Connect your Nexus Mods account</value>
     </data>
     <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
-        <value>Remove the selected mod(s) from this loadout</value>
+        <value>Uninstall the selected mod(s) from this loadout</value>
     </data>
     <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
         <value/>

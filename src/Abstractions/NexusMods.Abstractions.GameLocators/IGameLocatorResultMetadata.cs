@@ -11,5 +11,5 @@ public interface IGameLocatorResultMetadata
     /// <summary>
     /// Converts this metadata to a format that the game locator and file hash db can use to reference a specific build, version, etc.
     /// </summary>
-    public IEnumerable<string> ToLocatorIds();
+    public IEnumerable<LocatorId> ToLocatorIds();
 }
