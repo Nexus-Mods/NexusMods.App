@@ -65,10 +65,16 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
                     {
                         >= 0.75 => "HighRating",
                         >= 0.5 => "MidRating",
-                        _ => "LowRating",
+                        >= 0.01 => "LowRating",
+                        _ => "NoRating",
                     };
                 })
-                .Subscribe(className => OverallRatingPanel.Classes.Add(className))
+                .Subscribe(className =>
+                    {
+                        OverallRatingPanel.Classes.Add(className);
+                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P2");
+                    }
+                )
                 .DisposeWith(d);
         });
     }

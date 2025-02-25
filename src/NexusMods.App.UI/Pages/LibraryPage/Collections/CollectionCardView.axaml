@@ -9,6 +9,7 @@
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="288"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.Collections.CollectionCardView">
 
@@ -54,23 +55,29 @@
             <Border x:Name="StatsBorder">
                 <StackPanel x:Name="StatsPanel" IsVisible="True">
                     <StackPanel x:Name="ModsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}"
+                                           ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsMods_ToolTip}"/>
                         <TextBlock x:Name="NumDownloads" />
                     </StackPanel>
-                    <StackPanel x:Name="EndorsementsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
+                    <StackPanel x:Name="EndorsementsPanel"
+                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsEndorsements_ToolTip}">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUpOutline}" />
                         <TextBlock x:Name="Endorsements" />
                     </StackPanel>
-                    <StackPanel x:Name="DownloadsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                    <StackPanel x:Name="DownloadsPanel"
+                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsDownloads_ToolTip}">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.TrayArrowDown}" />
                         <TextBlock x:Name="TotalDownloads" />
                     </StackPanel>
-                    <StackPanel x:Name="TotalSizePanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
+                    <StackPanel x:Name="TotalSizePanel"
+                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsSize_ToolTip}">
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
                         <TextBlock x:Name="TotalSize" />
                     </StackPanel>
-                    <StackPanel x:Name="OverallRatingPanel">
-                        <icons:UnifiedIcon x:Name="OverallRatingIcon" Value="{x:Static icons:IconValues.CheckCircle}" />
+                    <StackPanel x:Name="OverallRatingPanel"
+                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsRating_ToolTip}">
+                        <icons:UnifiedIcon x:Name="OverallRatingIcon"
+                                           Value="{x:Static icons:IconValues.CheckCircle}" />
                         <TextBlock x:Name="OverallRating" />
                     </StackPanel>
                 </StackPanel>
