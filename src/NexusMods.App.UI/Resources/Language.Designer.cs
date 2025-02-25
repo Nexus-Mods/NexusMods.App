@@ -295,7 +295,52 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install Update.
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string CollectionDownloadViewModel_StatsDownloads_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_StatsDownloads_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Endorsements.
+        /// </summary>
+        public static string CollectionDownloadViewModel_StatsEndorsements_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_StatsEndorsements_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mods.
+        /// </summary>
+        public static string CollectionDownloadViewModel_StatsMods_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_StatsMods_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success Rating.
+        /// </summary>
+        public static string CollectionDownloadViewModel_StatsRating_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_StatsRating_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        public static string CollectionDownloadViewModel_StatsSize_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_StatsSize_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update to Revision {0}.
         /// </summary>
         public static string CollectionDownloadViewModel_UpdateCollection {
             get {
