@@ -160,10 +160,9 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
         var srcPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
         await _fileHashesService.GetFileHashesDb();
-        var foundRecord = _fileHashesService.GetGameFiles(loadout.InstallationInstance, loadout.LocatorIds)
+        var foundRecord = _fileHashesService.GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.ToArray()))
             .Where(f => f.Path == srcPath)
             .TryGetFirst(out var gameFileRecord);
-        
 
         if (!foundRecord)
         {

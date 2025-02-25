@@ -854,7 +854,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add.
+        ///   Looks up a localized string similar to Install.
         /// </summary>
         public static string FileOriginPage_AddMod {
             get {
@@ -863,7 +863,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add the selected mod(s) to this loadout.
+        ///   Looks up a localized string similar to Install the selected mod(s) to this loadout.
         /// </summary>
         public static string FileOriginPage_AddMod_ToolTip {
             get {
@@ -872,7 +872,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Advanced add.
+        ///   Looks up a localized string similar to Advanced Install.
         /// </summary>
         public static string FileOriginPage_AddModAdvanced {
             get {
@@ -1601,7 +1601,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove.
+        ///   Looks up a localized string similar to Uninstall.
         /// </summary>
         public static string LoadoutGridView__Remove {
             get {
@@ -1610,7 +1610,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove the selected mod(s) from this loadout.
+        ///   Looks up a localized string similar to Uninstall the selected mod(s) from this loadout.
         /// </summary>
         public static string LoadoutGridView__Remove_ToolTip {
             get {

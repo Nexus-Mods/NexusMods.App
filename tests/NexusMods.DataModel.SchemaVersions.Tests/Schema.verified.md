@@ -113,10 +113,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.SortableEntry/SortIndex                                         | Int32                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                      | Utf8                    | False   | False | False     | 
-| NexusMods.MnemonicDB.DatomStore/Indexed                                            | Null                    | False   | False | False     | 
+| NexusMods.MnemonicDB.DatomStore/Indexed                                            | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/NoHistory                                          | Null                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Optional                                           | Null                    | False   | False | False     | 
-| NexusMods.MnemonicDB.DatomStore/UniqueId                                           | Ascii                   | True    | False | False     | 
+| NexusMods.MnemonicDB.DatomStore/UniqueId                                           | Ascii                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/ValueType                                          | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/ExcisedDatoms                                     | UInt64                  | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/Timestamp                                         | Int64                   | False   | False | False     | 

@@ -9,17 +9,18 @@
     xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
     xmlns:grammars="clr-namespace:TextMateSharp.Grammars;assembly=TextMateSharp.Grammars"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.TextEdit.TextEditorPageView">
 
     <Grid RowDefinitions="Auto, *">
-        <Border Grid.Row="0" Classes="Toolbar" BorderThickness="0 0 0 1" BorderBrush="{StaticResource StrokeTranslucentWeakBrush}">
+        <Border Grid.Row="0" Classes="Toolbar">
             <StackPanel>
-                <TextBlock x:Name="LanguageNameText" Classes="BodyMDNormal ForegroundSubdued" HorizontalAlignment="Right" TextAlignment="Right" VerticalAlignment="Center"/>
+                <TextBlock x:Name="LanguageNameText" />
 
-                <Line/>
+                <Separator/>
 
-                <ComboBox x:Name="ThemeSelector" Classes="Tertiary" VerticalAlignment="Center" Height="32" >
+                <ComboBox x:Name="ThemeSelector" Classes="Secondary Compact" VerticalAlignment="Center" Height="32" >
                     <ComboBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type grammars:ThemeName}">
                             <StackPanel Orientation="Horizontal" Classes="Spacing-1">
@@ -30,30 +31,26 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <Line/>
+                <Separator/>
 
-                <Button x:Name="CopyButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="Copy" />
-                        <TextBlock Text="Copy"/>
-                    </StackPanel>
-                </Button>
-
-                <Button x:Name="PasteButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="Paste" />
-                        <TextBlock Text="Paste"/>
-                    </StackPanel>
-                </Button>
-
-                <Line/>
-
-                <Button x:Name="SaveButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="Save" />
-                        <TextBlock Text="Save"/>
-                    </StackPanel>
-                </Button>
+                <controls:StandardButton x:Name="CopyButton"
+                                         LeftIcon="{x:Static icons:IconValues.Copy}"
+                                         Text="Copy"
+                                         ShowIcon="Left"
+                                         Size="Small"
+                                         Fill="WeakAlt"/>
+                <controls:StandardButton x:Name="PasteButton"
+                                         LeftIcon="{x:Static icons:IconValues.Paste}"
+                                         Text="Paste"
+                                         ShowIcon="Left"
+                                         Size="Small"
+                                         Fill="WeakAlt"/>
+                <controls:StandardButton x:Name="SaveButton"
+                                         LeftIcon="{x:Static icons:IconValues.Save}"
+                                         Text="Save"
+                                         ShowIcon="Left"
+                                         Size="Small"
+                                         Fill="WeakAlt"/>
             </StackPanel>
         </Border>
 

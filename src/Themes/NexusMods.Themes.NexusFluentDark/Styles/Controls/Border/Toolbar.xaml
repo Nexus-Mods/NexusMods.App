@@ -1,201 +1,121 @@
-﻿<Styles
+﻿<!-- HOW TO USE THIS BORDER CLASS 
+
+<Border Classes="Toolbar">
+    <StackPanel>
+        Controls go here. 
+        Generally Small or Compact control variants are used.
+        TextBlock's can be used to Label sections, theme and colors are automatically set
+        <Separator /> can also be used to separate sections, style is automatically set.
+        <controls:StandardButton Size="Small" Text="Button 1" />
+        <Separator /> can also be used to separate sections, style is automatically set.
+    </StackPanel>
+</Border>
+
+-->
+
+<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <StackPanel Width="920" Classes="Spacing-2">
-            <!-- With Header -->
-            <Border Classes="Toolbar">
-                <Grid ColumnDefinitions="*, Auto">
-                    <TextBlock Grid.Column="0" Text="TOOL BAR HEADER" Classes="ToolBarTitle" />
-                    <StackPanel Grid.Column="1">
-                        <Button>
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                                <TextBlock Text="Remove" />
-                            </StackPanel>
-                        </Button>
-                        <Line Classes="Separator" />
-                        <Button>
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                                <TextBlock Text="Remove All" />
-                            </StackPanel>
-                        </Button>
-                        <Button IsEnabled="False">
-                            <StackPanel>
-                                <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                                <TextBlock Text="Remove All" />
-                            </StackPanel>
-                        </Button>
-                        <ComboBox SelectedIndex="0" Classes="Tertiary">
-                            <ComboBoxItem>
-                                <StackPanel>
-                                    <icons:UnifiedIcon Classes="ColorLens" />
-                                    <TextBlock Text="Item 1"/>
-                                </StackPanel>
-                            </ComboBoxItem>
-                            <ComboBoxItem>
-                                <StackPanel>
-                                    <icons:UnifiedIcon Classes="ColorLens" />
-                                    <TextBlock Text="Item 2"/>
-                                </StackPanel>
-                            </ComboBoxItem>
-                            <ComboBoxItem>
-                                <StackPanel>
-                                    <icons:UnifiedIcon Classes="ColorLens" />
-                                    <TextBlock Text="Item 3"/>
-                                </StackPanel>
-                            </ComboBoxItem>
-                        </ComboBox>
+        <Border Padding="16" Background="DarkSlateBlue">
+            <StackPanel Spacing="{StaticResource Spacing-2}">
+                <Border Classes="Toolbar">
+                    <StackPanel>
+                        <controls:StandardButton x:Name="AddModButton"
+                                                 Text="{x:Static resources:Language.FileOriginPage_AddMod}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.PlaylistAdd}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}" />
+                        <controls:StandardButton x:Name="AddModAdvancedButton"
+                                                 Text="{x:Static resources:Language.FileOriginPage_AddModAdvanced}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.PlaylistAdd}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddModAdvanced_ToolTip}" />
+                        <controls:StandardButton x:Name="RemoveModButton"
+                                                 Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
+                        <Separator />
+                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
+                        <controls:StandardButton x:Name="GetModsFromDriveButton"
+                                                 Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromDrive_ToolTip}" />
+                        <controls:StandardButton x:Name="GetModsFromNexusButton"
+                                                 Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"
+                                                 Type="Tertiary"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromNexus_ToolTip}" />
+                        <Separator />
+                        <SplitButton x:Name="UpdateAll" IsVisible="False"
+                                     Content="{x:Static resources:Language.FileOriginPage_UpdateAll}" />
+                        <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small"
+                                                 Type="Tertiary" Fill="WeakAlt"
+                                                 LeftIcon="{x:Static icons:IconValues.Refresh}" />
                     </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- No Header -->
-            <Border Classes="Toolbar">
-                <StackPanel>
-                    <TextBlock Classes="NotTitle" Text="Override: Not a title!" />
-                    <Button>
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="Remove" />
-                        </StackPanel>
-                    </Button>
-                    <Line Classes="Separator" />
-                    <Button>
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="Remove All" />
-                        </StackPanel>
-                    </Button>
-                    <Button IsEnabled="False">
-                        <StackPanel>
-                            <icons:UnifiedIcon Classes="RemoveCircleOutline" />
-                            <TextBlock Text="Remove All" />
-                        </StackPanel>
-                    </Button>
-                    <ComboBox SelectedIndex="0" Classes="Tertiary" >
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Classes="ColorLens" Size="20"/>
-                                    <TextBlock Text="Item" Classes="BodyMDNormal"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                        <ComboBoxItem><TextBlock Text="Item 1"/></ComboBoxItem>
-                        <ComboBoxItem><TextBlock Text="Item 2"/></ComboBoxItem>
-                        <ComboBoxItem><TextBlock Text="Item 3"/></ComboBoxItem>
-                    </ComboBox>
-                </StackPanel>
-            </Border>
-
-        </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
     </Design.PreviewWith>
 
     <!-- Style Definitions -->
 
     <Style Selector="Border.Toolbar">
+        <Setter Property="Padding" Value="24,12" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Height" Value="52" />
-        <Setter Property="Background" Value="{StaticResource SurfaceLow}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
         <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-        
+
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+
+            <Style Selector="^ > Separator">
+                <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                <Setter Property="Margin" Value="6,2" />
+                <Setter Property="Height" Value="{Binding $parent}" />
+                <Setter Property="Width" Value="1" />
+            </Style>
+
+            <Style Selector="^ > TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                <Style Selector="^:disabled">
+                    <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+                </Style>
+            </Style>
+        </Style>
+
         <Style Selector="^.Info">
-            <Setter Property="Background" Value="{StaticResource BrandInfo950Brush}"/>
+            <Setter Property="Background" Value="{StaticResource BrandInfo950Brush}" />
         </Style>
-        
+
         <Style Selector="^.Warning">
-            <Setter Property="Background" Value="{StaticResource BrandWarning950Brush}"/>
+            <Setter Property="Background" Value="{StaticResource BrandWarning950Brush}" />
         </Style>
-    </Style>
-
-    <Style Selector="Border.Toolbar > Grid">
-        <Setter Property="Margin" Value="24, 0" />
-    </Style>
-
-    <!-- Only applied when no grid -->
-    <Style Selector="Border.Toolbar > StackPanel">
-        <Setter Property="Margin" Value="24, 0" />
-    </Style>
-
-    <Style Selector="Border.Toolbar StackPanel">
-        <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
-    </Style>
-
-    <Style Selector="Border.Toolbar StackPanel Line">
-        <Setter Property="Width" Value="12" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="StrokeThickness" Value="1" />
-        <Setter Property="StartPoint" Value="6, 0" />
-        <Setter Property="EndPoint" Value="6, 32" />
-        <Setter Property="Stroke" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-    </Style>
-
-    <Style Selector="Border.Toolbar Button">
-        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="Padding" Value="0" />
-    </Style>
-
-    <Style Selector="Border.Toolbar Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-    </Style>
-
-    <Style Selector="Border.Toolbar Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
-    </Style>
-
-    <Style Selector="Border.Toolbar Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource SurfaceLowBrush}" />
-    </Style>
-
-    <Style Selector="Border.Toolbar Button StackPanel">
-        <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-        <Setter Property="Margin" Value="6" />
-    </Style>
-
-    <Style Selector="Border.Toolbar Button icons|UnifiedIcon">
-        <Setter Property="Size" Value="20" />
-    </Style>
-
-    <Style Selector="Border.Toolbar TextBlock">
-        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="0" />
-    </Style>
-
-    <!-- ComboBox -->
-    <Style Selector="Border.Toolbar ComboBox">
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Height" Value="32" />
-    </Style>
-
-    <!-- Optional Classes -->
-    <Style Selector="Border.Toolbar TextBlock.ToolBarTitle">
-        <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
-        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <!-- Class 'NotTitle', for text that is not title -->
-    <Style Selector="Border.Toolbar TextBlock.NotTitle">
-        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    
-    <!-- Note(Sewer): Apparently declaration order matters, so this will not work if placed
-         above the style for non-disabled button etc. 
-         
-         Anyway this grays out the text for any disabled components, e.g. Button, ComboBox, etc.
-    -->
-    <Style Selector="Border.Toolbar :disabled TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
     </Style>
 </Styles>
