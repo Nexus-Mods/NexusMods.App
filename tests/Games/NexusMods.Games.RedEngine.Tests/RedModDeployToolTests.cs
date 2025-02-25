@@ -21,6 +21,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task LoadorderFileIsWrittenCorrectly()
     {
         var loadout = await CreateLoadout();
