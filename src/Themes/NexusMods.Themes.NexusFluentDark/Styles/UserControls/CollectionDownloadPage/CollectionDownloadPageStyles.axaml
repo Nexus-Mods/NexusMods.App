@@ -97,7 +97,7 @@
                                         <Style Selector="^ StackPanel#RevisionsPanel">
                                             <Setter Property="Orientation" Value="Horizontal" />
                                             <Setter Property="VerticalAlignment" Value="Center" />
-                                            <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+                                            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
                                             <Style Selector="^ TextBlock#Revision">
                                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
@@ -106,12 +106,9 @@
                                             </Style>
 
                                             <Style Selector="^ icons|UnifiedIcon#ArrowRight">
-                                                <Setter Property="VerticalAlignment" Value="Center" />
-                                                <Setter Property="Size" Value="18" />
+                                                <Setter Property="Size" Value="16" />
                                                 <Setter Property="Foreground"
                                                         Value="{StaticResource InfoStrongBrush}" />
-                                                <Setter Property="Value"
-                                                        Value="{x:Static icons:IconValues.ArrowForward}" />
                                             </Style>
 
                                             <Style Selector="^ TextBlock#NewestRevision">
@@ -133,6 +130,8 @@
                                         <Style Selector="^ > StackPanel">
                                             <Setter Property="Orientation" Value="Horizontal" />
                                             <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+                                            <!-- we need a transparent brush for pointerover to work correctly to show tooltips -->
+                                            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
                                             <Style Selector="^ > icons|UnifiedIcon">
                                                 <Setter Property="Foreground"
@@ -198,28 +197,6 @@
 
 
                     </Style>
-                </Style>
-            </Style>
-
-            <Style Selector="^ Border#ListHeaderRowBorder">
-                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-                <Setter Property="Padding" Value="24, 12" />
-                <Setter Property="panels:Flex.Grow" Value="0" />
-                <Setter Property="panels:Flex.Shrink" Value="0" />
-                <Setter Property="BorderThickness" Value="0,0,0,1" />
-                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-
-                <Style Selector="^ panels|FlexPanel#ListHeaderRow">
-                    <Setter Property="JustifyContent" Value="FlexEnd" />
-                    <Setter Property="AlignItems" Value="Center" />
-                    <Setter Property="ColumnSpacing" Value="8" />
-
-                    <Style Selector="^ TextBlock#TextCollectionStatus">
-                        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-                    </Style>
-
                 </Style>
             </Style>
 

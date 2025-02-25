@@ -48,9 +48,18 @@
             </MenuItem>
         </MenuFlyout>
 
+        <!-- toolbar at top, tree data grid fill the remaining space -->
         <DockPanel x:Key="TabItemContent">
-            <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
-                <panels:FlexPanel x:Name="ListHeaderRow">
+            <Border DockPanel.Dock="Top" Classes="Toolbar">
+                <StackPanel HorizontalAlignment="Right">
+                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
+                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
+                                             Size="Small"
+                                             Type="Primary"
+                                             Fill="Weak"
+                                             LeftIcon="{x:Static icons:IconValues.Update}"
+                                             ShowIcon="Left" />
+                    <Separator/>
                     <TextBlock x:Name="TextCollectionStatus" />
                     <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
                     <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
@@ -66,12 +75,7 @@
                     <navigation:NavigationControl x:Name="ButtonViewCollection"
                                                   Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
                                                   Size="Small" />
-                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
-                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
-                                             Size="Small"
-                                             Type="Primary"
-                                             Fill="Strong" />
-
+                    
                     <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
                                              Size="Small"
@@ -85,7 +89,7 @@
                                              LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                              ShowIcon="Left"
                                              Size="Small" />
-                </panels:FlexPanel>
+                </StackPanel>
             </Border>
 
             <TreeDataGrid x:Name="DownloadsTree" DockPanel.Dock="Bottom" />
@@ -156,30 +160,37 @@
                                     <!-- revision -->
                                     <StackPanel x:Name="RevisionsPanel">
                                         <TextBlock x:Name="Revision" />
-                                        <icons:UnifiedIcon IsVisible="False" x:Name="ArrowRight" />
-                                        <TextBlock IsVisible="False" x:Name="NewestRevision" />
+                                        <icons:UnifiedIcon x:Name="ArrowRight"
+                                                           Value="{x:Static icons:IconValues.ArrowForward}"
+                                                           IsVisible="True" />
+                                        <TextBlock x:Name="NewestRevision" IsVisible="True" />
                                     </StackPanel>
 
                                 </StackPanel>
 
                                 <StackPanel x:Name="StatsPanel">
-                                    <StackPanel x:Name="ModsPanel">
+                                    <StackPanel x:Name="ModsPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsMods_ToolTip}">
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
                                         <TextBlock x:Name="NumDownloads" />
                                     </StackPanel>
-                                    <StackPanel x:Name="EndorsementsPanel">
+                                    <StackPanel x:Name="EndorsementsPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsEndorsements_ToolTip}">
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUpOutline}" />
                                         <TextBlock x:Name="Endorsements" />
                                     </StackPanel>
-                                    <StackPanel x:Name="DownloadsPanel">
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                    <StackPanel x:Name="DownloadsPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsDownloads_ToolTip}">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.TrayArrowDown}" />
                                         <TextBlock x:Name="TotalDownloads" />
                                     </StackPanel>
-                                    <StackPanel x:Name="TotalSizePanel">
+                                    <StackPanel x:Name="TotalSizePanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsSize_ToolTip}">
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
                                         <TextBlock x:Name="TotalSize" />
                                     </StackPanel>
-                                    <StackPanel x:Name="OverallRatingPanel">
+                                    <StackPanel x:Name="OverallRatingPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsRating_ToolTip}">
                                         <icons:UnifiedIcon x:Name="OverallRatingIcon"
                                                            Value="{x:Static icons:IconValues.CheckCircle}" />
                                         <TextBlock x:Name="OverallRating" />

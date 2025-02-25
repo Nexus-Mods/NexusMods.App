@@ -5,6 +5,7 @@ using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Resources;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
@@ -114,7 +115,11 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ArrowRight.IsVisible = isUpdateAvailable;
                     NewestRevision.IsVisible = isUpdateAvailable;
             
-                    if (optional.HasValue) NewestRevision.Text = $"Revision {optional.Value}";
+                    if (optional.HasValue)
+                    {
+                        ButtonUpdateCollection.Text = string.Format(Language.CollectionDownloadViewModel_UpdateCollection, optional.Value);
+                        NewestRevision.Text = $"Revision {optional.Value}";
+                    }
                 }).DisposeWith(d);
             
             this.WhenAnyValue(view => view.TabControl.SelectedItem)
@@ -135,7 +140,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             
                     ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
                 }).DisposeWith(d);
-
+            
             this.WhenAnyValue(
                 view => view.ViewModel!.CountDownloadedRequiredItems,
                 view => view.ViewModel!.CountDownloadedOptionalItems,
