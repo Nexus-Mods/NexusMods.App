@@ -1,4 +1,5 @@
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Resources;
 using R3;
 using ReactiveUI;
 
@@ -23,23 +24,24 @@ public partial class ManualDownloadRequiredOverlayView : ReactiveUserControl<IMa
 
             this.BindCommand(ViewModel, vm => vm.CommandTryAgain, view => view.ButtonTryAgain)
                 .AddTo(disposables);
-
-            this.OneWayBind(ViewModel, vm => vm.DownloadName, view => view.DownloadName.Text)
+            
+            this.BindCommand(ViewModel, vm => vm.CommandReportBug, view => view.ButtonReportBug)
+                .AddTo(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.DownloadName,
+                view => view.ViewModel!.ExpectedSize)
+                .SubscribeWithErrorLogging(tuple =>
+                {
+                    var (downloadName, expectedSize) = tuple;
+                    var text = string.Format(Language.ManualDownloadRequiredOverlayView_InfoStep2, downloadName, expectedSize);
+                    InfoLocateModTextBlock.Text = text;
+                    
+                }).AddTo(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.Instructions, view => view.InstructionsTextBlock.Text)
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.ExpectedHash, view => view.ExpectedHash.Text)
-                .AddTo(disposables);
-
-            this.OneWayBind(ViewModel, vm => vm.ExpectedSize, view => view.ExpectedSize.Text)
-                .AddTo(disposables);
-
-            this.OneWayBind(ViewModel, vm => vm.Instructions, view => view.Instructions.Text)
-                .AddTo(disposables);
-
-            this.OneWayBind(ViewModel, vm => vm.HasInstructions, view => view.Instructions.IsVisible)
-                .AddTo(disposables);
-
-            this.OneWayBind(ViewModel, vm => vm.ReceivedHash, view => view.ReceivedHash.Text)
+            this.OneWayBind(ViewModel, vm => vm.HasInstructions, view => view.InstructionsStack.IsVisible)
                 .AddTo(disposables);
 
             this.WhenAnyValue(
@@ -52,7 +54,7 @@ public partial class ManualDownloadRequiredOverlayView : ReactiveUserControl<IMa
                     var showInfo = !isCheckingFile && !isIncorrectFile;
                     var showChecking = isCheckingFile && !isIncorrectFile;
                     var showError = !isCheckingFile && isIncorrectFile;
-
+                    
                     InfoPanel.IsVisible = showInfo;
                     CheckingPanel.IsVisible = showChecking;
                     ErrorPanel.IsVisible = showError;

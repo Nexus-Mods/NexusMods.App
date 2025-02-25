@@ -125,7 +125,7 @@ public static class CollectionComponents
         protected override string GetButtonText(bool isDownloading, bool isDownloaded)
         {
             if (isDownloading || isDownloaded) return base.GetButtonText(isDownloading, isDownloaded);
-            return "Check external asset";
+            return "Third-party download";
         }
     }
 

@@ -4,7 +4,8 @@
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
-                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <!-- Actions -->
     <DataTemplate x:Key="{x:Static local:CollectionColumns+Actions.ColumnTemplateResourceKey}">
@@ -54,7 +55,8 @@
                                                          Fill="Strong"
                                                          HorizontalAlignment="Center"
                                                          IsVisible="{CompiledBinding !IsDownloading.Value}"
-                                                         Text="{CompiledBinding ButtonText.Value}"/>
+                                                         Text="{CompiledBinding ButtonText.Value}"
+                                                         ToolTip.Tip="{x:Static resources:Language.CollectionComponents_ExternalDownloadAction_ToolTip}"/>
                                 <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
                             </Panel>
                         </DataTemplate>
@@ -71,8 +73,8 @@
                                                          Size="Small"
                                                          Type="Secondary"
                                                          Fill="Strong"
-                                                         LeftIcon="{x:Static icons:IconValues.Save}"
-                                                         Text="{CompiledBinding ButtonText.Value}"/>
+                                                         Text="{CompiledBinding ButtonText.Value}"
+                                                         ToolTip.Tip="{x:Static resources:Language.CollectionComponents_ManualDownloadAction_ToolTip}"/>
                             </StackPanel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
