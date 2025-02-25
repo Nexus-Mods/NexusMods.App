@@ -2,10 +2,10 @@
 This build is the first release candidate for the Stardew Valley Preview! It features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
 
 ## Better game versioning
-We've make some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed in the backend of the 
+We've make some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed and the app will match the files on your PC to those included with these releases. 
 
 ## External Changes
-fdsfds
+
 
 ## More Features
 - Collections from Nexus Mods are now installed in a read-only state to ensure the collection as the curator intended it. Cloning and editing collections will be added in future.  
