@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.FileStore.Nx\NexusMods.Abstractions.FileStore.Nx.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Resources\NexusMods.Abstractions.Resources.csproj" />
+        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
+        <ProjectReference Include="..\..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Avowed\icon.png" />
+        <EmbeddedResource Include="Resources\Stalker2\icon.png" />
+        <EmbeddedResource Include="Resources\HogwartsLegacy\icon.png" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="CUE4Parse" />
+        <PackageReference Include="Polly.Core" />
+    </ItemGroup>
+</Project>

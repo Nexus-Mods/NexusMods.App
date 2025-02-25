@@ -4,6 +4,7 @@
     <PackageVersion Include="Avalonia.Labs.Panels" Version="11.2.0" />
     <PackageVersion Include="Avalonia.Skia" Version="11.2.3" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.1.0" />
+    <PackageVersion Include="CUE4Parse" Version="1.2.1" />
     <PackageVersion Include="Jitbit.FastCache" Version="1.1.0" />
     <PackageVersion Include="K4os.Compression.LZ4" Version="1.3.8" />
     <PackageVersion Include="Bannerlord.ModuleManager" Version="6.0.246" />
