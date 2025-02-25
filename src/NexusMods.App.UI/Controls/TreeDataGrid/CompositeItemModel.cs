@@ -57,7 +57,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
             {
                 if (change.Value is not IReactiveR3Object reactiveR3Object) return;
                 reactiveR3Object.Dispose();
-            });
+            }).AddTo(disposables);
         });
     }
 
