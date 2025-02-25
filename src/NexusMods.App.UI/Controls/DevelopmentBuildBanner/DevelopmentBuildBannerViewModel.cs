@@ -7,8 +7,7 @@ namespace NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 
 public class DevelopmentBuildBannerViewModel : AViewModel<IDevelopmentBuildBannerViewModel>, IDevelopmentBuildBannerViewModel
 {
-    // TODO: update this to a hotjar/google form URL when we have it
-    private const string GiveFeedbackUrl = "https://github.com/Nexus-Mods/NexusMods.App/issues/new/choose";
+    private const string GiveFeedbackUrl = "https://forms.gle/krXTRJLhiJM167oG9";
     public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
     public DevelopmentBuildBannerViewModel(IOSInterop osInterop)
     {
