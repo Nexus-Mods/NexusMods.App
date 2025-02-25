@@ -107,9 +107,14 @@ public class StandardButton : Button
         Strong,
 
         /// <summary>
-        /// Weak fill.
+        /// Weak fill (translucent).
         /// </summary>
         Weak,
+        
+        /// <summary>
+        /// Weak solid fill.
+        /// </summary>
+        WeakAlt,
     }
     
     #endregion
