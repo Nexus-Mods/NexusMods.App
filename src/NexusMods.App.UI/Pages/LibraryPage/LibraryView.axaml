@@ -118,10 +118,6 @@
                         <Separator />
 
                         <!-- 'Updates' button. -->
-                        <!-- This button's text is updated at runtime to set number of mods -->
-                        <SplitButton x:Name="UpdateAll" IsVisible="False">
-                            <TextBlock Text="{x:Static resources:Language.FileOriginPage_UpdateAll}"/>
-                        </SplitButton>
                         <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small"
                                                  Type="Tertiary" Fill="WeakAlt"
                                                  LeftIcon="{x:Static icons:IconValues.Refresh}" 
