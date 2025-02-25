@@ -131,6 +131,7 @@
                     <icons:UnifiedIcon Classes="AccountCog" />
                     <icons:UnifiedIcon Classes="Broadcast" />
                     <icons:UnifiedIcon Classes="FolderEyeOutline" />
+                    <icons:UnifiedIcon Classes="ThumbUpOutline" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -696,5 +697,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.FolderEyeOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEyeOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.ThumbUpOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ThumbUpOutline}" />
     </Style>
 </Styles>

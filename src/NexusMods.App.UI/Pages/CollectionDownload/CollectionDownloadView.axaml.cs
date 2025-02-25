@@ -79,9 +79,6 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.AuthorAvatar, view => view.AuthorAvatar.Source)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.Summary, view => view.Summary.Text)
-                .DisposeWith(d);
-
             this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.NumDownloads.Text)
                 .DisposeWith(d);
 
