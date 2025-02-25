@@ -15,8 +15,9 @@
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Resources\Avowed\icon.png" />
-        <EmbeddedResource Include="Resources\Stalker2\icon.png" />
         <EmbeddedResource Include="Resources\HogwartsLegacy\icon.png" />
+        <EmbeddedResource Include="Resources\PacificDrive\icon.png" />
+        <EmbeddedResource Include="Resources\Stalker2\icon.png" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CUE4Parse" />

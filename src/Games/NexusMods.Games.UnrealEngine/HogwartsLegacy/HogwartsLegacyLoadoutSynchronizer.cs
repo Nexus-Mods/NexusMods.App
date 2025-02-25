@@ -25,6 +25,7 @@ public class HogwartsLegacyLoadoutSynchronizer : ALoadoutSynchronizer
 
     public override bool IsIgnoredPath(GamePath path)
     {
+        // TODO: Implement path ignore logic once the UESynchronizer is ready.
         return false;
         //return _ueSynchronizer.IsIgnored(path, HogwartsLegacyGame.GameIdStatic);
     }

@@ -8,11 +8,22 @@ using NexusMods.Games.UnrealEngine.Installers;
 using NexusMods.Games.UnrealEngine.Models;
 using NexusMods.Games.UnrealEngine.Stalker2;
 using NexusMods.Games.UnrealEngine.HogwartsLegacy;
+using NexusMods.Games.UnrealEngine.PacificDrive;
 
 namespace NexusMods.Games.UnrealEngine;
 
 public static class Services
 {
+    private static IServiceCollection AddAvowed(this IServiceCollection services)
+    {
+        services
+            .AddGame<AvowedGame>()
+            .AddSingleton<ITool, RunGameTool<AvowedGame>>()
+            .AddSettings<AvowedSettings>();
+
+        return services;
+    }
+
     private static IServiceCollection AddHogwartsLegacy(this IServiceCollection services)
     {
         services
@@ -22,13 +33,14 @@ public static class Services
     
         return services;
     }
-    private static IServiceCollection AddAvowed(this IServiceCollection services)
+    
+    private static IServiceCollection AddPacificDrive(this IServiceCollection services)
     {
         services
-            .AddGame<AvowedGame>()
-            .AddSingleton<ITool, RunGameTool<AvowedGame>>()
-            .AddSettings<AvowedSettings>();
-
+            .AddGame<PacificDriveGame>()
+            .AddSingleton<ITool, RunGameTool<PacificDriveGame>>()
+            .AddSettings<PacificDriveSettings>();
+    
         return services;
     }
     
@@ -68,6 +80,7 @@ public static class Services
             // Games
             .AddAvowed()
             .AddHogwartsLegacy()
+            .AddPacificDrive()
             .AddStalker2()
             
             // Pipelines

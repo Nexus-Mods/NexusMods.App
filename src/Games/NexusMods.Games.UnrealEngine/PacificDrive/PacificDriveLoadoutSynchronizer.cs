@@ -3,17 +3,18 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
 
-namespace NexusMods.Games.UnrealEngine.Stalker2;
+namespace NexusMods.Games.UnrealEngine.PacificDrive;
 
-public class Stalker2LoadoutSynchronizer : ALoadoutSynchronizer
+public class PacificDriveLoadoutSynchronizer : ALoadoutSynchronizer
 {
-    private Stalker2Settings _settings;
+    private PacificDriveSettings _settings;
 
-    protected internal Stalker2LoadoutSynchronizer(IServiceProvider provider) : base(provider)
+    protected internal PacificDriveLoadoutSynchronizer(IServiceProvider provider) : base(provider)
     {
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
-        _settings = settingsManager.Get<Stalker2Settings>();
-        settingsManager.GetChanges<Stalker2Settings>().Subscribe(value => _settings = value);
+
+        _settings = settingsManager.Get<PacificDriveSettings>();
+        settingsManager.GetChanges<PacificDriveSettings>().Subscribe(value => _settings = value);
     }
 
     public override bool IsIgnoredBackupPath(GamePath path)
@@ -25,6 +26,5 @@ public class Stalker2LoadoutSynchronizer : ALoadoutSynchronizer
     {
         // TODO: Implement path ignore logic once the UESynchronizer is ready.
         return false;
-        //return _ueSynchronizer.IsIgnored(path, Stalker2Game.GameIdStatic);
     }
 }
