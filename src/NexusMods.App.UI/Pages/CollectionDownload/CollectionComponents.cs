@@ -136,13 +136,13 @@ public static class CollectionComponents
         private readonly IDisposable _activationDisposable;
         public ManualDownloadAction(CollectionDownloadExternal.ReadOnly downloadEntity, Observable<bool> isDownloadedObservable)
         {
-            CommandOpenModal = isDownloadedObservable.Select(static isDownloaded => !isDownloaded).ToReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
+            CommandOpenModal = isDownloadedObservable.Select(static isDownloaded => !isDownloaded).ObserveOnUIThreadDispatcher().ToReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
 
             _activationDisposable = this.WhenActivated((downloadEntity, isDownloadedObservable), static (self, state, disposables) =>
             {
                 var (_, isDownloadedObservable) = state;
 
-                isDownloadedObservable.Subscribe(self, static (isDownloaded, self) =>
+                isDownloadedObservable.ObserveOnUIThreadDispatcher().Subscribe(self, static (isDownloaded, self) =>
                 {
                     self._buttonText.Value = GetButtonText(isDownloaded);
                 }).AddTo(disposables);
