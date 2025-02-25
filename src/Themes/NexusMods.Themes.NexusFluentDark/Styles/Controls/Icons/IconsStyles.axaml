@@ -132,6 +132,8 @@
                     <icons:UnifiedIcon Classes="Broadcast" />
                     <icons:UnifiedIcon Classes="FolderEyeOutline" />
                     <icons:UnifiedIcon Classes="ThumbUpOutline" />
+                    <icons:UnifiedIcon Classes="Update" />
+                    <icons:UnifiedIcon Classes="TrayArrowDown" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -700,5 +702,11 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.ThumbUpOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ThumbUpOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Update">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Update}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.TrayArrowDown">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
     </Style>
 </Styles>
