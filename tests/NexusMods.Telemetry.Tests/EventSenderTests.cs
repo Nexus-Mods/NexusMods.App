@@ -46,7 +46,7 @@ public class EventSenderTests
                 ExpectJson($$"""{ "requests": ["?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add+Game&e_n=Mount+%26+Blade&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Mount+%26+Blade&h=0&m=0&s=1"] }""", res);
             });
 
-        var sender = new EventSender(loginManager, new HttpClient(messageHandler));
+        var sender = new EventSender(null, loginManager, new HttpClient(messageHandler));
 
         var timeProvider = new FakeTimeProvider();
         sender.AddEvent(definition: Events.Game.AddGame, metadata: new EventMetadata(name: "Mount & Blade", timeProvider: timeProvider));

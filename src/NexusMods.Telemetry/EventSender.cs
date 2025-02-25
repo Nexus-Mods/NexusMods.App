@@ -32,10 +32,11 @@ internal class EventSender : IEventSender
     private readonly ILoginManager _loginManager;
     private readonly HttpClient _httpClient;
     private readonly ArrayBufferWriter<byte> _writer;
+    private readonly ILogger<EventSender>? _logger;
 
     private static readonly byte[] EncodedUserAgent = CreateUserAgent();
 
-    public EventSender(ILogger<EventSender> logger, ILoginManager loginManager, HttpClient httpClient)
+    public EventSender(ILogger<EventSender>? logger, ILoginManager loginManager, HttpClient httpClient)
     {
         _logger = logger;
         _loginManager = loginManager;
@@ -48,7 +49,6 @@ internal class EventSender : IEventSender
 
     private ulong _lastGeneratedId;
     private ulong _highestSeenId;
-    private readonly ILogger<EventSender> _logger;
 
     /// <summary>
     /// Inserts the event into the queue.
@@ -217,7 +217,7 @@ internal class EventSender : IEventSender
         catch (Exception ex)
         {
             // NOTE (halgari): Yes, this will add more bloat to the log, but only in testing where DEBUG logging is enabled.
-            _logger.LogDebug(ex, "Error occured while sending events");
+            _logger?.LogDebug(ex, "Error occured while sending events");
         }
     }
 
