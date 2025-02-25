@@ -29,10 +29,9 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
             InstallationId = GameInstallation.GameMetadataId,
             LoadoutKind = LoadoutKind.Default,
             Revision = 0,
-            GameVersion = "Unknown",
+            GameVersion = VanityVersion.From("Unknown"),
         };
-        
-        
+
         var group = new LoadoutItemGroup.New(tx, out var groupId)
         {
             IsGroup = true,

@@ -55,12 +55,13 @@ internal class _0004_RemoveGameFiles : ITransactionalMigration
                 .OfTypeLoadoutFile()
                 .Select(file => ((GamePath)file.AsLoadoutItemWithTargetPath().TargetPath, file.Hash));
 
-            var suggestedVersion = _fileHashesService.SuggestGameVersion(loadout.InstallationInstance, files);
-            if (!_fileHashesService.TryGetLocatorIdsForVersion(loadout.InstallationInstance, suggestedVersion, out var locatorIds))
-                throw new Exception("Could not find locatorIds for version, this should never happen");
-            
-            tx.Add(loadout, Loadout.GameVersion, suggestedVersion);
-            foreach (var locatorId in locatorIds) 
+            var suggestVersionDefinitions = _fileHashesService.SuggestVersionData(loadout.InstallationInstance, files);
+            if (!suggestVersionDefinitions.HasValue) throw new Exception("Could not find locatorIds for version, this should never happen");
+
+            var (locatorIds, vanityVersion) = suggestVersionDefinitions.Value;
+
+            tx.Add(loadout, Loadout.GameVersion, vanityVersion);
+            foreach (var locatorId in locatorIds)
                 tx.Add(loadout, Loadout.LocatorIds, locatorId);
 
             foreach (var group in gameFilesGroups)
