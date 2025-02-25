@@ -168,11 +168,22 @@ public class ModUpdateService : IModUpdateService, IDisposable
             {
                 var newerFiles = RunUpdateCheck
                     .GetNewerFilesForExistingFile(kv.Value)
-                    // `!filesInLibrary.ContainsKey(newFile.Id)`: This filters out the case where we already have the latest file version on disk. 
-                    .Where(newFile => newFile.IsValid() && !filesInLibrary.ContainsKey(newFile.Id))
+                    .Where(newFile => newFile.IsValid())
                     .ToArray();
 
-                return new ModUpdateOnPage(kv.Value, newerFiles);
+                var hasUpdate = newerFiles.Length switch
+                {
+                    // `!filesInLibrary.ContainsKey(newFile.Id)`:
+                    // If the newest item for this mod is not in the library, we have an update.
+                    > 0 => !filesInLibrary.ContainsKey(newerFiles[0].Id),
+                    <= 0 => false,
+                };
+
+                return hasUpdate 
+                    ? new ModUpdateOnPage(kv.Value, newerFiles)
+                    // If there is no update, then return default struct, which will have
+                    // a 0 number of new files, and thus not be a valid update mapping.
+                    : new ModUpdateOnPage(default(NexusModsFileMetadata.ReadOnly),[]);
             })
             .Where(static kv => kv.NewerFiles.Length > 0)
             .ToDictionary(page => page.File.Id);
@@ -302,7 +313,7 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// Given that each array entry represents a single mod file, this is just the count of the internal array.
     /// </summary>
     public int NumberOfModFilesToUpdate => FileMappings.Length;
-    
+
     /// <summary>
     /// Returns the newest file across mods on this mod page.
     /// </summary>
@@ -326,7 +337,7 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
         
         return newestFile;
     }
-    
+
     /// <summary>
     /// Returns the newest file from every mod on this page.
     /// See Remarks before use.
@@ -336,7 +347,7 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     ///     outdated versions of the same mod. 
     /// </remarks>
     public IEnumerable<NexusModsFileMetadata.ReadOnly> NewestFileForEachMod() => FileMappings.Select(x => x.NewestFile);
-
+    
     /// <summary>
     /// Returns the newest file from every mod on this page.
     /// Only distinct (unique) files are returned.
