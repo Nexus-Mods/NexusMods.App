@@ -300,7 +300,7 @@ public class StandardButton : Button
             _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
         
         if (_rightIcon != null)
-            _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both or ShowIconOptions.IconOnly;
+            _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
     
     /// <summary>
@@ -324,7 +324,7 @@ public class StandardButton : Button
         if (_rightIcon == null) return;
         
         _rightIcon.Value = newIcon;
-        _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both or ShowIconOptions.IconOnly;
+        _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
     
     /// <summary>
