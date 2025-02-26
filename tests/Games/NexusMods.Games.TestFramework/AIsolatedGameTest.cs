@@ -371,33 +371,17 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         return result.Remap(collection);
     }
     
-    protected async ValueTask EnableMod(EntityId entityId)
+    protected async ValueTask EnableItem(EntityId entityId)
     {
         using var tx = Connection.BeginTransaction();
         tx.Retract(entityId, LoadoutItem.Disabled, Null.Instance);
         await tx.Commit();
     }
 
-    protected async ValueTask DisableMod(EntityId entityId)
+    protected async ValueTask DisableItem(EntityId entityId)
     {
         using var tx = Connection.BeginTransaction();
         tx.Add(entityId, LoadoutItem.Disabled, Null.Instance);
-        await tx.Commit();
-    }
-    
-    protected async ValueTask EnableModParent(EntityId entityId)
-    {
-        using var tx = Connection.BeginTransaction();
-        var parentId = LoadoutItem.Load(Connection.Db, entityId).ParentId;
-        tx.Retract(parentId, LoadoutItem.Disabled, Null.Instance);
-        await tx.Commit();
-    }
-    
-    protected async ValueTask DisableModParent(EntityId entityId)
-    {
-        using var tx = Connection.BeginTransaction();
-        var parentId = LoadoutItem.Load(Connection.Db, entityId).ParentId;
-        tx.Retract(parentId, LoadoutItem.Disabled, Null.Instance);
         await tx.Commit();
     }
 
