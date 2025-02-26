@@ -1,0 +1,149 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IManualDownloadRequiredOverlayViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
+    xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignHeight="800"
+    x:Class="NexusMods.App.UI.Pages.CollectionDownload.ManualDownloadRequiredOverlayView">
+
+    <Design.DataContext>
+        <local:ManualDownloadRequiredOverlayDesignViewModel />
+    </Design.DataContext>
+
+    <reactive:ReactiveUserControl.Styles>
+
+        <Style Selector="local|ManualDownloadRequiredOverlayView">
+            <Style Selector="^ TextBlock">
+                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+
+            <Style Selector="^ StackPanel#InfoPanel">
+                <Style Selector="^ > TextBlock#InfoTitleTextBlock">
+                    <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+                </Style>
+                <Style Selector="^ StackPanel#InstructionsStack > Border#InstructionsBorder">
+                    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                    <Setter Property="CornerRadius" Value="8" />
+                    <Setter Property="Padding" Value="12,12,8,12" />
+
+                    <Style Selector="^ TextBlock#InstructionsTextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                    </Style>
+                </Style>
+            </Style>
+
+            <Style Selector="^ StackPanel#CheckingPanel">
+                <Style Selector="^ > TextBlock#CheckingTitleTextBlock">
+                    <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^ StackPanel#ErrorPanel">
+                <Style Selector="^ > TextBlock#ErrorTitleTextBlock">
+                    <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+                </Style>
+            </Style>
+        </Style>
+
+    </reactive:ReactiveUserControl.Styles>
+
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
+        <base:MessageBoxBackground.TopContent>
+            <Border Padding="24">
+                <Panel>
+                    <StackPanel x:Name="InfoPanel" Spacing="16">
+                        <TextBlock x:Name="InfoTitleTextBlock"
+                                   Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_InfoTitle}" />
+                        <TextBlock
+                            Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_InfoDescription}" />
+
+                        <Grid ColumnDefinitions="24, *" RowDefinitions="Auto, 16, Auto, 16, Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="1." />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_InfoStep1}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="2." />
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="InfoLocateModTextBlock" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="3." />
+                            <TextBlock Grid.Row="4" Grid.Column="1"
+                                       Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_InfoStep3}" />
+                        </Grid>
+
+                        <StackPanel x:Name="InstructionsStack" Spacing="8">
+                            <TextBlock
+                                Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_InfoInstructionsDescription}" />
+                            <Border x:Name="InstructionsBorder">
+                                <ScrollViewer MaxHeight="160">
+                                    <TextBlock x:Name="InstructionsTextBlock" />
+                                </ScrollViewer>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel x:Name="CheckingPanel" Spacing="16">
+                        <TextBlock x:Name="CheckingTitleTextBlock"
+                                   Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_CheckingTitle}" />
+                        <TextBlock Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_CheckingText}" />
+                        <spinner:Spinner x:Name="Spinner" Width="48" Height="48" Margin="0,12" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="ErrorPanel" Spacing="16">
+                        <TextBlock x:Name="ErrorTitleTextBlock"
+                                   Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_ErrorTitle}" />
+                        <TextBlock Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_ErrorStep1}" />
+                        <TextBlock Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_ErrorStep2}" />
+                        <TextBlock Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_ErrorStep3}" />
+                        <controls:StandardButton
+                            x:Name="ButtonReportBug"
+                            Size="Small"
+                            Type="Tertiary"
+                            Fill="Weak"
+                            Text="{x:Static resources:Language.ManualDownloadRequiredOverlayView_ErrorReportBugText}" />
+                    </StackPanel>
+                </Panel>
+            </Border>
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+            <StackPanel Grid.Row="1" Orientation="Horizontal"
+                        Margin="24"
+                        HorizontalAlignment="Right"
+                        Spacing="10">
+
+                <controls:StandardButton DockPanel.Dock="Right"
+                                         x:Name="ButtonCancel"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         Text="Cancel" />
+                <controls:StandardButton DockPanel.Dock="Right"
+                                         x:Name="ButtonOpenBrowser"
+                                         Type="Secondary"
+                                         Fill="Strong"
+                                         Text="Open browser"
+                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                         ShowIcon="Left" />
+                <controls:StandardButton DockPanel.Dock="Right"
+                                         x:Name="ButtonAddFile"
+                                         Type="Secondary"
+                                         Fill="Strong"
+                                         Text="Add file"
+                                         LeftIcon="{x:Static icons:IconValues.FolderUploadOutline}"
+                                         ShowIcon="Left" />
+                <controls:StandardButton DockPanel.Dock="Right"
+                                         x:Name="ButtonTryAgain"
+                                         Type="Primary"
+                                         Fill="Strong"
+                                         Text="Try again" />
+            </StackPanel>
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+
+</reactive:ReactiveUserControl>

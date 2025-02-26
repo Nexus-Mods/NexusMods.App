@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Windows;
@@ -19,6 +20,18 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
         this.WhenActivated(disposables =>
         {
+            var storageProvider = GetTopLevel(this)?.StorageProvider;
+            if (storageProvider is not null)
+            {
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(vm =>
+                    {
+                        using var _ = vm.RegisterStorageProvider.Execute(storageProvider).Subscribe();
+                    })
+                    .DisposeWith(disposables);
+            }
+
             this.OneWayBind(ViewModel, vm => vm.TopBar, v => v.TopBar.ViewModel)
                 .DisposeWith(disposables);
 

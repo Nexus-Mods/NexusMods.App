@@ -231,6 +231,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible..
+        /// </summary>
+        public static string CollectionComponents_ExternalDownloadAction_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatic download not available. Click to open the third-party site to download and add the mod manually..
+        /// </summary>
+        public static string CollectionComponents_ManualDownloadAction_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ManualDownloadAction_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready to play - All required mods installed.
         /// </summary>
         public static string CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed {
@@ -1732,6 +1750,123 @@ namespace NexusMods.App.UI.Resources {
         public static string LoginMessageView_Title {
             get {
                 return ResourceManager.GetString("LoginMessageView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait while we verify the added file..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_CheckingText {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_CheckingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking Added File.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_CheckingTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_CheckingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report bug.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorReportBugText {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorReportBugText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please check you added the correct file and version..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep1 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For guidance, check the &apos;Additional Instructions&apos; tab which may include further details on the required file and version..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep2 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you can’t find the correct file, consider reporting the issue to the collection curator as a potential bug..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep3 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect Mod File Added.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection requires specific mod file(s) from third-party websites to be complete. Follow these steps to proceed with the manual download:.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoDescription {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection curator has provided the following additional instructions:.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoInstructionsDescription {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoInstructionsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click the &apos;Open Browser&apos; button below to navigate to the required website..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep1 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locate and download the mod file &apos;{0}&apos; (File size: {1}).
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep2 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return to this modal and add the downloaded file(s) using the &apos;Add File&apos; button..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep3 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manual Download Required.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoTitle", resourceCulture);
             }
         }
         

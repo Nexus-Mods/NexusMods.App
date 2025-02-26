@@ -246,6 +246,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/undo/
     public static readonly IconValue Undo = new ProjektankerIcon("mdi-undo");
+    
+    // https://pictogrammers.com/library/mdi/icon/tray-arrow-down/
+    public static readonly IconValue TrayArrowDown = new ProjektankerIcon("mdi-tray-arrow-down");
 
 #endregion
 
@@ -299,6 +302,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/file-document-outline/
     public static readonly IconValue FileDocumentOutline = new ProjektankerIcon("mdi-file-document-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/folder-upload-outline/
+    public static readonly IconValue FolderUploadOutline = new ProjektankerIcon("mdi-folder-upload-outline");
 
 #endregion
 

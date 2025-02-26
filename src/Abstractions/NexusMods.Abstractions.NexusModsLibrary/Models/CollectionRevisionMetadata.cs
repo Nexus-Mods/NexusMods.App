@@ -1,4 +1,6 @@
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -51,4 +53,21 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// The total number of ratings this revision has.
     /// </summary>
     public static readonly UInt64Attribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
+    
+    public partial struct ReadOnly
+    {
+        /// <summary>
+        /// The URL to the Nexus Mods page for this collection revision.
+        /// </summary>
+        /// <param name="gameDomain">The game domain for the collection.</param>
+        /// <returns>The URI to the collection revision page.</returns>
+        public Uri GetUri(GameDomain gameDomain) => NexusModsUrlBuilder.CreateCollectionRevisionUri(gameDomain, Collection.Slug, RevisionNumber);
+
+        /// <summary>
+        /// The URL to the Nexus Mods bugs page for this collection revision.
+        /// </summary>
+        /// <param name="gameDomain">The game domain for the collection.</param>
+        /// <returns>The URI to the collection revision bugs page.</returns>
+        public Uri GetBugsUri(GameDomain gameDomain) => NexusModsUrlBuilder.CreateCollectionRevisionBugsUri(gameDomain, Collection.Slug, RevisionNumber);
+    }
 }
