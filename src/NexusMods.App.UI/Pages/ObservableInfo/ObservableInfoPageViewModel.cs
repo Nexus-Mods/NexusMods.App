@@ -1,4 +1,5 @@
 using DynamicData.Kernel;
+using LiveChartsCore.SkiaSharpView;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ObservableCollections;
@@ -9,6 +10,8 @@ namespace NexusMods.App.UI.Pages.ObservableInfo;
 
 public interface IObservableInfoPageViewModel : IPageViewModelInterface
 {
+    IReadOnlyList<PieSeries<int>> Series { get; }
+
     IReadOnlyList<TrackingState> TrackingStates { get; }
 
     BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; }
@@ -17,14 +20,23 @@ public interface IObservableInfoPageViewModel : IPageViewModelInterface
 public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageViewModel>, IObservableInfoPageViewModel
 {
     private readonly HashSet<TrackingState> _trackingStatesBuffer = [];
-    private readonly ObservableList<TrackingState> _trackingStates = [];
 
+    private readonly ObservableList<TrackingState> _trackingStates = [];
     public IReadOnlyList<TrackingState> TrackingStates { get; }
+
+    private readonly ObservableDictionary<string, int> _topTypes = [];
+    public IReadOnlyList<PieSeries<int>> Series { get; }
+
     public BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; } = new(value: Optional<TrackingState>.None);
 
     public ObservableInfoPageViewModel(IWindowManager windowManager) : base(windowManager)
     {
         TrackingStates = _trackingStates.ToNotifyCollectionChangedSlim();
+        Series = _topTypes.ToNotifyCollectionChanged(static kv => new PieSeries<int>
+        {
+            Name = kv.Key,
+            Values = [kv.Value],
+        });
 
         this.WhenActivated(disposables =>
         {
@@ -39,6 +51,40 @@ public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageVie
                     {
                         self._trackingStatesBuffer.Add(trackingState);
                     });
+
+                    var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+                    foreach (var state in self._trackingStatesBuffer)
+                    {
+                        var count = counts.GetValueOrDefault(state.FormattedType, 0);
+                        counts[state.FormattedType] = count + 1;
+                    }
+
+                    var top = counts
+                        .OrderByDescending(static kv => kv.Value)
+                        .Take(count: 10)
+                        .Where(static kv => kv.Value > 1)
+                        .ToDictionary();
+
+                    var keysToRemove = self._topTypes
+                        .Select(static kv => kv.Key)
+                        .Except(top.Keys, StringComparer.OrdinalIgnoreCase)
+                        .ToArray();
+
+                    foreach (var key in keysToRemove)
+                    {
+                        self._topTypes.Remove(key);
+                    }
+
+                    foreach (var kv in top)
+                    {
+                        if (self._topTypes.TryGetValue(kv.Key, out var existingValue))
+                        {
+                            if (existingValue == kv.Value) continue;
+                        }
+
+                        self._topTypes[kv.Key] = kv.Value;
+                    }
                 })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (_, self) =>

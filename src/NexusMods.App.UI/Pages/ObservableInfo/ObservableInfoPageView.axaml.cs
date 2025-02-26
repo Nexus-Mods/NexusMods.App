@@ -21,6 +21,9 @@ public partial class ObservableInfoPageView : ReactiveUserControl<IObservableInf
             this.OneWayBind(ViewModel, vm => vm.TrackingStates.Count, view => view.Count.Text, static i => $"Observable Count: {i}")
                 .DisposeWith(disposables);
 
+            this.OneWayBind(ViewModel, vm => vm.Series, view => view.PieChart.Series)
+                .DisposeWith(disposables);
+
             this.Bind(
                 ViewModel,
                 vm => vm.SelectedItem.Value,
