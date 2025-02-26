@@ -29,16 +29,23 @@ public interface ICompositeColumnDefinition<TSelf>
             cellTemplateResourceKey: TSelf.GetColumnTemplateResourceKey(),
             options: new TemplateColumnOptions<CompositeItemModel<TKey>>
             {
-                CanUserSortColumn = true,
                 CanUserResizeColumn = true,
-                CompareAscending = static (a, b) => TSelf.Compare(Optional<CompositeItemModel<TKey>>.Create(a), b),
-                CompareDescending = static (a, b) => TSelf.Compare(Optional<CompositeItemModel<TKey>>.Create(b), a),
+
+                // TODO: https://github.com/Nexus-Mods/NexusMods.App/issues/2390
+                CanUserSortColumn = false,
+                CompareAscending = null,
+                CompareDescending = null,
+                // CompareAscending = static (a, b) => TSelf.Compare(Optional<CompositeItemModel<TKey>>.Create(a), b),
+                // CompareDescending = static (a, b) => TSelf.Compare(Optional<CompositeItemModel<TKey>>.Create(b), a),
             },
             width: width.ValueOrDefault()
         )
         {
             Id = TSelf.GetColumnId(),
-            SortDirection = sortDirection.HasValue ? sortDirection.Value : null,
+
+            // TODO: https://github.com/Nexus-Mods/NexusMods.App/issues/2390
+            SortDirection = null,
+            // SortDirection = sortDirection.HasValue ? sortDirection.Value : null,
         };
     }
 
