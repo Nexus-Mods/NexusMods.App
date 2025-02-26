@@ -39,22 +39,22 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
         _activationDisposable = this.WhenActivated(static (self, disposables) =>
         {
-            self.ModelActivationSubject
-                .Subscribe(self, static (tuple, self) =>
-                {
-                    var (model, isActivating) = tuple;
-
-                    if (isActivating && !model.IsActivated)
-                    {
-                        self.BeforeModelActivationHook(model);
-                        model.Activate();
-                    } else if (!isActivating && model.IsActivated)
-                    {
-                        self.BeforeModelDeactivationHook(model);
-                        model.Deactivate();
-                    }
-                })
-                .AddTo(disposables);
+            // self.ModelActivationSubject
+            //     .Subscribe(self, static (tuple, self) =>
+            //     {
+            //         var (model, isActivating) = tuple;
+            //
+            //         if (isActivating && !model.IsActivated)
+            //         {
+            //             self.BeforeModelActivationHook(model);
+            //             model.Activate();
+            //         } else if (!isActivating && model.IsActivated)
+            //         {
+            //             self.BeforeModelDeactivationHook(model);
+            //             model.Deactivate();
+            //         }
+            //     })
+            //     .AddTo(disposables);
 
             self.Roots
                 .ObserveCountChanged(notifyCurrentCount: true)
@@ -101,7 +101,18 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                     return self
                         .GetRootsObservable(viewHierarchical)
                         .OnUI()
-                        .Do(changeSet => self.Roots.ApplyChanges(changeSet))
+                        .Do(changeSet =>
+                        {
+                            foreach (var change in changeSet)
+                            {
+                                if (change.Reason == ChangeReason.Add)
+                                    change.Current.Activate();
+                                if (change.Reason == ChangeReason.Remove)
+                                    change.Current.Deactivate();
+                            }
+
+                            self.Roots.ApplyChanges(changeSet);
+                        })
                         .DisposeMany()
                         .ToObservable()
                         .Select(viewHierarchical, static (_, viewHierarchical) => viewHierarchical);
