@@ -830,6 +830,61 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Install downloaded optional mods</value>
     </data>
 
+    <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
+        <value>Manual Download Required</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoDescription" xml:space="preserve">
+        <value>This collection requires specific mod file(s) from third-party websites to be complete. Follow these steps to proceed with the manual download:</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep1" xml:space="preserve">
+        <value>Click the 'Open Browser' button below to navigate to the required website.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep2" xml:space="preserve">
+        <value>Locate and download the mod file '{0}' (File size: {1})</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep3" xml:space="preserve">
+        <value>Return to this modal and add the downloaded file(s) using the 'Add File' button.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoInstructionsDescription" xml:space="preserve">
+        <value>The Collection curator has provided the following additional instructions:</value>
+    </data>
+
+
+
+    <data name="ManualDownloadRequiredOverlayView_CheckingTitle" xml:space="preserve">
+        <value>Checking Added File</value>
+    </data>    
+    <data name="ManualDownloadRequiredOverlayView_CheckingText" xml:space="preserve">
+        <value>Please wait while we verify the added file.</value>
+    </data>
+    
+    
+    <data name="ManualDownloadRequiredOverlayView_ErrorTitle" xml:space="preserve">
+        <value>Incorrect Mod File Added</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep1" xml:space="preserve">
+        <value>Please check you added the correct file and version.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep2" xml:space="preserve">
+        <value>For guidance, check the 'Additional Instructions' tab which may include further details on the required file and version.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep3" xml:space="preserve">
+        <value>If you can’t find the correct file, consider reporting the issue to the collection curator as a potential bug.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorReportBugText" xml:space="preserve">
+        <value>Report bug</value>
+    </data>
+    
+    <data name="CollectionComponents_ExternalDownloadAction_ToolTip" xml:space="preserve">
+        <value>Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible.</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
+        <value>Automatic download not available. Click to open the third-party site to download and add the mod manually.</value>
+    </data>
+    
+    
+    
+
     <data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
         <value>Mods</value>
     </data>

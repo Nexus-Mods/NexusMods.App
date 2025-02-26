@@ -21,6 +21,7 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -85,6 +86,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
 
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
@@ -193,6 +195,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
                 .OnUI()
                 .Transform(ICollectionCardViewModel (revision) => new CollectionCardViewModel(
+                    collectionDownloader: collectionDownloader,
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,
                     windowManager: WindowManager,

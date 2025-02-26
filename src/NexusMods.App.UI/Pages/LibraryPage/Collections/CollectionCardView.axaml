@@ -86,13 +86,9 @@
 
                     <StackPanel Grid.Column="1" x:Name="ActionGroup">
                         <navigation:NavigationControl x:Name="DownloadButton"
-                                                      LeftIcon="{x:Static icons:IconValues.Download}"
-                                                      RightIcon="{x:Static icons:IconValues.ChevronRight}"
-                                                      ShowIcon="Both"
                                                       Size="Small"
                                                       Type="Secondary"
-                                                      Fill="Strong"
-                                                      Text="Continue Download" />
+                                                      Fill="Strong"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" x:Name="FooterLabels">

@@ -226,6 +226,9 @@ public static class Services
             .AddView<ObservableInfoPageView, IObservableInfoPageViewModel>()
             .AddViewModel<ObservableInfoPageViewModel, IObservableInfoPageViewModel>()
 
+            .AddView<ManualDownloadRequiredOverlayView, IManualDownloadRequiredOverlayViewModel>()
+            .AddViewModel<ManualDownloadRequiredOverlayViewModel, IManualDownloadRequiredOverlayViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -290,6 +293,7 @@ public static class Services
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, BundledDataProvider>()
             .AddSingleton<IEventBus, EventBus>()
+            .AddSingleton<IAvaloniaInterop, AvaloniaInterop>()
             .AddFileSystem()
             .AddImagePipelines();
     }

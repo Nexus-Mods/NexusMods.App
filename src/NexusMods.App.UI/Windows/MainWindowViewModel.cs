@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Platform.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Logging;
@@ -32,8 +33,9 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IWindowManager _windowManager;
-    
+
     public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
+    public ReactiveUI.ReactiveCommand<IStorageProvider, System.Reactive.Unit> RegisterStorageProvider { get; }
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
@@ -43,12 +45,14 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IEventBus eventBus,
         ISettingsManager settingsManager)
     {
+        var avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
         // Use GetRequiredService<TVM> instead.
         _windowManager = windowManager;
         _windowManager.RegisterWindow(this);
-        
+
         WorkspaceController = new WorkspaceController(
             window: this,
             serviceProvider: serviceProvider
@@ -61,6 +65,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         DevelopmentBuildBanner = serviceProvider.GetRequiredService<IDevelopmentBuildBannerViewModel>();
 
         BringWindowToFront = ReactiveCommand.Create(() => settingsManager.Get<BehaviorSettings>().BringWindowToFront);
+        RegisterStorageProvider = ReactiveCommand.Create<IStorageProvider>(storageProvider => avaloniaInterop.RegisterStorageProvider(storageProvider));
 
         this.WhenActivated(d =>
         {
