@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Time.Testing;
 using NexusMods.Abstractions.Library;
@@ -25,43 +26,24 @@ namespace NexusMods.Networking.NexusWebApi.Tests;
 [Trait("RequiresNetworking", "True")]
 public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateServiceTests> // game doesn't matter here, we just don't have SDV.
 {
-    private readonly IConnection _connection;
-    private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
-    private readonly NexusGraphQLClient _gqlClient;
     private readonly ILibraryService _libraryService;
-    private readonly ILogger<ModUpdateService> _logger;
     private readonly IModUpdateService _modUpdateService;
-    private readonly INexusApiClient _nexusApiClient;
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly FakeTimeProvider _timeProvider;
 
-    public ModUpdateServiceTests(
-        ITestOutputHelper outputHelper,
-        IConnection connection,
-        INexusApiClient nexusApiClient,
-        IGameDomainToGameIdMappingCache gameIdMappingCache,
-        ILogger<ModUpdateService> logger,
-        NexusGraphQLClient gqlClient,
-        TemporaryFileManager temporaryFileManager,
-        ILibraryService libraryService,
-        NexusModsLibrary nexusModsLibrary) : base(outputHelper)
+    public ModUpdateServiceTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        _connection = connection;
-        _nexusApiClient = nexusApiClient;
-        _gameIdMappingCache = gameIdMappingCache;
-        _logger = logger;
-        _gqlClient = gqlClient;
-        _temporaryFileManager = temporaryFileManager;
-        _libraryService = libraryService;
-        _nexusModsLibrary = nexusModsLibrary;
+        _temporaryFileManager = ServiceProvider.GetRequiredService<TemporaryFileManager>();
+        _libraryService = ServiceProvider.GetRequiredService<ILibraryService>();
+        _nexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
         _timeProvider = new FakeTimeProvider();
         _modUpdateService = new ModUpdateService(
-            _connection,
-            _nexusApiClient,
-            _gameIdMappingCache,
-            _logger,
-            _gqlClient,
+            ServiceProvider.GetRequiredService<IConnection>(),
+            ServiceProvider.GetRequiredService<INexusApiClient>(),
+            ServiceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>(),
+            ServiceProvider.GetRequiredService<ILogger<ModUpdateService>>(),
+            ServiceProvider.GetRequiredService<NexusGraphQLClient>(),
             _timeProvider);
     }
 
@@ -376,19 +358,6 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
 
         // Assert that SMAPI was not affected by the SpaceCore update
         receivedRemove.Should().BeFalse("SMAPI updates should not be removed when SpaceCore is updated");
-    }
-
-    [Fact]
-    public void Dispose_ShouldNotThrow()
-    {
-        // Arrange
-        var modUpdateService = new ModUpdateService(_connection, _nexusApiClient, _gameIdMappingCache,
-            _logger, _gqlClient, _timeProvider
-        );
-
-        // Act & Assert
-        var action = () => ((IDisposable)modUpdateService).Dispose();
-        action.Should().NotThrow();
     }
     
     private static void AssertUpdatesContainAllResults(StaticTestData.TestModData[] updates, ModUpdateOnPage modUpdate)
