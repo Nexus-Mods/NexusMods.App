@@ -42,27 +42,24 @@ public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageVie
         {
             Observable
                 .Timer(dueTime: TimeSpan.Zero, period: TimeSpan.FromSeconds(1), timeProvider: TimeProvider.System)
-                .Do(this, static (_, self) =>
+                .Select(this, static (_, self) =>
                 {
                     self._trackingStatesBuffer.Clear();
+
+                    var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
                     ObservableTracker.CheckAndResetDirty();
                     ObservableTracker.ForEachActiveTask(trackingState =>
                     {
                         self._trackingStatesBuffer.Add(trackingState);
+
+                        var count = counts.GetValueOrDefault(trackingState.FormattedType, 0);
+                        counts[trackingState.FormattedType] = count + 1;
                     });
-
-                    var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
-                    foreach (var state in self._trackingStatesBuffer)
-                    {
-                        var count = counts.GetValueOrDefault(state.FormattedType, 0);
-                        counts[state.FormattedType] = count + 1;
-                    }
 
                     var top = counts
                         .OrderByDescending(static kv => kv.Value)
-                        .Take(count: 10)
+                        .Take(count: 15)
                         .Where(static kv => kv.Value > 1)
                         .ToDictionary();
 
@@ -85,12 +82,16 @@ public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageVie
 
                         self._topTypes[kv.Key] = kv.Value;
                     }
-                })
-                .ObserveOnUIThreadDispatcher()
-                .Subscribe(this, static (_, self) =>
-                {
+
                     var toRemove = self._trackingStates.Except(self._trackingStatesBuffer).ToArray();
                     var toAdd = self._trackingStatesBuffer.Except(self._trackingStates).ToArray();
+
+                    return (toRemove, toAdd);
+                })
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (tuple, self) =>
+                {
+                    var (toRemove, toAdd) = tuple;
 
                     foreach (var state in toRemove)
                     {
