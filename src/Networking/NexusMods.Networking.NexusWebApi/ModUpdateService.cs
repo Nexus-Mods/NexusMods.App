@@ -198,7 +198,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
             .ToDictionary(page => page.File.Id);
 
         modVersionUpdater(existingFileToNewerFiles);
-        
+
         var modPageToNewerFiles = existingFileToNewerFiles
             .GroupBy(
                 kv => kv.Value.File.ModPageId, // 👈 mod page ID, NOT entity id.
