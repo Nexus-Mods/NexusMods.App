@@ -7,6 +7,7 @@
         <ResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
         <ResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
+        <ResourceInclude Source="/Resources/Palette/Gradients.axaml"/>
         <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
         <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
@@ -14,5 +15,6 @@
         <ResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
+        <ResourceInclude Source="/Resources/ControlThemes/SplitButton.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

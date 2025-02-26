@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x67D1122E715F4C48
-   - Total attributes: 193
+   - Fingerprint: 0x1B52EB13AA31E1EE
+   - Total attributes: 195
    - Total namespaces: 68
    
 ## Attributes
@@ -113,10 +113,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.SortableEntry/SortIndex                                         | Int32                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                      | Utf8                    | False   | False | False     | 
-| NexusMods.MnemonicDB.DatomStore/Indexed                                            | Null                    | False   | False | False     | 
+| NexusMods.MnemonicDB.DatomStore/Indexed                                            | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/NoHistory                                          | Null                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Optional                                           | Null                    | False   | False | False     | 
-| NexusMods.MnemonicDB.DatomStore/UniqueId                                           | Ascii                   | True    | False | False     | 
+| NexusMods.MnemonicDB.DatomStore/UniqueId                                           | Ascii                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/ValueType                                          | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/ExcisedDatoms                                     | UInt64                  | False   | False | False     | 
 | NexusMods.MnemonicDB.Transaction/Timestamp                                         | Int64                   | False   | False | False     | 
@@ -135,10 +135,12 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionCategory/NexusId                              | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/ArrayIndex                           | Int32                   | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/CollectionRevision                   | Reference               | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownload/Instructions                         | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/IsOptional                           | UInt8                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/Name                                 | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadBundled/BundledPath                   | Utf8Insensitive         | False   | False | False     | 
-| NexusMods.NexusModsLibrary.CollectionDownloadExternal/Md5                          | UInt128                 | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadExternal/ManualOnly                   | Null                    | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadExternal/Md5                          | UInt128                 | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadExternal/Size                         | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadExternal/Uri                          | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadNexusMods/FileMetadata                | Reference               | False   | False | False     | 
