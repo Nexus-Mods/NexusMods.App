@@ -85,7 +85,7 @@ public static class Services
                 .AddAdvancedInstallerUi()
                 .AddFileExtractors()
                 .AddSerializationAbstractions()
-                .AddSupportedGames(experimentalSettings)
+                .AddSupportedGames()
                 .AddCrossPlatform()
                 .AddGames()
                 .AddGenericGameSupport()
@@ -123,12 +123,8 @@ public static class Services
         return services;
     }
     
-    private static IServiceCollection AddSupportedGames(this IServiceCollection services, ExperimentalSettings? experimentalSettings)
+    private static IServiceCollection AddSupportedGames(this IServiceCollection services)
     {
-        if (experimentalSettings is { EnableAllGames: true })
-        {
-        }
-        
         Games.RedEngine.Services.AddRedEngineGames(services);
         Games.StardewValley.Services.AddStardewValley(services);
         Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);

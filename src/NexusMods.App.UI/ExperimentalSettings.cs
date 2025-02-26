@@ -1,4 +1,6 @@
+using System.Text.Json.Serialization;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.BuildInfo;
 
@@ -13,6 +15,12 @@ public record ExperimentalSettings : ISettings
     /// Enables games that are not enabled by default.
     /// </summary>
     public bool EnableAllGames { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
+
+    [JsonIgnore]
+    public readonly GameId[] SupportedGames =
+    [
+        GameId.From(1303), // Stardew Valley
+    ];
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {

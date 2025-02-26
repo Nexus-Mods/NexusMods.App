@@ -4,7 +4,8 @@
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
-                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <!-- Actions -->
     <DataTemplate x:Key="{x:Static local:CollectionColumns+Actions.ColumnTemplateResourceKey}">
@@ -50,11 +51,12 @@
                             <Panel>
                                 <controls:StandardButton Command="{CompiledBinding CommandDownload}"
                                                          Size="Small"
-                                                         Type="Tertiary"
-                                                         Fill="Weak"
+                                                         Type="Secondary"
+                                                         Fill="Strong"
                                                          HorizontalAlignment="Center"
                                                          IsVisible="{CompiledBinding !IsDownloading.Value}"
-                                                         Text="{CompiledBinding ButtonText.Value}"/>
+                                                         Text="{CompiledBinding ButtonText.Value}"
+                                                         ToolTip.Tip="{x:Static resources:Language.CollectionComponents_ExternalDownloadAction_ToolTip}"/>
                                 <spinner:Spinner IsVisible="{CompiledBinding IsDownloading.Value}" Height="20" Width="20"/>
                             </Panel>
                         </DataTemplate>
@@ -67,16 +69,12 @@
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:CollectionComponents+ManualDownloadAction}">
                             <StackPanel Orientation="Horizontal">
-                                <controls:StandardButton Command="{CompiledBinding CommandOpenUri}"
+                                <controls:StandardButton Command="{CompiledBinding CommandOpenModal}"
                                                          Size="Small"
-                                                         Type="Tertiary"
-                                                         Fill="Weak"
-                                                         Text="Open in browser"/>
-                                <controls:StandardButton Command="{CompiledBinding CommandAddFile}"
-                                                         Size="Small"
-                                                         Type="Tertiary"
-                                                         Fill="Weak"
-                                                         Text="Add downloaded file"/>
+                                                         Type="Secondary"
+                                                         Fill="Strong"
+                                                         Text="{CompiledBinding ButtonText.Value}"
+                                                         ToolTip.Tip="{x:Static resources:Language.CollectionComponents_ManualDownloadAction_ToolTip}"/>
                             </StackPanel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
