@@ -62,7 +62,7 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
 
         await ShouldHaveNoDiagnostics(loadout, because: "All required dependencies are installed and enabled");
 
-        await DisableMod(contentPatcher);
+        await DisableItem(contentPatcher);
 
         var diagnostic = await GetSingleDiagnostic(loadout);
         var disabledRequiredDependencyMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher is disabled and required by Farm Type Manager").Which.MessageData;
@@ -103,13 +103,13 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
 
         // Test disabled cases
-        await DisableMod(farmTypeManager);
+        await DisableItem(farmTypeManager);
         
         (await GetAllDiagnostics(loadout)).OfType<Diagnostic<Diagnostics.RequiredDependencyIsOutdatedMessageData>>()
             .Should().BeEmpty(because: "The dependant Farm Type Manager is disabled");
         
-        await EnableMod(farmTypeManager);
-        await DisableMod(contentPatcher);
+        await EnableItem(farmTypeManager);
+        await DisableItem(contentPatcher);
         
         (await GetAllDiagnostics(loadout)).OfType<Diagnostic<Diagnostics.RequiredDependencyIsOutdatedMessageData>>()
             .Should().BeEmpty(because: "The outdated dependency Content Patcher is disabled");
