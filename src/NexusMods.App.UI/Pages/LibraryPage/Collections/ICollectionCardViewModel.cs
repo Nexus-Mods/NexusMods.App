@@ -66,4 +66,6 @@ public interface ICollectionCardViewModel : IViewModelInterface
     /// Command to open the download page.
     /// </summary>
     R3.ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
+
+    bool IsCollectionInstalled { get; }
 }

@@ -24,4 +24,5 @@ public class CollectionCardDesignViewModel : AViewModel<ICollectionCardViewModel
     public string AuthorName => "FantasyAuthor";
     public Bitmap AuthorAvatar => new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
     public R3.ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; } = new(canExecuteSource: R3.Observable.Return(true), initialCanExecute: true);
+    public bool IsCollectionInstalled => false;
 }
