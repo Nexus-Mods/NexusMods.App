@@ -9,5 +9,5 @@ namespace NexusMods.StandardGameLocators.Unknown;
 [PublicAPI]
 public record UnknownLocatorResultMetadata : IGameLocatorResultMetadata
 {
-    public IEnumerable<string> ToLocatorIds() => ["StubbedGameState.zip"];
+    public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From("StubbedGameState.zip")];
 }

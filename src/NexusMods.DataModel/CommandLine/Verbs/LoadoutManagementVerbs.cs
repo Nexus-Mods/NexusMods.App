@@ -52,7 +52,7 @@ public static class LoadoutManagementVerbs
         [Option("v", "version", "Version to set")] string version,
         [Injected] IFileHashesService hasherService)
     {
-        if (!hasherService.TryGetLocatorIdsForVersion(loadout.InstallationInstance, version, out var newCommonIds))
+        if (!hasherService.TryGetLocatorIdsForVanityVersion(loadout.InstallationInstance.Store, VanityVersion.From(version), out var newCommonIds))
         {
             await renderer.Error("Version {0} not found", version);
             return -1;
@@ -60,7 +60,7 @@ public static class LoadoutManagementVerbs
         
         // Get the actual version from the ids, so that we can sanitize the version string, and collapse multiple
         // versions into a single version string
-        if (!hasherService.TryGetGameVersion(loadout.InstallationInstance, newCommonIds, out var actualVersion))
+        if (!hasherService.TryGetVanityVersion((loadout.InstallationInstance.Store, newCommonIds), out var actualVersion))
         {
             await renderer.Error("Version {0} not found", version);
             return -1;

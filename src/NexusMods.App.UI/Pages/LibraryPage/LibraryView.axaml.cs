@@ -44,10 +44,13 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             this.BindCommand(ViewModel, vm => vm.RemoveSelectedItemsCommand, view => view.RemoveModButton)
                 .AddTo(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsCommand, view => view.AddModButton)
+            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsCommand, view => view.InstallModSplitButton)
                 .AddTo(disposables);
-
-            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsWithAdvancedInstallerCommand, view => view.AddModAdvancedButton)
+            
+            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsCommand, view => view.InstallModMenuItem)
+                .AddTo(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsWithAdvancedInstallerCommand, view => view.AdvancedInstallModMenuItem)
                 .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.OpenFilePickerCommand, view => view.GetModsFromDriveButton)
@@ -69,9 +72,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 .AddTo(disposables);
             
             this.BindCommand(ViewModel, vm => vm.RefreshUpdatesCommand, view => view.Refresh)
-                .AddTo(disposables);
-            
-            this.BindCommand(ViewModel, vm => vm.UpdateAllCommand, view => view.UpdateAll)
                 .AddTo(disposables);
         });
     }

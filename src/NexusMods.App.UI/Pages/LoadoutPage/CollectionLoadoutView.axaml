@@ -16,20 +16,12 @@
         <loadoutPage:CollectionLoadoutDesignViewModel />
     </Design.DataContext>
 
-    <!-- header, treedatagrid -->
+    <!-- header, toolbar, treedatagrid -->
     <Grid RowDefinitions="Auto, Auto, *">
 
         <!-- header -->
         <Border Grid.Row="0" x:Name="HeaderBorderBackground">
             <Border x:Name="HeaderBorder">
-
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                        <GradientStop Offset="0" Color="#BF0F0F10" />
-                        <GradientStop Offset="1" Color="#F20F0F10" />
-                    </LinearGradientBrush>
-                </Border.Background>
-
                 <Grid RowDefinitions="Auto,Auto,Auto">
 
                     <!-- first row (image and title) -->
@@ -186,12 +178,13 @@
                                                                        Value="{x:Static icons:IconValues.Downloading}" />
                                                 </MenuItem.Icon>
                                             </navigation:NavigationMenuItem>
-                                            <MenuItem Header="Remove Collection"
+                                            <MenuItem Header="Uninstall Collection"
                                                       x:Name="RemoveCollectionMenuItem"
-                                                      Classes="Critical">
+                                                      Classes="Critical"
+                                                      ToolTip.Tip="Uninstall this collection from loadout. (Collection will remain in library)">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon Size="16"
-                                                                       Value="{x:Static icons:IconValues.DeleteOutline}" />
+                                                                       Value="{x:Static icons:IconValues.PlaylistRemove}" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                         </MenuFlyout>
@@ -207,16 +200,16 @@
 
         <!-- toolbar -->
         <!-- TODO: wire up View Mod Files button -->
-        <Border Grid.Row="1" IsVisible="False" Classes="Toolbar"
-                Padding="24,0"
-                Height="52">
-            <controls:StandardButton x:Name="ViewModFilesButton"
-                Size="Small"
-                Type="Tertiary"
-                Fill="Weak"
-                LeftIcon="{x:Static icons:IconValues.FolderEyeOutline}"
-                ShowIcon="Left"
-                Text="View Mod Files" />
+        <Border Grid.Row="1" IsVisible="False" Classes="Toolbar">
+            <StackPanel>
+                <controls:StandardButton x:Name="ViewModFilesButton"
+                                         Size="Small"
+                                         Type="Tertiary"
+                                         Fill="Weak"
+                                         LeftIcon="{x:Static icons:IconValues.FolderEyeOutline}"
+                                         ShowIcon="Left"
+                                         Text="View Mod Files" />
+            </StackPanel>
         </Border>
 
         <!-- tree data grid -->

@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
@@ -57,6 +58,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         WorkspaceId = workspaceId;
 
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
+        var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
         var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
@@ -163,6 +165,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         // Health Check
         LeftMenuItemHealthCheck = new HealthCheckLeftMenuItemViewModel(
             workspaceController,
+            settingsManager,
             WorkspaceId,
             new PageData
             {

@@ -1,11 +1,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
@@ -23,6 +21,7 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -72,8 +71,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
-    private BehaviorSubject<Optional<LoadoutId>> LoadoutSubject { get; } = new(Optional<LoadoutId>.None);
-
     public LibraryViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
@@ -89,26 +86,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
 
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
-        var loadoutObservable = LoadoutSubject
-            .Where(static id => id.HasValue)
-            .Select(static id => id.Value)
-            .AsSystemObservable()
-            .Replay(bufferSize: 1);
-
-        var gameObservable = loadoutObservable
-            .Select(id => Loadout.Load(_connection.Db, id).InstallationInstance.Game)
-            .Replay(bufferSize: 1);
-
-        var libraryFilter = new LibraryFilter(
-            loadoutObservable: loadoutObservable,
-            gameObservable: gameObservable
-        );
+        var loadout = Loadout.Load(_connection.Db, loadoutId);
+        var libraryFilter = new LibraryFilter(loadout, loadout.InstallationInstance.Game);
 
         Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
-        LoadoutSubject.OnNext(loadoutId);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
@@ -182,9 +167,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         this.WhenActivated(disposables =>
         {
-            disposables.Add(loadoutObservable.Connect());
-            disposables.Add(gameObservable.Connect());
-
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
             Adapter.Activate().AddTo(disposables);
 
@@ -213,6 +195,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
                 .OnUI()
                 .Transform(ICollectionCardViewModel (revision) => new CollectionCardViewModel(
+                    collectionDownloader: collectionDownloader,
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,
                     windowManager: WindowManager,

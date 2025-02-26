@@ -142,4 +142,9 @@ public interface IWorkspaceController
     public OpenPageBehavior GetDefaultOpenPageBehavior(
         PageData requestedPage,
         NavigationInput input);
+
+    /// <summary>
+    /// Gets the page data for the default page.
+    /// </summary>
+    PageData GetDefaultPageData(WorkspaceId workspaceId);
 }

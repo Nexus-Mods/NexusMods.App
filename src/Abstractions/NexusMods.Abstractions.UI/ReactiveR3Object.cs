@@ -1,6 +1,8 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using NexusMods.App.BuildInfo;
 using R3;
 using ReactiveUI;
 
@@ -32,7 +34,16 @@ public class ReactiveR3Object : IReactiveR3Object
     public IDisposable Activate()
     {
         _activation.OnNext(true);
-        return Disposable.Create(this, static self => self.Deactivate());
+
+        // NOTE(erri120): Using WeakReference to allow this instance to be cleaned up, even if
+        // the disposable is kept around. Since the disposable is only calling Deactivate() which
+        // does nothing if the instance is already disposed, we can assert that any cleaned up
+        // instances would be no problem if they are already disposed.
+        return Disposable.Create(new WeakReference<ReactiveR3Object>(this), static weakReference =>
+        {
+            if (!weakReference.TryGetTarget(out var self)) return;
+            self.Deactivate();
+        });
     }
 
     /// <inheritdoc />

@@ -1,5 +1,4 @@
-﻿maestros_of_synth_body_heat_radio
-maestros_of_synth_morro_rock_radio
+﻿maestros_of_synth_morro_rock_radio
 maestros_of_synth_night_fn
 maestros_of_synth_pacific_dreams
 maestros_of_synth_principales
@@ -8,5 +7,6 @@ maestros_of_synth_radio_vexelstorm
 maestros_of_synth_ritual_fm
 maestros_of_synth_royal_blue_radio
 maestros_of_synth_samizdat_radio
+maestros_of_synth_body_heat_radio
 maestros_of_synth_the_dirge
 Driver_Shotguns

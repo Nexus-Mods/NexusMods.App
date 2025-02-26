@@ -129,7 +129,7 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
         Dispatcher.UIThread.VerifyAccess();
 
         var vm = new WorkspaceViewModel(
-            logger: _loggerFactory.CreateLogger<WorkspaceViewModel>(),
+            loggerFactory: _loggerFactory,
             workspaceController: this,
             factoryController: _pageFactoryController
         )
@@ -435,5 +435,11 @@ internal sealed class WorkspaceController : ReactiveObject, IWorkspaceController
             OpenPageBehaviorType.NewTab => new OpenPageBehavior.NewTab(selectedPanel.Id),
             OpenPageBehaviorType.NewPanel => new OpenPageBehavior.NewPanel(Optional<WorkspaceGridState>.None),
         };
+    }
+
+    public PageData GetDefaultPageData(WorkspaceId workspaceId)
+    {
+        if (!TryGetWorkspace(workspaceId, out WorkspaceViewModel? workspace)) throw new InvalidOperationException();
+        return workspace.GetDefaultPageData();
     }
 }

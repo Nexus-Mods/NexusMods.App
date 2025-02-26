@@ -111,16 +111,19 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
             // diagnostic counts
             severityCountObservable
                 .Select(dict => dict.GetValueOrDefault(DiagnosticSeverity.Suggestion, defaultValue: 0))
+                .Select(num => Settings.MinimumSeverity > DiagnosticSeverity.Suggestion ? 0 : num)
                 .BindToVM(this, vm => vm.NumSuggestions)
                 .DisposeWith(disposable);
 
             severityCountObservable
                 .Select(dict => dict.GetValueOrDefault(DiagnosticSeverity.Warning, defaultValue: 0))
+                .Select(num => Settings.MinimumSeverity > DiagnosticSeverity.Warning ? 0 : num)
                 .BindToVM(this, vm => vm.NumWarnings)
                 .DisposeWith(disposable);
 
             severityCountObservable
                 .Select(dict => dict.GetValueOrDefault(DiagnosticSeverity.Critical, defaultValue: 0))
+                .Select(num => Settings.MinimumSeverity > DiagnosticSeverity.Critical ? 0 : num)
                 .BindToVM(this, vm => vm.NumCritical)
                 .DisposeWith(disposable);
 

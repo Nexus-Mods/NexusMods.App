@@ -14,7 +14,7 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
-    
+
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
     </Design.DataContext>
@@ -35,14 +35,6 @@
                 </MenuItem.Icon>
                 <MenuItem.Header>
                     <TextBlock>Open JSON file</TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
-            <MenuItem x:Name="MenuItemDeleteAllDownloads" Classes="Critical">
-                <MenuItem.Icon>
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
-                </MenuItem.Icon>
-                <MenuItem.Header>
-                    <TextBlock>Delete all downloads</TextBlock>
                 </MenuItem.Header>
             </MenuItem>
             <MenuItem x:Name="MenuItemDeleteCollectionRevision" Classes="Critical">
@@ -88,7 +80,7 @@
                     <controls:StandardButton x:Name="ButtonInstallOptionalItems"
                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
                                              Size="Small" />
-                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" 
+                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}"
                                              ShowLabel="False"
                                              LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                              ShowIcon="Left"
