@@ -61,7 +61,7 @@ public class MissingSMAPIEmitterTests : ALoadoutDiagnosticEmitterTest<Dependency
 
         await ShouldHaveNoDiagnostics(loadout, because: "SMAPI is installed and enabled");
 
-        await DisabledMod(smapi);
+        await DisableMod(smapi);
 
         var diagnostic = await GetSingleDiagnostic(loadout);
         var smapiRequiredButDisabledMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.SMAPIRequiredButDisabledMessageData>>(because: "SMAPI is required for 2 mods but disabled").Which.MessageData;

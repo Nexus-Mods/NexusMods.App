@@ -56,7 +56,7 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
         await tx.Commit();
     }
 
-    protected async ValueTask DisabledMod(EntityId entityId)
+    protected async ValueTask DisableMod(EntityId entityId)
     {
         using var tx = Connection.BeginTransaction();
         tx.Add(entityId, LoadoutItem.Disabled, Null.Instance);
