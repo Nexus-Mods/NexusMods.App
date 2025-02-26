@@ -6,8 +6,6 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Paths;
-using System.Reactive.Linq;
-using DynamicData.Kernel;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.TestFramework;
@@ -152,6 +150,8 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     [Fact]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOnLibraryItemAdd()
     {
+        // This tests that our real time update firing mechanism works.
+        // As a mod is added to library, the 'observable' should fire immediately.
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 
@@ -187,6 +187,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     [Fact]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOnLibraryItemRemove()
     {
+        // This tests that our real time update firing mechanism works.
+        // As a mod is removed from library, the 'observable' should emit a 'null'
+        // object to indicate there is not an update anymore.
+
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 
@@ -224,6 +228,9 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     [Fact]
     public async Task GetNewestModPageVersionObservable_ShouldNotifyOnLibraryItemAdd()
     {
+        // This tests that our real time update firing mechanism works.
+        // As a mod is added to library, the 'observable' for mod page should fire immediately.
+
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 
@@ -266,6 +273,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     [Fact]
     public async Task GetNewestModPageVersionObservable_ShouldNotifyOnLibraryItemRemove()
     {
+        // This tests that our real time update firing mechanism works.
+        // As a mod is removed from library, the 'observable' for mod page
+        // should emit a 'null' object to indicate there is not an update anymore.
+        
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 
@@ -301,6 +312,70 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         // Now remove it from the library.
         await _libraryService.RemoveItems([libraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
         receivedRemove.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetNewestFileVersionObservable_ShouldNotRemoveUnrelatedModUpdates_WhenModOnAnotherPageIsUpdated()
+    {
+        // This tests the 'fast path' of the real time update mechanism.
+        // When receiving mod updates via the library, we only update a small subset
+        // of the underlying ObservableCache. This test ensures that an update in
+        // one mod does not emit a removal of an update in another, which could
+        // otherwise happen due to incorrect logic.
+
+        // Arrange
+        var spaceCoreData = StaticTestData.SpaceCoreModData;
+        var smapiData = StaticTestData.SmapiModData;
+
+        // Download an old version of SpaceCore
+        await using var tempSpaceCoreFile = _temporaryFileManager.CreateFile();
+        var spaceCoreDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
+            destination: tempSpaceCoreFile,
+            gameId: (GameId)spaceCoreData.GameId,
+            modId: (ModId)spaceCoreData.ModId,
+            fileId: (FileId)spaceCoreData.FileId
+        );
+
+        // Download an old version of SMAPI
+        await using var tempSmapiFile = _temporaryFileManager.CreateFile();
+        var smapiDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
+            destination: tempSmapiFile,
+            gameId: (GameId)smapiData.GameId,
+            modId: (ModId)smapiData.ModId,
+            fileId: (FileId)smapiData.FileId
+        );
+
+        // Setup our listening for SMAPI updates
+        var smapiObservable = _modUpdateService.GetNewestFileVersionObservable(smapiDownloadJob.Job.FileMetadata);
+
+        // Add both mods to the library
+        _ = await _libraryService.AddDownload(spaceCoreDownloadJob);
+        _ = await _libraryService.AddDownload(smapiDownloadJob);
+        
+        // Track if we receive a "remove" notification for SMAPI
+        var receivedRemove = false;
+        using var smapiSubscription = smapiObservable.Subscribe(val =>
+            {
+                if (!val.HasValue)
+                    receivedRemove = true;
+            }
+        );
+        
+        // Now update SpaceCore to a newer version
+        var spaceCoreUpdate = spaceCoreData.Updates[0]; // Select the first update (1.0.2), hardcoded for easier debug.
+        await using var tempSpaceCoreUpdateFile = _temporaryFileManager.CreateFile();
+        var spaceCoreUpdateDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
+            destination: tempSpaceCoreUpdateFile,
+            gameId: (GameId)spaceCoreUpdate.GameId,
+            modId: (ModId)spaceCoreUpdate.ModId,
+            fileId: (FileId)spaceCoreUpdate.FileId
+        );
+        
+        // Add the SpaceCore update to the library
+        await _libraryService.AddDownload(spaceCoreUpdateDownloadJob);
+
+        // Assert that SMAPI was not affected by the SpaceCore update
+        receivedRemove.Should().BeFalse("SMAPI updates should not be removed when SpaceCore is updated");
     }
 
     [Fact]
