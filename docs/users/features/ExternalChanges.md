@@ -17,3 +17,16 @@ At a high level, the app works by keeping track of all the files in your game fo
     - An external program modified a file in an undesirable way.
     - An unscheduled game update has made breaking changes to game files.
 
+
+## How to manage External Changes
+
+!!! tip "Overrides"
+    Any changes recorded in External Changes will overwrite all conflicting files that come before them and therefore should be reviewed every so often to ensure they are not overriding anything important in your mod setup. 
+
+The changes collected by this feature will be available in the External Changes option for your active loadout - this option may not be visible until you've applied your mods at least once. 
+
+![The External Changes view showing added and removed files.](../images/0.7.4/ExternalChanges.webp)
+
+In this view, new files are displayed in their parents folders and deleted files are shown with a strike through. 
+
+Files can be removed with the :material-delete-forever: Delete option on the toolbar. Deleting a file that is marked as "Deleted" will undeleted it and cause it to re-appear in the game folder next time changes are applied. 
