@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using ObservableCollections;
@@ -8,15 +9,18 @@ namespace NexusMods.App.UI.Pages.ObservableInfo;
 
 public interface IObservableInfoPageViewModel : IPageViewModelInterface
 {
-    NotifyCollectionChangedSynchronizedViewList<TrackingState> TrackingStates { get; }
+    IReadOnlyList<TrackingState> TrackingStates { get; }
+
+    BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; }
 }
 
 public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageViewModel>, IObservableInfoPageViewModel
 {
-    private readonly List<TrackingState> _trackingStatesBuffer = [];
-
+    private readonly HashSet<TrackingState> _trackingStatesBuffer = [];
     private readonly ObservableList<TrackingState> _trackingStates = [];
-    public NotifyCollectionChangedSynchronizedViewList<TrackingState> TrackingStates { get; }
+
+    public IReadOnlyList<TrackingState> TrackingStates { get; }
+    public BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; } = new(value: Optional<TrackingState>.None);
 
     public ObservableInfoPageViewModel(IWindowManager windowManager) : base(windowManager)
     {
@@ -35,14 +39,19 @@ public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageVie
                     {
                         self._trackingStatesBuffer.Add(trackingState);
                     });
-
-                    self._trackingStatesBuffer.Sort();
                 })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (_, self) =>
                 {
-                    self._trackingStates.Clear();
-                    self._trackingStates.AddRange(self._trackingStatesBuffer);
+                    var toRemove = self._trackingStates.Except(self._trackingStatesBuffer).ToArray();
+                    var toAdd = self._trackingStatesBuffer.Except(self._trackingStates).ToArray();
+
+                    foreach (var state in toRemove)
+                    {
+                        self._trackingStates.Remove(state);
+                    }
+
+                    self._trackingStates.AddRange(toAdd);
                 })
                 .AddTo(disposables);
         });

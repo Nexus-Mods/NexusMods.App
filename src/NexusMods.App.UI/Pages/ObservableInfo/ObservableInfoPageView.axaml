@@ -10,7 +10,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.ObservableInfo.ObservableInfoPageView">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *, 4, *">
         <StackPanel Grid.Row="0" Spacing="{StaticResource Spacing-2}" Orientation="Horizontal">
             <TextBlock x:Name="Count" Classes="BodyLGNormal"/>
         </StackPanel>
@@ -25,6 +25,22 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <GridSplitter Grid.Row="2" Background="Black" ResizeDirection="Rows"/>
+
+        <ScrollViewer Grid.Row="3"
+                      x:Name="SelectedItemInfo"
+                      IsVisible="False"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-2}">
+                <TextBlock x:Name="TextType"/>
+                <TextBlock x:Name="TextDate"/>
+                <TextBox x:Name="TextStackTraceSlim" IsReadOnly="True"/>
+                <TextBox x:Name="TextStackTraceFull" IsReadOnly="True"/>
+            </StackPanel>
+        </ScrollViewer>
+
     </Grid>
 
 </reactive:ReactiveUserControl>
