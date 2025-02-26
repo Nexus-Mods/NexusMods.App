@@ -26,6 +26,8 @@ using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData.Aggregation;
+using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -60,6 +62,9 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         ISynchronizerService syncService,
         IGameRegistry gameRegistry) : base(windowManager)
     {
+        var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
+        var experimentalSettings = settingsManager.Get<ExperimentalSettings>();
+
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
 
         TabTitle = Language.MyGames;
@@ -89,6 +94,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         this.WhenActivated(d =>
             {
                 gameRegistry.InstalledGames
+                    .Where(game =>
+                    {
+                        if (experimentalSettings.EnableAllGames) return true;
+                        return experimentalSettings.SupportedGames.Contains(game.Game.GameId);
+                    })
+                    .ToReadOnlyObservableCollection()
                     .ToObservableChangeSet()
                     .Transform(installation =>
                         {
@@ -150,7 +161,14 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                 // NOTE(insomnious): The weird cast is so that we don't get a circular reference with Abstractions.Games when
                 // referencing Abstractions.GameLocators directly 
-                var supportedGamesAsIGame = gameRegistry.SupportedGames.Cast<IGame>();
+                var supportedGamesAsIGame = gameRegistry
+                    .SupportedGames
+                    .Where(game =>
+                    {
+                        if (experimentalSettings.EnableAllGames) return true;
+                        return experimentalSettings.SupportedGames.Contains(game.GameId);
+                    })
+                    .Cast<IGame>();
 
                 var miniGameWidgetViewModels = supportedGamesAsIGame
                     .Select(game =>
