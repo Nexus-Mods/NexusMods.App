@@ -83,6 +83,7 @@ nav:
       - Loadouts: users/features/Loadouts.md
       - Health Check: users/features/HealthCheck.md
       # - Global Undo: users/features/Undo.md
+      - External Changes: users/features/ExternalChanges.md
       - Workspaces: users/features/Workspaces.md
       - Collections: users/features/Collections.md
     - Games:
