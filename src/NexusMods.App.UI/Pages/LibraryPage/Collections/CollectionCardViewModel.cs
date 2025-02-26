@@ -10,6 +10,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using R3;
@@ -24,6 +25,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     private readonly CollectionMetadata.ReadOnly _collection;
 
     public CollectionCardViewModel(
+        CollectionDownloader collectionDownloader,
         IResourceLoader<EntityId, Bitmap> tileImagePipeline,
         IResourceLoader<EntityId, Bitmap> userAvatarPipeline,
         IWindowManager windowManager,
@@ -64,6 +66,13 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (bitmap, self) => self.AuthorAvatar = bitmap)
                 .AddTo(disposables);
+
+            var collectionGroupObservable = collectionDownloader.GetCollectionGroupObservable(_revision, targetLoadout);
+            collectionDownloader
+                .IsCollectionInstalledObservable(_revision, collectionGroupObservable)
+                .OnUI()
+                .SubscribeWithErrorLogging(isInstalled => IsCollectionInstalled = isInstalled)
+                .AddTo(disposables);
         });
     }
 
@@ -82,4 +91,6 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public bool IsAdult => _revision.IsAdult;
     public string AuthorName => _collection.Author.Name;
     public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
+
+    [Reactive] public bool IsCollectionInstalled { get; private set; }
 }
