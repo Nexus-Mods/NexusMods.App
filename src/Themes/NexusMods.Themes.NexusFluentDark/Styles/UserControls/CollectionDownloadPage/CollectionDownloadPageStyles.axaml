@@ -179,6 +179,14 @@
 
                                 <!-- color changes for rating values -->
                                 <Style Selector="^ StackPanel#OverallRatingPanel">
+                                    <Style Selector="^.NoRating">
+                                        <Style Selector="^ TextBlock#OverallRating">
+                                            <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        </Style>
+                                        <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                                            <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        </Style>
+                                    </Style>
                                     <Style Selector="^.LowRating">
                                         <Style Selector="^ TextBlock#OverallRating">
                                             <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
