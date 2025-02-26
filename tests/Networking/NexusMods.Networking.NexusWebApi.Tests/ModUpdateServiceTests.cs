@@ -360,6 +360,65 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         receivedRemove.Should().BeFalse("SMAPI updates should not be removed when SpaceCore is updated");
     }
     
+    [Fact]
+    public async Task GetNewestFileVersionObservable_ShouldNotifyOlderVersionWhenCurrentVersionRemoved()
+    {
+        // This tests that when both an older and current version of a mod are installed,
+        // and the current version is removed, the older version should receive update notification
+        // instantly.
+        
+        // Arrange
+        var spaceCoreData = StaticTestData.SpaceCoreModData;
+        var spaceCoreUpdate = spaceCoreData.Updates[^1]; // Get the latest update (1.1.1)
+
+        // Download an old version of SpaceCore
+        await using var tempOldFile = _temporaryFileManager.CreateFile();
+        var oldVersionDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
+            destination: tempOldFile,
+            gameId: (GameId)spaceCoreData.GameId,
+            modId: (ModId)spaceCoreData.ModId,
+            fileId: (FileId)spaceCoreData.FileId
+        );
+        
+        // Download a newer version of SpaceCore (known).
+        await using var tempCurrentFile = _temporaryFileManager.CreateFile();
+        var currentVersionDownloadJob = await _nexusModsLibrary.CreateDownloadJob(
+            destination: tempCurrentFile,
+            gameId: (GameId)spaceCoreUpdate.GameId,
+            modId: (ModId)spaceCoreUpdate.ModId,
+            fileId: (FileId)spaceCoreUpdate.FileId
+        );
+        
+        // Setup our listening for the old version updates
+        var oldVersionObservable = _modUpdateService.GetNewestFileVersionObservable(oldVersionDownloadJob.Job.FileMetadata);
+        
+        // Create collection for results
+        var updateResults = new List<ModUpdateOnPage>();
+        using var subscription = oldVersionObservable.Subscribe(val => 
+        {
+            if (val.HasValue)
+                updateResults.Add(val.Value);
+            else
+                updateResults.Clear();
+        });
+        
+        // Add both versions to the library
+        await _libraryService.AddDownload(oldVersionDownloadJob);
+        updateResults.Should().NotBeEmpty("Adding the old version should add an update.");
+        var currentLibraryFile = await _libraryService.AddDownload(currentVersionDownloadJob);
+        updateResults.Should().BeEmpty("Installing latest version should remove the update.");
+        
+        // Now remove the current version from the library
+        await _libraryService.RemoveItems([currentLibraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
+        
+        // Assert that the old version now has update notifications
+        updateResults.Should().NotBeEmpty("Old version should receive updates after newer version is removed");
+        
+        // And check all expected updates were found in the results
+        var updateOnPage = updateResults[0];
+        AssertUpdatesContainAllResults(spaceCoreData.Updates, updateOnPage);
+    }
+    
     private static void AssertUpdatesContainAllResults(StaticTestData.TestModData[] updates, ModUpdateOnPage modUpdate)
     {
         foreach (var expectedUpdate in updates)
