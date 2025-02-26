@@ -236,6 +236,10 @@ public class ModUpdateService : IModUpdateService, IDisposable
         _updateObserver.Dispose();
     }
     
+    /// <summary>
+    /// Updates the internal state of the <see cref="_newestModVersionCache"/> such that it
+    /// matches the contents of <paramref name="existingFileToNewerFiles"/>.
+    /// </summary>
     private void UpdateNewestModVersionCache(Dictionary<EntityId, ModUpdateOnPage> existingFileToNewerFiles)
     {
         // First remove any invalid files, and then add any newer files.
@@ -255,6 +259,14 @@ public class ModUpdateService : IModUpdateService, IDisposable
         });
     }
     
+    /// <summary>
+    /// <see cref="UpdateNewestModVersionCache"/> but scoped to a limited set of mod pages
+    /// marked by <paramref name="affectedModPageIds"/>. Anything not related to those mod
+    /// pages is not touched.
+    /// </summary>
+    /// <remarks>
+    ///     This is run on the hot path that reacts to changes in library.
+    /// </remarks>
     private void UpdateNewestModVersionCachePartial(Dictionary<EntityId, ModUpdateOnPage> existingFileToNewerFiles, HashSet<EntityId> affectedModPageIds)
     {
         // First remove any invalid files, and then add any newer files.
@@ -276,7 +288,11 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 updater.AddOrUpdate(new KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>(kv.Key, kv.Value));
         });
     }
-    
+
+    /// <summary>
+    /// Updates the internal state of the <see cref="_newestModOnAnyPageCache"/> such that it
+    /// matches the contents of <paramref name="modPageToNewerFiles"/>.
+    /// </summary>
     private void UpdateNewestModOnAnyPageCache(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> modPageToNewerFiles)
     {
         // First remove any invalid mod pages, and then add any newer files.
@@ -296,6 +312,14 @@ public class ModUpdateService : IModUpdateService, IDisposable
         });
     }
     
+    /// <summary>
+    /// <see cref="UpdateNewestModOnAnyPageCache"/> but scoped to a limited set of mod pages
+    /// marked by <paramref name="affectedModPageIds"/>. Anything not related to those mod
+    /// pages is not touched.
+    /// </summary>
+    /// <remarks>
+    ///     This is run on the hot path that reacts to changes in library.
+    /// </remarks>
     private void UpdateNewestModOnAnyPageCachePartial(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> modPageToNewerFiles, HashSet<EntityId> affectedModPageIds)
     {
         // First remove any invalid mod pages, and then add any newer files.
@@ -314,7 +338,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
                     updater.Remove(existingKey);
             }
             
-            // Add any newer files
+            // Add any newer pages
             foreach (var kv in modPageToNewerFiles)
                 updater.AddOrUpdate(kv);
         });
