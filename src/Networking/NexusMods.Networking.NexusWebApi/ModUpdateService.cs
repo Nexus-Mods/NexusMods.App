@@ -182,7 +182,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
 
                 var hasUpdate = newerFiles.Length switch
                 {
-                    // `!filesInLibrary.ContainsKey(newFile.Id)`:
                     // If the newest item for this mod is not in the library, we have an update.
                     > 0 => !filesInLibrary.ContainsKey(newerFiles[0].Id),
                     <= 0 => false,
