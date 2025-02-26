@@ -1,4 +1,3 @@
-using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
@@ -18,18 +17,7 @@ public interface ILibraryDataProvider
     IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter);
 }
 
-public class LibraryFilter
-{
-    public IObservable<LoadoutId> LoadoutObservable { get; }
-
-    public IObservable<ILocatableGame> GameObservable { get; }
-
-    public LibraryFilter(IObservable<LoadoutId> loadoutObservable, IObservable<ILocatableGame> gameObservable)
-    {
-        LoadoutObservable = loadoutObservable;
-        GameObservable = gameObservable;
-    }
-}
+public record LibraryFilter(LoadoutId LoadoutId, ILocatableGame Game);
 
 public static class LibraryDataProviderHelper
 {
@@ -42,11 +30,7 @@ public static class LibraryDataProviderHelper
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryItemId)
             .AsEntityIds()
             .Transform(datom => LoadoutItem.Load(connection.Db, datom.E))
-            .FilterOnObservable(loadoutItem =>
-                libraryFilter.LoadoutObservable.Select(loadoutId =>
-                    loadoutItem.LoadoutId.Equals(loadoutId)
-                )
-            );
+            .FilterImmutable(loadoutItem => loadoutItem.LoadoutId.Equals(libraryFilter.LoadoutId));
     }
 
     public static void AddInstalledDateComponent(
