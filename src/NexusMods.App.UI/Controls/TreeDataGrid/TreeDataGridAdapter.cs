@@ -50,15 +50,16 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
             self.Roots.ObserveAdd().Subscribe((self, disposables), static (change, tuple) =>
             {
-                var (_, disposables) = tuple;
-                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
-                reactiveR3Object.Activate().AddTo(disposables);
+                var (self, disposables) = tuple;
+
+                self.BeforeModelActivationHook(change.Value);
+                change.Value.Activate().AddTo(disposables);
             }).AddTo(disposables);
 
-            self.Roots.ObserveRemove().Subscribe(static change =>
+            self.Roots.ObserveRemove().Subscribe(self, static (change, self) =>
             {
-                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
-                reactiveR3Object.Dispose();
+                self.BeforeModelDeactivationHook(change.Value);
+                change.Value.Deactivate();
             }).AddTo(disposables);
 
             self.ViewHierarchical
