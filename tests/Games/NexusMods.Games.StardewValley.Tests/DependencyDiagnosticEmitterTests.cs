@@ -72,7 +72,22 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
 
         var dependent = disabledRequiredDependencyMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
         dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
+        
+        // Add extra enabled copy in another collection
+        var collectionA = (await CreateCollection(loadout.Id, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;
+        // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
+        var contentPatcherCollectionA = await InstallModFromNexusMods(loadout, ModId.From(1915), FileId.From(124659), parent: collectionA);
+        
+        await ShouldHaveNoDiagnostics(loadout, because: "The dependency ContentPatcher in collectionA  is enabled");
 
+        await DisableItem(collectionA);
+        var parentDisabledDiagnostic = await GetSingleDiagnostic(loadout);
+        diagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher parent collection is disabled and required by Farm Type Manager");
+        
+        await EnableItem(contentPatcher);
+        
+        await ShouldHaveNoDiagnostics(loadout, because: "The dependency ContentPatcher outside the collection is enabled");
+        
         await VerifyDiagnostic(diagnostic);
     }
 
