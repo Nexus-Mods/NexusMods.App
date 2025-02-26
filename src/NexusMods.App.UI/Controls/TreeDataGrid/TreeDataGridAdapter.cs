@@ -62,6 +62,18 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 change.Value.Deactivate();
             }).AddTo(disposables);
 
+            self.ModelActivationSubject.Subscribe((self, disposables), static (input, state) =>
+            {
+                var (self, disposables) = state;
+                var (model, isActivating) = input;
+
+                if (isActivating && !model.IsActivated)
+                {
+                    self.BeforeModelActivationHook(model);
+                    model.Activate().AddTo(disposables);
+                }
+            }).AddTo(disposables);
+
             self.ViewHierarchical
                 .AsObservable()
                 .ObserveOnUIThreadDispatcher()
