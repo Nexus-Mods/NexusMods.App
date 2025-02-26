@@ -43,9 +43,6 @@
                                 </StackPanel>
                             </StackPanel>
                         </Border>
-                        <Border Grid.Row="2" x:Name="SummaryTextFlexPanel">
-                            <TextBlock x:Name="SummaryText" />
-                        </Border>
                     </Grid>
 
                 </DockPanel>
@@ -111,6 +108,7 @@
                     </StackPanel>
                 </Grid>
             </Border>
+            
         </StackPanel>
     </Border>
 </reactiveUi:ReactiveUserControl>
