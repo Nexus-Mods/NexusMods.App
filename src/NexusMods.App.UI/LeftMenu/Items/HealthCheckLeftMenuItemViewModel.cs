@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -16,6 +17,7 @@ public class HealthCheckLeftMenuItemViewModel : LeftMenuItemViewModel
 
     public HealthCheckLeftMenuItemViewModel(
         IWorkspaceController workspaceController,
+        ISettingsManager settingsManager,
         WorkspaceId workspaceId,
         PageData pageData,
         IDiagnosticManager diagnosticManager,
@@ -23,12 +25,14 @@ public class HealthCheckLeftMenuItemViewModel : LeftMenuItemViewModel
     {
         var healthCheckCountsObservable = diagnosticManager
             .CountDiagnostics(loadoutId)
+            .CombineLatest(settingsManager.GetChanges<DiagnosticSettings>(prependCurrent: true))
             .OnUI()
-            .Do(counts =>
+            .Do(update =>
                 {
-                    IsCriticalVisible = counts.NumCritical != 0;
-                    IsWarningVisible = counts.NumWarnings != 0 && !IsCriticalVisible;
-                    IsSuggestionVisible = counts.NumSuggestions != 0 && !IsCriticalVisible && !IsWarningVisible;
+                    var (counts, settings) = update;
+                    IsCriticalVisible = counts.NumCritical != 0 && settings.MinimumSeverity <= DiagnosticSeverity.Critical;
+                    IsWarningVisible = counts.NumWarnings != 0 && !IsCriticalVisible && settings.MinimumSeverity <= DiagnosticSeverity.Warning;
+                    IsSuggestionVisible = counts.NumSuggestions != 0 && !IsCriticalVisible && !IsWarningVisible && settings.MinimumSeverity <= DiagnosticSeverity.Suggestion;
                 }
             );
 
