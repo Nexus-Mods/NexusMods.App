@@ -807,4 +807,64 @@
 	<data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
 		<value>Zainstaluj pobrane opcjonalne mody</value>
 	</data>
+	<data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
+		<value>Wymagane ręczne pobranie</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_InfoDescription" xml:space="preserve">
+		<value>Ta kolekcja wymaga określonych plików modów z zewnętrznych witryn, aby była kompletna. Wykonaj poniższe kroki, aby kontynuować ręczne pobieranie:</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_InfoStep1" xml:space="preserve">
+		<value>Kliknij przycisk „Otwórz przeglądarkę” poniżej, aby przejść do odpowiedniej witryny.</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_InfoStep2" xml:space="preserve">
+		<value>Znajdź i pobierz plik moda „{0}” (rozmiar pliku: {1}).</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_InfoStep3" xml:space="preserve">
+		<value>Wróć do tego okna i dodaj pobrane pliki, klikając przycisk „Dodaj plik”.</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_InfoInstructionsDescription" xml:space="preserve">
+		<value>Kurator kolekcji dostarczył następujące dodatkowe instrukcje:</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_CheckingTitle" xml:space="preserve">
+		<value>Sprawdzanie dodanego pliku</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_CheckingText" xml:space="preserve">
+		<value>Poczekaj, aż zweryfikujemy dodany plik</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_ErrorTitle" xml:space="preserve">
+		<value>Dodano nieprawidłowy plik moda</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_ErrorStep1" xml:space="preserve">
+		<value>Proszę sprawdzić, czy dodano właściwy plik i wersję.</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_ErrorStep2" xml:space="preserve">
+		<value>Aby uzyskać wskazówki, sprawdź zakładkę „Dodatkowe instrukcje”, która może zawierać dodatkowe informacje dotyczące wymaganego pliku i wersji.</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_ErrorStep3" xml:space="preserve">
+		<value>Jeśli nie możesz znaleźć odpowiedniego pliku, rozważ zgłoszenie problemu kuratorowi kolekcji jako potencjalnego błędu.</value>
+	</data>
+	<data name="ManualDownloadRequiredOverlayView_ErrorReportBugText" xml:space="preserve">
+		<value>Zgłoś błąd</value>
+	</data>
+	<data name="CollectionComponents_ExternalDownloadAction_ToolTip" xml:space="preserve">
+		<value>Próbuję automatycznie pobrać mod z zewnętrznej strony. Jeśli automatyczne pobranie nie będzie możliwe, będzie dostępna opcja ręcznego pobrania.</value>
+	</data>
+	<data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
+		<value>Automatyczne pobieranie jest niedostępne. Kliknij, aby otworzyć stronę zewnętrzną, skąd możesz pobrać i dodać mod ręcznie.</value>
+	</data>
+	<data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
+		<value>Mody</value>
+	</data>
+	<data name="CollectionDownloadViewModel_StatsEndorsements_ToolTip" xml:space="preserve">
+		<value>Polecenia</value>
+	</data>
+	<data name="CollectionDownloadViewModel_StatsDownloads_ToolTip" xml:space="preserve">
+		<value>Pobrania</value>
+	</data>
+	<data name="CollectionDownloadViewModel_StatsSize_ToolTip" xml:space="preserve">
+		<value>Rozmiar</value>
+	</data>
+	<data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
+		<value>Ocena sukcesu</value>
+	</data>
 </root>
