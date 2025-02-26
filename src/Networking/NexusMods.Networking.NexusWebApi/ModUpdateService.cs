@@ -430,7 +430,7 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     ///     outdated versions of the same mod. 
     /// </remarks>
     public IEnumerable<NexusModsFileMetadata.ReadOnly> NewestFileForEachMod() => FileMappings.Select(x => x.NewestFile);
-    
+
     /// <summary>
     /// Returns the newest file from every mod on this page.
     /// Only distinct (unique) files are returned.
