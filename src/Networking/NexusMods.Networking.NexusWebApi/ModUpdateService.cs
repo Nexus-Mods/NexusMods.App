@@ -6,6 +6,8 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
+using System;
+
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
@@ -19,12 +21,13 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly ILogger<ModUpdateService> _logger;
     private readonly NexusGraphQLClient _gqlClient;
+    private readonly TimeProvider _timeProvider;
     
     // Use SourceCache to maintain latest values per key
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
     private readonly IDisposable _updateObserver;
-    private const int UpdateCheckCooldownSeconds = 30;
+    internal const int UpdateCheckCooldownSeconds = 30;
     private DateTimeOffset _lastUpdateCheckTime = DateTimeOffset.MinValue;
 
     /// <summary/>
@@ -33,13 +36,15 @@ public class ModUpdateService : IModUpdateService, IDisposable
         INexusApiClient nexusApiClient,
         IGameDomainToGameIdMappingCache gameIdMappingCache,
         ILogger<ModUpdateService> logger,
-        NexusGraphQLClient gqlClient)
+        NexusGraphQLClient gqlClient,
+        TimeProvider timeProvider)
     {
         _connection = connection;
         _nexusApiClient = nexusApiClient;
         _gameIdMappingCache = gameIdMappingCache;
         _logger = logger;
         _gqlClient = gqlClient;
+        _timeProvider = timeProvider;
         // Note(sewer): This is a singleton, so we don't actually need to dispose, that said
         // I'm opting to for the sake of following good practices.
         _updateObserver = ObserveUpdates();
@@ -109,17 +114,17 @@ public class ModUpdateService : IModUpdateService, IDisposable
         // _lastUpdateCheckTime is updated.
         if (throttle)
         {
-            var timeLeft = UpdateCheckCooldownSeconds - (int)(DateTimeOffset.UtcNow - _lastUpdateCheckTime).TotalSeconds;
+            var timeLeft = UpdateCheckCooldownSeconds - (int)(_timeProvider.GetUtcNow() - _lastUpdateCheckTime).TotalSeconds;
             if (timeLeft > 0)
             {
                 _logger.LogInformation("Skipping update check due to rate limit ({cooldown} seconds). Time left: {timeLeft} seconds.", UpdateCheckCooldownSeconds, timeLeft);
-                return PerFeedCacheUpdaterResult<PageMetadataMixin>.WithStatus(CacheUpdaterResultStatus.RateLimited);
+                return PerFeedCacheUpdaterResult<PageMetadataMixin>.WithStatus(CacheUpdaterResultStatus.Throttled);
             }
-            _lastUpdateCheckTime = DateTimeOffset.UtcNow;
+            _lastUpdateCheckTime = _timeProvider.GetUtcNow();
         }
         else
         {
-            _lastUpdateCheckTime = DateTimeOffset.UtcNow;
+            _lastUpdateCheckTime = _timeProvider.GetUtcNow();
         }
 
         // Identify all mod pages needing a refresh
