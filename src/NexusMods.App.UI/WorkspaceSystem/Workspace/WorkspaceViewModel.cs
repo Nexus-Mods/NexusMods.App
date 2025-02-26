@@ -423,8 +423,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             _logger.LogError(e, "Exception creating page for factory `{FactoryId}` with context `{Context}`", pageData.FactoryId, pageData.Context);
 
             var defaultPageData = GetDefaultPageData();
-            OpenPageReplaceTab(defaultPageData, replaceTab, selectTab, checkOtherPanels: false);
-            return;
+            newTabPage = _factoryController.Create(defaultPageData, WindowId, Id, panel.Id, tab.Id);
         }
 
         tab.Header.Icon = newTabPage.ViewModel.TabIcon;
