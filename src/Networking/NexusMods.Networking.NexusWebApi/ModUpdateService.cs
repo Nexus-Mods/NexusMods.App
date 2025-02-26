@@ -16,6 +16,8 @@ namespace NexusMods.Networking.NexusWebApi;
 /// </summary>
 public class ModUpdateService : IModUpdateService, IDisposable
 {
+    internal const int UpdateCheckCooldownSeconds = 30;
+
     private readonly IConnection _connection;
     private readonly INexusApiClient _nexusApiClient;
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
@@ -27,7 +29,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
     private readonly IDisposable _updateObserver;
-    internal const int UpdateCheckCooldownSeconds = 30;
     private DateTimeOffset _lastUpdateCheckTime = DateTimeOffset.MinValue;
 
     /// <summary/>
