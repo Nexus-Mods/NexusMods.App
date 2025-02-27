@@ -7,24 +7,47 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.ObservableInfo"
     xmlns:r3="clr-namespace:R3;assembly=R3"
+    xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.ObservableInfo.ObservableInfoPageView">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *, 4, *">
         <StackPanel Grid.Row="0" Spacing="{StaticResource Spacing-2}" Orientation="Horizontal">
             <TextBlock x:Name="Count" Classes="BodyLGNormal"/>
         </StackPanel>
 
-        <ListBox Grid.Row="1" x:Name="States" SelectionMode="Single">
-            <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="r3:TrackingState">
-                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
-                        <TextBlock Classes="BodyMDNormal ForegroundSubdued" Text="{CompiledBinding TrackingId, Mode=OneTime}"/>
-                        <TextBlock Classes="BodyMDNormal ForegroundModerate" Text="{CompiledBinding FormattedType, Mode=OneTime}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid Grid.Row="1" ColumnDefinitions="*, 4, *">
+            <ListBox Grid.Column="0" x:Name="States" SelectionMode="Single">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="r3:TrackingState">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}">
+                            <TextBlock Classes="BodyMDNormal ForegroundSubdued" Text="{CompiledBinding TrackingId, Mode=OneTime}"/>
+                            <TextBlock Classes="BodyMDNormal ForegroundModerate" Text="{CompiledBinding FormattedType, Mode=OneTime}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <GridSplitter Grid.Column="1" Background="Black" ResizeDirection="Columns"/>
+
+            <lvc:PieChart Grid.Column="2" x:Name="PieChart"/>
+        </Grid>
+
+        <GridSplitter Grid.Row="2" Background="Black" ResizeDirection="Rows"/>
+
+        <ScrollViewer Grid.Row="3"
+                      x:Name="SelectedItemInfo"
+                      IsVisible="False"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-2}">
+                <TextBlock x:Name="TextType"/>
+                <TextBlock x:Name="TextDate"/>
+                <TextBox x:Name="TextStackTraceSlim" IsReadOnly="True"/>
+                <TextBox x:Name="TextStackTraceFull" IsReadOnly="True"/>
+            </StackPanel>
+        </ScrollViewer>
+
     </Grid>
 
 </reactive:ReactiveUserControl>

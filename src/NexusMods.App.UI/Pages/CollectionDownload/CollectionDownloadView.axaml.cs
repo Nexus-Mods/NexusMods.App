@@ -112,19 +112,19 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 .Subscribe(tuple =>
                 {
                     var (isUpdateAvailable, optional) = tuple;
-
+            
                     ButtonUpdateCollection.IsVisible = isUpdateAvailable;
                     ArrowRight.IsVisible = isUpdateAvailable;
                     NewestRevision.IsVisible = isUpdateAvailable;
-
+            
                     if (optional.HasValue) NewestRevision.Text = $"Revision {optional.Value}";
                 }).DisposeWith(d);
-
+            
             this.WhenAnyValue(view => view.TabControl.SelectedItem)
                 .Subscribe(selectedItem =>
                 {
                     CollectionDownloadsFilter filter;
-
+            
                     if (ReferenceEquals(selectedItem, RequiredTab))
                     {
                         filter = CollectionDownloadsFilter.OnlyRequired;
@@ -135,7 +135,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     {
                         return;
                     }
-
+            
                     ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
                 }).DisposeWith(d);
 
@@ -159,7 +159,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
                     ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && hasDownloadedAllOptionalItems && !hasInstalledAllOptionals;
                 }).DisposeWith(d);
-
+            
             this.WhenAnyValue(
                     view => view.ViewModel!.OptionalDownloadsCount,
                     view => view.ViewModel!.InstructionsRenderer,
@@ -168,7 +168,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 {
                     if (hasSingleTab) TabControl.Classes.Add("SingleTab");
                     else TabControl.Classes.Remove("SingleTab");
-
+            
                     if (hasSingleTab) TabControl.SelectedItem = RequiredTab;
                 }).DisposeWith(d);
 
@@ -179,10 +179,16 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     {
                         >= 0.75 => "HighRating",
                         >= 0.5 => "MidRating",
-                        _ => "LowRating",
+                        >= 0.01 => "LowRating",
+                        _ => "NoRating",
                     };
                 })
-                .Subscribe(className => OverallRatingPanel.Classes.Add(className))
+                .Subscribe(className =>
+                    {
+                        OverallRatingPanel.Classes.Add(className);
+                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P2");
+                    }
+                )
                 .DisposeWith(d);
 
             this.WhenAnyValue(view => view.ViewModel!.CanDownloadAutomatically)

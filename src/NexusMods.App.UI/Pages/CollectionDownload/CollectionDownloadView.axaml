@@ -14,7 +14,7 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
-    
+
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
     </Design.DataContext>
@@ -80,7 +80,7 @@
                     <controls:StandardButton x:Name="ButtonInstallOptionalItems"
                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
                                              Size="Small" />
-                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" 
+                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}"
                                              ShowLabel="False"
                                              LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                              ShowIcon="Left"

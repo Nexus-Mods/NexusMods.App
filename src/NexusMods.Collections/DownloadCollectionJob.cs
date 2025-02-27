@@ -33,7 +33,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
                 await Downloader.Download(nexusModsDownload, token);
             } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
             {
-                await Downloader.Download(externalDownload, onlyDirectDownloads: true, token);
+                await Downloader.Download(externalDownload, token);
             }
         });
 

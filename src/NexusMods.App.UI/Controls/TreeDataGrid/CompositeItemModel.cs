@@ -52,6 +52,12 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
                 if (change.Value is not IReactiveR3Object reactiveR3Object) return;
                 reactiveR3Object.Activate().AddTo(disposables);
             }).AddTo(disposables);
+
+            self._components.ObserveDictionaryRemove().ObserveOnUIThreadDispatcher().Subscribe(static change =>
+            {
+                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
+                reactiveR3Object.Dispose();
+            }).AddTo(disposables);
         });
     }
 
@@ -70,13 +76,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
     public bool Remove<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
         if (!_components.Remove(key, out var value)) return false;
-
         AssertComponent<TComponent>(key, value);
-        if (value is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
-
         return true;
     }
 

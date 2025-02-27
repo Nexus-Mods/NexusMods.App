@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x35A9F548B32E2CF0
-   - Total attributes: 193
+   - Fingerprint: 0x1B52EB13AA31E1EE
+   - Total attributes: 195
    - Total namespaces: 68
    
 ## Attributes
@@ -135,10 +135,12 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionCategory/NexusId                              | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/ArrayIndex                           | Int32                   | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/CollectionRevision                   | Reference               | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownload/Instructions                         | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/IsOptional                           | UInt8                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownload/Name                                 | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadBundled/BundledPath                   | Utf8Insensitive         | False   | False | False     | 
-| NexusMods.NexusModsLibrary.CollectionDownloadExternal/Md5                          | UInt128                 | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadExternal/ManualOnly                   | Null                    | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionDownloadExternal/Md5                          | UInt128                 | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadExternal/Size                         | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadExternal/Uri                          | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionDownloadNexusMods/FileMetadata                | Reference               | False   | False | False     | 
