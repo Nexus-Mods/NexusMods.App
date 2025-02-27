@@ -12,7 +12,7 @@
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+    mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
 
     <Design.DataContext>
@@ -115,7 +115,7 @@
 
                     <!-- first header row (image and metadata) -->
                     <Border x:Name="MainContentBorder">
-                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *">
+                        <Grid x:Name="MainContent" ColumnDefinitions="*, Auto">
 
                             <!-- left column (image and headings) -->
                             <DockPanel Grid.Column="0" x:Name="CollectionTitles">
