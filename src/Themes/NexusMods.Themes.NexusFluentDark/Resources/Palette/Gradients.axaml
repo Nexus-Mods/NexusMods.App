@@ -13,4 +13,9 @@
         <GradientStop Offset="1" Color="#F20F0F10" />
     </LinearGradientBrush>
 
+    <LinearGradientBrush x:Key="CollectionCardLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+        <GradientStop Offset="0" Color="{StaticResource SurfaceMid}" />
+        <GradientStop Offset="1" Color="{StaticResource SurfaceHigh}" />
+    </LinearGradientBrush>
+    
 </ResourceDictionary>
