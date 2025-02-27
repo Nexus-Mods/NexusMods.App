@@ -23,7 +23,12 @@
 
             <!-- all of our cells will be a type of this -->
             <Style Selector="^ TreeDataGridTemplateCell">
-
+                
+                <!-- collections download -> size cell -->
+                <Style Selector="^.LibraryColumns_ItemSize">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </Style>
+                
                 <!-- collections download -> actions cell -->
                 <Style Selector="^.CollectionColumns_Actions">
                     <Setter Property="HorizontalAlignment" Value="Right" />

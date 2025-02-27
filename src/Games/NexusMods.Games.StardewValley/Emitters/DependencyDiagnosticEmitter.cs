@@ -54,7 +54,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .ToDictionaryAsync(tuple => tuple.Item1.SMAPIModLoadoutItemId, tuple => tuple.Item2, cancellationToken);
 
         var uniqueIdToLoadoutItemId = loadoutItemIdToManifest
-            .DistinctBy(kv => kv.Value.UniqueID, StringComparer.OrdinalIgnoreCase)
+            .GroupBy(kv => kv.Value.UniqueID, StringComparer.OrdinalIgnoreCase)
+                .Select(g => SelectUniqueIdWinner(loadout, g))
             .Select(kv => (UniqueId: kv.Value.UniqueID, LoaodutItemId: kv.Key))
             .ToImmutableDictionary(kv => kv.UniqueId, kv => kv.LoaodutItemId, StringComparer.OrdinalIgnoreCase);
 
@@ -69,6 +70,16 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         {
             yield return diagnostic;
         }
+    }
+
+    private static KeyValuePair<SMAPIModLoadoutItemId, SMAPIManifest> SelectUniqueIdWinner(
+        Loadout.ReadOnly loadout, 
+        IGrouping<string, KeyValuePair<SMAPIModLoadoutItemId, SMAPIManifest>> g)
+    {
+        // TODO: select winner based on synchronizer winner
+        // For now prefer enabled mods over disabled ones
+        var enabledItem = g.FirstOrOptional(kv => LoadoutItem.Load(loadout.Db, kv.Key).IsEnabled());
+        return enabledItem.HasValue ? enabledItem.Value : g.First();
     }
 
     private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
@@ -91,7 +102,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 var disabledDependencies = requiredDependencies
                     .Select(uniqueIdToLoadoutItemId.GetValueOrDefault)
                     .Where(id => id != default(SMAPIModLoadoutItemId))
-                    .Where(id => !SMAPIModLoadoutItem.Load(loadout.Db, id).AsLoadoutItemGroup().AsLoadoutItem().IsEnabled())
+                    .Where(id => !LoadoutItem.Load(loadout.Db, id).IsEnabled())
                     .ToArray();
 
                 return (Id: loadoutItemId, DisabledDependencies: disabledDependencies);
@@ -105,7 +116,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
             return disabledDependencies.Select(dependencyId => Diagnostics.CreateDisabledRequiredDependency(
                 SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
-                Dependency: SMAPIModLoadoutItem.Load(loadout.Db, dependencyId).AsLoadoutItemGroup().ToReference(loadout)
+                Dependency: LoadoutItemGroup.Load(loadout.Db, dependencyId).ToReference(loadout)
             ));
         });
     }
@@ -122,7 +133,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             .Where(kv =>
             {
                 var (loadoutItemId, _) = kv;
-                return SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId).AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
+                return LoadoutItem.Load(loadout.Db, loadoutItemId).IsEnabled();
             })
             .Select(kv =>
             {
@@ -181,42 +192,55 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         CancellationToken cancellationToken)
     {
         var uniqueIdToVersion = loadoutItemIdToManifest
+            .Where(kv =>
+            {
+                var (loadoutItemId, _) = kv;
+                return LoadoutItem.Load(loadout.Db, loadoutItemId).IsEnabled();
+            })
             .Select(kv => (kv.Value.UniqueID, kv.Value.Version))
             .DistinctBy(kv => kv.UniqueID)
             .ToImmutableDictionary(kv => kv.UniqueID, kv => kv.Version);
 
-        var collect = loadoutItemIdToManifest.SelectMany(kv =>
-        {
-            var (loadoutItemId, manifest) = kv;
-
-            var minimumVersionDependencies = manifest.Dependencies
-                .Where(x => uniqueIdToLoadoutItemId.ContainsKey(x.UniqueID) && x.MinimumVersion is not null)
-                .Select(x => (x.UniqueID, x.MinimumVersion))
-                .ToList();
-
-            var contentPack = manifest.ContentPackFor;
-            if (contentPack?.MinimumVersion is not null && uniqueIdToLoadoutItemId.ContainsKey(contentPack.UniqueID))
-                minimumVersionDependencies.Add((contentPack.UniqueID, contentPack.MinimumVersion));
-
-            return minimumVersionDependencies.Select(dependency =>
+        var collect = loadoutItemIdToManifest
+            .Where(kv =>
             {
-                var dependencyModId = uniqueIdToLoadoutItemId[dependency.UniqueID];
-
-                var minimumVersion = dependency.MinimumVersion!;
-                var currentVersion = uniqueIdToVersion[dependency.UniqueID];
-
-                var isOutdated = currentVersion.IsOlderThan(minimumVersion);
-                return (
-                    LoadoutItemId: loadoutItemId,
-                    DependencyModId: dependencyModId,
-                    DependencyId: dependency.UniqueID,
-                    MinimumVersion: minimumVersion,
-                    CurrentVersion: currentVersion,
-                    IsOutdated: isOutdated
-                );
+                var (loadoutItemId, _) = kv;
+                return LoadoutItem.Load(loadout.Db, loadoutItemId).IsEnabled();
             })
-            .Where(tuple => tuple.IsOutdated);
-        }).ToArray();
+            .SelectMany(kv =>
+            {
+                var (loadoutItemId, manifest) = kv;
+
+                var minimumVersionDependencies = manifest.Dependencies
+                    .Where(x => uniqueIdToVersion.ContainsKey(x.UniqueID) && x.MinimumVersion is not null)
+                    .Select(x => (x.UniqueID, x.MinimumVersion))
+                    .ToList();
+
+                var contentPack = manifest.ContentPackFor;
+                if (contentPack?.MinimumVersion is not null && uniqueIdToVersion.ContainsKey(contentPack.UniqueID))
+                    minimumVersionDependencies.Add((contentPack.UniqueID, contentPack.MinimumVersion));
+
+                return minimumVersionDependencies.Select(dependency =>
+                        {
+                            var dependencyModId = uniqueIdToLoadoutItemId[dependency.UniqueID];
+
+                            var minimumVersion = dependency.MinimumVersion!;
+                            var currentVersion = uniqueIdToVersion[dependency.UniqueID];
+
+                            var isOutdated = currentVersion.IsOlderThan(minimumVersion);
+                            return (
+                                LoadoutItemId: loadoutItemId,
+                                DependencyModId: dependencyModId,
+                                DependencyId: dependency.UniqueID,
+                                MinimumVersion: minimumVersion,
+                                CurrentVersion: currentVersion,
+                                IsOutdated: isOutdated
+                            );
+                        }
+                    )
+                    .Where(tuple => tuple.IsOutdated);
+            })
+            .ToArray();
 
         var allMissingDependencies = collect
             .Select(tuple => tuple.DependencyId)

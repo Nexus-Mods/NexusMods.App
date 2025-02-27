@@ -44,8 +44,6 @@
                         <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
                             <reactive:ViewModelViewHost
                                 ViewModel="{CompiledBinding .}"
-                                Width="508"
-                                Height="288"
                                 ClipToBounds="False" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

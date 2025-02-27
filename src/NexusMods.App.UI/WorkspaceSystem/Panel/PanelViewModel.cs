@@ -6,6 +6,7 @@ using Avalonia;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
@@ -47,11 +48,16 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
     [Reactive] public IPanelTabViewModel SelectedTab { get; private set; } = null!;
     [Reactive] private PanelTabId SelectedTabId { get; set; }
 
+    private readonly ILogger _logger;
     private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
-    public PanelViewModel(IWorkspaceController workspaceController, PageFactoryController factoryController)
+    public PanelViewModel(
+        ILogger<PanelViewModel> logger,
+        IWorkspaceController workspaceController,
+        PageFactoryController factoryController)
     {
+        _logger = logger;
         _workspaceController = workspaceController;
         _factoryController = factoryController;
 
@@ -173,7 +179,18 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
 
     public void AddCustomTab(PageData pageData)
     {
-        var newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+        Page newTabPage;
+
+        try
+        {
+            newTabPage = _factoryController.Create(pageData, WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception creating page for factory `{FactoryId}` with context `{Context}`", pageData.FactoryId, pageData.Context);
+            newTabPage = _factoryController.Create(_workspaceController.GetDefaultPageData(WorkspaceId), WindowId, WorkspaceId, Id, tabId: Optional<PanelTabId>.None);
+        }
+
         var tab = new PanelTabViewModel(_workspaceController, WorkspaceId, Id)
         {
             Contents = newTabPage,
@@ -236,9 +253,9 @@ public class PanelViewModel : AViewModel<IPanelViewModel>, IPanelViewModel
                 {
                     newTabPage = _factoryController.Create(tab.PageData, WindowId, WorkspaceId, Id, tabId: tab.Id);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // TODO: logging
+                    _logger.LogError(e, "Exception creating page for factory `{FactoryId}` with context `{Context}`", tab.PageData.FactoryId, tab.PageData.Context);
                     continue;
                 }
 
