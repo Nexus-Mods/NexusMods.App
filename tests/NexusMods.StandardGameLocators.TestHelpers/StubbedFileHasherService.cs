@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
@@ -14,7 +13,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
-using NexusMods.MnemonicDB.Storage.InMemoryBackend;
+using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
@@ -40,10 +39,7 @@ public class StubbedFileHasherService : IFileHashesService
     private async Task SetupDb()
     {
         var backend = new Backend();
-        var settings = new DatomStoreSettings()
-        {
-            Path = default(AbsolutePath),
-        };
+        var settings = DatomStoreSettings.InMemory;
         _datomStore = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         _connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), _datomStore, _provider, []);
 
