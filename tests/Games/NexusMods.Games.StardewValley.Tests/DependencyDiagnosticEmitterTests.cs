@@ -82,7 +82,7 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
 
         await DisableItem(collectionA);
         var parentDisabledDiagnostic = await GetSingleDiagnostic(loadout);
-        diagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher parent collection is disabled and required by Farm Type Manager");
+        parentDisabledDiagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher parent collection is disabled and required by Farm Type Manager");
         
         await EnableItem(contentPatcher);
         
