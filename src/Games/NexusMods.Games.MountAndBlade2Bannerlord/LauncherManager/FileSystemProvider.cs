@@ -15,38 +15,22 @@ internal sealed class FileSystemProvider : IFileSystemProvider
         _fileSystem = fileSystem;
     }
 
-    private byte[] ReadFileContent(AbsolutePath filePath, int offset, int length)
-    {
-        using var fs = _fileSystem.ReadFile(filePath);
-        fs.Seek(offset, SeekOrigin.Begin);
-
-        var toRead = length == -1 ? (int) fs.Length : length;
-        var data = GC.AllocateUninitializedArray<byte>(toRead);
-        
-        fs.ReadAtLeast(data, toRead, false);
-        return data;
-    }
-
-    public byte[]? ReadFileContent(string unsanitizedFilePath, int offset, int length)
+    public async Task<byte[]?> ReadFileContentAsync(string unsanitizedFilePath, int offset, int length)
     {
         var filePath = _fileSystem.FromUnsanitizedFullPath(unsanitizedFilePath);
         if (!_fileSystem.FileExists(filePath)) return null;
 
         try
         {
-            if (offset == 0 && length == -1)
-            {
-                return ReadFileContent(filePath, offset, length);
-            }
+            if (length == -1)
+                length = (int) _fileSystem.GetFileEntry(filePath).Size.Value;
             
-            if (offset >= 0 && length > 0)
-            {
-                var data = GC.AllocateUninitializedArray<byte>(length);
-                _fileSystem.ReadBytesRandomAccess(filePath, data, offset);
-                return data;
-            }
+            if (length == 0)
+                return [];
             
-            return null;
+            var data = GC.AllocateUninitializedArray<byte>(length);
+            await _fileSystem.ReadBytesRandomAccessAsync(filePath, data, offset);
+            return data;
         }
         catch (Exception ex)
         {
@@ -55,7 +39,7 @@ internal sealed class FileSystemProvider : IFileSystemProvider
         }
     }
 
-    public void WriteFileContent(string unsanitizedFilePath, byte[]? data)
+    public async Task WriteFileContentAsync(string unsanitizedFilePath, byte[]? data)
     {
         var filePath = _fileSystem.FromUnsanitizedFullPath(unsanitizedFilePath);
         if (!_fileSystem.FileExists(filePath)) return;
@@ -68,8 +52,8 @@ internal sealed class FileSystemProvider : IFileSystemProvider
             }
             else
             {
-                using var fs = _fileSystem.WriteFile(filePath);
-                fs.Write(data, 0, data.Length);
+                await using var fs = _fileSystem.WriteFile(filePath);
+                await fs.WriteAsync(data);
             }
         }
         catch (Exception ex)
@@ -78,21 +62,21 @@ internal sealed class FileSystemProvider : IFileSystemProvider
         }
     }
 
-    public string[]? ReadDirectoryFileList(string unsanitizedDirectoryPath)
+    public Task<string[]?> ReadDirectoryFileListAsync(string unsanitizedDirectoryPath)
     {
         var directoryPath = _fileSystem.FromUnsanitizedFullPath(unsanitizedDirectoryPath);
 
-        return _fileSystem.DirectoryExists(directoryPath)
+        return Task.FromResult(_fileSystem.DirectoryExists(directoryPath)
             ? _fileSystem.EnumerateFiles(directoryPath).Select(x => x.GetFullPath()).ToArray()
-            : null;
+            : null);
     }
 
-    public string[]? ReadDirectoryList(string unsanitizedDirectoryPath)
+    public Task<string[]?> ReadDirectoryListAsync(string unsanitizedDirectoryPath)
     {
         var directoryPath = _fileSystem.FromUnsanitizedFullPath(unsanitizedDirectoryPath);
         
-        return _fileSystem.DirectoryExists(directoryPath)
+        return Task.FromResult(_fileSystem.DirectoryExists(directoryPath)
             ? _fileSystem.EnumerateDirectories(directoryPath).Select(x => x.GetFullPath()).ToArray()
-            : null;
+            : null);
     }
 }

@@ -45,7 +45,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     }
     
 
-    string IGameInfoProvider.GetInstallPath() => _installationPath;
+    Task<string> IGameInfoProvider.GetInstallPathAsync() => Task.FromResult(_installationPath);
 
     /// <summary>
     /// This sets the commandline arguments for the game, arguments include:
@@ -56,15 +56,19 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     /// </summary>
     /// <param name="executable">The game executable.</param>
     /// <param name="gameParameters">List of commandline arguments.</param>
-    public void SetGameParameters(string executable, IReadOnlyList<string> gameParameters) => ExecutableParameters = gameParameters.ToArray();
-    
+    public Task SetGameParametersAsync(string executable, IReadOnlyList<string> gameParameters)
+    {
+        ExecutableParameters = gameParameters.ToArray();
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// Allows us to modify the settings for the vanilla Bannerlord Launcher.
     /// </summary>
-    LauncherOptions ILauncherStateProvider.GetOptions() => new()
+    Task<LauncherOptions> ILauncherStateProvider.GetOptionsAsync() => Task.FromResult(new LauncherOptions()
     {
         BetaSorting = _settings.BetaSorting,
-    };
+    });
     
     /// <summary>
     /// This allows us for control over booting in SP/MP mode.
@@ -73,7 +77,10 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     /// to boot directly into SP/MP mode, skipping the standard mod manager/launcher
     /// if desired by the user.
     /// </summary>
-    LauncherState ILauncherStateProvider.GetState() => null!;
+    Task<LauncherState> ILauncherStateProvider.GetStateAsync() => Task.FromResult(new LauncherState()
+    {
+        IsSingleplayer = true,
+    });
     
     /// <summary>
     /// Returns all available ViewModels (all mods in loadout)
@@ -82,7 +89,7 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     ///     We do not need to set the <see cref="IModuleViewModel.Index"/> field, this is
     ///     set by the LauncherManager library itself.
     /// </remarks>
-    IModuleViewModel[]? ILoadOrderStateProvider.GetAllModuleViewModels() => null;
+    Task<IModuleViewModel[]?> ILoadOrderStateProvider.GetAllModuleViewModelsAsync() => Task.FromResult<IModuleViewModel[]?>(null);
 
     /// <summary>
     /// Returns the current shown sorted ViewModels, based on MnemonicDB state.
@@ -95,15 +102,16 @@ public sealed partial class LauncherManagerNexusModsApp : LauncherManagerHandler
     ///     Performing a <see cref="LauncherManagerHandler.Sort"/> to reset the sort to a 'default' state
     ///     may do a call back into <see cref="ILoadOrderStateProvider.SetModuleViewModels"/>
     /// </remarks>
-    IModuleViewModel[]? ILoadOrderStateProvider.GetModuleViewModels() => null;
+    Task<IModuleViewModel[]?> ILoadOrderStateProvider.GetModuleViewModelsAsync() => Task.FromResult<IModuleViewModel[]?>(null);
 
     /// <summary>
     /// Sets the current shown sorted ViewModels.
     /// This is called into when 'autosort' i.e. <see cref="LauncherManagerHandler.Sort"/> is performed,
     /// setting the sort to a 'default' state.
     /// </summary>
-    void ILoadOrderStateProvider.SetModuleViewModels(IReadOnlyList<IModuleViewModel> moduleViewModels)
+    Task ILoadOrderStateProvider.SetModuleViewModelsAsync(IReadOnlyList<IModuleViewModel> moduleViewModels)
     {
+        return Task.CompletedTask;
         // TODO: The set of 'enabled' mods may have changed.
         // The set of 'index'es may have changed.
         // We need to diff against our state in the DB, and update the DB accordingly.
