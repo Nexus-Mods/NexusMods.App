@@ -121,12 +121,9 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 _logger.LogInformation("Skipping update check due to rate limit ({cooldown} seconds). Time left: {timeLeft} seconds.", UpdateCheckCooldownSeconds, timeLeft);
                 return PerFeedCacheUpdaterResult<PageMetadataMixin>.WithStatus(CacheUpdaterResultStatus.Throttled);
             }
-            _lastUpdateCheckTime = _timeProvider.GetUtcNow();
         }
-        else
-        {
-            _lastUpdateCheckTime = _timeProvider.GetUtcNow();
-        }
+        
+        _lastUpdateCheckTime = _timeProvider.GetUtcNow();
 
         // Identify all mod pages needing a refresh
         var updateCheckResult = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(
