@@ -49,20 +49,6 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
         diagnostics.Should().BeEmpty(because: because);
     }
 
-    protected async ValueTask EnableMod(EntityId entityId)
-    {
-        using var tx = Connection.BeginTransaction();
-        tx.Retract(entityId, LoadoutItem.Disabled, Null.Instance);
-        await tx.Commit();
-    }
-
-    protected async ValueTask DisabledMod(EntityId entityId)
-    {
-        using var tx = Connection.BeginTransaction();
-        tx.Add(entityId, LoadoutItem.Disabled, Null.Instance);
-        await tx.Commit();
-    }
-
     protected async ValueTask VerifyDiagnostic(Diagnostic diagnostic, [CallerFilePath] string sourceFile = "")
     {
         var diagnosticWriter = ServiceProvider.GetRequiredService<IDiagnosticWriter>();
