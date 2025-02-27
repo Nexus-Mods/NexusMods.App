@@ -36,25 +36,7 @@ public static class TreeDataGridViewHelper
                 removeHandler: handler => treeDataGrid.RowClearing -= handler
             ).Select(static tuple => (tuple.e.Row.Model, false));
 
-            // NOTE(erri120): TreeDataGridRow doesn't invoke RowClearing when it gets detached
-            // from the visual tree. It does invoke RowPrepared when it gets attached with previous
-            // context, so this is likely an oversight. Regardless, it messes with our activation/deactivation
-            // system since now you can have situations where a row will never get deactivated if the entire TreeDataGrid
-            // gets detached from the visual tree.
-            // Example: ContentControl or TabControl that sometimes has a TreeDataGrid and sometimes not
-            var rowDetached = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
-                addHandler: handler => treeDataGrid.RowPrepared += handler,
-                removeHandler: handler => treeDataGrid.RowPrepared -= handler
-            )
-                .Select(static tuple => tuple.e.Row)
-                .SelectMany(static row => Observable.FromEventHandler<VisualTreeAttachmentEventArgs>(
-                    addHandler: handler => row.DetachedFromVisualTree += handler,
-                    removeHandler: handler => row.DetachedFromVisualTree -= handler
-                ))
-                .Select(static tuple => tuple.sender as TreeDataGridRow)
-                .Select(static row => (row?.Model, false));
-
-            deactivate.Merge(rowDetached).Merge(activate)
+            deactivate.Merge(activate)
                 .Where(static tuple => tuple.Model is TItemModel)
                 .Select(static tuple => ((tuple.Model as TItemModel)!, tuple.Item2))
                 .Subscribe((view, getAdapter), static (tuple, state) => state.getAdapter(state.view.ViewModel!).ModelActivationSubject.OnNext(tuple))
