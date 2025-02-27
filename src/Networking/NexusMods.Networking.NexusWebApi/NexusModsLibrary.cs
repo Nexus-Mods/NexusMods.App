@@ -74,6 +74,14 @@ public partial class NexusModsLibrary
         foreach (var node in modInfo.Data!.LegacyMods.Nodes)
             first = node.Resolve(_connection.Db, tx);
         
+        await ResolveAllFilesInModPage(uid, tx, first, cancellationToken);
+
+        var txResults = await tx.Commit();
+        return NexusModsModPageMetadata.Load(txResults.Db, txResults[first]);
+    }
+
+    private async Task ResolveAllFilesInModPage(UidForMod uid, ITransaction tx, EntityId modPageId, CancellationToken cancellationToken)
+    {
         // Note(sewer):
         // Make sure to also fetch all files on the mod page.
         // The update code refreshes file info only on changes of the mod page.
@@ -85,10 +93,7 @@ public partial class NexusModsLibrary
         var filesByUid = await _gqlClient.ModFiles.ExecuteAsync(modIdString, gameIdString, cancellationToken);
         filesByUid.EnsureNoErrors();
         foreach (var node in filesByUid.Data!.ModFiles)
-            node.Resolve(_connection.Db, tx, first);
-        
-        var txResults = await tx.Commit();
-        return NexusModsModPageMetadata.Load(txResults.Db, txResults[first]);
+            node.Resolve(_connection.Db, tx, modPageId);
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(

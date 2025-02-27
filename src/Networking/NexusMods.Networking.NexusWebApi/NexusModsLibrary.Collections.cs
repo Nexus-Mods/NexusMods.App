@@ -55,7 +55,7 @@ public partial class NexusModsLibrary
         var collectionEntityId = UpdateCollectionInfo(db, tx, slug, collectionRevisionInfo.Collection);
         var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, revisionNumber, collectionEntityId, collectionRevisionInfo);
 
-        var resolvedEntitiesLookup = ResolveModFiles(db, tx, collectionRoot, gameIds, collectionRevisionInfo);
+        var resolvedEntitiesLookup = await ResolveModFiles(db, tx, collectionRoot, gameIds, collectionRevisionInfo);
         UpdateFiles(db, tx, collectionRevisionEntityId, collectionRevisionInfo, collectionRoot, gameIds, resolvedEntitiesLookup);
 
         var results = await tx.Commit();
@@ -207,7 +207,7 @@ public partial class NexusModsLibrary
         return list;
     }
 
-    private static ResolvedEntitiesLookup ResolveModFiles(
+    private async Task<ResolvedEntitiesLookup> ResolveModFiles(
         IDb db,
         ITransaction tx,
         CollectionRoot collectionRoot,
@@ -232,6 +232,7 @@ public partial class NexusModsLibrary
             {
                 modEntityId = file.Mod.Resolve(db, tx);
                 modPageIds[uidForMod] = modEntityId;
+                await ResolveAllFilesInModPage(uidForMod, tx, modEntityId, CancellationToken.None);
             }
 
             var fileEntityId = file.Resolve(db, tx, modEntityId);
