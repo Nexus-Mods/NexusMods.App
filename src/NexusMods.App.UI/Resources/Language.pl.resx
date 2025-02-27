@@ -799,7 +799,7 @@
 		<value>Zobacz zainstalowaną kolekcję</value>
 	</data>
 	<data name="CollectionDownloadViewModel_UpdateCollection" xml:space="preserve">
-		<value>Zainstaluj aktualizację</value>
+		<value>Zaktualizuj do wersji {0}</value>
 	</data>
 	<data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
 		<value>Pobierz wszystkie opcjonalne mody</value>
