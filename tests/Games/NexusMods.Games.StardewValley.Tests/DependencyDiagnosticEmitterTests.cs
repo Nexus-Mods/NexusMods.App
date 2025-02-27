@@ -73,21 +73,50 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         var dependent = disabledRequiredDependencyMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
         dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
         
-        // Add extra enabled copy in another collection
-        var collectionA = (await CreateCollection(loadout.Id, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;
+        await VerifyDiagnostic(diagnostic);
+    }
+
+    [Fact]
+    public async Task Test_DisabledRequiredDependency_Collections()
+    {
+        var loadout = await CreateLoadout();
+        
+        var collectionA = (await CreateCollection(loadout, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;
+        var collectionB = (await CreateCollection(loadout, "Collection B")).AsLoadoutItemGroup().LoadoutItemGroupId;
+        
+        // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
+        await InstallModFromNexusMods(loadout, ModId.From(2400), FileId.From(119630), parent: collectionA);
+        
+        // Farm Type Manager 1.24.0 (https://www.nexusmods.com/stardewvalley/mods/3231?tab=files)
+        var farmTypeManager = await InstallModFromNexusMods(loadout, ModId.From(3231), FileId.From(117244), parent: collectionA);
+        
+        // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
+        var contentPatcherCollectionB = await InstallModFromNexusMods(loadout, ModId.From(1915), FileId.From(124659), parent: collectionB);
+        
+        await ShouldHaveNoDiagnostics(loadout, because: "All required dependencies are installed and enabled");
+        
+        await DisableItem(collectionB);
+        
+        var diagnostic = await GetSingleDiagnostic(loadout);
+        var disabledRequiredDependencyMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher is inside disabled collection and required by Farm Type Manager").Which.MessageData;
+        
+        var dependency = disabledRequiredDependencyMessageData.Dependency.ResolveData(ServiceProvider, Connection);
+        dependency.AsLoadoutItem().ParentId.Should().Be(contentPatcherCollectionB.LoadoutItemGroupId, because: "Content Patcher is the dependency");
+        
+        var dependent = disabledRequiredDependencyMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
+        dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
+        
+        // Add a copy in another collection
         // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
         var contentPatcherCollectionA = await InstallModFromNexusMods(loadout, ModId.From(1915), FileId.From(124659), parent: collectionA);
         
-        await ShouldHaveNoDiagnostics(loadout, because: "The dependency ContentPatcher in collectionA  is enabled");
+        await ShouldHaveNoDiagnostics(loadout, because: "The dependency ContentPatcher in collectionA is enabled");
+        
+        await DisableItem(contentPatcherCollectionA);
+        
+        var diagnostic2 = await GetSingleDiagnostic(loadout);
+        diagnostic2.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Both content patcher mods are disabled and required by Farm Type Manager");
 
-        await DisableItem(collectionA);
-        var parentDisabledDiagnostic = await GetSingleDiagnostic(loadout);
-        parentDisabledDiagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher parent collection is disabled and required by Farm Type Manager");
-        
-        await EnableItem(contentPatcher);
-        
-        await ShouldHaveNoDiagnostics(loadout, because: "The dependency ContentPatcher outside the collection is enabled");
-        
         await VerifyDiagnostic(diagnostic);
     }
 
@@ -120,12 +149,14 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         // Test disabled cases
         await DisableItem(farmTypeManager);
         
+        await ShouldHaveNoDiagnostics(loadout, because: "The dependant Farm Type Manager is disabled");
         (await GetAllDiagnostics(loadout)).OfType<Diagnostic<Diagnostics.RequiredDependencyIsOutdatedMessageData>>()
             .Should().BeEmpty(because: "The dependant Farm Type Manager is disabled");
         
         await EnableItem(farmTypeManager);
         await DisableItem(contentPatcher);
         
+        await ShouldHaveNoDiagnostics(loadout, because: "The outdated dependency Content Patcher is disabled");
         (await GetAllDiagnostics(loadout)).OfType<Diagnostic<Diagnostics.RequiredDependencyIsOutdatedMessageData>>()
             .Should().BeEmpty(because: "The outdated dependency Content Patcher is disabled");
         
