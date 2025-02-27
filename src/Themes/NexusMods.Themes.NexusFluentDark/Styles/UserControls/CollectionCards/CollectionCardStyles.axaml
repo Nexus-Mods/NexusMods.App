@@ -23,41 +23,34 @@
         <Style Selector="^ Border#CardCollectionBorder">
             <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-            <Setter Property="ClipToBounds" Value="True" />
 
             <Style Selector="^ Border#BackgroundLayerBorder">
                 <Setter Property="Background" Value="{StaticResource CollectionCardLinearGradientBrush}" />
+                <Setter Property="CornerRadius" Value="4,4,0,0" />
                 <Setter Property="VerticalAlignment" Value="Top" />
                 <Setter Property="Padding" Value="16,8" />
 
                 <Style Selector="^ StackPanel#BackgroundLayerStack">
                     <Setter Property="Orientation" Value="Horizontal" />
                     <Setter Property="HorizontalAlignment" Value="Right" />
-                    <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
                     <!-- default textblock style -->
                     <Style Selector="^ TextBlock">
                         <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                         <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                         <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="TextWrapping" Value="Wrap" />
                     </Style>
 
-                    <Style Selector="^ StackPanel#NexusModsStack">
-                        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Orientation" Value="Horizontal" />
-                        <Style Selector="^ > icons|UnifiedIcon">
-                            <Setter Property="Size" Value="20" />
-                        </Style>
-                        <Style Selector="^ > TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource PrimaryStrongBrush}" />
-                        </Style>
+                    <Style Selector="^ > icons|UnifiedIcon">
+                        <Setter Property="Size" Value="20" />
                     </Style>
+                    
                     <Style Selector="^ StackPanel#RevisionsStack">
                         <Setter Property="Orientation" Value="Horizontal" />
                         <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-                        
+
                         <Style Selector="^ StackPanel#RevisionUpdateStack">
                             <Setter Property="Orientation" Value="Horizontal" />
                             <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
@@ -100,8 +93,9 @@
                     <Style Selector="^ > TextBlock#TitleText">
                         <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
                         <Setter Property="Margin" Value="0,0,0,4" />
-                        <Setter Property="TextWrapping" Value="NoWrap" />
+                        <Setter Property="TextWrapping" Value="Wrap" />
                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                        <Setter Property="MaxHeight" Value="48" />
                     </Style>
 
                     <Style Selector="^ > StackPanel#ActionStack">
@@ -117,6 +111,12 @@
                         <Style Selector="^ TextBlock">
                             <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                        </Style>
+                        
+                        <Style Selector="^ TextBlock#AuthorName">
+                            <Setter Property="MaxWidth" Value="117" />
+                            <Setter Property="TextWrapping" Value="NoWrap" />
+                            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                         </Style>
 
                         <Style Selector="^ Ellipse">

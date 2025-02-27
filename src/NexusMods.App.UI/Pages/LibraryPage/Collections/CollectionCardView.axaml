@@ -25,10 +25,8 @@
             <Border x:Name="BackgroundLayerBorder">
                 <StackPanel x:Name="BackgroundLayerStack">
                     <!-- nexus mods logo -->
-                    <StackPanel x:Name="NexusModsStack">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
-                        <TextBlock Text="Nexus Mods" />
-                    </StackPanel>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}"
+                                       ToolTip.Tip="Nexus Mods Collection"/>
                     <!-- revision -->
                     <StackPanel x:Name="RevisionsStack">
                         <TextBlock x:Name="RevisionText" />
@@ -50,11 +48,7 @@
                 <!-- right column -->
                 <DockPanel x:Name="DetailsDock">
                     <!-- stay at top -->
-                    <TextBlock DockPanel.Dock="Top" x:Name="TitleText"
-                               Theme="{StaticResource BodyLGBoldTheme}"
-                               Margin="0,0,0,4"
-                               TextWrapping="NoWrap"
-                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock DockPanel.Dock="Top" x:Name="TitleText"/>
                     <!-- stay at bottom -->
                     <StackPanel DockPanel.Dock="Bottom" x:Name="ActionStack">
                         <navigation:NavigationControl x:Name="DownloadButton"
