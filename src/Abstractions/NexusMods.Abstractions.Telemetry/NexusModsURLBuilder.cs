@@ -62,6 +62,10 @@ public static class NexusModsUrlBuilder
 
     public static Uri CreateCollectionsUri(GameDomain gameDomain, CollectionSlug collectionSlug) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}", campaign: "collections");
 
+    public static Uri CreateCollectionRevisionUri(GameDomain gameDomain, CollectionSlug collectionSlug, RevisionNumber revisionNumber) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}/revisions/{revisionNumber}", campaign: "collections");
+   
+    public static Uri CreateCollectionRevisionBugsUri(GameDomain gameDomain, CollectionSlug collectionSlug, RevisionNumber revisionNumber) => CreateUri($"https://next.nexusmods.com/{gameDomain}/collections/{collectionSlug}/revisions/{revisionNumber}/bugs", campaign: "collections");
+    
     public static Uri LearAboutPremiumUri => CreateUri("https://next.nexusmods.com/premium");
 
     public static Uri UpgradeToPremiumUri => CreateUri("https://users.nexusmods.com/account/billing/premium");

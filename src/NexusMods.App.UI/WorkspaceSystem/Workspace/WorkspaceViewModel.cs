@@ -59,15 +59,18 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     public ReadOnlyObservableCollection<IPanelResizerViewModel> Resizers => _resizers;
 
     private readonly ILogger _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly IWorkspaceController _workspaceController;
     private readonly PageFactoryController _factoryController;
 
     public WorkspaceViewModel(
-        ILogger<WorkspaceViewModel> logger,
+        ILoggerFactory loggerFactory,
         IWorkspaceController workspaceController,
         PageFactoryController factoryController)
     {
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<WorkspaceViewModel>();
+        _loggerFactory = loggerFactory;
+
         _workspaceController = workspaceController;
         _factoryController = factoryController;
 
@@ -352,7 +355,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         );
     }
 
-    private PageData GetDefaultPageData()
+    public PageData GetDefaultPageData()
     {
         var allDetails = _factoryController.GetAllDetails(Context).ToArray();
         var pageData = new PageData
@@ -360,8 +363,8 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
             FactoryId = NewTabPageFactory.StaticId,
             Context = new NewTabPageContext
             {
-                DiscoveryDetails = allDetails
-            }
+                DiscoveryDetails = allDetails,
+            },
         };
 
         return pageData;
@@ -408,7 +411,21 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
         if (!tab.Contents.ViewModel.CanClose()) return;
 
         // Replace the tab contents
-        var newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
+
+        Page newTabPage;
+
+        try
+        {
+            newTabPage = _factoryController.Create(pageData, WindowId, Id, panel.Id, tab.Id);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception creating page for factory `{FactoryId}` with context `{Context}`", pageData.FactoryId, pageData.Context);
+
+            var defaultPageData = GetDefaultPageData();
+            newTabPage = _factoryController.Create(defaultPageData, WindowId, Id, panel.Id, tab.Id);
+        }
+
         tab.Header.Icon = newTabPage.ViewModel.TabIcon;
         tab.Header.Title = newTabPage.ViewModel.TabTitle;
 
@@ -474,7 +491,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
                 var (panelId, logicalBounds) = panel;
                 if (panelId == PanelId.DefaultValue)
                 {
-                    var panelViewModel = new PanelViewModel(_workspaceController, _factoryController)
+                    var panelViewModel = new PanelViewModel(_loggerFactory.CreateLogger<PanelViewModel>(), _workspaceController, _factoryController)
                     {
                         WindowId = WindowId,
                         WorkspaceId = Id,
@@ -554,7 +571,7 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
             foreach (var panel in data.Panels)
             {
-                var vm = new PanelViewModel(_workspaceController, _factoryController)
+                var vm = new PanelViewModel(_loggerFactory.CreateLogger<PanelViewModel>(), _workspaceController, _factoryController)
                 {
                     WindowId = WindowId,
                     WorkspaceId = Id,

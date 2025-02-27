@@ -19,7 +19,7 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     public required string BuildId { get; init; }
     
     /// <inheritdoc />
-    public IEnumerable<string> ToLocatorIds() => [BuildId];
+    public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(BuildId)];
 }
 
 [PublicAPI]

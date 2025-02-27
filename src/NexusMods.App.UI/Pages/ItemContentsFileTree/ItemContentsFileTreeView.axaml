@@ -20,13 +20,17 @@
                                               Text="Edit File"
                                               LeftIcon="{x:Static icons:IconValues.FileEdit}"
                                               ShowIcon="Left"
-                                              Size="Small"/>
+                                              Size="Small"
+                                              Type="Tertiary"
+                                              Fill="WeakAlt"/>
                 
                 <controls:StandardButton x:Name="RemoveButton" 
                                          Text="Delete"
                                          LeftIcon="{x:Static icons:IconValues.DeleteForever}"
                                          ShowIcon="Left"
-                                         Size="Small"/>
+                                         Size="Small"
+                                         Type="Tertiary"
+                                         Fill="WeakAlt"/>
             </StackPanel>
         </Border>
 

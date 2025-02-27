@@ -4,6 +4,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;
@@ -65,10 +67,26 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
                     {
                         >= 0.75 => "HighRating",
                         >= 0.5 => "MidRating",
-                        _ => "LowRating",
+                        >= 0.01 => "LowRating",
+                        _ => "NoRating",
                     };
                 })
-                .Subscribe(className => OverallRatingPanel.Classes.Add(className))
+                .Subscribe(className =>
+                    {
+                        OverallRatingPanel.Classes.Add(className);
+                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P2");
+                    }
+                )
+                .DisposeWith(d);
+
+            this.WhenAnyValue(view => view.ViewModel!.IsCollectionInstalled)
+                .SubscribeWithErrorLogging(isInstalled =>
+                {
+                    DownloadButton.Text = isInstalled ? "Installed" : "Continue Download";
+                    DownloadButton.LeftIcon = isInstalled ? IconValues.Check : IconValues.Download;
+                    DownloadButton.RightIcon = isInstalled ? null : IconValues.ChevronRight;
+                    DownloadButton.ShowIcon = isInstalled ? StandardButton.ShowIconOptions.Left : StandardButton.ShowIconOptions.Both;
+                })
                 .DisposeWith(d);
         });
     }

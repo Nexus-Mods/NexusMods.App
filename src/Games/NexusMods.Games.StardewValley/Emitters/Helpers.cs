@@ -24,8 +24,23 @@ internal static class Helpers
     public static ISemanticVersion GetGameVersion(Loadout.ReadOnly loadout)
     {
         var game = (loadout.InstallationInstance.Game as AGame)!;
-        var localVersion = game.GetLocalVersion(loadout.Installation).Convert(static v => v.ToString());
-        var rawVersion = localVersion.ValueOr(() => loadout.GameVersion);
+
+        // NOTE(erri120): `Major.Minor.Patch` is the only thing the SMAPI API supports
+        // in regard to SemanticVersion. Passing a `System.Version` into the constructor
+        // will create a `SemanticVersion` with only `Major`, `Minor`, and `Patch` fields.
+        // The string parser of `SemanticVersion` accepts more if `allowNonStandard` is enabled,
+        // however the SMAPI API will not return any data if a "non-standard" version is passed
+        // to it for some reason.
+        // See https://github.com/Nexus-Mods/NexusMods.App/pull/2713 for details.
+        var localVersion = game
+            .GetLocalVersion(loadout.Installation)
+            .Convert(static version => new SemanticVersion(version));
+
+        if (localVersion.HasValue) return localVersion.Value;
+
+        // NOTE(erri120): should only be hit during tests
+        var vanityVersion = loadout.GameVersion;
+        var rawVersion = vanityVersion.Value;
 
 #if DEBUG
         // NOTE(erri120): dumb hack for tests
@@ -36,7 +51,7 @@ internal static class Helpers
         }
 #endif
 
-        var gameVersion = new SemanticVersion(rawVersion);
+        var gameVersion = new SemanticVersion(rawVersion, allowNonStandard: true);
         return gameVersion;
     }
 

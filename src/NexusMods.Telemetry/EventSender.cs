@@ -9,6 +9,7 @@ using System.Text;
 using Cysharp.Text;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Paths;
@@ -31,11 +32,13 @@ internal class EventSender : IEventSender
     private readonly ILoginManager _loginManager;
     private readonly HttpClient _httpClient;
     private readonly ArrayBufferWriter<byte> _writer;
+    private readonly ILogger<EventSender>? _logger;
 
     private static readonly byte[] EncodedUserAgent = CreateUserAgent();
 
-    public EventSender(ILoginManager loginManager, HttpClient httpClient)
+    public EventSender(ILogger<EventSender>? logger, ILoginManager loginManager, HttpClient httpClient)
     {
+        _logger = logger;
         _loginManager = loginManager;
         _httpClient = httpClient;
         _writer = new ArrayBufferWriter<byte>();
@@ -200,14 +203,22 @@ internal class EventSender : IEventSender
         }
     }
 
-    private static async ValueTask SendEvents(ReadOnlyMemory<byte> data, HttpClient httpClient, CancellationToken cancellationToken)
+    private async ValueTask SendEvents(ReadOnlyMemory<byte> data, HttpClient httpClient, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, Constants.MatomoTrackingEndpoint);
         request.Content = new ReadOnlyMemoryContent(data);
         request.Content.Headers.ContentType = new MediaTypeHeaderValue(MediaTypeNames.Application.Json);
 
-        var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            // NOTE (halgari): Yes, this will add more bloat to the log, but only in testing where DEBUG logging is enabled.
+            _logger?.LogDebug(ex, "Error occured while sending events");
+        }
     }
 
     /// <summary>
