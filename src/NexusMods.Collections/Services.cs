@@ -15,6 +15,7 @@ public static class Services
             .AddNexusCollectionBundledLoadoutGroupModel()
             .AddNexusCollectionItemLoadoutGroupModel()
             .AddNexusCollectionReplicatedLoadoutGroupModel()
-            .AddCollectionVerbs();
+            .AddCollectionVerbs()
+            .AddSingleton<CollectionDownloader>();
     }
 }

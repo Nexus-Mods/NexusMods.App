@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Windows;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -46,6 +47,7 @@ public class PageFactoryController
     {
         var factory = GetFactory(pageData);
         var page = factory.Create(pageData.Context);
+
         page.ViewModel.WindowId = windowId;
         page.ViewModel.WorkspaceId = workspaceId;
         page.ViewModel.PanelId = panelId;

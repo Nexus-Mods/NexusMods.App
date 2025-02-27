@@ -114,7 +114,8 @@
                                              ShowLabel="False"
                                              ShowIcon="Left"
                                              Type="Tertiary"
-                                             Fill="Weak" />
+                                             Fill="Weak" 
+                                             ToolTip.Tip="{x:Static resources:Language.GameWidget__RemoveGame_ToolTip}"/>
                 </Grid>
 
                 <!-- RemovingGame -->

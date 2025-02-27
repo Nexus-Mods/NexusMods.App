@@ -1,4 +1,4 @@
-The Workspace feature allows incredible flexibility and customisation when managing your mods. Different pages in the app can be opened in new tabs or panels to help arrange the most relevant information in the most useful way. 
+The Workspace feature allows increased flexibility and customisation when managing your mods. Different pages in the app can be opened in new tabs or panels to help arrange the most relevant information in the most useful way. 
 
 ![An example of a workspace set up with multiple tabs and panels](../images/0.5.2/WorkspacesExample.webp)
 

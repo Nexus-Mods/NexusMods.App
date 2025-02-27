@@ -86,6 +86,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.EventBus\NexusMods.Abstractions.EventBus.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
@@ -100,6 +101,7 @@
         <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
+        <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
         <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
@@ -589,12 +591,6 @@
         </Compile>
         <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\LocalFileDataProvider.cs">
-          <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\NexusModsDataProvider.cs">
-          <DependentUpon>ILibraryDataProvider.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeViewModel.cs">
           <DependentUpon>IItemContentsFileTreeViewModel.cs</DependentUpon>

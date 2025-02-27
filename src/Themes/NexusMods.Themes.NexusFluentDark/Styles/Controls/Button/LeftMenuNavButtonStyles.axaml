@@ -243,10 +243,6 @@
         <Style Selector="^:active">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-
-            <Style Selector="^ > DockPanel > TextBlock">
-                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
-            </Style>
         </Style>
 
         <!-- SELECTED -->
@@ -257,10 +253,6 @@
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BorderBrush" Value="{StaticResource BrandNeutral600Brush}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-
-            <Style Selector="^ > DockPanel > TextBlock">
-                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
-            </Style>
         </Style>
 
         <!-- POINTEROVER -->

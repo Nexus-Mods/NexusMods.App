@@ -98,48 +98,53 @@
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
-        <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-            <controls:MultiComponentControl.AvailableTemplates>
-                
-                <!-- Update -->
-                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
-                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
-                            
-                            <controls:StandardButton Command="{CompiledBinding CommandUpdate}"
-                                                     Text="{CompiledBinding ButtonText}"
-                                                     Size="Small"
-                                                     Type="Primary"
-                                                     Fill="Weak" />
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
+        <StackPanel Orientation="Horizontal">
+            <!-- Update -->
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                                ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
 
-                <!-- Install -->
-                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+InstallAction"
-                                            ComponentKey="{x:Static local:LibraryColumns+Actions.InstallComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LibraryComponents+InstallAction}">
-                            <Panel>
-                                <controls:StandardButton Command="{CompiledBinding CommandInstall}"
-                                                         Text="{CompiledBinding ButtonText.Value}"
+                                <controls:StandardButton Command="{CompiledBinding CommandUpdate}"
+                                                         Text="{CompiledBinding ButtonText}"
                                                          Size="Small"
                                                          Type="Primary"
-                                                         Fill="Strong"
-                                                         IsVisible="{CompiledBinding !IsInstalled.Value}"/>
-                                <StackPanel x:Name="InstalledStack" 
-                                            Orientation="Horizontal" 
-                                            IsVisible="{CompiledBinding IsInstalled.Value}">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"/>
-                                    <TextBlock Text="{CompiledBinding ButtonText.Value}"/>
-                                </StackPanel>
-                            </Panel>
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
-            </controls:MultiComponentControl.AvailableTemplates>
-        </controls:MultiComponentControl>
+                                                         Fill="Weak" />
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+            </controls:ComponentControl>
+
+            <!-- Install -->
+            <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+InstallAction"
+                                                ComponentKey="{x:Static local:LibraryColumns+Actions.InstallComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type local:LibraryComponents+InstallAction}">
+                                <Panel>
+                                    <controls:StandardButton Command="{CompiledBinding CommandInstall}"
+                                                             Text="{CompiledBinding ButtonText.Value}"
+                                                             Size="Small"
+                                                             Type="Primary"
+                                                             Fill="Strong"
+                                                             IsVisible="{CompiledBinding !IsInstalled.Value}"/>
+                                    <StackPanel x:Name="InstalledStack"
+                                                Orientation="Horizontal"
+                                                IsVisible="{CompiledBinding IsInstalled.Value}">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"/>
+                                        <TextBlock Text="{CompiledBinding ButtonText.Value}"/>
+                                    </StackPanel>
+                                </Panel>
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+            </controls:ComponentControl>
+        </StackPanel>
     </DataTemplate>
 
 </ResourceDictionary>

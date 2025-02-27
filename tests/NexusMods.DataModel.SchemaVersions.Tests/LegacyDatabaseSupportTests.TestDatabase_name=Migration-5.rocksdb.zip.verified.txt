@@ -1,7 +1,7 @@
 ﻿{
   Name: Migration-5.rocksdb.zip,
   OldId: 4,
-  NewId: 5,
+  NewId: 6,
   Loadouts: 1,
   LoadoutItemGroups: 2,
   Collections: 1,

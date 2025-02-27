@@ -29,12 +29,12 @@ Diagnostics are shown in the following situations:
 Settings files for mods (e.g. `config.json`) are saved as part of a Loadout. This allows for different combinations of settings to be used in each loadout. Copying a loadout will duplicate all existing settings whereas creating a new loadout will start with the defaults. See [Loadouts](../features/Loadouts.md). 
 
 ### Edit Config Files
-Easily edit mod config files in your loadout(s). When new config files are created after starting the game, the app will automatically assign them to mod they correspond to. To edit these settings select the mod in the "My Mods" view and click "View Mod Files" on the toolbar. Locate the config file (e.g. config.json) and click "Edit File" from the toolbar. Click save when finished editing, then apply the changes to your game. 
+ When new config files are created after starting the game, the app will automatically assign them to the mod they correspond to. To edit these settings, select the mod in the "My Mods" view and click "View Mod Files" on the toolbar. Locate the config file (e.g. config.json) and click "Edit File" from the toolbar. Click save when you've finished editing, then apply the changes to your game. 
 
 ![Using the app to edit a config.json](../images/0.5.3/SDVEditConfig.webp)
 
 ### Selective Game Backup
-When managing Stardew Valley the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
+When managing Stardew Valley, the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
 
 ## Compatibility
 This game can be managed via the app on the following operating systems and platforms. The application will automatically detect valid installations from supported game stores if possible. 

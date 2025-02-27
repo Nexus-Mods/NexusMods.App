@@ -14,7 +14,7 @@ Diagnostics are shown in the following situations:
 - On Linux, BG3 Script Extender is installed via WINE but the WINE DLL Override setting is not set to allow the correct DLL file to be used.
 
 ### Selective Game Backup
-When managing Baldur's Gate 3 the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
+When managing Baldur's Gate 3, the app will back up only the core game files (default) or the entire game folder. Backing up the whole game requires significantly more hard drive space. This option can be toggled in the :material-cog: Settings menu.
 
 
 ## Compatibility

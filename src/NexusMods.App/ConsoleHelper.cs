@@ -24,7 +24,7 @@ public static class ConsoleHelper
     /// <param name="forceNewConsoleIfNoParent">If there is no parent console, should one be created?</param>
     public static void EnsureConsole(bool forceNewConsoleIfNoParent = false)
     {
-        if (!AttachConsole(ATTACH_PARENT_PROCESS) && !forceNewConsoleIfNoParent)
+        if (!AttachConsole(ATTACH_PARENT_PROCESS) && forceNewConsoleIfNoParent)
         {
             AllocConsole();
         }

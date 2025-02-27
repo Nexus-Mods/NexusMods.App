@@ -21,6 +21,12 @@ using R3;
 namespace NexusMods.App.UI.Pages;
 using CollectionDownloadEntity = Abstractions.NexusModsLibrary.Models.CollectionDownload;
 
+public enum CollectionDownloadsFilter
+{
+    OnlyRequired,
+    OnlyOptional,
+}
+
 public class CollectionDataProvider
 {
     private readonly IConnection _connection;
@@ -32,7 +38,7 @@ public class CollectionDataProvider
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-        _collectionDownloader = new CollectionDownloader(serviceProvider);
+        _collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         _thumbnailLoader = ImagePipelines.GetModPageThumbnailPipeline(serviceProvider);
     }
 
@@ -63,6 +69,11 @@ public class CollectionDataProvider
                     return ToItemModel(externalDownload, collectionGroupObservable);
                 }
 
+                if (downloadEntity.TryGetAsCollectionDownloadBundled(out var bundledDownload))
+                {
+                    return ToItemModel(bundledDownload, collectionGroupObservable);
+                }
+
                 throw new UnreachableException();
             });
     }
@@ -71,7 +82,7 @@ public class CollectionDataProvider
     {
         return filterObservable.Select(filter =>
         {
-            if (!downloadEntity.IsCollectionDownloadNexusMods() && !downloadEntity.IsCollectionDownloadExternal()) return false;
+            if (!downloadEntity.IsCollectionDownloadNexusMods() && !downloadEntity.IsCollectionDownloadExternal() && !downloadEntity.IsCollectionDownloadBundled()) return false;
 
             return filter switch
             {
@@ -126,15 +137,27 @@ public class CollectionDataProvider
         itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: download.Md5.ToString()));
         itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: download.Size));
 
-        var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();
+        var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable().Publish(initialValue: new CollectionDownloadStatus(new CollectionDownloadStatus.NotDownloaded())).RefCount();
         var downloadJobStatusObservable = GetJobStatusObservable<ExternalDownloadJob>(job => job.ExpectedMd5 == download.Md5);
 
-        AddDownloadAction(
-            itemModel: itemModel,
+        var baseShouldAddDownloadObservable = ShouldAddObservable(
             downloadEntity: download.AsCollectionDownload(),
             statusObservable: statusObservable,
-            groupObservable: groupObservable.ToObservable(),
+            groupObservable: groupObservable.ToObservable()
+        ).Select(static b => !b).Publish(initialValue: true).RefCount();
+
+        var isManualOnlyObservable = CollectionDownloadExternal
+            .Observe(_connection, download.Id)
+            .Prepend(download)
+            .Select(static download => download.IsManualOnly)
+            .DistinctUntilChanged()
+            .ToObservable()
+            .Publish(initialValue: false)
+            .RefCount();
+
+        itemModel.AddObservable(
             key: CollectionColumns.Actions.ExternalDownloadComponentKey,
+            shouldAddObservable: baseShouldAddDownloadObservable.CombineLatest(isManualOnlyObservable, static (shouldAddDownload, isManualOnly) => shouldAddDownload && !isManualOnly),
             componentFactory: () => new CollectionComponents.ExternalDownloadAction(
                 downloadEntity: download,
                 downloadJobStatusObservable: downloadJobStatusObservable,
@@ -142,6 +165,30 @@ public class CollectionDataProvider
             )
         );
 
+        itemModel.AddObservable(
+            key: CollectionColumns.Actions.ManualDownloadComponentKey,
+            shouldAddObservable: baseShouldAddDownloadObservable.CombineLatest(isManualOnlyObservable, static (shouldAddDownload, isManualOnly) => shouldAddDownload && isManualOnly),
+            componentFactory: () => new CollectionComponents.ManualDownloadAction(
+                downloadEntity: download,
+                isDownloadedObservable: statusObservable.Select(status => status.IsDownloaded())
+            )
+        );
+
+        AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable, groupObservable.ToObservable());
+
+        return itemModel;
+    }
+
+    private CompositeItemModel<EntityId> ToItemModel(
+        CollectionDownloadBundled.ReadOnly download,
+        IObservable<Optional<CollectionGroup.ReadOnly>> groupObservable)
+    {
+        var itemModel = new CompositeItemModel<EntityId>(download.Id);
+
+        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: download.AsCollectionDownload().Name));
+        itemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
+
+        var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();
         AddInstallAction(itemModel, download.AsCollectionDownload(), statusObservable, groupObservable.ToObservable());
 
         return itemModel;
@@ -191,7 +238,6 @@ public class CollectionDataProvider
         Func<TComponent> componentFactory)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-
         itemModel.AddObservable(
             key: key,
             shouldAddObservable: ShouldAddObservable(downloadEntity, statusObservable, groupObservable).Select(static b => !b),

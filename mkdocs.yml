@@ -6,12 +6,20 @@ repo_url: https://github.com/Nexus-Mods/NexusMods.App
 
 extra:
   social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/Nexus-Mods
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/NexusSites
+    # - icon: fontawesome/brands/twitter
+    #   link: https://twitter.com/NexusSites
     - icon: fontawesome/brands/discord
-      link: https://discord.gg/ReWTxb93jS
+      link: https://discord.gg/NexusMods
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/nexusmods.com
+    - icon: fontawesome/brands/tiktok
+      link: https://www.tiktok.com/@nexusmodsofficial
+    - icon: fontawesome/brands/twitch
+      link: https://www.twitch.tv/nexusmodsofficial
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@NexusModsOfficial
+    - icon: fontawesome/brands/instagram
+      link: https://www.instagram.com/nexusmodsofficial
 
 extra_css:
   - Nexus/Stylesheets/extra.css
@@ -51,18 +59,26 @@ theme:
     - navigation.tabs
     - navigation.indexes
     - content.footnote.tooltips
+    # - toc.integrate
 
 plugins:
   - search
+  # - open-in-new-tab
+  # - social
+  # - mkdocs-video
 
 nav:
   - User Guides: 
     - Home: users/index.md
     - System Requirements: users/SystemRequirements.md
-    - Getting Started: users/GettingStarted.md
-    - Adding a Game: users/AddGames.md
+    - Getting Started: 
+      - users/gettingstarted/index.md
+      # - Introduction: users/gettingstarted/Introduction.md
+      - Adding a Game: users/gettingstarted/AddGames.md      
+      - Downloading a Mod: users/gettingstarted/DownloadAMod.md
+      - Downloading a Collection: users/gettingstarted/DownloadACollection.md
     # - Mod Library: users/Library.md
-    # - Installed Mods: users/InstalledMods.md
+      - Moving to the App: users/gettingstarted/MovingToTheApp.md
     - Features: 
       - Loadouts: users/features/Loadouts.md
       - Health Check: users/features/HealthCheck.md

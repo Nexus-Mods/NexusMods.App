@@ -231,6 +231,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible..
+        /// </summary>
+        public static string CollectionComponents_ExternalDownloadAction_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatic download not available. Click to open the third-party site to download and add the mod manually..
+        /// </summary>
+        public static string CollectionComponents_ManualDownloadAction_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ManualDownloadAction_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready to play - All required mods installed.
         /// </summary>
         public static string CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed {
@@ -836,7 +854,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add.
+        ///   Looks up a localized string similar to Install.
         /// </summary>
         public static string FileOriginPage_AddMod {
             get {
@@ -845,7 +863,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add the selected mod(s) to this loadout.
+        ///   Looks up a localized string similar to Install the selected mod(s) to this loadout.
         /// </summary>
         public static string FileOriginPage_AddMod_ToolTip {
             get {
@@ -854,7 +872,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Advanced add.
+        ///   Looks up a localized string similar to Advanced Install.
         /// </summary>
         public static string FileOriginPage_AddModAdvanced {
             get {
@@ -1070,6 +1088,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removes the game and all mods installed by the app.
+        /// </summary>
+        public static string GameWidget__RemoveGame_ToolTip {
+            get {
+                return ResourceManager.GetString("GameWidget__RemoveGame_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Removing game.
         /// </summary>
         public static string GameWidget__Removing_game {
@@ -1084,15 +1111,6 @@ namespace NexusMods.App.UI.Resources {
         public static string GameWidget__View {
             get {
                 return ResourceManager.GetString("GameWidget__View", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Give feedback.
-        /// </summary>
-        public static string GiveFeedbackMenuItem_Header {
-            get {
-                return ResourceManager.GetString("GiveFeedbackMenuItem.Header", resourceCulture);
             }
         }
         
@@ -1583,7 +1601,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove.
+        ///   Looks up a localized string similar to Uninstall.
         /// </summary>
         public static string LoadoutGridView__Remove {
             get {
@@ -1592,7 +1610,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove the selected mod(s) from this loadout.
+        ///   Looks up a localized string similar to Uninstall the selected mod(s) from this loadout.
         /// </summary>
         public static string LoadoutGridView__Remove_ToolTip {
             get {
@@ -1732,6 +1750,123 @@ namespace NexusMods.App.UI.Resources {
         public static string LoginMessageView_Title {
             get {
                 return ResourceManager.GetString("LoginMessageView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait while we verify the added file..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_CheckingText {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_CheckingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking Added File.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_CheckingTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_CheckingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report bug.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorReportBugText {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorReportBugText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please check you added the correct file and version..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep1 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For guidance, check the &apos;Additional Instructions&apos; tab which may include further details on the required file and version..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep2 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you can’t find the correct file, consider reporting the issue to the collection curator as a potential bug..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep3 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect Mod File Added.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection requires specific mod file(s) from third-party websites to be complete. Follow these steps to proceed with the manual download:.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoDescription {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection curator has provided the following additional instructions:.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoInstructionsDescription {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoInstructionsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click the &apos;Open Browser&apos; button below to navigate to the required website..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep1 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locate and download the mod file &apos;{0}&apos; (File size: {1}).
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep2 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return to this modal and add the downloaded file(s) using the &apos;Add File&apos; button..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep3 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manual Download Required.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoTitle", resourceCulture);
             }
         }
         
@@ -2037,6 +2172,42 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discord.
+        /// </summary>
+        public static string OpenDiscordMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenDiscordMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nexus Mods forums.
+        /// </summary>
+        public static string OpenForumsMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenForumsMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GitHub.
+        /// </summary>
+        public static string OpenGitHubMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenGitHubMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status page.
+        /// </summary>
+        public static string OpenStatusPageMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenStatusPageMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add tab.
         /// </summary>
         public static string Panel_Add_tab_ToolTip {
@@ -2096,6 +2267,15 @@ namespace NexusMods.App.UI.Resources {
         public static string SettingsView_Title {
             get {
                 return ResourceManager.GetString("SettingsView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to About.
+        /// </summary>
+        public static string ShowWelcomeMessageMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ShowWelcomeMessageMenuItem.Header", resourceCulture);
             }
         }
         
@@ -2177,6 +2357,15 @@ namespace NexusMods.App.UI.Resources {
         public static string TopBar_Forward_ToolTip {
             get {
                 return ResourceManager.GetString("TopBar_Forward_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade to Premium.
+        /// </summary>
+        public static string TopBar_GetPremiumMenuItem {
+            get {
+                return ResourceManager.GetString("TopBar_GetPremiumMenuItem", resourceCulture);
             }
         }
         
@@ -2298,7 +2487,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View App logs.
+        ///   Looks up a localized string similar to View app logs.
         /// </summary>
         public static string ViewAppLogsMenuItem_Header {
             get {

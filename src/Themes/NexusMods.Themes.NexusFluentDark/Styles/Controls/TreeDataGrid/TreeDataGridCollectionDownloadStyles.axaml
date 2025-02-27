@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI">
+        xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <Style Selector="TreeDataGrid#DownloadsTree">
 
@@ -22,19 +23,23 @@
 
             <!-- all of our cells will be a type of this -->
             <Style Selector="^ TreeDataGridTemplateCell">
-                <!-- <Setter Property="Background" Value="Blue" /> -->
 
                 <!-- collections download -> actions cell -->
                 <Style Selector="^.CollectionColumns_Actions">
                     <Setter Property="HorizontalAlignment" Value="Right" />
 
-                    <Style Selector="^ StackPanel#DownloadingStack">
+                    <Style Selector="^ StackPanel#DownloadingStack,^ StackPanel#DownloadedStack">
                         <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
                         <Style Selector="^ > spinner|Spinner">
                             <Setter Property="Width" Value="16" />
                             <Setter Property="Height" Value="16" />
                             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        </Style>
+
+                        <Style Selector="^ > icons|UnifiedIcon">
+                            <Setter Property="Size" Value="16" />
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                         </Style>
 
                         <Style Selector="^ > TextBlock">

@@ -16,8 +16,12 @@ public interface IModUpdateService
     /// </summary>
     /// <param name="token">Cancellation token</param>
     /// <param name="notify">True if external listeners should be notified after an update check.</param>
-    /// <returns>Updated mod information</returns>
-    Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true);
+    /// <param name="throttle">Whether to throttle the update check to specific intervals.</param>
+    /// <returns>
+    ///     Updated mod page information.
+    ///     Calls to this method may be throttled if <paramref name="throttle"/> is set to false.
+    /// </returns>
+    Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true, bool throttle = true);
 
     /// <summary>
     /// Notifies of updates to mod files and mod pages based on our existing metadata.
@@ -32,12 +36,13 @@ public interface IModUpdateService
     /// <summary>
     /// Returns an observable for the newest version of a file.
     /// </summary>
-    /// <returns>An observable that signals the newest version of a file.</returns>
-    IObservable<Optional<NexusModsFileMetadata.ReadOnly>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current);
+    /// <returns>An observable that signals an update for a singular mod on a page.</returns>
+    IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current);
 
     /// <summary>
     /// Returns an observable when any file on a mod page is updated. 
     /// </summary>
     /// <param name="current">The current mod page to listen for changes in.</param>
-    IObservable<Optional<NewerFilesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current);
+    /// <returns>An observable that returns all updated items on a given mod page.</returns>
+    IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current);
 }

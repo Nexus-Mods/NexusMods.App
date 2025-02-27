@@ -1,33 +1,52 @@
-﻿using Avalonia;
+﻿using System.Reactive.Disposables;
+using Avalonia;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.BuildInfo;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 
 [UsedImplicitly]
 public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopmentBuildBannerViewModel>
 {
-    private static readonly StyledProperty<string> TextProperty =
-        AvaloniaProperty.Register<DevelopmentBuildBannerView, string>(nameof(Text), "vX.X - DEVELOPMENT USE ONLY");
+    private static readonly StyledProperty<string> AppNameProperty =
+        AvaloniaProperty.Register<DevelopmentBuildBannerView, string>(nameof(AppName), "DEVELOPMENT USE ONLY");
+    
+    private static readonly StyledProperty<string> AppVersionProperty =
+        AvaloniaProperty.Register<DevelopmentBuildBannerView, string>(nameof(AppVersion), "vX.X.X");
 
-    public string Text
+    public string AppName
     {
-        get => GetValue(TextProperty);
-        set => SetValue(TextProperty, value);
+        get => GetValue(AppNameProperty);
+        set => SetValue(AppNameProperty, value);
+    }
+    
+    public string AppVersion
+    {
+        get => GetValue(AppVersionProperty);
+        set => SetValue(AppVersionProperty, value);
     }
 
     public DevelopmentBuildBannerView()
     {
         InitializeComponent();
 
-        var appVersion = GetAppVersion();
-        Text = $"{appVersion} - DEVELOPMENT USE ONLY";
+        this.WhenActivated(d =>
+            {
+                this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackButton)
+                    .DisposeWith(d);
+            }
+        );
+        
+        var appName = CompileConstants.IsDebug ? "DEVELOPMENT USE ONLY" : "Stardew Valley Preview";
+
+        AppVersion = GetAppVersion();
+        AppName = $"{appName}:";
     }
 
     private static string GetAppVersion()
     {
-        var prefix = CompileConstants.IsDebug ? "Debug build" : ApplicationConstants.Version.ToString();
-        return $"{prefix} - {ApplicationConstants.CommitHash}";
+        return CompileConstants.IsDebug ? $"Debug build - {ApplicationConstants.CommitHash}" : ApplicationConstants.Version.ToString();
     }
 }

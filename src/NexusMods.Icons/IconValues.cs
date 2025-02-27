@@ -99,6 +99,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/format-list-bulleted/
     public static readonly IconValue FormatListBullet = new ProjektankerIcon("mdi-format-list-bulleted");
     
+    // https://pictogrammers.com/library/mdi/icon/list-box-outline/
+    public static readonly IconValue ListBoxOutline = new ProjektankerIcon("mdi-list-box-outline");
+
     // https://pictogrammers.com/library/mdi/icon/format-list-checkbox/
     public static readonly IconValue FormatListCheckbox = new ProjektankerIcon("mdi-format-list-checkbox");
     
@@ -151,6 +154,11 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/sort-descending/
     public static readonly IconValue SortDescending = new ProjektankerIcon("mdi-sort-descending");
 
+    // https://pictogrammers.com/library/mdi/icon/account-cog/
+    public static readonly IconValue AccountCog = new ProjektankerIcon("mdi-account-cog");
+    
+    // https://pictogrammers.com/library/mdi/icon/logout/
+    public static readonly IconValue Logout = new ProjektankerIcon("mdi-logout");
 #endregion
 
 #region Alert
@@ -201,6 +209,12 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/tooltip-question/
     public static readonly IconValue LiveHelp = new ProjektankerIcon("mdi-tooltip-question");
+    
+    // https://pictogrammers.com/library/mdi/icon/party-popper/
+    public static readonly IconValue PartyPopper = new ProjektankerIcon("mdi-party-popper");
+    
+    // https://pictogrammers.com/library/mdi/icon/broadcast/
+    public static readonly IconValue Broadcast = new ProjektankerIcon("mdi-broadcast");
 
 #endregion
 
@@ -232,6 +246,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/undo/
     public static readonly IconValue Undo = new ProjektankerIcon("mdi-undo");
+    
+    // https://pictogrammers.com/library/mdi/icon/tray-arrow-down/
+    public static readonly IconValue TrayArrowDown = new ProjektankerIcon("mdi-tray-arrow-down");
 
 #endregion
 
@@ -261,6 +278,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/folder-outline/
     public static readonly IconValue Folder = new ProjektankerIcon("mdi-folder-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/folder-eye-outline/
+    public static readonly IconValue FolderEyeOutline = new ProjektankerIcon("mdi-folder-eye-outline");
 
     // https://pictogrammers.com/library/mdi/icon/check-underline/
     public static readonly IconValue FolderOpen = new ProjektankerIcon("mdi-folder-open-outline");
@@ -282,6 +302,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/file-document-outline/
     public static readonly IconValue FileDocumentOutline = new ProjektankerIcon("mdi-file-document-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/folder-upload-outline/
+    public static readonly IconValue FolderUploadOutline = new ProjektankerIcon("mdi-folder-upload-outline");
 
 #endregion
 
@@ -368,6 +391,10 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/swap-vertical"/
     public static readonly IconValue Swap = new ProjektankerIcon("mdi-swap-vertical");
+    
+    // https://pictogrammers.com/library/mdi/icon/dots-vertical/
+    public static readonly IconValue MoreVertical = new ProjektankerIcon("mdi-dots-vertical");
+    
 
 #endregion
     
@@ -557,6 +584,18 @@ public static class IconValues
         new Rect(0, 0, 24, 24 )
     ));
     
+    // GitHub icon
+    public static readonly IconValue GitHub = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M48.854 0C21.839 0 0 22 0 49.217c0 21.756 13.993 40.172 33.405 46.69 2.427.49 3.316-1.059 3.316-2.362 0-1.141-.08-5.052-.08-9.127-13.59 2.934-16.42-5.867-16.42-5.867-2.184-5.704-5.42-7.17-5.42-7.17-4.448-3.015.324-3.015.324-3.015 4.934.326 7.523 5.052 7.523 5.052 4.367 7.496 11.404 5.378 14.235 4.074.404-3.178 1.699-5.378 3.074-6.6-10.839-1.141-22.243-5.378-22.243-24.283 0-5.378 1.94-9.778 5.014-13.2-.485-1.222-2.184-6.275.486-13.038 0 0 4.125-1.304 13.426 5.052a46.97 46.97 0 0 1 12.214-1.63c4.125 0 8.33.571 12.213 1.63 9.302-6.356 13.427-5.052 13.427-5.052 2.67 6.763.97 11.816.485 13.038 3.155 3.422 5.015 7.822 5.015 13.2 0 18.905-11.404 23.06-22.324 24.283 1.78 1.548 3.316 4.481 3.316 9.126 0 6.6-.08 11.897-.08 13.526 0 1.304.89 2.853 3.316 2.364 19.412-6.52 33.405-24.935 33.405-46.691C97.707 22 75.788 0 48.854 0z",
+        new Rect(0, 0, 98, 96 )
+    ));
+    
+    // Premium icon
+    public static readonly IconValue Premium = new SimpleVectorIcon(new SimpleVectorIconImage(
+            "M7.99998 14L1.33331 6L3.33331 2H12.6666L14.6666 6L7.99998 14ZM6.41665 5.33333H9.58331L8.58331 3.33333H7.41665L6.41665 5.33333ZM7.33331 11.1167V6.66667H3.63331L7.33331 11.1167ZM8.66665 11.1167L12.3666 6.66667H8.66665V11.1167ZM11.0666 5.33333H12.8333L11.8333 3.33333H10.0666L11.0666 5.33333ZM3.16665 5.33333H4.93331L5.93331 3.33333H4.16665L3.16665 5.33333Z",
+            new Rect(0, 0, 16, 16 )
+    ));
+    
     public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
 
 #endregion
@@ -596,6 +635,11 @@ public static class IconValues
     /// </summary>
     public static readonly IconValue PictogramSettings = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/settings.svg"));
 
+    /// <summary>
+    /// Brand pictogram for Celebrate
+    /// </summary>
+    public static readonly IconValue PictogramCelebrate = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg"));
+    
 #endregion
     
 }

@@ -101,7 +101,7 @@ public abstract class AGame : IGame
     /// Returns a game specific version of the game, usually from the primary executable.
     /// Usually used for game specific diagnostics.
     /// </summary>
-    public virtual Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+    public virtual Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
     {
         try
         {
@@ -112,7 +112,7 @@ public abstract class AGame : IGame
         }
         catch (Exception)
         {
-            return new Version(0, 0, 0, 0);
+            return Optional<Version>.None;
         }
     }
 

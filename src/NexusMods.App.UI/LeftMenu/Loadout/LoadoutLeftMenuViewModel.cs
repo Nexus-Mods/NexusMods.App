@@ -11,11 +11,13 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
+using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -56,6 +58,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         WorkspaceId = workspaceId;
 
         var diagnosticManager = serviceProvider.GetRequiredService<IDiagnosticManager>();
+        var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         var conn = serviceProvider.GetRequiredService<IConnection>();
         var monitor = serviceProvider.GetRequiredService<IJobMonitor>();
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
@@ -63,7 +66,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         var logger = serviceProvider.GetRequiredService<ILogger<LoadoutLeftMenuViewModel>>();
 
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
-        var collectionDownloader = new CollectionDownloader(serviceProvider);
+        var collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
         
         // Library
         LeftMenuItemLibrary = new LeftMenuItemWithCountBadgeViewModel(
@@ -86,18 +89,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         };
         
         // Loadout
-        var loadoutModCountObservable = conn.ObserveDatoms(LibraryLinkedLoadoutItem.PrimaryAttribute)
-            .Filter(datom =>
-                {
-                    var item = LoadoutItem.Load(conn.Db, datom.E);
-                    return item.LoadoutId.Equals(loadoutContext.LoadoutId);
-                }
-            )
-            .QueryWhenChanged(datoms => datoms.Count);
-
-        var loadoutLabelObservable = loadoutModCountObservable.Select(count =>
-            string.Format(Language.LoadoutView_Title_Installed_Mods, count)
-        );
+        var loadoutLabelObservable = LoadoutDataProviderHelper
+            .CountAllLoadoutItems(serviceProvider, loadoutContext.LoadoutId)
+            .Select(count => string.Format(Language.LoadoutView_Title_Installed_Mods, count));
 
         LeftMenuItemLoadout = new LeftMenuItemViewModel(
             workspaceController,
@@ -171,6 +165,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
         // Health Check
         LeftMenuItemHealthCheck = new HealthCheckLeftMenuItemViewModel(
             workspaceController,
+            settingsManager,
             WorkspaceId,
             new PageData
             {
@@ -224,6 +219,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                                 Context = new ItemContentsFileTreePageContext
                                 {
                                     GroupId = group.LoadoutItemGroupId,
+                                    IsReadOnly = false,
                                 },
                             }
                         )

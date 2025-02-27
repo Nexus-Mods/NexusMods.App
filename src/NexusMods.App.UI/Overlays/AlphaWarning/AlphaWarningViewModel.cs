@@ -16,16 +16,10 @@ namespace NexusMods.App.UI.Overlays.AlphaWarning;
 [UsedImplicitly]
 public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, IAlphaWarningViewModel
 {
-    
-    // NOTE(erri120): from https://github.com/Nexus-Mods/NexusMods.App/issues/1376
-    private static readonly Uri DiscordUri = new("https://discord.gg/y7NfQWyRkj");
-    private static readonly Uri ForumsUri = new("https://forums.nexusmods.com/forum/9052-nexus-mods-app/");
-    private static readonly Uri GitHubUri = new("https://github.com/Nexus-Mods/NexusMods.App");
-
     public ReactiveCommand<Unit, Unit> ViewChangelogInAppCommand { get; }
-    public ReactiveCommand<Unit, Uri> OpenDiscordCommand { get; }
-    public ReactiveCommand<Unit, Uri> OpenForumsCommand { get; }
-    public ReactiveCommand<Unit, Uri> OpenGitHubCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenDiscordCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenForumsCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenGitHubCommand { get; }
 
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
 
@@ -39,55 +33,44 @@ public class AlphaWarningViewModel : AOverlayViewModel<IAlphaWarningViewModel>, 
     {
         _settingsManager = settingsManager;
 
-        OpenDiscordCommand = ReactiveCommand.Create(() => DiscordUri);
-        OpenForumsCommand = ReactiveCommand.Create(() => ForumsUri);
-        OpenGitHubCommand = ReactiveCommand.Create(() => GitHubUri);
-
         ViewChangelogInAppCommand = ReactiveCommand.Create(() =>
-        {
-            var workspaceController = WorkspaceController;
-            if (workspaceController is null) return;
-
-            var pageData = new PageData
             {
-                Context = new ChangelogPageContext
+                var workspaceController = WorkspaceController;
+                if (workspaceController is null) return;
+
+                var pageData = new PageData
                 {
-                    TargetVersion = null,
-                },
-                FactoryId = ChangelogPageFactory.StaticId,
-            };
+                    Context = new ChangelogPageContext
+                    {
+                        TargetVersion = null,
+                    },
+                    FactoryId = ChangelogPageFactory.StaticId,
+                };
 
-            var behavior = workspaceController.GetOpenPageBehavior(pageData, new NavigationInformation(NavigationInput.Default, Optional<OpenPageBehaviorType>.None));
-            workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, new NavigationInformation(NavigationInput.Default, Optional<OpenPageBehaviorType>.None));
+                workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
 
-            Close();
-        });
+                Close();
+            }
+        );
 
         CloseCommand = ReactiveCommand.Create(() =>
-        {
-            _settingsManager.Update<AlphaSettings>(settings => settings with
             {
-                HasShownModal = true,
-            });
-
-            Close();
-        });
-
-        this.WhenActivated(disposables =>
-        {
-            this.WhenAnyObservable(
-                vm => vm.OpenDiscordCommand,
-                vm => vm.OpenForumsCommand,
-                vm => vm.OpenGitHubCommand)
-                .SubscribeWithErrorLogging(uri =>
-                {
-                    _ = Task.Run(async () =>
+                _settingsManager.Update<AlphaSettings>(settings => settings with
                     {
-                        await osInterop.OpenUrl(uri);
-                    });
-                })
-                .DisposeWith(disposables);
-        });
+                        HasShownModal = true,
+                    }
+                );
+
+                Close();
+            }
+        );
+
+        OpenDiscordCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.DiscordUri); });
+
+        OpenForumsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.ForumsUri); });
+
+        OpenGitHubCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.GitHubUri); });
     }
 
     public bool MaybeShow()

@@ -1,0 +1,19 @@
+﻿[Id] NexusMods.Games.StardewValley: 1
+[Title] Missing Dependency
+[Summary] 'Farm Type Manager' requires 'Content Patcher' which is not installed
+[Details]
+The mod **Farm Type Manager** requires **Content Patcher** to function, but **Content Patcher** is not installed.
+
+
+### How to Resolve
+1. Download **Content Patcher** from [Nexus Mods](https://nexusmods.com/stardewvalley/mods/1915?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
+2. Add **Content Patcher** to the loadout. 
+
+### Technical Details
+The `manifest.json` file included with **Farm Type Manager** lists a mod with the ID `Pathoschild.ContentPatcher` as a requirement or is using it as a framework in order function. 
+
+The issue can arise in these scenarios:
+
+1. **Missing Installation**: The required mod is not installed
+2. **Incorrect Mod ID**: The manifest data for **Farm Type Manager** might be incorrect
+

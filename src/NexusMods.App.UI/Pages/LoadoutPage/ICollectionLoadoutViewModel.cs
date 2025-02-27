@@ -1,7 +1,9 @@
+using System.Reactive;
 using Avalonia.Media.Imaging;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
-using R3;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -23,6 +25,11 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
     /// Gets whether the collection is enabled.
     /// </summary>
     bool IsCollectionEnabled { get; }
+    
+    /// <summary>
+    /// Gets the number of mods installed in the collection, both required and optional.
+    /// </summary>
+    int InstalledModsCount { get; }
 
     string Name { get; }
 
@@ -36,5 +43,9 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
 
     Bitmap? BackgroundImage { get; }
 
-    ReactiveCommand<Unit> CommandToggle { get; }
+    R3.ReactiveCommand<R3.Unit> CommandToggle { get; }
+    
+    R3.ReactiveCommand<R3.Unit> CommandDeleteCollection { get; }
+    
+    ReactiveCommand<NavigationInformation, Unit> CommandViewCollectionDownloadPage { get; }
 }

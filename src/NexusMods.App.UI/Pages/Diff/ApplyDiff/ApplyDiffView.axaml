@@ -7,25 +7,25 @@
                                 xmlns:trees="clr-namespace:NexusMods.App.UI.Controls.Trees"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Diff.ApplyDiff.ApplyDiffView">
     <Design.DataContext>
         <applyDiff:ApplyDiffDesignViewModel />
     </Design.DataContext>
-    
+
     <Grid RowDefinitions="Auto, *">
         <Border Classes="Toolbar" Grid.Row="0">
             <StackPanel>
-                <Button x:Name="RefreshButton">
-                    <StackPanel>
-                        <icons:UnifiedIcon Classes="Refresh" />
-                        <TextBlock Text="{x:Static resources:Language.ApplyDiff_Refresh}" />
-                    </StackPanel>
-                </Button>
+                <controls:StandardButton x:Name="RefreshButton"
+                                         LeftIcon="{x:Static icons:IconValues.Refresh}"
+                                         Text="Refresh"
+                                         ShowIcon="Left"
+                                         Size="Small"
+                                         Fill="WeakAlt" />
             </StackPanel>
         </Border>
-        
-        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="TreeViewHost"/>
+
+        <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="TreeViewHost" />
     </Grid>
 </reactiveUi:ReactiveUserControl>
-

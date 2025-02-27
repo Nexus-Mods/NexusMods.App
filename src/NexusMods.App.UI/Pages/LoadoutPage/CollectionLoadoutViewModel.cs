@@ -10,6 +10,12 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using System.Reactive.Linq;
+using DynamicData;
+using NexusMods.Abstractions.Collections;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -31,8 +37,9 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
         var tilePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var backgroundPipeline = ImagePipelines.GetCollectionBackgroundImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
-
-        var group = CollectionGroup.Load(connection.Db, pageContext.GroupId);
+        
+        var nexusCollectionGroup = NexusCollectionLoadoutGroup.Load(connection.Db, pageContext.GroupId);
+        var group = nexusCollectionGroup.AsCollectionGroup();
         TabIcon = IconValues.CollectionsOutline;
         TabTitle = group.AsLoadoutItemGroup().AsLoadoutItem().Name;
 
@@ -85,11 +92,68 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
         );
+        
+        CommandDeleteCollection = new ReactiveCommand(
+            executeAsync: async (_, _) =>
+            {
+                // Switch away from this page since its collection will be deleted
+                var pageData = new PageData
+                {
+                    FactoryId = CollectionDownloadPageFactory.StaticId,
+                    Context = new CollectionDownloadPageContext()
+                    {
+                        TargetLoadout = pageContext.LoadoutId,
+                        CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = new OpenPageBehavior.ReplaceTab(PanelId, TabId);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior, checkOtherPanels: false);
+                
+                using var tx = connection.BeginTransaction();
+                
+                // Delete collection loadout group and all installed mods inside it
+                tx.Delete(nexusCollectionGroup.Id, recursive: true);
+                
+                await tx.Commit();
+            },
+            awaitOperation: AwaitOperation.Drop,
+            configureAwait: false
+        );
+
+        CommandViewCollectionDownloadPage = ReactiveUI.ReactiveCommand.Create<NavigationInformation, System.Reactive.Unit>
+        (
+            info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = CollectionDownloadPageFactory.StaticId,
+                    Context = new CollectionDownloadPageContext()
+                    {
+                        TargetLoadout = pageContext.LoadoutId,
+                        CollectionRevisionMetadataId = nexusCollectionGroup.RevisionId,
+                    },
+                };
+
+                var workspaceController = GetWorkspaceController();
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(WorkspaceId, pageData, behavior);
+                
+                return System.Reactive.Unit.Default;
+            }
+        );
 
         this.WhenActivated(disposables =>
         {
             Adapter.Activate().AddTo(disposables);
-
+            
+            connection.ObserveDatoms(LoadoutItem.ParentId, pageContext.GroupId)
+                .QueryWhenChanged(datoms => datoms.Count)
+                .OnUI()
+                .Subscribe(count => InstalledModsCount = count)
+                .AddTo(disposables);
+            
             LoadoutItem
                 .Observe(connection, pageContext.GroupId)
                 .Select(static item => !item.IsDisabled)
@@ -136,5 +200,10 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
     [Reactive] public Bitmap? TileImage { get; private set; }
 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
+    
+    [Reactive] public int InstalledModsCount { get; private set; }
+    
     public ReactiveCommand<Unit> CommandToggle { get; }
+    public ReactiveCommand<Unit> CommandDeleteCollection { get; }
+    public ReactiveUI.ReactiveCommand<NavigationInformation, System.Reactive.Unit> CommandViewCollectionDownloadPage { get; }
 }

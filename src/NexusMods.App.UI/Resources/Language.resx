@@ -231,10 +231,10 @@
         <value>Delete</value>
     </data>
     <data name="FileOriginPage_AddMod" xml:space="preserve">
-        <value>Add</value>
+        <value>Install</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
-        <value>Advanced add</value>
+        <value>Advanced Install</value>
     </data>
     <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
         <value>Games Added</value>
@@ -409,6 +409,9 @@
     <data name="GameWidget__View" xml:space="preserve">
         <value>View</value>
     </data>
+    <data name="GameWidget__RemoveGame_ToolTip" xml:space="preserve">
+        <value>Removes the game and all mods installed by the app</value>
+    </data>
     <data name="GameWidget__Removing_game" xml:space="preserve">
         <value>Removing game</value>
     </data>
@@ -512,7 +515,7 @@
         <value>View in library</value>
     </data>
     <data name="LoadoutGridView__Remove" xml:space="preserve">
-        <value>Remove</value>
+        <value>Uninstall</value>
     </data>
     <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
         <value>To easily download mods from Nexus Mods you will need to log in with your Nexus Mods account.  To add mods manually from your drive, you do not need to log in.</value>
@@ -550,15 +553,31 @@
     <data name="TopBar_AccountSettings" xml:space="preserve">
         <value>Account settings</value>
     </data>
+    <data name="TopBar_GetPremiumMenuItem" xml:space="preserve">
+        <value>Upgrade to Premium</value>
+    </data>
     <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
         <value>View changelog</value>
     </data>
     <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
-        <value>View App logs</value>
+        <value>View app logs</value>
     </data>
-    <data name="GiveFeedbackMenuItem.Header" xml:space="preserve">
-        <value>Give feedback</value>
+    <data name="ShowWelcomeMessageMenuItem.Header" xml:space="preserve">
+        <value>About</value>
     </data>
+
+    <data name="OpenDiscordMenuItem.Header" xml:space="preserve">
+        <value>Discord</value>
+    </data>
+    <data name="OpenGitHubMenuItem.Header" xml:space="preserve">
+        <value>GitHub</value>
+    </data>
+    <data name="OpenForumsMenuItem.Header" xml:space="preserve">
+        <value>Nexus Mods forums</value>
+    </data>
+    <data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
+        <value>Status page</value>
+    </data> 
     <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
         <value>Open in new tab</value>
     </data>
@@ -569,7 +588,7 @@
         <value>Help and feedback</value>
     </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
-        <value>Add the selected mod(s) to this loadout</value>
+        <value>Install the selected mod(s) to this loadout</value>
     </data>
     <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
         <value>Permanently remove this mod from your Library</value>
@@ -749,7 +768,7 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Connect your Nexus Mods account</value>
     </data>
     <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
-        <value>Remove the selected mod(s) from this loadout</value>
+        <value>Uninstall the selected mod(s) from this loadout</value>
     </data>
     <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
         <value/>
@@ -810,4 +829,59 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
         <value>Install downloaded optional mods</value>
     </data>
+
+    <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
+        <value>Manual Download Required</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoDescription" xml:space="preserve">
+        <value>This collection requires specific mod file(s) from third-party websites to be complete. Follow these steps to proceed with the manual download:</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep1" xml:space="preserve">
+        <value>Click the 'Open Browser' button below to navigate to the required website.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep2" xml:space="preserve">
+        <value>Locate and download the mod file '{0}' (File size: {1})</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoStep3" xml:space="preserve">
+        <value>Return to this modal and add the downloaded file(s) using the 'Add File' button.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_InfoInstructionsDescription" xml:space="preserve">
+        <value>The Collection curator has provided the following additional instructions:</value>
+    </data>
+
+
+
+    <data name="ManualDownloadRequiredOverlayView_CheckingTitle" xml:space="preserve">
+        <value>Checking Added File</value>
+    </data>    
+    <data name="ManualDownloadRequiredOverlayView_CheckingText" xml:space="preserve">
+        <value>Please wait while we verify the added file.</value>
+    </data>
+    
+    
+    <data name="ManualDownloadRequiredOverlayView_ErrorTitle" xml:space="preserve">
+        <value>Incorrect Mod File Added</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep1" xml:space="preserve">
+        <value>Please check you added the correct file and version.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep2" xml:space="preserve">
+        <value>For guidance, check the 'Additional Instructions' tab which may include further details on the required file and version.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorStep3" xml:space="preserve">
+        <value>If you can’t find the correct file, consider reporting the issue to the collection curator as a potential bug.</value>
+    </data>
+    <data name="ManualDownloadRequiredOverlayView_ErrorReportBugText" xml:space="preserve">
+        <value>Report bug</value>
+    </data>
+    
+    <data name="CollectionComponents_ExternalDownloadAction_ToolTip" xml:space="preserve">
+        <value>Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible.</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
+        <value>Automatic download not available. Click to open the third-party site to download and add the mod manually.</value>
+    </data>
+    
+    
+    
 </root>

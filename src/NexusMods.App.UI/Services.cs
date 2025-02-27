@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.App.UI.Controls.DataGrid;
@@ -229,6 +230,9 @@ public static class Services
             .AddView<DebugControlsPageView, IDebugControlsPageViewModel>()
             .AddViewModel<DebugControlsPageViewModel, IDebugControlsPageViewModel>()
 
+            .AddView<ManualDownloadRequiredOverlayView, IManualDownloadRequiredOverlayViewModel>()
+            .AddViewModel<ManualDownloadRequiredOverlayViewModel, IManualDownloadRequiredOverlayViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -277,11 +281,8 @@ public static class Services
             .AddSingleton<IWorkspaceAttachmentsFactory, LoadoutAttachmentsFactory>()
 
             // Diagnostics
-            .AddSingleton<IValueFormatter, LoadoutReferenceFormatter>()
-            .AddSingleton<IValueFormatter, NamedLinkFormatter>()
-            .AddSingleton<IValueFormatter, LoadoutItemGroupFormatter>()
-            .AddSingleton<IDiagnosticWriter, DiagnosticWriter>()
-            
+            .AddDiagnosticWriter()
+
             // Overlay Helpers
             .AddHostedService<NexusLoginOverlayService>()
 
@@ -295,6 +296,9 @@ public static class Services
             .AddSingleton<ILoadoutDataProvider, LocalFileDataProvider>()
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
+            .AddSingleton<ILoadoutDataProvider, BundledDataProvider>()
+            .AddSingleton<IEventBus, EventBus>()
+            .AddSingleton<IAvaloniaInterop, AvaloniaInterop>()
             .AddFileSystem()
             .AddImagePipelines();
     }

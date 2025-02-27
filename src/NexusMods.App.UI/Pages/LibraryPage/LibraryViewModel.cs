@@ -1,19 +1,14 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reactive.Linq;
-using System.Reflection.Metadata;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
@@ -26,6 +21,7 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -75,13 +71,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
-    private BehaviorSubject<Optional<LoadoutId>> LoadoutSubject { get; } = new(Optional<LoadoutId>.None);
-
     public LibraryViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
         IGameDomainToGameIdMappingCache gameIdMappingCache,
-        INexusApiClient nexusApiClient,
         LoadoutId loadoutId) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
@@ -93,26 +86,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
 
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
-        var loadoutObservable = LoadoutSubject
-            .Where(static id => id.HasValue)
-            .Select(static id => id.Value)
-            .AsSystemObservable()
-            .Replay(bufferSize: 1);
-
-        var gameObservable = loadoutObservable
-            .Select(id => Loadout.Load(_connection.Db, id).InstallationInstance.Game)
-            .Replay(bufferSize: 1);
-
-        var libraryFilter = new LibraryFilter(
-            loadoutObservable: loadoutObservable,
-            gameObservable: gameObservable
-        );
+        var loadout = Loadout.Load(_connection.Db, loadoutId);
+        var libraryFilter = new LibraryFilter(loadout, loadout.InstallationInstance.Game);
 
         Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
-        LoadoutSubject.OnNext(loadoutId);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
@@ -186,9 +167,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         this.WhenActivated(disposables =>
         {
-            disposables.Add(loadoutObservable.Connect());
-            disposables.Add(gameObservable.Connect());
-
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
             Adapter.Activate().AddTo(disposables);
 
@@ -206,7 +184,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     }
                     else
                     {
-                        await HandleUpdateMessage(updateMessage.NewFile, cancellationToken);
+                        await HandleUpdateMessage(updateMessage, cancellationToken);
                     }
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -217,6 +195,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
                 .OnUI()
                 .Transform(ICollectionCardViewModel (revision) => new CollectionCardViewModel(
+                    collectionDownloader: collectionDownloader,
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,
                     windowManager: WindowManager,
@@ -234,23 +213,56 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private async ValueTask HandleUpdateMessage(NexusModsFileMetadata.ReadOnly fileMetadata, CancellationToken cancellationToken)
+    private async ValueTask HandleUpdateMessage(UpdateMessage updateMessage, CancellationToken cancellationToken)
     {
+        var updatesOnPage = updateMessage.Updates;
+        
         // Note(sewer)
         // If the user is a free user, they have to go to the website due to API restrictions.
         // For premium, we can start a download directly.
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
         {
-            var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(fileMetadata.Uid.FileId, fileMetadata.Uid.GameId);
-            var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-            await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+            /*
+               // Note(sewer): The commented code here is the correct behaviour
+               // as intended per the phase one design. We temporarily need to alter
+               // this behaviour due to the TreeDataGrid bug. When TreeDataGrid
+               // is fixed, we can revert.
+
+               // If there are multiple mods, we expand the row
+               var treeNode = updateMessage.TreeNode;
+               if (updatesOnPage.NumberOfModFilesToUpdate > 1)
+               {
+                   treeNode.IsExpanded = true; // 👈 TreeDataGrid bug. Doesn't handle PropertyChanged right.
+               }
+               else
+               {
+                   // Otherwise send them to the download page!!
+                   var latestFile = updatesOnPage.NewestFile();
+                   var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(latestFile.Uid.FileId, latestFile.Uid.GameId);
+                   var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+                   await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+               }
+            */
+
+            // Open download page for every unique file.
+            foreach (var file in updatesOnPage.NewestUniqueFileForEachMod())
+            {
+                var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(file.Uid.FileId, file.Uid.GameId);
+                var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+                await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+            }
         }
         else
         {
-            await using var tempPath = _temporaryFileManager.CreateFile();
-            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, fileMetadata, cancellationToken: cancellationToken);
-            await _libraryService.AddDownload(job);
+            // Note(sewer): There's usually just 1 file in like 99% of the cases here
+            //              so no need to optimize around file reuse and TemporaryFileManager.
+            foreach (var newestFile in updatesOnPage.NewestUniqueFileForEachMod())
+            {
+                await using var tempPath = _temporaryFileManager.CreateFile();
+                var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
+                await _libraryService.AddDownload(job);
+            }
         }
     }
 
@@ -346,7 +358,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
-public readonly record struct UpdateMessage(NexusModsFileMetadata.ReadOnly NewFile);
+public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
@@ -404,12 +416,13 @@ public class LibraryTreeDataGridAdapter :
         var updateActionDisposable = model.SubscribeToComponent<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
-            factory: static (self, itemModel, component) => component.CommandUpdate.Subscribe((self, itemModel, component), static (_, state) =>
+            factory: static (self, itemModel, component) => component.CommandUpdate
+                .SubscribeOnUIThreadDispatcher() // Update payload may expand row for free users, requiring UI thread.
+                .Subscribe((self, itemModel, component), static (_, state) =>
             {
-                var (self, _, component) = state;
-                var newFile = component.NewFile.Value;
-
-                self.MessageSubject.OnNext(new UpdateMessage(newFile));
+                var (self, model, component) = state;
+                var newFile = component.NewFiles.Value;
+                self.MessageSubject.OnNext(new UpdateMessage(newFile, model));
             })
         );
 

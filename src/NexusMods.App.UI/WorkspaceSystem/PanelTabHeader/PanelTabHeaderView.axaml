@@ -34,7 +34,7 @@
                 Margin="16,0,0,0">
                 <icons:UnifiedIcon x:Name="Icon" DockPanel.Dock="Left" />
                 <TextBlock x:Name="TitleTextBlock"
-                           Theme="{StaticResource BodySMBoldTheme}"
+                           Theme="{StaticResource BodySMNormalTheme}"
                            TextWrapping="NoWrap"
                            TextTrimming="CharacterEllipsis"
                            Margin="8,0,8,0" />

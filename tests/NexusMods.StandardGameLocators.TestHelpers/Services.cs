@@ -11,6 +11,7 @@ using GameFinder.StoreHandlers.Xbox;
 using GameFinder.Wine;
 using GameFinder.Wine.Bottles;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.DependencyInjection;
@@ -158,7 +159,7 @@ public static class Services
 
         if (OSInformation.Shared.IsLinux)
         {
-            coll.AddSingleton<HeroicGOGHandler>(s => new HeroicGOGHandler(s.GetRequiredService<IFileSystem>()));
+            coll.AddSingleton<HeroicGOGHandler>(s => new HeroicGOGHandler(s.GetRequiredService<IFileSystem>(), s.GetRequiredService<ILogger<HeroicGOGHandler>>()));
 
             coll.AddSingleton<IWinePrefixManager<WinePrefix>>(s =>
                 new StubbedWinePrefixManager<WinePrefix>(s.GetRequiredService<TemporaryFileManager>(),

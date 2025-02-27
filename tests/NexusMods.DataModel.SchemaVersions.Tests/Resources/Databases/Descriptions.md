@@ -19,4 +19,5 @@ Finally, update the `Descriptions.md` file with the new data.
 | 2024-11-04 | `SDV.4_11_2024.rocksdb.zip` | A snapshot of SDV managed and with the "Stardew Valley VERY Expanded" collection installed.                          |
 | 2025-02-05 | `SDV.2_5_2025.rocksdb.zip`  | A snapshot of SDV from 0.7.2 with a few mods installed, no collections, before removing game files from the loadout. |
 | 2025-02-06 | `Issue-2608.rocksdb.zip`    | A snapshot for testing Issue [#2608](https://github.com/Nexus-Mods/NexusMods.App/issues/2608)                        |
-| 2025-02-13 | `Migration-5.rocksdb.zip` | For testing migration 5                                                                                              |
+| 2025-02-13 | `Migration-5.rocksdb.zip`   | For testing migration 5                                                                                              |
+| 2025-02-17 | `Migration-6.rocksdb.zip`   | For testing migration 6                                                                                              |

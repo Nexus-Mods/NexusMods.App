@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Collections;
 /// <summary>
 /// A direct downloaded file from a collection
 /// </summary>
-[Include<LibraryFile>]
+[Include<LocalFile>]
 public partial class DirectDownloadLibraryFile : IModelDefinition
 {
     private const string Namespace = "NexusMods.Collections.DirectDownloadLibraryFile";

@@ -36,7 +36,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     private readonly ILoginManager _loginManager;
     private readonly ILogger<TopBarViewModel> _logger;
-
+    
     [Reactive] public string ActiveWorkspaceTitle { get; [UsedImplicitly] set; } = string.Empty;
     [Reactive] public string ActiveWorkspaceSubtitle { get; [UsedImplicitly] set; } = string.Empty;
 
@@ -44,8 +44,11 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
     public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> ViewChangelogCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> ViewAppLogsCommand { get; }
-    public ReactiveUI.ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
-
+    public ReactiveUI.ReactiveCommand<Unit, Unit> ShowWelcomeMessageCommand { get; }    
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenDiscordCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenForumsCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenGitHubCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> OpenStatusPageCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
@@ -118,7 +121,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             Tracking.AddEvent(Events.Help.ViewAppLogs, metadata: new EventMetadata(name: null));
         });
 
-        GiveFeedbackCommand = ReactiveCommand.Create(() =>
+        ShowWelcomeMessageCommand = ReactiveCommand.Create(() =>
         {
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
             alphaWarningViewModel.WorkspaceController = workspaceController;
@@ -126,7 +129,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             overlayController.Enqueue(alphaWarningViewModel);
             Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
         });
-
+        
         var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
         LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin);
 
@@ -159,6 +162,14 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
             await osInterop.OpenUrl(uri);
         });
+        
+        OpenDiscordCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.DiscordUri); });
+
+        OpenForumsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.ForumsUri); });
+
+        OpenGitHubCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.GitHubUri); });
+        
+        OpenStatusPageCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.StatusPageUri); });
 
         this.WhenActivated(d =>
         {

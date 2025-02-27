@@ -124,6 +124,15 @@
                     <icons:UnifiedIcon Classes="FormatListCheckbox" />
                     <icons:UnifiedIcon Classes="DotsGrid" />
                     <icons:UnifiedIcon Classes="FormatAlignJustify" />
+                    <icons:UnifiedIcon Classes="MoreVertical" />
+                    <icons:UnifiedIcon Classes="ListBoxOutline" />
+                    <icons:UnifiedIcon Classes="PartyPopper" />
+                    <icons:UnifiedIcon Classes="Logout" />
+                    <icons:UnifiedIcon Classes="AccountCog" />
+                    <icons:UnifiedIcon Classes="Broadcast" />
+                    <icons:UnifiedIcon Classes="FolderEyeOutline" />
+                    <icons:UnifiedIcon Classes="FolderUploadOutline" />
+                    <icons:UnifiedIcon Classes="TrayArrowDown" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -133,6 +142,8 @@
                     <icons:UnifiedIcon Classes="GOG" />
                     <icons:UnifiedIcon Classes="Xbox" />
                     <icons:UnifiedIcon Classes="Epic" />
+                    <icons:UnifiedIcon Classes="GitHub" />
+                    <icons:UnifiedIcon Classes="Premium" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="PanelAllFull" />
@@ -144,10 +155,6 @@
                     <icons:UnifiedIcon Classes="PictogramGame3D" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" IsEnabled="False" />
-                    <icons:UnifiedIcon Classes="PictogramGame3D" Size="48" Opacity="0.4" />
-                </WrapPanel>
-                <WrapPanel>
                     <icons:UnifiedIcon Classes="PictogramBox2" />
                     <icons:UnifiedIcon Classes="PictogramBox2" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramBox2" Size="48" />
@@ -156,6 +163,9 @@
                     <icons:UnifiedIcon Classes="PictogramSettings" />
                     <icons:UnifiedIcon Classes="PictogramSettings" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramSettings" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramCelebrate" />
+                    <icons:UnifiedIcon Classes="PictogramCelebrate" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramCelebrate" Size="48" />
                 </WrapPanel>
             </StackPanel>
         </Border>
@@ -357,7 +367,7 @@
     <Style Selector="icons|UnifiedIcon.FolderOpenOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderOpen}" />
     </Style>
-    
+
     <Style Selector="icons|UnifiedIcon.FolderEditOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEditOutline}" />
     </Style>
@@ -658,5 +668,41 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PanelAllFull">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PanelAllFull}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramCelebrate">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramCelebrate}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.MoreVertical">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.MoreVertical}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.ListBoxOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ListBoxOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PartyPopper">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PartyPopper}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.AccountCog">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.AccountCog}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Logout">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Logout}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.GitHub">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.GitHub}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Broadcast">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Broadcast}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Premium">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Premium}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FolderEyeOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEyeOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FolderUploadOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FolderUploadOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.TrayArrowDown">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
     </Style>
 </Styles>
