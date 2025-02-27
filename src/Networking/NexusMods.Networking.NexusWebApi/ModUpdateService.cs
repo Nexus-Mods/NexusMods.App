@@ -400,7 +400,12 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// <summary>
     /// Returns the newest file across mods on this mod page.
     /// </summary>
-    public NexusModsFileMetadata.ReadOnly NewestFile()
+    public NexusModsFileMetadata.ReadOnly NewestFile() => MappingWithNewestFile().NewestFile;
+
+    /// <summary>
+    /// Returns the <see cref="ModUpdateOnPage"/> instance with the newest file.
+    /// </summary>
+    public ModUpdateOnPage MappingWithNewestFile()
     {
         // Note(sewer): This matches the behaviour established in the design for
         // the mod update feature. The row should show the details of the newest mod.
@@ -410,15 +415,20 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
         
         // Compare the newest file in all `FileMappings` and return most recent one
         // (without LINQ, avoid alloc, since every mod row will touch this code in UI).
-        var newestFile = FileMappings[0].NewerFiles[0];
+        var newestUploadTime = FileMappings[0].NewerFiles[0].UploadedAt;
+        var newestMapping = FileMappings[0];
         for (var x = 1; x < FileMappings.Length; x++)
         {
-            var newerFile = FileMappings[x].NewerFiles[0];
-            if (newerFile.UploadedAt > newestFile.UploadedAt)
-                newestFile = newerFile;
+            var mapping = FileMappings[x];
+            var uploadTime = mapping.NewerFiles[0].UploadedAt;
+            if (uploadTime > newestUploadTime)
+            {
+                newestUploadTime = uploadTime;
+                newestMapping = mapping;
+            }
         }
         
-        return newestFile;
+        return newestMapping;
     }
 
     /// <summary>
