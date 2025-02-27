@@ -33,7 +33,7 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var isSMAPIEnabled = smapiLoadoutItems.Any(x => !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled);
+        var isSMAPIEnabled = smapiLoadoutItems.Any(x => x.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled());
         if (isSMAPIEnabled) yield break;
 
         yield return Diagnostics.CreateSMAPIRequiredButDisabled(
