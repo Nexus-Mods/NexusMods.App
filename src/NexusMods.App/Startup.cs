@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Converters;
 using NexusMods.App.UI.Windows;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -109,7 +110,9 @@ public class Startup
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(serviceProvider.GetRequiredService<InjectedViewLocator>, typeof(IViewLocator));
-
+        
+        Locator.CurrentMutable.RegisterConstant<IBindingTypeConverter>(new SizeToStringTypeConverter());
+        
         var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
         ObservableSystem.RegisterUnhandledExceptionHandler(exception =>
         {
