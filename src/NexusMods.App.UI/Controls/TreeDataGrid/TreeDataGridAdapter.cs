@@ -48,29 +48,15 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 })
                 .AddTo(disposables);
 
-            self.Roots.ObserveAdd().Subscribe((self, disposables), static (change, tuple) =>
+            self.ModelActivationSubject.Subscribe(self, static (input, self) =>
             {
-                var (self, disposables) = tuple;
-
-                self.BeforeModelActivationHook(change.Value);
-                change.Value.Activate().AddTo(disposables);
-            }).AddTo(disposables);
-
-            self.Roots.ObserveRemove().Subscribe(self, static (change, self) =>
-            {
-                self.BeforeModelDeactivationHook(change.Value);
-                change.Value.Deactivate();
-            }).AddTo(disposables);
-
-            self.ModelActivationSubject.Subscribe((self, disposables), static (input, state) =>
-            {
-                var (self, disposables) = state;
                 var (model, isActivating) = input;
 
+                // NOTE(erri120): This is only necessary for child rows since root rows are handled directly.
                 if (isActivating && !model.IsActivated)
                 {
                     self.BeforeModelActivationHook(model);
-                    model.Activate().AddTo(disposables);
+                    model.Activate();
                 }
             }).AddTo(disposables);
 
@@ -79,6 +65,11 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 .ObserveOnUIThreadDispatcher()
                 .Do(self, static (viewHierarchical, self) =>
                 {
+                    foreach (var root in self.Roots)
+                    {
+                        root.Dispose();
+                    }
+
                     self.Roots.Clear();
 
                     // NOTE(erri120): we have to do this manually, the TreeDataGrid doesn't deselect when changing source
@@ -110,7 +101,21 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                     return self
                         .GetRootsObservable(viewHierarchical)
                         .OnUI()
-                        .Do(changeSet => self.Roots.ApplyChanges(changeSet))
+                        .Do(changeSet =>
+                        {
+                            // NOTE(erri120): We activate all items before adding them to Roots
+                            // so they get values before the TreeDataGrid even sees them.
+                            foreach (var change in changeSet)
+                            {
+                                if (change.Reason is ChangeReason.Add)
+                                {
+                                    self.BeforeModelActivationHook(change.Current);
+                                    change.Current.Activate();
+                                }
+                            }
+
+                            self.Roots.ApplyChanges(changeSet);
+                        })
                         .DisposeMany()
                         .ToObservable()
                         .Select(viewHierarchical, static (_, viewHierarchical) => viewHierarchical);
@@ -161,7 +166,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     }
 
     protected virtual void BeforeModelActivationHook(TModel model) {}
-    protected virtual void BeforeModelDeactivationHook(TModel model) {}
 
     protected abstract IObservable<IChangeSet<TModel, TKey>> GetRootsObservable(bool viewHierarchical);
     protected abstract IColumn<TModel>[] CreateColumns(bool viewHierarchical);

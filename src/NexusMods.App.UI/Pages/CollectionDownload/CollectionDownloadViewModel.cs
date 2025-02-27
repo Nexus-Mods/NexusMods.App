@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Media.Imaging;
@@ -10,7 +9,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
@@ -496,9 +494,6 @@ public class CollectionDownloadTreeDataGridAdapter :
 
     public Subject<OneOf<InstallMessage, DownloadNexusModsMessage, DownloadExternalMessage, ManualDownloadOpenModal>> MessageSubject { get; } = new();
 
-    private readonly IDisposable _activationDisposable;
-    private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
-
     public CollectionDownloadTreeDataGridAdapter(
         IServiceProvider serviceProvider,
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
@@ -507,20 +502,6 @@ public class CollectionDownloadTreeDataGridAdapter :
         _revisionMetadata = revisionMetadata;
         _targetLoadout = targetLoadout;
         _collectionDataProvider = serviceProvider.GetRequiredService<CollectionDataProvider>();
-
-        _activationDisposable = this.WhenActivated(static (self, disposables) =>
-        {
-            Disposable.Create(self._commandDisposables,static commandDisposables =>
-            {
-                foreach (var kv in commandDisposables)
-                {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
-
-                commandDisposables.Clear();
-            }).AddTo(disposables);
-        });
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
@@ -532,7 +513,7 @@ public class CollectionDownloadTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        var installActionDisposable = model.SubscribeToComponent<CollectionComponents.InstallAction, CollectionDownloadTreeDataGridAdapter>(
+        model.TrackSubscriptionToComponent<CollectionComponents.InstallAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.InstallComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandInstall.Subscribe(self, static (downloadEntity, self) =>
@@ -541,7 +522,7 @@ public class CollectionDownloadTreeDataGridAdapter :
             })
         );
 
-        var downloadNexusModsActionDisposable = model.SubscribeToComponent<CollectionComponents.NexusModsDownloadAction, CollectionDownloadTreeDataGridAdapter>(
+        model.TrackSubscriptionToComponent<CollectionComponents.NexusModsDownloadAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.NexusModsDownloadComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandDownload.Subscribe(self, static (downloadEntity, self) =>
@@ -550,7 +531,7 @@ public class CollectionDownloadTreeDataGridAdapter :
             })
         );
 
-        var downloadExternalActionDisposable = model.SubscribeToComponent<CollectionComponents.ExternalDownloadAction, CollectionDownloadTreeDataGridAdapter>(
+        model.TrackSubscriptionToComponent<CollectionComponents.ExternalDownloadAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.ExternalDownloadComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandDownload.Subscribe(self, static (downloadEntity, self) =>
@@ -559,7 +540,7 @@ public class CollectionDownloadTreeDataGridAdapter :
             })
         );
 
-        var downloadManualActionDisposable = model.SubscribeToComponent<CollectionComponents.ManualDownloadAction, CollectionDownloadTreeDataGridAdapter>(
+        model.TrackSubscriptionToComponent<CollectionComponents.ManualDownloadAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.ManualDownloadComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandOpenModal.Subscribe(self, static (downloadEntity, self) =>
@@ -567,20 +548,6 @@ public class CollectionDownloadTreeDataGridAdapter :
                 self.MessageSubject.OnNext(new ManualDownloadOpenModal(downloadEntity));
             })
         );
-
-        var disposable = Disposable.Combine(installActionDisposable, downloadNexusModsActionDisposable, downloadExternalActionDisposable, downloadManualActionDisposable);
-
-        var didAdd = _commandDisposables.TryAdd(model, disposable);
-        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
-    }
-
-    protected override void BeforeModelDeactivationHook(CompositeItemModel<EntityId> model)
-    {
-        base.BeforeModelDeactivationHook(model);
-
-        var didRemove = _commandDisposables.Remove(model, out var disposable);
-        Debug.Assert(didRemove, "subscription for the model should exist");
-        disposable?.Dispose();
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
@@ -597,16 +564,11 @@ public class CollectionDownloadTreeDataGridAdapter :
     }
 
     private bool _isDisposed;
-
     protected override void Dispose(bool disposing)
     {
-        if (!_isDisposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
-            {
-                Disposable.Dispose(_activationDisposable, MessageSubject);
-            }
-
+            MessageSubject.Dispose();
             _isDisposed = true;
         }
 
