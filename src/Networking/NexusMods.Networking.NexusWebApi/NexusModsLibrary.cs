@@ -72,7 +72,7 @@ public partial class NexusModsLibrary
         modInfo.EnsureNoErrors();
         EntityId first = default;
         foreach (var node in modInfo.Data!.LegacyMods.Nodes)
-            first = node.Resolve(_connection.Db, tx);
+            first = node.Resolve(_connection.Db, tx, setFilesTimestamp: true);
         
         await ResolveAllFilesInModPage(uid, tx, first, cancellationToken);
 
