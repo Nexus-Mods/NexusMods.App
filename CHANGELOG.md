@@ -1,11 +1,11 @@
-# v0.7.4 - 2025-02-XX
+# v0.7.4 - 2025-03-XX
 This build is the first release candidate for the Stardew Valley Preview! It features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
 
 ## Better game versioning
 We've make some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed and the app will match the files on your PC to those included with these releases. 
 
 ## External Changes
-
+<!-- >view and delete additional files in the loadout which are no part of the game or any mods.< !-->
 
 ## More Features
 - Collections from Nexus Mods are now installed in a read-only state to ensure the collection as the curator intended it. Cloning and editing collections will be added in future.  
@@ -22,14 +22,12 @@ We've make some major changes to how we identify the games installed on your PC 
 
 ## Bug Fixes
 - A Command Prompt window will no longer be open behind the app on Windows. 
+- The Success Rating for a collection now shows the correct value.
+- If a collection has less than 3 votes on the Success Rating, it shows as grey instead of red. 
 
 ## Known Issues
-
-
-Features
-- External Changes tab - view and delete additional files in the loadout which are no part of the game or any mods.
-- Indexed Games - Stardew Valley on Steam/GOG has been indexed and allows the app to know if your game folder is clean on first managing it. It also now supports game updates. Backups and restore from GOG/Steam coming in the future. 
-
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The table header sorting and accordion state are not saved and reset each time the view is loaded.
 
 # v0.7.3 - 2025-02-03
 The release adds collections to the Library, introduces thumbnails for mods, and includes significant usability improvements for the left menu. 
