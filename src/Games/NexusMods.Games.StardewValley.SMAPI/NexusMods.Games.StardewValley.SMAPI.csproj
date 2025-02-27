@@ -15,7 +15,8 @@
     <ItemGroup>
         <!-- keep in sync with https://github.com/Pathoschild/SMAPI/blob/develop/src/SMAPI.Toolkit/SMAPI.Toolkit.csproj -->
         <!-- https://github.com/Pathoschild/SMAPI/blob/develop/src/Directory.Packages.props -->
-        <PackageReference Include="HtmlAgilityPack" VersionOverride="1.11.70" />
+        <PackageReference Include="HtmlAgilityPack" VersionOverride="1.11.71" />
+        <PackageReference Include="Markdig" VersionOverride="0.38.0" />
         <PackageReference Include="Newtonsoft.Json" VersionOverride="13.0.3" />
         <PackageReference Include="Pathoschild.Http.FluentClient" VersionOverride="4.4.1" />
     </ItemGroup>
