@@ -323,7 +323,7 @@ public class SMAPIGameVersionDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Exception while getting JSON data from {Uri}", dataUri);
+            _logger.LogWarning(e, "Exception while getting JSON data from {Uri}", dataUri);
             return null;
         }
     }
