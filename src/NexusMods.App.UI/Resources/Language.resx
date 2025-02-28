@@ -821,7 +821,7 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>View Installed Collection</value>
     </data>
     <data name="CollectionDownloadViewModel_UpdateCollection" xml:space="preserve">
-        <value>Install Update</value>
+        <value>Update to Revision {0}</value>
     </data>
     <data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
         <value>Download all optional mods</value>
@@ -884,4 +884,20 @@ To apply changes or launch the game again, please close the game first.</value>
     
     
     
+
+    <data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
+        <value>Mods</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsEndorsements_ToolTip" xml:space="preserve">
+        <value>Endorsements</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsDownloads_ToolTip" xml:space="preserve">
+        <value>Downloads</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsSize_ToolTip" xml:space="preserve">
+        <value>Size</value>
+    </data>
+    <data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
+        <value>Success Rating</value>
+    </data>
 </root>

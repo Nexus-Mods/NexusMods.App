@@ -35,7 +35,7 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public ulong EndorsementCount => 248;
     public ulong TotalDownloads => 30_000;
     public Size TotalSize { get; } = Size.From(76_123_456);
-    public Percent OverallRating { get; } = Percent.CreateClamped(0.82);
+    public Percent OverallRating { get; } = Percent.CreateClamped(0);
     public Bitmap TileImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/collection_tile_image.png")));
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public string CollectionStatusText { get; } = "0 of 9 mods downloaded";

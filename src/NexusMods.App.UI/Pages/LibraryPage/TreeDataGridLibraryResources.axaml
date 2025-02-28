@@ -108,7 +108,7 @@
                             <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
 
                                 <controls:StandardButton Command="{CompiledBinding CommandUpdate}"
-                                                         Text="{CompiledBinding ButtonText}"
+                                                         Text="{CompiledBinding ButtonText.Value}"
                                                          Size="Small"
                                                          Type="Primary"
                                                          Fill="Weak" />
