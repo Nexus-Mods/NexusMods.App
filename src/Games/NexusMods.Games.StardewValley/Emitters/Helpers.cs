@@ -101,7 +101,7 @@ internal static class Helpers
         }
     }
 
-    public static LogFilePathWithEditTime? GetLatestSMAPILogFile(ILogger _logger)
+    public static List<LogFilePathWithEditTime>? GetLatestSMAPILogFile(ILogger _logger)
     {
         // Check if the SMAPI logs folder exists (may require the game to be run at least once with SMAPI)
         if (!Directory.Exists(Constants.SMAPILogsFolder))
@@ -122,7 +122,7 @@ internal static class Helpers
         if (logFiles.Any())
         {
             // Return the newest log file.
-            return logFiles.Last();
+            return logFiles;
 
         }
         else
