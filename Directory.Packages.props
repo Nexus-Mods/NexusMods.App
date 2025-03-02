@@ -27,7 +27,7 @@
     <PackageVersion Include="NexusMods.Telemetry.OpenTelemetry" Version="1.0.0" />
     <PackageVersion Include="FomodInstaller.Interface" Version="1.2.0" />
     <PackageVersion Include="FomodInstaller.Scripting.XmlScript" Version="1.0.0" />
-    <PackageVersion Include="Bannerlord.LauncherManager" Version="1.0.140" />
+    <PackageVersion Include="Bannerlord.LauncherManager" Version="2.0.149" />
     <PackageVersion Include="FetchBannerlordVersion" Version="1.0.6.46" />
     <PackageVersion Include="NLog" Version="5.2.8" />
     <PackageVersion Include="Noggog.CSharpExt" Version="2.67.3" />
