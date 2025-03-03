@@ -15,6 +15,8 @@ public interface IObservableInfoPageViewModel : IPageViewModelInterface
     IReadOnlyList<TrackingState> TrackingStates { get; }
 
     BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; }
+
+    bool TrackStackTraces { get; }
 }
 
 public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageViewModel>, IObservableInfoPageViewModel
@@ -29,8 +31,12 @@ public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageVie
 
     public BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; } = new(value: Optional<TrackingState>.None);
 
-    public ObservableInfoPageViewModel(IWindowManager windowManager) : base(windowManager)
+    public bool TrackStackTraces { get; }
+
+    public ObservableInfoPageViewModel(IWindowManager windowManager, bool trackStackTraces) : base(windowManager)
     {
+        TrackStackTraces = trackStackTraces;
+
         TrackingStates = _trackingStates.ToNotifyCollectionChangedSlim();
         Series = _topTypes.ToNotifyCollectionChanged(static kv => new PieSeries<int>
         {
@@ -40,6 +46,15 @@ public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageVie
 
         this.WhenActivated(disposables =>
         {
+            ObservableTracker.EnableTracking = true;
+            ObservableTracker.EnableStackTrace = trackStackTraces;
+
+            Disposable.Create(() =>
+            {
+                ObservableTracker.EnableTracking = false;
+                ObservableTracker.EnableStackTrace = false;
+            }).AddTo(disposables);
+
             Observable
                 .Timer(dueTime: TimeSpan.Zero, period: TimeSpan.FromSeconds(1), timeProvider: TimeProvider.System)
                 .Select(this, static (_, self) =>
