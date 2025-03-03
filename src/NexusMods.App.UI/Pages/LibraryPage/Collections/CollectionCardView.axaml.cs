@@ -38,7 +38,7 @@ public partial class CollectionCardView : ReactiveUserControl<ICollectionCardVie
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.RevisionText.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
             
-            this.OneWayBind(ViewModel, vm => vm.NumDownloads, view => view.ModsCountText.Text, count => $"{count} Mods")
+            this.OneWayBind(ViewModel, vm => vm.NumDownloads, view => view.ModsCountText.Text, count => $"{count:N0} Mods")
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.TotalSize, view => view.TotalSize.Text)

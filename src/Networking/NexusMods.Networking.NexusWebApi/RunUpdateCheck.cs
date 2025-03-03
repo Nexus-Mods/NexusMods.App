@@ -129,7 +129,7 @@ public static class RunUpdateCheck
         var modInfo = await gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)uid.ModId.Value, cancellationToken);
         modInfo.EnsureNoErrors();
         foreach (var node in modInfo.Data!.LegacyMods.Nodes)
-            node.Resolve(db, tx);
+            node.Resolve(db, tx, setFilesTimestamp: true);
         
         // Update Mod Files
         var filesByUid = await gqlClient.ModFiles.ExecuteAsync(modIdString, gameIdString, cancellationToken);

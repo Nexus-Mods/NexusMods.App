@@ -215,7 +215,6 @@ public partial class NexusModsLibrary
         ICollectionRevisionInfo_CollectionRevision collectionRevision)
     {
         var res = new ResolvedEntitiesLookup();
-
         var modPageIds = new Dictionary<UidForMod, EntityId>();
 
         foreach (var modFile in collectionRevision.ModFiles)
@@ -230,7 +229,7 @@ public partial class NexusModsLibrary
             var uidForMod = UidForMod.FromV2Api(file.Mod.Uid);
             if (!modPageIds.TryGetValue(uidForMod, out var modEntityId))
             {
-                modEntityId = file.Mod.Resolve(db, tx);
+                modEntityId = file.Mod.Resolve(db, tx, setFilesTimestamp: false);
                 modPageIds[uidForMod] = modEntityId;
             }
 
