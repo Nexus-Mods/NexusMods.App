@@ -178,19 +178,29 @@ public class CollectionDownloader
     /// </summary>
     public async ValueTask Download(CollectionDownloadNexusMods.ReadOnly download, CancellationToken cancellationToken, CollectionDownload.ReadOnly[] downloads = null!)
     {
-        const int downloadLimit = 10;
         if (_loginManager.IsPremium)
         {
             await using var tempPath = _temporaryFileManager.CreateFile();
             var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, download.FileMetadata, cancellationToken: cancellationToken);
             await _libraryService.AddDownload(job);
         }
+        else if (downloads == null!)
+        {
+            await _osInterop.OpenUrl(download.FileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+        }
         else
         {
-            if (downloads.Length <= downloadLimit) 
+            var hyperlinks = new List<string>();
+            foreach (var mod in downloads)
             {
-                await _osInterop.OpenUrl(download.FileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+                if (!mod.TryGetAsCollectionDownloadNexusMods(out var d)) continue;
+                var url = d.FileMetadata.GetUri();
+                var text = $"{d.FileMetadata.Name}";
+                hyperlinks.Add($" - \u001b]8;;{url}\u0007{text}\u001b]8;;\u0007");
             }
+            throw new OperationCanceledException(
+                "The following mods are missing from the collection:" + Environment.NewLine + string.Join(Environment.NewLine, hyperlinks)
+                );
         }
     }
 
