@@ -4,27 +4,20 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
+using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using Cysharp.Text;
 using DynamicData.Kernel;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Paths;
 
 namespace NexusMods.Telemetry;
 
-[PublicAPI]
-public interface IEventSender
-{
-    void AddEvent(EventDefinition definition, EventMetadata metadata);
-
-    ValueTask Run();
-}
-
-internal class EventSender : IEventSender
+internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
 {
     // NOTE(erri120): Arbitrarily chosen limit.
     private const int Limit = 64;
@@ -32,20 +25,33 @@ internal class EventSender : IEventSender
     private readonly ILoginManager _loginManager;
     private readonly HttpClient _httpClient;
     private readonly ArrayBufferWriter<byte> _writer;
-    private readonly ILogger<EventSender>? _logger;
+    private readonly ILogger<TrackingDataSender> _logger;
+    private readonly IDisposable? _disposable;
 
     private static readonly byte[] EncodedUserAgent = CreateUserAgent();
 
-    public EventSender(ILogger<EventSender>? logger, ILoginManager loginManager, HttpClient httpClient)
+    public TrackingDataSender(
+        ILogger<TrackingDataSender> logger,
+        ILoginManager loginManager,
+        HttpClient httpClient,
+        IObservableExceptionSource? exceptionSource = null)
     {
         _logger = logger;
         _loginManager = loginManager;
         _httpClient = httpClient;
         _writer = new ArrayBufferWriter<byte>();
+
+        if (exceptionSource is not null)
+        {
+            _disposable = exceptionSource.Exceptions
+                .Select(static msg => msg.Exception)
+                .Where(static e => e is not null)
+                .Subscribe(e => AddException(e!));
+        }
     }
 
-    private readonly ValueTuple<EventDefinition, EventMetadata, ulong>[] _insertRingBuffer = new ValueTuple<EventDefinition, EventMetadata, ulong>[Limit];
-    private readonly ValueTuple<EventDefinition, EventMetadata, ulong>[] _sortedReadingCopy = new ValueTuple<EventDefinition, EventMetadata, ulong>[Limit];
+    private readonly ValueTuple<TrackingData, ulong>[] _insertRingBuffer = new ValueTuple<TrackingData, ulong>[Limit];
+    private readonly ValueTuple<TrackingData, ulong>[] _sortedReadingCopy = new ValueTuple<TrackingData, ulong>[Limit];
 
     private ulong _lastGeneratedId;
     private ulong _highestSeenId;
@@ -66,8 +72,23 @@ internal class EventSender : IEventSender
         Debug.Assert(newIndex >= 0);
         Debug.Assert(newIndex < _insertRingBuffer.Length);
 
-        var tuple = new ValueTuple<EventDefinition, EventMetadata, ulong>(definition, metadata, id);
-        _insertRingBuffer[newIndex] = tuple;
+        _insertRingBuffer[newIndex] = new ValueTuple<TrackingData, ulong>(new TrackingData(new EventData(definition, metadata)), id);
+    }
+
+    public void AddException(Exception exception)
+    {
+        var data = ExceptionData.Create(exception);
+        if (data.Count == 0) return;
+
+        foreach (var exceptionData in data)
+        {
+            var id = Interlocked.Increment(ref _lastGeneratedId);
+            var newIndex = (int)(id % Limit);
+            Debug.Assert(newIndex >= 0);
+            Debug.Assert(newIndex < _insertRingBuffer.Length);
+
+            _insertRingBuffer[newIndex] = new ValueTuple<TrackingData, ulong>(new TrackingData(exceptionData), id);
+        }
     }
 
     public async ValueTask Run()
@@ -77,7 +98,7 @@ internal class EventSender : IEventSender
         var span = PrepareSpan(_sortedReadingCopy, _highestSeenId);
         if (span.IsEmpty) return;
 
-        _highestSeenId = span[^1].Item3;
+        _highestSeenId = span[^1].Item2;
 
         var userId = _loginManager.UserInfo?.UserId ?? Optional<UserId>.None;
 
@@ -95,7 +116,7 @@ internal class EventSender : IEventSender
     /// <summary>
     /// Prepares the HTTP request data.
     /// </summary>
-    private static void PrepareRequest(IBufferWriter<byte> writer, ReadOnlySpan<ValueTuple<EventDefinition, EventMetadata, ulong>> events, Optional<UserId> userId)
+    private static void PrepareRequest(IBufferWriter<byte> writer, ReadOnlySpan<ValueTuple<TrackingData, ulong>> data, Optional<UserId> userId)
     {
         // https://developer.matomo.org/api-reference/tracking-api#bulk-tracking
         using (var sb = ZString.CreateUtf8StringBuilder(notNested: true))
@@ -105,8 +126,10 @@ internal class EventSender : IEventSender
         }
 
         var isFirst = true;
-        foreach (var eventTuple in events)
+        foreach (var dataIdTuple in data)
         {
+            var (trackingData, _) = dataIdTuple;
+
             if (!isFirst)
             {
                 using var sb = ZString.CreateUtf8StringBuilder(notNested: true);
@@ -115,7 +138,7 @@ internal class EventSender : IEventSender
             }
 
             isFirst = false;
-            SerializeEvent(writer, eventTuple, userId);
+            SerializeData(writer, trackingData, userId);
         }
 
         using (var sb = ZString.CreateUtf8StringBuilder(notNested: true))
@@ -129,9 +152,8 @@ internal class EventSender : IEventSender
     /// Serializes the event into the buffer as an UTF8 encoded string.
     /// </summary>
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    private static void SerializeEvent(IBufferWriter<byte> writer, ValueTuple<EventDefinition, EventMetadata, ulong> tuple, Optional<UserId> userId)
+    private static void SerializeData(IBufferWriter<byte> writer, TrackingData trackingData, Optional<UserId> userId)
     {
-        var (definition, metadata, _) = tuple;
         using var sb = ZString.CreateUtf8StringBuilder(notNested: true);
         sb.Append("\"");
 
@@ -161,33 +183,55 @@ internal class EventSender : IEventSender
         // sb.Append("&new_visit=1"); // If set to 1, will force a new visit to be created
         // sb.Append("&queuedtracking=0"); // If set to 0, will execute the request immediately
 
+        // NOTE(erri120): maybe something for later
+        // sb.Append("&res=1920x1080"); // The resolution of the device the visitor is using
+
         if (userId.HasValue)
         {
             sb.Append("&uid="); // User ID for logged in users
             sb.Append(userId.Value.Value);
         }
 
-        sb.Append("&e_c="); // Event category
-        AppendBytes(definition.SafeCategory);
-
-        sb.Append("&e_a="); // Event action
-        AppendBytes(definition.SafeAction);
-
-        if (metadata.Name is not null)
+        if (trackingData.Data.IsT0)
         {
-            sb.Append("&e_n="); // Event name
-            AppendBytes(metadata.SafeName);
+            // https://developer.matomo.org/api-reference/tracking-api#optional-event-tracking-info
+            var (definition, metadata) = trackingData.Data.AsT0;
+
+            sb.Append("&e_c="); // Event category
+            AppendBytes(definition.SafeCategory);
+
+            sb.Append("&e_a="); // Event action
+            AppendBytes(definition.SafeAction);
+
+            if (metadata.Name is not null)
+            {
+                sb.Append("&e_n="); // Event name
+                AppendBytes(metadata.SafeName);
+            }
+
+            sb.Append("&h="); // The current hour (local time)
+            sb.Append(metadata.CurrentTime.Hour);
+            sb.Append("&m="); // The current minute (local time)
+            sb.Append(metadata.CurrentTime.Minute);
+            sb.Append("&s="); // The current second (local time)
+            sb.Append(metadata.CurrentTime.Second);
+        } else if (trackingData.Data.IsT1)
+        {
+            // https://developer.matomo.org/api-reference/tracking-api#tracking-http-api-reference
+            var (type, message, stackTrace) = trackingData.Data.AsT1;
+
+            sb.Append("&cra="); // message
+            sb.Append(message);
+
+            if (stackTrace is not null)
+            {
+                sb.Append("&cra_st="); // stack trace
+                sb.Append(stackTrace);
+            }
+
+            sb.Append("&cra_tp="); // error type
+            sb.Append(type);
         }
-
-        sb.Append("&h="); // The current hour (local time)
-        sb.Append(metadata.CurrentTime.Hour);
-        sb.Append("&m="); // The current minute (local time)
-        sb.Append(metadata.CurrentTime.Minute);
-        sb.Append("&s="); // The current second (local time)
-        sb.Append(metadata.CurrentTime.Second);
-
-        // NOTE(erri120): maybe something for later
-        // sb.Append("&res=1920x1080"); // The resolution of the device the visitor is using
 
         sb.Append("\"");
         sb.CopyTo(writer);
@@ -216,8 +260,7 @@ internal class EventSender : IEventSender
         }
         catch (Exception ex)
         {
-            // NOTE (halgari): Yes, this will add more bloat to the log, but only in testing where DEBUG logging is enabled.
-            _logger?.LogDebug(ex, "Error occured while sending events");
+            _logger.LogDebug(ex, "Error occured while sending events");
         }
     }
 
@@ -227,25 +270,25 @@ internal class EventSender : IEventSender
     private void PrepareArrays()
     {
         _insertRingBuffer.CopyTo(_sortedReadingCopy, index: 0);
-        Array.Sort(_sortedReadingCopy, static (a, b) => a.Item3.CompareTo(b.Item3));
+        Array.Sort(_sortedReadingCopy, static (a, b) => a.Item2.CompareTo(b.Item2));
     }
 
     /// <summary>
     /// Creates a slice of the array to exclude already seen events.
     /// </summary>
-    private static ReadOnlySpan<ValueTuple<EventDefinition, EventMetadata, ulong>> PrepareSpan(ValueTuple<EventDefinition, EventMetadata, ulong>[] input, ulong highestSeenId)
+    private static ReadOnlySpan<ValueTuple<TrackingData, ulong>> PrepareSpan(ValueTuple<TrackingData, ulong>[] input, ulong highestSeenId)
     {
         Debug.Assert(input.Length == Limit);
 
         var sliceStartIndex = 0;
         for (var i = 0; i < Limit; i++)
         {
-            var id = input[i].Item3;
+            var id = input[i].Item2;
             if (id > highestSeenId) break;
             sliceStartIndex += 1;
         }
 
-        if (sliceStartIndex >= Limit) return ReadOnlySpan<ValueTuple<EventDefinition, EventMetadata, ulong>>.Empty;
+        if (sliceStartIndex >= Limit) return ReadOnlySpan<ValueTuple<TrackingData, ulong>>.Empty;
         return input.AsSpan(start: sliceStartIndex);
     }
 
@@ -279,9 +322,7 @@ internal class EventSender : IEventSender
         // https://devicedetector.lw1.at/Mozilla%2F5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)
         if (platform == OSPlatform.Windows)
         {
-            Debug.Assert(osVersion.Version.Major == 10);
-            Debug.Assert(architecture == Architecture.X64);
-            return $"Mozilla/5.0 (Windows NT {osVersion.Version.ToString(fieldCount: 2)}; Win64; x64)";
+            return "Mozilla/5.0 (Windows NT 10.0; Win64; x64)";
         }
 
         // https://devicedetector.lw1.at/Mozilla%2F5.0%20(Macintosh;%20Intel%20Mac%20OS%20X%2014.7)
@@ -291,5 +332,10 @@ internal class EventSender : IEventSender
         }
 
         throw new NotSupportedException();
+    }
+
+    public void Dispose()
+    {
+        _disposable?.Dispose();
     }
 }
