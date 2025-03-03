@@ -30,11 +30,10 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
         IResourceLoader<EntityId, Bitmap> userAvatarPipeline,
         IWindowManager windowManager,
         WorkspaceId workspaceId,
-        IConnection connection,
-        RevisionId revision,
+        CollectionRevisionMetadata.ReadOnly revision,
         LoadoutId targetLoadout)
     {
-        _revision = CollectionRevisionMetadata.FindByRevisionId(connection.Db, revision).First();
+        _revision = revision;
         _collection = _revision.Collection;
 
         var workspaceController = windowManager.ActiveWorkspaceController;
