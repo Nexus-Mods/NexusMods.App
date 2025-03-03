@@ -6,6 +6,8 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
+using System;
+
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
@@ -14,17 +16,19 @@ namespace NexusMods.Networking.NexusWebApi;
 /// </summary>
 public class ModUpdateService : IModUpdateService, IDisposable
 {
+    internal const int UpdateCheckCooldownSeconds = 30;
+
     private readonly IConnection _connection;
     private readonly INexusApiClient _nexusApiClient;
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly ILogger<ModUpdateService> _logger;
     private readonly NexusGraphQLClient _gqlClient;
+    private readonly TimeProvider _timeProvider;
     
     // Use SourceCache to maintain latest values per key
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
     private readonly IDisposable _updateObserver;
-    private const int UpdateCheckCooldownSeconds = 30;
     private DateTimeOffset _lastUpdateCheckTime = DateTimeOffset.MinValue;
 
     /// <summary/>
@@ -33,13 +37,15 @@ public class ModUpdateService : IModUpdateService, IDisposable
         INexusApiClient nexusApiClient,
         IGameDomainToGameIdMappingCache gameIdMappingCache,
         ILogger<ModUpdateService> logger,
-        NexusGraphQLClient gqlClient)
+        NexusGraphQLClient gqlClient,
+        TimeProvider timeProvider)
     {
         _connection = connection;
         _nexusApiClient = nexusApiClient;
         _gameIdMappingCache = gameIdMappingCache;
         _logger = logger;
         _gqlClient = gqlClient;
+        _timeProvider = timeProvider;
         // Note(sewer): This is a singleton, so we don't actually need to dispose, that said
         // I'm opting to for the sake of following good practices.
         _updateObserver = ObserveUpdates();
@@ -84,7 +90,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 
                 // We grab entityID(s) because we want to query the DB for the
                 // latest info of the affected mod pages, not a possible snapshot.
-                var affectedModPage = new List<EntityId>();
+                var affectedModPage = new HashSet<EntityId>();
                 
                 // Accept all events; Add, Update, Remove, Refresh, Reset
                 foreach (var change in changes)
@@ -109,18 +115,15 @@ public class ModUpdateService : IModUpdateService, IDisposable
         // _lastUpdateCheckTime is updated.
         if (throttle)
         {
-            var timeLeft = UpdateCheckCooldownSeconds - (int)(DateTimeOffset.UtcNow - _lastUpdateCheckTime).TotalSeconds;
+            var timeLeft = UpdateCheckCooldownSeconds - (int)(_timeProvider.GetUtcNow() - _lastUpdateCheckTime).TotalSeconds;
             if (timeLeft > 0)
             {
                 _logger.LogInformation("Skipping update check due to rate limit ({cooldown} seconds). Time left: {timeLeft} seconds.", UpdateCheckCooldownSeconds, timeLeft);
-                return PerFeedCacheUpdaterResult<PageMetadataMixin>.WithStatus(CacheUpdaterResultStatus.RateLimited);
+                return PerFeedCacheUpdaterResult<PageMetadataMixin>.WithStatus(CacheUpdaterResultStatus.Throttled);
             }
-            _lastUpdateCheckTime = DateTimeOffset.UtcNow;
         }
-        else
-        {
-            _lastUpdateCheckTime = DateTimeOffset.UtcNow;
-        }
+        
+        _lastUpdateCheckTime = _timeProvider.GetUtcNow();
 
         // Identify all mod pages needing a refresh
         var updateCheckResult = await RunUpdateCheck.CheckForModPagesWhichNeedUpdating(
@@ -158,26 +161,39 @@ public class ModUpdateService : IModUpdateService, IDisposable
             .DistinctBy(static fileMetadata => fileMetadata.Id)
             .ToDictionary(static x => x.Id, static x => x);
 
-        NotifyForUpdatesOfSpecificFiles(filesInLibrary);
+        NotifyForUpdatesOfSpecificFiles(filesInLibrary, UpdateNewestModVersionCache, UpdateNewestModOnAnyPageCache);
     }
     
-    private void NotifyForUpdatesOfSpecificFiles(Dictionary<EntityId, NexusModsFileMetadata.ReadOnly> filesInLibrary)
+    private void NotifyForUpdatesOfSpecificFiles(
+        Dictionary<EntityId, NexusModsFileMetadata.ReadOnly> filesInLibrary, 
+        ModVersionCacheUpdateDelegate modVersionUpdater, 
+        ModPageCacheUpdateDelegate modPageUpdater)
     {
         var existingFileToNewerFiles = filesInLibrary
             .Select(kv =>
             {
                 var newerFiles = RunUpdateCheck
                     .GetNewerFilesForExistingFile(kv.Value)
-                    // `!filesInLibrary.ContainsKey(newFile.Id)`: This filters out the case where we already have the latest file version on disk. 
-                    .Where(newFile => newFile.IsValid() && !filesInLibrary.ContainsKey(newFile.Id))
+                    .Where(newFile => newFile.IsValid())
                     .ToArray();
 
-                return new ModUpdateOnPage(kv.Value, newerFiles);
+                var hasUpdate = newerFiles.Length switch
+                {
+                    // If the newest item for this mod is not in the library, we have an update.
+                    > 0 => !filesInLibrary.ContainsKey(newerFiles[0].Id),
+                    <= 0 => false,
+                };
+
+                return hasUpdate 
+                    ? new ModUpdateOnPage(kv.Value, newerFiles)
+                    // If there is no update, then return default struct, which will have
+                    // a 0 number of new files, and thus not be a valid update mapping.
+                    : new ModUpdateOnPage(default(NexusModsFileMetadata.ReadOnly),[]);
             })
             .Where(static kv => kv.NewerFiles.Length > 0)
             .ToDictionary(page => page.File.Id);
 
-        UpdateNewestModVersionCache(existingFileToNewerFiles);
+        modVersionUpdater(existingFileToNewerFiles);
 
         var modPageToNewerFiles = existingFileToNewerFiles
             .GroupBy(
@@ -189,7 +205,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 group => (ModUpdatesOnModPage)group.ToArray()
             );
 
-        UpdateNewestModOnAnyPageCache(modPageToNewerFiles);
+        modPageUpdater(modPageToNewerFiles);
     }
 
     /// <inheritdoc />
@@ -216,6 +232,10 @@ public class ModUpdateService : IModUpdateService, IDisposable
         _updateObserver.Dispose();
     }
     
+    /// <summary>
+    /// Updates the internal state of the <see cref="_newestModVersionCache"/> such that it
+    /// matches the contents of <paramref name="existingFileToNewerFiles"/>.
+    /// </summary>
     private void UpdateNewestModVersionCache(Dictionary<EntityId, ModUpdateOnPage> existingFileToNewerFiles)
     {
         // First remove any invalid files, and then add any newer files.
@@ -235,6 +255,40 @@ public class ModUpdateService : IModUpdateService, IDisposable
         });
     }
     
+    /// <summary>
+    /// <see cref="UpdateNewestModVersionCache"/> but scoped to a limited set of mod pages
+    /// marked by <paramref name="affectedModPageIds"/>. Anything not related to those mod
+    /// pages is not touched.
+    /// </summary>
+    /// <remarks>
+    ///     This is run on the hot path that reacts to changes in library.
+    /// </remarks>
+    private void UpdateNewestModVersionCachePartial(Dictionary<EntityId, ModUpdateOnPage> existingFileToNewerFiles, HashSet<EntityId> affectedModPageIds)
+    {
+        // First remove any invalid files, and then add any newer files.
+        _newestModVersionCache.Edit(updater =>
+        {
+            foreach (var kv in updater.Items)
+            {
+                // Check if this file belongs to any of the affected mod pages.
+                // We shouldn't remove updates from any other mod pages.
+                if (!affectedModPageIds.Contains(kv.Value.File.ModPageId)) continue;
+                
+                // Entries not in our partial set filtered by mod page should be removed.
+                if (!existingFileToNewerFiles.ContainsKey(kv.Key))
+                    updater.Remove(kv.Key);
+            }
+            
+            // Add any newer files/items.
+            foreach (var kv in existingFileToNewerFiles)
+                updater.AddOrUpdate(new KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>(kv.Key, kv.Value));
+        });
+    }
+
+    /// <summary>
+    /// Updates the internal state of the <see cref="_newestModOnAnyPageCache"/> such that it
+    /// matches the contents of <paramref name="modPageToNewerFiles"/>.
+    /// </summary>
     private void UpdateNewestModOnAnyPageCache(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> modPageToNewerFiles)
     {
         // First remove any invalid mod pages, and then add any newer files.
@@ -253,8 +307,40 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 updater.AddOrUpdate(kv);
         });
     }
+    
+    /// <summary>
+    /// <see cref="UpdateNewestModOnAnyPageCache"/> but scoped to a limited set of mod pages
+    /// marked by <paramref name="affectedModPageIds"/>. Anything not related to those mod
+    /// pages is not touched.
+    /// </summary>
+    /// <remarks>
+    ///     This is run on the hot path that reacts to changes in library.
+    /// </remarks>
+    private void UpdateNewestModOnAnyPageCachePartial(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> modPageToNewerFiles, HashSet<EntityId> affectedModPageIds)
+    {
+        // First remove any invalid mod pages, and then add any newer files.
+        _newestModOnAnyPageCache.Edit(updater =>
+        {
+            // Remove any currently known mod pages from _newestModOnAnyPageCache
+            // that no longer require to be updated.
+            foreach (var existingKey in updater.Keys)
+            {
+                // Check if this mod page is one of the affected ones.
+                // Pages not in set to be updated should be ignored.
+                if (!affectedModPageIds.Contains(existingKey)) continue;
 
-    private void NotifyForUpdatesOfSpecificModPages(List<EntityId> modPageIds)
+                // Only remove after filter if it's no longer in the updated list
+                if (!modPageToNewerFiles.ContainsKey(existingKey))
+                    updater.Remove(existingKey);
+            }
+            
+            // Add any newer pages
+            foreach (var kv in modPageToNewerFiles)
+                updater.AddOrUpdate(kv);
+        });
+    }
+
+    private void NotifyForUpdatesOfSpecificModPages(HashSet<EntityId> modPageIds)
     {
         // Note(sewer): Change to generic inheriting IEnumerable if ever making this public.
         var filesInLibrary = new Dictionary<EntityId, NexusModsFileMetadata.ReadOnly>();
@@ -284,8 +370,13 @@ public class ModUpdateService : IModUpdateService, IDisposable
         }
 
         // And now beam the update stuff, brrr!!
-        NotifyForUpdatesOfSpecificFiles(filesInLibrary);
+        NotifyForUpdatesOfSpecificFiles(filesInLibrary, 
+            existingFileToNewerFiles=> UpdateNewestModVersionCachePartial(existingFileToNewerFiles, modPageIds), 
+            modPageToNewerFiles=> UpdateNewestModOnAnyPageCachePartial(modPageToNewerFiles, modPageIds));
     }
+
+    private delegate void ModVersionCacheUpdateDelegate(Dictionary<EntityId, ModUpdateOnPage> cache);
+    private delegate void ModPageCacheUpdateDelegate(Dictionary<NexusModsModPageMetadataId, ModUpdatesOnModPage> cache);
 }
 
 /// <summary>
@@ -302,11 +393,16 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// Given that each array entry represents a single mod file, this is just the count of the internal array.
     /// </summary>
     public int NumberOfModFilesToUpdate => FileMappings.Length;
-    
+
     /// <summary>
     /// Returns the newest file across mods on this mod page.
     /// </summary>
-    public NexusModsFileMetadata.ReadOnly NewestFile()
+    public NexusModsFileMetadata.ReadOnly NewestFile() => MappingWithNewestFile().NewestFile;
+
+    /// <summary>
+    /// Returns the <see cref="ModUpdateOnPage"/> instance with the newest file.
+    /// </summary>
+    public ModUpdateOnPage MappingWithNewestFile()
     {
         // Note(sewer): This matches the behaviour established in the design for
         // the mod update feature. The row should show the details of the newest mod.
@@ -316,17 +412,22 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
         
         // Compare the newest file in all `FileMappings` and return most recent one
         // (without LINQ, avoid alloc, since every mod row will touch this code in UI).
-        var newestFile = FileMappings[0].NewerFiles[0];
+        var newestUploadTime = FileMappings[0].NewerFiles[0].UploadedAt;
+        var newestMapping = FileMappings[0];
         for (var x = 1; x < FileMappings.Length; x++)
         {
-            var newerFile = FileMappings[x].NewerFiles[0];
-            if (newerFile.UploadedAt > newestFile.UploadedAt)
-                newestFile = newerFile;
+            var mapping = FileMappings[x];
+            var uploadTime = mapping.NewerFiles[0].UploadedAt;
+            if (uploadTime > newestUploadTime)
+            {
+                newestUploadTime = uploadTime;
+                newestMapping = mapping;
+            }
         }
         
-        return newestFile;
+        return newestMapping;
     }
-    
+
     /// <summary>
     /// Returns the newest file from every mod on this page.
     /// See Remarks before use.

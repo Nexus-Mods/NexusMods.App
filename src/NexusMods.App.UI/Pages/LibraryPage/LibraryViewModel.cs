@@ -200,8 +200,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     userAvatarPipeline: userAvatarPipeline,
                     windowManager: WindowManager,
                     workspaceId: WorkspaceId,
-                    connection: _connection,
-                    revision: revision.RevisionId,
+                    revision: revision,
                     targetLoadout: _loadout)
                 )
                 .Bind(out _collections)

@@ -44,6 +44,7 @@ public static class Services
         collection.AddApiKeyModel();
         collection.AddGameDomainToGameIdMappingModel();
         collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
+        collection.AddSingleton(TimeProvider.System);
         
         collection
             .AddNexusModsLibraryModels()
