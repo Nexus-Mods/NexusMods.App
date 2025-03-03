@@ -2,7 +2,9 @@
 This build is the first release candidate for the Stardew Valley Preview! It features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
 
 ## Better game versioning
-We've make some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed and the app will match the files on your PC to those included with these releases. 
+We've make some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed and the app will match the files on your PC to those included with these releases. The app will now be able to tell if your game folder is unmodded on first managing the game and identify any mod files already in your game folder. 
+
+In future, we hope to use this system to integrate with GOG.com to allow users to quickly swap between game versions on demand. 
 
 ## External Changes
 <!-- >view and delete additional files in the loadout which are no part of the game or any mods.< !-->
@@ -19,6 +21,8 @@ We've make some major changes to how we identify the games installed on your PC 
 - The app can now differentiate between a mod installed as part of a collection and the same mod installed directly from the Library. 
 - When installing collections for Stardew Valley, an unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
 - Conflicting mods within a collection are now installed in an order that respects the rules set by the curator. 
+- Large numbers are now displayed with comma separation or abbreviations.
+- File sizes now only show a decimal places above 1GB. 
 
 ## Bug Fixes
 - A Command Prompt window will no longer be open behind the app on Windows. 
