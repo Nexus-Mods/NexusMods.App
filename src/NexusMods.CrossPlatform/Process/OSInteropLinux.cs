@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.Versioning;
 using CliWrap;
 using LinuxDesktopUtils.XDGDesktopPortal;
@@ -13,7 +14,6 @@ namespace NexusMods.CrossPlatform.Process;
 internal class OSInteropLinux : AOSInterop
 {
     private readonly IFileSystem _fileSystem;
-    private readonly XDGOpenDependency _xdgOpenDependency;
     private readonly DesktopPortalConnectionManagerWrapper _portalWrapper;
     private readonly ILogger _logger;
 
@@ -24,11 +24,9 @@ internal class OSInteropLinux : AOSInterop
         ILoggerFactory loggerFactory,
         DesktopPortalConnectionManagerWrapper portalWrapper,
         IProcessFactory processFactory,
-        IFileSystem fileSystem,
-        XDGOpenDependency xdgOpenDependency) : base(loggerFactory, processFactory)
+        IFileSystem fileSystem) : base(loggerFactory, processFactory)
     {
         _fileSystem = fileSystem;
-        _xdgOpenDependency = xdgOpenDependency;
         _portalWrapper = portalWrapper;
         _logger = loggerFactory.CreateLogger<OSInteropLinux>();
     }
@@ -67,15 +65,7 @@ internal class OSInteropLinux : AOSInterop
     }
 
     /// <inheritdoc/>
-    protected override Command CreateCommand(Uri uri)
-    {
-        // From the man page (https://man.archlinux.org/man/xdg-open.1):
-        // In case of success the process launched from the .desktop file will not be forked off and therefore
-        // may result in xdg-open running for a very long time.
-        // This behaviour intentionally differs from most desktop specific openers to allow terminal based applications
-        // to run using the same terminal xdg-open was called from.
-        return _xdgOpenDependency.CreateOpenUriCommand(uri);
-    }
+    protected override Command CreateCommand(Uri uri) => throw new UnreachableException("Should never be called");
 
     /// <inheritdoc />
     public override AbsolutePath GetOwnExe()

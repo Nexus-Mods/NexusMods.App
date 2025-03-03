@@ -31,12 +31,11 @@ This page lists the recommended system requirements to install and run the app o
 <sub>\* Storage space required does not factor in the number of games managed, the size of the managed games and the mods installed.</sub> -->
 
 ### Linux Dependencies
+
 The App requires the following programs to be available on the system `PATH` at runtime:
 
-- `xdg-open` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/)) to open URLs in your browser.
 - `xdg-settings` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/))
 - `update-desktop-database` (part of [desktop-file-utils](https://www.freedesktop.org/wiki/Software/desktop-file-utils/)) to update the MIME cache after creating a desktop entry file for the NXM link handler.
-
 
 In addition, the following libraries are required:
 
@@ -44,6 +43,8 @@ In addition, the following libraries are required:
 - `glibc` 2.2.5 or newer
 - `glibc++` 3.4 or newer
 - `fontconfig`
+
+The app also requires the XDG Desktop Portal and one backend to be installed and available. You might need to restart your PC after installing. If you use a standard desktop environment like GNOME or KDE, then you should already have the portal and one backend installed. See the [portal docs](https://flatpak.github.io/xdg-desktop-portal/#using-portals) for more details.
 
 ### Linux Packages
 
