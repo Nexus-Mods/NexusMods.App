@@ -513,7 +513,7 @@ public class CollectionDownloadTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        model.TrackSubscriptionToComponent<CollectionComponents.InstallAction, CollectionDownloadTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<CollectionComponents.InstallAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.InstallComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandInstall.Subscribe(self, static (downloadEntity, self) =>
@@ -522,7 +522,7 @@ public class CollectionDownloadTreeDataGridAdapter :
             })
         );
 
-        model.TrackSubscriptionToComponent<CollectionComponents.NexusModsDownloadAction, CollectionDownloadTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<CollectionComponents.NexusModsDownloadAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.NexusModsDownloadComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandDownload.Subscribe(self, static (downloadEntity, self) =>
@@ -531,7 +531,7 @@ public class CollectionDownloadTreeDataGridAdapter :
             })
         );
 
-        model.TrackSubscriptionToComponent<CollectionComponents.ExternalDownloadAction, CollectionDownloadTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<CollectionComponents.ExternalDownloadAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.ExternalDownloadComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandDownload.Subscribe(self, static (downloadEntity, self) =>
@@ -540,7 +540,7 @@ public class CollectionDownloadTreeDataGridAdapter :
             })
         );
 
-        model.TrackSubscriptionToComponent<CollectionComponents.ManualDownloadAction, CollectionDownloadTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<CollectionComponents.ManualDownloadAction, CollectionDownloadTreeDataGridAdapter>(
             key: CollectionColumns.Actions.ManualDownloadComponentKey,
             state: this,
             factory: static (self, _, component) => component.CommandOpenModal.Subscribe(self, static (downloadEntity, self) =>

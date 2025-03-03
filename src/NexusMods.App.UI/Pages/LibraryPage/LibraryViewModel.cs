@@ -381,7 +381,7 @@ public class LibraryTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        model.TrackSubscriptionToComponent<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.InstallComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
@@ -393,7 +393,7 @@ public class LibraryTreeDataGridAdapter :
             })
         );
 
-        model.TrackSubscriptionToComponent<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandUpdate

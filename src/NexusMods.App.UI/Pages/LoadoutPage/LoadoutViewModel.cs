@@ -240,7 +240,7 @@ public class LoadoutTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        model.TrackSubscriptionToComponent<LoadoutComponents.IsEnabled, LoadoutTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<LoadoutComponents.IsEnabled, LoadoutTreeDataGridAdapter>(
             key: LoadoutColumns.IsEnabled.IsEnabledComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>

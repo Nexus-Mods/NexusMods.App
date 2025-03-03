@@ -323,7 +323,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
     /// Differs from <see cref="SubscribeToComponent{TComponent,TState}"/> in that the
     /// disposable is tracked by the model itself.
     /// </remarks>
-    public void TrackSubscriptionToComponent<TComponent, TState>(
+    public void SubscribeToComponentAndTrack<TComponent, TState>(
         ComponentKey key,
         TState state,
         Func<TState, CompositeItemModel<TKey>, TComponent, IDisposable> factory)
