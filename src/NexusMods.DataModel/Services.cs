@@ -24,6 +24,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.DataModel;
 
@@ -52,6 +53,10 @@ public static class Services
                 var settings = settingsManager.Get<DataModelSettings>();
                 if (settings.UseInMemoryDataModel)
                     return DatomStoreSettings.InMemory;
+                
+                var path = settings.MnemonicDBPath.ToPath(fileSystem);
+                if (!path.DirectoryExists())
+                    path.CreateDirectory();
                 return new DatomStoreSettings
                 {
                     Path = settings.MnemonicDBPath.ToPath(fileSystem),
