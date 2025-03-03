@@ -3,10 +3,12 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Exceptions;
 using NexusMods.Abstractions.Loadouts.Ids;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.Paths;
@@ -22,6 +24,7 @@ public class SynchronizerService : ISynchronizerService
     private readonly ILogger<SynchronizerService> _logger;
     private readonly IConnection _conn;
     private readonly IGameRegistry _gameRegistry;
+    private readonly IJobMonitor _jobMonitor;
     private readonly Dictionary<EntityId, SynchronizerState> _gameStates;
     private readonly Dictionary<LoadoutId, SynchronizerState> _loadoutStates;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -30,10 +33,11 @@ public class SynchronizerService : ISynchronizerService
     /// <summary>
     /// DI Constructor
     /// </summary>
-    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService)
+    public SynchronizerService(IConnection conn, ILogger<SynchronizerService> logger, IGameRegistry gameRegistry, IFileHashesService fileHashesService, IJobMonitor jobMonitor)
     {
         _logger = logger;
         _conn = conn;
+        _jobMonitor = jobMonitor;
         _gameRegistry = gameRegistry;
         _gameStates = _gameRegistry.Installations.ToDictionary(e => e.Key, _ => new SynchronizerState());
         _loadoutStates = Loadout.All(conn.Db).ToDictionary(e => e.LoadoutId, _ => new SynchronizerState());
@@ -56,18 +60,22 @@ public class SynchronizerService : ISynchronizerService
     }
     
     /// <inheritdoc />
-    public bool GetShouldSynchronize(LoadoutId loadoutId)
+    public IJobTask<ProcessLoadoutChangesJob, bool> GetShouldSynchronize(LoadoutId loadoutId)
     {
-        var db = _conn.Db;
-        var loadout = Loadout.Load(db, loadoutId);
-        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
-        var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
+        return _jobMonitor.Begin(new ProcessLoadoutChangesJob(loadoutId),
+            ctx =>
+            {
+                var db = _conn.Db;
+                var loadout = Loadout.Load(db, loadoutId);
+                var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+                var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
+                var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-        var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
-        var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
+                var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
+                var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
         
-        return synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState);
+                return ValueTask.FromResult(synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState));
+            });
     }
     
     /// <inheritdoc />
@@ -227,10 +235,10 @@ public class SynchronizerService : ISynchronizerService
                         return LoadoutSynchronizerState.Current;
 
                     // Potentially long operation, run on thread pool
-                    var diffFound = await Task.Run(() =>
+                    var diffFound = await Task.Run(async () =>
                         {
                             _logger.LogTrace("Checking for changes in loadout {LoadoutId}", loadoutId);
-                            var diffFound = GetShouldSynchronize(loadoutId);
+                            var diffFound = await GetShouldSynchronize(loadoutId);
                             _logger.LogTrace("Changes found in loadout {LoadoutId}: {DiffFound}", loadoutId, diffFound);
                             return diffFound;
                         }, cancellationToken);
