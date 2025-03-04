@@ -5,10 +5,13 @@ using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Resources;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
+using Humanizer;
+using NexusMods.App.UI.Converters;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -78,17 +81,14 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
             this.OneWayBind(ViewModel, vm => vm.AuthorAvatar, view => view.AuthorAvatar.Source)
                 .DisposeWith(d);
-
-            this.OneWayBind(ViewModel, vm => vm.Summary, view => view.Summary.Text)
+            
+            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.NumDownloads.Text, v => v.ToString("N0"))
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.NumDownloads.Text)
+            this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text, v => Convert.ToInt32(v).ToMetric(null, 1))
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text)
-                .DisposeWith(d);
-
-            this.OneWayBind(ViewModel, vm => vm.TotalDownloads, view => view.TotalDownloads.Text)
+            this.OneWayBind(ViewModel, vm => vm.TotalDownloads, view => view.TotalDownloads.Text, v => Convert.ToInt32(v).ToMetric(null, 1))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.TotalSize, view => view.TotalSize.Text)
@@ -97,15 +97,15 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.OverallRating, view => view.OverallRating.Text)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.RequiredDownloadsCount, view => view.RequiredDownloadsCount.Text)
+            this.OneWayBind(ViewModel, vm => vm.RequiredDownloadsCount, view => view.RequiredDownloadsCount.Text, v => v.ToString("N0"))
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.OptionalDownloadsCount, view => view.OptionalDownloadsCount.Text)
+            this.OneWayBind(ViewModel, vm => vm.OptionalDownloadsCount, view => view.OptionalDownloadsCount.Text, v => v.ToString("N0"))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
-
+            
             this.WhenAnyValue(
                     view => view.ViewModel!.IsUpdateAvailable.Value,
                     view => view.ViewModel!.NewestRevisionNumber.Value)
@@ -117,7 +117,11 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ArrowRight.IsVisible = isUpdateAvailable;
                     NewestRevision.IsVisible = isUpdateAvailable;
             
-                    if (optional.HasValue) NewestRevision.Text = $"Revision {optional.Value}";
+                    if (optional.HasValue)
+                    {
+                        ButtonUpdateCollection.Text = string.Format(Language.CollectionDownloadViewModel_UpdateCollection, optional.Value);
+                        NewestRevision.Text = $"Revision {optional.Value}";
+                    }
                 }).DisposeWith(d);
             
             this.WhenAnyValue(view => view.TabControl.SelectedItem)
@@ -138,7 +142,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             
                     ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
                 }).DisposeWith(d);
-
+            
             this.WhenAnyValue(
                 view => view.ViewModel!.CountDownloadedRequiredItems,
                 view => view.ViewModel!.CountDownloadedOptionalItems,
@@ -186,7 +190,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 .Subscribe(className =>
                     {
                         OverallRatingPanel.Classes.Add(className);
-                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P2");
+                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P0");
                     }
                 )
                 .DisposeWith(d);
@@ -220,5 +224,8 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 }).DisposeWith(d);
         });
     }
+
+    
+    
 }
 

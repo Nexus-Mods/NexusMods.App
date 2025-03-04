@@ -90,5 +90,6 @@ public enum CacheUpdaterResultStatus
     /// The result of this method call may contain a partial result, with the
     /// info obtained from before the call was rate limited.
     /// </summary>
+    // ReSharper disable once UnusedMember.Global
     RateLimited, // Placeholder.
 }

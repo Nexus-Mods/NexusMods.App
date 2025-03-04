@@ -131,6 +131,9 @@
                     <icons:UnifiedIcon Classes="AccountCog" />
                     <icons:UnifiedIcon Classes="Broadcast" />
                     <icons:UnifiedIcon Classes="FolderEyeOutline" />
+                    <icons:UnifiedIcon Classes="ThumbUpOutline" />
+                    <icons:UnifiedIcon Classes="Update" />
+                    <icons:UnifiedIcon Classes="TrayArrowDown" />
                     <icons:UnifiedIcon Classes="FolderUploadOutline" />
                     <icons:UnifiedIcon Classes="TrayArrowDown" />
                 </WrapPanel>
@@ -698,6 +701,15 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.FolderEyeOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEyeOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.ThumbUpOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ThumbUpOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Update">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Update}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.TrayArrowDown">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.FolderUploadOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderUploadOutline}" />

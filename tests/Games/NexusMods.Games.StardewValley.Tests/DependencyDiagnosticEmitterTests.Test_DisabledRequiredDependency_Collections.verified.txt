@@ -1,0 +1,17 @@
+﻿[Id] NexusMods.Games.StardewValley: 5
+[Title] Disabled Dependency
+[Summary] 'Farm Type Manager' requires 'Content Patcher' but it is disabled
+[Details]
+The mod **Farm Type Manager** requires **Content Patcher** to function, but **Content Patcher** is not enabled.
+
+
+### How to Resolve
+1. Enable **Content Patcher** in "Installed Mods"
+
+### Technical Details
+The `manifest.json` file included with **Farm Type Manager** lists **Content Patcher** as a requirement in order function. 
+
+The issue can arise in these scenarios:
+
+1. **Disabled Mod**: The required mod is disabled in the loadout
+2. **Incorrect Mod ID**: The manifest data for **Farm Type Manager** might be incorrect
