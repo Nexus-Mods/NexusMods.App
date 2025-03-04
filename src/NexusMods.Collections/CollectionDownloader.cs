@@ -176,7 +176,7 @@ public class CollectionDownloader
     /// <summary>
     /// Downloads a file from nexus mods for premium users or opens the download page in the browser.
     /// </summary>
-    public async ValueTask Download(CollectionDownloadNexusMods.ReadOnly download, CancellationToken cancellationToken)
+    public async ValueTask Download(CollectionDownloadNexusMods.ReadOnly download, CancellationToken cancellationToken, CollectionDownload.ReadOnly[] downloads = null!)
     {
         if (_loginManager.IsPremium)
         {
@@ -184,9 +184,23 @@ public class CollectionDownloader
             var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, download.FileMetadata, cancellationToken: cancellationToken);
             await _libraryService.AddDownload(job);
         }
-        else
+        else if (downloads == null!)
         {
             await _osInterop.OpenUrl(download.FileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+        }
+        else
+        {
+            var hyperlinks = new List<string>();
+            foreach (var mod in downloads)
+            {
+                if (!mod.TryGetAsCollectionDownloadNexusMods(out var d)) continue;
+                var url = d.FileMetadata.GetUri();
+                var text = $"{d.FileMetadata.Name}";
+                hyperlinks.Add($" - \u001b]8;;{url}\u0007{text}\u001b]8;;\u0007");
+            }
+            throw new OperationCanceledException(
+                "The following mods are missing from the collection:" + Environment.NewLine + string.Join(Environment.NewLine, hyperlinks)
+                );
         }
     }
 
