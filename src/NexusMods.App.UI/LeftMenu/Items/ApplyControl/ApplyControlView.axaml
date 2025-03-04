@@ -7,6 +7,7 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
+                                xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="200"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.ApplyControlView">
     <Design.DataContext>
@@ -34,8 +35,21 @@
                                           Size="Small"
                                           ToolTip.Tip="{x:Static resources:Language.ApplyControlView_ViewApplyChanges_ToolTip}"
                                           HorizontalAlignment="Stretch" />
-
-            <!-- Apply button -->
+            
+            <StackPanel x:Name="ProcessingChangesStackPanel"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        Margin="0,0,0,6">
+                <spinner:Spinner Width="12"
+                         Height="24"
+                         Foreground="{StaticResource NeutralStrongBrush}"/>
+                <TextBlock Text="Processing changes..."
+                           Theme="{StaticResource BodySMNormalTheme}"
+                           Foreground="{StaticResource NeutralModerateBrush}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+            
+                <!-- Apply button -->
             <Button x:Name="ApplyButton"
                     HorizontalAlignment="Stretch"
                     Height="44"

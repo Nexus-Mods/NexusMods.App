@@ -23,6 +23,9 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
 
                 this.OneWayBind(ViewModel, vm => vm.IsLaunchButtonEnabled, v => v.LaunchButtonView.IsEnabled)
                     .DisposeWith(disposables);
+                
+                this.OneWayBind(ViewModel, vm => vm.IsProcessing, v => v.ProcessingChangesStackPanel.IsVisible)
+                    .DisposeWith(disposables);
 
                 this.WhenAnyObservable(view => view.ViewModel!.ApplyCommand.CanExecute)
                     .OnUI()

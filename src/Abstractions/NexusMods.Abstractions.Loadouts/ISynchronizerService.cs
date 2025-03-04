@@ -24,11 +24,6 @@ public interface ISynchronizerService
     public FileDiffTree GetApplyDiffTree(LoadoutId loadout);
 
     /// <summary>
-    /// Computes whether there are changes that need to be synchronized for a given loadout.
-    /// </summary>
-    public bool GetShouldSynchronize(LoadoutId loadoutId);
-
-    /// <summary>
     /// Returns the last applied loadout for a given game installation.
     /// </summary>
     public bool TryGetLastAppliedLoadout(GameInstallation gameInstallation, out Loadout.ReadOnly loadout);

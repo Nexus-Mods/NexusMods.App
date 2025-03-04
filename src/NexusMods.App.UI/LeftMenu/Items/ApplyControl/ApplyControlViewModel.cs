@@ -1,11 +1,13 @@
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.Loadouts.Exceptions;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
@@ -33,6 +35,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
     public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
 
+    [Reactive] public bool IsProcessing { get; private set; }
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
     [Reactive] public bool IsLaunchButtonEnabled { get; private set; } = true;
 
@@ -75,10 +78,15 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
 
         this.WhenActivated(disposables =>
             {
+                var isProcessingObservable = _jobMonitor.HasActiveJob<ProcessLoadoutChangesJob>(job => job.LoadoutId.Equals(loadoutId))
+                    .Prepend(false);
+                
                 var loadoutStatuses = Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
-                    .Switch();
+                    .Switch()
+                    .Prepend(LoadoutSynchronizerState.Pending);
 
-                var gameStatuses = _syncService.StatusForGame(_gameMetadataId);
+                var gameStatuses = _syncService.StatusForGame(_gameMetadataId)
+                    .Prepend(GameSynchronizerState.Idle);
 
                 // Note(sewer):
                 // Fire an initial value with StartWith because CombineLatest requires all stuff to have latest values.
@@ -89,17 +97,22 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 //     - This is done in 'Synchronize' method.
                 // - They're running a tool from within the App.
                 //     - Check running jobs.
-                loadoutStatuses.CombineLatest(gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), (loadout, game, running) => (loadout, game, running))
+                loadoutStatuses.CombineLatest(isProcessingObservable, gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), (loadout, isProcessing, game, running) => (loadout, isProcessing, game, running))
                     .OnUI()
                     .Subscribe(status =>
                     {
-                        var (ldStatus, gameStatus, running) = status;
-
-                        CanApply = gameStatus != GameSynchronizerState.Busy
+                        var (ldStatus, isProcessing,  gameStatus, running) = status;
+                        
+                        IsProcessing = isProcessing;
+                        CanApply = !isProcessing
+                                   && !running
+                                   && gameStatus != GameSynchronizerState.Busy
                                    && ldStatus != LoadoutSynchronizerState.Pending
-                                   && ldStatus != LoadoutSynchronizerState.Current
-                                   && !running;
-                        IsLaunchButtonEnabled = ldStatus == LoadoutSynchronizerState.Current && gameStatus != GameSynchronizerState.Busy && !running;
+                                   && ldStatus != LoadoutSynchronizerState.Current;
+                        IsLaunchButtonEnabled = !isProcessing 
+                                                && !running
+                                                && gameStatus != GameSynchronizerState.Busy
+                                                && ldStatus == LoadoutSynchronizerState.Current;
                     })
                     .DisposeWith(disposables);
             }
