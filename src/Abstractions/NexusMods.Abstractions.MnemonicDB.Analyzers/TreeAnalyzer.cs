@@ -34,7 +34,7 @@ public class TreeAnalyzer : IAnalyzer<FrozenSet<EntityId>>
                     continue;
 
                 var parent = ValueTag.Reference.Read<EntityId>(datom.ValueSpan);
-                if (!modified.Add(datom.E)) continue;
+                if (!modified.Add(parent)) continue;
                 remaining.Push((parent, current.IsRetract));
             }
         }
