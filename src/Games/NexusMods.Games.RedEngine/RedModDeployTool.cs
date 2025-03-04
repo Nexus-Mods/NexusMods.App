@@ -36,6 +36,8 @@ public class RedModDeployTool : ITool
 
     public async Task Execute(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
+        // TODO: re-enable once we have proper sorting
+        return;
         var exe = RedModPath.CombineChecked(loadout.InstallationInstance);
         var deployFolder = RedModDeployFolder.CombineChecked(loadout.InstallationInstance);
 

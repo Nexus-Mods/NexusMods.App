@@ -59,6 +59,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         ParentFactory = parentFactory;
         _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
+        // TODO: Re-enable once we get a more sensible way to ordering that doesn't rely on database events. 
+        return;
         // load the previously saved order
         var order = RetrieveSortableEntries();
         _orderCache.AddOrUpdate(order);
@@ -362,14 +364,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             };
         }
 
-        try
-        {
-            await tx.Commit();
-        }
-        catch (Exception e)
-        {
-            // TODO : Handle this better
-        }
+        await tx.Commit();
     }
 
     private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddSortOrderModel(
