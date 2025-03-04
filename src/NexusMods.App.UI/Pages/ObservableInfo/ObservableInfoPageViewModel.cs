@@ -15,90 +15,121 @@ public interface IObservableInfoPageViewModel : IPageViewModelInterface
     IReadOnlyList<TrackingState> TrackingStates { get; }
 
     BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; }
+
+    bool TrackStackTraces { get; }
 }
 
 public class ObservableInfoPageViewModel : APageViewModel<IObservableInfoPageViewModel>, IObservableInfoPageViewModel
 {
-    private readonly HashSet<TrackingState> _trackingStatesBuffer = [];
-
     private readonly ObservableList<TrackingState> _trackingStates = [];
     public IReadOnlyList<TrackingState> TrackingStates { get; }
 
-    private readonly ObservableDictionary<string, int> _topTypes = [];
+    private readonly ObservableDictionary<string, PieSeries<int>> _series = [];
     public IReadOnlyList<PieSeries<int>> Series { get; }
 
     public BindableReactiveProperty<Optional<TrackingState>> SelectedItem { get; } = new(value: Optional<TrackingState>.None);
 
-    public ObservableInfoPageViewModel(IWindowManager windowManager) : base(windowManager)
+    public bool TrackStackTraces { get; }
+
+    public ObservableInfoPageViewModel(IWindowManager windowManager, bool trackStackTraces) : base(windowManager)
     {
+        TrackStackTraces = trackStackTraces;
+
         TrackingStates = _trackingStates.ToNotifyCollectionChangedSlim();
-        Series = _topTypes.ToNotifyCollectionChanged(static kv => new PieSeries<int>
-        {
-            Name = kv.Key,
-            Values = [kv.Value],
-        });
+        Series = _series.ToNotifyCollectionChanged(static kv => kv.Value);
 
         this.WhenActivated(disposables =>
         {
+            ObservableTracker.EnableTracking = true;
+            ObservableTracker.EnableStackTrace = trackStackTraces;
+
+            Disposable.Create(() =>
+            {
+                ObservableTracker.EnableTracking = false;
+                ObservableTracker.EnableStackTrace = false;
+            }).AddTo(disposables);
+
+            var statesToAdd = new HashSet<TrackingState>();
+            var statesToRemove = new HashSet<TrackingState>();
+            var countsToAdd = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            var countsToRemove = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             Observable
                 .Timer(dueTime: TimeSpan.Zero, period: TimeSpan.FromSeconds(1), timeProvider: TimeProvider.System)
-                .Select(this, static (_, self) =>
+                .Synchronize()
+                .Select((this, statesToAdd, statesToRemove, countsToAdd, countsToRemove), static (_, tuple) =>
                 {
-                    self._trackingStatesBuffer.Clear();
-
-                    var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    var (self, statesToAdd, statesToRemove, countsToAdd, countsToRemove) = tuple;
+                    statesToAdd.Clear();
+                    statesToRemove.Clear();
+                    countsToAdd.Clear();
+                    countsToRemove.Clear();
 
                     ObservableTracker.CheckAndResetDirty();
                     ObservableTracker.ForEachActiveTask(trackingState =>
                     {
-                        self._trackingStatesBuffer.Add(trackingState);
+                        statesToAdd.Add(trackingState);
 
-                        var count = counts.GetValueOrDefault(trackingState.FormattedType, 0);
-                        counts[trackingState.FormattedType] = count + 1;
+                        var count = countsToAdd.GetValueOrDefault(trackingState.FormattedType, 0);
+                        countsToAdd[trackingState.FormattedType] = count + 1;
                     });
 
-                    var top = counts
-                        .OrderByDescending(static kv => kv.Value)
-                        .Take(count: 15)
-                        .Where(static kv => kv.Value > 1)
-                        .ToDictionary();
-
-                    var keysToRemove = self._topTypes
-                        .Select(static kv => kv.Key)
-                        .Except(top.Keys, StringComparer.OrdinalIgnoreCase)
-                        .ToArray();
-
-                    foreach (var key in keysToRemove)
+                    foreach (var trackingState in self._trackingStates)
                     {
-                        self._topTypes.Remove(key);
+                        if (statesToAdd.Remove(trackingState)) continue;
+                        statesToRemove.Add(trackingState);
                     }
 
-                    foreach (var kv in top)
+                    foreach (var kv in self._series)
                     {
-                        if (self._topTypes.TryGetValue(kv.Key, out var existingValue))
-                        {
-                            if (existingValue == kv.Value) continue;
-                        }
-
-                        self._topTypes[kv.Key] = kv.Value;
+                        if (countsToAdd.ContainsKey(kv.Key)) continue;
+                        countsToRemove.Add(kv.Key);
                     }
 
-                    var toRemove = self._trackingStates.Except(self._trackingStatesBuffer).ToArray();
-                    var toAdd = self._trackingStatesBuffer.Except(self._trackingStates).ToArray();
-
-                    return (toRemove, toAdd);
+                    var averageCount = (int)Math.Floor(countsToAdd.Values.Average());
+                    return (statesToAdd, statesToRemove, countsToAdd, countsToRemove, averageCount);
                 })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (tuple, self) =>
                 {
-                    var (toRemove, toAdd) = tuple;
+                    var (statesToAdd, statesToRemove, countsToAdd, countsToRemove, averageCount) = tuple;
 
-                    foreach (var state in toRemove)
+                    self._trackingStates.AddRange(statesToAdd);
+                    foreach (var trackingState in statesToRemove)
                     {
-                        self._trackingStates.Remove(state);
+                        self._trackingStates.Remove(trackingState);
                     }
 
-                    self._trackingStates.AddRange(toAdd);
+                    foreach (var kv in countsToAdd)
+                    {
+                        var invalidValue = kv.Value <= 1 || kv.Value < averageCount;
+
+                        if (self._series.TryGetValue(kv.Key, out var value))
+                        {
+                            if (invalidValue)
+                            {
+                                countsToRemove.Add(kv.Key);
+                                continue;
+                            }
+
+                            value.Values = [kv.Value];
+                        }
+                        else
+                        {
+                            if (invalidValue) continue;
+
+                            self._series.Add(kv.Key, new PieSeries<int>
+                            {
+                                Name = kv.Key,
+                                Values = [kv.Value],
+                            });
+                        }
+                    }
+
+                    foreach (var key in countsToRemove)
+                    {
+                        self._series.Remove(key: key);
+                    }
                 })
                 .AddTo(disposables);
         });
