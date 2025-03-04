@@ -45,6 +45,7 @@ When managing your game for the very first time, any files that aren't part of t
 * Fixed an issue where the SMAPI version and game version comparison diagnostic was not running correctly. 
 
 ## Known Issues
+* The sort order for some columns does not work correctly, this is especially noticeable with the "Actions" column.
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
 * The table header sorting and collapsible section states are not saved and reset each time the view is loaded.
 
