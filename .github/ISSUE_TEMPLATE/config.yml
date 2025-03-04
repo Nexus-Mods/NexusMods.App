@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Get Support
+    url: https://nexus-mods.github.io/NexusMods.App/users/
+    about: If you're having problems using the app, check the documentation and help links here. 
