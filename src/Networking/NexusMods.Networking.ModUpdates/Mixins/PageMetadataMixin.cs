@@ -31,7 +31,7 @@ public struct PageMetadataMixin : IModFeedItem
         
         // If not in DB for whatever reason, default to min, will be refreshed on next
         // update check.
-        return DateTimeOffset.UtcNow;
+        return DateTimeOffset.MinValue;
     }
 
     /// <summary>

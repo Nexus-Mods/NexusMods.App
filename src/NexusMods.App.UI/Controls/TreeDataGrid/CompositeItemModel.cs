@@ -22,6 +22,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
 
     private readonly Dictionary<ComponentKey, IDisposable> _observableSubscriptions = new();
     private readonly ObservableDictionary<ComponentKey, IItemModelComponent> _components = new();
+    private readonly CompositeDisposable _trackedDisposables = new();
 
     /// <summary>
     /// Gets the dictionary of all components currently in the item model.
@@ -168,7 +169,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
         Func<TComponent> componentFactory)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        return shouldAddObservable.Subscribe((this, key, componentFactory), static (shouldAdd, tuple) =>
+        return shouldAddObservable.ObserveOnUIThreadDispatcher().Subscribe((this, key, componentFactory), static (shouldAdd, tuple) =>
         {
             var (self, key, componentFactory) = tuple;
 
@@ -195,7 +196,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
         where T : notnull
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        return observable.Subscribe((this, key, observable, componentFactory), static (optionalValue, tuple) =>
+        return observable.ObserveOnUIThreadDispatcher().Subscribe((this, key, observable, componentFactory), static (optionalValue, tuple) =>
         {
             var (self, key, observable, componentFactory) = tuple;
 
@@ -315,6 +316,22 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
         return Disposable.Combine(serialDisposable, disposable);
     }
 
+    /// <summary>
+    /// Subscribes to a component with the given key in the item model.
+    /// </summary>
+    /// <remarks>
+    /// Differs from <see cref="SubscribeToComponent{TComponent,TState}"/> in that the
+    /// disposable is tracked by the model itself.
+    /// </remarks>
+    public void SubscribeToComponentAndTrack<TComponent, TState>(
+        ComponentKey key,
+        TState state,
+        Func<TState, CompositeItemModel<TKey>, TComponent, IDisposable> factory)
+        where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+    {
+        SubscribeToComponent(key, state, factory).AddTo(_trackedDisposables);
+    }
+
     private static TComponent AssertComponent<TComponent>(ComponentKey key, IItemModelComponent component)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
@@ -337,6 +354,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
         {
             if (disposing)
             {
+                _trackedDisposables.Dispose();
                 _activationDisposable.Dispose();
 
                 foreach (var kv in _observableSubscriptions)

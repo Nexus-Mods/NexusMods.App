@@ -39,6 +39,8 @@ public partial class ObservableInfoPageView : ReactiveUserControl<IObservableInf
             this.WhenAnyValue(view => view.ViewModel!.SelectedItem.Value)
                 .SubscribeWithErrorLogging(optional =>
                 {
+                    if (!(ViewModel?.TrackStackTraces ?? false)) return;
+
                     if (!optional.HasValue)
                     {
                         SelectedItemInfo.IsVisible = false;

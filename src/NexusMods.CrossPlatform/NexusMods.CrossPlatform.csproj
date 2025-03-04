@@ -49,9 +49,6 @@
         <Compile Update="Process\ProtontricksNativeDependency.cs">
             <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
         </Compile>
-        <Compile Update="Process\XDGOpenDependency.cs">
-            <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
-        </Compile>
         <Compile Update="Process\XDGSettingsDependency.cs">
             <DependentUpon>ExecutableRuntimeDependency.cs</DependentUpon>
         </Compile>

@@ -115,7 +115,7 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
                         IsGroup = true,
                         LoadoutItem = new LoadoutItem.New(tx, id)
                         {
-                            Name = root.Info.Name,
+                            Name = RevisionMetadata.Collection.Name,
                             LoadoutId = TargetLoadout,
                             IsDisabled = true,
                         },
