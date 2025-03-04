@@ -168,7 +168,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
         Func<TComponent> componentFactory)
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        return shouldAddObservable.Subscribe((this, key, componentFactory), static (shouldAdd, tuple) =>
+        return shouldAddObservable.ObserveOnUIThreadDispatcher().Subscribe((this, key, componentFactory), static (shouldAdd, tuple) =>
         {
             var (self, key, componentFactory) = tuple;
 
@@ -195,7 +195,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
         where T : notnull
         where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        return observable.Subscribe((this, key, observable, componentFactory), static (optionalValue, tuple) =>
+        return observable.ObserveOnUIThreadDispatcher().Subscribe((this, key, observable, componentFactory), static (optionalValue, tuple) =>
         {
             var (self, key, observable, componentFactory) = tuple;
 
