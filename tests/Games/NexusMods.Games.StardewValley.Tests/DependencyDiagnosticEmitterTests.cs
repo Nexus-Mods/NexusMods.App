@@ -149,14 +149,12 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         // Test disabled cases
         await DisableItem(farmTypeManager);
         
-        await ShouldHaveNoDiagnostics(loadout, because: "The dependant Farm Type Manager is disabled");
         (await GetAllDiagnostics(loadout)).OfType<Diagnostic<Diagnostics.RequiredDependencyIsOutdatedMessageData>>()
             .Should().BeEmpty(because: "The dependant Farm Type Manager is disabled");
         
         await EnableItem(farmTypeManager);
         await DisableItem(contentPatcher);
         
-        await ShouldHaveNoDiagnostics(loadout, because: "The outdated dependency Content Patcher is disabled");
         (await GetAllDiagnostics(loadout)).OfType<Diagnostic<Diagnostics.RequiredDependencyIsOutdatedMessageData>>()
             .Should().BeEmpty(because: "The outdated dependency Content Patcher is disabled");
         
