@@ -7,31 +7,46 @@ We've make some major changes to how we identify the games installed on your PC 
 In future, we hope to use this system to integrate with GOG.com to allow users to quickly swap between game versions on demand. 
 
 ## External Changes
-<!-- >view and delete additional files in the loadout which are no part of the game or any mods.< !-->
+Within your loadout, there can often be changes made to your game or mod files that aren't part of your mods. These are now collated into the new ["External Changes" page](https://nexus-mods.github.io/NexusMods.App/users/features/ExternalChanges/) shown in your loadout. Files that have been created, modified or deleted in the game folder will be listed here and allow users to manage them. 
+
+![The External Changes page with several files displayed.](https://nexus-mods.github.io/NexusMods.App/users/images/0.7.4/ExternalChanges.webp)
+
+When managing your game for the very first time, any files that aren't part of the base game will be displayed here and can be quickly removed if you want to clean your game folder for a fresh start. Future development of this feature will allow you to add these files to your loadout as mods. 
 
 ## More Features
-- Collections from Nexus Mods are now installed in a read-only state to ensure the collection as the curator intended it. Cloning and editing collections will be added in future.  
-- The Collection Download page now includes an Instructions tab which includes both collection and mod instructions. 
-- The header has been redesigned to be more compact. 
-- The Settings UI has been updated to match the latest brand guidelines.
-- Stardew Valley mods that are packaged without a top-level folder will now install correctly. 
-- Collections can now be removed from the loadout using the menu option in the header. 
+* Collections from Nexus Mods are now installed in a read-only state to ensure the collection as the curator intended it. Cloning and editing collections will be added in future.  
+* The Collection Download page now includes an Instructions tab which includes both collection and mod instructions. 
+* Collections can now be removed from loadout without deleting them from the Library. 
+* The header has been redesigned to be more compact. 
+* The Settings UI has been updated to match the latest brand guidelines.
+* Stardew Valley mods that are packaged without a top-level folder will now install correctly. 
+* Collections can now be removed from the loadout using the menu option in the header. 
+* Added more information to the Health Check diagnostics for Stardew Valley. 
 
 ## Technical Changes
-- The app can now differentiate between a mod installed as part of a collection and the same mod installed directly from the Library. 
-- When installing collections for Stardew Valley, an unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
-- Conflicting mods within a collection are now installed in an order that respects the rules set by the curator. 
-- Large numbers are now displayed with comma separation or abbreviations.
-- File sizes now only show a decimal places above 1GB. 
+* All games except Stardew Valley have been moved behind the "Unsupported Games" flag in Settings. If you were modding Cyberpunk, Baldur's Gate 3 or Mount & Blade II:Bannerlord in a previous release, you will need to enable this option to continue managing your mods. 
+* The app can now differentiate between a mod installed as part of a collection and the same mod installed directly from the Library. 
+* When installing collections for Stardew Valley, an unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
+* Conflicting mods within a collection are now installed in an order that respects the rules set by the curator. 
+* Large numbers are now displayed with comma separation or abbreviations.
+* File sizes now only show a decimal places above 1GB. 
+* Edits to mod files are now saved to External Changes instead of merging into the source mod. 
+* Added a new "Give Feedback" button to the bottom of the main window.
 
 ## Bug Fixes
-- A Command Prompt window will no longer be open behind the app on Windows. 
-- The Success Rating for a collection now shows the correct value.
-- If a collection has less than 3 votes on the Success Rating, it shows as grey instead of red. 
+* Mod updates now correctly show that number of mod files with updates rather than the number of new versions between the current and latest releases. 
+* The left menu now displays the correct name of a collection if the internal manifest and website don't match.
+* A Command Prompt window will no longer be open behind the app on Windows. 
+* The Success Rating for a collection now shows the correct value.
+* If a collection has less than 3 votes on the Success Rating, it shows as grey instead of red. 
+* Collections with no required mods can now be installed.
+* Fixed multiple places where the app UI would freeze when making large numbers of changes in quick succession.
+* Fixed an issue where the workspace could be broken by a saved page no longer being available.
+* Fixed an issue where the SMAPI version and game version comparison diagnostic was not running correctly. 
 
 ## Known Issues
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
-* The table header sorting and accordion state are not saved and reset each time the view is loaded.
+* The table header sorting and collapsible section states are not saved and reset each time the view is loaded.
 
 # v0.7.3 - 2025-02-03
 The release adds collections to the Library, introduces thumbnails for mods, and includes significant usability improvements for the left menu. 
