@@ -790,17 +790,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!node.Actions.HasFlag(Actions.IngestFromDisk))
                 continue;
             
-            // If the file is already in the loadout, we just need to update entry's hash and size
-            if (node.HaveLoadout && node is { SourceItemType: LoadoutSourceItemType.Loadout, Loadout.HaveEntityId: true })
-            {
-                var loadoutItemId = node.Loadout.EntityId;
-                tx.Add(loadoutItemId, LoadoutFile.Hash, node.Disk.Hash);
-                tx.Add(loadoutItemId, LoadoutFile.Size, node.Disk.Size);
-                tx.Add(node.Disk.EntityId, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
-                continue;
-            }
-            
-            // If the file is not in the loadout, we need to add it
+            // Entry was added or modified
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {

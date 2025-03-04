@@ -1,0 +1,34 @@
+name: "Issue Maintenance"
+
+on:
+  issues:
+    types: [closed, labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  on_label:
+    if: github.event.action == 'labeled' && github.event.label.name == 'needs logs'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Thanks for opening this issue! To help us resolve the issue, please upload the logs from the app.
+            You can find a guide on how to find the logs [here](https://nexus-mods.github.io/NexusMods.App/users/faq/LogFiles/).
+
+  on_close:
+    if: github.event.action == 'closed' && github.event.issue.state_reason == 'completed' && contains(github.event.issue.labels.*.name, 'user raised')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Thanks for opening this issue! We've resolved the issue for the next release.
