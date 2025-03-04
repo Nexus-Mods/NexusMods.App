@@ -10,6 +10,8 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
+using Humanizer;
+using NexusMods.App.UI.Converters;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -80,13 +82,13 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.AuthorAvatar, view => view.AuthorAvatar.Source)
                 .DisposeWith(d);
             
-            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.NumDownloads.Text)
+            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.NumDownloads.Text, v => v.ToString("N0"))
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text)
+            this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text, v => Convert.ToInt32(v).ToMetric(null, 1))
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.TotalDownloads, view => view.TotalDownloads.Text)
+            this.OneWayBind(ViewModel, vm => vm.TotalDownloads, view => view.TotalDownloads.Text, v => Convert.ToInt32(v).ToMetric(null, 1))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.TotalSize, view => view.TotalSize.Text)
@@ -95,15 +97,15 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.OverallRating, view => view.OverallRating.Text)
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.RequiredDownloadsCount, view => view.RequiredDownloadsCount.Text)
+            this.OneWayBind(ViewModel, vm => vm.RequiredDownloadsCount, view => view.RequiredDownloadsCount.Text, v => v.ToString("N0"))
                 .DisposeWith(d);
 
-            this.OneWayBind(ViewModel, vm => vm.OptionalDownloadsCount, view => view.OptionalDownloadsCount.Text)
+            this.OneWayBind(ViewModel, vm => vm.OptionalDownloadsCount, view => view.OptionalDownloadsCount.Text, v => v.ToString("N0"))
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.RevisionNumber, view => view.Revision.Text, revision => $"Revision {revision}")
                 .DisposeWith(d);
-
+            
             this.WhenAnyValue(
                     view => view.ViewModel!.IsUpdateAvailable.Value,
                     view => view.ViewModel!.NewestRevisionNumber.Value)
@@ -188,7 +190,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 .Subscribe(className =>
                     {
                         OverallRatingPanel.Classes.Add(className);
-                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P2");
+                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P0");
                     }
                 )
                 .DisposeWith(d);
@@ -222,5 +224,8 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 }).DisposeWith(d);
         });
     }
+
+    
+    
 }
 
