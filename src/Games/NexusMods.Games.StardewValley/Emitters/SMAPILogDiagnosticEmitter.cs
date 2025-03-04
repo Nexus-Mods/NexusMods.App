@@ -28,15 +28,17 @@ public class SMAPILogDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
         await Task.Yield();
 
-        LogFilePathWithEditTime? latestLog = Helpers.GetLatestSMAPILogFile(_logger);
+        List<LogFilePathWithEditTime>? allLogs = Helpers.GetLatestSMAPILogFile(_logger);
 
-        _logger.LogDebug($"Latest SMAPI Log {latestLog}");
+        _logger.LogDebug($"Latest SMAPI Log {allLogs?.Last()}");
 
-        if (latestLog == null)
+        if (allLogs == null)
         {
             _logger.LogDebug("No SMAPI logs available to perform diagnostic.");
             yield break;
         }
+
+        LogFilePathWithEditTime latestLog = allLogs.Last();
 
         // Ignore the regular logs, we're only interested in crashes.
         if (!latestLog.FilePath.EndsWith(Constants.SMAPIErrorFileName))
