@@ -29,7 +29,7 @@
                         <icons:UnifiedIcon Size="60" x:Name="Icon" />
                     </Border>
 
-                    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                         <TextBlock x:Name="TitleTextBlock"
                                    Theme="{StaticResource HeadingSMSemiTheme}"
                                    Foreground="{StaticResource NeutralStrongBrush}"

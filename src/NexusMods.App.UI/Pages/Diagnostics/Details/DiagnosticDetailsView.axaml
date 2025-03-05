@@ -35,7 +35,7 @@
                     <icons:UnifiedIcon Size="60" x:Name="Icon" Value="{x:Static icons:IconValues.PictogramHealth}" />
                 </Border>
 
-                <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock x:Name="TitleTextBlock"
                                    Text="Health Check:"
