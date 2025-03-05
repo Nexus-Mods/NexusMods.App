@@ -246,13 +246,22 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     .OnUI()
                     .SubscribeWithErrorLogging(currentCount =>
                     {
-                        var diff = Math.Max(0, currentCount - previousCount);
-                        NewDownloadModelCount += diff;
+                        if (LeftMenuItemLibrary.IsActive || LeftMenuItemLibrary.IsSelected)
+                        {
+                            NewDownloadModelCount = 0;
+                        }
+                        else
+                        {
+                            var diff = Math.Max(0, currentCount - previousCount);
+                            NewDownloadModelCount += diff;
+                        }
+
                         previousCount = currentCount;
                     })
                     .DisposeWith(disposable);
 
-                LeftMenuItemLibrary.WhenAnyValue(item=> item.IsActive)
+                LeftMenuItemLibrary
+                    .WhenAnyValue(item => item.IsActive, item => item.IsSelected, (isActive, isSelected) => isActive || isSelected)
                     .Subscribe(isActive => NewDownloadModelCount = isActive ? 0 : NewDownloadModelCount)
                     .DisposeWith(disposable);
             }
