@@ -18,10 +18,6 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
     {
         var downloads = RevisionMetadata.Downloads.ToArray();
         
-        var requiredDownloads = downloads.Where(download =>
-            CollectionDownloader.DownloadMatchesItemType(download, ItemType) &&
-            !CollectionDownloader.GetStatus(download, Db).IsDownloaded()).ToArray();
-
         await Parallel.ForAsync(fromInclusive: 0, toExclusive: downloads.Length, parallelOptions: new ParallelOptions
         {
             CancellationToken = context.CancellationToken,
@@ -34,7 +30,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
 
             if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
             {
-                await Downloader.Download(nexusModsDownload, token, requiredDownloads);
+                await Downloader.Download(nexusModsDownload, token);
             } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
             {
                 await Downloader.Download(externalDownload, token);

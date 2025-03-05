@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
@@ -5,6 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
@@ -33,6 +35,7 @@ internal static class Verbs
         [Injected] ILibraryService libraryService,
         [Injected] NexusModsLibrary nexusModsLibrary,
         [Injected] IServiceProvider serviceProvider,
+        [Injected] ILoginManager loginManager,
         [Injected] IConnection connection,
         [Injected] CollectionDownloader collectionDownloader,
         [Injected] CancellationToken token)
@@ -47,16 +50,20 @@ internal static class Verbs
 
         var revisionMetadata = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
 
-        try
+        if (loginManager.IsPremium)
         {
             await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: connection.Db,
                 cancellationToken: token
             );
         }
-        catch (OperationCanceledException e)
+        else
         {
-            await renderer.Error(e.Message);
-            return 0;
+            var links = CollectionDownloader.GetMissingHyperlinks(revisionMetadata, db: connection.Db);
+            if (links.Count > 0)
+            {
+                await renderer.Text("The following mods are missing from the collection:" + Environment.NewLine + string.Join(Environment.NewLine, links));
+                return 0;
+            }
         }
         
         var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
