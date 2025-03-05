@@ -238,10 +238,18 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     .Subscribe()
                     .DisposeWith(disposable);
 
+                var previousCount = 0;
+                NewDownloadModelCount = 0;
+
                 LibraryDataProviderHelper
                     .CountAllLibraryItems(serviceProvider, loadoutContext.LoadoutId)
                     .OnUI()
-                    .SubscribeWithErrorLogging(currentCount => NewDownloadModelCount = currentCount)
+                    .SubscribeWithErrorLogging(currentCount =>
+                    {
+                        var diff = Math.Max(0, currentCount - previousCount);
+                        NewDownloadModelCount += diff;
+                        previousCount = currentCount;
+                    })
                     .DisposeWith(disposable);
 
                 LeftMenuItemLibrary.WhenAnyValue(item=> item.IsActive)
