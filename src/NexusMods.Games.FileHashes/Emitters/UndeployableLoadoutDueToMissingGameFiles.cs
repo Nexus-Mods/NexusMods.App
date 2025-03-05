@@ -12,6 +12,9 @@ public class UndeployableLoadoutDueToMissingGameFiles : ILoadoutDiagnosticEmitte
 {
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
+        // TODO: Enable this diagnostic once users have a way to back up the game files from UI
+        yield break;
+
         var syncronizer = loadout.InstallationInstance.GetGame().Synchronizer;
         var syncTree = await syncronizer.BuildSyncTree(loadout);
         syncronizer.ProcessSyncTree(syncTree);
