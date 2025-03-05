@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using JetBrains.Annotations;
@@ -138,8 +139,9 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
                         {
                             model._childrenObservableSerialDisposable.Disposable = model.ChildrenObservable
                                 .OnUI()
+                                .Do(changeSet => model._children.ApplyChanges(changeSet))
                                 .DisposeMany()
-                                .SubscribeWithErrorLogging(changeSet => model._children.ApplyChanges(changeSet));
+                                .SubscribeWithErrorLogging();
                         }
                     }, onCompleted: static (_, model) => CleanupChildren(model._children));
             }

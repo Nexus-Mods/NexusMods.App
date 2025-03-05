@@ -23,7 +23,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
 
     private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.RedModFolderName);
 
-    private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
+    // TODO: Re-enable once we get a more sensible way to ordering that doesn't rely on database events.
+    private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList = new(new ObservableCollection<ISortableItem>());
 
     private readonly SortOrderId _sortOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -58,6 +59,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         ParentFactory = parentFactory;
         _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
+        // TODO: Re-enable once we get a more sensible way to ordering that doesn't rely on database events. 
+        return;
         // load the previously saved order
         var order = RetrieveSortableEntries();
         _orderCache.AddOrUpdate(order);
