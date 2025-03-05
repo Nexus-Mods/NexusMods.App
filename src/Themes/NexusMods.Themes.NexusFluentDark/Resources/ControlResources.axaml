@@ -95,9 +95,11 @@
     <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
     <Thickness x:Key="ComboBoxDropdownBorderThickness">0</Thickness>
     <Thickness x:Key="ComboBoxItemThemePadding">11,5,11,7</Thickness>
+    <Thickness x:Key="ComboBoxItemThemeMargin">0,0,0,0</Thickness>
+    <CornerRadius x:Key="ComboBoxItemThemeCornerRadius">4,4,4,4</CornerRadius>
     <FontWeight x:Key="ComboBoxHeaderThemeFontWeight">Normal</FontWeight>
     <Thickness x:Key="ComboBoxDropdownBorderPadding">0</Thickness>
-    <Thickness x:Key="ComboBoxDropdownContentMargin">0,4,0,4</Thickness>
+    <Thickness x:Key="ComboBoxDropdownContentMargin">4,4,4,4</Thickness>
 
     <StaticResource x:Key="ComboBoxBackground" ResourceKey="SurfaceTranslucentMidBrush" />
     <StaticResource x:Key="ComboBoxBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
