@@ -31,6 +31,14 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform(localFile => ToLibraryItemModel(libraryFilter, localFile));
     }
 
+    public IObservable<int> CountLibraryItems(LibraryFilter libraryFilter)
+    {
+        return LocalFile
+            .ObserveAll(_connection)
+            .QueryWhenChanged(query => query.Count)
+            .Prepend(0);
+    }
+
     private CompositeItemModel<EntityId> ToLibraryItemModel(LibraryFilter libraryFilter, LocalFile.ReadOnly localFile)
     {
         var linkedLoadoutItemsObservable = LibraryDataProviderHelper

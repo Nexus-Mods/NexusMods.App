@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -14,7 +13,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages;
@@ -233,30 +231,37 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     .OnUI()
                     .SubscribeWithErrorLogging(item => LeftMenuItemExternalChanges = item)
                     .DisposeWith(disposable);
-                
-                
+
                 collectionItemsObservable
                     .OnUI()
                     .SortAndBind(out _leftMenuCollectionItems, collectionItemComparer)
                     .Subscribe()
                     .DisposeWith(disposable);
 
-                LibraryUserFilters.ObserveFilteredLibraryItems(connection: conn)
-                    .RemoveKey()
-                    .WhereReasonsAre(ListChangeReason.Add,
-                        ListChangeReason.AddRange,
-                        ListChangeReason.Remove,
-                        ListChangeReason.RemoveRange
-                    )
+                var previousCount = 0;
+                NewDownloadModelCount = 0;
+
+                LibraryDataProviderHelper
+                    .CountAllLibraryItems(serviceProvider, loadoutContext.LoadoutId)
                     .OnUI()
-                    .SubscribeWithErrorLogging(changeSet => NewDownloadModelCount = Math.Max(0, NewDownloadModelCount + (changeSet.Adds - changeSet.Removes)))
+                    .SubscribeWithErrorLogging(currentCount =>
+                    {
+                        if (LeftMenuItemLibrary.IsActive || LeftMenuItemLibrary.IsSelected)
+                        {
+                            NewDownloadModelCount = 0;
+                        }
+                        else
+                        {
+                            var diff = Math.Max(0, currentCount - previousCount);
+                            NewDownloadModelCount += diff;
+                        }
+
+                        previousCount = currentCount;
+                    })
                     .DisposeWith(disposable);
 
-                // NOTE(erri120): No new downloads when the Left Menu gets loaded. Must be set here because the observable stream
-                // above will count all existing downloads, which we want to ignore.
-                NewDownloadModelCount = 0;
-                
-                LeftMenuItemLibrary.WhenAnyValue(item=> item.IsActive)
+                LeftMenuItemLibrary
+                    .WhenAnyValue(item => item.IsActive, item => item.IsSelected, (isActive, isSelected) => isActive || isSelected)
                     .Subscribe(isActive => NewDownloadModelCount = isActive ? 0 : NewDownloadModelCount)
                     .DisposeWith(disposable);
             }
