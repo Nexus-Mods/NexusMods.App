@@ -9,10 +9,11 @@
         </ResourceDictionary>
     </Styles.Resources>
 
+    <!-- these are used by the Design View -->
     <FluentTheme>
         <FluentTheme.Palettes>
             <ColorPaletteResources x:Key="Dark"
-                           Accent="{DynamicResource PrimaryModerate}"
+                           Accent="{StaticResource PrimaryModerate}"
                            AltHigh="{StaticResource SurfaceBase}"
                            AltLow="{StaticResource SurfaceBase}"
                            AltMedium="{StaticResource SurfaceBase}"

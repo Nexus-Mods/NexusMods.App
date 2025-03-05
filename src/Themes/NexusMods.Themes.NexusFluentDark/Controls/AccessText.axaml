@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <Border Padding="16" Width="360" Height="240">
+            <StackPanel>
+                <AccessText Text="AccessText" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    
+    <!-- Add Resources Here -->
+    <ControlTheme x:Key="{x:Type AccessText}" TargetType="AccessText" BasedOn="{StaticResource BodySMNormalTheme}" />
+</ResourceDictionary>

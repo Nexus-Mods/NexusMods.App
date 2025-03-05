@@ -71,11 +71,28 @@
         <Setter Property="CornerRadius" Value="0" />
         <!-- <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" /> -->
         <!-- <Setter Property="HorizontalAlignment" Value="Stretch" /> -->
-
+        
         <!-- tab item headers text -->
         <!-- header padding -->
-        <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
-            <Setter Property="Margin" Value="0,0,0,0" />
+        <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+            
+            <!-- this is our secondary way without custom header and only using text -->
+            <Style Selector="^ > AccessText">
+                <!-- <Setter Property="Background" Value="DarkSlateGray"/> -->
+                <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
+            </Style>
+            
+            <!-- this is our secondary way without custom header and only using text -->
+            <Style Selector="^ TextBlock">
+                <!-- <Setter Property="Background" Value="DarkSlateGray"/> -->
+                <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
+            </Style>
+            
+            <Style Selector="^ > WrapPanel">
+                <Setter Property="Background" Value="DarkSlateGray"/>
+                
+                
+            </Style>
         </Style>
 
         <Style Selector="^ TabItem">
@@ -84,28 +101,7 @@
             <Setter Property="CornerRadius" Value="0" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
-            <!-- this is our primary way with custom header -->
-            <Style Selector="^ > StackPanel">
-                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-                <Style Selector="^ > TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
-                </Style>
-                <!-- badge -->
-                <Style Selector="^ > Border">
-                    <Setter Property="Padding" Value="8,2" />
-                    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-                    <Setter Property="CornerRadius" Value="50" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Style Selector="^ > TextBlock">
-                        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                    </Style>
-                </Style>
-            </Style>
             
-            <!-- this is our secondary way without custom header and only using text -->
-            <Style Selector="^ > AccessText,^ > TextBlock">
-                <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
-            </Style>
 
 
             <!-- selected state -->
@@ -115,7 +111,9 @@
                 <Style Selector="^ /template/ Border#PART_LayoutRoot">
                     <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralStrongBrush}" />
                 </Style>
-
+                <Style Selector="^ TabItem /template/ Border#PART_LayoutRoot">
+                    <Setter Property="Background" Value="DarkRed"/>
+                </Style>
                 <Style Selector="^ > StackPanel">
                     <Style Selector="^ > TextBlock">
                         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />

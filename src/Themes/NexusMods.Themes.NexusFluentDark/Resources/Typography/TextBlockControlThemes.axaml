@@ -6,7 +6,6 @@
         <ResourceInclude Source="/Resources/Palette/Fonts/SemanticFonts.axaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-
     <!-- NOTE(erri120): dynamic font loading via weights isn't really supported in Avalonia. -->
     <!-- You need to explicitly use the BOLD font AND change the weight. -->
 
@@ -15,7 +14,7 @@
     <!-- Text stays at a fixed distance from the top of the box instead of being centered, causing clipping or misalignment. -->
     <!-- Reference issue: https://github.com/AvaloniaUI/Avalonia/issues/13873 -->
     <!-- So we should ignore all text alignment issues and wait for a fix from Avalonia. -->
-
+   
     <ControlTheme x:Key="Heading2XLSemiTheme" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
         <Setter Property="FontWeight" Value="SemiBold" />

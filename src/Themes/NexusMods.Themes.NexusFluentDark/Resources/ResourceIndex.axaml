@@ -1,20 +1,33 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
     <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
+        <ResourceInclude Source="/Resources/Palette/Colors/ElementGradients.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Opacities/ElementOpacities.axaml"/>
         <ResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
         <ResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Gradients.axaml"/>
-        <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
+        <ResourceInclude Source="/Resources/BaseResources.axaml"/>
+        <ResourceInclude Source="/Resources/ControlResources.axaml"/>
+
+        
         <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
         <ResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/SplitButton.axaml"/>
+                
+        <!-- controls -->
+        <ResourceInclude Source="/Controls/TextBlock.axaml"/>
+        <ResourceInclude Source="/Controls/AccessText.axaml"/>
+        <ResourceInclude Source="/Controls/Button.axaml"/>
+        <ResourceInclude Source="/Controls/SplitButton.axaml"/>
+        <ResourceInclude Source="/Controls/ComboBox.axaml"/>
+        <ResourceInclude Source="/Controls/ComboBoxItem.axaml"/>
+        
     </ResourceDictionary.MergedDictionaries>
+    
 </ResourceDictionary>

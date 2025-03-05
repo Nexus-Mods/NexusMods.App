@@ -8,83 +8,157 @@
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.DebugControls"
     xmlns:r3="clr-namespace:R3;assembly=R3"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
 
-    <DockPanel Classes.WithContentTemplates="{Binding IsChecked, ElementName=UseContentTemplates}">
-        <DockPanel.Styles>
-            <Style Selector="DockPanel.WithContentTemplates">
-                <Style Selector="^ TabItem">
-                    <Setter Property="ContentTemplate">
-                        <DataTemplate x:CompileBindings="False">
-                            <Border BorderBrush="Red" BorderThickness="10">
-                                <ContentPresenter Content="{Binding}" />
-                            </Border>
-                        </DataTemplate>
-                    </Setter>
-                </Style>
-                <Style Selector="^ TabControl">
-                    <Setter Property="ContentTemplate">
-                        <DataTemplate>
-                            <TextBlock Text="This template should be overriden by each TabItem's template." />
-                        </DataTemplate>
-                    </Setter>
-                </Style>
-            </Style>
-        </DockPanel.Styles>
-        <TextBlock
-            DockPanel.Dock="Top"
-            Classes="h2"
-            Text="A tab control that displays a tab strip along with the content of the selected tab"
-            Margin="4">
-        </TextBlock>
-        <Grid
-            ColumnDefinitions="*,*"
-            RowDefinitions="*,100">
-            <DockPanel
-                Grid.Column="0"
-                Margin="4">
-                <TextBlock
-                    DockPanel.Dock="Top"
-                    Classes="h1"
-                    Text="From Inline TabItems">
-                </TextBlock>
-                <TabControl
-                    Margin="0 16"
-                    TabStripPlacement="{Binding TabPlacement}">
-                    <TabItem Header="_Arch">
-                        <StackPanel Orientation="Vertical" Spacing="8">
-                            <TextBlock>This is the first page in the TabControl.</TextBlock>
+    <Border Background="{StaticResource SurfaceLowBrush}">
+        <StackPanel>
+            <TabControl>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Classes="TabItemHeaderStack">
+                            <TextBlock Text="Controls"/>
                         </StackPanel>
-                    </TabItem>
-                    <TabItem Header="_Leaf">
-                        <StackPanel Orientation="Vertical" Spacing="8">
-                            <TextBlock>This is the second page in the TabControl.</TextBlock>
-                        </StackPanel>
-                    </TabItem>
-                    <TabItem Header="_Disabled" IsEnabled="False">
-                        <TextBlock>You should not see this.</TextBlock>
-                    </TabItem>
-                </TabControl>
-            </DockPanel>
+                    </TabItem.Header>
+                    <Border>
+                        <StackPanel Spacing="16">
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <StackPanel>
+                                    <TextBlock Text="Button"></TextBlock>
+                                    <Button>Enabled</Button>
+                                    <Button IsEnabled="False">Disabled</Button>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="SplitButton"></TextBlock>
+                                    <SplitButton>
+                                        <TextBlock Text="Enabled" />
+                                        <SplitButton.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Install" />
+                                                <MenuItem Header="Advanced Install" />
+                                            </MenuFlyout>
+                                        </SplitButton.Flyout>
+                                    </SplitButton>
+                                    <SplitButton IsEnabled="False">
+                                        <TextBlock Text="Disabled" />
+                                    </SplitButton>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="ComboBox"></TextBlock>
+                                    <ComboBox PlaceholderText="Placeholder">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                        <ComboBoxItem>Item 2</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox SelectedIndex="0">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                        <ComboBoxItem>Item 2</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox PlaceholderText="Placeholder" IsEnabled="False">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                        <ComboBoxItem>Item 2</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox IsEnabled="False" SelectedIndex="0">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
 
-            <StackPanel
-                Grid.Row="1"
-                Grid.ColumnSpan="2"
-                Orientation="Horizontal"
-                Spacing="8"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-                <TextBlock VerticalAlignment="Center">Tab Placement:</TextBlock>
-                <ComboBox SelectedIndex="{Binding TabPlacement, Mode=TwoWay}" Width="100">
-                    <ComboBoxItem>Left</ComboBoxItem>
-                    <ComboBoxItem>Bottom</ComboBoxItem>
-                    <ComboBoxItem>Right</ComboBoxItem>
-                    <ComboBoxItem>Top</ComboBoxItem>
-                </ComboBox>
-                <CheckBox Name="UseContentTemplates">Set TabItem.ContentTemplate</CheckBox>
-            </StackPanel>
-        </Grid>
-    </DockPanel>
+                                <StackPanel>
+                                    <TextBlock Text="ToggleSwitch"></TextBlock>
+                                    <ToggleSwitch>Button</ToggleSwitch>
+                                    <ToggleSwitch IsChecked="True">Button</ToggleSwitch>
+                                    <ToggleSwitch IsEnabled="False">Button</ToggleSwitch>
+                                    <ToggleSwitch IsChecked="True" IsEnabled="False">Button</ToggleSwitch>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="CheckBox"></TextBlock>
+                                    <CheckBox>Enabled</CheckBox>
+                                    <CheckBox IsChecked="True">Checked</CheckBox>
+                                    <CheckBox IsChecked="{x:Null}">3-State</CheckBox>
+                                    <CheckBox IsEnabled="False">Disabled</CheckBox>
+                                    <CheckBox IsChecked="True" IsEnabled="False">Checked</CheckBox>
+                                    <CheckBox IsChecked="{x:Null}" IsEnabled="False">3-State</CheckBox>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="RadioButton Switch"></TextBlock>
+                                    <RadioButton>Enabled</RadioButton>
+                                    <RadioButton IsChecked="True">Checked</RadioButton>
+                                    <RadioButton IsEnabled="False">Disabled</RadioButton>
+                                    <RadioButton IsChecked="True" IsEnabled="False">Checked</RadioButton>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <StackPanel>
+                                    <TextBlock Text="TextBox"></TextBlock>
+                                    <TextBox>Enabled</TextBox>
+                                    <TextBox Watermark="Placeholder" />
+                                    <TextBox IsEnabled="False">Disabled</TextBox>
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Slider"></TextBlock>
+                                    <Slider Value="0"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            TickFrequency="10"
+                                            Width="200" />
+                                    <Slider Value="100"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            TickPlacement="Outside"
+                                            Width="200" />
+                                    <Slider Value="0"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            TickPlacement="BottomRight"
+                                            IsSnapToTickEnabled="True"
+                                            Ticks="0,20,25,40,75,100"
+                                            Width="200" />
+                                    <Slider IsEnabled="False" />
+                                </StackPanel>
+                                <StackPanel>
+                                    <ListBox>
+                                        <ListBoxItem>Unselected</ListBoxItem>
+                                        <ListBoxItem IsSelected="True">Selected</ListBoxItem>
+                                        <ListBoxItem IsEnabled="False">Unselected</ListBoxItem>
+                                    </ListBox>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Classes="TabItemHeaderStack">
+                            <TextBlock Text="Typography" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Star}" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <StackPanel>
+                        <TextBlock Text="TextBlock" />
+                        <TextBlock Text="Theme BodyLGNormalTheme" Theme="{StaticResource BodyLGNormalTheme}" />
+                        <TextBlock Text="Class BodyLGNormal" Classes="BodyLGNormal" />
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Classes="TabItemHeaderStack">
+                            <TextBlock Text="Colors" />
+                            <Border>
+                                <TextBlock Text="123" />
+                            </Border>
+                        </StackPanel>
+                    </TabItem.Header>
+                    <StackPanel>
+                        <Border Width="100" Height="30" Background="Blue">
+                            <TextBlock Text="Blue" />
+                            
+                        </Border>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
+    </Border>
+
 
 </reactive:ReactiveUserControl>

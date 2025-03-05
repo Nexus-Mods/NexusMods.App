@@ -64,7 +64,7 @@
                     <icons:UnifiedIcon Classes="DragVertical" />
                     <icons:UnifiedIcon Classes="Search" />
                     <icons:UnifiedIcon Classes="Home" />
-                    <icons:UnifiedIcon Classes="ToggleSwitch" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchOn" />
                     <icons:UnifiedIcon Classes="ToggleSwitchOff" />
                     <icons:UnifiedIcon Classes="Game" />
                     <icons:UnifiedIcon Classes="Undo" />
@@ -403,7 +403,7 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.Home}" />
     </Style>
 
-    <Style Selector="icons|UnifiedIcon.ToggleSwitch">
+    <Style Selector="icons|UnifiedIcon.ToggleSwitchOn">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOn}" />
     </Style>
 
