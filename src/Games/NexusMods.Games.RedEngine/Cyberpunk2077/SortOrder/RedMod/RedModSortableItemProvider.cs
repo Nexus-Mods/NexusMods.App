@@ -70,7 +70,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
             .Subscribe()
             .AddTo(_disposables);
 
-        // Observe RedMod groups
+        // Observe RedMod groups changes
         RedModLoadoutGroup.ObserveAll(_connection)
             .Transform((_, redModId) => LoadoutItem.Load(_connection.Db, redModId))
             // Filter by the loadout
@@ -84,11 +84,9 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
                         .Select(isEnabled => (RedMod: redMod, RedModFolder: redMod.RedModFolder(), IsEnabled: isEnabled));
                 }
             )
-            .SortBy(tuple => tuple.RedModFolder.ToString())
-            .Bind(out var redModStates)
             .ToObservable()
             .SubscribeAwait(
-                async (changes, token) => { await UpdateOrderCache(redModStates, token); },
+                async (changes, token) => { await UpdateOrderCache(token); },
                 awaitOperation: AwaitOperation.Sequential
             )
             .AddTo(_disposables);
@@ -179,12 +177,16 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
             .ToList();
     }
 
-    private async Task UpdateOrderCache(IReadOnlyList<RedModWithState> redModsGroupsWithState, CancellationToken token)
+    private async Task UpdateOrderCache(CancellationToken token)
     {
         await _semaphore.WaitAsync(token);
         try
         {
-            var redModsGroups = redModsGroupsWithState.ToList();
+            var redModsGroups = RedModLoadoutGroup.All(_connection.Db)
+                .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
+                .Select(g => new RedModWithState( g, g.RedModFolder(), g.IsEnabled()))
+                .ToList();
+                
             var oldOrder = _orderCache.Items.OrderBy(item => item.SortIndex);
             
             if (token.IsCancellationRequested) return;
