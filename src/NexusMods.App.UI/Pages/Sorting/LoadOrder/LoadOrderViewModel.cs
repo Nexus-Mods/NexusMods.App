@@ -112,7 +112,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                     .SubscribeAwait(async (payload, cancellationToken) =>
                         {
                             var (item, delta) = payload;
-                            await provider.SetRelativePosition(((LoadOrderItemModel)item).InnerItem, delta);
+                            await provider.SetRelativePosition(((LoadOrderItemModel)item).InnerItem, delta, cancellationToken);
                         }
                     )
                     .DisposeWith(d);
