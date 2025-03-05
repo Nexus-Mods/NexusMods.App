@@ -8,7 +8,7 @@ using R3;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
-public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
+public class RedModSortableItemProviderFactory : ISortableItemProviderFactory, IDisposable
 {
     private readonly IConnection _connection;
     private readonly Dictionary<LoadoutId, RedModSortableItemProvider> _providers = new();
@@ -98,5 +98,13 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
         }
 
         throw new InvalidOperationException($"RedModSortableItemProviderFactory: provider not found for loadout {loadoutId}");
+    }
+    
+    public void Dispose()
+    {
+        foreach (var provider in _providers.Values)
+        {
+            provider.Dispose();
+        }
     }
 }

@@ -59,7 +59,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             cts.Token.Register(() => tsc1.TrySetCanceled(), useSynchronizationContext: false);
 
             // listen for the order to be updated
-            provider.SortableItems
+            using var _ = provider.SortableItems
                 .WhenAnyValue(coll => coll.Count)
                 .Where(count => count == 12)
                 .Distinct()
