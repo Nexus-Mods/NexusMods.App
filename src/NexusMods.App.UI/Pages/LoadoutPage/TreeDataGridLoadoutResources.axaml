@@ -38,17 +38,13 @@
                                             ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ParentCollectionDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
-                            <StackPanel Orientation="Horizontal">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" Size="20"/>
-                                <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" IsEnabled="false" IsChecked="False">
-                                    <ToggleSwitch.OnContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OnContent>
-                                    <ToggleSwitch.OffContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OffContent>
-                                </ToggleSwitch>
-                            </StackPanel>
+                            <controls:StandardButton
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
+                                RightIcon="{x:Static icons:IconValues.ToggleOff}"
+                                ShowIcon="Both"
+                                ShowLabel="False"
+                                ToolTip.Tip="Mod cannot be switched on as it is as part of a read only collection. Switch on the collection to switch on this mod"/>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
@@ -58,14 +54,12 @@
                                             ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="18" IsVisible="{CompiledBinding IsLocked.Value}"/>
-
+                            <Panel>
                                 <ToggleSwitch Classes="Compact"
                                               HorizontalAlignment="Center"
                                               Command="{CompiledBinding CommandToggle}"
                                               IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
-                                              IsEnabled="{CompiledBinding !IsLocked.Value}">
+                                              IsVisible="{CompiledBinding !IsLocked.Value}">
                                     <ToggleSwitch.OnContent>
                                         <ContentControl />
                                     </ToggleSwitch.OnContent>
@@ -73,7 +67,16 @@
                                         <ContentControl />
                                     </ToggleSwitch.OffContent>
                                 </ToggleSwitch>
-                            </StackPanel>
+                                <controls:StandardButton
+                                    Size="Small"
+                                    LeftIcon="{x:Static icons:IconValues.Lock}"
+                                    RightIcon="{x:Static icons:IconValues.ToggleOn}"
+                                    ShowIcon="Both"
+                                    ShowLabel="False"
+                                    IsVisible="{CompiledBinding IsLocked.Value}"
+                                    ToolTip.Tip="Mod cannot be turned off as it is as part of a read only collection. Switch off the collection to turn off this mod"/>
+                            </Panel>
+                            
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>

@@ -435,11 +435,12 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/star/
     public static readonly IconValue Star = new ProjektankerIcon("mdi-star");
 
-    // https://pictogrammers.com/library/mdi/icon/toggle-switch-outline/
-    public static readonly IconValue ToggleOff = new ProjektankerIcon("mdi-toggle-switch-outline");
-
+    // https://pictogrammers.com/library/mdi/icon/toggle-switch/
+    public static readonly IconValue ToggleOn = new ProjektankerIcon("mdi-toggle-switch");
+    
     // https://pictogrammers.com/library/mdi/icon/toggle-switch-off-outline/
-    public static readonly IconValue ToggleOn = new ProjektankerIcon("mdi-toggle-switch-off-outline");
+    public static readonly IconValue ToggleOff = new ProjektankerIcon("mdi-toggle-switch-off-outline");
+
 
 #endregion
 
