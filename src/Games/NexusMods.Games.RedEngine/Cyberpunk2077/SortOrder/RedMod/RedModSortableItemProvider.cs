@@ -24,7 +24,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
     private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.RedModFolderName);
 
     // TODO: Re-enable once we get a more sensible way to ordering that doesn't rely on database events.
-    private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList = new(new ObservableCollection<ISortableItem>());
+    private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
     private readonly SortOrderId _sortOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -60,7 +60,6 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
         _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
         // TODO: Re-enable once we get a more sensible way to ordering that doesn't rely on database events. 
-        return;
         // load the previously saved order
         var order = RetrieveSortableEntries();
         _orderCache.AddOrUpdate(order);
@@ -91,7 +90,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             .Bind(out var redModStates)
             .ToObservable()
             .SubscribeAwait(
-                async (changes, _) => { await UpdateOrderCache(redModStates); },
+                async (changes, token) => { await UpdateOrderCache(redModStates, token); },
                 awaitOperation: AwaitOperation.Sequential
             )
             .AddTo(_disposables);
@@ -180,19 +179,28 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider, IDisposa
             .ToList();
     }
 
-    private async Task UpdateOrderCache(IReadOnlyList<RedModWithState> redModsGroupsWithState)
+    private async Task UpdateOrderCache(IReadOnlyList<RedModWithState> redModsGroupsWithState, CancellationToken token)
     {
-        await _semaphore.WaitAsync();
+        await _semaphore.WaitAsync(token);
         try
         {
             var redModsGroups = redModsGroupsWithState.ToList();
             var oldOrder = _orderCache.Items.OrderBy(item => item.SortIndex);
-
+            
+            if (token.IsCancellationRequested)
+                return;
+            
             // Update the order
             var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder.ToList(), this);
+            
+            if (token.IsCancellationRequested)
+                return;
 
             // Update the database
             await PersistSortableEntries(stagingList);
+            
+            if (token.IsCancellationRequested)
+                return;
 
             // Update the cache
             _orderCache.Edit(innerCache =>
