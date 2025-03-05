@@ -102,9 +102,16 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             vm.Image = LoadImageFromStream(iconStream);
                             vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
                             vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
-                            vm.IsActive = false;
                             vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
                             vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
+                            vm.IsActive = false;
+
+                            if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
+                                activeLoadoutContext.LoadoutId == loadout.LoadoutId)
+                            {
+                                SetActiveItem(vm);
+                            }
+                            
                             return vm;
                         }
                     )
@@ -190,38 +197,25 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                             .Concat(_loadoutSpineItems)
                             .FirstOrDefault(spineItem => spineItem.WorkspaceContext?.Equals(context) == true);
 
-                        if (itemToActivate == null)
-                            return;
-
-                        if (_activeSpineItem != null)
-                            _activeSpineItem.IsActive = false;
-
-                        itemToActivate.IsActive = true;
-                        _activeSpineItem = itemToActivate;
+                        SetActiveItem(itemToActivate);
                     }
                 )
                 .DisposeWith(disposables);
-
-            // Update the active spine item if the loadoutList changes
-            _loadoutSpineItems.ToObservableChangeSet()
-                .SubscribeWithErrorLogging(_ =>
-                    {
-                        if (_activeSpineItem is not { WorkspaceContext: LoadoutContext loadoutContext }) return;
-
-                        // The spine item might have been replaced with a new one (TransformAsync)
-                        var newSpineItem = _loadoutSpineItems.FirstOrDefault(
-                            spineItem => loadoutContext.Equals(spineItem.WorkspaceContext)
-                        );
-                        if (newSpineItem == null) return;
-
-                        _activeSpineItem.IsActive = false;
-                        newSpineItem.IsActive = true;
-                        _activeSpineItem = newSpineItem;
-                    }
-                )
-                .DisposeWith(disposables);
+            
             }
         );
+    }
+
+    private void SetActiveItem(ISpineItemViewModel? itemToActivate)
+    {
+        if (itemToActivate == null)
+            return;
+
+        if (_activeSpineItem != null)
+            _activeSpineItem.IsActive = false;
+
+        itemToActivate.IsActive = true;
+        _activeSpineItem = itemToActivate;
     }
 
     private Bitmap LoadImageFromStream(Stream iconStream)
