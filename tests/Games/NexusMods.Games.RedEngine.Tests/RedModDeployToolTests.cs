@@ -78,7 +78,9 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var order = provider.SortableItems;
         var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
 
-        await provider.SetRelativePosition(specificRedMod, delta);
+        var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        var token = cts2.Token;
+        await provider.SetRelativePosition(specificRedMod, delta, token);
 
         loadout = loadout.Rebase();
 
