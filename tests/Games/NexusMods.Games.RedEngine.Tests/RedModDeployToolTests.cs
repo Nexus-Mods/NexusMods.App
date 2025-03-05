@@ -31,7 +31,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     }
 
     [Theory]
-    [Trait("FlakeyTest", "True")]
+    // [Trait("FlakeyTest", "True")]
     [InlineData("Driver_Shotguns", 3)]
     [InlineData("Driver_Shotguns", -3)]
     [InlineData("Driver_Shotguns", -11)]
