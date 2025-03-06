@@ -9,7 +9,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using SystemObservable = System.Reactive.Linq.Observable;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
