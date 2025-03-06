@@ -45,7 +45,7 @@ The loadout is based on {Game} v{Version} but there are {FileCount} file(s) miss
 3. Close and reopen the app
 
 ## Technical Details
-While checking the contents of the game folder against the hashmap for {Game} (v{Version}) from {Store}, {FileCount} file(s) - totalling {Size} - could not be located in the game folder, have not been backed up by the app or cannot be fetched from {Store} automatically.
+While checking the contents of the game folder against the file list index for {Game} (v{Version}) from {Store}, {FileCount} file(s) - totalling {Size} - could not be located in the game folder, have not been backed up by the app or cannot be fetched from {Store} automatically.
 
 Without all the required base game files, the loadout cannot be applied.
 
