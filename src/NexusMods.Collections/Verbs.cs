@@ -58,10 +58,11 @@ internal static class Verbs
         }
         else
         {
-            var links = CollectionDownloader.GetMissingHyperlinks(revisionMetadata, db: connection.Db);
-            if (links.Count > 0)
+            var tuples = CollectionDownloader.GetMissingDownloadLinks(revisionMetadata, db: connection.Db, itemType: CollectionDownloader.ItemType.Required);
+            if (tuples.Count > 0)
             {
-                await renderer.Text("The following mods are missing from the collection:" + Environment.NewLine + string.Join(Environment.NewLine, links));
+                await renderer.TextLine($"Missing {tuples.Count} downloads:");
+                await renderer.Table(["Name", "Uri"], tuples.Select(t => new object[] { t.Download.Name, t.Uri.ToString() }));
                 return 0;
             }
         }
