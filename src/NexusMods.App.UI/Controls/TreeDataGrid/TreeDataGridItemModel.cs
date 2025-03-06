@@ -73,6 +73,11 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     {
         get
         {
+            // NOTE(erri120): When this item model gets disposed, all children get disposed, and then
+            // we clear the children observable list which triggers the TreeDataGrid. If HasChildren
+            // is still True, TreeDataGrid will try and access this which won't work because we're disposed.
+            Debug.Assert(!_isDisposed);
+            if (_isDisposed) return [];
             _childrenCollectionInitialization.OnNext(true);
             return _childrenView;
         }
