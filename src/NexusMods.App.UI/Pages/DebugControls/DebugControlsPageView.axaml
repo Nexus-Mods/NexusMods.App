@@ -145,7 +145,6 @@
                 </TabItem.Header>
                 <ScrollViewer>
                     <StackPanel>
-                        <TextBlock Text="TextBlock" />
                         <TextBlock Text="Heading2XLSemi" Theme="{StaticResource Heading2XLSemiTheme}" />
                         <TextBlock Text="HeadingXLSemi" Theme="{StaticResource HeadingXLSemiTheme}" />
                         <TextBlock Text="HeadingLGSemi" Theme="{StaticResource HeadingLGSemiTheme}" />
@@ -181,240 +180,346 @@
                 </TabItem.Header>
 
                 <TabControl Classes="Subtabs">
-                    <TabItem Header="Primitives" />
-                    <TabItem Header="Brand" />
-                    <TabItem IsSelected="True" Header="Elements">
+                    
+                    <TabControl.Styles>
+                        <Style Selector="StackPanel.ElementSection">
+                            <Setter Property="Spacing" Value="4" />
+                            <Style Selector="^ > TextBlock:nth-child(1)">
+                                <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+                            </Style>
+                            <Style Selector="^ StackPanel.ColorRamp">
+                                <Style Selector="^ > TextBlock:nth-child(1)">
+                                    <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
+                                </Style>
+                                <Style Selector="^ Grid">
+                                    <Setter Property="Height" Value="20" />
+                                </Style>
+                            </Style>
+                        </Style>
+                    </TabControl.Styles>
+                    
+                    <TabItem Header="Tier 1 - Primitives" />
+                    <TabItem Header="Tier 2 - Brand">
                         <ScrollViewer>
                             <StackPanel>
                                 <StackPanel>
-                                    <TextBlock Text="Surface" Theme="{StaticResource BodyLGBoldTheme}" />
+                                    <TextBlock Text="Brand" Theme="{StaticResource HeadingXSSemiTheme}" />
                                     <TextBlock Text="Description" />
-                                    <StackPanel>
-                                        <TextBlock Text="Neutral/Translucent" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource SurfaceTranslucentLowBrush}">
-                                                <TextBlock Text="SurfaceTranslucentLow" />
-                                            </Border>
-                                            <Border Background="{StaticResource SurfaceTranslucentMidBrush}">
-                                                <TextBlock Text="SurfaceTranslucentMid" />
-                                            </Border>
-                                            <Border Background="{StaticResource SurfaceTranslucentHighBrush}">
-                                                <TextBlock Text="SurfaceTranslucentHigh" />
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
                                     <StackPanel>
                                         <TextBlock Text="Neutral" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource SurfaceBaseBrush}">
-                                                <TextBlock Text="SurfaceBase" />
-                                            </Border>
-                                            <Border Background="{StaticResource SurfaceLowBrush}">
-                                                <TextBlock Text="SurfaceLow" />
-                                            </Border>
-                                            <Border Background="{StaticResource SurfaceMidBrush}">
-                                                <TextBlock Text="SurfaceMid" />
-                                            </Border>
-                                            <Border Background="{StaticResource SurfaceHighBrush}">
-                                                <TextBlock Text="SurfaceHigh" />
-                                            </Border>
-                                            <Border Background="{StaticResource SurfaceInvertedBrush}">
-                                                <TextBlock Text="SurfaceInverted" />
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-                                
-                                <StackPanel>
-                                    <TextBlock Text="Stroke" Theme="{StaticResource BodyLGBoldTheme}" />
-                                    <TextBlock Text="Description" />
-                                    <StackPanel>
-                                        <TextBlock Text="Neutral/Translucent" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource NeutralWeakBrush}">
-                                                <TextBlock Text="NeutralWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralSubduedBrush}">
-                                                <TextBlock Text="NeutralSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralModerateBrush}">
-                                                <TextBlock Text="NeutralModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralStrongBrush}">
-                                                <TextBlock Text="NeutralStrong" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralInvertedBrush}">
-                                                <TextBlock Text="NeutralInverted" />
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-                                
-                                <StackPanel>
-                                    <TextBlock Text="Foreground" Theme="{StaticResource BodyLGBoldTheme}" />
-                                    <TextBlock Text="Description" />
-                                    <StackPanel>
-                                        <TextBlock Text="Neutral/Translucent" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource NeutralTranslucentWeakerBrush}">
-                                                <TextBlock Text="NeutralTranslucentWeaker" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralTranslucentWeakBrush}">
-                                                <TextBlock Text="NeutralTranslucentWeak" />
-                                            </Border>
-                                            <Border
-                                                Background="{StaticResource NeutralTranslucentSubduedBrush}">
-                                                <TextBlock Text="NeutralTranslucentSubdued" />
-                                            </Border>
-                                            <Border
-                                                Background="{StaticResource NeutralTranslucentModerateBrush}">
-                                                <TextBlock Text="NeutralTranslucentModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralTranslucentStrongBrush}">
-                                                <TextBlock Text="NeutralTranslucentStrong" />
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel>
-                                        <TextBlock Text="Neutral" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource NeutralWeakBrush}">
-                                                <TextBlock Text="NeutralWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralSubduedBrush}">
-                                                <TextBlock Text="NeutralSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralModerateBrush}">
-                                                <TextBlock Text="NeutralModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralStrongBrush}">
-                                                <TextBlock Text="NeutralStrong" />
-                                            </Border>
-                                            <Border Background="{StaticResource NeutralInvertedBrush}">
-                                                <TextBlock Text="NeutralInverted" />
-                                            </Border>
-                                        </StackPanel>
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*" Height="20">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandNeutral950Brush}"
+                                                    ToolTip.Tip="BrandNeutral950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandNeutral900Brush}"
+                                                    ToolTip.Tip="BrandNeutral900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandNeutral800Brush}"
+                                                    ToolTip.Tip="BrandNeutral800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandNeutral700Brush}"
+                                                    ToolTip.Tip="BrandNeutral700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandNeutral600Brush}"
+                                                    ToolTip.Tip="BrandNeutral600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandNeutral500Brush}"
+                                                    ToolTip.Tip="BrandNeutral500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandNeutral400Brush}"
+                                                    ToolTip.Tip="BrandNeutral400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandNeutral300Brush}"
+                                                    ToolTip.Tip="BrandNeutral300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandNeutral200Brush}"
+                                                    ToolTip.Tip="BrandNeutral200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandNeutral100Brush}"
+                                                    ToolTip.Tip="BrandNeutral100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandNeutral50Brush}"
+                                                    ToolTip.Tip="BrandNeutral50Brush" />
+                                        </Grid>
                                     </StackPanel>
                                     <StackPanel>
                                         <TextBlock Text="Danger" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource DangerWeakBrush}">
-                                                <TextBlock Text="DangerWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource DangerSubduedBrush}">
-                                                <TextBlock Text="DangerSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource DangerModerateBrush}">
-                                                <TextBlock Text="DangerModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource DangerStrongBrush}">
-                                                <TextBlock Text="DangerStrong" />
-                                            </Border>
-                                        </StackPanel>
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*" Height="20">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandDanger950Brush}"
+                                                    ToolTip.Tip="BrandDanger950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandDanger900Brush}"
+                                                    ToolTip.Tip="BrandDanger900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandDanger800Brush}"
+                                                    ToolTip.Tip="BrandDanger800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandDanger700Brush}"
+                                                    ToolTip.Tip="BrandDanger700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandDanger600Brush}"
+                                                    ToolTip.Tip="BrandDanger600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandDanger500Brush}"
+                                                    ToolTip.Tip="BrandDanger500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandDanger400Brush}"
+                                                    ToolTip.Tip="BrandDanger400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandDanger300Brush}"
+                                                    ToolTip.Tip="BrandDanger300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandDanger200Brush}"
+                                                    ToolTip.Tip="BrandDanger200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandDanger100Brush}"
+                                                    ToolTip.Tip="BrandDanger100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandDanger50Brush}"
+                                                    ToolTip.Tip="BrandDanger50Brush" />
+                                        </Grid>
                                     </StackPanel>
                                     <StackPanel>
                                         <TextBlock Text="Primary" />
-                                        <StackPanel Orientation="Horizontal">
-                                            
-                                            <Border Background="{StaticResource PrimarySubduedBrush}">
-                                                <TextBlock Text="PrimarySubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource PrimaryModerateBrush}">
-                                                <TextBlock Text="PrimaryModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource PrimaryStrongBrush}">
-                                                <TextBlock Text="PrimaryStrong" />
-                                            </Border>
-                                        </StackPanel>
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*" Height="20">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandPrimary950Brush}"
+                                                    ToolTip.Tip="BrandPrimary950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandPrimary900Brush}"
+                                                    ToolTip.Tip="BrandPrimary900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandPrimary800Brush}"
+                                                    ToolTip.Tip="BrandPrimary800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandPrimary700Brush}"
+                                                    ToolTip.Tip="BrandPrimary700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandPrimary600Brush}"
+                                                    ToolTip.Tip="BrandPrimary600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandPrimary500Brush}"
+                                                    ToolTip.Tip="BrandPrimary500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandPrimary400Brush}"
+                                                    ToolTip.Tip="BrandPrimary400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandPrimary300Brush}"
+                                                    ToolTip.Tip="BrandPrimary300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandPrimary200Brush}"
+                                                    ToolTip.Tip="BrandPrimary200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandPrimary100Brush}"
+                                                    ToolTip.Tip="BrandPrimary100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandPrimary50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
                                     </StackPanel>
                                     <StackPanel>
                                         <TextBlock Text="Warning" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource WarningWeakBrush}">
-                                                <TextBlock Text="WarningWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource WarningSubduedBrush}">
-                                                <TextBlock Text="WarningSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource WarningModerateBrush}">
-                                                <TextBlock Text="WarningModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource WarningStrongBrush}">
-                                                <TextBlock Text="WarningStrong" />
-                                            </Border>
-                                        </StackPanel>
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*" Height="20">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandWarning950Brush}"
+                                                    ToolTip.Tip="BrandWarning950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandWarning900Brush}"
+                                                    ToolTip.Tip="BrandWarning900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandWarning800Brush}"
+                                                    ToolTip.Tip="BrandWarning800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandWarning700Brush}"
+                                                    ToolTip.Tip="BrandWarning700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandWarning600Brush}"
+                                                    ToolTip.Tip="BrandWarning600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandWarning500Brush}"
+                                                    ToolTip.Tip="BrandWarning500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandWarning400Brush}"
+                                                    ToolTip.Tip="BrandWarning400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandWarning300Brush}"
+                                                    ToolTip.Tip="BrandWarning300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandWarning200Brush}"
+                                                    ToolTip.Tip="BrandWarning200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandWarning100Brush}"
+                                                    ToolTip.Tip="BrandWarning100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandWarning50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
                                     </StackPanel>
-                                    <StackPanel>
-                                        <TextBlock Text="Success" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource SuccessWeakBrush}">
-                                                <TextBlock Text="SuccessWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource SuccessSubduedBrush}">
-                                                <TextBlock Text="SuccessSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource SuccessModerateBrush}">
-                                                <TextBlock Text="SuccessModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource SuccessStrongBrush}">
-                                                <TextBlock Text="SuccessStrong" />
-                                            </Border>
-                                        </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem IsSelected="True" Header="Tier 3 - Elements">
+                        <ScrollViewer>
+                            <StackPanel Spacing="16">
+                                
+                                
+                                
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Surface" />
+                                    <TextBlock Text="Description" />
+
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="NeutralTranslucent" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource SurfaceTranslucentLowBrush}"
+                                                    ToolTip.Tip="SurfaceTranslucentLowBrush" />
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource SurfaceTranslucentMidBrush}"
+                                                    ToolTip.Tip="SurfaceTranslucentMidBrush" />
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource SurfaceTranslucentHighBrush}"
+                                                    ToolTip.Tip="SurfaceTranslucentHighBrush" />
+                                        </Grid>
                                     </StackPanel>
-                                    <StackPanel>
-                                        <TextBlock Text="Creators" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource CreatorsWeakBrush}">
-                                                <TextBlock Text="CreatorsWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource CreatorsSubduedBrush}">
-                                                <TextBlock Text="CreatorsSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource CreatorsModerateBrush}">
-                                                <TextBlock Text="CreatorsModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource CreatorsStrongBrush}">
-                                                <TextBlock Text="CreatorsStrong" />
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel>
-                                        <TextBlock Text="Info" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource InfoWeakBrush}">
-                                                <TextBlock Text="InfoWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource InfoSubduedBrush}">
-                                                <TextBlock Text="InfoSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource InfoModerateBrush}">
-                                                <TextBlock Text="InfoModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource InfoStrongBrush}">
-                                                <TextBlock Text="InfoStrong" />
-                                            </Border>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel>
-                                        <TextBlock Text="Premium" />
-                                        <StackPanel Orientation="Horizontal">
-                                            <Border Background="{StaticResource PremiumWeakBrush}">
-                                                <TextBlock Text="PremiumWeak" />
-                                            </Border>
-                                            <Border Background="{StaticResource PremiumSubduedBrush}">
-                                                <TextBlock Text="PremiumSubdued" />
-                                            </Border>
-                                            <Border Background="{StaticResource PremiumModerateBrush}">
-                                                <TextBlock Text="PremiumModerate" />
-                                            </Border>
-                                            <Border Background="{StaticResource PremiumStrongBrush}">
-                                                <TextBlock Text="PremiumStrong" />
-                                            </Border>
-                                        </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Neutral" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*" Height="20">
+                                            <Border Grid.Column="0" Background="{StaticResource SurfaceBaseBrush}"
+                                                    ToolTip.Tip="SurfaceBaseBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource SurfaceLowBrush}"
+                                                    ToolTip.Tip="SurfaceLowBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource SurfaceMidBrush}"
+                                                    ToolTip.Tip="SurfaceMidBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource SurfaceHighBrush}"
+                                                    ToolTip.Tip="SurfaceHighBrush" />
+                                            <Border Grid.Column="4" Background="{StaticResource SurfaceInvertedBrush}"
+                                                    ToolTip.Tip="SurfaceInvertedBrush" />
+                                        </Grid>
                                     </StackPanel>
                                 </StackPanel>
 
-                                
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Stroke" />
+                                    <TextBlock Text="Description" />
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="NeutralTranslucent" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource NeutralWeakBrush}"
+                                                    ToolTip.Tip="NeutralWeakBrush">
+                                                <TextBlock Text="Example" />
+                                            </Border>
+                                            <Border Grid.Column="1" Background="{StaticResource NeutralSubduedBrush}"
+                                                    ToolTip.Tip="NeutralSubduedBrush">
+                                                <TextBlock Text="Example" />
+                                            </Border>
+                                            <Border Grid.Column="2" Background="{StaticResource NeutralModerateBrush}"
+                                                    ToolTip.Tip="NeutralModerateBrush">
+                                                <TextBlock Text="Example" />
+                                            </Border>
+                                            <Border Grid.Column="3" Background="{StaticResource NeutralStrongBrush}"
+                                                    ToolTip.Tip="NeutralStrongBrush">
+                                                <TextBlock Text="Example" />
+                                            </Border>
+                                            <Border Grid.Column="4" Background="{StaticResource NeutralInvertedBrush}"
+                                                    ToolTip.Tip="NeutralInvertedBrush">
+                                                <TextBlock Text="Example" />
+                                            </Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Foreground" Theme="{StaticResource HeadingXSSemiTheme}" />
+                                    <TextBlock Text="Description" />
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="NeutralTranslucent" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource NeutralTranslucentWeakerBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentWeakerBrush" />
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource NeutralTranslucentWeakBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentWeakBrush" />
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource NeutralTranslucentSubduedBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentSubduedBrush" />
+                                            <Border Grid.Column="3"
+                                                    Background="{StaticResource NeutralTranslucentModerateBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentModerateBrush" />
+                                            <Border Grid.Column="4"
+                                                    Background="{StaticResource NeutralTranslucentStrongBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Neutral" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource NeutralWeakBrush}"
+                                                    ToolTip.Tip="NeutralWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource NeutralSubduedBrush}"
+                                                    ToolTip.Tip="NeutralSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource NeutralModerateBrush}"
+                                                    ToolTip.Tip="NeutralModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource NeutralStrongBrush}"
+                                                    ToolTip.Tip="NeutralStrongBrush" />
+                                            <Border Grid.Column="4" Background="{StaticResource NeutralInvertedBrush}"
+                                                    ToolTip.Tip="NeutralInvertedBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Danger" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource DangerWeakBrush}"
+                                                    ToolTip.Tip="DangerWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource DangerSubduedBrush}"
+                                                    ToolTip.Tip="DangerSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource DangerModerateBrush}"
+                                                    ToolTip.Tip="DangerModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource DangerStrongBrush}"
+                                                    ToolTip.Tip="DangerStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Primary" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource PrimaryWeakBrush}"
+                                                    ToolTip.Tip="PrimaryWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource PrimarySubduedBrush}"
+                                                    ToolTip.Tip="PrimarySubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource PrimaryModerateBrush}"
+                                                    ToolTip.Tip="PrimaryModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource PrimaryStrongBrush}"
+                                                    ToolTip.Tip="PrimaryStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Warning" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource WarningWeakBrush}"
+                                                    ToolTip.Tip="WarningWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource WarningSubduedBrush}"
+                                                    ToolTip.Tip="WarningSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource WarningModerateBrush}"
+                                                    ToolTip.Tip="WarningModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource WarningStrongBrush}"
+                                                    ToolTip.Tip="WarningStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Success" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource SuccessWeakBrush}"
+                                                    ToolTip.Tip="SuccessWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource SuccessSubduedBrush}"
+                                                    ToolTip.Tip="SuccessSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource SuccessModerateBrush}"
+                                                    ToolTip.Tip="SuccessModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource SuccessStrongBrush}"
+                                                    ToolTip.Tip="SuccessStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Creators" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource CreatorsWeakBrush}"
+                                                    ToolTip.Tip="CreatorsWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource CreatorsSubduedBrush}"
+                                                    ToolTip.Tip="CreatorsSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource CreatorsModerateBrush}"
+                                                    ToolTip.Tip="CreatorsModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource CreatorsStrongBrush}"
+                                                    ToolTip.Tip="CreatorsStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Info" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource InfoWeakBrush}"
+                                                    ToolTip.Tip="InfoWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource InfoSubduedBrush}"
+                                                    ToolTip.Tip="InfoSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource InfoModerateBrush}"
+                                                    ToolTip.Tip="InfoModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource InfoStrongBrush}"
+                                                    ToolTip.Tip="InfoStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Premium" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource PremiumWeakBrush}"
+                                                    ToolTip.Tip="PremiumWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource PremiumSubduedBrush}"
+                                                    ToolTip.Tip="PremiumSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource PremiumModerateBrush}"
+                                                    ToolTip.Tip="PremiumModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource PremiumStrongBrush}"
+                                                    ToolTip.Tip="PremiumStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+
+
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
