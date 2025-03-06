@@ -58,10 +58,12 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 )]
             );
         });
+        
+        var hasChildrenObservable = childrenObservable.IsNotEmpty();
 
         var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id)
         {
-            HasChildrenObservable = SystemObservable.Return(true),
+            HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
         };
 

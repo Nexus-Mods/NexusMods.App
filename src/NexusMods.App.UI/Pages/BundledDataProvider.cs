@@ -1,5 +1,8 @@
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
@@ -43,14 +46,12 @@ public class BundledDataProvider : ILoadoutDataProvider
     {
         var loadoutItem = item.AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup().AsLoadoutItem();
 
-        var hasChildrenObservable = Observable.Return(true);
-        var childrenObservable = Observable.Return(
-            new ChangeSet<CompositeItemModel<EntityId>, EntityId>(
-                [
-                    new Change<CompositeItemModel<EntityId>, EntityId>(ChangeReason.Add, item.Id, LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem)),
-                ]
-            ));
-
+        var childrenObservable = new ReadOnlyObservableCollection<CompositeItemModel<EntityId>>( 
+                [LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem)])
+            .ToObservableChangeSet()
+            .AddKey(model => model.Key);
+        var hasChildrenObservable = childrenObservable.IsNotEmpty();
+        
         var parentItemModel = new CompositeItemModel<EntityId>(item.Id)
         {
             HasChildrenObservable = hasChildrenObservable,
