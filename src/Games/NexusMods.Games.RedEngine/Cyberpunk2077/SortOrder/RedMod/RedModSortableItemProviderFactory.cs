@@ -99,4 +99,12 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
 
         throw new InvalidOperationException($"RedModSortableItemProviderFactory: provider not found for loadout {loadoutId}");
     }
+    
+    public void Dispose()
+    {
+        foreach (var provider in _providers.Values)
+        {
+            provider.Dispose();
+        }
+    }
 }
