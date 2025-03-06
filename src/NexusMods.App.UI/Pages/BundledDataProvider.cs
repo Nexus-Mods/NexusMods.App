@@ -66,7 +66,7 @@ public class BundledDataProvider : ILoadoutDataProvider
 
         LoadoutDataProviderHelper.AddCollection(_connection, parentItemModel, loadoutItem);
         LoadoutDataProviderHelper.AddLockedEnabledState(parentItemModel, loadoutItem);
-        LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, loadoutItem);
+        LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, loadoutItem);
 
         return parentItemModel;
     }

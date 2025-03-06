@@ -24,7 +24,7 @@ public static class LoadoutComponents
         public int CompareTo(LockedEnabledState? other) => 0;
     }
 
-    public sealed class IsEnabled : ReactiveR3Object, IItemModelComponent<IsEnabled>, IComparable<IsEnabled>
+    public sealed class EnabledStateToggle : ReactiveR3Object, IItemModelComponent<EnabledStateToggle>, IComparable<EnabledStateToggle>
     {
         public ReactiveCommand<Unit> CommandToggle { get; } = new();
 
@@ -37,7 +37,7 @@ public static class LoadoutComponents
             f1: static x => x.AsEnumerable()
         );
 
-        public int CompareTo(IsEnabled? other)
+        public int CompareTo(EnabledStateToggle? other)
         {
             var (a, b) = (Value.Value, other?.Value.Value);
             return (a, b) switch
@@ -52,7 +52,7 @@ public static class LoadoutComponents
         private readonly IDisposable _activationDisposable;
         private readonly IDisposable? _idsObservable;
 
-        public IsEnabled(
+        public EnabledStateToggle(
             ValueComponent<bool?> valueComponent,
             LoadoutItemId itemId)
         {
@@ -65,7 +65,7 @@ public static class LoadoutComponents
             });
         }
 
-        public IsEnabled(
+        public EnabledStateToggle(
             ValueComponent<bool?> valueComponent,
             IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable)
         {
@@ -117,17 +117,17 @@ public static class LoadoutColumns
     }
 
     [UsedImplicitly]
-    public sealed class IsEnabled : ICompositeColumnDefinition<IsEnabled>
+    public sealed class EnabledState : ICompositeColumnDefinition<EnabledState>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<LoadoutComponents.IsEnabled>(key: IsEnabledComponentKey);
-            var bValue = a.GetOptional<LoadoutComponents.IsEnabled>(key: IsEnabledComponentKey);
+            var aValue = a.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
+            var bValue = a.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
             return aValue.Compare(bValue);
         }
 
-        public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(IsEnabled);
-        public static readonly ComponentKey IsEnabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.IsEnabled));
+        public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(EnabledState);
+        public static readonly ComponentKey EnabledStateToggleComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.EnabledStateToggle));
         public static readonly ComponentKey ParentCollectionDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.ParentCollectionDisabled));
         public static readonly ComponentKey LockedEnabledStateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.LockedEnabledState));
         public static string GetColumnHeader() => "Actions";

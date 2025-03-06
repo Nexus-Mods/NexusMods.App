@@ -210,7 +210,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
     {
-        return itemModel.Get<LoadoutComponents.IsEnabled>(LoadoutColumns.IsEnabled.IsEnabledComponentKey).ItemIds;
+        return itemModel.Get<LoadoutComponents.EnabledStateToggle>(LoadoutColumns.EnabledState.EnabledStateToggleComponentKey).ItemIds;
     }
 }
 
@@ -240,8 +240,8 @@ public class LoadoutTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        model.SubscribeToComponentAndTrack<LoadoutComponents.IsEnabled, LoadoutTreeDataGridAdapter>(
-            key: LoadoutColumns.IsEnabled.IsEnabledComponentKey,
+        model.SubscribeToComponentAndTrack<LoadoutComponents.EnabledStateToggle, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.EnabledStateToggleComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
             {
@@ -264,7 +264,7 @@ public class LoadoutTreeDataGridAdapter :
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
             ColumnCreator.Create<EntityId, LoadoutColumns.Collections>(),
-            ColumnCreator.Create<EntityId, LoadoutColumns.IsEnabled>(),
+            ColumnCreator.Create<EntityId, LoadoutColumns.EnabledState>(),
         ];
     }
 

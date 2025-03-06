@@ -25,8 +25,8 @@
         </controls:ComponentControl>
     </DataTemplate>
 
-    <!-- Enabled -->
-    <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
+    <!-- Enabled State -->
+    <DataTemplate x:Key="{x:Static local:LoadoutColumns+EnabledState.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
@@ -35,7 +35,7 @@
             <controls:MultiComponentControl.AvailableTemplates>
                 <!-- parent collection disabled -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+ParentCollectionDisabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ParentCollectionDisabledComponentKey}">
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ParentCollectionDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
                             <controls:StandardButton
@@ -49,9 +49,9 @@
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
                 
-                <!-- Locked enabled -->
+                <!-- locked enabled state -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+LockedEnabledState"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.LockedEnabledStateComponentKey}">
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.LockedEnabledStateComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+LockedEnabledState}">
                             <controls:StandardButton
@@ -66,10 +66,10 @@
                 </controls:ComponentTemplate>
 
                 <!-- normal toggle -->
-                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+EnabledStateToggle"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.EnabledStateToggleComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+EnabledStateToggle}">
                             <ToggleSwitch Classes="Compact"
                                           HorizontalAlignment="Center"
                                           Command="{CompiledBinding CommandToggle}"

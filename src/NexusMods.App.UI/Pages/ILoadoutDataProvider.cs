@@ -93,7 +93,7 @@ public static class LoadoutDataProviderHelper
 
         AddCollection(connection, itemModel, loadoutItem);
         AddLockedEnabledState(itemModel, loadoutItem);
-        AddIsEnabled(connection, itemModel, loadoutItem);
+        AddEnabledStateToggle(connection, itemModel, loadoutItem);
 
         return itemModel;
     }
@@ -107,7 +107,7 @@ public static class LoadoutDataProviderHelper
         var isParentCollectionDisabledObservable = LoadoutItem.Observe(connection, collectionGroup.Id).Select(static item => item.IsDisabled).ToObservable();
 
         itemModel.AddObservable(
-            key: LoadoutColumns.IsEnabled.ParentCollectionDisabledComponentKey,
+            key: LoadoutColumns.EnabledState.ParentCollectionDisabledComponentKey,
             shouldAddObservable: isParentCollectionDisabledObservable,
             componentFactory: () => new LoadoutComponents.ParentCollectionDisabled()
         );
@@ -116,13 +116,13 @@ public static class LoadoutDataProviderHelper
     public static void AddLockedEnabledState(CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
     {
         if (IsLocked(loadoutItem))
-            itemModel.Add(LoadoutColumns.IsEnabled.LockedEnabledStateComponentKey, new LoadoutComponents.LockedEnabledState());
+            itemModel.Add(LoadoutColumns.EnabledState.LockedEnabledStateComponentKey, new LoadoutComponents.LockedEnabledState());
     }
 
-    public static void AddIsEnabled(IConnection connection, CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
+    public static void AddEnabledStateToggle(IConnection connection, CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
     {
         var isEnabledObservable = LoadoutItem.Observe(connection, loadoutItem.Id).Select(static item => (bool?)!item.IsDisabled);
-        itemModel.Add(LoadoutColumns.IsEnabled.IsEnabledComponentKey, new LoadoutComponents.IsEnabled(
+        itemModel.Add(LoadoutColumns.EnabledState.EnabledStateToggleComponentKey, new LoadoutComponents.EnabledStateToggle(
             valueComponent: new ValueComponent<bool?>(
                 initialValue: !loadoutItem.IsDisabled,
                 valueObservable: isEnabledObservable
@@ -184,13 +184,13 @@ public static class LoadoutDataProviderHelper
             .ToObservable();
 
         parentItemModel.AddObservable(
-            key: LoadoutColumns.IsEnabled.LockedEnabledStateComponentKey,
+            key: LoadoutColumns.EnabledState.LockedEnabledStateComponentKey,
             shouldAddObservable: isLockedObservable,
             componentFactory: () => new LoadoutComponents.LockedEnabledState()
         );
     }
 
-    public static void AddIsEnabled(
+    public static void AddEnabledStateToggle(
         IConnection connection,
         CompositeItemModel<EntityId> parentItemModel,
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
@@ -216,7 +216,7 @@ public static class LoadoutDataProviderHelper
                 return isEnabled.HasValue ? isEnabled.Value : null;
             });
 
-        parentItemModel.Add(LoadoutColumns.IsEnabled.IsEnabledComponentKey, new LoadoutComponents.IsEnabled(
+        parentItemModel.Add(LoadoutColumns.EnabledState.EnabledStateToggleComponentKey, new LoadoutComponents.EnabledStateToggle(
             valueComponent: new ValueComponent<bool?>(
                 initialValue: true,
                 valueObservable: isEnabledObservable
