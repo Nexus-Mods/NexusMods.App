@@ -129,6 +129,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
         LoadoutDataProviderHelper.AddDateComponent(parentItemModel, localFile.GetCreatedAt(), linkedItemsObservable);
         LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
+        LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
 
         return parentItemModel;

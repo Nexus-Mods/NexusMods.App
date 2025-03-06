@@ -271,6 +271,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
             LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
             LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
             LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
 
             return parentItemModel;

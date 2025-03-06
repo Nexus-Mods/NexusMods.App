@@ -48,35 +48,35 @@
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
+                
+                <!-- Locked enabled -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+LockedEnabledState"
+                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.LockedEnabledStateComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+LockedEnabledState}">
+                            <controls:StandardButton
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Lock}"
+                                RightIcon="{x:Static icons:IconValues.ToggleOn}"
+                                ShowIcon="Both"
+                                ShowLabel="False"
+                                ToolTip.Tip="Mod cannot be turned off as it is as part of a read only collection. Switch off the collection to turn off this mod"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
 
                 <!-- normal toggle -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
                                             ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
-                            <Panel>
-                                <ToggleSwitch Classes="Compact"
-                                              HorizontalAlignment="Center"
-                                              Command="{CompiledBinding CommandToggle}"
-                                              IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
-                                              IsVisible="{CompiledBinding !IsLocked.Value}">
-                                    <ToggleSwitch.OnContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OnContent>
-                                    <ToggleSwitch.OffContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OffContent>
-                                </ToggleSwitch>
-                                <controls:StandardButton
-                                    Size="Small"
-                                    LeftIcon="{x:Static icons:IconValues.Lock}"
-                                    RightIcon="{x:Static icons:IconValues.ToggleOn}"
-                                    ShowIcon="Both"
-                                    ShowLabel="False"
-                                    IsVisible="{CompiledBinding IsLocked.Value}"
-                                    ToolTip.Tip="Mod cannot be turned off as it is as part of a read only collection. Switch off the collection to turn off this mod"/>
-                            </Panel>
-                            
+                            <ToggleSwitch Classes="Compact"
+                                          HorizontalAlignment="Center"
+                                          Command="{CompiledBinding CommandToggle}"
+                                          IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
+                                          OnContent="{x:Null}"
+                                          OffContent="{x:Null}">
+                            </ToggleSwitch>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>

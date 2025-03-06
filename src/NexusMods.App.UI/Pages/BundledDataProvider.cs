@@ -65,6 +65,7 @@ public class BundledDataProvider : ILoadoutDataProvider
         parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: item.GetCreatedAt()));
 
         LoadoutDataProviderHelper.AddCollection(_connection, parentItemModel, loadoutItem);
+        LoadoutDataProviderHelper.AddLockedEnabledState(parentItemModel, loadoutItem);
         LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, loadoutItem);
 
         return parentItemModel;
