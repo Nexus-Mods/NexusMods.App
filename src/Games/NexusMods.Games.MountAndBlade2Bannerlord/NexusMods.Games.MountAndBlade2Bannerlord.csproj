@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FetchBannerlordVersion" />
     <PackageReference Include="Bannerlord.ModuleManager" />
     <PackageReference Include="LinqGen" />
     <PackageReference Include="NexusMods.Paths" />
     <PackageReference Include="Bannerlord.LauncherManager" />
-    <PackageReference Include="FetchBannerlordVersion" />
   </ItemGroup>
 
   <ItemGroup>
