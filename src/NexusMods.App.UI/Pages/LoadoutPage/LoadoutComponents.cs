@@ -96,18 +96,6 @@ public static class LoadoutComponents
             });
         }
 
-        public EnabledStateToggle(
-            ValueComponent<bool?> valueComponent,
-            IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable)
-        {
-            _valueComponent = valueComponent;
-
-            _activationDisposable = this.WhenActivated((childrenItemIdsObservable), static (self, state, disposables) =>
-            {
-                self._valueComponent.Activate().AddTo(disposables);
-            });
-        }
-
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
         {

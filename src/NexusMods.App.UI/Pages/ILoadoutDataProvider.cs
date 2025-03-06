@@ -220,8 +220,7 @@ public static class LoadoutDataProviderHelper
             valueComponent: new ValueComponent<bool?>(
                 initialValue: true,
                 valueObservable: isEnabledObservable
-            ),
-            childrenItemIdsObservable: linkedItemsObservable.TransformImmutable(static item => item.LoadoutItemId)
+            )
         ));
     }
     
