@@ -14,6 +14,46 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public static class LoadoutComponents
 {
+    public sealed class LoadoutItemIds : ReactiveR3Object, IItemModelComponent<LoadoutItemIds>, IComparable<LoadoutItemIds>
+    {
+        public int CompareTo(LoadoutItemIds? other) => 0;
+        
+        private readonly OneOf<ObservableHashSet<LoadoutItemId>, LoadoutItemId[]> _ids;
+        private readonly IDisposable? _idsObservable;
+        
+        public IEnumerable<LoadoutItemId> ItemIds => _ids.Match(
+            f0: static x => x.AsEnumerable(),
+            f1: static x => x.AsEnumerable()
+        );
+        
+        public LoadoutItemIds(LoadoutItemId itemId)
+        {
+            _ids = new[] { itemId };
+        }
+        
+        public LoadoutItemIds(IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable)
+        {
+            _ids = new ObservableHashSet<LoadoutItemId>();
+            _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
+        }
+        
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(_idsObservable ?? Disposable.Empty);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+    
     public sealed class ParentCollectionDisabled : ReactiveR3Object, IItemModelComponent<ParentCollectionDisabled>, IComparable<ParentCollectionDisabled>
     {
         public int CompareTo(ParentCollectionDisabled? other) => 0;
@@ -31,12 +71,6 @@ public static class LoadoutComponents
         private readonly ValueComponent<bool?> _valueComponent;
         public IReadOnlyBindableReactiveProperty<bool?> Value => _valueComponent.Value;
 
-        private readonly OneOf<ObservableHashSet<LoadoutItemId>, LoadoutItemId[]> _ids;
-        public IEnumerable<LoadoutItemId> ItemIds => _ids.Match(
-            f0: static x => x.AsEnumerable(),
-            f1: static x => x.AsEnumerable()
-        );
-
         public int CompareTo(EnabledStateToggle? other)
         {
             var (a, b) = (Value.Value, other?.Value.Value);
@@ -50,14 +84,11 @@ public static class LoadoutComponents
         }
 
         private readonly IDisposable _activationDisposable;
-        private readonly IDisposable? _idsObservable;
 
         public EnabledStateToggle(
-            ValueComponent<bool?> valueComponent,
-            LoadoutItemId itemId)
+            ValueComponent<bool?> valueComponent)
         {
             _valueComponent = valueComponent;
-            _ids = new[] { itemId };
 
             _activationDisposable = this.WhenActivated(static (self, disposables) =>
             {
@@ -70,14 +101,11 @@ public static class LoadoutComponents
             IObservable<IChangeSet<LoadoutItemId, EntityId>> childrenItemIdsObservable)
         {
             _valueComponent = valueComponent;
-            _ids = new ObservableHashSet<LoadoutItemId>();
 
             _activationDisposable = this.WhenActivated((childrenItemIdsObservable), static (self, state, disposables) =>
             {
                 self._valueComponent.Activate().AddTo(disposables);
             });
-
-            _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
         private bool _isDisposed;
@@ -87,7 +115,7 @@ public static class LoadoutComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, _valueComponent, _idsObservable ?? Disposable.Empty);
+                    Disposable.Dispose(_activationDisposable, _valueComponent);
                 }
 
                 _isDisposed = true;
@@ -127,6 +155,7 @@ public static class LoadoutColumns
         }
 
         public const string ColumnTemplateResourceKey = nameof(LoadoutColumns) + "_" + nameof(EnabledState);
+        public static readonly ComponentKey LoadoutItemIdsComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.LoadoutItemIds));
         public static readonly ComponentKey EnabledStateToggleComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.EnabledStateToggle));
         public static readonly ComponentKey ParentCollectionDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.ParentCollectionDisabled));
         public static readonly ComponentKey LockedEnabledStateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.LockedEnabledState));

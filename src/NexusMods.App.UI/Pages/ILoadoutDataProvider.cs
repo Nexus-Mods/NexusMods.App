@@ -90,6 +90,7 @@ public static class LoadoutDataProviderHelper
 
         itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: loadoutItem.Name));
         itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: loadoutItem.GetCreatedAt()));
+        itemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(itemId: loadoutItem));
 
         AddCollection(connection, itemModel, loadoutItem);
         AddLockedEnabledState(itemModel, loadoutItem);
@@ -122,13 +123,12 @@ public static class LoadoutDataProviderHelper
     public static void AddEnabledStateToggle(IConnection connection, CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
     {
         var isEnabledObservable = LoadoutItem.Observe(connection, loadoutItem.Id).Select(static item => (bool?)!item.IsDisabled);
-        itemModel.Add(LoadoutColumns.EnabledState.EnabledStateToggleComponentKey, new LoadoutComponents.EnabledStateToggle(
-            valueComponent: new ValueComponent<bool?>(
-                initialValue: !loadoutItem.IsDisabled,
-                valueObservable: isEnabledObservable
-            ),
-            itemId: loadoutItem.LoadoutItemId
-        ));
+        itemModel.Add(LoadoutColumns.EnabledState.EnabledStateToggleComponentKey,
+            new LoadoutComponents.EnabledStateToggle(
+                valueComponent: new ValueComponent<bool?>(
+                    initialValue: !loadoutItem.IsDisabled,
+                    valueObservable: isEnabledObservable
+        )));
     }
 
     public static void AddDateComponent(
@@ -223,6 +223,16 @@ public static class LoadoutDataProviderHelper
             ),
             childrenItemIdsObservable: linkedItemsObservable.TransformImmutable(static item => item.LoadoutItemId)
         ));
+    }
+    
+    public static void AddLoadoutItemIds(
+        CompositeItemModel<EntityId> parentItemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        var loadoutItemIdsObservable = linkedItemsObservable
+            .TransformImmutable(static item => item.LoadoutItemId);
+
+        parentItemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(loadoutItemIdsObservable));
     }
 
     public static IObservable<IChangeSet<Datom, EntityId>> FilterInStaticLoadout(

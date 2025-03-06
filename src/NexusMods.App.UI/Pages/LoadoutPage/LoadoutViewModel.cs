@@ -210,7 +210,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
     {
-        return itemModel.Get<LoadoutComponents.EnabledStateToggle>(LoadoutColumns.EnabledState.EnabledStateToggleComponentKey).ItemIds;
+        return itemModel.Get<LoadoutComponents.LoadoutItemIds>(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey).ItemIds;
     }
 }
 
@@ -245,14 +245,19 @@ public class LoadoutTreeDataGridAdapter :
             state: this,
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
             {
-                var (self, _, component) = tuple;
+                var (self, itemModel, component) = tuple;
                 var isEnabled = component.Value.Value;
-                var ids = component.ItemIds.ToArray();
+                var ids = GetLoadoutItemIds(itemModel).ToArray();
                 var shouldEnable = !isEnabled ?? false;
 
                 self.MessageSubject.OnNext(new ToggleEnableState(ids, shouldEnable));
             })
         );
+    }
+    
+    private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
+    {
+        return itemModel.Get<LoadoutComponents.LoadoutItemIds>(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey).ItemIds;
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
