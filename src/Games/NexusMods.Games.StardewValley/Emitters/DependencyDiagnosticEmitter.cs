@@ -77,9 +77,10 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         IGrouping<string, KeyValuePair<SMAPIModLoadoutItemId, SMAPIManifest>> g)
     {
         // TODO: select winner based on synchronizer winner
-        // For now prefer enabled mods over disabled ones
-        var enabledItem = g.FirstOrOptional(kv => LoadoutItem.Load(loadout.Db, kv.Key).IsEnabled());
-        return enabledItem.HasValue ? enabledItem.Value : g.First();
+        // For now prefer enabled mods over disabled ones, newer versions over older ones
+        var sortedItems = g.OrderByDescending(kv => kv.Value.Version).ToArray();
+        var enabledItem = sortedItems.FirstOrOptional(kv => LoadoutItem.Load(loadout.Db, kv.Key).IsEnabled());
+        return enabledItem.HasValue ? enabledItem.Value : sortedItems.First();
     }
 
     private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
