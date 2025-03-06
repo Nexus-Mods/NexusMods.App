@@ -1,5 +1,200 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <Border Classes="Low" Padding="16">
+            <Border.Styles>
+                <Style Selector="StackPanel.Element">
+                    <Style Selector="^ > TextBlock">
+                        <Setter Property="Theme" Value="{StaticResource HeadingLGSemiTheme}" />
+                    </Style>
+                    <Style Selector="^ StackPanel.Section">
+                        <Style Selector="^ > TextBlock">
+                            <Setter Property="Theme" Value="{StaticResource HeadingSMSemiTheme}" />
+                        </Style>
+                        <Style Selector="^ StackPanel.ColorRamp">
+                            <Setter Property="Orientation" Value="Horizontal" />
+                            <Style Selector="^ > Border">
+                                <Setter Property="Width" Value="128" />
+                                <Setter Property="Height" Value="64" />
+                                <Setter Property="Padding" Value="8" />
+                                <Style Selector="^ > TextBlock">
+                                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                                </Style>
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+            </Border.Styles>
+
+            <StackPanel>
+                <StackPanel Classes="Element">
+                    <TextBlock Text="Surface" />
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Neutral" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource SurfaceBaseBrush}">
+                                <TextBlock Text="SurfaceBase" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource SurfaceLowBrush}">
+                                <TextBlock Text="SurfaceLow" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource SurfaceMidBrush}">
+                                <TextBlock Text="SurfaceMid" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource SurfaceHighBrush}">
+                                <TextBlock Text="SurfaceHigh" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource SurfaceInvertedBrush}">
+                                <TextBlock Text="SurfaceInverted" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Classes="Element">
+                    <TextBlock Text="Foreground" />
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Neutral" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource NeutralWeakBrush}">
+                                <TextBlock Text="SurfaceBase" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource NeutralSubduedBrush}">
+                                <TextBlock Text="SurfaceLow" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource NeutralModerateBrush}">
+                                <TextBlock Text="NeutralModerate" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource NeutralStrongBrush}">
+                                <TextBlock Text="NeutralStrong" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource NeutralInvertedBrush}">
+                                <TextBlock Text="NeutralInverted" Foreground="White" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Danger" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource DangerWeakBrush}">
+                                <TextBlock Text="DangerWeak" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource DangerSubduedBrush}">
+                                <TextBlock Text="DangerSubdued" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource DangerModerateBrush}">
+                                <TextBlock Text="DangerModerate" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource DangerStrongBrush}">
+                                <TextBlock Text="DangerStrong" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Primary" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource BrandPrimary500Brush}">
+                                <TextBlock Text="BrandPrimarySubdued" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource BrandPrimary400Brush}">
+                                <TextBlock Text="BrandPrimaryModerate" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource BrandPrimary300Brush}">
+                                <TextBlock Text="BrandPrimaryStrong" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Warning" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource WarningWeakBrush}">
+                                <TextBlock Text="WarningWeak" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource WarningSubduedBrush}">
+                                <TextBlock Text="WarningSubdued" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource WarningModerateBrush}">
+                                <TextBlock Text="WarningModerate" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource WarningStrongBrush}">
+                                <TextBlock Text="WarningStrong" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Success" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource SuccessWeakBrush}">
+                                <TextBlock Text="SuccessWeak" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource SuccessSubduedBrush}">
+                                <TextBlock Text="SuccessSubdued" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource SuccessModerateBrush}">
+                                <TextBlock Text="SuccessModerate" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource SuccessStrongBrush}">
+                                <TextBlock Text="SuccessStrong" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Creators" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource CreatorsWeakBrush}">
+                                <TextBlock Text="CreatorsWeak" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource CreatorsSubduedBrush}">
+                                <TextBlock Text="CreatorsSubdued" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource CreatorsModerateBrush}">
+                                <TextBlock Text="CreatorsModerate" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource CreatorsStrongBrush}">
+                                <TextBlock Text="CreatorsStrong" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Info" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource InfoWeakBrush}">
+                                <TextBlock Text="InfoWeak" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource InfoSubduedBrush}">
+                                <TextBlock Text="InfoSubdued" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource InfoModerateBrush}">
+                                <TextBlock Text="InfoModerate" Foreground="Black" />
+                            </Border>
+                            <Border Background="{StaticResource InfoStrongBrush}">
+                                <TextBlock Text="InfoStrong" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Classes="Section">
+                        <TextBlock Text="Premium" />
+                        <StackPanel Classes="ColorRamp">
+                            <Border Background="{StaticResource PremiumWeakBrush}">
+                                <TextBlock Text="PremiumWeak" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource PremiumSubduedBrush}">
+                                <TextBlock Text="PremiumSubdued" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource PremiumModerateBrush}">
+                                <TextBlock Text="PremiumModerate" Foreground="White" />
+                            </Border>
+                            <Border Background="{StaticResource PremiumStrongBrush}">
+                                <TextBlock Text="PremiumStrong" Foreground="Black" />
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+        </Border>
+    </Design.PreviewWith>
 
     <!-- Element Colors (Layer 3) -->
     <!-- These are the colors used for the elements of the UI, such as buttons, textboxes, etc. -->
@@ -12,6 +207,13 @@
     
     
     <!-- Background -->
+
+    <!-- SURFACE    
+    The background colours for pages and other surfaces such as cards. These colours act as the base canvas to 
+    place foreground elements on to. They define the visual structure of th UI. When solid background elements are 
+    stacked, the brightness should increase up the scale. These levels can also be used to differentiate hierarchy, 
+    with bottom being least important and top being most important. (Translucent backgrounds will increase in opacity 
+    on stacking so only 1 variant is needed) -->
 
     <!-- Neutral/Solid -->
 
@@ -28,7 +230,6 @@
     <SolidColorBrush x:Key="SurfaceMidBrush" Color="{StaticResource SurfaceMid}" />
     <SolidColorBrush x:Key="SurfaceHighBrush" Color="{StaticResource SurfaceHigh}" />
     <SolidColorBrush x:Key="SurfaceInvertedBrush" Color="{StaticResource SurfaceInverted}" />
-
 
     <!-- NeutralTranslucent -->
 
@@ -49,7 +250,13 @@
                      Color="{StaticResource BrandTranslucentDark50}"
                      Opacity="{StaticResource OpacityTransparent}" />
 
-    <!-- Foreground -->
+
+    <!-- FOREGROUND        
+    Foreground elements are the content the user will be consuming and/or interacting with. They are displayed on 
+    top of surface elements. Foreground elements can be text, icons, and interactive elements such as buttons. 
+    The colours are named in relation to the information they are intended to convey i.e “Danger”, then each of 
+    these are further divided to provide differing levels of contrast when placed on a surface. For example “Strong” 
+    would have a high/strong contrast to the background surface colour. -->
 
     <!-- NeutralSolid -->
 
@@ -67,7 +274,6 @@
     <SolidColorBrush x:Key="NeutralStrongBrush" Color="{StaticResource NeutralStrong}" />
     <SolidColorBrush x:Key="NeutralInvertedBrush" Color="{StaticResource NeutralInverted}" />
 
-
     <!-- Danger -->
 
     <!-- Colors -->
@@ -81,7 +287,6 @@
     <SolidColorBrush x:Key="DangerSubduedBrush" Color="{StaticResource DangerSubdued}" />
     <SolidColorBrush x:Key="DangerModerateBrush" Color="{StaticResource DangerModerate}" />
     <SolidColorBrush x:Key="DangerStrongBrush" Color="{StaticResource DangerStrong}" />
-
 
     <!-- Primary -->
 
@@ -110,7 +315,8 @@
     <SolidColorBrush x:Key="WarningModerateBrush" Color="{StaticResource WarningModerate}" />
     <SolidColorBrush x:Key="WarningStrongBrush" Color="{StaticResource WarningStrong}" />
 
-    <SolidColorBrush x:Key="WarningSubdued20Brush" Color="{StaticResource WarningSubdued}" Opacity="{StaticResource OpacitySubdued}" />
+    <SolidColorBrush x:Key="WarningSubdued20Brush" Color="{StaticResource WarningSubdued}"
+                     Opacity="{StaticResource OpacitySubdued}" />
 
     <!-- Success -->
 
@@ -126,7 +332,22 @@
     <SolidColorBrush x:Key="SuccessModerateBrush" Color="{StaticResource SuccessModerate}" />
     <SolidColorBrush x:Key="SuccessStrongBrush" Color="{StaticResource SuccessStrong}" />
 
-    <SolidColorBrush x:Key="SuccessSubdued20Brush" Color="{StaticResource SuccessSubdued}" Opacity="{StaticResource OpacitySubdued}" />
+    <SolidColorBrush x:Key="SuccessSubdued20Brush" Color="{StaticResource SuccessSubdued}"
+                     Opacity="{StaticResource OpacitySubdued}" />
+
+    <!-- Creators -->
+
+    <!-- Colors -->
+    <StaticResource x:Key="CreatorsWeak" ResourceKey="BrandCreators800" />
+    <StaticResource x:Key="CreatorsSubdued" ResourceKey="BrandCreators600" />
+    <StaticResource x:Key="CreatorsModerate" ResourceKey="BrandCreators500" />
+    <StaticResource x:Key="CreatorsStrong" ResourceKey="BrandCreators300" />
+
+    <!-- SolidColorBrushes -->
+    <SolidColorBrush x:Key="CreatorsWeakBrush" Color="{StaticResource CreatorsWeak}" />
+    <SolidColorBrush x:Key="CreatorsSubduedBrush" Color="{StaticResource CreatorsSubdued}" />
+    <SolidColorBrush x:Key="CreatorsModerateBrush" Color="{StaticResource CreatorsModerate}" />
+    <SolidColorBrush x:Key="CreatorsStrongBrush" Color="{StaticResource CreatorsStrong}" />
 
     <!-- Info -->
 
@@ -142,22 +363,21 @@
     <SolidColorBrush x:Key="InfoModerateBrush" Color="{StaticResource InfoModerate}" />
     <SolidColorBrush x:Key="InfoStrongBrush" Color="{StaticResource InfoStrong}" />
 
-    
-    
+
     <!-- Premium -->
-    
+
     <!-- Colors -->
     <StaticResource x:Key="PremiumWeak" ResourceKey="BrandPremium950" />
     <StaticResource x:Key="PremiumSubdued" ResourceKey="BrandPremium800" />
     <StaticResource x:Key="PremiumModerate" ResourceKey="BrandPremium600" />
     <StaticResource x:Key="PremiumStrong" ResourceKey="BrandPremium400" />
-    
+
     <!-- SolidColorBrushes -->
     <SolidColorBrush x:Key="PremiumWeakBrush" Color="{StaticResource PremiumWeak}" />
     <SolidColorBrush x:Key="PremiumSubduedBrush" Color="{StaticResource PremiumSubdued}" />
     <SolidColorBrush x:Key="PremiumModerateBrush" Color="{StaticResource PremiumModerate}" />
     <SolidColorBrush x:Key="PremiumStrongBrush" Color="{StaticResource PremiumStrong}" />
-    
+
 
     <!-- Focus -->
 
@@ -182,7 +402,10 @@
     <SolidColorBrush x:Key="NeutralTranslucentModerateBrush" Color="{StaticResource NeutralTranslucentModerate}" />
     <SolidColorBrush x:Key="NeutralTranslucentStrongBrush" Color="{StaticResource NeutralTranslucentStrong}" />
 
-    <!-- Strokes -->
+    <!-- STROKES        
+    The outline or border around an element or section. They can be used to emphasise elements or create boundaries on a 
+    page. Stroke colours are scoped to only be available for selection on strokes/borders and shapes. Foreground colours 
+    can also be used for strokes when required e.g. to communicate Danger, Warning, Success or Info. -->
 
     <!-- NeutralTranslucent -->
 
