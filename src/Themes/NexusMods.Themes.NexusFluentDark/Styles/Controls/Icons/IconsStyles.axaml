@@ -64,8 +64,6 @@
                     <icons:UnifiedIcon Classes="DragVertical" />
                     <icons:UnifiedIcon Classes="Search" />
                     <icons:UnifiedIcon Classes="Home" />
-                    <icons:UnifiedIcon Classes="ToggleSwitch" />
-                    <icons:UnifiedIcon Classes="ToggleSwitchOff" />
                     <icons:UnifiedIcon Classes="Game" />
                     <icons:UnifiedIcon Classes="Undo" />
                     <icons:UnifiedIcon Classes="Redo" />
@@ -147,6 +145,9 @@
                     <icons:UnifiedIcon Classes="Epic" />
                     <icons:UnifiedIcon Classes="GitHub" />
                     <icons:UnifiedIcon Classes="Premium" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchOn" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchOff" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchIndeterminate" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="PanelAllFull" />
@@ -403,13 +404,6 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.Home}" />
     </Style>
 
-    <Style Selector="icons|UnifiedIcon.ToggleSwitch">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOn}" />
-    </Style>
-
-    <Style Selector="icons|UnifiedIcon.ToggleSwitchOff">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOff}" />
-    </Style>
 
     <Style Selector="icons|UnifiedIcon.Game">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Game}" />
@@ -716,5 +710,17 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.TrayArrowDown">
         <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ToggleSwitchOn">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOn}" />
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.ToggleSwitchOff">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOff}" />
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ToggleSwitchIndeterminate">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleIndeterminate}" />
     </Style>
 </Styles>
