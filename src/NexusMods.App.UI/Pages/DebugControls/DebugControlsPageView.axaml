@@ -9,20 +9,20 @@
     xmlns:r3="clr-namespace:R3;assembly=R3"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d"
+    mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
 
     <Border Background="{StaticResource SurfaceLowBrush}">
-        <StackPanel>
-            <TabControl>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Classes="TabItemHeaderStack">
-                            <TextBlock Text="Controls"/>
-                        </StackPanel>
-                    </TabItem.Header>
-                    <Border>
-                        <StackPanel Spacing="16">
+        <TabControl>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Controls" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Border>
+                    <ScrollViewer>
+                        <StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="16">
                                 <StackPanel>
                                     <TextBlock Text="Button"></TextBlock>
@@ -125,39 +125,303 @@
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
-                    </Border>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Classes="TabItemHeaderStack">
-                            <TextBlock Text="Typography" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Star}" />
-                        </StackPanel>
-                    </TabItem.Header>
+                    </ScrollViewer>
+                </Border>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="TreeDataGrid" />
+                    </StackPanel>
+                </TabItem.Header>
+                <TreeDataGrid />
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Typography" />
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Star}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer>
                     <StackPanel>
                         <TextBlock Text="TextBlock" />
-                        <TextBlock Text="Theme BodyLGNormalTheme" Theme="{StaticResource BodyLGNormalTheme}" />
+                        <TextBlock Text="Heading2XLSemi" Theme="{StaticResource Heading2XLSemiTheme}" />
+                        <TextBlock Text="HeadingXLSemi" Theme="{StaticResource HeadingXLSemiTheme}" />
+                        <TextBlock Text="HeadingLGSemi" Theme="{StaticResource HeadingLGSemiTheme}" />
+                        <TextBlock Text="HeadingMDSemi" Theme="{StaticResource HeadingMDSemiTheme}" />
+                        <TextBlock Text="HeadingSMSemi" Theme="{StaticResource HeadingSMSemiTheme}" />
+                        <TextBlock Text="HeadingXSSemi" Theme="{StaticResource HeadingXSSemiTheme}" />
+
+                        <TextBlock Text="TitleMDSemi" Theme="{StaticResource TitleMDSemiTheme}" />
+                        <TextBlock Text="TitleSMSemi" Theme="{StaticResource TitleSMSemiTheme}" />
+                        <TextBlock Text="TitleXSSemi" Theme="{StaticResource TitleXSSemiTheme}" />
                         <TextBlock Text="Class BodyLGNormal" Classes="BodyLGNormal" />
+
+                        <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}" />
+                        <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" />
+                        <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" />
+                        <TextBlock Text="BodyMDBold" Theme="{StaticResource BodyMDBoldTheme}" />
+                        <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" />
+                        <TextBlock Text="BodySMBold" Theme="{StaticResource BodySMBoldTheme}" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" />
                     </StackPanel>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Classes="TabItemHeaderStack">
-                            <TextBlock Text="Colors" />
-                            <Border>
-                                <TextBlock Text="123" />
-                            </Border>
-                        </StackPanel>
-                    </TabItem.Header>
-                    <StackPanel>
-                        <Border Width="100" Height="30" Background="Blue">
-                            <TextBlock Text="Blue" />
-                            
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem IsSelected="True">
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Colors" />
+                        <Border>
+                            <TextBlock Text="123" />
                         </Border>
                     </StackPanel>
-                </TabItem>
-            </TabControl>
-        </StackPanel>
+                </TabItem.Header>
+
+                <TabControl Classes="Subtabs">
+                    <TabItem Header="Primitives" />
+                    <TabItem Header="Brand" />
+                    <TabItem IsSelected="True" Header="Elements">
+                        <ScrollViewer>
+                            <StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="Surface" Theme="{StaticResource BodyLGBoldTheme}" />
+                                    <TextBlock Text="Description" />
+                                    <StackPanel>
+                                        <TextBlock Text="Neutral/Translucent" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource SurfaceTranslucentLowBrush}">
+                                                <TextBlock Text="SurfaceTranslucentLow" />
+                                            </Border>
+                                            <Border Background="{StaticResource SurfaceTranslucentMidBrush}">
+                                                <TextBlock Text="SurfaceTranslucentMid" />
+                                            </Border>
+                                            <Border Background="{StaticResource SurfaceTranslucentHighBrush}">
+                                                <TextBlock Text="SurfaceTranslucentHigh" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Neutral" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource SurfaceBaseBrush}">
+                                                <TextBlock Text="SurfaceBase" />
+                                            </Border>
+                                            <Border Background="{StaticResource SurfaceLowBrush}">
+                                                <TextBlock Text="SurfaceLow" />
+                                            </Border>
+                                            <Border Background="{StaticResource SurfaceMidBrush}">
+                                                <TextBlock Text="SurfaceMid" />
+                                            </Border>
+                                            <Border Background="{StaticResource SurfaceHighBrush}">
+                                                <TextBlock Text="SurfaceHigh" />
+                                            </Border>
+                                            <Border Background="{StaticResource SurfaceInvertedBrush}">
+                                                <TextBlock Text="SurfaceInverted" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                                <StackPanel>
+                                    <TextBlock Text="Stroke" Theme="{StaticResource BodyLGBoldTheme}" />
+                                    <TextBlock Text="Description" />
+                                    <StackPanel>
+                                        <TextBlock Text="Neutral/Translucent" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource NeutralWeakBrush}">
+                                                <TextBlock Text="NeutralWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralSubduedBrush}">
+                                                <TextBlock Text="NeutralSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralModerateBrush}">
+                                                <TextBlock Text="NeutralModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralStrongBrush}">
+                                                <TextBlock Text="NeutralStrong" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralInvertedBrush}">
+                                                <TextBlock Text="NeutralInverted" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                                
+                                <StackPanel>
+                                    <TextBlock Text="Foreground" Theme="{StaticResource BodyLGBoldTheme}" />
+                                    <TextBlock Text="Description" />
+                                    <StackPanel>
+                                        <TextBlock Text="Neutral/Translucent" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource NeutralTranslucentWeakerBrush}">
+                                                <TextBlock Text="NeutralTranslucentWeaker" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralTranslucentWeakBrush}">
+                                                <TextBlock Text="NeutralTranslucentWeak" />
+                                            </Border>
+                                            <Border
+                                                Background="{StaticResource NeutralTranslucentSubduedBrush}">
+                                                <TextBlock Text="NeutralTranslucentSubdued" />
+                                            </Border>
+                                            <Border
+                                                Background="{StaticResource NeutralTranslucentModerateBrush}">
+                                                <TextBlock Text="NeutralTranslucentModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralTranslucentStrongBrush}">
+                                                <TextBlock Text="NeutralTranslucentStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Neutral" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource NeutralWeakBrush}">
+                                                <TextBlock Text="NeutralWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralSubduedBrush}">
+                                                <TextBlock Text="NeutralSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralModerateBrush}">
+                                                <TextBlock Text="NeutralModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralStrongBrush}">
+                                                <TextBlock Text="NeutralStrong" />
+                                            </Border>
+                                            <Border Background="{StaticResource NeutralInvertedBrush}">
+                                                <TextBlock Text="NeutralInverted" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Danger" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource DangerWeakBrush}">
+                                                <TextBlock Text="DangerWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource DangerSubduedBrush}">
+                                                <TextBlock Text="DangerSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource DangerModerateBrush}">
+                                                <TextBlock Text="DangerModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource DangerStrongBrush}">
+                                                <TextBlock Text="DangerStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Primary" />
+                                        <StackPanel Orientation="Horizontal">
+                                            
+                                            <Border Background="{StaticResource PrimarySubduedBrush}">
+                                                <TextBlock Text="PrimarySubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource PrimaryModerateBrush}">
+                                                <TextBlock Text="PrimaryModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource PrimaryStrongBrush}">
+                                                <TextBlock Text="PrimaryStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Warning" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource WarningWeakBrush}">
+                                                <TextBlock Text="WarningWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource WarningSubduedBrush}">
+                                                <TextBlock Text="WarningSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource WarningModerateBrush}">
+                                                <TextBlock Text="WarningModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource WarningStrongBrush}">
+                                                <TextBlock Text="WarningStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Success" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource SuccessWeakBrush}">
+                                                <TextBlock Text="SuccessWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource SuccessSubduedBrush}">
+                                                <TextBlock Text="SuccessSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource SuccessModerateBrush}">
+                                                <TextBlock Text="SuccessModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource SuccessStrongBrush}">
+                                                <TextBlock Text="SuccessStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Creators" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource CreatorsWeakBrush}">
+                                                <TextBlock Text="CreatorsWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource CreatorsSubduedBrush}">
+                                                <TextBlock Text="CreatorsSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource CreatorsModerateBrush}">
+                                                <TextBlock Text="CreatorsModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource CreatorsStrongBrush}">
+                                                <TextBlock Text="CreatorsStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Info" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource InfoWeakBrush}">
+                                                <TextBlock Text="InfoWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource InfoSubduedBrush}">
+                                                <TextBlock Text="InfoSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource InfoModerateBrush}">
+                                                <TextBlock Text="InfoModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource InfoStrongBrush}">
+                                                <TextBlock Text="InfoStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="Premium" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Background="{StaticResource PremiumWeakBrush}">
+                                                <TextBlock Text="PremiumWeak" />
+                                            </Border>
+                                            <Border Background="{StaticResource PremiumSubduedBrush}">
+                                                <TextBlock Text="PremiumSubdued" />
+                                            </Border>
+                                            <Border Background="{StaticResource PremiumModerateBrush}">
+                                                <TextBlock Text="PremiumModerate" />
+                                            </Border>
+                                            <Border Background="{StaticResource PremiumStrongBrush}">
+                                                <TextBlock Text="PremiumStrong" />
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+
+            </TabItem>
+        </TabControl>
     </Border>
 
 
