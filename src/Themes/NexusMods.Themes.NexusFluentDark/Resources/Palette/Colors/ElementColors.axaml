@@ -96,11 +96,13 @@
     <!-- Primary -->
 
     <!-- Colors -->
+    <StaticResource x:Key="PrimaryWeak" ResourceKey="BrandPrimary700" />
     <StaticResource x:Key="PrimarySubdued" ResourceKey="BrandPrimary500" />
     <StaticResource x:Key="PrimaryModerate" ResourceKey="BrandPrimary400" />
     <StaticResource x:Key="PrimaryStrong" ResourceKey="BrandPrimary300" />
 
     <!-- SolidColorBrushes -->
+    <SolidColorBrush x:Key="PrimaryWeakBrush" Color="{StaticResource PrimaryWeak}" />
     <SolidColorBrush x:Key="PrimarySubduedBrush" Color="{StaticResource PrimarySubdued}" />
     <SolidColorBrush x:Key="PrimaryModerateBrush" Color="{StaticResource PrimaryModerate}" />
     <SolidColorBrush x:Key="PrimaryStrongBrush" Color="{StaticResource PrimaryStrong}" />
