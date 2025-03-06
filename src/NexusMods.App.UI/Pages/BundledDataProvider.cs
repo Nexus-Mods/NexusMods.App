@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
@@ -7,6 +8,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -43,14 +45,15 @@ public class BundledDataProvider : ILoadoutDataProvider
     {
         var loadoutItem = item.AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup().AsLoadoutItem();
 
-        var hasChildrenObservable = Observable.Return(true);
-        var childrenObservable = Observable.Return(
+        var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
             new ChangeSet<CompositeItemModel<EntityId>, EntityId>(
                 [
                     new Change<CompositeItemModel<EntityId>, EntityId>(ChangeReason.Add, item.Id, LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem)),
                 ]
-            ));
-
+            )
+        );
+        var hasChildrenObservable = childrenObservable.IsNotEmpty();
+        
         var parentItemModel = new CompositeItemModel<EntityId>(item.Id)
         {
             HasChildrenObservable = hasChildrenObservable,
