@@ -281,25 +281,25 @@ public class CollectionDownloader
     }
 
     /// <summary>
-    /// Returns the hyperlinks for the missing items in CLI format.
+    /// Returns all missing downloads and Uris.
     /// </summary>
-    public static List<string> GetMissingHyperlinks(CollectionRevisionMetadata.ReadOnly revision, IDb db, ItemType itemType = ItemType.Required)
+    public static IReadOnlyList<(CollectionDownload.ReadOnly Download, Uri Uri)> GetMissingDownloadLinks(CollectionRevisionMetadata.ReadOnly revision, IDb db, ItemType itemType = ItemType.Required)
     {
-        var missingDownloads = revision.Downloads.Where(download =>
-            DownloadMatchesItemType(download, itemType) &&
-            !GetStatus(download, db).IsDownloaded()).ToArray();
-        
-        var hyperlinks = new List<string>();
-        
-        foreach (var item in missingDownloads)
+        var results = new List<(CollectionDownload.ReadOnly Download, Uri Uri)>();
+        var downloads = GetItems(revision, itemType).Where(download => GetStatus(download, db).IsNotDownloaded());
+
+        foreach (var download in downloads)
         {
-            if (!item.TryGetAsCollectionDownloadNexusMods(out var d)) continue;
-            var url = d.FileMetadata.GetUri();
-            var text = $"{d.FileMetadata.Name}";
-            hyperlinks.Add($" - \u001b]8;;{url}\u0007{text}\u001b]8;;\u0007");
+            if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+            {
+                results.Add((download, nexusModsDownload.FileMetadata.GetUri()));
+            } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+            {
+                results.Add((download, externalDownload.Uri));
+            }
         }
 
-        return hyperlinks;
+        return results;
     }
 
     private static CollectionDownloadStatus GetStatus(CollectionDownloadBundled.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)
