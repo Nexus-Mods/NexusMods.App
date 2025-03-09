@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
@@ -5,6 +6,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
@@ -33,6 +35,7 @@ internal static class Verbs
         [Injected] ILibraryService libraryService,
         [Injected] NexusModsLibrary nexusModsLibrary,
         [Injected] IServiceProvider serviceProvider,
+        [Injected] ILoginManager loginManager,
         [Injected] IConnection connection,
         [Injected] CollectionDownloader collectionDownloader,
         [Injected] CancellationToken token)
@@ -47,8 +50,23 @@ internal static class Verbs
 
         var revisionMetadata = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, CollectionSlug.From(slug), RevisionNumber.From((ulong)revision), token);
 
-        await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: connection.Db, cancellationToken: token);
-
+        if (loginManager.IsPremium)
+        {
+            await collectionDownloader.DownloadItems(revisionMetadata, itemType: CollectionDownloader.ItemType.Required, db: connection.Db,
+                cancellationToken: token
+            );
+        }
+        else
+        {
+            var tuples = CollectionDownloader.GetMissingDownloadLinks(revisionMetadata, db: connection.Db, itemType: CollectionDownloader.ItemType.Required);
+            if (tuples.Count > 0)
+            {
+                await renderer.TextLine($"Missing {tuples.Count} downloads:");
+                await renderer.Table(["Name", "Uri"], tuples.Select(t => new object[] { t.Download.Name, t.Uri.ToString() }));
+                return 0;
+            }
+        }
+        
         var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
         var installJob = await InstallCollectionJob.Create(serviceProvider, loadout, collectionFile, revisionMetadata, items);
         return 0;

@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// A factory for creating providers for sortable items for specific loadouts
 /// </summary>
-public interface ISortableItemProviderFactory
+public interface ISortableItemProviderFactory : IDisposable
 {
     /// <summary>
     /// Returns a provider of sortable items for a specific loadout
