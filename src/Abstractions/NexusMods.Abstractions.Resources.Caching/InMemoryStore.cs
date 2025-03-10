@@ -1,12 +1,21 @@
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
+using JetBrains.Annotations;
 using NexusMods.Extensions.BCL;
 
 namespace NexusMods.Abstractions.Resources.Caching;
 
 /// <summary>
-/// In-memory store for pipeline results with optional period cleanup task.g
+/// In-memory store for pipeline results with optional period cleanup tasks.
 /// </summary>
+/// <remarks>
+/// Prefer this over <see cref="ResourceCache{TResourceIdentifier,TKey,TData}"/> and
+/// <see cref="ScopedResourceCache{TResourceIdentifier,TKey,TData}"/> if you just need
+/// storage instead of a bounded cache that adds and removes items based on access patterns.
+/// </remarks>
+/// <seealso cref="ResourceCache{TResourceIdentifier,TKey,TData}"/>
+/// <seealso cref="ScopedResourceCache{TResourceIdentifier,TKey,TData}"/>
+[PublicAPI]
 public sealed class InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut, TKey, TData> : IResourceLoader<TResourceIdentifierIn, TData>, IDisposable
     where TResourceIdentifierIn : notnull
     where TResourceIdentifierOut : notnull
