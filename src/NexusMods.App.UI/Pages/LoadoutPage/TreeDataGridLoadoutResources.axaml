@@ -3,7 +3,8 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:converters="clr-namespace:NexusMods.App.UI.Converters">
 
     <!-- Collections -->
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+Collections.ColumnTemplateResourceKey}">
@@ -70,13 +71,23 @@
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.EnabledStateToggleComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+EnabledStateToggle}">
-                            <ToggleSwitch Classes="Compact"
-                                          HorizontalAlignment="Center"
-                                          Command="{CompiledBinding CommandToggle}"
-                                          IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
-                                          OnContent="{x:Null}"
-                                          OffContent="{x:Null}">
-                            </ToggleSwitch>
+                            <Panel>
+                                <Button Command="{CompiledBinding CommandToggle}"
+                                        Theme="{x:Null}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        IsVisible="{CompiledBinding Value.Value, Converter={x:Static converters:IsNullConverter.Instance}}">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ToggleIndeterminate}"
+                                                       Size="40"/>
+                                </Button>
+                                <ToggleSwitch Classes="Compact"
+                                              HorizontalAlignment="Center"
+                                              Command="{CompiledBinding CommandToggle}"
+                                              IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
+                                              OnContent="{x:Null}"
+                                              OffContent="{x:Null}"
+                                              IsVisible="{CompiledBinding Value.Value, Converter={x:Static converters:IsNotNullConverter.Instance}}"/>
+                            </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
