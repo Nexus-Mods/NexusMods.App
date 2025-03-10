@@ -11,9 +11,13 @@ internal sealed class LoadoutReferenceFormatter(IConnection conn) : IValueFormat
     {
         // TODO: custom markdown control
         var loadout = Loadout.Load(conn.Db, value.DataId);
-        if (loadout.IsValid()) 
+        if (loadout.IsValid())
+        {
             writer.Write(ref state, loadout.Name);
+        }
         else
-            writer.Write(ref state, "MISSING LOADOUT");
+        {
+            writer.Write(ref state, $"Invalid Loadout entity: {value.DataId}");
+        }
     }
 }

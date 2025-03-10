@@ -17,7 +17,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
     public async ValueTask<R3.Unit> StartAsync(IJobContext<DownloadCollectionJob> context)
     {
         var downloads = RevisionMetadata.Downloads.ToArray();
-
+        
         await Parallel.ForAsync(fromInclusive: 0, toExclusive: downloads.Length, parallelOptions: new ParallelOptions
         {
             CancellationToken = context.CancellationToken,
