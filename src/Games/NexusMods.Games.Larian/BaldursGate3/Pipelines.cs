@@ -1,5 +1,4 @@
 using System.Reactive;
-using BitFaster.Caching.Lru;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Resources;
@@ -49,10 +48,21 @@ public static class Pipelines
                     }
                 }
             )
-            .UseCache(
-                keyGenerator: static hash => hash,
+            .StoreInMemory(
+                keySelector: static hash => hash,
                 keyComparer: EqualityComparer<Hash>.Default,
-                capacityPartition: new FavorWarmPartition(totalCapacity: 300)
+                getKeysToDelete: async (keys, _) =>
+                {
+                    var res = new List<(Hash, Hash)>(capacity: keys.Length);
+                    foreach (var tuple in keys)
+                    {
+                        var hasFile = await fileStore.HaveFile(tuple.Item1);
+                        if (hasFile) continue;
+                        res.Add(tuple);
+                    }
+
+                    return res.ToArray();
+                }
             );
 
         return pipeline;
