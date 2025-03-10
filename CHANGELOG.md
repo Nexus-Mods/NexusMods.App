@@ -32,6 +32,7 @@ When managing your game for the very first time, any files that aren't part of t
 * File sizes now only show a decimal places above 1GB. 
 * Edits to mod files are now saved to External Changes instead of merging into the source mod. 
 * Added a new "Give Feedback" button to the bottom of the main window.
+* When two different versions of the same SMAPI mod are installed into the loadout, diagnostics will use the most up to date version to display messages. 
 
 ## Bug Fixes
 * Mod updates now correctly show that number of mod files with updates rather than the number of new versions between the current and latest releases. 
