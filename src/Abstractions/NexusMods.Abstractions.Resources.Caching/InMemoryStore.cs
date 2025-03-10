@@ -1,14 +1,19 @@
+using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using NexusMods.Extensions.BCL;
 
 namespace NexusMods.Abstractions.Resources.Caching;
 
+/// <summary>
+/// In-memory store for pipeline results with optional period cleanup task.g
+/// </summary>
 public sealed class InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut, TKey, TData> : IResourceLoader<TResourceIdentifierIn, TData>, IDisposable
     where TResourceIdentifierIn : notnull
     where TResourceIdentifierOut : notnull
     where TData : notnull
     where TKey : notnull
 {
+    [SuppressMessage("ReSharper", "StaticMemberInGenericType", Justification = "Doesn't matter for value types")]
     private static readonly TimeSpan DefaultDelay = TimeSpan.FromSeconds(30);
 
     /// <summary>
@@ -156,6 +161,9 @@ public sealed class InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut,
 
 public static partial class ExtensionsMethods
 {
+    /// <summary>
+    /// Store the results in-memory.
+    /// </summary>
     public static IResourceLoader<TResourceIdentifier, TData> StoreInMemory<TResourceIdentifier, TKey, TData>(
         this IResourceLoader<TResourceIdentifier, TData> inner,
         Func<TResourceIdentifier, TKey> keySelector,
@@ -179,6 +187,9 @@ public static partial class ExtensionsMethods
         );
     }
 
+    /// <summary>
+    /// Store the results in-memory.
+    /// </summary>
     public static IResourceLoader<TResourceIdentifier, TData> StoreInMemory<TResourceIdentifier, TKey, TData>(
         this IResourceLoader<TKey, TData> inner,
         Func<TResourceIdentifier, TKey> selector,
@@ -202,6 +213,9 @@ public static partial class ExtensionsMethods
         );
     }
 
+    /// <summary>
+    /// Store the results in-memory.
+    /// </summary>
     public static IResourceLoader<TResourceIdentifierIn, TData> StoreInMemory<TResourceIdentifierIn, TResourceIdentifierOut, TKey, TData>(
         this IResourceLoader<TResourceIdentifierOut, TData> inner,
         Func<TResourceIdentifierIn, TKey> keySelector,
