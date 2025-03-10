@@ -235,8 +235,7 @@ public static class LoadoutDataProviderHelper
         IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
     {
         var isEnabledObservable = linkedItemsObservable
-            .TransformOnObservable(item => LoadoutItem.Observe(connection, item.Id))
-            .TransformImmutable(static item => !item.IsDisabled)
+            .TransformOnObservable(item => item.IsEnabledObservable(connection))
             .QueryWhenChanged(query =>
             {
                 var isEnabled = Optional<bool>.None;

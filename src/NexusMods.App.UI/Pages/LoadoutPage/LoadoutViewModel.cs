@@ -151,22 +151,32 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
             {
-                if (message.Ids.Length == 0) return;
+                var toggleableItems = message.Ids
+                    .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
+                    .Where(item => !(NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired))
+                    .ToArray();
+
+                if (toggleableItems.Length == 0) return;
+
+                // We only enable if all items are disabled, otherwise we disable
+                var shouldEnable = toggleableItems.All(loadoutItem => loadoutItem.IsDisabled);
+
                 using var tx = connection.BeginTransaction();
 
-                foreach (var loadoutItemId in message.Ids)
+                foreach (var id in toggleableItems)
                 {
-                    if (message.ShouldEnable)
+                    if (shouldEnable)
                     {
-                        tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        tx.Retract(id, LoadoutItem.Disabled, Null.Instance);
                     }
                     else
                     {
-                        tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        tx.Add(id, LoadoutItem.Disabled, Null.Instance);
                     }
                 }
 
                 await tx.Commit();
+                
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
 
             // Compute the target group for the ViewFilesCommand
