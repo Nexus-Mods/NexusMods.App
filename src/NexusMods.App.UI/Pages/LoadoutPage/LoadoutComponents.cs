@@ -64,6 +64,11 @@ public static class LoadoutComponents
         public int CompareTo(LockedEnabledState? other) => 0;
     }
 
+    public sealed class MixLockedAndParentDisabled : ReactiveR3Object, IItemModelComponent<MixLockedAndParentDisabled>, IComparable<MixLockedAndParentDisabled>
+    {
+        public int CompareTo(MixLockedAndParentDisabled? other) => 0;
+    }
+
     public sealed class EnabledStateToggle : ReactiveR3Object, IItemModelComponent<EnabledStateToggle>, IComparable<EnabledStateToggle>
     {
         public ReactiveCommand<Unit> CommandToggle { get; } = new();
@@ -147,6 +152,7 @@ public static class LoadoutColumns
         public static readonly ComponentKey EnabledStateToggleComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.EnabledStateToggle));
         public static readonly ComponentKey ParentCollectionDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.ParentCollectionDisabled));
         public static readonly ComponentKey LockedEnabledStateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.LockedEnabledState));
+        public static readonly ComponentKey MixLockedAndParentDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.MixLockedAndParentDisabled));
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

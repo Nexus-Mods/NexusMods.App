@@ -228,6 +228,45 @@ public static class LoadoutDataProviderHelper
             componentFactory: () => new LoadoutComponents.LockedEnabledState()
         );
     }
+    
+    public static void AddMixLockedAndParentDisabled(
+        IConnection connection,
+        CompositeItemModel<EntityId> parentItemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        var shouldAddObservable = linkedItemsObservable
+            .TransformOnObservable(item =>
+                {
+                    var isLocked = IsLocked(item);
+                    if (!item.Parent.TryGetAsCollectionGroup(out var collectionGroup))
+                        return System.Reactive.Linq.Observable.Return((IsLocked: isLocked, IsParentDisabled: false));
+                    
+                    return LoadoutItem.Observe(connection, collectionGroup)
+                        .Select(parentItem => (IsLocked: isLocked, IsParentDisabled: parentItem.IsDisabled));
+                }
+            )
+            .QueryWhenChanged(query =>
+            {
+                // Check if all items are either locked or parent disabled, but we need to have at least one of each
+                var hasLocked = false;
+                var hasParentDisabled = false;
+                foreach (var (isLocked, isParentDisabled) in query.Items)
+                {
+                    if (isParentDisabled) hasParentDisabled = true;
+                    // locked state only counts if the parent is not disabled
+                    if (isLocked && !isParentDisabled) hasLocked = true;
+                    if (!isLocked && !isParentDisabled) return false;
+                }
+                return hasLocked && hasParentDisabled;
+            })
+            .ToObservable();
+
+        parentItemModel.AddObservable(
+            key: LoadoutColumns.EnabledState.MixLockedAndParentDisabledComponentKey,
+            shouldAddObservable: shouldAddObservable,
+            componentFactory: () => new LoadoutComponents.MixLockedAndParentDisabled()
+        );
+    }
 
     public static void AddEnabledStateToggle(
         IConnection connection,

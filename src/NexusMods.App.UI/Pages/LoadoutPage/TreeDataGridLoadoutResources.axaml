@@ -65,7 +65,23 @@
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
-
+                
+                <!-- mix of locked enabled and parent disabled -> indeterminate -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+MixLockedAndParentDisabled"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.MixLockedAndParentDisabledComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+MixLockedAndParentDisabled}">
+                            <controls:StandardButton
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
+                                RightIcon="{x:Static icons:IconValues.ToggleIndeterminate}"
+                                ShowIcon="Both"
+                                ShowLabel="False"/>
+                            <!-- TODO: add ToolTip ?-->
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+                
                 <!-- normal toggle -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+EnabledStateToggle"
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.EnabledStateToggleComponentKey}">
