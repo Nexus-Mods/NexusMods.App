@@ -30,6 +30,7 @@
         <ResourceInclude Source="/Controls/ToggleSwitch.axaml"/>
         <ResourceInclude Source="/Controls/CheckBox.axaml"/>
         <ResourceInclude Source="/Controls/RadioButton.axaml"/>
+        <ResourceInclude Source="/Controls/TextBox.axaml"/>
         
     </ResourceDictionary.MergedDictionaries>
     

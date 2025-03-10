@@ -354,7 +354,7 @@
 
     <!-- Resources for RadioButton.xaml -->
     <x:Double x:Key="RadioButtonBorderThemeThickness">2</x:Double>
-    
+
     <StaticResource x:Key="RadioButtonForeground" ResourceKey="NeutralModerateBrush" />
     <StaticResource x:Key="RadioButtonForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
     <StaticResource x:Key="RadioButtonForegroundPressed" ResourceKey="NeutralModerateBrush" />
@@ -367,23 +367,23 @@
     <StaticResource x:Key="RadioButtonBorderBrushPointerOver" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonBorderBrushPressed" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonBorderBrushDisabled" ResourceKey="SurfaceTransparentBrush" />
-    
+
     <StaticResource x:Key="RadioButtonOuterEllipseStroke" ResourceKey="NeutralModerateBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseStrokePointerOver"
                     ResourceKey="NeutralModerateBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseStrokePressed" ResourceKey="NeutralModerateBrush" />
-    <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeDisabled" 
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeDisabled"
                      Color="{StaticResource NeutralModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
-    
+
     <StaticResource x:Key="RadioButtonOuterEllipseFill" ResourceKey="SurfaceLowBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseFillPointerOver" ResourceKey="SurfaceTranslucentMidBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseFillPressed"
                     ResourceKey="SurfaceLowBrush" />
-    <SolidColorBrush x:Key="RadioButtonOuterEllipseFillDisabled" 
-                    Color="{StaticResource SurfaceLow}"
-                    Opacity="{StaticResource OpacityDisabledElement}" />
-    
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseFillDisabled"
+                     Color="{StaticResource SurfaceLow}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
     <StaticResource x:Key="RadioButtonOuterEllipseCheckedStroke" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver"
                     ResourceKey="SurfaceTransparentBrush" />
@@ -391,25 +391,67 @@
                     ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokeDisabled"
                     ResourceKey="SurfaceTransparentBrush" />
-    
+
     <StaticResource x:Key="RadioButtonOuterEllipseCheckedFill" ResourceKey="PrimaryModerateBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseCheckedFillPointerOver"
                     ResourceKey="PrimaryModerateBrush" />
     <StaticResource x:Key="RadioButtonOuterEllipseCheckedFillPressed"
                     ResourceKey="PrimaryModerateBrush" />
     <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillDisabled"
-                    Color="{StaticResource PrimaryModerate}"
-                    Opacity="{StaticResource OpacityDisabledElement}" />
-    
+                     Color="{StaticResource PrimaryModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
     <StaticResource x:Key="RadioButtonCheckGlyphFill" ResourceKey="NeutralTranslucentStrongBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphFillPointerOver"
                     ResourceKey="NeutralTranslucentStrongBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphFillPressed" ResourceKey="NeutralTranslucentStrongBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphFillDisabled" ResourceKey="NeutralTranslucentStrongBrush" />
-    
+
     <StaticResource x:Key="RadioButtonCheckGlyphStroke" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphStrokePointerOver" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphStrokePressed" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphStrokeDisabled" ResourceKey="SurfaceTransparentBrush" />
+
+    <!-- Resources for TextBox.xaml -->
+    <!-- Copied from FluentBaseDark.xaml -->
+    <StaticResource x:Key="TextControlForeground" ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="TextControlForegroundPointerOver" ResourceKey="NeutralSubduedBrush" />
+    <SolidColorBrush x:Key="TextControlForegroundDisabled" 
+                     Color="{StaticResource NeutralSubdued}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    
+    <StaticResource x:Key="TextControlBackground" ResourceKey="BrandTranslucentDark400Brush" />
+    <StaticResource x:Key="TextControlBackgroundPointerOver" ResourceKey="SurfaceTranslucentLowBrush" />
+    <StaticResource x:Key="TextControlBackgroundDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="TextControlBackgroundFocused" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="TextControlBorderBrush" ResourceKey="StrokeTranslucentSubduedBrush" />
+    <StaticResource x:Key="TextControlBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="TextControlBorderBrushFocused" ResourceKey="StrokeTranslucentSubduedBrush" />
+    <SolidColorBrush x:Key="TextControlBorderBrushDisabled" 
+                     Color="{StaticResource StrokeTranslucentSubdued}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="TextControlPlaceholderForeground" ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="TextControlPlaceholderForegroundPointerOver"
+                    ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="TextControlPlaceholderForegroundDisabled"
+                    ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="TextControlPlaceholderForegroundFocused"
+                    ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="TextControlSelectionHighlightColor" ResourceKey="PrimaryModerateBrush" />
+
+    <!-- buttons are for revealing password etc -->
+    <StaticResource x:Key="TextControlButtonForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="TextControlButtonForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="TextControlButtonForegroundPressed"
+                    ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="TextControlButtonBackground" ResourceKey="SurfaceMidBrush" />
+    <StaticResource x:Key="TextControlButtonBackgroundPointerOver" ResourceKey="SurfaceHighBrush" />
+    <StaticResource x:Key="TextControlButtonBackgroundPressed" ResourceKey="SurfaceHighBrush" />
+    <StaticResource x:Key="TextControlButtonBorderBrush" ResourceKey="StrokeTranslucentSubduedBrush" />
+    <StaticResource x:Key="TextControlButtonBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="TextControlButtonBorderBrushPressed" ResourceKey="StrokeTranslucentStrongBrush" />
+
+    <StaticResource x:Key="TextControlForegroundFocused" ResourceKey="NeutralStrongBrush" />
 
 </ResourceDictionary>

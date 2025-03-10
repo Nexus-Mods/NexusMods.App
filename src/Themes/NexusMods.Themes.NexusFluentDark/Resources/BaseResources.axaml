@@ -24,8 +24,8 @@
     <SolidColorBrush x:Key="SystemControlTransparentBrush" Color="Transparent" />
     <x:Boolean x:Key="UseSystemFocusVisuals">True</x:Boolean>
     <Thickness x:Key="TextControlBorderThemeThickness">1</Thickness>
-    <Thickness x:Key="TextControlBorderThemeThicknessFocused">2</Thickness>
-    <Thickness x:Key="TextControlThemePadding">10,6,6,5</Thickness>
+    <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+    <Thickness x:Key="TextControlThemePadding">8,5,6,4</Thickness>
     <sys:Double x:Key="IconElementThemeHeight">20</sys:Double>
     <sys:Double x:Key="IconElementThemeWidth">20</sys:Double>
     <sys:Double x:Key="RefreshVisualizerIndicatorSize">24</sys:Double>
@@ -34,5 +34,12 @@
     <!-- Override system shape defaults -->
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="OverlayCornerRadius">6</CornerRadius>
+    
+    <x:Double x:Key="AutoCompleteListMaxHeight">374</x:Double>
+    <Thickness x:Key="AutoCompleteListMargin">0,2,0,2</Thickness>
+    <Thickness x:Key="AutoCompleteListBorderThemeThickness">1</Thickness>
+    <Thickness x:Key="AutoCompleteListPadding">-1,0,-1,0</Thickness>
+    <x:Double x:Key="TextControlThemeMinHeight">28</x:Double>
+    <x:Double x:Key="TextControlThemeMinWidth">64</x:Double>
     
 </ResourceDictionary>
