@@ -64,8 +64,6 @@
                     <icons:UnifiedIcon Classes="DragVertical" />
                     <icons:UnifiedIcon Classes="Search" />
                     <icons:UnifiedIcon Classes="Home" />
-                    <icons:UnifiedIcon Classes="ToggleSwitch" />
-                    <icons:UnifiedIcon Classes="ToggleSwitchOff" />
                     <icons:UnifiedIcon Classes="Game" />
                     <icons:UnifiedIcon Classes="Undo" />
                     <icons:UnifiedIcon Classes="Redo" />
@@ -131,6 +129,11 @@
                     <icons:UnifiedIcon Classes="AccountCog" />
                     <icons:UnifiedIcon Classes="Broadcast" />
                     <icons:UnifiedIcon Classes="FolderEyeOutline" />
+                    <icons:UnifiedIcon Classes="ThumbUpOutline" />
+                    <icons:UnifiedIcon Classes="Update" />
+                    <icons:UnifiedIcon Classes="TrayArrowDown" />
+                    <icons:UnifiedIcon Classes="FolderUploadOutline" />
+                    <icons:UnifiedIcon Classes="TrayArrowDown" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -142,6 +145,9 @@
                     <icons:UnifiedIcon Classes="Epic" />
                     <icons:UnifiedIcon Classes="GitHub" />
                     <icons:UnifiedIcon Classes="Premium" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchOn" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchOff" />
+                    <icons:UnifiedIcon Classes="ToggleSwitchIndeterminate" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="PanelAllFull" />
@@ -398,13 +404,6 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.Home}" />
     </Style>
 
-    <Style Selector="icons|UnifiedIcon.ToggleSwitch">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOn}" />
-    </Style>
-
-    <Style Selector="icons|UnifiedIcon.ToggleSwitchOff">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOff}" />
-    </Style>
 
     <Style Selector="icons|UnifiedIcon.Game">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Game}" />
@@ -696,5 +695,32 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.FolderEyeOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderEyeOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.ThumbUpOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ThumbUpOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Update">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Update}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.TrayArrowDown">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FolderUploadOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FolderUploadOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.TrayArrowDown">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ToggleSwitchOn">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOn}" />
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.ToggleSwitchOff">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleOff}" />
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.ToggleSwitchIndeterminate">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleIndeterminate}" />
     </Style>
 </Styles>

@@ -9,101 +9,75 @@
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    mc:Ignorable="d" d:DesignWidth="508" d:DesignHeight="288"
+    mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.Collections.CollectionCardView">
 
     <Design.DataContext>
         <collections:CollectionCardDesignViewModel />
     </Design.DataContext>
 
-    <Border x:Name="CardCollectionBorder">
-        <StackPanel x:Name="CardCollection">
+    <Border x:Name="CardCollectionBorder" Width="372">
 
-            <!-- top row -->
-            <Border x:Name="ContainerBorder">
-                <DockPanel x:Name="Container">
+        <!-- panel just to layer the background and foreground -->
+        <Panel>
 
-                    <!-- left column -->
-                    <Border x:Name="TileImageBorder" DockPanel.Dock="Left">
-                        <Image x:Name="TileImage" />
-                    </Border>
-
-                    <!-- right column -->
-                    <Grid x:Name="TitleContainer" RowDefinitions="Auto,Auto,*">
-                        <TextBlock Grid.Row="0" x:Name="TitleText" />
-                        <Border Grid.Row="1" x:Name="CategoryTextBorder">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Name="RevisionNumberText" />
-                                <Ellipse Width="4" Height="4" />
-                                <TextBlock x:Name="CategoryText" />
-                                <StackPanel x:Name="AdultStackPanel" Orientation="Horizontal" Spacing="8">
-                                    <Ellipse Width="4" Height="4" />
-                                    <TextBlock x:Name="AdultText" Text="Adult" />
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                        <Border Grid.Row="2" x:Name="SummaryTextFlexPanel">
-                            <TextBlock x:Name="SummaryText" />
-                        </Border>
-                    </Grid>
-
-                </DockPanel>
-            </Border>
-
-            <!-- middle row (stats) -->
-            <Border x:Name="StatsBorder">
-                <StackPanel x:Name="StatsPanel" IsVisible="True">
-                    <StackPanel x:Name="ModsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
-                        <TextBlock x:Name="NumDownloads" />
-                    </StackPanel>
-                    <StackPanel x:Name="EndorsementsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
-                        <TextBlock x:Name="Endorsements" />
-                    </StackPanel>
-                    <StackPanel x:Name="DownloadsPanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                        <TextBlock x:Name="TotalDownloads" />
-                    </StackPanel>
-                    <StackPanel x:Name="TotalSizePanel">
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
-                        <TextBlock x:Name="TotalSize" />
-                    </StackPanel>
-                    <StackPanel x:Name="OverallRatingPanel">
-                        <icons:UnifiedIcon x:Name="OverallRatingIcon" Value="{x:Static icons:IconValues.CheckCircle}" />
-                        <TextBlock x:Name="OverallRating" />
+            <!-- background layer -->
+            <Border x:Name="BackgroundLayerBorder">
+                <StackPanel x:Name="BackgroundLayerStack">
+                    <!-- nexus mods logo -->
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}"
+                                       ToolTip.Tip="Nexus Mods Collection"/>
+                    <!-- revision -->
+                    <StackPanel x:Name="RevisionsStack">
+                        <TextBlock x:Name="RevisionText" />
+                        <StackPanel x:Name="RevisionUpdateStack" IsVisible="False">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" />
+                            <TextBlock x:Name="NewestRevision" Text="456" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </Border>
 
-            <!-- bottom row (actions) -->
-            <Border x:Name="ActionFooterBorder">
-                <Grid x:Name="ActionFooter" ColumnDefinitions="Auto,*,Auto">
+            <!-- foreground layer -->
+            <DockPanel x:Name="ForegroundLayerDock">
+                <!-- left column -->
+                <Border x:Name="TileImageBorder" DockPanel.Dock="Left">
+                    <Image x:Name="TileImage" />
+                </Border>
 
-                    <StackPanel Grid.Column="1" x:Name="ActionGroup">
+                <!-- right column -->
+                <DockPanel x:Name="DetailsDock">
+                    <!-- stay at top -->
+                    <TextBlock DockPanel.Dock="Top" x:Name="TitleText"/>
+                    <!-- stay at bottom -->
+                    <StackPanel DockPanel.Dock="Bottom" x:Name="ActionStack">
                         <navigation:NavigationControl x:Name="DownloadButton"
-                                                      LeftIcon="{x:Static icons:IconValues.Download}"
-                                                      RightIcon="{x:Static icons:IconValues.ChevronRight}"
-                                                      ShowIcon="Both"
                                                       Size="Small"
                                                       Type="Secondary"
                                                       Fill="Strong"
-                                                      Text="Continue Download" />
+                                                      LeftIcon="{x:Static icons:IconValues.Download}"
+                                                      RightIcon="{x:Static icons:IconValues.ChevronRight}"
+                                                      ShowIcon="Both" />
                     </StackPanel>
 
-                    <StackPanel Grid.Column="2" x:Name="FooterLabels">
-                        <StackPanel x:Name="UserLabel">
-                            <Border x:Name="AvatarImageBorder">
-                                <Image x:Name="AuthorAvatarImage" />
-                            </Border>
-                            <TextBlock x:Name="AuthorName" />
+                    <!-- fill remaining space -->
+                    <panels:FlexPanel x:Name="StatsPanel">
+                        <StackPanel>
+                            <TextBlock x:Name="ModsCountText" />
+                            <Ellipse />
                         </StackPanel>
-                        <StackPanel x:Name="ListingLabel">
-                            <TextBlock x:Name="ListingLabelText" />
+                        <StackPanel>
+                            <TextBlock x:Name="TotalSize" />
+                            <Ellipse />
                         </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </StackPanel>
+                        <TextBlock x:Name="AuthorName" />
+                        <StackPanel>
+                            <Ellipse />
+                            <TextBlock Text="Read Only" />
+                        </StackPanel>
+                    </panels:FlexPanel>
+                </DockPanel>
+            </DockPanel>
+        </Panel>
     </Border>
 </reactiveUi:ReactiveUserControl>

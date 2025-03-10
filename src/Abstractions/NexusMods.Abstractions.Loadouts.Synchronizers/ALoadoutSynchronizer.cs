@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
@@ -298,7 +299,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
     public IEnumerable<LoadoutSourceItem> GetNormalGameState(IDb referenceDb, Loadout.ReadOnly loadout)
     {
-        foreach (var item in _fileHashService.GetGameFiles(loadout.InstallationInstance, loadout.LocatorIds.ToArray()))
+        foreach (var item in _fileHashService.GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.ToArray())))
         {
             yield return new LoadoutSourceItem
             {
@@ -495,22 +496,22 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var diskState = loadout.Installation.DiskStateEntries
             .Select(part => ((GamePath)part.Path, part.Hash));
         
-        var suggestedVersionDefinition = _fileHashService.SuggestVersionDefinitions(loadout.InstallationInstance, diskState);
+        var suggestedVersionDefinition = _fileHashService.SuggestVersionData(loadout.InstallationInstance, diskState);
         if (!suggestedVersionDefinition.HasValue)
             return loadout;
         
         var newLocatorIds = suggestedVersionDefinition.Value.LocatorIds;
 
-        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds, StringComparer.OrdinalIgnoreCase).Count();
-        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds, StringComparer.OrdinalIgnoreCase).Count();
-        
+        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds).Count();
+        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds).Count();
+
         // No reason to change the loadout if the version is the same
         if (locatorRemovals == 0 && locatorAdditions == 0)
             return loadout;
 
         // Make a lookup set of the new files
         var versionFiles = _fileHashService
-            .GetGameFiles(loadout.InstallationInstance, newLocatorIds)
+            .GetGameFiles((loadout.InstallationInstance.Store, newLocatorIds))
             .Select(file => file.Path)
             .ToHashSet();
 
@@ -532,7 +533,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         
         // Update the version and locator ids
-        tx.Add(loadout, Loadout.GameVersion, suggestedVersionDefinition.Value.VersionName);
+        tx.Add(loadout, Loadout.GameVersion, suggestedVersionDefinition.Value.VanityVersion);
         foreach (var id in loadout.LocatorIds) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
         foreach (var id in newLocatorIds)
@@ -789,17 +790,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (!node.Actions.HasFlag(Actions.IngestFromDisk))
                 continue;
             
-            // If the file is already in the loadout, we just need to update entry's hash and size
-            if (node.HaveLoadout && node is { SourceItemType: LoadoutSourceItemType.Loadout, Loadout.HaveEntityId: true })
-            {
-                var loadoutItemId = node.Loadout.EntityId;
-                tx.Add(loadoutItemId, LoadoutFile.Hash, node.Disk.Hash);
-                tx.Add(loadoutItemId, LoadoutFile.Size, node.Disk.Size);
-                tx.Add(node.Disk.EntityId, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
-                continue;
-            }
-            
-            // If the file is not in the loadout, we need to add it
+            // Entry was added or modified
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
@@ -1281,13 +1272,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 using var tx = Connection.BeginTransaction();
 
-                List<string> locatorMetadata = [];
+                List<LocatorId> locatorIds = [];
                 if (installation.LocatorResultMetadata != null)
                 {
-                    locatorMetadata.AddRange(installation.LocatorResultMetadata.ToLocatorIds());
+                    locatorIds.AddRange(installation.LocatorResultMetadata.ToLocatorIds());
                 }
 
-                if (!_fileHashService.TryGetGameVersion(installation, locatorMetadata, out var version))
+                if (!_fileHashService.TryGetVanityVersion((installation.Store, locatorIds.ToArray()), out var version))
                     _logger.LogWarning("Unable to find game version for {Game}", installation.GameMetadataId);
 
                 var loadout = new Loadout.New(tx)
@@ -1297,7 +1288,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     InstallationId = installation.GameMetadataId,
                     Revision = 0,
                     LoadoutKind = LoadoutKind.Default,
-                    LocatorIds = locatorMetadata,
+                    LocatorIds = locatorIds,
                     GameVersion = version,
                 };
                 
@@ -1343,7 +1334,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         // Synchronize the last applied loadout, so we don't lose any changes
         await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
-        
+
         var commonIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
         await ResetToOriginalGameState(installation, commonIds);
     }
@@ -1530,14 +1521,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Execute the garbage collector
         _garbageCollectorRunner.RunWithMode(gcRunMode);
     }
-    
-    
-    /// <inheritdoc />
-    public async Task ResetToOriginalGameState(GameInstallation installation, string[] commonIds)
+
+    public async Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds)
     {
-        var gameState = _fileHashService.GetGameFiles(installation, commonIds);
+        var gameState = _fileHashService.GetGameFiles((installation.Store, locatorIds));
         var metaData = await ReindexState(installation, Connection);
-        
+
         List<PathPartPair> diskState = [];
 
         foreach (var diskFile in metaData.DiskStateEntries)

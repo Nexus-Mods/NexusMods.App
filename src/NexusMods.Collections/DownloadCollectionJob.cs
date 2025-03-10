@@ -17,7 +17,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
     public async ValueTask<R3.Unit> StartAsync(IJobContext<DownloadCollectionJob> context)
     {
         var downloads = RevisionMetadata.Downloads.ToArray();
-
+        
         await Parallel.ForAsync(fromInclusive: 0, toExclusive: downloads.Length, parallelOptions: new ParallelOptions
         {
             CancellationToken = context.CancellationToken,
@@ -33,7 +33,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
                 await Downloader.Download(nexusModsDownload, token);
             } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
             {
-                await Downloader.Download(externalDownload, onlyDirectDownloads: true, token);
+                await Downloader.Download(externalDownload, token);
             }
         });
 

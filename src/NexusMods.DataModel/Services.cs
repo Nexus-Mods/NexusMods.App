@@ -22,7 +22,9 @@ using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage.Abstractions;
+using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
+using NexusMods.Paths.Trees.Traits;
 
 namespace NexusMods.DataModel;
 
@@ -44,14 +46,17 @@ public static class Services
         coll.AddSettingsStorageBackend<MnemonicDBSettingsBackend>(isDefault: true);
         coll.AddAttributeCollection(typeof(Setting));
 
-        coll.AddSingleton<MnemonicDB.Storage.InMemoryBackend.Backend>();
-        coll.AddSingleton<MnemonicDB.Storage.RocksDbBackend.Backend>();
-
         coll.AddSingleton<DatomStoreSettings>(sp =>
             {
                 var fileSystem = sp.GetRequiredService<IFileSystem>();
                 var settingsManager = sp.GetRequiredService<ISettingsManager>();
                 var settings = settingsManager.Get<DataModelSettings>();
+                if (settings.UseInMemoryDataModel)
+                    return DatomStoreSettings.InMemory;
+                
+                var path = settings.MnemonicDBPath.ToPath(fileSystem);
+                if (!path.DirectoryExists())
+                    path.CreateDirectory();
                 return new DatomStoreSettings
                 {
                     Path = settings.MnemonicDBPath.ToPath(fileSystem),
@@ -59,24 +64,7 @@ public static class Services
             }
         );
         
-        coll.AddSingleton<IStoreBackend>(sp =>
-        {
-            var settingsManager = sp.GetRequiredService<ISettingsManager>();
-            var settings = settingsManager.Get<DataModelSettings>();
-            if (settings.UseInMemoryDataModel)
-            {
-                return sp.GetRequiredService<MnemonicDB.Storage.InMemoryBackend.Backend>();
-            }
-            else
-            {
-                var datomStoreSettings = sp.GetRequiredService<DatomStoreSettings>();
-
-                if (!datomStoreSettings.Path.DirectoryExists()) 
-                    datomStoreSettings.Path.CreateDirectory();
-                
-                return sp.GetRequiredService<MnemonicDB.Storage.RocksDbBackend.Backend>();
-            }
-        });
+        coll.AddSingleton<IStoreBackend>(_ => new Backend());
 
         coll.AddSingleton<JsonConverter, AbsolutePathConverter>();
         coll.AddSingleton<JsonConverter, RelativePathConverter>();

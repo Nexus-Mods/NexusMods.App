@@ -1,11 +1,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
-using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
@@ -14,7 +11,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
@@ -23,6 +19,7 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -72,8 +69,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
-    private BehaviorSubject<Optional<LoadoutId>> LoadoutSubject { get; } = new(Optional<LoadoutId>.None);
-
     public LibraryViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
@@ -89,26 +84,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         _loginManager = serviceProvider.GetRequiredService<ILoginManager>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
 
+        var collectionDownloader = new CollectionDownloader(serviceProvider);
         var tileImagePipeline = ImagePipelines.GetCollectionTileImagePipeline(serviceProvider);
         var userAvatarPipeline = ImagePipelines.GetUserAvatarPipeline(serviceProvider);
 
-        var loadoutObservable = LoadoutSubject
-            .Where(static id => id.HasValue)
-            .Select(static id => id.Value)
-            .AsSystemObservable()
-            .Replay(bufferSize: 1);
-
-        var gameObservable = loadoutObservable
-            .Select(id => Loadout.Load(_connection.Db, id).InstallationInstance.Game)
-            .Replay(bufferSize: 1);
-
-        var libraryFilter = new LibraryFilter(
-            loadoutObservable: loadoutObservable,
-            gameObservable: gameObservable
-        );
+        var loadout = Loadout.Load(_connection.Db, loadoutId);
+        var libraryFilter = new LibraryFilter(loadout, loadout.InstallationInstance.Game);
 
         Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
-        LoadoutSubject.OnNext(loadoutId);
 
         _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
 
@@ -182,9 +165,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         this.WhenActivated(disposables =>
         {
-            disposables.Add(loadoutObservable.Connect());
-            disposables.Add(gameObservable.Connect());
-
             Disposable.Create(this, static vm => vm.StorageProvider = null).AddTo(disposables);
             Adapter.Activate().AddTo(disposables);
 
@@ -213,12 +193,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
                 .OnUI()
                 .Transform(ICollectionCardViewModel (revision) => new CollectionCardViewModel(
+                    collectionDownloader: collectionDownloader,
                     tileImagePipeline: tileImagePipeline,
                     userAvatarPipeline: userAvatarPipeline,
                     windowManager: WindowManager,
                     workspaceId: WorkspaceId,
-                    connection: _connection,
-                    revision: revision.RevisionId,
+                    revision: revision,
                     targetLoadout: _loadout)
                 )
                 .Bind(out _collections)
@@ -386,27 +366,10 @@ public class LibraryTreeDataGridAdapter :
 
     public Subject<OneOf<InstallMessage, UpdateMessage>> MessageSubject { get; } = new();
 
-    private readonly IDisposable _activationDisposable;
-    private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
-
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
-
-        _activationDisposable = this.WhenActivated(static (self, disposables) =>
-        {
-            Disposable.Create(self._commandDisposables,static commandDisposables =>
-            {
-                foreach (var kv in commandDisposables)
-                {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
-
-                commandDisposables.Clear();
-            }).AddTo(disposables);
-        });
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
@@ -418,7 +381,7 @@ public class LibraryTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        var installActionDisposable = model.SubscribeToComponent<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.InstallComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
@@ -430,7 +393,7 @@ public class LibraryTreeDataGridAdapter :
             })
         );
 
-        var updateActionDisposable = model.SubscribeToComponent<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandUpdate
@@ -442,20 +405,6 @@ public class LibraryTreeDataGridAdapter :
                 self.MessageSubject.OnNext(new UpdateMessage(newFile, model));
             })
         );
-
-        var disposable = Disposable.Combine(installActionDisposable, updateActionDisposable);
-
-        var didAdd = _commandDisposables.TryAdd(model, disposable);
-        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
-    }
-
-    protected override void BeforeModelDeactivationHook(CompositeItemModel<EntityId> model)
-    {
-        base.BeforeModelDeactivationHook(model);
-
-        var didRemove = _commandDisposables.Remove(model, out var disposable);
-        Debug.Assert(didRemove, "subscription for the model should exist");
-        disposable?.Dispose();
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
@@ -474,16 +423,11 @@ public class LibraryTreeDataGridAdapter :
     }
 
     private bool _isDisposed;
-
     protected override void Dispose(bool disposing)
     {
-        if (!_isDisposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
-            {
-                Disposable.Dispose(_activationDisposable, MessageSubject);
-            }
-
+            MessageSubject.Dispose();
             _isDisposed = true;
         }
 

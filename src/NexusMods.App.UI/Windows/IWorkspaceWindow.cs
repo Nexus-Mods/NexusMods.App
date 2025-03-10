@@ -27,5 +27,5 @@ public interface IWorkspaceWindow
     /// <summary>
     ///     This command is used to bring the window to front.
     /// </summary>
-    ReactiveCommand<Unit, Unit> BringWindowToFront { get; }
+    ReactiveCommand<Unit, bool> BringWindowToFront { get; }
 }

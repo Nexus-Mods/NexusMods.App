@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.GameLocators;
@@ -46,7 +47,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         _fs = provider.GetRequiredService<IFileSystem>();
     }
     
-    public override Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+    public override Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
     {
         try
         {
@@ -62,7 +63,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         }
         catch (Exception)
         {
-            return new Version(0, 0, 0, 0);
+            return Optional<Version>.None;
         }
     }
 

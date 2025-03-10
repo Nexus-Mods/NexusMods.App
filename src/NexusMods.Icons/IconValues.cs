@@ -123,7 +123,10 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/thumb-up/
     public static readonly IconValue ThumbUp = new ProjektankerIcon("mdi-thumb-up");
-
+    
+    // https://pictogrammers.com/library/mdi/icon/thumb-up-outline/
+    public static readonly IconValue ThumbUpOutline = new ProjektankerIcon("mdi-thumb-up-outline");
+    
     // https://pictogrammers.com/library/mdi/icon/thumbs-up-down/
     public static readonly IconValue ThumbsUpDown = new ProjektankerIcon("mdi-thumbs-up-down");
         
@@ -246,6 +249,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/undo/
     public static readonly IconValue Undo = new ProjektankerIcon("mdi-undo");
+    
+    // https://pictogrammers.com/library/mdi/icon/tray-arrow-down/
+    public static readonly IconValue TrayArrowDown = new ProjektankerIcon("mdi-tray-arrow-down");
 
 #endregion
 
@@ -299,6 +305,12 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/file-document-outline/
     public static readonly IconValue FileDocumentOutline = new ProjektankerIcon("mdi-file-document-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/folder-upload-outline/
+    public static readonly IconValue FolderUploadOutline = new ProjektankerIcon("mdi-folder-upload-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/update/
+    public static readonly IconValue Update = new ProjektankerIcon("mdi-update");
 
 #endregion
 
@@ -423,12 +435,6 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/star/
     public static readonly IconValue Star = new ProjektankerIcon("mdi-star");
 
-    // https://pictogrammers.com/library/mdi/icon/toggle-switch-outline/
-    public static readonly IconValue ToggleOff = new ProjektankerIcon("mdi-toggle-switch-outline");
-
-    // https://pictogrammers.com/library/mdi/icon/toggle-switch-off-outline/
-    public static readonly IconValue ToggleOn = new ProjektankerIcon("mdi-toggle-switch-off-outline");
-
 #endregion
 
 #region Custom Icons
@@ -478,8 +484,8 @@ public static class IconValues
     // Custom Icon from Figma. The source of this icon is currently unknown.
     // Need to ask. - Sewer
     public static readonly IconValue HardDrive = new SimpleVectorIcon(new SimpleVectorIconImage(
-        "M3.33317 14.1665H16.6665V9.1665H3.33317V14.1665ZM14.1665 12.9165C14.5137 12.9165 14.8089 12.795 15.0519 12.5519C15.295 12.3089 15.4165 12.0137 15.4165 11.6665C15.4165 11.3193 15.295 11.0241 15.0519 10.7811C14.8089 10.538 14.5137 10.4165 14.1665 10.4165C13.8193 10.4165 13.5241 10.538 13.2811 10.7811C13.038 11.0241 12.9165 11.3193 12.9165 11.6665C12.9165 12.0137 13.038 12.3089 13.2811 12.5519C13.5241 12.795 13.8193 12.9165 14.1665 12.9165ZM18.3332 7.49984H15.979L14.3123 5.83317H5.68734L4.02067 7.49984H1.6665L4.52067 4.64567C4.67345 4.49289 4.85053 4.37484 5.05192 4.2915C5.25331 4.20817 5.46512 4.1665 5.68734 4.1665H14.3123C14.5346 4.1665 14.7464 4.20817 14.9478 4.2915C15.1491 4.37484 15.3262 4.49289 15.479 4.64567L18.3332 7.49984ZM3.33317 15.8332C2.87484 15.8332 2.48248 15.67 2.15609 15.3436C1.8297 15.0172 1.6665 14.6248 1.6665 14.1665V7.49984H18.3332V14.1665C18.3332 14.6248 18.17 15.0172 17.8436 15.3436C17.5172 15.67 17.1248 15.8332 16.6665 15.8332H3.33317Z",
-        new Rect(0, 0, 20, 20)
+        "M4 17H20V11H4V17ZM17 15.5C17.4167 15.5 17.7708 15.3542 18.0625 15.0625C18.3542 14.7708 18.5 14.4167 18.5 14C18.5 13.5833 18.3542 13.2292 18.0625 12.9375C17.7708 12.6458 17.4167 12.5 17 12.5C16.5833 12.5 16.2292 12.6458 15.9375 12.9375C15.6458 13.2292 15.5 13.5833 15.5 14C15.5 14.4167 15.6458 14.7708 15.9375 15.0625C16.2292 15.3542 16.5833 15.5 17 15.5ZM22 9H19.175L17.175 7H6.825L4.825 9H2L5.425 5.575C5.60833 5.39167 5.82083 5.25 6.0625 5.15C6.30417 5.05 6.55833 5 6.825 5H17.175C17.4417 5 17.6958 5.05 17.9375 5.15C18.1792 5.25 18.3917 5.39167 18.575 5.575L22 9ZM4 19C3.45 19 2.97917 18.8042 2.5875 18.4125C2.19583 18.0208 2 17.55 2 17V9H22V17C22 17.55 21.8042 18.0208 21.4125 18.4125C21.0208 18.8042 20.55 19 20 19H4Z",
+        new Rect(0, 0, 24, 24)
     ));
 
     // The Black and White Nexus 'Developer' Logo.
@@ -590,6 +596,24 @@ public static class IconValues
             new Rect(0, 0, 16, 16 )
     ));
     
+    
+    // Toggle On icon
+    public static readonly IconValue ToggleOn = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M7 7C4.23858 7 2 9.23858 2 12C2 14.7614 4.23858 17 7 17H17C19.7614 17 22 14.7614 22 12C22 9.23858 19.7614 7 17 7H7ZM17 15.3329C18.841 15.3329 20.3333 13.8405 20.3333 11.9996C20.3333 10.1586 18.841 8.66626 17 8.66626C15.1591 8.66626 13.6667 10.1586 13.6667 11.9996C13.6667 13.8405 15.1591 15.3329 17 15.3329Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
+    // Toggle Off icon
+    public static readonly IconValue ToggleOff = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M7 8H17C19.2091 8 21 9.79086 21 12C21 14.2091 19.2091 16 17 16H7C4.79086 16 3 14.2091 3 12C3 9.79086 4.79086 8 7 8ZM2 12C2 9.23858 4.23858 7 7 7H17C19.7614 7 22 9.23858 22 12C22 14.7614 19.7614 17 17 17H7C4.23858 17 2 14.7614 2 12ZM7 14.5C8.38071 14.5 9.5 13.3807 9.5 12C9.5 10.6193 8.38071 9.5 7 9.5C5.61929 9.5 4.5 10.6193 4.5 12C4.5 13.3807 5.61929 14.5 7 14.5Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
+    // Toggle Indeterminate icon
+    public static readonly IconValue ToggleIndeterminate = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M19 12C19 13.1046 18.1046 14 17 14C15.8954 14 15 13.1046 15 12C15 10.8954 15.8954 10 17 10C18.1046 10 19 10.8954 19 12Z M7 7C4.23858 7 2 9.23858 2 12C2 14.7614 4.23858 17 7 17H17C19.7614 17 22 14.7614 22 12C22 9.23858 19.7614 7 17 7H7ZM21 12C21 14.2091 19.2091 16 17 16C14.7909 16 13 14.2091 13 12C13 9.79086 14.7909 8 17 8C19.2091 8 21 9.79086 21 12Z",
+        new Rect(0, 0, 24, 24 )
+    ));
     public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
 
 #endregion

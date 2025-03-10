@@ -1,9 +1,11 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using R3;
@@ -18,8 +20,26 @@ public static class CollectionColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            // TODO:
+            if (CompareImpl<CollectionComponents.InstallAction>(InstallComponentKey, a, b).TryGet(out var value)) return value;
+            if (CompareImpl<CollectionComponents.ManualDownloadAction>(ManualDownloadComponentKey, a, b).TryGet(out value)) return value;
+            if (CompareImpl<CollectionComponents.ExternalDownloadAction>(ExternalDownloadComponentKey, a, b).TryGet(out value)) return value;
+            if (CompareImpl<CollectionComponents.NexusModsDownloadAction>(NexusModsDownloadComponentKey, a, b).TryGet(out value)) return value;
             return 0;
+
+            static Optional<int> CompareImpl<TComponent>(ComponentKey key, CompositeItemModel<TKey> a, CompositeItemModel<TKey> b)
+                where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+            {
+                var x = a.GetOptional<TComponent>(key);
+                var y = b.GetOptional<TComponent>(key);
+
+                return (x.HasValue, y.HasValue) switch
+                {
+                    (true, true) => x.Value.CompareTo(y.Value),
+                    (true, false) => -1,
+                    (false, true) => 1,
+                    _ => Optional<int>.None,
+                };
+            }
         }
 
         public const string ColumnTemplateResourceKey = nameof(CollectionColumns) + "_" + nameof(Actions);
@@ -60,7 +80,7 @@ public static class CollectionComponents
                     var (downloadStatus, isDownloaded) = tuple;
                     self._canDownload.OnNext(!isDownloaded && downloadStatus < JobStatus.Running);
                     self._downloadStatus.Value = downloadStatus;
-                    self._buttonText.Value = GetButtonText(isDownloading: downloadStatus == JobStatus.Running, isDownloaded);
+                    self._buttonText.Value = self.GetButtonText(isDownloading: downloadStatus == JobStatus.Running, isDownloaded);
                 }).AddTo(disposables);
             });
 
@@ -79,10 +99,10 @@ public static class CollectionComponents
 
         public IReadOnlyBindableReactiveProperty<bool> IsDownloading { get; }
 
-        private readonly BindableReactiveProperty<string> _buttonText = new(value: GetButtonText(isDownloading: false, isDownloaded: false));
+        private readonly BindableReactiveProperty<string> _buttonText = new(value: "");
         public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
 
-        internal static string GetButtonText(bool isDownloading, bool isDownloaded)
+        protected virtual string GetButtonText(bool isDownloading, bool isDownloaded)
         {
             if (isDownloaded) return "Downloaded";
             return isDownloading ? "Downloading" : "Download";
@@ -121,32 +141,50 @@ public static class CollectionComponents
             Observable<JobStatus> downloadJobStatusObservable,
             Observable<bool> isDownloadedObservable)
             : base(downloadEntity, downloadJobStatusObservable, isDownloadedObservable) { }
+
+        protected override string GetButtonText(bool isDownloading, bool isDownloaded)
+        {
+            if (isDownloading || isDownloaded) return base.GetButtonText(isDownloading, isDownloaded);
+            return "Third-party download";
+        }
     }
 
     public sealed class ManualDownloadAction : ReactiveR3Object, IItemModelComponent<ManualDownloadAction>, IComparable<ManualDownloadAction>
     {
-        public int CompareTo(ManualDownloadAction? other)
+        public int CompareTo(ManualDownloadAction? other) => other is null ? 1 : 0;
+
+        private readonly IDisposable _activationDisposable;
+        public ManualDownloadAction(CollectionDownloadExternal.ReadOnly downloadEntity, Observable<bool> isDownloadedObservable)
         {
-            if (other is null) return 1;
-            return 0;
+            CommandOpenModal = isDownloadedObservable.Select(static isDownloaded => !isDownloaded).ObserveOnUIThreadDispatcher().ToReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
+
+            _activationDisposable = this.WhenActivated((downloadEntity, isDownloadedObservable), static (self, state, disposables) =>
+            {
+                var (_, isDownloadedObservable) = state;
+
+                isDownloadedObservable.ObserveOnUIThreadDispatcher().Subscribe(self, static (isDownloaded, self) =>
+                {
+                    self._buttonText.Value = GetButtonText(isDownloaded);
+                }).AddTo(disposables);
+            });
         }
 
-        public ManualDownloadAction(CollectionDownloadExternal.ReadOnly downloadEntity)
-        {
-            CommandOpenUri = new ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
-            CommandAddFile = new ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly>(_ => downloadEntity);
-        }
+        private readonly BindableReactiveProperty<string> _buttonText = new(value: "");
+        public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
 
-        public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandOpenUri { get; }
-        public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandAddFile { get; }
+        public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandOpenModal { get; }
+
+        private static string GetButtonText(bool isDownloaded) => isDownloaded ? "Downloaded" : "Manual download";
 
         private bool _isDisposed;
+
         protected override void Dispose(bool disposing)
         {
             if (!_isDisposed)
             {
                 if (disposing)
                 {
+                    Disposable.Dispose(CommandOpenModal, ButtonText, _activationDisposable);
                 }
 
                 _isDisposed = true;

@@ -34,18 +34,27 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
 
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
+    private IObservable<IChangeSet<NexusModsModPageMetadata.ReadOnly, EntityId>> FilterLibraryItems(LibraryFilter libraryFilter)
     {
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
             // only show mod pages for the currently selected game
-            .FilterOnObservable(modPage => libraryFilter.GameObservable.Select(game => modPage.Uid.GameId.Equals(game.GameId)))
+            .FilterImmutable(modPage => modPage.Uid.GameId.Equals(libraryFilter.Game.GameId))
             // only show mod pages that have library files
             .FilterOnObservable(modPage => _connection
                 .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)
                 .IsNotEmpty()
-            )
-            .Transform(modPage => ToLibraryItemModel(modPage, libraryFilter));
+            );
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
+    {
+        return FilterLibraryItems(libraryFilter).Transform(modPage => ToLibraryItemModel(modPage, libraryFilter));
+    }
+
+    public IObservable<int> CountLibraryItems(LibraryFilter libraryFilter)
+    {
+        return FilterLibraryItems(libraryFilter).QueryWhenChanged(query => query.Count).Prepend(0);
     }
 
     private CompositeItemModel<EntityId> ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPage, LibraryFilter libraryFilter)
@@ -115,8 +124,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         ));
 
         // Update available
-        var newestVersionObservable = _modUpdateService
-            .GetNewestModPageVersionObservable(modPage)
+        var newestModPageObservable = _modUpdateService.GetNewestModPageVersionObservable(modPage);
+        var currentUpdateVersionObservable = newestModPageObservable
+            .Select(static optional => !optional.HasValue ? "" : optional.Value.MappingWithNewestFile().File.Version)
+            .OnUI();
+        var newestVersionObservable = newestModPageObservable
             .Select(static optional => optional.Convert(static updatesOnPage => updatesOnPage.NewestFile().Version))
             .OnUI();
 
@@ -126,7 +138,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
                 currentVersion: new StringComponent(
                     initialValue: string.Empty,
-                    valueObservable: currentVersionObservable
+                    valueObservable: currentUpdateVersionObservable
                 ),
                 newVersion: initialValue,
                 newVersionObservable: valueObservable
@@ -259,7 +271,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
             LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
             LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
-            LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
 
             return parentItemModel;
         });

@@ -38,7 +38,14 @@ public class TrackingService : BackgroundService
                 _logger.LogError(e, "Exception sending events");
             }
 
-            await Task.Delay(delay: Delay, cancellationToken: stoppingToken).ConfigureAwait(false);
+            try
+            {
+                await Task.Delay(delay: Delay, cancellationToken: stoppingToken).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Text;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using JetBrains.Annotations;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
@@ -22,7 +21,7 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
 {
     private readonly ILogger _logger;
     private readonly HttpClient _httpClient;
-    private readonly IResourceLoader<Uri, Bitmap> _remoteImagePipeline;
+    private readonly IResourceLoader<Uri, IImage> _remoteImagePipeline;
 
     [Reactive] public string Contents { get; set; } = string.Empty;
     [Reactive] public Uri? MarkdownUri { get; set; }

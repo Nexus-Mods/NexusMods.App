@@ -1,3 +1,4 @@
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using BitFaster.Caching;
@@ -31,9 +32,10 @@ public static class ImagePipelines
     private const string MarkdownRendererRemoteImagePipelineKey = nameof(MarkdownRendererRemoteImagePipelineKey);
 
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
-    private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/black-box.png")));
+    private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-background-fallback.png")));
     private static readonly Bitmap UserAvatarFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
     internal static readonly Bitmap ModPageThumbnailFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/transparent.png")));
+    internal static readonly Bitmap MarkdownFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/transparent.png")));
 
     public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Bitmap> pipeline)
     {
@@ -86,7 +88,7 @@ public static class ImagePipelines
                     fileStore: serviceProvider.GetRequiredService<IFileStore>()
                 )
             )
-            .AddKeyedSingleton<IResourceLoader<Uri, Bitmap>>(
+            .AddKeyedSingleton<IResourceLoader<Uri, IImage>>(
                 serviceKey: MarkdownRendererRemoteImagePipelineKey,
                 implementationFactory: static (serviceProvider, _) => CreateMarkdownRendererRemoteImagePipeline(
                     httpClient: serviceProvider.GetRequiredService<HttpClient>()
@@ -128,9 +130,9 @@ public static class ImagePipelines
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<Hash, Lifetime<Bitmap>>>(serviceKey: GuidedInstallerFileImagePipelineKey);
     }
 
-    public static IResourceLoader<Uri, Bitmap> GetMarkdownRendererRemoteImagePipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<Uri, IImage> GetMarkdownRendererRemoteImagePipeline(IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredKeyedService<IResourceLoader<Uri, Bitmap>>(serviceKey: MarkdownRendererRemoteImagePipelineKey);
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<Uri, IImage>>(serviceKey: MarkdownRendererRemoteImagePipelineKey);
     }
 
     private static IResourceLoader<EntityId, Bitmap> CreateUserAvatarPipeline(
@@ -256,11 +258,15 @@ public static class ImagePipelines
         return pipeline;
     }
 
-    private static IResourceLoader<Uri, Bitmap> CreateMarkdownRendererRemoteImagePipeline(HttpClient httpClient)
+    private static IResourceLoader<Uri, IImage> CreateMarkdownRendererRemoteImagePipeline(HttpClient httpClient)
     {
         var pipeline = new HttpLoader(httpClient)
-            .Decode(decoderType: DecoderType.Skia)
-            .ToAvaloniaBitmap();
+            .EnableSvgSupport(static inner => inner
+                .Decode(decoderType: DecoderType.Skia)
+                .ToAvaloniaBitmap()
+                .UseFallbackValue(MarkdownFallback)
+            )
+            .UseFallbackValue(MarkdownFallback);
 
         return pipeline;
     }

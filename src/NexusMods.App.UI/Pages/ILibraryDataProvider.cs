@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Aggregation;
 using DynamicData.Kernel;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -16,23 +17,31 @@ namespace NexusMods.App.UI.Pages;
 public interface ILibraryDataProvider
 {
     IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter);
+
+    IObservable<int> CountLibraryItems(LibraryFilter libraryFilter);
 }
 
-public class LibraryFilter
-{
-    public IObservable<LoadoutId> LoadoutObservable { get; }
-
-    public IObservable<ILocatableGame> GameObservable { get; }
-
-    public LibraryFilter(IObservable<LoadoutId> loadoutObservable, IObservable<ILocatableGame> gameObservable)
-    {
-        LoadoutObservable = loadoutObservable;
-        GameObservable = gameObservable;
-    }
-}
+public record LibraryFilter(LoadoutId LoadoutId, ILocatableGame Game);
 
 public static class LibraryDataProviderHelper
 {
+    public static IObservable<int> CountAllLibraryItems(IServiceProvider serviceProvider, LoadoutId loadoutId)
+    {
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+        var loadout = Loadout.Load(connection.Db, loadoutId);
+
+        var libraryFilter = new LibraryFilter(loadout, loadout.InstallationInstance.Game);
+        return CountAllLibraryItems(serviceProvider, libraryFilter);
+    }
+
+    public static IObservable<int> CountAllLibraryItems(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
+    {
+        var libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>();
+        return libraryDataProviders
+            .Select(provider => provider.CountLibraryItems(libraryFilter))
+            .CombineLatest(static counts => counts.Sum());
+    }
+
     public static IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> GetLinkedLoadoutItems(
         IConnection connection,
         LibraryFilter libraryFilter,
@@ -42,11 +51,7 @@ public static class LibraryDataProviderHelper
             .ObserveDatoms(LibraryLinkedLoadoutItem.LibraryItemId, libraryItemId)
             .AsEntityIds()
             .Transform(datom => LoadoutItem.Load(connection.Db, datom.E))
-            .FilterOnObservable(loadoutItem =>
-                libraryFilter.LoadoutObservable.Select(loadoutId =>
-                    loadoutItem.LoadoutId.Equals(loadoutId)
-                )
-            );
+            .FilterImmutable(loadoutItem => loadoutItem.LoadoutId.Equals(libraryFilter.LoadoutId));
     }
 
     public static void AddInstalledDateComponent(

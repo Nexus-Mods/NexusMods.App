@@ -64,6 +64,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                     {
                         FileId = loadoutFile.LoadoutFileId,
                         FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3,
+                        IsReadOnly = Context!.IsReadOnly,
                     },
                 };
 
@@ -75,10 +76,16 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             })
             .AddTo(ref _disposables);
 
-        RemoveCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
-            .WhereNotNull()
-            .Select(_ => true)
-            .ToReactiveCommand<R3.Unit>(async (_, cancellationToken) =>
+        
+        // ReSharper disable once InvokeAsExtensionMethod
+        RemoveCommand = Observable.CombineLatest(
+                this.ObservePropertyChanged(vm => vm.Context)
+                    .Select(context => context is { IsReadOnly: false }),
+                this.ObservePropertyChanged(vm => vm.SelectedItem)
+                    .Select(item => item is not null),
+                resultSelector: (isWritable, hasSelection) => isWritable && hasSelection
+            )
+            .ToReactiveCommand<Unit>(async (_, _) =>
                 {
                     var gamePath = SelectedItem!.Key;
                     var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
@@ -87,7 +94,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                         .OfTypeLoadoutItemWithTargetPath()
                         .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path))
                         .ToArray();
-                    
+
                     if (loadoutItemsToDelete.Length == 0)
                     {
                         logger.LogError("Unable to find Loadout files with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
@@ -95,14 +102,14 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                     }
 
                     using var tx = connection.BeginTransaction();
-                
+
                     foreach (var loadoutItem in loadoutItemsToDelete)
                     {
                         tx.Delete(loadoutItem, recursive: false);
                     }
-                    
+
                     await tx.Commit();
-                
+
                     // Refresh the file tree, currently by re-creating it which isn't super great
                     FileTreeViewModel = new LoadoutItemGroupFileTreeViewModel(group.Rebase());
                 }

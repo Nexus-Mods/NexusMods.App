@@ -9,27 +9,26 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
-using NexusMods.Abstractions.Serialization;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -106,7 +105,22 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         NexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
         SynchronizerService = ServiceProvider.GetRequiredService<ISynchronizerService>();
     }
-    
+
+    public async Task<LibraryFile.ReadOnly> DownloadModFromNexusMods(ModId modId, FileId fileId)
+    {
+        await using var destination = TemporaryFileManager.CreateFile();
+
+        var downloadJob = await NexusModsLibrary.CreateDownloadJob(destination.Path, Game.GameId, modId, fileId);
+        return await LibraryService.AddDownload(downloadJob);
+    }
+
+    public async Task<LoadoutItemGroup.ReadOnly> InstallModFromNexusMods(LoadoutId loadoutId, ModId modId, FileId fileId,  
+        Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null)
+    {
+        var libraryFile = await DownloadModFromNexusMods(modId, fileId);
+        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+    }
+
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
     {
         var libraryFile = await LibraryService.AddLocalFile(file);
@@ -335,6 +349,41 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// </summary>
     protected void Refresh<T>(ref T entity) where T : IReadOnlyModel<T>
         => entity = T.Create(Connection.Db, entity.Id);
+
+    protected async ValueTask<CollectionGroup.ReadOnly> CreateCollection(LoadoutId loadoutId, string name)
+    {
+        using var tx = Connection.BeginTransaction();
+        var collection = new CollectionGroup.New(tx, out var id)
+        {
+            IsReadOnly = false,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    LoadoutId = loadoutId,
+                    Name = name,
+                },
+            },
+        };
+        
+        var result = await tx.Commit();
+        return result.Remap(collection);
+    }
+    
+    protected async ValueTask EnableItem(EntityId entityId)
+    {
+        using var tx = Connection.BeginTransaction();
+        tx.Retract(entityId, LoadoutItem.Disabled, Null.Instance);
+        await tx.Commit();
+    }
+
+    protected async ValueTask DisableItem(EntityId entityId)
+    {
+        using var tx = Connection.BeginTransaction();
+        tx.Add(entityId, LoadoutItem.Disabled, Null.Instance);
+        await tx.Commit();
+    }
 
     /// <summary>
     /// Creates a ZIP archive using <see cref="ZipArchive"/> and returns the

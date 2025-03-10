@@ -67,7 +67,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves the IModFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static EntityId Resolve(this IModFragment modFragment, IDb db, ITransaction tx)
+    public static EntityId Resolve(this IModFragment modFragment, IDb db, ITransaction tx, bool setFilesTimestamp = false)
     {
         var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, UidForMod.FromV2Api(modFragment.Uid));
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);
@@ -80,7 +80,9 @@ public static class FragmentExtensions
         if (Uri.TryCreate(modFragment.ThumbnailUrl, UriKind.Absolute, out var thumbnailUri))
             nexusModResolver.Add(NexusModsModPageMetadata.ThumbnailUri, thumbnailUri);
 
-        nexusModResolver.Add(NexusModsModPageMetadata.DataUpdatedAt, DateTimeOffset.UtcNow);
+        if (setFilesTimestamp)
+            nexusModResolver.Add(NexusModsModPageMetadata.DataUpdatedAt, DateTimeOffset.UtcNow);
+
         return nexusModResolver.Id;
     }
 

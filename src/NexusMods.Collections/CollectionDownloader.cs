@@ -18,6 +18,7 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -137,12 +138,20 @@ public class CollectionDownloader
     /// <summary>
     /// Downloads an external file.
     /// </summary>
-    public async ValueTask Download(CollectionDownloadExternal.ReadOnly download, bool onlyDirectDownloads, CancellationToken cancellationToken)
+    public async ValueTask Download(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)
     {
         var result = await CanDirectDownload(download, cancellationToken);
         if (result.CanDownload)
         {
-            _logger.LogInformation("Downloading external file at `{Uri}` directly", download.Uri);
+            _logger.LogInformation("Downloading external file directly at `{Uri}` (`{Hash}`)", download.Uri, download.Md5);
+
+            if (download.Rebase(_connection.Db).IsManualOnly)
+            {
+                using var tx = _connection.BeginTransaction();
+                tx.Retract(download.Id, CollectionDownloadExternal.ManualOnly, Null.Instance);
+                await tx.Commit();
+            }
+
             var job = ExternalDownloadJob.Create(
                 _serviceProvider,
                 download.Uri,
@@ -155,19 +164,13 @@ public class CollectionDownloader
         }
         else
         {
-            if (onlyDirectDownloads) return;
+            _logger.LogInformation("Unable to direct download `{Uri}` (`{Hash}`)", download.Uri, download.Md5);
+            if (download.Rebase(_connection.Db).IsManualOnly) return;
 
-            _logger.LogInformation("Unable to direct download `{Uri}`, using browse as a fallback", download.Uri);
-            await _osInterop.OpenUrl(download.Uri, logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            using var tx = _connection.BeginTransaction();
+            tx.Add(download.Id, CollectionDownloadExternal.ManualOnly, Null.Instance);
+            await tx.Commit();
         }
-    }
-
-    /// <summary>
-    /// Downloads an external file or opens the browser if the file can't be downloaded automatically.
-    /// </summary>
-    public ValueTask Download(CollectionDownloadExternal.ReadOnly download, CancellationToken cancellationToken)
-    {
-        return Download(download, onlyDirectDownloads: false, cancellationToken);
     }
 
     /// <summary>
@@ -275,6 +278,28 @@ public class CollectionDownloader
 
         if (observables.Length == 0) return groupObservable.Select(static optional => optional.HasValue);
         return observables.CombineLatest(static list => list.All(static installed => installed));
+    }
+
+    /// <summary>
+    /// Returns all missing downloads and Uris.
+    /// </summary>
+    public static IReadOnlyList<(CollectionDownload.ReadOnly Download, Uri Uri)> GetMissingDownloadLinks(CollectionRevisionMetadata.ReadOnly revision, IDb db, ItemType itemType = ItemType.Required)
+    {
+        var results = new List<(CollectionDownload.ReadOnly Download, Uri Uri)>();
+        var downloads = GetItems(revision, itemType).Where(download => GetStatus(download, db).IsNotDownloaded());
+
+        foreach (var download in downloads)
+        {
+            if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+            {
+                results.Add((download, nexusModsDownload.FileMetadata.GetUri()));
+            } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+            {
+                results.Add((download, externalDownload.Uri));
+            }
+        }
+
+        return results;
     }
 
     private static CollectionDownloadStatus GetStatus(CollectionDownloadBundled.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)

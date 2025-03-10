@@ -9,7 +9,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
-using SystemObservable = System.Reactive.Linq.Observable;
 using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
@@ -31,6 +30,14 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .Transform(localFile => ToLibraryItemModel(libraryFilter, localFile));
     }
 
+    public IObservable<int> CountLibraryItems(LibraryFilter libraryFilter)
+    {
+        return LocalFile
+            .ObserveAll(_connection)
+            .QueryWhenChanged(query => query.Count)
+            .Prepend(0);
+    }
+
     private CompositeItemModel<EntityId> ToLibraryItemModel(LibraryFilter libraryFilter, LocalFile.ReadOnly localFile)
     {
         var linkedLoadoutItemsObservable = LibraryDataProviderHelper
@@ -50,10 +57,12 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
                 )]
             );
         });
+        
+        var hasChildrenObservable = childrenObservable.IsNotEmpty();
 
         var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id)
         {
-            HasChildrenObservable = SystemObservable.Return(true),
+            HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable,
         };
 
@@ -120,7 +129,10 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
 
         LoadoutDataProviderHelper.AddDateComponent(parentItemModel, localFile.GetCreatedAt(), linkedItemsObservable);
         LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
-        LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
+        LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
+        LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
+        LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
+        
 
         return parentItemModel;
     }

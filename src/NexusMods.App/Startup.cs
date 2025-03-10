@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Converters;
 using NexusMods.App.UI.Windows;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -99,17 +100,27 @@ public class Startup
         var app = AppBuilder
             .Configure(serviceProvider.GetRequiredService<App>)
             .UsePlatformDetect()
+            .With(new X11PlatformOptions
+            {
+                // NOTE(erri120): Prevents DBus exceptions for tooltips.
+                // For details see https://github.com/Nexus-Mods/NexusMods.App/issues/2799
+                UseDBusMenu = false,
+            })
+            .With(new SkiaOptions
+            {
+                // NOTE(insomnious): Opacity doesn't work on SVGs without this SkiaOptions set. It's needed for when we want to disable\fade SVG icons.
+                // For details see https://github.com/AvaloniaUI/Avalonia/pull/9964
+                UseOpacitySaveLayer = true,
+            })
             .LogToTrace()
             .UseR3()
-            .UseReactiveUI()
-            .With(new SkiaOptions { UseOpacitySaveLayer = true });
-        
-            // NOTE(insomnious): Opacity doesn't work on SVGs without this SkiaOptions set. It's needed for when we want to disable\fade SVG icons.
-            // See https://github.com/AvaloniaUI/Avalonia/pull/9964 for more details.
+            .UseReactiveUI();
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
         Locator.CurrentMutable.Register(serviceProvider.GetRequiredService<InjectedViewLocator>, typeof(IViewLocator));
-
+        
+        Locator.CurrentMutable.RegisterConstant<IBindingTypeConverter>(new SizeToStringTypeConverter());
+        
         var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
         ObservableSystem.RegisterUnhandledExceptionHandler(exception =>
         {

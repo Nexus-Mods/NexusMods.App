@@ -7,5 +7,9 @@
       <PackageReference Include="R3" />
       <PackageReference Include="ReactiveUI" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
+    </ItemGroup>
 
 </Project>

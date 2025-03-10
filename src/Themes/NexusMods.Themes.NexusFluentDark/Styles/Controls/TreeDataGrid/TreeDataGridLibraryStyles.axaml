@@ -3,11 +3,11 @@
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <Style Selector="TreeDataGrid#TreeDataGridLibrary">
-        
+
         <!-- <Setter Property="Background" Value="DarkGreen"/> -->
 
         <!-- ROWS -->
-        
+
         <Style Selector="^ TreeDataGridRow">
 
             <!-- child row -->
@@ -44,9 +44,18 @@
                     </Style>
                 </Style>
 
+                <!-- library -> size cell -->
+                <Style Selector="^.LibraryColumns_ItemSize">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </Style>
+                
                 <!-- library -> actions cell -->
                 <Style Selector="^.LibraryColumns_Actions">
                     <Setter Property="HorizontalAlignment" Value="Right" />
+
+                    <Style Selector="^/template/ ContentPresenter#PART_ContentPresenter > StackPanel">
+                        <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
+                    </Style>
 
                     <Style Selector="^ StackPanel#InstalledStack">
                         <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />

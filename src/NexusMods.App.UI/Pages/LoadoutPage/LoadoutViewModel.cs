@@ -1,14 +1,12 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
@@ -105,12 +103,17 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     var group = viewModFilesArgumentsSubject.Value;
                     if (!group.HasValue) return;
 
+                    var isReadonly = group.Value.AsLoadoutItem()
+                        .GetThisAndParents()
+                        .Any(item => NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired);
+
                     var pageData = new PageData
                     {
                         FactoryId = ItemContentsFileTreePageFactory.StaticId,
                         Context = new ItemContentsFileTreePageContext
                         {
                             GroupId = group.Value.Id,
+                            IsReadOnly = isReadonly,
                         },
                     };
                     var workspaceController = GetWorkspaceController();
@@ -207,7 +210,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
     {
-        return itemModel.Get<LoadoutComponents.IsEnabled>(LoadoutColumns.IsEnabled.IsEnabledComponentKey).ItemIds;
+        return itemModel.Get<LoadoutComponents.LoadoutItemIds>(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey).ItemIds;
     }
 }
 
@@ -222,26 +225,10 @@ public class LoadoutTreeDataGridAdapter :
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
     private readonly LoadoutFilter _loadoutFilter;
 
-    private readonly IDisposable _activationDisposable;
-    private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
     public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, LoadoutFilter loadoutFilter)
     {
         _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
         _loadoutFilter = loadoutFilter;
-
-        _activationDisposable = this.WhenActivated(static (self, disposables) =>
-        {
-            Disposable.Create(self._commandDisposables,static commandDisposables =>
-            {
-                foreach (var kv in commandDisposables)
-                {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
-
-                commandDisposables.Clear();
-            }).AddTo(disposables);
-        });
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
@@ -253,31 +240,24 @@ public class LoadoutTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        var disposable = model.SubscribeToComponent<LoadoutComponents.IsEnabled, LoadoutTreeDataGridAdapter>(
-            key: LoadoutColumns.IsEnabled.IsEnabledComponentKey,
+        model.SubscribeToComponentAndTrack<LoadoutComponents.EnabledStateToggle, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.EnabledStateToggleComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
             {
-                var (self, _, component) = tuple;
+                var (self, itemModel, component) = tuple;
                 var isEnabled = component.Value.Value;
-                var ids = component.ItemIds.ToArray();
+                var ids = GetLoadoutItemIds(itemModel).ToArray();
                 var shouldEnable = !isEnabled ?? false;
 
                 self.MessageSubject.OnNext(new ToggleEnableState(ids, shouldEnable));
             })
         );
-
-        var didAdd = _commandDisposables.TryAdd(model, disposable);
-        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
     }
-
-    protected override void BeforeModelDeactivationHook(CompositeItemModel<EntityId> model)
+    
+    private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
     {
-        base.BeforeModelDeactivationHook(model);
-
-        var didRemove = _commandDisposables.Remove(model, out var disposable);
-        Debug.Assert(didRemove, "subscription for the model should exist");
-        disposable?.Dispose();
+        return itemModel.Get<LoadoutComponents.LoadoutItemIds>(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey).ItemIds;
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
@@ -289,7 +269,7 @@ public class LoadoutTreeDataGridAdapter :
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
             ColumnCreator.Create<EntityId, LoadoutColumns.Collections>(),
-            ColumnCreator.Create<EntityId, LoadoutColumns.IsEnabled>(),
+            ColumnCreator.Create<EntityId, LoadoutColumns.EnabledState>(),
         ];
     }
 
@@ -298,7 +278,7 @@ public class LoadoutTreeDataGridAdapter :
     {
         if (disposing && !_isDisposed)
         {
-            Disposable.Dispose(_activationDisposable, MessageSubject);
+            MessageSubject.Dispose();
             _isDisposed = true;
         }
 

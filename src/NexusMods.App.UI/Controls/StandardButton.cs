@@ -107,9 +107,14 @@ public class StandardButton : Button
         Strong,
 
         /// <summary>
-        /// Weak fill.
+        /// Weak fill (translucent).
         /// </summary>
         Weak,
+        
+        /// <summary>
+        /// Weak solid fill.
+        /// </summary>
+        WeakAlt,
     }
     
     #endregion
@@ -241,20 +246,27 @@ public class StandardButton : Button
         {
             UpdateLeftIcon(change.GetNewValue<IconValue?>());
         }
+        else if (change.Property == RightIconProperty)
+        {
+            UpdateRightIcon(change.GetNewValue<IconValue?>());
+        }
         else if (change.Property == TextProperty)
         {
             UpdateLabel(change.GetNewValue<string?>());
+        } 
+        else if (change.Property == ShowIconProperty)
+        {
+            UpdateIconVisibility();
         } 
     }
 
     /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        _rightIcon = e.NameScope.Find<UnifiedIcon>("PART_RightIcon");
         _content = e.NameScope.Find<ContentPresenter>("PART_ContentPresenter");
         _border = e.NameScope.Find<Border>("PART_Border");
 
-        if (_rightIcon == null || _content == null || _border == null) return;
+        if (_content == null || _border == null) return;
         
         // label text
         _label = e.NameScope.Find<TextBlock>("PART_Label");
@@ -265,17 +277,30 @@ public class StandardButton : Button
         _leftIcon = e.NameScope.Find<UnifiedIcon>("PART_LeftIcon");
         if (_leftIcon != null)
             UpdateLeftIcon(LeftIcon);
-
-        _rightIcon.Value = RightIcon;
-
+        
+        // right icon
+        _rightIcon = e.NameScope.Find<UnifiedIcon>("PART_RightIcon");
+        if (_rightIcon != null)
+            UpdateRightIcon(RightIcon);
+        
         // if Content is not null, display the Content just like a regular button would (using ContentPresenter).
         // Otherwise, build the button from the set properties
         _content.IsVisible = Content is not null;
         _border.IsVisible = Content is null;
         
-        _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
-        
         base.OnApplyTemplate(e);
+    }
+    
+    /// <summary>
+    /// Updates the icon visibility of the <see cref="StandardButton"/>.
+    /// </summary>
+    private void UpdateIconVisibility()
+    {
+        if (_leftIcon != null)
+            _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
+        
+        if (_rightIcon != null)
+            _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
     
     /// <summary>
@@ -288,6 +313,18 @@ public class StandardButton : Button
         
         _leftIcon.Value = newIcon;
         _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
+    }
+    
+    /// <summary>
+    /// Updates the right icon of the <see cref="StandardButton"/>.
+    /// </summary>
+    /// <param name="newIcon">The new icon value</param>
+    private void UpdateRightIcon(IconValue? newIcon)
+    {
+        if (_rightIcon == null) return;
+        
+        _rightIcon.Value = newIcon;
+        _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
     
     /// <summary>

@@ -12,14 +12,15 @@
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+    mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
-    
+
     <Design.DataContext>
         <collectionDownload:CollectionDownloadDesignViewModel />
     </Design.DataContext>
 
     <reactiveUi:ReactiveUserControl.Resources>
+
         <MenuFlyout x:Key="CollectionMenuFlyout">
             <MenuItem x:Name="MenuItemViewOnNexusMods">
                 <MenuItem.Icon>
@@ -37,14 +38,6 @@
                     <TextBlock>Open JSON file</TextBlock>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem x:Name="MenuItemDeleteAllDownloads" Classes="Critical">
-                <MenuItem.Icon>
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
-                </MenuItem.Icon>
-                <MenuItem.Header>
-                    <TextBlock>Delete all downloads</TextBlock>
-                </MenuItem.Header>
-            </MenuItem>
             <MenuItem x:Name="MenuItemDeleteCollectionRevision" Classes="Critical">
                 <MenuItem.Icon>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
@@ -55,9 +48,18 @@
             </MenuItem>
         </MenuFlyout>
 
+        <!-- toolbar at top, tree data grid fill the remaining space -->
         <DockPanel x:Key="TabItemContent">
-            <Border x:Name="ListHeaderRowBorder" DockPanel.Dock="Top">
-                <panels:FlexPanel x:Name="ListHeaderRow">
+            <Border DockPanel.Dock="Top" Classes="Toolbar">
+                <StackPanel HorizontalAlignment="Right">
+                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
+                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
+                                             Size="Small"
+                                             Type="Primary"
+                                             Fill="Weak"
+                                             LeftIcon="{x:Static icons:IconValues.Update}"
+                                             ShowIcon="Left" />
+                    <Separator/>
                     <TextBlock x:Name="TextCollectionStatus" />
                     <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
                     <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
@@ -73,13 +75,7 @@
                     <navigation:NavigationControl x:Name="ButtonViewCollection"
                                                   Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
                                                   Size="Small" />
-
-                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
-                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
-                                             Size="Small"
-                                             Type="Primary"
-                                             Fill="Strong" />
-
+                    
                     <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
                                              Size="Small"
@@ -88,12 +84,12 @@
                     <controls:StandardButton x:Name="ButtonInstallOptionalItems"
                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
                                              Size="Small" />
-                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}" 
+                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}"
                                              ShowLabel="False"
                                              LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                              ShowIcon="Left"
                                              Size="Small" />
-                </panels:FlexPanel>
+                </StackPanel>
             </Border>
 
             <TreeDataGrid x:Name="DownloadsTree" DockPanel.Dock="Bottom" />
@@ -119,65 +115,93 @@
 
                     <!-- first header row (image and metadata) -->
                     <Border x:Name="MainContentBorder">
-                        <Grid x:Name="MainContent" ColumnDefinitions="Auto, *">
+                        <Grid x:Name="MainContent" ColumnDefinitions="*, Auto">
 
-                            <!-- left column (image) -->
-                            <Border Grid.Column="0" x:Name="CollectionImageBorder">
-                                <Image x:Name="CollectionImage" />
-                            </Border>
+                            <!-- left column (image and headings) -->
+                            <DockPanel Grid.Column="0" x:Name="CollectionTitles">
+                                <Border DockPanel.Dock="Left" x:Name="CollectionImageBorder">
+                                    <Image x:Name="CollectionImage" />
+                                </Border>
+                                <StackPanel Margin="12,0,0,0" Spacing="8">
+                                    <TextBlock x:Name="Title">Collection download</TextBlock>
+                                    <TextBlock x:Name="Heading" />
+                                </StackPanel>
+                            </DockPanel>
 
                             <!-- right column (metadata) -->
-                            <Grid Grid.Column="1" x:Name="CollectionDetails" RowDefinitions="Auto,Auto,Auto,*"
-                                  ColumnDefinitions="Auto">
-                                <TextBlock Grid.Row="0" x:Name="Title">COLLECTION DOWNLOAD</TextBlock>
-                                <TextBlock Grid.Row="1" x:Name="Heading" />
-                                <Border Grid.Row="2" x:Name="TagsPanelBorder">
-                                    <StackPanel x:Name="TagsPanel">
-                                        <StackPanel x:Name="RevisionsPanel">
-                                            <TextBlock x:Name="Revision" />
-                                            <icons:UnifiedIcon IsVisible="False" x:Name="ArrowRight" />
-                                            <TextBlock IsVisible="False" x:Name="NewestRevision" />
-                                        </StackPanel>
-                                        <StackPanel x:Name="AuthorStackPanel">
-                                            <Border x:Name="AuthorAvatarBorder">
-                                                <Image x:Name="AuthorAvatar" />
-                                            </Border>
-                                            <TextBlock x:Name="AuthorName" />
-                                        </StackPanel>
+                            <StackPanel Grid.Column="1" x:Name="CollectionDetails">
+
+                                <StackPanel x:Name="TagsPanel">
+
+                                    <!-- author and avatar -->
+                                    <StackPanel x:Name="AuthorStackPanel">
+                                        <Border x:Name="AuthorAvatarBorder">
+                                            <Image x:Name="AuthorAvatar" />
+                                        </Border>
+                                        <TextBlock x:Name="AuthorName" />
                                     </StackPanel>
-                                </Border>
-                                <TextBlock Grid.Row="3" x:Name="Summary" />
-                            </Grid>
+
+                                    <Ellipse Fill="{StaticResource NeutralTranslucentWeakBrush}" Width="4" Height="4" />
+
+                                    <!-- nexus mods logo -->
+                                    <StackPanel x:Name="NexusModsLogo"
+                                                Orientation="Horizontal"
+                                                Spacing="4">
+                                        <icons:UnifiedIcon Size="20"
+                                                           Value="{x:Static icons:IconValues.NexusColor}" />
+                                        <TextBlock Text="Nexus Mods"
+                                                   Theme="{StaticResource BodySMNormalTheme}"
+                                                   Foreground="{StaticResource PrimaryStrongBrush}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <Ellipse Fill="{StaticResource NeutralTranslucentWeakBrush}" Width="4" Height="4" />
+
+                                    <!-- revision -->
+                                    <StackPanel x:Name="RevisionsPanel">
+                                        <TextBlock x:Name="Revision" />
+                                        <icons:UnifiedIcon x:Name="ArrowRight"
+                                                           Value="{x:Static icons:IconValues.ArrowForward}"
+                                                           IsVisible="True" />
+                                        <TextBlock x:Name="NewestRevision" IsVisible="True" />
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                                <StackPanel x:Name="StatsPanel">
+                                    <StackPanel x:Name="ModsPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsMods_ToolTip}">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
+                                        <TextBlock x:Name="NumDownloads" />
+                                    </StackPanel>
+                                    <StackPanel x:Name="EndorsementsPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsEndorsements_ToolTip}">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUpOutline}" />
+                                        <TextBlock x:Name="Endorsements" />
+                                    </StackPanel>
+                                    <StackPanel x:Name="DownloadsPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsDownloads_ToolTip}">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.TrayArrowDown}" />
+                                        <TextBlock x:Name="TotalDownloads" />
+                                    </StackPanel>
+                                    <StackPanel x:Name="TotalSizePanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsSize_ToolTip}">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
+                                        <TextBlock x:Name="TotalSize" />
+                                    </StackPanel>
+                                    <StackPanel x:Name="OverallRatingPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsRating_ToolTip}">
+                                        <icons:UnifiedIcon x:Name="OverallRatingIcon"
+                                                           Value="{x:Static icons:IconValues.CheckCircle}" />
+                                        <TextBlock x:Name="OverallRating" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
 
                         </Grid>
                     </Border>
 
-                    <!-- second header row (stats) -->
-                    <Border x:Name="StatsBorder">
-                        <StackPanel x:Name="Stats" IsVisible="True">
-                            <StackPanel x:Name="ModsPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" />
-                                <TextBlock x:Name="NumDownloads" />
-                            </StackPanel>
-                            <StackPanel x:Name="EndorsementsPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" />
-                                <TextBlock x:Name="Endorsements" />
-                            </StackPanel>
-                            <StackPanel x:Name="DownloadsPanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
-                                <TextBlock x:Name="TotalDownloads" />
-                            </StackPanel>
-                            <StackPanel x:Name="TotalSizePanel">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" />
-                                <TextBlock x:Name="TotalSize" />
-                            </StackPanel>
-                            <StackPanel x:Name="OverallRatingPanel">
-                                <icons:UnifiedIcon x:Name="OverallRatingIcon"
-                                                   Value="{x:Static icons:IconValues.CheckCircle}" />
-                                <TextBlock x:Name="OverallRating" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
+
                 </StackPanel>
             </Border>
         </Border>

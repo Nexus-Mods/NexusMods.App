@@ -53,20 +53,4 @@ public abstract class AUnrealEngineGame : AGame, IUnrealEngineGameAddon
         _serviceProvider.GetRequiredService<ModOverwritesGameFilesEmitter>(),
         _serviceProvider.GetRequiredService<MissingScriptingSystemEmitter>(),
     ];
-    
-    public override Version GetLocalVersion(GameInstallMetadata.ReadOnly installation)
-    {
-        try
-        {
-            var executableGamePath = GetPrimaryFile(installation.Store);
-            var fvi = executableGamePath
-                .Combine(_fs.FromUnsanitizedFullPath(installation.Path)).FileInfo
-                .GetFileVersionInfo();
-            return fvi.ProductVersion;
-        }
-        catch (Exception)
-        {
-            return new Version(0, 0, 0, 0);
-        }
-    }
 }

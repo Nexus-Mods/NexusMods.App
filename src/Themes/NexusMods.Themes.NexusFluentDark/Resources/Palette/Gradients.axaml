@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Add Resources Here -->
+
+    <!-- LinearGradientBrushes -->
+    <LinearGradientBrush x:Key="StardewLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+        <GradientStop Color="#4ADE80" Offset="0" />
+        <GradientStop Color="#2563EB" Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="CollectionHeaderImageLinearGradientBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+        <GradientStop Offset="0" Color="#BF0F0F10" />
+        <GradientStop Offset="1" Color="#F20F0F10" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="CollectionCardLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+        <GradientStop Offset="0" Color="{StaticResource SurfaceMid}" />
+        <GradientStop Offset="1" Color="{StaticResource SurfaceHigh}" />
+    </LinearGradientBrush>
+    
+</ResourceDictionary>

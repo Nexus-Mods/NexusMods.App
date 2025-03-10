@@ -25,8 +25,8 @@
         </controls:ComponentControl>
     </DataTemplate>
 
-    <!-- Enabled -->
-    <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
+    <!-- Enabled State -->
+    <DataTemplate x:Key="{x:Static local:LoadoutColumns+EnabledState.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
@@ -35,45 +35,48 @@
             <controls:MultiComponentControl.AvailableTemplates>
                 <!-- parent collection disabled -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+ParentCollectionDisabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ParentCollectionDisabledComponentKey}">
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ParentCollectionDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
-                            <StackPanel Orientation="Horizontal">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" Size="20"/>
-                                <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" IsEnabled="false" IsChecked="False">
-                                    <ToggleSwitch.OnContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OnContent>
-                                    <ToggleSwitch.OffContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OffContent>
-                                </ToggleSwitch>
-                            </StackPanel>
+                            <controls:StandardButton
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
+                                RightIcon="{x:Static icons:IconValues.ToggleOff}"
+                                ShowIcon="Both"
+                                ShowLabel="False"
+                                ToolTip.Tip="Mod cannot be switched on as it is as part of a read only collection. Switch on the collection to switch on this mod"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+                
+                <!-- locked enabled state -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+LockedEnabledState"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.LockedEnabledStateComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+LockedEnabledState}">
+                            <controls:StandardButton
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Lock}"
+                                RightIcon="{x:Static icons:IconValues.ToggleOn}"
+                                ShowIcon="Both"
+                                ShowLabel="False"
+                                ToolTip.Tip="Mod cannot be turned off as it is as part of a read only collection. Switch off the collection to turn off this mod"/>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
 
                 <!-- normal toggle -->
-                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+EnabledStateToggle"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.EnabledStateToggleComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="18" IsVisible="{CompiledBinding IsLocked.Value}"/>
-
-                                <ToggleSwitch Classes="Compact"
-                                              HorizontalAlignment="Center"
-                                              Command="{CompiledBinding CommandToggle}"
-                                              IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
-                                              IsEnabled="{CompiledBinding !IsLocked.Value}">
-                                    <ToggleSwitch.OnContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OnContent>
-                                    <ToggleSwitch.OffContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OffContent>
-                                </ToggleSwitch>
-                            </StackPanel>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+EnabledStateToggle}">
+                            <ToggleSwitch Classes="Compact"
+                                          HorizontalAlignment="Center"
+                                          Command="{CompiledBinding CommandToggle}"
+                                          IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
+                                          OnContent="{x:Null}"
+                                          OffContent="{x:Null}">
+                            </ToggleSwitch>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
