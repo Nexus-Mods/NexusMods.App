@@ -88,6 +88,9 @@
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+EnabledStateToggle}">
                             <Panel>
+                                <!-- NOTE(Al12rs): ToggleSwitch allows users to change its UI state even if the underlying IsChecked bound value didn't change -->
+                                <!--    This can happen in case the value is Null (indeterminate state), where pressing the toggle might not change the value -->
+                                <!--    As a workaround we show a button with the indeterminate state icon instead -->
                                 <Button Command="{CompiledBinding CommandToggle}"
                                         Theme="{x:Null}"
                                         Background="Transparent"
