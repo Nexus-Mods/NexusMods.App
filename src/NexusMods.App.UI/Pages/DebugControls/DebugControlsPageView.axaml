@@ -20,16 +20,16 @@
                         <TextBlock Text="Controls" />
                     </StackPanel>
                 </TabItem.Header>
-                <Border>
+                <Border Padding="8">
                     <ScrollViewer>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="16">
-                                <StackPanel>
+                                <StackPanel Spacing="8">
                                     <TextBlock Text="Button"></TextBlock>
                                     <Button>Enabled</Button>
                                     <Button IsEnabled="False">Disabled</Button>
                                 </StackPanel>
-                                <StackPanel>
+                                <StackPanel Spacing="8">
                                     <TextBlock Text="SplitButton"></TextBlock>
                                     <SplitButton>
                                         <TextBlock Text="Enabled" />
@@ -44,7 +44,7 @@
                                         <TextBlock Text="Disabled" />
                                     </SplitButton>
                                 </StackPanel>
-                                <StackPanel>
+                                <StackPanel Spacing="8">
                                     <TextBlock Text="ComboBox"></TextBlock>
                                     <ComboBox PlaceholderText="Placeholder">
                                         <ComboBoxItem>Item 1</ComboBoxItem>
@@ -63,14 +63,15 @@
                                     </ComboBox>
                                 </StackPanel>
 
-                                <StackPanel>
+                                <StackPanel Spacing="8">
                                     <TextBlock Text="ToggleSwitch"></TextBlock>
-                                    <ToggleSwitch>Button</ToggleSwitch>
-                                    <ToggleSwitch IsChecked="True">Button</ToggleSwitch>
-                                    <ToggleSwitch IsEnabled="False">Button</ToggleSwitch>
-                                    <ToggleSwitch IsChecked="True" IsEnabled="False">Button</ToggleSwitch>
+                                    <ToggleSwitch />
+                                    <ToggleSwitch IsChecked="True" />
+                                    <ToggleSwitch IsChecked="{x:Null}" />
+                                    <ToggleSwitch IsEnabled="False" />
+                                    <ToggleSwitch IsChecked="True" IsEnabled="False" />
                                 </StackPanel>
-                                <StackPanel>
+                                <StackPanel Spacing="8">
                                     <TextBlock Text="CheckBox"></TextBlock>
                                     <CheckBox>Enabled</CheckBox>
                                     <CheckBox IsChecked="True">Checked</CheckBox>
@@ -79,7 +80,7 @@
                                     <CheckBox IsChecked="True" IsEnabled="False">Checked</CheckBox>
                                     <CheckBox IsChecked="{x:Null}" IsEnabled="False">3-State</CheckBox>
                                 </StackPanel>
-                                <StackPanel>
+                                <StackPanel Spacing="8">
                                     <TextBlock Text="RadioButton Switch"></TextBlock>
                                     <RadioButton>Enabled</RadioButton>
                                     <RadioButton IsChecked="True">Checked</RadioButton>
@@ -131,6 +132,13 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Modals" />
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="TreeDataGrid" />
                     </StackPanel>
                 </TabItem.Header>
@@ -169,7 +177,7 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem IsSelected="True">
+            <TabItem>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Colors" />
@@ -180,7 +188,7 @@
                 </TabItem.Header>
 
                 <TabControl Classes="Subtabs">
-                    
+
                     <TabControl.Styles>
                         <Style Selector="StackPanel.ElementSection">
                             <Setter Property="Spacing" Value="4" />
@@ -197,7 +205,7 @@
                             </Style>
                         </Style>
                     </TabControl.Styles>
-                    
+
                     <TabItem Header="Tier 1 - Primitives" />
                     <TabItem Header="Tier 2 - Brand">
                         <ScrollViewer>
@@ -320,9 +328,8 @@
                     <TabItem IsSelected="True" Header="Tier 3 - Elements">
                         <ScrollViewer>
                             <StackPanel Spacing="16">
-                                
-                                
-                                
+
+
                                 <StackPanel Classes="ElementSection">
                                     <TextBlock Text="Surface" />
                                     <TextBlock Text="Description" />

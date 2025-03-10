@@ -32,7 +32,7 @@
     <Thickness x:Key="ButtonPadding">8,5,8,5</Thickness>
     
     <!-- Override system shape defaults -->
-    <CornerRadius x:Key="ControlCornerRadius">3</CornerRadius>
-    <CornerRadius x:Key="OverlayCornerRadius">5</CornerRadius>
+    <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+    <CornerRadius x:Key="OverlayCornerRadius">6</CornerRadius>
     
 </ResourceDictionary>

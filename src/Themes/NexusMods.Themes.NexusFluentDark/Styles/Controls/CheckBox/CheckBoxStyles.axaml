@@ -24,113 +24,250 @@
             </CheckBox>
         </StackPanel>
     </Design.PreviewWith>
+    
+    <!-- copied from Avalonia.Themes.Fluent/Controls/CheckBox.xaml -->
+    <!-- resources are in src/Themes/NexusMods.Themes.NexusFluentDark/Resources/ControlResources.axaml -->
 
     <Style Selector="CheckBox">
 
-        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-        </Style>
+        <!-- Unchecked PointerOver State -->
+        <Style Selector="^:pointerover">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundUncheckedPointerOver}" />
+            </Style>
 
-        <!-- used when Content property is set with a string -->
-        <Style Selector="^ AccessText">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        </Style>
-
-        <!-- used when Content property is used with a TextBlock -->
-        <Style Selector="^ TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        </Style>
-
-        <!-- unchecked state -->
-        <Style Selector="^:unchecked">
-
-            <!-- whole control border -->
             <Style Selector="^ /template/ Border#PART_Border">
-                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundUncheckedPointerOver}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushUncheckedPointerOver}" />
             </Style>
 
-            <!-- checkbox button border -->
             <Style Selector="^ /template/ Border#NormalRectangle">
-                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentStrongBrush}" />
-                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedPointerOver}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillUncheckedPointerOver}" />
             </Style>
 
-            <!-- built in check icon -->
             <Style Selector="^ /template/ Path#CheckGlyph">
-                <Setter Property="Fill" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-
-            <!-- unchecked pointerover -->
-            <Style Selector="^:pointerover">
-
-                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                </Style>
-
-                <!-- whole control border -->
-                <Style Selector="^ /template/ Border#PART_Border">
-                    <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-                </Style>
-
-                <!-- checkbox button border -->
-                <Style Selector="^ /template/ Border#NormalRectangle">
-                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                </Style>
-
-                <!-- built in check icon -->
-                <Style Selector="^ /template/ Path#CheckGlyph">
-                    <Setter Property="Fill" Value="{StaticResource NeutralInvertedBrush}" />
-                </Style>
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundUncheckedPointerOver}" />
             </Style>
         </Style>
 
-        <!-- checked state -->
-        <Style Selector="^:checked">
+        <!-- Unchecked Pressed State -->
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundUncheckedPressed}" />
+            </Style>
 
-            <!-- checkbox button border -->
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundUncheckedPressed}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushUncheckedPressed}" />
+            </Style>
+
             <Style Selector="^ /template/ Border#NormalRectangle">
-                <Setter Property="BorderBrush" Value="{StaticResource NeutralTranslucentStrongBrush}" />
-                <Setter Property="Background" Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedPressed}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillUncheckedPressed}" />
             </Style>
 
-            <!-- built in check icon -->
             <Style Selector="^ /template/ Path#CheckGlyph">
-                <Setter Property="Fill" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-
-            <!-- checked pointerover -->
-            <Style Selector="^:pointerover">
-                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                </Style>
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundUncheckedPressed}" />
             </Style>
         </Style>
 
-        <!-- indeterminate state -->
-        <Style Selector="^:indeterminate">
-
-            <!-- checkbox button border -->
-            <Style Selector="^ /template/ Border#NormalRectangle">
-                <Setter Property="BorderBrush" Value="{StaticResource NeutralTranslucentStrongBrush}" />
-                <Setter Property="Background" Value="{StaticResource NeutralTranslucentStrongBrush}" />
-            </Style>
-
-            <!-- built in check icon -->
-            <Style Selector="^ /template/ Path#CheckGlyph">
-                <Setter Property="Fill" Value="{StaticResource NeutralInvertedBrush}" />
-            </Style>
-            
-            <!-- indeterminate pointerover -->
-            <Style Selector="^:pointerover">
-                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                </Style>
-            </Style>
-        </Style>
-
-        <!-- disabled state -->
+        <!-- Unchecked Disabled state -->
         <Style Selector="^:disabled">
-            <Setter Property="Opacity" Value="0.4" />
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundUncheckedDisabled}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundUncheckedDisabled}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushUncheckedDisabled}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedDisabled}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillUncheckedDisabled}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundUncheckedDisabled}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:checked">
+            <!-- Checked Normal State -->
+            <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundChecked}" />
+            <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundChecked}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushChecked}" />
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillChecked}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillChecked}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundChecked}" />
+                <Setter Property="Data" Value="{StaticResource CheckMarkPathData}" />
+                <Setter Property="Width" Value="9" />
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <!-- Checked PointerOver State -->
+            <Style Selector="^:pointerover">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundCheckedPointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundCheckedPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushCheckedPointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeCheckedPointerOver}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedPointerOver}" />
+                </Style>
+            </Style>
+
+            <!-- Checked Pressed State -->
+            <Style Selector="^:pressed">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundCheckedPressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundCheckedPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushCheckedPressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeCheckedPressed}" />
+                    <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedPressed}" />
+                </Style>
+            </Style>
+
+            <!-- Checked Disabled State -->
+            <Style Selector="^:disabled">
+                <Style Selector="^ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundCheckedDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundCheckedDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushCheckedDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeCheckedDisabled}" />
+                    <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedDisabled}" />
+                </Style>
+            </Style>
+        </Style>
+
+        <Style Selector="^:indeterminate">
+            <!-- Indeterminate Normal State -->
+            <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminate}" />
+            <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminate}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushIndeterminate}" />
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminate}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminate}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminate}" />
+                <Setter Property="Data" Value="M1536 1536v-1024h-1024v1024h1024z" />
+                <Setter Property="Width" Value="7" />
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <!-- Indeterminate PointerOver State -->
+            <Style Selector="^:pointerover">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminatePointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminatePointerOver}" />
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxBorderBrushIndeterminatePointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminatePointerOver}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill"
+                            Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminatePointerOver}" />
+                </Style>
+            </Style>
+
+            <!-- Indeterminate Pressed State -->
+            <Style Selector="^:pressed">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminatePressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminatePressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushIndeterminatePressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminatePressed}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminatePressed}" />
+                </Style>
+            </Style>
+
+            <!-- Indeterminate Disabled State -->
+            <Style Selector="^:disabled">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminateDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminateDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushIndeterminateDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminateDisabled}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminateDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminateDisabled}" />
+                </Style>
+            </Style>
         </Style>
     </Style>
 

@@ -16,7 +16,7 @@
     <StyleInclude Source="/Styles/Controls/Separator/SeparatorStyles.axaml"/>
     <!-- <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml" /> -->
     <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml" />
-    <StyleInclude Source="/Styles/Controls/CheckBox/CheckBoxStyles.axaml" />
+    <!-- <StyleInclude Source="/Styles/Controls/CheckBox/CheckBoxStyles.axaml" /> -->
     <StyleInclude Source="/Styles/Controls/RadioButton/RadioButtonStyles.axaml" />
     <!-- <StyleInclude Source="/Styles/Controls/Border/BorderStyles.axaml" /> -->
     <StyleInclude Source="/Styles/Controls/Border/Toolbar.xaml" />
@@ -40,7 +40,7 @@
     
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml" />
-    <StyleInclude Source="/Styles/Controls/ToggleSwitch/ToggleSwitchStyles.axaml" />
+    <!-- <StyleInclude Source="/Styles/Controls/ToggleSwitch/ToggleSwitchStyles.axaml" /> -->
     <!-- <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxStyles.axaml" /> -->
     <!-- <StyleInclude Source="/Styles/Controls/ComboBox/ComboBoxItemStyles.axaml" /> -->
     <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml" />

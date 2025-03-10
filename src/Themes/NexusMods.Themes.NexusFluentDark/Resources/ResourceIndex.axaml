@@ -27,6 +27,9 @@
         <ResourceInclude Source="/Controls/SplitButton.axaml"/>
         <ResourceInclude Source="/Controls/ComboBox.axaml"/>
         <ResourceInclude Source="/Controls/ComboBoxItem.axaml"/>
+        <ResourceInclude Source="/Controls/ToggleSwitch.axaml"/>
+        <ResourceInclude Source="/Controls/CheckBox.axaml"/>
+        <ResourceInclude Source="/Controls/RadioButton.axaml"/>
         
     </ResourceDictionary.MergedDictionaries>
     
