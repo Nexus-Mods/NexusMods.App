@@ -12,9 +12,9 @@ public sealed class InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut,
     private static readonly TimeSpan DefaultDelay = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// Returns all keys to delete.
+    /// Predicate whether to delete the key.
     /// </summary>
-    public delegate ValueTask<(TKey, TResourceIdentifierIn)[]> GetKeysToDelete((TKey, TResourceIdentifierIn)[] keys, CancellationToken cancellationToken);
+    public delegate ValueTask<bool> ShouldDeleteKey((TKey, TResourceIdentifierIn) key, CancellationToken cancellationToken);
 
     private readonly Func<TResourceIdentifierIn, TKey> _keySelector;
     private readonly Func<TResourceIdentifierIn, TResourceIdentifierOut> _resourceIdentifierSelector;
@@ -33,7 +33,7 @@ public sealed class InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut,
         Func<TResourceIdentifierIn, TKey> keySelector,
         Func<TResourceIdentifierIn, TResourceIdentifierOut> resourceIdentifierSelector,
         IEqualityComparer<TKey> keyComparer,
-        GetKeysToDelete? getKeysToDelete,
+        ShouldDeleteKey? shouldDeleteKey,
         Optional<TimeSpan> deleteDelay,
         IResourceLoader<TResourceIdentifierOut, TData> inner)
     {
@@ -48,23 +48,30 @@ public sealed class InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut,
 
         _dictionarySemaphore = new SemaphoreSlim(initialCount: 1, maxCount: 1);
 
-        if (getKeysToDelete is not null)
+        if (shouldDeleteKey is not null)
         {
             _cts = new CancellationTokenSource();
-            _cleanupTask = Task.Run(() => CleanupTask(getKeysToDelete, delay: deleteDelay.ValueOr(() => DefaultDelay), _cts.Token));
+            _cleanupTask = Task.Run(() => CleanupTask(shouldDeleteKey, delay: deleteDelay.ValueOr(() => DefaultDelay), _cts.Token));
         }
     }
 
-    private async Task CleanupTask(GetKeysToDelete getKeysToDelete, TimeSpan delay, CancellationToken cancellationToken)
+    private async Task CleanupTask(ShouldDeleteKey shouldDeleteKey, TimeSpan delay, CancellationToken cancellationToken)
     {
+        var keysToDelete = new Queue<(TKey, TResourceIdentifierIn)>();
+
         while (!_isDisposed && !cancellationToken.IsCancellationRequested)
         {
             try
             {
                 using var _ = _dictionarySemaphore.WaitDisposable(cancellationToken: cancellationToken);
 
-                var keysToDelete = await getKeysToDelete(_dictionary.Keys.ToArray(), cancellationToken);
-                foreach (var key in keysToDelete)
+                foreach (var key in _dictionary.Keys)
+                {
+                    var shouldDelete = await shouldDeleteKey(key, cancellationToken);
+                    if (shouldDelete) keysToDelete.Enqueue(key);
+                }
+
+                while (keysToDelete.TryDequeue(out var key))
                 {
                     if (_dictionary.Remove(key, out var data) && data is IDisposable disposableData)
                     {
@@ -153,19 +160,19 @@ public static partial class ExtensionsMethods
         this IResourceLoader<TResourceIdentifier, TData> inner,
         Func<TResourceIdentifier, TKey> keySelector,
         IEqualityComparer<TKey> keyComparer,
-        InMemoryStore<TResourceIdentifier, TResourceIdentifier, TKey, TData>.GetKeysToDelete? getKeysToDelete,
+        InMemoryStore<TResourceIdentifier, TResourceIdentifier, TKey, TData>.ShouldDeleteKey? shouldDeleteKey,
         Optional<TimeSpan> deleteDelay = default)
         where TResourceIdentifier : notnull
         where TData : notnull
         where TKey : notnull
     {
         return inner.Then(
-            state: (keySelector, keyComparer, getKeysToDelete, deleteDelay),
+            state: (keySelector, keyComparer, shouldDeleteKey, deleteDelay),
             factory: static (input, inner) => new InMemoryStore<TResourceIdentifier, TResourceIdentifier, TKey, TData>(
                 keySelector: input.keySelector,
                 resourceIdentifierSelector: static x => x,
                 keyComparer: input.keyComparer,
-                getKeysToDelete: input.getKeysToDelete,
+                shouldDeleteKey: input.shouldDeleteKey,
                 deleteDelay: input.deleteDelay,
                 inner: inner
             )
@@ -176,19 +183,19 @@ public static partial class ExtensionsMethods
         this IResourceLoader<TKey, TData> inner,
         Func<TResourceIdentifier, TKey> selector,
         IEqualityComparer<TKey> keyComparer,
-        InMemoryStore<TResourceIdentifier, TKey, TKey, TData>.GetKeysToDelete? getKeysToDelete,
+        InMemoryStore<TResourceIdentifier, TKey, TKey, TData>.ShouldDeleteKey? shouldDeleteKey,
         Optional<TimeSpan> deleteDelay = default)
         where TResourceIdentifier : notnull
         where TData : notnull
         where TKey : notnull
     {
         return inner.Then(
-            state: (selector, keyComparer, getKeysToDelete, deleteDelay),
+            state: (selector, keyComparer, shouldDeleteKey, deleteDelay),
             factory: static (input, inner) => new InMemoryStore<TResourceIdentifier, TKey, TKey, TData>(
                 keySelector: input.selector,
                 resourceIdentifierSelector: input.selector,
                 keyComparer: input.keyComparer,
-                getKeysToDelete: input.getKeysToDelete,
+                shouldDeleteKey: input.shouldDeleteKey,
                 deleteDelay: input.deleteDelay,
                 inner: inner
             )
@@ -200,7 +207,7 @@ public static partial class ExtensionsMethods
         Func<TResourceIdentifierIn, TKey> keySelector,
         Func<TResourceIdentifierIn, TResourceIdentifierOut> resourceIdentifierSelector,
         IEqualityComparer<TKey> keyComparer,
-        InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut, TKey, TData>.GetKeysToDelete? getKeysToDelete,
+        InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut, TKey, TData>.ShouldDeleteKey? shouldDeleteKey,
         Optional<TimeSpan> deleteDelay = default)
         where TResourceIdentifierIn : notnull
         where TResourceIdentifierOut : notnull
@@ -208,12 +215,12 @@ public static partial class ExtensionsMethods
         where TKey : notnull
     {
         return inner.Then(
-            state: (keySelector, resourceIdentifierSelector, keyComparer, getKeysToDelete, deleteDelay),
+            state: (keySelector, resourceIdentifierSelector, keyComparer, shouldDeleteKey, deleteDelay),
             factory: static (input, inner) => new InMemoryStore<TResourceIdentifierIn, TResourceIdentifierOut, TKey, TData>(
                 keySelector: input.keySelector,
                 resourceIdentifierSelector: input.resourceIdentifierSelector,
                 keyComparer: input.keyComparer,
-                getKeysToDelete: input.getKeysToDelete,
+                shouldDeleteKey: input.shouldDeleteKey,
                 deleteDelay: input.deleteDelay,
                 inner: inner
             )

@@ -45,17 +45,7 @@ internal static class Pipelines
             .StoreInMemory<BannerlordModuleLoadoutItem.ReadOnly, Hash, ModuleInfoExtended>(
                 selector: static mod => mod.ModuleInfo.AsLoadoutFile().Hash,
                 keyComparer: EqualityComparer<Hash>.Default,
-                getKeysToDelete: (keys, _) =>
-                {
-                    var db = connection.Db;
-                    var res = keys.Where(tuple =>
-                    {
-                        var (_, entity) = tuple;
-                        return !BannerlordModuleLoadoutItem.Load(db, entity.Id).IsValid();
-                    }).ToArray();
-
-                    return ValueTask.FromResult(res);
-                }
+                shouldDeleteKey: (tuple, _) => ValueTask.FromResult(!BannerlordModuleLoadoutItem.Load(connection.Db, tuple.Item2.Id).IsValid())
             );
 
         return pipeline;

@@ -48,17 +48,7 @@ internal static class Pipelines
             .StoreInMemory<SMAPIModLoadoutItem.ReadOnly, Hash, SMAPIManifest>(
                 selector: static mod => mod.Manifest.AsLoadoutFile().Hash,
                 keyComparer: EqualityComparer<Hash>.Default,
-                getKeysToDelete: (keys, _) =>
-                {
-                    var db = connection.Db;
-                    var res = keys.Where(tuple =>
-                    {
-                        var (_, entity) = tuple;
-                        return !SMAPIModLoadoutItem.Load(db, entity.Id).IsValid();
-                    }).ToArray();
-
-                    return ValueTask.FromResult(res);
-                }
+                shouldDeleteKey: (tuple, _) => ValueTask.FromResult(!SMAPIModLoadoutItem.Load(connection.Db, tuple.Item2.Id).IsValid())
             );
 
         return pipeline;

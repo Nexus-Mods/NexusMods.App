@@ -51,18 +51,7 @@ public static class Pipelines
             .StoreInMemory(
                 keySelector: static hash => hash,
                 keyComparer: EqualityComparer<Hash>.Default,
-                getKeysToDelete: async (keys, _) =>
-                {
-                    var res = new List<(Hash, Hash)>(capacity: keys.Length);
-                    foreach (var tuple in keys)
-                    {
-                        var hasFile = await fileStore.HaveFile(tuple.Item1);
-                        if (hasFile) continue;
-                        res.Add(tuple);
-                    }
-
-                    return res.ToArray();
-                }
+                shouldDeleteKey: async (tuple, _) => await fileStore.HaveFile(tuple.Item1)
             );
 
         return pipeline;
