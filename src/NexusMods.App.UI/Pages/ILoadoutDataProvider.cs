@@ -93,6 +93,7 @@ public static class LoadoutDataProviderHelper
         itemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(itemId: loadoutItem));
 
         AddCollection(connection, itemModel, loadoutItem);
+        AddParentCollectionDisabled(connection, itemModel, loadoutItem);
         AddLockedEnabledState(itemModel, loadoutItem);
         AddEnabledStateToggle(connection, itemModel, loadoutItem);
 
@@ -113,7 +114,45 @@ public static class LoadoutDataProviderHelper
             componentFactory: () => new LoadoutComponents.ParentCollectionDisabled()
         );
     }
-    
+
+    public static void AddParentCollectionDisabled(IConnection connection, CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
+    {
+        if (!loadoutItem.Parent.TryGetAsCollectionGroup(out var collectionGroup)) return;
+
+        var isParentCollectionDisabledObservable = LoadoutItem.Observe(connection, collectionGroup.Id).Select(static item => item.IsDisabled).ToObservable();
+
+        itemModel.AddObservable(
+            key: LoadoutColumns.EnabledState.ParentCollectionDisabledComponentKey,
+            shouldAddObservable: isParentCollectionDisabledObservable,
+            componentFactory: () => new LoadoutComponents.ParentCollectionDisabled()
+        );
+    }
+
+    public static void AddParentCollectionsDisabled(
+        IConnection connection,
+        CompositeItemModel<EntityId> parentItemModel,
+        IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> linkedItemsObservable)
+    {
+        // Check if all children have a disabled parent collection
+        var isParentCollectionDisabledObservable = linkedItemsObservable
+            .TransformOnObservable(item =>
+                {
+                    if (!item.Parent.TryGetAsCollectionGroup(out var collectionGroup)) 
+                        return System.Reactive.Linq.Observable.Return(false);
+                    return LoadoutItem.Observe(connection, collectionGroup)
+                        .Select(static parentItem => parentItem.IsDisabled);
+                }
+            )
+            .QueryWhenChanged(query => query.Items.All(isDisabled => isDisabled))
+            .ToObservable();
+
+        parentItemModel.AddObservable(
+            key: LoadoutColumns.EnabledState.ParentCollectionDisabledComponentKey,
+            shouldAddObservable: isParentCollectionDisabledObservable,
+            componentFactory: () => new LoadoutComponents.ParentCollectionDisabled()
+        );
+    }
+
     public static void AddLockedEnabledState(CompositeItemModel<EntityId> itemModel, LoadoutItem.ReadOnly loadoutItem)
     {
         if (IsLocked(loadoutItem))
