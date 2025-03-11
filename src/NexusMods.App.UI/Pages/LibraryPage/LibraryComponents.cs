@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using DynamicData;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.UI;
@@ -76,15 +77,26 @@ public static class LibraryColumns
             var aInstall = a.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
             var bInstall = b.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
 
-            if (aInstall.HasValue && bInstall.HasValue) return aInstall.Value.CompareTo(bInstall.Value);
-            if (aInstall.HasValue) return -1;
-            if (bInstall.HasValue) return 1;
-
             var aUpdate = a.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
             var bUpdate = b.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
-            if (aUpdate.HasValue && bUpdate.HasValue) return aUpdate.Value.CompareTo(bUpdate.Value);
 
-            return 0;
+            var orderA = GetOrder(aInstall, aUpdate);
+            var orderB = GetOrder(bInstall, bUpdate);
+
+            return orderA.CompareTo(orderB);
+            
+            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update)
+            {
+                var isUpdateAvailable = update.HasValue;
+                var hasInstallButton = install is { HasValue: true, Value.IsInstalled.Value: false };
+                var isInstalled = install is { HasValue: true, Value.IsInstalled.Value: true };
+
+                if (isUpdateAvailable && hasInstallButton) return 1;
+                if (hasInstallButton) return 2;
+                if (isUpdateAvailable) return 3;
+                if (isInstalled) return 4;
+                return 5;
+            }
         }
 
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(Actions);
