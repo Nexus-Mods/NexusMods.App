@@ -9,7 +9,7 @@ public static class Services
     {
         services.AddSchemaVersionModel();
         services.AddMigrationLogItemModel();
-        services.AddSingleton<MigrationService>();
+        services.AddTransient<MigrationService>();
 
         // Migrations go here:
         return services
