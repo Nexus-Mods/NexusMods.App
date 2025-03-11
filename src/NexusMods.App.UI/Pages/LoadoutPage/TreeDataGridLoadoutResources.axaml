@@ -74,7 +74,7 @@
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+LockedEnabledState}">
                             <controls:StandardButton
                                 Size="Small"
-                                LeftIcon="{x:Static icons:IconValues.Lock}"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
                                 RightIcon="{x:Static icons:IconValues.ToggleOn}"
                                 ShowIcon="Both"
                                 ShowLabel="False"
