@@ -153,7 +153,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 var toggleableItems = message.Ids
                     .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
+                    // Exclude collection required items
                     .Where(item => !(NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired))
+                    // Exclude items that are part of a collection that is disabled
+                    .Where(item => !(item.Parent.TryGetAsCollectionGroup(out var collectionGroup)
+                                     && collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
+                    )
                     .ToArray();
 
                 if (toggleableItems.Length == 0) return;
