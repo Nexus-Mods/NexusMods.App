@@ -127,7 +127,7 @@ public static class LoadoutColumns
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
             var aValue = a.GetOptional<StringComponent>(key: ComponentKey);
-            var bValue = a.GetOptional<StringComponent>(key: ComponentKey);
+            var bValue = b.GetOptional<StringComponent>(key: ComponentKey);
             return aValue.Compare(bValue);
         }
 
@@ -143,7 +143,7 @@ public static class LoadoutColumns
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
             var aValue = a.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
-            var bValue = a.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
+            var bValue = b.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
             return aValue.Compare(bValue);
         }
 
