@@ -23,9 +23,19 @@ public static class LibraryColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
-            var bValue = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
-            return aValue.Compare(bValue);
+            var aVersion = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            var bVersion = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            
+            var aNewVersion = a.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
+            var bNewVersion = b.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
+            
+            // Compare based on the presence of new versions
+            return (aNewVersion.HasValue, bNewVersion.HasValue) switch
+            {
+                (true, false) => 1,
+                (false, true) => -1,
+                _ => aVersion.Compare(bVersion),
+            };
         }
 
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(ItemVersion);
