@@ -41,12 +41,22 @@
                 <!-- <Setter Property="Background" Value="DarkRed" /> -->
                 <Style Selector="^ Button">
                     <Setter Property="Padding" Value="0" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+
                     <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                    </Style>
+                    
+                    <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                        <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
                     </Style>
                 </Style>
             </Style>
-        </Style>
 
+        </Style>
     </Style>
+
 </Styles>
