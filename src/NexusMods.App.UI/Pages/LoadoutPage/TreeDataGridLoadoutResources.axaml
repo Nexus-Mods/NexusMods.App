@@ -100,7 +100,7 @@
                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.ToggleIndeterminate}"
                                                        Size="40"/>
                                 </Button>
-                                <ToggleSwitch Classes="Compact"
+                                <ToggleSwitch Classes="ExtraSmall"
                                               HorizontalAlignment="Center"
                                               Command="{CompiledBinding CommandToggle}"
                                               IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
