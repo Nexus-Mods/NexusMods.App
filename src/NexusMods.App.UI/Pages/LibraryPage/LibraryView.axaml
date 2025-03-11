@@ -119,7 +119,7 @@
                         <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small"
                                                  Type="Tertiary" Fill="WeakAlt"
                                                  LeftIcon="{x:Static icons:IconValues.Refresh}" 
-                                                 ToolTip.Tip="Refresh" />
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
                     </StackPanel>
                 </Border>
 
