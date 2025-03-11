@@ -43,7 +43,7 @@ public static class DiskStateExtensions
         var asOfDb = metadata.Db.Connection.AsOf(txId);
         // Get the attributes for the entries in the disk state
         var segment = asOfDb.Datoms(DiskStateEntry.Game, metadata.Id);
-        return new Entities<DiskStateEntry.ReadOnly>(new EntityIds(segment, 0, segment.Count), asOfDb);
+        return new Entities<DiskStateEntry.ReadOnly>(segment.EntityIds(), asOfDb);
     }
     
     /// <summary>

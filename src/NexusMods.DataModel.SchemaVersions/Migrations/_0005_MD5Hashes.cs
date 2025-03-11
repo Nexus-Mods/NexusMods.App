@@ -39,8 +39,8 @@ internal class _0005_MD5Hashes : ITransactionalMigration
             .All(db)
             .Select(entity =>
             {
-                // NOTE(erri120): need to use the IndexSegment because we don't want resolved datoms for removed attributes
-                foreach (var datom in entity.IndexSegment)
+                // NOTE(erri120): need to use the EntitySegment because we don't want resolved datoms for removed attributes
+                foreach (var datom in entity.EntitySegment)
                 {
                     if (attributesToRemove.Contains(datom.A)) return datom;
                 }
