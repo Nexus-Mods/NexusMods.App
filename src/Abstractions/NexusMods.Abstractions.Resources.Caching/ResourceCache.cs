@@ -4,6 +4,11 @@ using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Resources.Caching;
 
+/// <summary>
+/// Cache for pipeline results.
+/// </summary>
+/// <seealso cref="InMemoryStore{TResourceIdentifierIn,TResourceIdentifierOut,TKey,TData}"/>
+/// <seealso cref="ScopedResourceCache{TResourceIdentifier,TKey,TData}"/>
 [PublicAPI]
 public sealed class ResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<TResourceIdentifier, TData>
     where TResourceIdentifier : notnull
