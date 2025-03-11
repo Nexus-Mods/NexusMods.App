@@ -352,6 +352,8 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
     {
         if (!_isDisposed)
         {
+            _isDisposed = true;
+
             if (disposing)
             {
                 _trackedDisposables.Dispose();
@@ -370,8 +372,6 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
                     }
                 }
             }
-
-            _isDisposed = true;
         }
 
         base.Dispose(disposing);
