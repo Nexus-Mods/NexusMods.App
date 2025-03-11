@@ -1,20 +1,16 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
 using OneOf;
 using R3;
-using ReactiveUI;
 using Disposable = R3.Disposable;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
