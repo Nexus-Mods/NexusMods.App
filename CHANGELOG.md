@@ -1,4 +1,4 @@
-# v0.8.1 - 2025-03-XX
+# v0.8.2 - 2025-03-XX
 This release features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
 
 ## Better game versioning
@@ -33,6 +33,7 @@ When managing your game for the very first time, any files that aren't part of t
 * Edits to mod files are now saved to External Changes instead of merging into the source mod. 
 * Added a new "Give Feedback" button to the bottom of the main window.
 * When two different versions of the same SMAPI mod are installed into the loadout, diagnostics will use the most up to date version to display messages. 
+* Errors communicating with the SMAPI server will now silently be recorded in the logs rather than showing a pop up.
 
 ## Bug Fixes
 * Mod updates now correctly show that number of mod files with updates rather than the number of new versions between the current and latest releases. 
@@ -46,7 +47,7 @@ When managing your game for the very first time, any files that aren't part of t
 * Fixed an issue where the SMAPI version and game version comparison diagnostic was not running correctly. 
 
 ## Known Issues
-* The sort order for some columns does not work correctly, this is especially noticeable with the "Actions" column.
+* The sort order for some columns does not work as expected.
 * The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
 * The table header sorting and collapsible section states are not saved and reset each time the view is loaded.
 
