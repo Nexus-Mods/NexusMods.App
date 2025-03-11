@@ -254,6 +254,7 @@ public class CollectionDownloader
         var job = new DownloadCollectionJob
         {
             Downloader = this,
+            Logger = _serviceProvider.GetRequiredService<ILogger<DownloadCollectionJob>>(),
             RevisionMetadata = revisionMetadata,
             Db = db,
             ItemType = itemType,
