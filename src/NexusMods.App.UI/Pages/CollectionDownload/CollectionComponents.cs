@@ -113,12 +113,11 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
                 if (disposing)
                 {
                     Disposable.Dispose(CommandDownload, IsDownloading, _canDownload, _buttonText, _downloadStatus, _activationDisposable);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -182,12 +181,11 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
                 if (disposing)
                 {
                     Disposable.Dispose(CommandOpenModal, ButtonText, _activationDisposable);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -237,12 +235,12 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
                     Disposable.Dispose(CommandInstall, _canInstall, _buttonText, _isInstalled, _activationDisposable);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
