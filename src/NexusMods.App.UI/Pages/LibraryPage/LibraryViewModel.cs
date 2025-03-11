@@ -409,14 +409,14 @@ public class LibraryTreeDataGridAdapter :
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>(sortDirection: ListSortDirection.Ascending);
+        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>();
 
         return
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, LibraryColumns.ItemVersion>(),
             ColumnCreator.Create<EntityId, LibraryColumns.ItemSize>(),
-            ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
             ColumnCreator.Create<EntityId, LibraryColumns.Actions>(),
         ];

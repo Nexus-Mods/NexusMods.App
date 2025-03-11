@@ -262,12 +262,12 @@ public class LoadoutTreeDataGridAdapter :
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>(sortDirection: ListSortDirection.Ascending);
+        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>();
 
         return
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<EntityId, LoadoutColumns.Collections>(),
             ColumnCreator.Create<EntityId, LoadoutColumns.EnabledState>(),
         ];
