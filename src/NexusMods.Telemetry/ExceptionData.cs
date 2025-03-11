@@ -17,7 +17,7 @@ internal record struct ExceptionData(string Type, string Message, string? StackT
         {
             result.Add(new ExceptionData(
                 Type: exception.GetType().ToString(),
-                Message: exception.Message,
+                Message: RedactUtils.Redact(exception.Message),
                 StackTrace: exception.StackTrace
             ));
         }
