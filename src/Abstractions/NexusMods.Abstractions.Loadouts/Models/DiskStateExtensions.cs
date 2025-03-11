@@ -42,8 +42,8 @@ public static class DiskStateExtensions
         // Get an as-of db for the last applied loadout
         var asOfDb = metadata.Db.Connection.AsOf(txId);
         // Get the attributes for the entries in the disk state
-        var segment = asOfDb.Datoms(DiskStateEntry.Game, metadata.Id);
-        return new Entities<DiskStateEntry.ReadOnly>(new EntityIds(segment, 0, segment.Count), asOfDb);
+        var segment = asOfDb.GetBackRefs(DiskStateEntry.Game, metadata.Id);
+        return new Entities<DiskStateEntry.ReadOnly>(segment, asOfDb);
     }
     
     /// <summary>
@@ -53,7 +53,7 @@ public static class DiskStateExtensions
     {
         return DiskStateAsOf(metadata, TxId.From(tx.Id.Value));
     }
-    
+
     /// <summary>
     /// Load the disk state of the game as of the last applied loadout
     /// </summary>
@@ -62,14 +62,9 @@ public static class DiskStateExtensions
         // No previously applied loadout, return an empty state
         if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
         {
-            return EmptyState;
+            return new(new EntityIds { Data = new byte[sizeof(uint)] }, metadata.Db);
         }
+
         return metadata.DiskStateAsOf(metadata.LastSyncedLoadoutTransaction);
     }
-    
-    private static readonly Entities<DiskStateEntry.ReadOnly> EmptyState = new();
-    
-
-
-    
 }
