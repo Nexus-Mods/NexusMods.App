@@ -61,20 +61,13 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
     /// </summary>
     public void AddEvent(EventDefinition definition, EventMetadata metadata)
     {
-        // NOTE(erri120): Since these are just tracking events, it's okay if we
-        // loose some of them. As such, a simple "ring buffer" represented by an
-        // array is completely fine and this shouldn't impact performance for
-        // any consumer inserting events.
         Debug.Assert(metadata.IsValid());
-
-        var id = Interlocked.Increment(ref _lastGeneratedId);
-        var newIndex = (int)(id % Limit);
-        Debug.Assert(newIndex >= 0);
-        Debug.Assert(newIndex < _insertRingBuffer.Length);
-
-        _insertRingBuffer[newIndex] = new ValueTuple<TrackingData, ulong>(new TrackingData(new EventData(definition, metadata)), id);
+        Insert(new TrackingData(new EventData(definition, metadata)));
     }
 
+    /// <summary>
+    /// Inserts the exception into the queue.
+    /// </summary>
     public void AddException(Exception exception)
     {
         var data = ExceptionData.Create(exception);
@@ -82,13 +75,18 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
 
         foreach (var exceptionData in data)
         {
-            var id = Interlocked.Increment(ref _lastGeneratedId);
-            var newIndex = (int)(id % Limit);
-            Debug.Assert(newIndex >= 0);
-            Debug.Assert(newIndex < _insertRingBuffer.Length);
-
-            _insertRingBuffer[newIndex] = new ValueTuple<TrackingData, ulong>(new TrackingData(exceptionData), id);
+            Insert(new TrackingData(exceptionData));
         }
+    }
+
+    private void Insert(TrackingData trackingData)
+    {
+        var id = Interlocked.Increment(ref _lastGeneratedId);
+        var newIndex = (int)(id % Limit);
+        Debug.Assert(newIndex >= 0);
+        Debug.Assert(newIndex < _insertRingBuffer.Length);
+
+        _insertRingBuffer[newIndex] = new ValueTuple<TrackingData, ulong>(trackingData, id);
     }
 
     public async ValueTask Run()
@@ -105,7 +103,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
         try
         {
             PrepareRequest(_writer, span, userId);
-            await SendEvents(_writer.WrittenMemory, _httpClient, CancellationToken.None);
+            await SendData(_writer.WrittenMemory, _httpClient, CancellationToken.None);
         }
         finally
         {
@@ -149,7 +147,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
     }
 
     /// <summary>
-    /// Serializes the event into the buffer as an UTF8 encoded string.
+    /// Serializes the data into the buffer as an UTF8 encoded string.
     /// </summary>
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     private static void SerializeData(IBufferWriter<byte> writer, TrackingData trackingData, Optional<UserId> userId)
@@ -164,6 +162,11 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
         sb.Append("&rec=1"); // Required for tracking, must be set to one
         sb.Append("&apiv=1"); // API version to use, currently always 1
 
+        // NOTE(erri120): If you're debugging the tracking, you can uncomment these
+        // lines to instantly see the request appear in matomo.
+        // sb.Append("&new_visit=1"); // If set to 1, will force a new visit to be created
+        // sb.Append("&queuedtracking=0"); // If set to 0, will execute the request immediately
+
         sb.Append("&ua="); // User agent
         AppendBytes(EncodedUserAgent);
 
@@ -177,12 +180,6 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
         sb.Append("&ca=1"); // Custom action for anything that isn't a page view
         // sb.Append("&url=app://loadout"); // The full URL for the current action
         // sb.Append("&action_name=Loadout"); // For page tracks: the page title
-
-        // NOTE(erri120): If you're debugging the tracking, you can uncomment these
-        // lines to instantly see the request appear in matomo.
-        // sb.Append("&new_visit=1"); // If set to 1, will force a new visit to be created
-        // sb.Append("&queuedtracking=0"); // If set to 0, will execute the request immediately
-
         // NOTE(erri120): maybe something for later
         // sb.Append("&res=1920x1080"); // The resolution of the device the visitor is using
 
@@ -192,7 +189,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
             sb.Append(userId.Value.Value);
         }
 
-        if (trackingData.Data.IsT0)
+        if (trackingData.Data.IsT0) // event
         {
             // https://developer.matomo.org/api-reference/tracking-api#optional-event-tracking-info
             var (definition, metadata) = trackingData.Data.AsT0;
@@ -215,7 +212,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
             sb.Append(metadata.CurrentTime.Minute);
             sb.Append("&s="); // The current second (local time)
             sb.Append(metadata.CurrentTime.Second);
-        } else if (trackingData.Data.IsT1)
+        } else if (trackingData.Data.IsT1) // exception
         {
             // https://developer.matomo.org/api-reference/tracking-api#tracking-http-api-reference
             var (type, message, stackTrace) = trackingData.Data.AsT1;
@@ -247,7 +244,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
         }
     }
 
-    private async ValueTask SendEvents(ReadOnlyMemory<byte> data, HttpClient httpClient, CancellationToken cancellationToken)
+    private async ValueTask SendData(ReadOnlyMemory<byte> data, HttpClient httpClient, CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, Constants.MatomoTrackingEndpoint);
         request.Content = new ReadOnlyMemoryContent(data);
@@ -260,7 +257,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogDebug(ex, "Error occured while sending events");
+            _logger.LogDebug(ex, "Exception sending tracking data");
         }
     }
 
@@ -274,7 +271,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
     }
 
     /// <summary>
-    /// Creates a slice of the array to exclude already seen events.
+    /// Creates a slice of the array to exclude already seen data.
     /// </summary>
     private static ReadOnlySpan<ValueTuple<TrackingData, ulong>> PrepareSpan(ValueTuple<TrackingData, ulong>[] input, ulong highestSeenId)
     {
