@@ -218,22 +218,29 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
             var (type, message, stackTrace) = trackingData.Data.AsT1;
 
             sb.Append("&cra="); // message
-            sb.Append(message);
+            UrlEncode(message);
 
             if (stackTrace is not null)
             {
                 sb.Append("&cra_st="); // stack trace
-                sb.Append(stackTrace);
+                UrlEncode(stackTrace);
             }
 
             sb.Append("&cra_tp="); // error type
-            sb.Append(type);
+            UrlEncode(type);
         }
 
         sb.Append("\"");
         sb.CopyTo(writer);
 
         return;
+
+        void UrlEncode(string input)
+        {
+            var bytes = Encoding.UTF8.GetBytes(input);
+            var encoded = WebUtility.UrlEncodeToBytes(bytes, offset: 0, count: bytes.Length);
+            AppendBytes(encoded);
+        }
 
         void AppendBytes(byte[] data)
         {
