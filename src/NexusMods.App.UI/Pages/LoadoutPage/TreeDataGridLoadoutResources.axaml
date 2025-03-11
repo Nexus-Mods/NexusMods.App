@@ -34,6 +34,23 @@
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
+                
+                <!-- mix of locked enabled and parent disabled -> indeterminate -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+MixLockedAndParentDisabled"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.MixLockedAndParentDisabledComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+MixLockedAndParentDisabled}">
+                            <controls:StandardButton
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
+                                RightIcon="{x:Static icons:IconValues.ToggleIndeterminate}"
+                                ShowIcon="Both"
+                                ShowLabel="False"/>
+                            <!-- TODO: add ToolTip ?-->
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+                
                 <!-- parent collection disabled -->
                 <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+ParentCollectionDisabled"
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ParentCollectionDisabledComponentKey}">
@@ -62,22 +79,6 @@
                                 ShowIcon="Both"
                                 ShowLabel="False"
                                 ToolTip.Tip="Mod cannot be turned off as it is as part of a read only collection. Switch off the collection to turn off this mod"/>
-                        </DataTemplate>
-                    </controls:ComponentTemplate.DataTemplate>
-                </controls:ComponentTemplate>
-                
-                <!-- mix of locked enabled and parent disabled -> indeterminate -->
-                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+MixLockedAndParentDisabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.MixLockedAndParentDisabledComponentKey}">
-                    <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LoadoutComponents+MixLockedAndParentDisabled}">
-                            <controls:StandardButton
-                                Size="Small"
-                                LeftIcon="{x:Static icons:IconValues.Collections}"
-                                RightIcon="{x:Static icons:IconValues.ToggleIndeterminate}"
-                                ShowIcon="Both"
-                                ShowLabel="False"/>
-                            <!-- TODO: add ToolTip ?-->
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
