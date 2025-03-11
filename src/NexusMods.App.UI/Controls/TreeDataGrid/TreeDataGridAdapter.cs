@@ -125,16 +125,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 .Subscribe()
                 .AddTo(disposables);
 
-            self.Source.AsObservable()
-                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-                .Where(source => source is not null)
-                .Subscribe(static (source) =>
-                    {
-                        var sortColumn = source.Columns.FirstOrOptional(column => column.SortDirection is not null);
-                        if (sortColumn.HasValue) source.SortBy(sortColumn.Value, sortColumn.Value.SortDirection!.Value);
-                    }
-                );
-
             Disposable.Create(self._selectionModelsSerialDisposable, static serialDisposable => serialDisposable.Disposable = null).AddTo(disposables);
         });
     }
