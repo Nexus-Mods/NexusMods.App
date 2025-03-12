@@ -23,7 +23,7 @@
         <MergeResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
         <MergeResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
                 
-        <!-- controls -->
+        <!-- avalonia controls -->
         <MergeResourceInclude Source="/Controls/TextBlock.axaml"/>
         <MergeResourceInclude Source="/Controls/AccessText.axaml"/>
         <MergeResourceInclude Source="/Controls/Button.axaml"/>
@@ -34,6 +34,9 @@
         <MergeResourceInclude Source="/Controls/CheckBox.axaml"/>
         <MergeResourceInclude Source="/Controls/RadioButton.axaml"/>
         <MergeResourceInclude Source="/Controls/TextBox.axaml"/>
+        
+        <!-- custom controls -->
+        <MergeResourceInclude Source="/Resources/ControlThemes/StandardButton.axaml"/>
         
     </ResourceDictionary.MergedDictionaries>
     

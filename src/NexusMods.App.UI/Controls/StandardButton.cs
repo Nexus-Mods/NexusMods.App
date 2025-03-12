@@ -24,7 +24,7 @@ public class StandardButton : Button
     public enum ShowIconOptions
     {
         /// <summary>
-        /// No icon is displayed.
+        /// No icon is displayed (Default).
         /// </summary>
         None,
 
@@ -60,9 +60,14 @@ public class StandardButton : Button
         Medium,
 
         /// <summary>
-        /// Small size.
+        /// Small size (Default).
         /// </summary>
         Small,
+        
+        /// <summary>
+        /// Small size.
+        /// </summary>
+        ExtraSmall,
     }
 
     /// <summary>
@@ -86,7 +91,7 @@ public class StandardButton : Button
         Secondary,
 
         /// <summary>
-        /// Tertiary type.
+        /// Tertiary type (Default).
         /// </summary>
         Tertiary,
     }
@@ -107,7 +112,7 @@ public class StandardButton : Button
         Strong,
 
         /// <summary>
-        /// Weak fill (translucent).
+        /// Weak fill (translucent) (Default).
         /// </summary>
         Weak,
         
@@ -154,7 +159,7 @@ public class StandardButton : Button
     /// <summary>
     /// Defines the Size attached property of the <see cref="StandardButton"/>.
     /// </summary>
-    public static readonly AttachedProperty<Sizes> SizeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Sizes>("Size", defaultValue: Sizes.Medium);
+    public static readonly AttachedProperty<Sizes> SizeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Sizes>("Size", defaultValue: Sizes.Small);
 
     /// <summary>
     /// Defines the Fill attached property of the <see cref="StandardButton"/>.

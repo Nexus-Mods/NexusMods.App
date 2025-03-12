@@ -9,7 +9,7 @@
     xmlns:r3="clr-namespace:R3;assembly=R3"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="780" d:DesignHeight="600"
+    mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
 
     <Border Background="{StaticResource SurfaceLowBrush}">
@@ -25,12 +25,12 @@
                         <StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="16">
                                 <StackPanel Spacing="8">
-                                    <TextBlock Text="Button"></TextBlock>
+                                    <TextBlock Text="Button" />
                                     <Button>Enabled</Button>
                                     <Button IsEnabled="False">Disabled</Button>
                                 </StackPanel>
                                 <StackPanel Spacing="8">
-                                    <TextBlock Text="SplitButton"></TextBlock>
+                                    <TextBlock Text="SplitButton" />
                                     <SplitButton>
                                         <TextBlock Text="Enabled" />
                                         <SplitButton.Flyout>
@@ -45,7 +45,7 @@
                                     </SplitButton>
                                 </StackPanel>
                                 <StackPanel Spacing="8">
-                                    <TextBlock Text="ComboBox"></TextBlock>
+                                    <TextBlock Text="ComboBox" />
                                     <ComboBox PlaceholderText="Placeholder">
                                         <ComboBoxItem>Item 1</ComboBoxItem>
                                         <ComboBoxItem>Item 2</ComboBoxItem>
@@ -62,17 +62,16 @@
                                         <ComboBoxItem>Item 1</ComboBoxItem>
                                     </ComboBox>
                                 </StackPanel>
-
                                 <StackPanel Spacing="8">
-                                    <TextBlock Text="ToggleSwitch"></TextBlock>
+                                    <TextBlock Text="ToggleSwitch" />
                                     <ToggleSwitch />
                                     <ToggleSwitch IsChecked="True" />
-                                    <ToggleSwitch IsChecked="{x:Null}" IsThreeState="True"  />
+                                    <ToggleSwitch IsChecked="{x:Null}" IsThreeState="True" />
                                     <ToggleSwitch IsEnabled="False" />
                                     <ToggleSwitch IsChecked="True" IsEnabled="False" />
                                 </StackPanel>
                                 <StackPanel Spacing="8">
-                                    <TextBlock Text="CheckBox"></TextBlock>
+                                    <TextBlock Text="CheckBox" />
                                     <CheckBox>Enabled</CheckBox>
                                     <CheckBox IsChecked="True">Checked</CheckBox>
                                     <CheckBox IsChecked="{x:Null}" IsThreeState="True">3-State</CheckBox>
@@ -81,20 +80,32 @@
                                     <CheckBox IsChecked="{x:Null}" IsEnabled="False">3-State</CheckBox>
                                 </StackPanel>
                                 <StackPanel Spacing="8">
-                                    <TextBlock Text="RadioButton Switch"></TextBlock>
+                                    <TextBlock Text="RadioButton" />
                                     <RadioButton>Enabled</RadioButton>
                                     <RadioButton IsChecked="True">Checked</RadioButton>
                                     <RadioButton IsEnabled="False">Disabled</RadioButton>
                                     <RadioButton IsChecked="True" IsEnabled="False">Checked</RadioButton>
                                 </StackPanel>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" Spacing="16">
                                 <StackPanel Spacing="8">
-                                    <TextBlock Text="TextBox"></TextBlock>
+                                    <TextBlock Text="TextBox" />
                                     <TextBox>Enabled</TextBox>
                                     <TextBox Watermark="Placeholder" />
                                     <TextBox IsEnabled="False">Disabled</TextBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="StandardButton" />
+                                    <controls:StandardButton Text="Default" />
+                                    <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
+                                    <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
+                                    <controls:StandardButton Text="Secondary-Strong" ShowIcon="Right" Type="Secondary" Fill="Strong" />
+                                    <controls:StandardButton Text="Secondary-Weak" ShowIcon="Right" Type="Secondary" Fill="Weak" />
+                                    <controls:StandardButton Text="Secondary-None" ShowIcon="Right" Type="Secondary" Fill="None" />
+                                    <controls:StandardButton Text="Primary-Strong" ShowIcon="Right" Type="Primary" Fill="Strong" />
+                                    <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary" Fill="Weak" />
+                                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall"  />
+                                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Both" />
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

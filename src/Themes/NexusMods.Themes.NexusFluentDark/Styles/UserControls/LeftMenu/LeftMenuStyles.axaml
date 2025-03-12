@@ -22,7 +22,9 @@
     </Design.PreviewWith>
     
     <!-- HOME & LOADOUT LEFT MENU -->
-    <Style Selector="home|HomeLeftMenuView,loadout|LoadoutLeftMenuView">
+    <Style Selector="
+        home|HomeLeftMenuView,
+        loadout|LoadoutLeftMenuView">
         
         <!-- MAIN STACK -->
         <Style Selector="^ StackPanel#LeftMenuStack">

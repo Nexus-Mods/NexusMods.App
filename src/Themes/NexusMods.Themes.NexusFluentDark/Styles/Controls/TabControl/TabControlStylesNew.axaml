@@ -89,7 +89,7 @@
     </Design.PreviewWith>
 
     <Style Selector="TabControl">
-
+ 
         <Style Selector="^ TabItem">
 
             <Style Selector="^ StackPanel.TabItemHeaderStack">
@@ -152,6 +152,11 @@
                         <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                     </Style>
                 </Style>
+            </Style>
+            
+            <!-- hide the underline element -->
+            <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
+                <Setter Property="Background" Value="{StaticResource PrimaryModerateBrush}"/>
             </Style>
 
         </Style>

@@ -10,8 +10,11 @@
             <StackPanel Orientation="Vertical">
                 <TextBlock Text="Test Area" Theme="{StaticResource HeadingMDSemiTheme}" />
                 <StackPanel>
+                    <Button Content="Button"/>
                     <controls:StandardButton IsEnabled="True" Text="Enabled" ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Check}" />
+                    <controls:StandardButton IsEnabled="True" Text="Enabled" ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Check}" Size="Medium" />
                     <controls:StandardButton IsEnabled="False" Text="Disabled" ShowIcon="Left"
                                              LeftIcon="{x:Static icons:IconValues.Close}" />
                     <controls:StandardButton ShowIcon="Both" />
@@ -83,12 +86,11 @@
 
         <!-- start of default button styles to match avalonia's default
         https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/Button.xaml-->
-        <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
-        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
-        <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThemeThickness}" />
-        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-        <Setter Property="Padding" Value="6,0" />
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource ButtonForeground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource ButtonBorderThemeThickness}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="RenderTransform" Value="none" />
@@ -98,7 +100,6 @@
             </Transitions>
         </Setter>
         <!-- end default button styles -->
-
 
         <Setter Property="Template">
             <ControlTemplate>
@@ -117,7 +118,7 @@
                                       VerticalAlignment="{TemplateBinding VerticalAlignment}" />
 
                     <!-- this is used when Content isn't set (used for normal buttons) -->
-                    <Border x:Name="PART_Border"
+                    <Border Name="PART_Border"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
@@ -125,8 +126,7 @@
                             Padding="{TemplateBinding Padding}">
                         <StackPanel Orientation="Horizontal" 
                                     VerticalAlignment="Center" 
-                                    HorizontalAlignment="Center"
-                                    Spacing="4">
+                                    HorizontalAlignment="Center">
                             <icons:UnifiedIcon Name="PART_LeftIcon" />
                             <TextBlock Name="PART_Label" Text="{TemplateBinding Text}" />
                             <icons:UnifiedIcon Name="PART_RightIcon" />
@@ -138,27 +138,27 @@
 
         <!-- Set the default avalonia button styles -->
         <Style Selector="^:pointerover">
-            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPointerOver}" />
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
         </Style>
 
         <Style Selector="^:pressed">
-            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPressed}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPressed}" />
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPressed}" />
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPressed}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressed}" />
         </Style>
 
         <Style Selector="^:disabled">
-            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundDisabled}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushDisabled}" />
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundDisabled}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushDisabled}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundDisabled}" />
         </Style>
 
         <Style Selector="^:flyout-open">
-            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundPointerOver}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrushPointerOver}" />
-            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundPointerOver}" />
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
         </Style>
         <!-- end of default button styles -->
 
@@ -170,26 +170,21 @@
         <Style Selector="^">
             <Setter Property="ClipToBounds" Value="False" />
             <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="{DynamicResource ButtonPaddingMedium}" />
+            <Setter Property="Padding" Value="0" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource SurfaceTransparentBrush}" />
-
-            <Style Selector="^ /template/ Border">
-                <Setter Property="Height" Value="36" />
-            </Style>
+            <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
 
             <Style Selector="^ StackPanel">
                 <Setter Property="Spacing" Value="{StaticResource Spacing-1}"></Setter>
             </Style>
 
             <Style Selector="^ icons|UnifiedIcon">
-                <Setter Property="Size" Value="20"></Setter>
+                <Setter Property="Size" Value="16"/>
             </Style>
 
             <Style Selector="^ TextBlock">
                 <!-- needs a little padding to fully match figma -->
-                <Setter Property="Padding" Value="2 0" />
-                <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                <Setter Property="Padding" Value="0" />
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <!-- NOTE: Spacing is handled through margin of icon and images as icons seem to behave strangely -->
             </Style>
@@ -202,24 +197,22 @@
             <Style Selector="^[ShowIcon=IconOnly]">
                 <Setter Property="Padding" Value="0" />
 
-                <Style Selector="^ /template/ Border">
-                    <!-- NOTE(insomnious): fixed size as we know how big the icons are -->
-                    <Setter Property="Height" Value="24" />
-                    <Setter Property="Width" Value="24" />
-                </Style>
+                <!-- <Style Selector="^ /template/ Border"> -->
+                <!--     ~1~ NOTE(insomnious): fixed size as we know how big the icons are @1@ -->
+                <!--     <Setter Property="Height" Value="16" /> -->
+                <!--     <Setter Property="Width" Value="16" /> -->
+                <!-- </Style> -->
             </Style>
         </Style>
 
         <!-- small variants -->
-        <Style Selector="^[Size=Small]">
+        <Style Selector="^[Size=Medium]">
             <Setter Property="Padding" Value="{DynamicResource ButtonPaddingSmall}" />
 
             <Style Selector="^ StackPanel">
                 <Setter Property="Spacing" Value="{StaticResource Spacing-1}"></Setter>
             </Style>
 
-            <Style Selector="^ /template/ Border">
-                <Setter Property="Height" Value="28" />
 
                 <Style Selector="^ icons|UnifiedIcon">
                     <Setter Property="Size" Value="16"></Setter>
@@ -230,7 +223,6 @@
                     <Setter Property="Padding" Value="1 0" />
                     <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                 </Style>
-            </Style>
 
             <!-- icon only variants -->
             <Style Selector="^[ShowIcon=IconOnly]">
@@ -396,214 +388,5 @@
         </Style>
 
     </Style>
-
-    <!-- Obsolete Button.Standard class styles, use StandardButton instead -->
-    <!-- Base Standard Button (only use with additional qualifiers)-->
-    <Style Selector="Button.Standard">
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-        <Setter Property="Height" Value="36" />
-
-        <!-- Don't set vertical margins, use vertical alignment to keep things centered instead -->
-        <Setter Property="Padding" Value="8, 0" />
-
-        <!-- Set an invisible border thickness to 1 to avoid size differences with outlined variants. -->
-        <Setter Property="BorderThickness" Value="1" />
-
-        <!-- Allow the BoxShadow for the focus to extend beyond the button bounds -->
-        <Setter Property="ClipToBounds" Value="False" />
-
-        <!-- If text is at top level -->
-        <Style Selector="^ TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-        </Style>
-
-        <Style Selector="^ > StackPanel">
-            <Setter Property="Orientation" Value="Horizontal" />
-        </Style>
-
-        <Style Selector="^ > StackPanel > icons|UnifiedIcon">
-            <Setter Property="Size" Value="20" />
-            <Setter Property="Margin" Value="0,0,4,0" />
-        </Style>
-
-        <Style Selector="^:focus /template/ ContentPresenter#PART_ContentPresenter">
-            <!-- ReSharper disable once Xaml.InvalidResourceType -->
-            <Setter Property="BoxShadow" Value="{StaticResource FocusBoxShadow}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
-        </Style>
-    </Style>
-
-
-    <!-- Standard Primary -->
-    <Style Selector="Button.Standard.Primary">
-        <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-
-        <Style Selector="^ TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimaryStrongBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimarySubduedBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource PrimaryModerateBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-
-    </Style>
-
-
-    <!-- Standard PrimaryOutlined -->
-    <Style Selector="Button.Standard.PrimaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceHighBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryStrongBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource PrimarySubduedBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource PrimaryModerateBrush}" />
-        </Style>
-    </Style>
-
-
-    <!-- Standard Secondary -->
-    <Style Selector="Button.Standard.Secondary">
-        <Setter Property="Background" Value="{DynamicResource NeutralModerateBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource NeutralStrongBrush}" />
-
-            <!-- Pointerover uses a different foreground color, so we need to set it again here. -->
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource NeutralSubduedBrush}" />
-
-            <!-- Disabled uses a different foreground color, so we need to set it again here. -->
-            <Setter Property="Foreground" Value="{DynamicResource NeutralInvertedBrush}" />
-        </Style>
-    </Style>
-
-
-    <!-- Standard SecondaryOutlined -->
-    <Style Selector="Button.Standard.SecondaryOutlined">
-        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerate}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentStrong}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceMidBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource NeutralModerateBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentModerate }" />
-        </Style>
-    </Style>
-
-
-    <!-- Standard Tertiary -->
-    <Style Selector="Button.Standard.Tertiary">
-        <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTransparentBrush}" />
-        </Style>
-    </Style>
-
-    <!-- Standard Tertiary Weak -->
-    <Style Selector="Button.Standard.Tertiary.Weak">
-        <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentMidBrush}" />
-        </Style>
-    </Style>
-
-
-    <!-- Standard Success -->
-    <Style Selector="Button.Standard.Success">
-        <Setter Property="Background" Value="{DynamicResource SuccessSubduedBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SuccessModerateBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource SuccessWeakBrush}" />
-        </Style>
-    </Style>
-
-
-    <!-- Standard Info -->
-    <Style Selector="Button.Standard.Info">
-        <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
-
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource InfoSubduedBrush}" />
-        </Style>
-
-        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource BrandInfo900}" />
-        </Style>
-
-        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource InfoWeakBrush}" />
-        </Style>
-    </Style>
-
+    
 </Styles>

@@ -5,67 +5,6 @@
     <Design.PreviewWith>
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
-                
-                <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" 
-                      RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-                    
-                    <Border Grid.Column="0" Grid.Row="0">
-                        <TextBlock Text="Default" />
-                    </Border>
-                    
-                    <Border Grid.Column="1" Grid.Row="0">
-                        <TextBlock Text="Active" />
-                    </Border>
-                    
-                    <Border Grid.Column="2" Grid.Row="0">
-                        <TextBlock Text="Selected" />
-                    </Border>
-                    
-                    <navigation:LeftMenuNavButton Grid.Column="0" Grid.Row="1">
-                        <DockPanel>
-                            <icons:UnifiedIcon DockPanel.Dock="Left"
-                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
-                            <TextBlock Text="Label Goes Here"
-                                       TextWrapping="NoWrap"
-                                       TextTrimming="CharacterEllipsis" />
-                        </DockPanel>
-                    </navigation:LeftMenuNavButton>
-                    
-                    <navigation:LeftMenuNavButton Grid.Column="1" Grid.Row="1" IsActive="True">
-                        <DockPanel>
-                            <icons:UnifiedIcon DockPanel.Dock="Left"
-                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
-                            <TextBlock Text="Label Goes Here"
-                                       TextWrapping="NoWrap"
-                                       TextTrimming="CharacterEllipsis" />
-                        </DockPanel>
-                    </navigation:LeftMenuNavButton>
-                    
-                    <navigation:LeftMenuNavButton Grid.Column="2" Grid.Row="1" IsSelected="True">
-                        <DockPanel>
-                            <icons:UnifiedIcon DockPanel.Dock="Left"
-                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
-                            <TextBlock Text="Label Goes Here"
-                                       TextWrapping="NoWrap"
-                                       TextTrimming="CharacterEllipsis" />
-                        </DockPanel>
-                    </navigation:LeftMenuNavButton>
-                    
-                    
-                    
-                </Grid>
-
-                <StackPanel Spacing="8" Orientation="Vertical" Width="80">
-                    <Border>
-                        <TextBlock Text="Default" />
-                    </Border>
-                    <Border>
-                        <TextBlock Text="Active" />
-                    </Border>
-                    <Border>
-                        <TextBlock Text="Selected" />
-                    </Border>
-                </StackPanel>
 
                 <StackPanel Spacing="8" Orientation="Vertical" Width="140">
 
@@ -77,6 +16,12 @@
                                        TextWrapping="NoWrap"
                                        TextTrimming="CharacterEllipsis" />
                         </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                    
+                    <navigation:LeftMenuNavButton>
+                        <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
                     </navigation:LeftMenuNavButton>
 
                     <navigation:LeftMenuNavButton IsActive="True">
@@ -118,7 +63,7 @@
                                     VerticalAlignment="Center"
                                     Theme="{StaticResource BodySMBoldTheme}"
                                     Foreground="{StaticResource NeutralInverted}"
-                                    Text="1" />
+                                    Text="8" />
                             </Border>
                             <TextBlock Text="Label Goes Here"
                                        TextWrapping="NoWrap"

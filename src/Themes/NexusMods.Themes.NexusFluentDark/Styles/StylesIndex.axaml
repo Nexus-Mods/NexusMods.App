@@ -17,7 +17,7 @@
     <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Border/Toolbar.xaml" />
     <StyleInclude Source="/Styles/Controls/Border/FooterBorder.axaml" />
-    <StyleInclude Source="/Styles/Controls/Button/StandardButtonStyles.axaml" />
+    <!-- <StyleInclude Source="/Styles/Controls/Button/StandardButtonStyles.axaml" /> -->
     <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml" />
