@@ -3,12 +3,14 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
-using R3;
 
 namespace NexusMods.App.UI.Pages.ObservableInfo;
 
 [JsonName("ObservableInfoPageContext")]
-public record ObservableInfoPageContext : IPageFactoryContext;
+public record ObservableInfoPageContext : IPageFactoryContext
+{
+    public required bool IncludeStackTraces { get; init; }
+}
 
 [UsedImplicitly]
 public class ObservableInfoPageFactory : APageFactory<IObservableInfoPageViewModel, ObservableInfoPageContext>
@@ -20,9 +22,7 @@ public class ObservableInfoPageFactory : APageFactory<IObservableInfoPageViewMod
 
     public override IObservableInfoPageViewModel CreateViewModel(ObservableInfoPageContext context)
     {
-        ObservableTracker.EnableTracking = true;
-        ObservableTracker.EnableStackTrace = true;
-        return new ObservableInfoPageViewModel(WindowManager);
+        return new ObservableInfoPageViewModel(WindowManager, context.IncludeStackTraces);
     }
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
@@ -34,12 +34,29 @@ public class ObservableInfoPageFactory : APageFactory<IObservableInfoPageViewMod
             new PageDiscoveryDetails
             {
                 Icon = IconValues.Warning,
-                ItemName = "Observable Tracker",
+                ItemName = "Observable Tracker (with StackTraces)",
                 SectionName = "Utilities",
                 PageData = new PageData
                 {
                     FactoryId = StaticId,
-                    Context = new ObservableInfoPageContext(),
+                    Context = new ObservableInfoPageContext
+                    {
+                        IncludeStackTraces = true,
+                    },
+                },
+            },
+            new PageDiscoveryDetails
+            {
+                Icon = IconValues.Warning,
+                ItemName = "Observable Tracker (without StackTraces)",
+                SectionName = "Utilities",
+                PageData = new PageData
+                {
+                    FactoryId = StaticId,
+                    Context = new ObservableInfoPageContext
+                    {
+                        IncludeStackTraces = false,
+                    },
                 },
             },
         ];

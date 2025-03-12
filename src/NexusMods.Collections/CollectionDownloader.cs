@@ -254,6 +254,7 @@ public class CollectionDownloader
         var job = new DownloadCollectionJob
         {
             Downloader = this,
+            Logger = _serviceProvider.GetRequiredService<ILogger<DownloadCollectionJob>>(),
             RevisionMetadata = revisionMetadata,
             Db = db,
             ItemType = itemType,
@@ -278,6 +279,28 @@ public class CollectionDownloader
 
         if (observables.Length == 0) return groupObservable.Select(static optional => optional.HasValue);
         return observables.CombineLatest(static list => list.All(static installed => installed));
+    }
+
+    /// <summary>
+    /// Returns all missing downloads and Uris.
+    /// </summary>
+    public static IReadOnlyList<(CollectionDownload.ReadOnly Download, Uri Uri)> GetMissingDownloadLinks(CollectionRevisionMetadata.ReadOnly revision, IDb db, ItemType itemType = ItemType.Required)
+    {
+        var results = new List<(CollectionDownload.ReadOnly Download, Uri Uri)>();
+        var downloads = GetItems(revision, itemType).Where(download => GetStatus(download, db).IsNotDownloaded());
+
+        foreach (var download in downloads)
+        {
+            if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+            {
+                results.Add((download, nexusModsDownload.FileMetadata.GetUri()));
+            } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+            {
+                results.Add((download, externalDownload.Uri));
+            }
+        }
+
+        return results;
     }
 
     private static CollectionDownloadStatus GetStatus(CollectionDownloadBundled.ReadOnly download, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)

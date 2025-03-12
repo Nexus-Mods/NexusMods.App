@@ -33,16 +33,29 @@ changes made by you or a game store (such as GOG Galaxy, Steam, etc.) may render
     internal static IDiagnosticTemplate UndeployableLoadoutDueToMissingGameFiles = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 1))
-        .WithTitle("Loadout is undeployable due to missing game files")
+        .WithTitle("Missing Game Files")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("There are {FileCount} game files that do not have a valid source")
+        .WithSummary("Loadout can't be applied due to {FileCount} missing game file(s) with no valid source")
         .WithDetails("""
-We've detected that there are {FileCount} game files, totaling {Size}, that do not have a valid source. However, in order to deploy the current loadout these files are needed. Until the loadout
-is updated to not include these files or the files can be sourced, the loadout is undeployable."
+The loadout is based on {Game} v{Version} but there are {FileCount} file(s) missing from the game installation. Unless these file(s) are restored, the loadout cannot be applied. 
+ 
+## How to Resolve
+1. Open the {Store} launcher 
+2. Verify or repair the game files
+3. Close and reopen the app
+
+## Technical Details
+While checking the contents of the game folder against the file list index for {Game} (v{Version}) from {Store}, {FileCount} file(s) - totalling {Size} - could not be located in the game folder, have not been backed up by the app or cannot be fetched from {Store} automatically.
+
+Without all the required base game files, the loadout cannot be applied.
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<Size>("Size")
             .AddValue<int>("FileCount")
+            .AddValue<string>("Game")
+            .AddValue<string>("Store")
+            .AddValue<string>("Version")
         )
         .Finish();
 }

@@ -1,9 +1,11 @@
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using R3;
@@ -18,8 +20,26 @@ public static class CollectionColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            // TODO:
+            if (CompareImpl<CollectionComponents.InstallAction>(InstallComponentKey, a, b).TryGet(out var value)) return value;
+            if (CompareImpl<CollectionComponents.ManualDownloadAction>(ManualDownloadComponentKey, a, b).TryGet(out value)) return value;
+            if (CompareImpl<CollectionComponents.ExternalDownloadAction>(ExternalDownloadComponentKey, a, b).TryGet(out value)) return value;
+            if (CompareImpl<CollectionComponents.NexusModsDownloadAction>(NexusModsDownloadComponentKey, a, b).TryGet(out value)) return value;
             return 0;
+
+            static Optional<int> CompareImpl<TComponent>(ComponentKey key, CompositeItemModel<TKey> a, CompositeItemModel<TKey> b)
+                where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
+            {
+                var x = a.GetOptional<TComponent>(key);
+                var y = b.GetOptional<TComponent>(key);
+
+                return (x.HasValue, y.HasValue) switch
+                {
+                    (true, true) => x.Value.CompareTo(y.Value),
+                    (true, false) => -1,
+                    (false, true) => 1,
+                    _ => Optional<int>.None,
+                };
+            }
         }
 
         public const string ColumnTemplateResourceKey = nameof(CollectionColumns) + "_" + nameof(Actions);
@@ -93,12 +113,11 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandDownload, IsDownloading, _canDownload, _buttonText, _downloadStatus, _activationDisposable);
+                    Disposable.Dispose(_activationDisposable,IsDownloading, CommandDownload, _canDownload, _buttonText, _downloadStatus);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -162,12 +181,11 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandOpenModal, ButtonText, _activationDisposable);
+                    Disposable.Dispose(_activationDisposable, CommandOpenModal, ButtonText);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -217,12 +235,12 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandInstall, _canInstall, _buttonText, _isInstalled, _activationDisposable);
+                    Disposable.Dispose(_activationDisposable, CommandInstall, _canInstall, _buttonText, _isInstalled);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);

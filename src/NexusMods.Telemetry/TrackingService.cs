@@ -10,35 +10,42 @@ public class TrackingService : BackgroundService
     private static readonly TimeSpan Delay = TimeSpan.FromSeconds(seconds: 5);
 
     private readonly ILogger _logger;
-    private readonly IEventSender _eventSender;
+    private readonly ITrackingDataSender _trackingDataSender;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public TrackingService(ILogger<TrackingService> logger, IEventSender eventSender)
+    public TrackingService(ILogger<TrackingService> logger, ITrackingDataSender trackingDataSender)
     {
         _logger = logger;
-        _eventSender = eventSender;
+        _trackingDataSender = trackingDataSender;
     }
 
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Tracking.EventSender = _eventSender;
+        Tracking.EventSender = _trackingDataSender;
         await Task.Yield();
 
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                await _eventSender.Run().ConfigureAwait(false);
+                await _trackingDataSender.Run().ConfigureAwait(false);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception sending events");
             }
 
-            await Task.Delay(delay: Delay, cancellationToken: stoppingToken).ConfigureAwait(false);
+            try
+            {
+                await Task.Delay(delay: Delay, cancellationToken: stoppingToken).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
         }
     }
 }

@@ -18,15 +18,13 @@ public class TreeAnalyzer : IAnalyzer<FrozenSet<EntityId>>
         
         foreach (var datom in dbNew.RecentlyAdded)
         {
+            if (!modified.Add(datom.E)) continue;
             remaining.Push((datom.E, datom.IsRetract));
         }
         
         while (remaining.Count > 0)
         {
             var current = remaining.Pop();
-            
-            if (!modified.Add(current.E))
-                continue;
             
             var db = current.IsRetract ? dbOld : dbNew;
             var entity = db.Get(current.E);
@@ -36,6 +34,7 @@ public class TreeAnalyzer : IAnalyzer<FrozenSet<EntityId>>
                     continue;
 
                 var parent = ValueTag.Reference.Read<EntityId>(datom.ValueSpan);
+                if (!modified.Add(parent)) continue;
                 remaining.Push((parent, current.IsRetract));
             }
         }

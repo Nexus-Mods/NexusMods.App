@@ -30,6 +30,7 @@
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridSortOrderStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridCollectionDownloadStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridOtherStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridActionsColumnStyles.axaml" />
     
     
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml" />

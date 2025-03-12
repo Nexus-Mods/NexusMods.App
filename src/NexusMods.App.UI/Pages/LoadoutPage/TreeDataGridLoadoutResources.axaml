@@ -3,7 +3,9 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:converters="clr-namespace:NexusMods.App.UI.Converters"
+                    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
 
     <!-- Collections -->
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+Collections.ColumnTemplateResourceKey}">
@@ -25,55 +27,91 @@
         </controls:ComponentControl>
     </DataTemplate>
 
-    <!-- Enabled -->
-    <DataTemplate x:Key="{x:Static local:LoadoutColumns+IsEnabled.ColumnTemplateResourceKey}">
+    <!-- Enabled State -->
+    <DataTemplate x:Key="{x:Static local:LoadoutColumns+EnabledState.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
-                <!-- parent collection disabled -->
-                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+ParentCollectionDisabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.ParentCollectionDisabledComponentKey}">
+                
+                <!-- mix of locked enabled and parent disabled -> indeterminate -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+MixLockedAndParentDisabled"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.MixLockedAndParentDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
-                            <StackPanel Orientation="Horizontal">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}" Size="20"/>
-                                <ToggleSwitch Classes="Compact" HorizontalAlignment="Center" IsEnabled="false" IsChecked="False">
-                                    <ToggleSwitch.OnContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OnContent>
-                                    <ToggleSwitch.OffContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OffContent>
-                                </ToggleSwitch>
-                            </StackPanel>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+MixLockedAndParentDisabled}">
+                            <navigation:NavigationControl
+                                Command="{CompiledBinding ButtonCommand}"
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
+                                RightIcon="{x:Static icons:IconValues.ToggleIndeterminate}"
+                                ShowIcon="Both"
+                                ShowLabel="False"
+                                ToolTip.Tip="Contains mods that are both on and off and can't be interacted with due to their parent collections"/>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
-
-                <!-- normal toggle -->
-                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+IsEnabled"
-                                            ComponentKey="{x:Static local:LoadoutColumns+IsEnabled.IsEnabledComponentKey}">
+                
+                <!-- parent collection disabled -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+ParentCollectionDisabled"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ParentCollectionDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type local:LoadoutComponents+IsEnabled}">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" Size="18" IsVisible="{CompiledBinding IsLocked.Value}"/>
-
-                                <ToggleSwitch Classes="Compact"
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
+                            <navigation:NavigationControl
+                                Command="{CompiledBinding ButtonCommand}"
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
+                                RightIcon="{x:Static icons:IconValues.ToggleOff}"
+                                ShowIcon="Both"
+                                ShowLabel="False"
+                                ToolTip.Tip="Mod's collection is switched off. Switch on the collection to switch on this mod"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+                
+                <!-- locked enabled state -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+LockedEnabledState"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.LockedEnabledStateComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+LockedEnabledState}">
+                            <navigation:NavigationControl
+                                Command="{CompiledBinding ButtonCommand}"
+                                Size="Small"
+                                LeftIcon="{x:Static icons:IconValues.Collections}"
+                                RightIcon="{x:Static icons:IconValues.ToggleOn}"
+                                ShowIcon="Both"
+                                ShowLabel="False"
+                                ToolTip.Tip="Mod cannot be turned off as it is as part of a read only collection. Switch off the collection to turn off this mod"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+                
+                <!-- normal toggle -->
+                <controls:ComponentTemplate x:TypeArguments="local:LoadoutComponents+EnabledStateToggle"
+                                            ComponentKey="{x:Static local:LoadoutColumns+EnabledState.EnabledStateToggleComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type local:LoadoutComponents+EnabledStateToggle}">
+                            <Panel>
+                                <!-- NOTE(Al12rs): ToggleSwitch allows users to change its UI state even if the underlying IsChecked bound value didn't change -->
+                                <!--    This can happen in case the value is Null (indeterminate state), where pressing the toggle might not change the value -->
+                                <!--    As a workaround we show a button with the indeterminate state icon instead -->
+                                <Button Command="{CompiledBinding CommandToggle}"
+                                        Theme="{x:Null}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        IsVisible="{CompiledBinding Value.Value, Converter={x:Static converters:IsNullConverter.Instance}}">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ToggleIndeterminate}"
+                                                       Size="40"/>
+                                </Button>
+                                <ToggleSwitch Classes="ExtraSmall"
                                               HorizontalAlignment="Center"
                                               Command="{CompiledBinding CommandToggle}"
                                               IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
-                                              IsEnabled="{CompiledBinding !IsLocked.Value}">
-                                    <ToggleSwitch.OnContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OnContent>
-                                    <ToggleSwitch.OffContent>
-                                        <ContentControl />
-                                    </ToggleSwitch.OffContent>
-                                </ToggleSwitch>
-                            </StackPanel>
+                                              OnContent="{x:Null}"
+                                              OffContent="{x:Null}"
+                                              IsVisible="{CompiledBinding Value.Value, Converter={x:Static converters:IsNotNullConverter.Instance}}"/>
+                            </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>

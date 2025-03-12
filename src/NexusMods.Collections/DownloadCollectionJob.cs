@@ -1,6 +1,5 @@
-using DynamicData.Kernel;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -8,6 +7,7 @@ namespace NexusMods.Collections;
 
 public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJob, R3.Unit>
 {
+    public required ILogger<DownloadCollectionJob> Logger { get; init; }
     public required CollectionRevisionMetadata.ReadOnly RevisionMetadata { get; init; }
     public required CollectionDownloader.ItemType ItemType { get; init; }
     public required CollectionDownloader Downloader { get; init; }
@@ -17,7 +17,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
     public async ValueTask<R3.Unit> StartAsync(IJobContext<DownloadCollectionJob> context)
     {
         var downloads = RevisionMetadata.Downloads.ToArray();
-
+        
         await Parallel.ForAsync(fromInclusive: 0, toExclusive: downloads.Length, parallelOptions: new ParallelOptions
         {
             CancellationToken = context.CancellationToken,
@@ -28,12 +28,24 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
             if (!CollectionDownloader.DownloadMatchesItemType(download, ItemType)) return;
             if (CollectionDownloader.GetStatus(download, Db).IsDownloaded()) return;
 
-            if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+            try
             {
-                await Downloader.Download(nexusModsDownload, token);
-            } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+                if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
+                {
+                    await Downloader.Download(nexusModsDownload, token);
+                }
+                else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
+                {
+                    await Downloader.Download(externalDownload, token);
+                }
+            }
+            catch (OperationCanceledException)
             {
-                await Downloader.Download(externalDownload, token);
+                // ignored
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Exception while downloading `{DownloadName}` from `{CollectionName}/{RevisionNumber}`", download.Name, download.CollectionRevision.Collection.Slug, download.CollectionRevision.RevisionNumber);
             }
         });
 

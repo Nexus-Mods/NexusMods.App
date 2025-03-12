@@ -15,5 +15,7 @@ public interface IApplyControlViewModel : IViewModelInterface
     
     bool IsLaunchButtonEnabled { get; }
     
+    bool IsProcessing { get; }
+    
     string ApplyButtonText { get; }
 }

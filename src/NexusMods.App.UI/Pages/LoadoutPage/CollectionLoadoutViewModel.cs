@@ -181,6 +181,30 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                     .Subscribe(this, static (image, self) => self.AuthorAvatar = image)
                     .AddTo(disposables);
             }
+
+            Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
+            {
+                // Toggle item state
+                if (message.IsT0){
+                    await LoadoutViewModel.ToggleItemEnabledState(message.AsT0.Ids, connection);
+                    return;
+                }
+
+                // Open collection
+                if (message.IsT1)
+                {
+                    var data = message.AsT1;
+                    LoadoutViewModel.OpenItemCollectionPage(
+                        data.Ids,
+                        data.NavigationInformation,
+                        pageContext.LoadoutId,
+                        GetWorkspaceController(),
+                        connection
+                    );
+                    return;
+                }
+                
+            }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
         });
     }
 

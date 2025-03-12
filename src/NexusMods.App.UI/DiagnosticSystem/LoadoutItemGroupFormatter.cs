@@ -11,7 +11,14 @@ internal sealed class LoadoutItemGroupFormatter(IConnection conn) : IValueFormat
     public void Format(IDiagnosticWriter writer, ref DiagnosticWriterState state, LoadoutItemGroupReference value)
     {
         // TODO: custom markdown control
-        var mod = LoadoutItemGroup.Load(conn.Db, value.DataId);
-        writer.Write(ref state, $"{mod.AsLoadoutItem().Name}");
+        var loadoutItemGroup = LoadoutItemGroup.Load(conn.Db, value.DataId);
+        if (loadoutItemGroup.IsValid())
+        {
+            writer.Write(ref state, $"{loadoutItemGroup.AsLoadoutItem().Name}");
+        }
+        else
+        {
+            writer.Write(ref state, $"Invalid LoadoutItemGroup entity: {value.DataId}");
+        }
     }
 }

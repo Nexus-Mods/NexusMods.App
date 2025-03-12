@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -12,7 +11,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
@@ -368,27 +366,10 @@ public class LibraryTreeDataGridAdapter :
 
     public Subject<OneOf<InstallMessage, UpdateMessage>> MessageSubject { get; } = new();
 
-    private readonly IDisposable _activationDisposable;
-    private readonly Dictionary<CompositeItemModel<EntityId>, IDisposable> _commandDisposables = new();
-
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
-
-        _activationDisposable = this.WhenActivated(static (self, disposables) =>
-        {
-            Disposable.Create(self._commandDisposables,static commandDisposables =>
-            {
-                foreach (var kv in commandDisposables)
-                {
-                    var (_, disposable) = kv;
-                    disposable.Dispose();
-                }
-
-                commandDisposables.Clear();
-            }).AddTo(disposables);
-        });
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
@@ -400,7 +381,7 @@ public class LibraryTreeDataGridAdapter :
     {
         base.BeforeModelActivationHook(model);
 
-        var installActionDisposable = model.SubscribeToComponent<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<LibraryComponents.InstallAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.InstallComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
@@ -412,7 +393,7 @@ public class LibraryTreeDataGridAdapter :
             })
         );
 
-        var updateActionDisposable = model.SubscribeToComponent<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
+        model.SubscribeToComponentAndTrack<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandUpdate
@@ -424,48 +405,29 @@ public class LibraryTreeDataGridAdapter :
                 self.MessageSubject.OnNext(new UpdateMessage(newFile, model));
             })
         );
-
-        var disposable = Disposable.Combine(installActionDisposable, updateActionDisposable);
-
-        var didAdd = _commandDisposables.TryAdd(model, disposable);
-        Debug.Assert(didAdd, "subscription for the model shouldn't exist yet");
-    }
-
-    protected override void BeforeModelDeactivationHook(CompositeItemModel<EntityId> model)
-    {
-        base.BeforeModelDeactivationHook(model);
-
-        var didRemove = _commandDisposables.Remove(model, out var disposable);
-        Debug.Assert(didRemove, "subscription for the model should exist");
-        disposable?.Dispose();
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>(sortDirection: ListSortDirection.Ascending);
+        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>();
 
         return
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, LibraryColumns.ItemVersion>(),
             ColumnCreator.Create<EntityId, LibraryColumns.ItemSize>(),
-            ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(),
+            ColumnCreator.Create<EntityId, LibraryColumns.DownloadedDate>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
             ColumnCreator.Create<EntityId, LibraryColumns.Actions>(),
         ];
     }
 
     private bool _isDisposed;
-
     protected override void Dispose(bool disposing)
     {
-        if (!_isDisposed)
+        if (disposing && !_isDisposed)
         {
-            if (disposing)
-            {
-                Disposable.Dispose(_activationDisposable, MessageSubject);
-            }
-
+            MessageSubject.Dispose();
             _isDisposed = true;
         }
 

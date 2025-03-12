@@ -1,12 +1,15 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using UIObservableExtensions = NexusMods.App.UI.Extensions.ObservableExtensions;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -43,14 +46,15 @@ public class BundledDataProvider : ILoadoutDataProvider
     {
         var loadoutItem = item.AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup().AsLoadoutItem();
 
-        var hasChildrenObservable = Observable.Return(true);
-        var childrenObservable = Observable.Return(
+        var childrenObservable = UIObservableExtensions.ReturnFactory(() =>
             new ChangeSet<CompositeItemModel<EntityId>, EntityId>(
                 [
                     new Change<CompositeItemModel<EntityId>, EntityId>(ChangeReason.Add, item.Id, LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem)),
                 ]
-            ));
-
+            )
+        );
+        var hasChildrenObservable = childrenObservable.IsNotEmpty();
+        
         var parentItemModel = new CompositeItemModel<EntityId>(item.Id)
         {
             HasChildrenObservable = hasChildrenObservable,
@@ -60,9 +64,13 @@ public class BundledDataProvider : ILoadoutDataProvider
         parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: item.AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup().AsLoadoutItem().Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
         parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: item.GetCreatedAt()));
+        parentItemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(loadoutItem));
 
+        
         LoadoutDataProviderHelper.AddCollection(_connection, parentItemModel, loadoutItem);
-        LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, loadoutItem);
+        LoadoutDataProviderHelper.AddParentCollectionDisabled(_connection, parentItemModel, loadoutItem);
+        LoadoutDataProviderHelper.AddLockedEnabledState(parentItemModel, loadoutItem);
+        LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, loadoutItem);
 
         return parentItemModel;
     }

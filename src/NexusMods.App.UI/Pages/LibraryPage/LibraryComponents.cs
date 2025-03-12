@@ -1,20 +1,17 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Reactive.Disposables;
 using DynamicData;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
 using OneOf;
 using R3;
-using ReactiveUI;
 using Disposable = R3.Disposable;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
@@ -26,9 +23,19 @@ public static class LibraryColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
-            var bValue = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
-            return aValue.Compare(bValue);
+            var aVersion = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            var bVersion = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            
+            var aNewVersion = a.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
+            var bNewVersion = b.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
+            
+            // Compare based on the presence of new versions
+            return (aNewVersion.HasValue, bNewVersion.HasValue) switch
+            {
+                (true, false) => 1,
+                (false, true) => -1,
+                _ => aVersion.Compare(bVersion),
+            };
         }
 
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(ItemVersion);
@@ -80,15 +87,26 @@ public static class LibraryColumns
             var aInstall = a.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
             var bInstall = b.GetOptional<LibraryComponents.InstallAction>(key: InstallComponentKey);
 
-            if (aInstall.HasValue && bInstall.HasValue) return aInstall.Value.CompareTo(bInstall.Value);
-            if (aInstall.HasValue) return -1;
-            if (bInstall.HasValue) return 1;
-
             var aUpdate = a.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
             var bUpdate = b.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
-            if (aUpdate.HasValue && bUpdate.HasValue) return aUpdate.Value.CompareTo(bUpdate.Value);
 
-            return 0;
+            var orderA = GetOrder(aInstall, aUpdate);
+            var orderB = GetOrder(bInstall, bUpdate);
+
+            return orderA.CompareTo(orderB);
+            
+            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update)
+            {
+                var isUpdateAvailable = update.HasValue;
+                var hasInstallButton = install is { HasValue: true, Value.IsInstalled.Value: false };
+                var isInstalled = install is { HasValue: true, Value.IsInstalled.Value: true };
+
+                if (isUpdateAvailable && hasInstallButton) return 1;
+                if (hasInstallButton) return 2;
+                if (isUpdateAvailable) return 3;
+                if (isInstalled) return 4;
+                return 5;
+            }
         }
 
         public const string ColumnTemplateResourceKey = nameof(LibraryColumns) + "_" + nameof(Actions);
