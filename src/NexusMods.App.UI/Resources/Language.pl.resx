@@ -735,6 +735,9 @@
 	<data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby otworzyć stronę Nexus Mods</value>
 	</data>
+	<data name="FileOriginsPage_CheckForUpdates_ToolTip" xml:space="preserve">
+		<value>Kliknij, aby sprawdzić Nexus Mods pod kątem dostępnych aktualizacji plików modów</value>
+	</data>
 	<data name="TopBar_Forward_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby przejść dalej</value>
 	</data>
@@ -751,7 +754,7 @@
 		<value>Kliknij, aby odinstalować wybrany mod z tego zestawu</value>
 	</data>
 	<data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
-		<value/>
+		<value>Kliknij, aby zobaczyć pliki zawarte w tym modzie</value>
 	</data>
 	<data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
 		<value>Gotowa do zainstalowania - wszystkie wymagane mody zostały pobrane</value>
