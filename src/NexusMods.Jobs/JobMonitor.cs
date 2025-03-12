@@ -36,11 +36,6 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
             .Filter(j => j.Definition is TJobDefinition);
     }
 
-    public void RegisterJob(IJob job)
-    {
-        _allJobs.AddOrUpdate(job);
-    }
-
     public void Dispose()
     {
         _compositeDisposable.Dispose();
@@ -67,6 +62,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
                         _logger.LogError("Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
                     }
                 }
+                _allJobs.Remove(ctx);
             }
         );
         return new JobTask<TJobType, TResultType>(ctx);
@@ -92,6 +88,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
                         _logger.LogError("Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
                     }
                 }
+                _allJobs.Remove(ctx);
             }
         );
         return new JobTask<TJobType, TResultType>(ctx);

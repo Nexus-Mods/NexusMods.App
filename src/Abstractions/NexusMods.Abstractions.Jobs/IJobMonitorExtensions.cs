@@ -1,7 +1,5 @@
-using System.Diagnostics;
 using System.Reactive.Linq;
 using DynamicData;
-
 
 namespace NexusMods.Abstractions.Jobs;
 
@@ -26,6 +24,9 @@ public static class IJobMonitorExtensions
             .FilterOnObservable(job => job.ObservableStatus.Select(status => status.IsActive()));
     }
 
+    /// <summary>
+    /// Returns true if there is a job which satisfies the given predicate.
+    /// </summary>
     public static IObservable<bool> HasActiveJob<TJobType>(this IJobMonitor jobMonitor, Func<TJobType, bool> predicate)
         where TJobType : IJobDefinition
     {

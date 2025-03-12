@@ -8,6 +8,7 @@ using NexusMods.App.UI.Extensions;
 using ObservableCollections;
 using R3;
 using System.Reactive.Linq;
+using DynamicData.Kernel;
 
 namespace NexusMods.App.UI.Controls;
 

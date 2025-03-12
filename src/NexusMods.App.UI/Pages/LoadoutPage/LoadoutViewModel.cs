@@ -151,22 +151,37 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
             {
-                if (message.Ids.Length == 0) return;
+                var toggleableItems = message.Ids
+                    .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
+                    // Exclude collection required items
+                    .Where(item => !(NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired))
+                    // Exclude items that are part of a collection that is disabled
+                    .Where(item => !(item.Parent.TryGetAsCollectionGroup(out var collectionGroup)
+                                     && collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
+                    )
+                    .ToArray();
+
+                if (toggleableItems.Length == 0) return;
+
+                // We only enable if all items are disabled, otherwise we disable
+                var shouldEnable = toggleableItems.All(loadoutItem => loadoutItem.IsDisabled);
+
                 using var tx = connection.BeginTransaction();
 
-                foreach (var loadoutItemId in message.Ids)
+                foreach (var id in toggleableItems)
                 {
-                    if (message.ShouldEnable)
+                    if (shouldEnable)
                     {
-                        tx.Retract(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        tx.Retract(id, LoadoutItem.Disabled, Null.Instance);
                     }
                     else
                     {
-                        tx.Add(loadoutItemId, LoadoutItem.Disabled, Null.Instance);
+                        tx.Add(id, LoadoutItem.Disabled, Null.Instance);
                     }
                 }
 
                 await tx.Commit();
+                
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
 
             // Compute the target group for the ViewFilesCommand
@@ -262,12 +277,12 @@ public class LoadoutTreeDataGridAdapter :
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>(sortDirection: ListSortDirection.Ascending);
+        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>();
 
         return
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(),
+            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<EntityId, LoadoutColumns.Collections>(),
             ColumnCreator.Create<EntityId, LoadoutColumns.EnabledState>(),
         ];
