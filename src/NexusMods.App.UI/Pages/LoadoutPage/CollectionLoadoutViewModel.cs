@@ -184,31 +184,25 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
 
             Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
             {
-                var toggleableItems = message.Ids
-                    .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
-                    .Where(item => !(NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired))
-                    .ToArray();
-
-                if (toggleableItems.Length == 0) return;
-
-                // We only enable if all items are disabled, otherwise we disable
-                var shouldEnable = toggleableItems.All(loadoutItem => loadoutItem.IsDisabled);
-
-                using var tx = connection.BeginTransaction();
-
-                foreach (var id in toggleableItems)
-                {
-                    if (shouldEnable)
-                    {
-                        tx.Retract(id, LoadoutItem.Disabled, Null.Instance);
-                    }
-                    else
-                    {
-                        tx.Add(id, LoadoutItem.Disabled, Null.Instance);
-                    }
+                // Toggle item state
+                if (message.IsT0){
+                    await LoadoutViewModel.ToggleItemEnabledState(message.AsT0.Ids, connection);
+                    return;
                 }
 
-                await tx.Commit();
+                // Open collection
+                if (message.IsT1)
+                {
+                    var data = message.AsT1;
+                    LoadoutViewModel.OpenItemCollectionPage(
+                        data.Ids,
+                        data.NavigationInformation,
+                        pageContext.LoadoutId,
+                        GetWorkspaceController(),
+                        connection
+                    );
+                    return;
+                }
                 
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
         });

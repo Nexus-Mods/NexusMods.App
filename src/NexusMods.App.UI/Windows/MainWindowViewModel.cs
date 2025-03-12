@@ -22,6 +22,7 @@ using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
+using NexusMods.CrossPlatform;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -161,9 +162,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     private IDisposable ConnectErrors(IServiceProvider provider)
     {
+        var settings = provider.GetRequiredService<ISettingsManager>().Get<LoggingSettings>();
+        if (!settings.ShowExceptions) return Disposable.Empty;
+
         var source = provider.GetService<IObservableExceptionSource>();
-        if (source is null)
-            return Disposable.Empty;
+        if (source is null) return Disposable.Empty;
 
         return source.Exceptions
             .Subscribe(msg =>
