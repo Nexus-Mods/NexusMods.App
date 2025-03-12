@@ -98,7 +98,6 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
-        <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
@@ -598,9 +597,6 @@
         <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
           <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
-        <Compile Update="Controls\DataGrid\Columns\ModName\ModNameView.axaml.cs">
-          <DependentUpon>ModNameView.axaml</DependentUpon>
-        </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -756,6 +752,11 @@
       <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
       <UpToDateCheckInput Remove="Controls\Badge\Badge.axaml" />
       <UpToDateCheckInput Remove="Controls\DataGrid\Columns\ModInstalled\ModInstalledView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
     </ItemGroup>
 
     <ItemGroup>
