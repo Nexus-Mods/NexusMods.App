@@ -10,7 +10,7 @@ namespace NexusMods.Telemetry;
 [PublicAPI]
 public static class Tracking
 {
-    internal static IEventSender? EventSender { get; set; }
+    internal static ITrackingDataSender? EventSender { get; set; }
 
     /// <summary>
     /// Check whether tracking is enabled to gate computational expensive operations.
@@ -35,7 +35,7 @@ public static class TrackingRegistration
         if (!settings.IsEnabled) return serviceCollection;
 
         return serviceCollection
-            .AddSingleton<IEventSender, EventSender>()
+            .AddSingleton<ITrackingDataSender, TrackingDataSender>()
             .AddHostedService<TrackingService>();
     }
 }
