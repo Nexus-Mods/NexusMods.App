@@ -608,14 +608,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
-        await tx.Commit();
+        var result = await tx.Commit();
 
-        gameMetadata.Rebase();
+        var newMetadata = gameMetadata.Rebase(result.Db);
 
         // Clean up empty directories
         if (foldersWithDeletedFiles.Count > 0)
         {
-            CleanDirectories(foldersWithDeletedFiles, gameMetadata.DiskStateEntries, gameInstallation);
+            CleanDirectories(foldersWithDeletedFiles, newMetadata.DiskStateEntries, gameInstallation);
         }
     }
 
