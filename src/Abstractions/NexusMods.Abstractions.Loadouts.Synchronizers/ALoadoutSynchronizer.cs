@@ -837,7 +837,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
             {
-                await Synchronize(prevLoadout);
                 await DeactivateCurrentLoadout(loadout.InstallationInstance);
                 await ActivateLoadout(loadout);
                 return loadout.Rebase();
