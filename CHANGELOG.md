@@ -2,7 +2,7 @@
 This release features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
 
 ## Better game versioning
-We've make some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed and the app will match the files on your PC to those included with these releases. The app will now be able to tell if your game folder is unmodded on first managing the game and identify any mod files already in your game folder. 
+We've made some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed and the app will match the files on your PC to those included with these releases. The app will now be able to tell if your game folder is unmodded on first managing the game and identify any mod files already in your game folder. 
 
 In future, we hope to use this system to integrate with GOG.com to allow users to quickly swap between game versions on demand. 
 
@@ -14,19 +14,18 @@ Within your loadout, there can often be changes made to your game or mod files t
 When managing your game for the very first time, any files that aren't part of the base game will be displayed here and can be quickly removed if you want to clean your game folder for a fresh start. Future development of this feature will allow you to add these files to your loadout as mods. 
 
 ## More Features
-* Collections from Nexus Mods are now installed in a read-only state to ensure the collection as the curator intended it. Cloning and editing collections will be added in future.  
-* The Collection Download page now includes an Instructions tab which includes both collection and mod instructions. 
-* Collections can now be removed from loadout without deleting them from the Library. 
+* Collections from Nexus Mods are now installed in a read-only state to ensure the collection is as the curator intended it. Cloning and editing collections will be added in future.  
+* The Collection Download page now includes an Instructions tab with both collection and mod instructions. 
+* Collections can now be removed from loadout without deleting them from the Library using the menu option in the header. 
 * The header has been redesigned to be more compact. 
 * The Settings UI has been updated to match the latest brand guidelines.
 * Stardew Valley mods that are packaged without a top-level folder will now install correctly. 
-* Collections can now be removed from the loadout using the menu option in the header. 
 * Added more information to the Health Check diagnostics for Stardew Valley. 
 
 ## Technical Changes
 * All games except Stardew Valley have been moved behind the "Unsupported Games" flag in Settings. If you were modding Cyberpunk, Baldur's Gate 3 or Mount & Blade II:Bannerlord in a previous release, you will need to enable this option to continue managing your mods. 
 * The app can now differentiate between a mod installed as part of a collection and the same mod installed directly from the Library. 
-* When installing collections for Stardew Valley, an unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
+* When installing collections for Stardew Valley, any unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
 * Conflicting mods within a collection are now installed in an order that respects the rules set by the curator. 
 * Large numbers are now displayed with comma separation or abbreviations.
 * File sizes now only show a decimal places above 1GB. 
