@@ -43,12 +43,12 @@ public static class LoadoutComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
                     Disposable.Dispose(_idsObservable ?? Disposable.Empty);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -97,8 +97,7 @@ public static class LoadoutComponents
 
         private readonly IDisposable _activationDisposable;
 
-        public EnabledStateToggle(
-            ValueComponent<bool?> valueComponent)
+        public EnabledStateToggle(ValueComponent<bool?> valueComponent)
         {
             _valueComponent = valueComponent;
 
@@ -113,12 +112,12 @@ public static class LoadoutComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
                     Disposable.Dispose(_activationDisposable, _valueComponent);
-                }
-
-                _isDisposed = true;
+                }                
             }
 
             base.Dispose(disposing);
