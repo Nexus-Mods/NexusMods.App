@@ -4,7 +4,8 @@
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-                    xmlns:converters="clr-namespace:NexusMods.App.UI.Converters">
+                    xmlns:converters="clr-namespace:NexusMods.App.UI.Converters"
+                    xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation">
 
     <!-- Collections -->
     <DataTemplate x:Key="{x:Static local:LoadoutColumns+Collections.ColumnTemplateResourceKey}">
@@ -40,7 +41,8 @@
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.MixLockedAndParentDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+MixLockedAndParentDisabled}">
-                            <controls:StandardButton
+                            <navigation:NavigationControl
+                                Command="{CompiledBinding ButtonCommand}"
                                 Size="Small"
                                 LeftIcon="{x:Static icons:IconValues.Collections}"
                                 RightIcon="{x:Static icons:IconValues.ToggleIndeterminate}"
@@ -56,7 +58,8 @@
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.ParentCollectionDisabledComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+ParentCollectionDisabled}">
-                            <controls:StandardButton
+                            <navigation:NavigationControl
+                                Command="{CompiledBinding ButtonCommand}"
                                 Size="Small"
                                 LeftIcon="{x:Static icons:IconValues.Collections}"
                                 RightIcon="{x:Static icons:IconValues.ToggleOff}"
@@ -72,7 +75,8 @@
                                             ComponentKey="{x:Static local:LoadoutColumns+EnabledState.LockedEnabledStateComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type local:LoadoutComponents+LockedEnabledState}">
-                            <controls:StandardButton
+                            <navigation:NavigationControl
+                                Command="{CompiledBinding ButtonCommand}"
                                 Size="Small"
                                 LeftIcon="{x:Static icons:IconValues.Collections}"
                                 RightIcon="{x:Static icons:IconValues.ToggleOn}"

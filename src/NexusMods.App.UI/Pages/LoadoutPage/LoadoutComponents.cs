@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
@@ -42,12 +43,12 @@ public static class LoadoutComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
                     Disposable.Dispose(_idsObservable ?? Disposable.Empty);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -56,16 +57,22 @@ public static class LoadoutComponents
     
     public sealed class ParentCollectionDisabled : ReactiveR3Object, IItemModelComponent<ParentCollectionDisabled>, IComparable<ParentCollectionDisabled>
     {
+        public ReactiveCommand<NavigationInformation, NavigationInformation> ButtonCommand { get; } = new(info => info);
+
         public int CompareTo(ParentCollectionDisabled? other) => 0;
     }
     
     public sealed class LockedEnabledState : ReactiveR3Object, IItemModelComponent<LockedEnabledState>, IComparable<LockedEnabledState>
     {
+        public ReactiveCommand<NavigationInformation, NavigationInformation> ButtonCommand { get; } = new(info => info);
+
         public int CompareTo(LockedEnabledState? other) => 0;
     }
 
     public sealed class MixLockedAndParentDisabled : ReactiveR3Object, IItemModelComponent<MixLockedAndParentDisabled>, IComparable<MixLockedAndParentDisabled>
     {
+        public ReactiveCommand<NavigationInformation, NavigationInformation> ButtonCommand { get; } = new(info => info);
+        
         public int CompareTo(MixLockedAndParentDisabled? other) => 0;
     }
 
@@ -90,8 +97,7 @@ public static class LoadoutComponents
 
         private readonly IDisposable _activationDisposable;
 
-        public EnabledStateToggle(
-            ValueComponent<bool?> valueComponent)
+        public EnabledStateToggle(ValueComponent<bool?> valueComponent)
         {
             _valueComponent = valueComponent;
 
@@ -106,12 +112,12 @@ public static class LoadoutComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
                     Disposable.Dispose(_activationDisposable, _valueComponent);
-                }
-
-                _isDisposed = true;
+                }                
             }
 
             base.Dispose(disposing);
