@@ -597,9 +597,6 @@
         <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
           <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
-        <Compile Update="Controls\DataGrid\Columns\ModName\ModNameView.axaml.cs">
-          <DependentUpon>ModNameView.axaml</DependentUpon>
-        </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
           <SubType>Code</SubType>

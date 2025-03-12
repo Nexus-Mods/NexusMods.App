@@ -4,7 +4,6 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
-using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -83,8 +82,6 @@ public static class Services
 
             // View Models
             .AddTransient<MainWindowViewModel>()
-            .AddTransient(typeof(DataGridViewModelColumn<,>))
-            .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
             
             .AddViewModel<CollectionCardDesignViewModel, ICollectionCardViewModel>()
