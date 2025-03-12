@@ -29,13 +29,13 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
         MarkdownRendererViewModel = markdownRendererViewModel;
 
         MarkdownRendererViewModel.Contents = $"""
-## Help us improve
+## Diagnostics and Usage Data
 
-Help us provide you with the best modding experience.
+We’d like to collect diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.
 
-With your permission, we will collect anonymous analytics information and send it to our team to help us improve quality and performance.
+Your data will be processed in accordance with our [Privacy Policy]({ TelemetrySettings.Link }). You can change your preference anytime in settings.
 
-[More information about the data we track]({ TelemetrySettings.Link })
+Would you like to enable data collection?
 """;
 
         Allow = ReactiveCommand.Create(() =>
