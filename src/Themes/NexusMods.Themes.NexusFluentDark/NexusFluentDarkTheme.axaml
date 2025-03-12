@@ -1,4 +1,5 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+﻿<Styles 
+    xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Styles.Resources>
@@ -11,36 +12,36 @@
 
     <!-- these are used by the Design View -->
     <FluentTheme>
-        <FluentTheme.Palettes>
-            <ColorPaletteResources x:Key="Dark"
-                           Accent="{StaticResource PrimaryModerate}"
-                           AltHigh="{StaticResource SurfaceBase}"
-                           AltLow="{StaticResource SurfaceBase}"
-                           AltMedium="{StaticResource SurfaceBase}"
-                           AltMediumHigh="{StaticResource SurfaceBase}"
-                           AltMediumLow="{StaticResource SurfaceBase}"
-                           BaseHigh="{StaticResource SurfaceInverted}"
-                           BaseLow="{StaticResource StrokeTranslucentSubdued}"
-                           BaseMedium="{StaticResource NeutralSubdued}"
-                           BaseMediumHigh="{StaticResource NeutralModerate}"
-                           BaseMediumLow="{StaticResource NeutralTranslucentWeak}"
-                           ChromeAltLow="{StaticResource NeutralModerate}"
-                           ChromeBlackHigh="{StaticResource SurfaceBase}"
-                           ChromeBlackLow="{StaticResource NeutralModerate}"
-                           ChromeBlackMedium="{StaticResource SurfaceBase}"
-                           ChromeBlackMediumLow="{StaticResource SurfaceBase}"
-                           ChromeDisabledHigh="{StaticResource NeutralTranslucentWeak}"
-                           ChromeDisabledLow="{StaticResource NeutralSubdued}"
-                           ChromeGray="{StaticResource StrokeTranslucentStrong}"
-                           ChromeHigh="{StaticResource StrokeTranslucentStrong}"
-                           ChromeLow="{StaticResource StrokeTranslucentWeak}"
-                           ChromeMedium="{StaticResource SurfaceLow}"
-                           ChromeMediumLow="{StaticResource SurfaceMid}"
-                           ChromeWhite="{StaticResource SurfaceInverted}"
-                           ListLow="{StaticResource SurfaceLow}"
-                           ListMedium="{StaticResource StrokeTranslucentSubdued}"
-                           RegionColor="{StaticResource SurfaceBase}" />
-        </FluentTheme.Palettes>
+        <!-- <FluentTheme.Palettes> -->
+        <!--     <ColorPaletteResources x:Key="Dark" -->
+        <!--                    Accent="{StaticResource PrimaryModerate}" -->
+        <!--                    AltHigh="{StaticResource SurfaceBase}" -->
+        <!--                    AltLow="{StaticResource SurfaceBase}" -->
+        <!--                    AltMedium="{StaticResource SurfaceBase}" -->
+        <!--                    AltMediumHigh="{StaticResource SurfaceBase}" -->
+        <!--                    AltMediumLow="{StaticResource SurfaceBase}" -->
+        <!--                    BaseHigh="{StaticResource SurfaceInverted}" -->
+        <!--                    BaseLow="{StaticResource StrokeTranslucentSubdued}" -->
+        <!--                    BaseMedium="{StaticResource NeutralSubdued}" -->
+        <!--                    BaseMediumHigh="{StaticResource NeutralModerate}" -->
+        <!--                    BaseMediumLow="{StaticResource NeutralTranslucentWeak}" -->
+        <!--                    ChromeAltLow="{StaticResource NeutralModerate}" -->
+        <!--                    ChromeBlackHigh="{StaticResource SurfaceBase}" -->
+        <!--                    ChromeBlackLow="{StaticResource NeutralModerate}" -->
+        <!--                    ChromeBlackMedium="{StaticResource SurfaceBase}" -->
+        <!--                    ChromeBlackMediumLow="{StaticResource SurfaceBase}" -->
+        <!--                    ChromeDisabledHigh="{StaticResource NeutralTranslucentWeak}" -->
+        <!--                    ChromeDisabledLow="{StaticResource NeutralSubdued}" -->
+        <!--                    ChromeGray="{StaticResource StrokeTranslucentStrong}" -->
+        <!--                    ChromeHigh="{StaticResource StrokeTranslucentStrong}" -->
+        <!--                    ChromeLow="{StaticResource StrokeTranslucentWeak}" -->
+        <!--                    ChromeMedium="{StaticResource SurfaceLow}" -->
+        <!--                    ChromeMediumLow="{StaticResource SurfaceMid}" -->
+        <!--                    ChromeWhite="{StaticResource SurfaceInverted}" -->
+        <!--                    ListLow="{StaticResource SurfaceLow}" -->
+        <!--                    ListMedium="{StaticResource StrokeTranslucentSubdued}" -->
+        <!--                    RegionColor="{StaticResource SurfaceBase}" /> -->
+        <!-- </FluentTheme.Palettes> -->
     </FluentTheme>
 
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />

@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+
     <!-- Resources for Checkbox.xaml -->
     <Thickness x:Key="CheckBoxBorderThemeThickness">2</Thickness>
 
@@ -62,7 +63,8 @@
                      Color="{StaticResource NeutralModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
-    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver"
+                    ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedDisabled" ResourceKey="SurfaceTransparentBrush" />
 
@@ -72,7 +74,8 @@
                     ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePressed"
                     ResourceKey="SurfaceTransparentBrush" />
-    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminateDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminateDisabled"
+                    ResourceKey="SurfaceTransparentBrush" />
 
     <StaticResource x:Key="CheckBoxCheckBackgroundFillUnchecked" ResourceKey="SurfaceLowBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundFillUncheckedPointerOver"
@@ -92,7 +95,8 @@
                      Color="{StaticResource NeutralTranslucentStrong}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
-    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminate" ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminate"
+                    ResourceKey="NeutralTranslucentStrongBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOver"
                     ResourceKey="NeutralTranslucentStrongBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePressed"
@@ -129,24 +133,6 @@
                     ResourceKey="NeutralInvertedBrush" />
 
     <!-- Resources for Button.axaml -->
-
-    <!-- unused -->
-    <!-- <StaticResource x:Key="AccentButtonBackground" ResourceKey="SystemControlBackgroundAccentBrush" />  -->
-    <!-- <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" -->
-    <!--                  Color="{DynamicResource SystemAccentColorLight1}" /> -->
-    <!-- <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="{DynamicResource SystemAccentColorDark1}" /> -->
-    <!-- <StaticResource x:Key="AccentButtonBackgroundDisabled" ResourceKey="SystemControlBackgroundBaseLowBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonForeground" ResourceKey="SystemControlBackgroundChromeWhiteBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonForegroundPointerOver" -->
-    <!--                 ResourceKey="SystemControlBackgroundChromeWhiteBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonForegroundPressed" ResourceKey="SystemControlBackgroundChromeWhiteBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonForegroundDisabled" -->
-    <!--                 ResourceKey="SystemControlDisabledBaseMediumLowBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonBorderBrush" ResourceKey="SystemControlForegroundTransparentBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonBorderBrushPointerOver" -->
-    <!--                 ResourceKey="SystemControlForegroundTransparentBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonBorderBrushPressed" ResourceKey="SystemControlHighlightTransparentBrush" /> -->
-    <!-- <StaticResource x:Key="AccentButtonBorderBrushDisabled" ResourceKey="SystemControlDisabledTransparentBrush" /> -->
 
     <Thickness x:Key="ButtonBorderThemeThickness">0</Thickness>
     <StaticResource x:Key="ButtonBackground" ResourceKey="SurfaceTranslucentMidBrush" />
@@ -223,10 +209,10 @@
     <Thickness x:Key="ComboBoxDropdownBorderThickness">0</Thickness>
     <Thickness x:Key="ComboBoxItemThemePadding">11,5,11,7</Thickness>
     <Thickness x:Key="ComboBoxItemThemeMargin">0,0,0,0</Thickness>
-    <CornerRadius x:Key="ComboBoxItemThemeCornerRadius">4,4,4,4</CornerRadius>
+    <CornerRadius x:Key="ComboBoxItemThemeCornerRadius">0,0,0,0</CornerRadius>
     <FontWeight x:Key="ComboBoxHeaderThemeFontWeight">Normal</FontWeight>
     <Thickness x:Key="ComboBoxDropdownBorderPadding">0</Thickness>
-    <Thickness x:Key="ComboBoxDropdownContentMargin">4,4,4,4</Thickness>
+    <Thickness x:Key="ComboBoxDropdownContentMargin">0,4,0,4</Thickness>
 
     <StaticResource x:Key="ComboBoxBackground" ResourceKey="SurfaceTranslucentMidBrush" />
     <StaticResource x:Key="ComboBoxBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
@@ -301,8 +287,10 @@
     <StaticResource x:Key="ComboBoxItemBorderBrushDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="ComboBoxItemBorderBrushSelected" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="ComboBoxItemBorderBrushSelectedPressed" ResourceKey="StrokeTranslucentModerateBrush" />
-    <StaticResource x:Key="ComboBoxItemBorderBrushSelectedPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
-    <StaticResource x:Key="ComboBoxItemBorderBrushSelectedDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushSelectedPointerOver"
+                    ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushSelectedDisabled"
+                    ResourceKey="StrokeTranslucentModerateBrush" />
 
     <!--Recources ToggleSwitch-->
     <Thickness x:Key="ToggleSwitchOnStrokeThickness">0</Thickness>
@@ -416,10 +404,10 @@
     <!-- Copied from FluentBaseDark.xaml -->
     <StaticResource x:Key="TextControlForeground" ResourceKey="NeutralSubduedBrush" />
     <StaticResource x:Key="TextControlForegroundPointerOver" ResourceKey="NeutralSubduedBrush" />
-    <SolidColorBrush x:Key="TextControlForegroundDisabled" 
+    <SolidColorBrush x:Key="TextControlForegroundDisabled"
                      Color="{StaticResource NeutralSubdued}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
-    
+
     <StaticResource x:Key="TextControlBackground" ResourceKey="BrandTranslucentDark400Brush" />
     <StaticResource x:Key="TextControlBackgroundPointerOver" ResourceKey="SurfaceTranslucentLowBrush" />
     <StaticResource x:Key="TextControlBackgroundDisabled" ResourceKey="SurfaceTransparentBrush" />
@@ -427,7 +415,7 @@
     <StaticResource x:Key="TextControlBorderBrush" ResourceKey="StrokeTranslucentSubduedBrush" />
     <StaticResource x:Key="TextControlBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="TextControlBorderBrushFocused" ResourceKey="StrokeTranslucentSubduedBrush" />
-    <SolidColorBrush x:Key="TextControlBorderBrushDisabled" 
+    <SolidColorBrush x:Key="TextControlBorderBrushDisabled"
                      Color="{StaticResource StrokeTranslucentSubdued}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
@@ -449,7 +437,8 @@
     <StaticResource x:Key="TextControlButtonBackgroundPointerOver" ResourceKey="SurfaceHighBrush" />
     <StaticResource x:Key="TextControlButtonBackgroundPressed" ResourceKey="SurfaceHighBrush" />
     <StaticResource x:Key="TextControlButtonBorderBrush" ResourceKey="StrokeTranslucentSubduedBrush" />
-    <StaticResource x:Key="TextControlButtonBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="TextControlButtonBorderBrushPointerOver"
+                    ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="TextControlButtonBorderBrushPressed" ResourceKey="StrokeTranslucentStrongBrush" />
 
     <StaticResource x:Key="TextControlForegroundFocused" ResourceKey="NeutralStrongBrush" />

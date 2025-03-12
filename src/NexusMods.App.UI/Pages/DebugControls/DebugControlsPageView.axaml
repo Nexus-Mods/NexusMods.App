@@ -67,7 +67,7 @@
                                     <TextBlock Text="ToggleSwitch"></TextBlock>
                                     <ToggleSwitch />
                                     <ToggleSwitch IsChecked="True" />
-                                    <ToggleSwitch IsChecked="{x:Null}" />
+                                    <ToggleSwitch IsChecked="{x:Null}" IsThreeState="True"  />
                                     <ToggleSwitch IsEnabled="False" />
                                     <ToggleSwitch IsChecked="True" IsEnabled="False" />
                                 </StackPanel>
@@ -75,7 +75,7 @@
                                     <TextBlock Text="CheckBox"></TextBlock>
                                     <CheckBox>Enabled</CheckBox>
                                     <CheckBox IsChecked="True">Checked</CheckBox>
-                                    <CheckBox IsChecked="{x:Null}">3-State</CheckBox>
+                                    <CheckBox IsChecked="{x:Null}" IsThreeState="True">3-State</CheckBox>
                                     <CheckBox IsEnabled="False">Disabled</CheckBox>
                                     <CheckBox IsChecked="True" IsEnabled="False">Checked</CheckBox>
                                     <CheckBox IsChecked="{x:Null}" IsEnabled="False">3-State</CheckBox>
@@ -90,7 +90,7 @@
                             </StackPanel>
 
                             <StackPanel Orientation="Horizontal" Spacing="16">
-                                <StackPanel>
+                                <StackPanel Spacing="8">
                                     <TextBlock Text="TextBox"></TextBlock>
                                     <TextBox>Enabled</TextBox>
                                     <TextBox Watermark="Placeholder" />

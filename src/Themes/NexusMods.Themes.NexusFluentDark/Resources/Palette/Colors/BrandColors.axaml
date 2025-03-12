@@ -6,12 +6,6 @@
     <!-- When creating components the full range of these Brands can be used if required, although the curated selection in Layer 3 is preferred. -->
     <!-- Note: Only the translucent black and white colours maintain descriptive names as they will always be varying opacities of light and dark. -->
 
-    <!-- Include the Primitive colors -->
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="/Resources/Palette/Colors/PrimitiveColors.axaml" />
-    </ResourceDictionary.MergedDictionaries>
-
-
     <!-- Neutral -->
 
     <!-- Colors -->

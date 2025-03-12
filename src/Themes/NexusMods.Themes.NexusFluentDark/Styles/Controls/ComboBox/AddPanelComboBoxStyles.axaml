@@ -4,7 +4,7 @@
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <Design.PreviewWith>
-        <Border Padding="16">
+        <Border Padding="16" Width="100" Height="100">
             <StackPanel Orientation="Vertical" Classes="Spacing-1">
                 <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
                     <ComboBoxItem Content="Item 1" />

@@ -5,29 +5,69 @@
     <Design.PreviewWith>
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
+                
+                <Grid ColumnDefinitions="Auto,Auto,Auto,Auto" 
+                      RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                    
+                    <Border Grid.Column="0" Grid.Row="0">
+                        <TextBlock Text="Default" />
+                    </Border>
+                    
+                    <Border Grid.Column="1" Grid.Row="0">
+                        <TextBlock Text="Active" />
+                    </Border>
+                    
+                    <Border Grid.Column="2" Grid.Row="0">
+                        <TextBlock Text="Selected" />
+                    </Border>
+                    
+                    <navigation:LeftMenuNavButton Grid.Column="0" Grid.Row="1">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                    
+                    <navigation:LeftMenuNavButton Grid.Column="1" Grid.Row="1" IsActive="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                    
+                    <navigation:LeftMenuNavButton Grid.Column="2" Grid.Row="1" IsSelected="True">
+                        <DockPanel>
+                            <icons:UnifiedIcon DockPanel.Dock="Left"
+                                               Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                    
+                    
+                    
+                </Grid>
 
                 <StackPanel Spacing="8" Orientation="Vertical" Width="80">
-                    <Border Height="34">
-                        <TextBlock Text="Default"
-                                   VerticalAlignment="Center"
-                                   Theme="{StaticResource BodyMDBoldTheme}"
-                                   Foreground="{StaticResource BrandNeutral500Brush}" />
+                    <Border>
+                        <TextBlock Text="Default" />
                     </Border>
-                    <Border Height="34">
-                        <TextBlock Text="Active"
-                                   VerticalAlignment="Center"
-                                   Theme="{StaticResource BodyMDBoldTheme}"
-                                   Foreground="{StaticResource BrandNeutral500Brush}" />
+                    <Border>
+                        <TextBlock Text="Active" />
                     </Border>
-                    <Border Height="34">
-                        <TextBlock Text="Selected"
-                                   VerticalAlignment="Center"
-                                   Theme="{StaticResource BodyMDBoldTheme}"
-                                   Foreground="{StaticResource BrandNeutral500Brush}" />
+                    <Border>
+                        <TextBlock Text="Selected" />
                     </Border>
                 </StackPanel>
 
-                <StackPanel Spacing="8" Orientation="Vertical" Width="145">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="140">
 
                     <navigation:LeftMenuNavButton>
                         <DockPanel>
@@ -234,7 +274,6 @@
         <Setter Property="Margin" Value="2" />
 
         <Style Selector="^ > DockPanel > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             <Setter Property="Margin" Value="4 0 4 0" />
         </Style>
 

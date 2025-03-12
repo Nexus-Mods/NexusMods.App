@@ -32,14 +32,9 @@
       <AdditionalFiles Include="Resources\Palette\Colors\PrimitiveColors.axaml" />
       <AdditionalFiles Include="Resources\Palette\Fonts\PrimitiveFonts.axaml" />
       <AdditionalFiles Include="Resources\Palette\Fonts\SemanticFonts.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Border\BorderStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\BareIconStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\HyperlinkStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\RoundedButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Button\SpineButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Button\SpineDownloadButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Button\StandardButtonStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\CheckBox\CheckBoxStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Icons\IconsStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\ProgressBar\ProgressBarStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\RadioButton\RadioButtonStyles.axaml" />
@@ -57,13 +52,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBoxStyles.addPanelDropDown.axaml">
-        <DependentUpon>ComboBoxStyles.axaml</DependentUpon>
-      </AvaloniaXaml>
-    </ItemGroup>
-
-    <ItemGroup>
       <Folder Include="Assets\Fonts\Bold\" />
+      <Folder Include="Styles\Controls\CheckBox\" />
+      <Folder Include="Styles\Controls\RadioButton\" />
+      <Folder Include="Styles\Controls\SplitButton\" />
+      <Folder Include="Styles\Controls\TextBlock\" />
+      <Folder Include="Styles\Controls\TextBox\" />
     </ItemGroup>
 
 </Project>

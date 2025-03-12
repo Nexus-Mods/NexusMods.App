@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <ResourceDictionary.MergedDictionaries>
+        
+        <ResourceInclude Source="/Resources/Palette/Colors/PrimitiveColors.axaml" />
         <ResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Colors/ElementGradients.axaml"/>
@@ -9,28 +11,29 @@
         <ResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
         <ResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
         <ResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
-        <ResourceInclude Source="/Resources/BaseResources.axaml"/>
-        <ResourceInclude Source="/Resources/ControlResources.axaml"/>
-
         
-        <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
+        
+        <MergeResourceInclude Source="/Resources/BaseResources.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlResources.axaml"/>
+        <MergeResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
+        
+        <MergeResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
                 
         <!-- controls -->
-        <ResourceInclude Source="/Controls/TextBlock.axaml"/>
-        <ResourceInclude Source="/Controls/AccessText.axaml"/>
-        <ResourceInclude Source="/Controls/Button.axaml"/>
-        <ResourceInclude Source="/Controls/SplitButton.axaml"/>
-        <ResourceInclude Source="/Controls/ComboBox.axaml"/>
-        <ResourceInclude Source="/Controls/ComboBoxItem.axaml"/>
-        <ResourceInclude Source="/Controls/ToggleSwitch.axaml"/>
-        <ResourceInclude Source="/Controls/CheckBox.axaml"/>
-        <ResourceInclude Source="/Controls/RadioButton.axaml"/>
-        <ResourceInclude Source="/Controls/TextBox.axaml"/>
+        <MergeResourceInclude Source="/Controls/TextBlock.axaml"/>
+        <MergeResourceInclude Source="/Controls/AccessText.axaml"/>
+        <MergeResourceInclude Source="/Controls/Button.axaml"/>
+        <MergeResourceInclude Source="/Controls/SplitButton.axaml"/>
+        <MergeResourceInclude Source="/Controls/ComboBox.axaml"/>
+        <MergeResourceInclude Source="/Controls/ComboBoxItem.axaml"/>
+        <MergeResourceInclude Source="/Controls/ToggleSwitch.axaml"/>
+        <MergeResourceInclude Source="/Controls/CheckBox.axaml"/>
+        <MergeResourceInclude Source="/Controls/RadioButton.axaml"/>
+        <MergeResourceInclude Source="/Controls/TextBox.axaml"/>
         
     </ResourceDictionary.MergedDictionaries>
     

@@ -1,8 +1,7 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="using:System">
-    
-    
+
 
     <!-- Defines misc resources for the Theme -->
 
@@ -14,7 +13,6 @@
     <StreamGeometry x:Key="MenuDownGeometry">M0 0.5L5 5.5L10 0.5H0Z</StreamGeometry>
 
     <StreamGeometry x:Key="KeyBoardArrowDownGeometry">M1.0575 0.442383L4.5 3.87738L7.9425 0.442383L9 1.49988L4.5 5.99988L0 1.49988L1.0575 0.442383Z</StreamGeometry>
-
 
     <!-- start of copies from Avalonia.Themes.Fluent -->
 
@@ -30,16 +28,16 @@
     <sys:Double x:Key="IconElementThemeWidth">20</sys:Double>
     <sys:Double x:Key="RefreshVisualizerIndicatorSize">24</sys:Double>
     <Thickness x:Key="ButtonPadding">8,5,8,5</Thickness>
-    
+
     <!-- Override system shape defaults -->
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="OverlayCornerRadius">6</CornerRadius>
-    
+
     <x:Double x:Key="AutoCompleteListMaxHeight">374</x:Double>
     <Thickness x:Key="AutoCompleteListMargin">0,2,0,2</Thickness>
     <Thickness x:Key="AutoCompleteListBorderThemeThickness">1</Thickness>
     <Thickness x:Key="AutoCompleteListPadding">-1,0,-1,0</Thickness>
     <x:Double x:Key="TextControlThemeMinHeight">28</x:Double>
     <x:Double x:Key="TextControlThemeMinWidth">64</x:Double>
-    
+
 </ResourceDictionary>
