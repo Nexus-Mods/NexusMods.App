@@ -41,11 +41,13 @@ internal class OSInteropWindows : AOSInterop
         var path = filePath.ToNativeSeparators(_fileSystem.OS);
 
         // reference: https://ss64.com/nt/explorer.html
-        var command = Cli.Wrap("explorer.exe").WithArguments($@"/select,""{path}""");
-        var task = _processFactory.ExecuteAsync(command, logProcessOutput: logOutput, cancellationToken: cancellationToken);
-
+        var command = Cli.Wrap("explorer.exe").WithArguments($@"/select,""{path}""")
+            // NOTE(Al12rs): Apparently explorer.exe returns 1 on success here, so we need to ignore non-zero return values during validation
+            .WithValidation(CommandResultValidation.None);
+        
         try
         {
+            var task = _processFactory.ExecuteAsync(command, logProcessOutput: logOutput, cancellationToken: cancellationToken);
             await task.AwaitOrForget(_logger, fireAndForget: fireAndForget, cancellationToken: cancellationToken);
         }
         catch (TaskCanceledException)

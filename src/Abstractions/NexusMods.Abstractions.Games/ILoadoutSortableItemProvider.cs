@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// A loadout specific provider and manager of sortable items.
 /// </summary>
-public interface ILoadoutSortableItemProvider 
+public interface ILoadoutSortableItemProvider : IDisposable
 {
     /// <summary>
     /// The ISortableItemProviderFactory that created this provider
@@ -28,5 +28,5 @@ public interface ILoadoutSortableItemProvider
     /// </summary>
     /// <param name="sortableItem">item to move</param>
     /// <param name="delta">positive or negative index delta</param>
-    Task SetRelativePosition(ISortableItem sortableItem, int delta);
+    Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token);
 }

@@ -12,6 +12,7 @@ public class UndeployableLoadoutDueToMissingGameFiles : ILoadoutDiagnosticEmitte
 {
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
+
         var syncronizer = loadout.InstallationInstance.GetGame().Synchronizer;
         var syncTree = await syncronizer.BuildSyncTree(loadout);
         syncronizer.ProcessSyncTree(syncTree);
@@ -30,7 +31,13 @@ public class UndeployableLoadoutDueToMissingGameFiles : ILoadoutDiagnosticEmitte
 
         if (count > 0)
         {
-            yield return Diagnostics.CreateUndeployableLoadoutDueToMissingGameFiles(totalSize, count);
+            yield return Diagnostics.CreateUndeployableLoadoutDueToMissingGameFiles(
+                Size: totalSize,
+                FileCount: count,
+                Game: loadout.InstallationInstance.Game.Name,
+                Store: loadout.InstallationInstance.Store.Value,
+                Version: loadout.GameVersion.ToString()
+            );
         }
     }
 }

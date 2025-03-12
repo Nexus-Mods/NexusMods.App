@@ -435,12 +435,6 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/star/
     public static readonly IconValue Star = new ProjektankerIcon("mdi-star");
 
-    // https://pictogrammers.com/library/mdi/icon/toggle-switch-outline/
-    public static readonly IconValue ToggleOff = new ProjektankerIcon("mdi-toggle-switch-outline");
-
-    // https://pictogrammers.com/library/mdi/icon/toggle-switch-off-outline/
-    public static readonly IconValue ToggleOn = new ProjektankerIcon("mdi-toggle-switch-off-outline");
-
 #endregion
 
 #region Custom Icons
@@ -602,6 +596,24 @@ public static class IconValues
             new Rect(0, 0, 16, 16 )
     ));
     
+    
+    // Toggle On icon
+    public static readonly IconValue ToggleOn = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M7 7C4.23858 7 2 9.23858 2 12C2 14.7614 4.23858 17 7 17H17C19.7614 17 22 14.7614 22 12C22 9.23858 19.7614 7 17 7H7ZM17 15.3329C18.841 15.3329 20.3333 13.8405 20.3333 11.9996C20.3333 10.1586 18.841 8.66626 17 8.66626C15.1591 8.66626 13.6667 10.1586 13.6667 11.9996C13.6667 13.8405 15.1591 15.3329 17 15.3329Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
+    // Toggle Off icon
+    public static readonly IconValue ToggleOff = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M7 8H17C19.2091 8 21 9.79086 21 12C21 14.2091 19.2091 16 17 16H7C4.79086 16 3 14.2091 3 12C3 9.79086 4.79086 8 7 8ZM2 12C2 9.23858 4.23858 7 7 7H17C19.7614 7 22 9.23858 22 12C22 14.7614 19.7614 17 17 17H7C4.23858 17 2 14.7614 2 12ZM7 14.5C8.38071 14.5 9.5 13.3807 9.5 12C9.5 10.6193 8.38071 9.5 7 9.5C5.61929 9.5 4.5 10.6193 4.5 12C4.5 13.3807 5.61929 14.5 7 14.5Z",
+        new Rect(0, 0, 24, 24 )
+    ));
+    
+    // Toggle Indeterminate icon
+    public static readonly IconValue ToggleIndeterminate = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M19 12C19 13.1046 18.1046 14 17 14C15.8954 14 15 13.1046 15 12C15 10.8954 15.8954 10 17 10C18.1046 10 19 10.8954 19 12Z M7 7C4.23858 7 2 9.23858 2 12C2 14.7614 4.23858 17 7 17H17C19.7614 17 22 14.7614 22 12C22 9.23858 19.7614 7 17 7H7ZM21 12C21 14.2091 19.2091 16 17 16C14.7909 16 13 14.2091 13 12C13 9.79086 14.7909 8 17 8C19.2091 8 21 9.79086 21 12Z",
+        new Rect(0, 0, 24, 24 )
+    ));
     public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
 
 #endregion

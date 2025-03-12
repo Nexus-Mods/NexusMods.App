@@ -70,7 +70,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception contacting {Url}", ApiBaseUrl);
+                _logger.LogWarning(e, "Exception contacting {Url}", ApiBaseUrl);
             }
 
             if (apiResult is not null)

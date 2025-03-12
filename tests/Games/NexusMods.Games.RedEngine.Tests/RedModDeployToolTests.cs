@@ -13,15 +13,16 @@ namespace NexusMods.Games.RedEngine.Tests;
 
 public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Game>
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly RedModDeployTool _tool;
 
-    public RedModDeployToolTests(ITestOutputHelper helper) : base(helper)
+    public RedModDeployToolTests(ITestOutputHelper helper, ITestOutputHelper testOutputHelper) : base(helper)
     {
+        _testOutputHelper = testOutputHelper;
         _tool = ServiceProvider.GetServices<ITool>().OfType<RedModDeployTool>().Single();
     }
 
     [Fact]
-    [Trait("FlakeyTest", "True")]
     public async Task LoadorderFileIsWrittenCorrectly()
     {
         var loadout = await CreateLoadout();
@@ -30,6 +31,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     }
 
     [Theory]
+    [InlineData("Driver_Shotguns", 0)]
     [InlineData("Driver_Shotguns", 3)]
     [InlineData("Driver_Shotguns", -3)]
     [InlineData("Driver_Shotguns", -11)]
@@ -38,49 +40,58 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     [InlineData("maestros_of_synth_the_dirge", -11)]
     public async Task MovingModsRelativelyResultsInCorrectOrdering(string name, int delta)
     {
-        var loadout = await CreateLoadout();
+        try
+        {
+            var loadout = await CreateLoadout();
 
-        var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
-        // Wait for the factory to pick up the loadouts
-        await Task.Delay(TimeSpan.FromSeconds(1));
+            var factory = ServiceProvider.GetRequiredService<RedModSortableItemProviderFactory>();
+            // Wait for the factory to pick up the loadouts
+            await Task.Delay(TimeSpan.FromSeconds(1));
         
-        var provider = factory.GetLoadoutSortableItemProvider(loadout);
+            var provider = factory.GetLoadoutSortableItemProvider(loadout);
 
-        var tsc1 = new TaskCompletionSource<Unit>();
-        // avoid stalling the test on failure
-        using var cts = new CancellationTokenSource();
-        cts.CancelAfter(TimeSpan.FromSeconds(30));
-        cts.Token.Register(() => tsc1.TrySetCanceled(), useSynchronizationContext: false);
+            var tsc1 = new TaskCompletionSource<Unit>();
+            // avoid stalling the test on failure
+            using var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromSeconds(30));
+            cts.Token.Register(() => tsc1.TrySetCanceled(), useSynchronizationContext: false);
 
-        // listen for the order to be updated
-        provider.SortableItems
-            .WhenAnyValue(coll => coll.Count)
-            .Where(count => count == 12)
-            .Distinct()
-            .Subscribe(_ =>
-                {
-                    if (!tsc1.Task.IsCompleted)
+            // listen for the order to be updated
+            using var _ = provider.SortableItems
+                .WhenAnyValue(coll => coll.Count)
+                .Where(count => count == 12)
+                .Distinct()
+                .Subscribe(_ =>
                     {
-                        tsc1.SetResult(Unit.Default);
+                        if (!tsc1.Task.IsCompleted)
+                        {
+                            tsc1.SetResult(Unit.Default);
+                        }
                     }
-                }
-            );
+                );
         
-        // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
-        // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
-        loadout = await AddRedMods(loadout);
+            // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
+            // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
+            loadout = await AddRedMods(loadout);
         
-        // wait for the order to be updated
-        await tsc1.Task;
+            // wait for the order to be updated
+            await tsc1.Task;
 
-        var order = provider.SortableItems;
-        var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
+            var order = provider.SortableItems;
+            var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
 
-        await provider.SetRelativePosition(specificRedMod, delta);
+            var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var token = cts2.Token;
+            await provider.SetRelativePosition(specificRedMod, delta, token);
 
-        loadout = loadout.Rebase();
+            loadout = loadout.Rebase();
 
-        await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
+            await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
+        } catch (Exception e)
+        {
+            _testOutputHelper.WriteLine(e.ToString());
+            throw;
+        }
     }
 
 

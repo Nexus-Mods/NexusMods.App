@@ -1,6 +1,5 @@
 using System.Reactive;
 using System.Text;
-using BitFaster.Caching.Lru;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Resources;
@@ -8,6 +7,7 @@ using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Hashing.xxHash3;
+using NexusMods.MnemonicDB.Abstractions;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley;
@@ -21,7 +21,8 @@ internal static class Pipelines
         return serviceCollection.AddKeyedSingleton<IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest>>(
             serviceKey: ManifestPipelineKey,
             implementationFactory: static (serviceProvider, _) => CreateManifestPipeline(
-                fileStore: serviceProvider.GetRequiredService<IFileStore>()
+                fileStore: serviceProvider.GetRequiredService<IFileStore>(),
+                connection: serviceProvider.GetRequiredService<IConnection>()
             )
         );
     }
@@ -31,7 +32,7 @@ internal static class Pipelines
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest>>(serviceKey: ManifestPipelineKey);
     }
 
-    private static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> CreateManifestPipeline(IFileStore fileStore)
+    private static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> CreateManifestPipeline(IFileStore fileStore, IConnection connection)
     {
         var pipeline = new FileStoreStreamLoader(fileStore)
             .ThenDo(Unit.Default, static (_, _, resource, _) =>
@@ -44,13 +45,10 @@ internal static class Pipelines
 
                 return ValueTask.FromResult(resource.WithData(manifest));
             })
-            .UseCache(
-                keyGenerator: static hash => hash,
+            .StoreInMemory<SMAPIModLoadoutItem.ReadOnly, Hash, SMAPIManifest>(
+                selector: static mod => mod.Manifest.AsLoadoutFile().Hash,
                 keyComparer: EqualityComparer<Hash>.Default,
-                capacityPartition: new FavorWarmPartition(totalCapacity: 100)
-            )
-            .ChangeIdentifier<SMAPIModLoadoutItem.ReadOnly, Hash, SMAPIManifest>(
-                static mod => mod.Manifest.AsLoadoutFile().Hash
+                shouldDeleteKey: (tuple, _) => ValueTask.FromResult(!SMAPIModLoadoutItem.Load(connection.Db, tuple.Item2.Id).IsValid())
             );
 
         return pipeline;

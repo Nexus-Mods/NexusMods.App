@@ -17,7 +17,8 @@ internal class XDGSettingsDependency : ExecutableRuntimeDependency
     {
         var command = Cli
             .Wrap("xdg-settings")
-            .WithArguments($"set default-url-scheme-handler {uriScheme} {desktopFile}");
+            .WithArguments($"set default-url-scheme-handler {uriScheme} {desktopFile}")
+            .WithValidation(CommandResultValidation.None);
 
         return command;
     }

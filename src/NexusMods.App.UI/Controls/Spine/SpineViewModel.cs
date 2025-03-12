@@ -88,140 +88,134 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
         var workspaceController = windowManager.ActiveWorkspaceController;
 
         this.WhenActivated(disposables =>
-                {
-                    var loadouts = Loadout.ObserveAll(_conn);
+            {
+                var loadouts = Loadout.ObserveAll(_conn);
 
-                    loadouts
-                        .Filter(loadout => loadout.IsVisible())
-                        .TransformAsync(async loadout =>
-                            {
-                                await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
-
-                                var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
-                                vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
-                                vm.Image = LoadImageFromStream(iconStream);
-                                vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
-                                vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
-                                vm.IsActive = false;
-                                vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
-                                vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
-                                return vm;
-                            }
-                        )
-                        .OnUI()
-                        .OnItemRemoved(loadoutSpineItem =>
-                            {
-                                if (loadoutSpineItem.WorkspaceContext is LoadoutContext loadoutContext)
-                                    workspaceController.UnregisterWorkspaceByContext<LoadoutContext>(context => loadoutContext == context);
-                            })
-                    .SortAndBind(out _loadoutSpineItems, LoadoutComparerInstance)
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(disposables);
-
-                // Create Left Menus for each workspace on demand
-                workspaceController.AllWorkspaces
-                    .ToObservableChangeSet()
-                    .OnItemAdded(workspace =>
-                    {
-                        if (_leftMenus.TryGetValue(workspace.Id, out _))
-                        {
-                            return;
-                        }
-                            
-                        try
-                        {
-                            var leftMenu = workspaceAttachmentsFactory.CreateLeftMenuFor(
-                                workspace.Context,
-                                workspace.Id,
-                                workspaceController
-                            );
-
-                            if (leftMenu == null)
-                            {
-                                throw new InvalidDataException("LeftMenu factory returned a null view model");
-                            }
-                            
-                            _leftMenus.Add(workspace.Id, leftMenu);
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.LogError(e, "Exception while creating left menu for context {Context}", workspace.Context);
-                        }
-                    })
-                    .OnItemRemoved(workspace => _leftMenus.Remove(workspace.Id, out _))
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(disposables);
-
-                // Navigate away from the Loadout workspace if the Loadout is removed
                 loadouts
-                    .OnUI()
-                    .OnItemRemoved(loadout =>
+                    .Filter(loadout => loadout.IsVisible())
+                    .TransformAsync(async loadout =>
                         {
+                            await using var iconStream = await ((IGame)loadout.InstallationInstance.Game).Icon.GetStreamAsync();
+
+                            var vm = serviceProvider.GetRequiredService<IImageButtonViewModel>();
+                            vm.Name = loadout.InstallationInstance.Game.Name + " - " + loadout.Name;
+                            vm.Image = LoadImageFromStream(iconStream);
+                            vm.LoadoutBadgeViewModel = new LoadoutBadgeViewModel(_conn, _syncService, hideOnSingleLoadout: true);
+                            vm.LoadoutBadgeViewModel.LoadoutValue = loadout;
+                            vm.WorkspaceContext = new LoadoutContext { LoadoutId = loadout.LoadoutId };
+                            vm.Click = ReactiveCommand.Create(() => ChangeToLoadoutWorkspace(loadout.LoadoutId));
+                            vm.IsActive = false;
+
                             if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
                                 activeLoadoutContext.LoadoutId == loadout.LoadoutId)
                             {
-                                workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
-                                    {
-                                        FactoryId = MyGamesPageFactory.StaticId,
-                                        Context = new MyGamesPageContext(),
-                                    }
-                                );
+                                SetActiveItem(vm);
                             }
-                        }, false
-                    )
-                    .SubscribeWithErrorLogging()
-                    .DisposeWith(disposables);
-
-                // Update the LeftMenuViewModel when the active workspace changes
-                workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace.Id)
-                    .Select(workspaceId => _leftMenus.GetValueOrDefault(workspaceId))
-                    .BindToVM(this, vm => vm.LeftMenuViewModel)
-                    .DisposeWith(disposables);
-
-                // Update the active spine item when the active workspace changes
-                workspaceController
-                    .WhenAnyValue(controller => controller.ActiveWorkspace)
-                    .Select(workspace => workspace.Context)
-                    .WhereNotNull()
-                    .SubscribeWithErrorLogging(context =>
-                        {
-                            var itemToActivate = _specialSpineItems
-                                .Concat(_loadoutSpineItems)
-                                .FirstOrDefault(spineItem => spineItem.WorkspaceContext?.Equals(context) == true);
-
-                            if (itemToActivate == null)
-                                return;
-
-                            if (_activeSpineItem != null)
-                                _activeSpineItem.IsActive = false;
-
-                            itemToActivate.IsActive = true;
-                            _activeSpineItem = itemToActivate;
+                            
+                            return vm;
                         }
                     )
-                    .DisposeWith(disposables);
-
-                // Update the active spine item if the loadoutList changes
-                _loadoutSpineItems.ToObservableChangeSet()
-                    .SubscribeWithErrorLogging(_ =>
+                    .OnUI()
+                    .OnItemRemoved(loadoutSpineItem =>
                         {
-                            if (_activeSpineItem is not { WorkspaceContext: LoadoutContext loadoutContext }) return;
+                            if (loadoutSpineItem.WorkspaceContext is LoadoutContext loadoutContext)
+                                workspaceController.UnregisterWorkspaceByContext<LoadoutContext>(context => loadoutContext == context);
+                        })
+                .SortAndBind(out _loadoutSpineItems, LoadoutComparerInstance)
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
 
-                            // The spine item might have been replaced with a new one (TransformAsync)
-                            var newSpineItem = _loadoutSpineItems.FirstOrDefault(
-                                spineItem => loadoutContext.Equals(spineItem.WorkspaceContext)
+            // Create Left Menus for each workspace on demand
+            workspaceController.AllWorkspaces
+                .ToObservableChangeSet()
+                .OnItemAdded(workspace =>
+                {
+                    if (_leftMenus.TryGetValue(workspace.Id, out _))
+                    {
+                        return;
+                    }
+                        
+                    try
+                    {
+                        var leftMenu = workspaceAttachmentsFactory.CreateLeftMenuFor(
+                            workspace.Context,
+                            workspace.Id,
+                            workspaceController
+                        );
+
+                        if (leftMenu == null)
+                        {
+                            throw new InvalidDataException("LeftMenu factory returned a null view model");
+                        }
+                        
+                        _leftMenus.Add(workspace.Id, leftMenu);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Exception while creating left menu for context {Context}", workspace.Context);
+                    }
+                })
+                .OnItemRemoved(workspace => _leftMenus.Remove(workspace.Id, out _))
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
+
+            // Navigate away from the Loadout workspace if the Loadout is removed
+            loadouts
+                .OnUI()
+                .OnItemRemoved(loadout =>
+                    {
+                        if (workspaceController.ActiveWorkspace.Context is LoadoutContext activeLoadoutContext &&
+                            activeLoadoutContext.LoadoutId == loadout.LoadoutId)
+                        {
+                            workspaceController.ChangeOrCreateWorkspaceByContext<HomeContext>(() => new PageData
+                                {
+                                    FactoryId = MyGamesPageFactory.StaticId,
+                                    Context = new MyGamesPageContext(),
+                                }
                             );
-                            if (newSpineItem == null) return;
-
-                            _activeSpineItem.IsActive = false;
-                            newSpineItem.IsActive = true;
-                            _activeSpineItem = newSpineItem;
                         }
-                    )
-                    .DisposeWith(disposables);
+                    }, false
+                )
+                .SubscribeWithErrorLogging()
+                .DisposeWith(disposables);
+
+            // Update the LeftMenuViewModel when the active workspace changes
+            workspaceController.WhenAnyValue(controller => controller.ActiveWorkspace)
+                .Select(workspace => workspace.Id)
+                .Select(workspaceId => _leftMenus.GetValueOrDefault(workspaceId))
+                .BindToVM(this, vm => vm.LeftMenuViewModel)
+                .DisposeWith(disposables);
+
+            // Update the active spine item when the active workspace changes
+            workspaceController
+                .WhenAnyValue(controller => controller.ActiveWorkspace)
+                .Select(workspace => workspace.Context)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(context =>
+                    {
+                        var itemToActivate = _specialSpineItems
+                            .Concat(_loadoutSpineItems)
+                            .FirstOrDefault(spineItem => spineItem.WorkspaceContext?.Equals(context) == true);
+
+                        SetActiveItem(itemToActivate);
+                    }
+                )
+                .DisposeWith(disposables);
+            
             }
         );
+    }
+
+    private void SetActiveItem(ISpineItemViewModel? itemToActivate)
+    {
+        if (itemToActivate == null)
+            return;
+
+        if (_activeSpineItem != null)
+            _activeSpineItem.IsActive = false;
+
+        itemToActivate.IsActive = true;
+        _activeSpineItem = itemToActivate;
     }
 
     private Bitmap LoadImageFromStream(Stream iconStream)

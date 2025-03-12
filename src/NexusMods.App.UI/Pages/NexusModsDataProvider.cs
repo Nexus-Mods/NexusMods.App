@@ -34,7 +34,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
 
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
+    private IObservable<IChangeSet<NexusModsModPageMetadata.ReadOnly, EntityId>> FilterLibraryItems(LibraryFilter libraryFilter)
     {
         return NexusModsModPageMetadata
             .ObserveAll(_connection)
@@ -44,8 +44,17 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .FilterOnObservable(modPage => _connection
                 .ObserveDatoms(NexusModsLibraryItem.ModPageMetadata, modPage)
                 .IsNotEmpty()
-            )
-            .Transform(modPage => ToLibraryItemModel(modPage, libraryFilter));
+            );
+    }
+
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
+    {
+        return FilterLibraryItems(libraryFilter).Transform(modPage => ToLibraryItemModel(modPage, libraryFilter));
+    }
+
+    public IObservable<int> CountLibraryItems(LibraryFilter libraryFilter)
+    {
+        return FilterLibraryItems(libraryFilter).QueryWhenChanged(query => query.Count).Prepend(0);
     }
 
     private CompositeItemModel<EntityId> ToLibraryItemModel(NexusModsModPageMetadata.ReadOnly modPage, LibraryFilter libraryFilter)
@@ -262,7 +271,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
             LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);
             LoadoutDataProviderHelper.AddCollections(parentItemModel, linkedItemsObservable);
-            LoadoutDataProviderHelper.AddIsEnabled(_connection, parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddParentCollectionsDisabled(_connection, parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddMixLockedAndParentDisabled(_connection, parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
+            LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
 
             return parentItemModel;
         });
