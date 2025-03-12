@@ -1,8 +1,4 @@
-using System.Diagnostics;
-using System.Reflection;
-using System.Text;
 using CliWrap;
-using CliWrap.Buffered;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.FileExtractor;
@@ -12,7 +8,6 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Networking.Downloaders;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
@@ -89,9 +84,6 @@ internal static class CleanupVerbs
 
                 // The DataModel folder.
                 DataModelSettings.GetStandardDataModelFolder(fileSystem),
-
-                // The whole base Download folder.
-                DownloadSettings.GetStandardDownloadsFolder(fileSystem),
 
                 // Local Application Data (where all app files default to).
                 DataModelSettings.GetLocalApplicationDataDirectory(fileSystem),

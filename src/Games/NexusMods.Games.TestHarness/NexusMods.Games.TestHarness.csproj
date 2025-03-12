@@ -6,7 +6,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
-        <ProjectReference Include="..\..\Abstractions\NexusMods.Abstractions.HttpDownloader\NexusMods.Abstractions.HttpDownloader.csproj" />
         <ProjectReference Include="..\..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\..\NexusMods.StandardGameLocators\NexusMods.StandardGameLocators.csproj" />
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj" />
