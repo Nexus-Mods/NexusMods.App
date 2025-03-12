@@ -1,0 +1,62 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+
+    <Style Selector="TreeDataGridTemplateCell">
+        <!-- <Setter Property="Background" Value="Blue" /> -->
+
+        <!-- loadout -> actions cell -->
+        <Style Selector="^.LoadoutColumns_EnabledState">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+
+            <Style Selector="^ Border.LoadoutColumns_EnabledState_LockedEnabledState">
+                <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
+                <Style Selector="^ controls|StandardButton">
+                    <Style Selector="^ /template/ icons|UnifiedIcon#PART_RightIcon">
+                        <Setter Property="Size" Value="24" />
+                    </Style>
+                </Style>
+            </Style>
+
+            <Style Selector="^ Border.LoadoutColumns_EnabledState_ParentCollectionDisabled">
+                <!-- <Setter Property="Background" Value="DarkOliveGreen" /> -->
+                <Style Selector="^ controls|StandardButton">
+                    <Style Selector="^ /template/ icons|UnifiedIcon#PART_RightIcon">
+                        <Setter Property="Size" Value="24" />
+                    </Style>
+                </Style>
+            </Style>
+
+            <Style Selector="^ Border.LoadoutColumns_EnabledState_MixLockedAndParentDisabled">
+                <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->
+                <Style Selector="^ controls|StandardButton">
+                    <Style Selector="^ /template/ icons|UnifiedIcon#PART_RightIcon">
+                        <Setter Property="Size" Value="24" />
+                    </Style>
+                </Style>
+            </Style>
+
+            <Style Selector="^ Border.LoadoutColumns_EnabledState_EnabledStateToggle">
+                <!-- <Setter Property="Background" Value="DarkRed" /> -->
+                <Style Selector="^ Button">
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+
+                    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                    </Style>
+                    
+                    <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                        <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
+                    </Style>
+                </Style>
+            </Style>
+
+        </Style>
+    </Style>
+
+</Styles>
