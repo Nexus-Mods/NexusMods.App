@@ -2,7 +2,6 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.HttpDownloader;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -32,10 +31,10 @@ public class StressTest
         [Injected] INexusGraphQLClient nexusGqlClient,
         [Injected] IGameDomainToGameIdMappingCache domainToIdCache,
         [Injected] TemporaryFileManager temporaryFileManager,
-        [Injected] IHttpDownloader downloader,
         [Injected] ILibraryService libraryService,
         [Injected] IEnumerable<IGameLocator> gameLocators,
         [Injected] IGuidedInstaller optionSelector,
+        [Injected] NexusModsLibrary nexusModsLibrary,
         [Injected] CancellationToken token)
     {
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
@@ -78,13 +77,11 @@ public class StressTest
                             file.Name,
                             size);
 
-                        var urls = await nexusApiClient.DownloadLinksAsync(domain, mod.ModId, uid.FileId, token);
+
                         await using var tmpPath = temporaryFileManager.CreateFile();
 
-                        var cts = new CancellationTokenSource();
-                        cts.CancelAfter(TimeSpan.FromMinutes(20));
-
-                        hash = await downloader.DownloadAsync(urls.Data.Select(d => d.Uri), tmpPath, token: cts.Token);
+                        var downloadJob = await nexusModsLibrary.CreateDownloadJob(tmpPath, game.GameId, mod.ModId, uid.FileId, cancellationToken: CancellationToken.None);
+                        var libraryFile = await libraryService.AddDownload(downloadJob);
 
                         await renderer.Text("Installing {0} {1} {2} - {3}", mod.ModId,
                             uid.FileId,
@@ -93,8 +90,7 @@ public class StressTest
 
                         var list = await game.Synchronizer.CreateLoadout(install);
 
-                        var localFile = await libraryService.AddLocalFile(tmpPath);
-                        await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), list.LoadoutId);
+                        await libraryService.InstallItem(libraryFile.AsLibraryItem(), list.LoadoutId);
                         
                         results.Add((file.Name, mod.ModId, uid.FileId, hash, true, null));
                         await renderer.Text("Installed {0} {1} {2} - {3}", mod.ModId, uid.FileId,

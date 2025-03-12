@@ -4,14 +4,8 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
-using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Diagnostics;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
@@ -33,7 +27,6 @@ using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
-using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
@@ -61,11 +54,6 @@ using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 using ReactiveUI;
-using DownloadGameNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
-using DownloadNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName.DownloadNameView;
-using DownloadSizeView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize.DownloadSizeView;
-using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
-using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 using SettingToggleControl = NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl;
@@ -94,8 +82,6 @@ public static class Services
 
             // View Models
             .AddTransient<MainWindowViewModel>()
-            .AddTransient(typeof(DataGridViewModelColumn<,>))
-            .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
             
             .AddViewModel<CollectionCardDesignViewModel, ICollectionCardViewModel>()
@@ -115,13 +101,7 @@ public static class Services
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<SpineDownloadButtonViewModel, ISpineDownloadButtonViewModel>()
-            .AddViewModel<DownloadGameNameViewModel, IDownloadGameNameViewModel>()
-            .AddViewModel<DownloadNameViewModel, IDownloadNameViewModel>()
-            .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
-            .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
-            .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
             .AddViewModel<MessageBoxOkViewModel, IMessageBoxOkViewModel>()
-            .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
             .AddViewModel<LoginMessageBoxViewModel, ILoginMessageBoxViewModel>()
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
             .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
@@ -146,12 +126,6 @@ public static class Services
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
             .AddView<SpineDownloadButtonView, ISpineDownloadButtonViewModel>()
-            .AddView<DownloadGameNameView, IDownloadGameNameViewModel>()
-            .AddView<DownloadNameView, IDownloadNameViewModel>()
-            .AddView<DownloadVersionView, IDownloadVersionViewModel>()
-            .AddView<DownloadSizeView, IDownloadSizeViewModel>()
-            .AddView<DownloadStatusView, IDownloadStatusViewModel>()
-            .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
             .AddView<MessageBoxOkView, IMessageBoxOkViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<LoginMessageBoxView, ILoginMessageBoxViewModel>()
