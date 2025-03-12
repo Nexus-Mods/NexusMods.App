@@ -20,7 +20,7 @@ public record TelemetrySettings : ISettings
                 .AddPropertyToUI(x => x.IsEnabled, propertyBuilder => propertyBuilder
                     .AddToSection(Sections.Privacy)
                     .WithDisplayName("Send diagnostic and usage data")
-                    .WithDescription("Help us improve the app by sending anonymous diagnostic and usage data to Nexus Mods.")
+                    .WithDescription("Help us improve the app by sending diagnostic and usage data to Nexus Mods.")
                     .WithLink(Link)
                     .UseBooleanContainer()
                     .RequiresRestart()

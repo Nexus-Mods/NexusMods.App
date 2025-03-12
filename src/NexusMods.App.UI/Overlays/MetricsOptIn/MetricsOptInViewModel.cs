@@ -31,7 +31,7 @@ public class MetricsOptInViewModel : AOverlayViewModel<IMetricsOptInViewModel>, 
         MarkdownRendererViewModel.Contents = $"""
 ## Diagnostics and Usage Data
 
-We’d like to collect anonymous diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.
+We’d like to collect diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.
 
 Your data will be processed in accordance with our [Privacy Policy]({ TelemetrySettings.Link }). You can change your preference anytime in settings.
 
