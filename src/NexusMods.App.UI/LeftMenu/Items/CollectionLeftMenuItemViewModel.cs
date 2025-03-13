@@ -16,7 +16,7 @@ public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuI
 {
     [Reactive] public bool IsEnabled { get; set; }
     
-    public bool IsToggleVisible { get; } = true;
+    public bool IsToggleVisible { get; set; } = true;
     
     public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
     

@@ -10,12 +10,14 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages;
+using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -65,7 +67,10 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
         var collectionItemComparer = new LeftMenuCollectionItemComparer();
         var collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
-        
+
+        var loadout = Abstractions.Loadouts.Loadout.Load(conn.Db, loadoutContext.LoadoutId.Value);
+        var game = loadout.InstallationInstance.Game;
+
         // Library
         LeftMenuItemLibrary = new LeftMenuItemWithCountBadgeViewModel(
             workspaceController,
@@ -110,6 +115,34 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             ToolTip = new StringComponent(Language.LoadoutView_Title_Installed_Mods_ToolTip),
         };
 
+        var collectionRevisionsObservable = CollectionRevisionMetadata
+            .ObserveAll(conn)
+            .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
+            .FilterOnObservable(revision =>
+            {
+                var groupObservable = collectionDownloader.GetCollectionGroupObservable(revision, loadout);
+                var isNotInstalledObservable = collectionDownloader.IsCollectionInstalledObservable(revision, groupObservable).Select(static isInstalled => !isInstalled);
+                return isNotInstalledObservable;
+            })
+            .Transform(ILeftMenuItemViewModel (revision) =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = CollectionDownloadPageFactory.StaticId,
+                    Context = new CollectionDownloadPageContext
+                    {
+                        TargetLoadout = loadout,
+                        CollectionRevisionMetadataId = revision,
+                    },
+                };
+
+                return new LeftMenuItemViewModel(workspaceController, workspaceId, pageData)
+                {
+                    Text = new StringComponent(revision.Collection.Name),
+                    Icon = IconValues.Downloading,
+                };
+            });
+
         // Collections
         var collectionItemsObservable = CollectionGroup.ObserveAll(conn)
             .FilterImmutable(f => f.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
@@ -132,7 +165,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         FactoryId = CollectionLoadoutPageFactory.StaticId,
                         Context = new CollectionLoadoutPageContext
                         {
-                            LoadoutId = collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
+                            LoadoutId = loadout,
                             GroupId = collection,
                         },
                     }
@@ -141,7 +174,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         FactoryId = LoadoutPageFactory.StaticId,
                         Context = new LoadoutPageContext
                         {
-                            LoadoutId = collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId,
+                            LoadoutId = loadout,
                             GroupScope = collection.AsLoadoutItemGroup().LoadoutItemGroupId,
                         },
                     };
@@ -233,6 +266,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     .DisposeWith(disposable);
 
                 collectionItemsObservable
+                    .MergeChangeSets(collectionRevisionsObservable)
                     .OnUI()
                     .SortAndBind(out _leftMenuCollectionItems, collectionItemComparer)
                     .Subscribe()
