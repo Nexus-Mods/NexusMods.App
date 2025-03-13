@@ -75,7 +75,7 @@ public static class CollectionComponents
             {
                 var (_, downloadJobStatusObservable, isDownloadedObservable) = state;
 
-                downloadJobStatusObservable.CombineLatest(isDownloadedObservable, static (a, b) => (a, b)).Subscribe(self, static (tuple, self) =>
+                downloadJobStatusObservable.CombineLatest(isDownloadedObservable, static (a, b) => (a, b)).ObserveOnUIThreadDispatcher().Subscribe(self, static (tuple, self) =>
                 {
                     var (downloadStatus, isDownloaded) = tuple;
                     self._canDownload.OnNext(!isDownloaded && downloadStatus < JobStatus.Running);

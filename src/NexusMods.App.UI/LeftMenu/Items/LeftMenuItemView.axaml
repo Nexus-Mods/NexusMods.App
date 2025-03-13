@@ -18,7 +18,7 @@
 
             <ContentControl x:Name="RightContentControl" DockPanel.Dock="Right">
                 <ContentControl.DataTemplates>
-                    <!-- Collection items -->
+                    <!-- Toggle -->
                     <DataTemplate DataType="items:ILeftMenuItemWithToggleViewModel">
                         <ToggleSwitch Classes="ExtraSmall"
                                       OnContent="{x:Null}"
@@ -57,6 +57,10 @@
                                        Foreground="{StaticResource NeutralInverted}"
                                        Text="{CompiledBinding Count}" />
                         </Border>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="items:LeftMenuItemWithRightIconViewModel">
+                        <icons:UnifiedIcon Value="{CompiledBinding RightIcon}"/>
                     </DataTemplate>
 
                     <!-- Nothing for default items  -->
