@@ -126,6 +126,16 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 .AddTo(disposables);
 
             Disposable.Create(self._selectionModelsSerialDisposable, static serialDisposable => serialDisposable.Disposable = null).AddTo(disposables);
+
+            Disposable.Create(self, static self =>
+            {
+                foreach (var root in self.Roots)
+                {
+                    root.Dispose();
+                }
+
+                self.Roots.Clear();
+            }).AddTo(disposables);
         });
     }
 
