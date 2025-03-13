@@ -136,10 +136,11 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     },
                 };
 
-                return new LeftMenuItemViewModel(workspaceController, workspaceId, pageData)
+                return new LeftMenuItemWithRightIconViewModel(workspaceController, workspaceId, pageData)
                 {
                     Text = new StringComponent(revision.Collection.Name),
-                    Icon = IconValues.Downloading,
+                    Icon = IconValues.CollectionsOutline,
+                    RightIcon = IconValues.Downloading,
                 };
             });
 
@@ -189,6 +190,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 {
                     Text = new StringComponent(collection.AsLoadoutItemGroup().AsLoadoutItem().Name),
                     Icon = IconValues.CollectionsOutline,
+                    IsCollectionReadOnly = collection.IsReadOnly,
                 };
             })
             .Transform(ILeftMenuItemViewModel (item) => item);
@@ -307,20 +309,24 @@ file class LeftMenuCollectionItemComparer : IComparer<ILeftMenuItemViewModel>
 {
     public int Compare(ILeftMenuItemViewModel? x, ILeftMenuItemViewModel? y)
     {
-        if (x is null && y is null)
-            return 0;
-        if (x is null)
-            return -1;
-        if (y is null)
-            return 1;
+        if (x is null && y is null) return 0;
+        if (x is null) return -1;
+        if (y is null) return 1;
 
         return (x, y) switch
         {
-            (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => 
-                a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value),
-            ({ } a, { } b) => 
-                string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
+            (CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b) => Compare(a, b),
+            (CollectionLeftMenuItemViewModel, _) => -1,
+            (_, CollectionLeftMenuItemViewModel) => 1,
+            ({ } a, { } b) => string.Compare(a.Text.Value.Value, b.Text.Value.Value, StringComparison.Ordinal),
             _ => 0,
         };
+    }
+
+    private static int Compare(CollectionLeftMenuItemViewModel a, CollectionLeftMenuItemViewModel b)
+    {
+        var res = a.IsCollectionReadOnly.CompareTo(b.IsCollectionReadOnly);
+        if (res != 0) return res;
+        return a.CollectionGroupId.Value.CompareTo(b.CollectionGroupId.Value);
     }
 }
