@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
@@ -23,7 +22,6 @@ using NexusMods.Games.Generic;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
 using NexusMods.Library;
-using NexusMods.Networking.Downloaders;
 using NexusMods.Networking.GOG;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
@@ -96,7 +94,6 @@ public static class Services
                 // .AddAdvancedHttpDownloader()
                 .AddTestHarness()
                 .AddFileSystem()
-                .AddDownloaders()
                 .AddCleanupVerbs()
                 .AddSteamCli()
                 .AddGOG()
