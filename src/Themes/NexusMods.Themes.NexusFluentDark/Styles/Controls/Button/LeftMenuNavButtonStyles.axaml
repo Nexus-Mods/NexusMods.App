@@ -6,7 +6,7 @@
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
 
-                <StackPanel Spacing="8" Orientation="Vertical" Width="140">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="150">
 
                     <navigation:LeftMenuNavButton>
                         <DockPanel>
@@ -46,7 +46,7 @@
 
                 </StackPanel>
 
-                <StackPanel Spacing="8" Orientation="Vertical" Width="165">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="160">
 
                     <navigation:LeftMenuNavButton>
                         <DockPanel>
@@ -117,7 +117,7 @@
                         </DockPanel>
                     </navigation:LeftMenuNavButton>
                 </StackPanel>
-                <StackPanel Spacing="8" Orientation="Vertical">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="180">
                     <navigation:LeftMenuNavButton>
                         <DockPanel>
                             <icons:UnifiedIcon DockPanel.Dock="Left"
@@ -215,11 +215,20 @@
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="Fill" Value="None" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <!-- using margin to make up for the border on other states being inside the button -->
-        <Setter Property="Margin" Value="2" />
+        <!-- using transparent border to make up for other states needing border -->
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
+        <Setter Property="Margin" Value="0" />
 
-        <Style Selector="^ > DockPanel > TextBlock">
-            <Setter Property="Margin" Value="4 0 4 0" />
+        <Style Selector="^ > DockPanel">
+            <Style Selector="^ > TextBlock">
+                <Setter Property="Margin" Value="4 0 4 0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style Selector="^ > ToggleSwitch">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
         </Style>
 
         <!-- ACTIVE -->

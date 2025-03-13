@@ -3,13 +3,19 @@
     <Design.PreviewWith>
         <StackPanel Margin="20" Width="250" Spacing="24">
             <StackPanel Spacing="12">
-                <ToggleSwitch />
-                <ToggleSwitch IsChecked="True" />
+                <Border Background="DarkSlateGray" HorizontalAlignment="Left" Padding="8">
+                    <ToggleSwitch DockPanel.Dock="Right" Background="DarkRed" />
+                </Border>
+                <ToggleSwitch 
+                    Classes="WithLabel"/>
+                <ToggleSwitch IsChecked="True" 
+                              Classes="WithContent"/>
                 <ToggleSwitch HorizontalContentAlignment="Left"
+                              Classes="WithContent"
                               Content="Header"
                               OffContent="Off"
                               OnContent="On" />
-                <ToggleSwitch Background="Yellow" />
+                <ToggleSwitch Background="DarkOrange" />
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
@@ -60,31 +66,36 @@
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="12" MaxWidth="12" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <Grid
                             x:Name="SwitchAreaGrid"
                             Grid.RowSpan="3"
-                            Grid.ColumnSpan="3"
+                            Grid.ColumnSpan="2"
                             Background="{StaticResource ToggleSwitchContainerBackground}"
                             Margin="0,5"
                             TemplatedControl.IsTemplateFocusTarget="True" />
 
+                        <!-- Defaults to no labels or content, use the WithContent class to show the content -->
                         <ContentPresenter
                             x:Name="PART_OffContentPresenter"
                             Grid.RowSpan="3"
-                            Grid.Column="2"
+                            Grid.Column="1"
+                            IsVisible="False"
+                            Margin="12,0,0,0"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             Content="{TemplateBinding OffContent}"
                             ContentTemplate="{TemplateBinding OffContentTemplate}" />
-
+                        
+                        <!-- Defaults to no labels or content, use the WithContent class to show the content -->
                         <ContentPresenter
                             x:Name="PART_OnContentPresenter"
                             Grid.RowSpan="3"
-                            Grid.Column="2"
+                            Grid.Column="1"
+                            IsVisible="False"
+                            Margin="12,0,0,0"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             Content="{TemplateBinding OnContent}"
@@ -260,6 +271,16 @@
 
         <Style Selector="^:unchecked /template/ ContentPresenter#PART_OnContentPresenter">
             <Setter Property="Opacity" Value="0" />
+        </Style>
+        
+        <!-- our toggleswitch is defaulting to no labels or content, use this class to show the content -->
+        <Style Selector="^.WithContent">
+            <Style Selector="^ /template/ ContentPresenter#PART_OnContentPresenter">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_OffContentPresenter">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
         </Style>
     </ControlTheme>
 </ResourceDictionary>

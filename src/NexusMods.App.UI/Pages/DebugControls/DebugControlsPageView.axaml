@@ -99,12 +99,17 @@
                                     <controls:StandardButton Text="Default" />
                                     <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
                                     <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
-                                    <controls:StandardButton Text="Secondary-Strong" ShowIcon="Right" Type="Secondary" Fill="Strong" />
-                                    <controls:StandardButton Text="Secondary-Weak" ShowIcon="Right" Type="Secondary" Fill="Weak" />
-                                    <controls:StandardButton Text="Secondary-None" ShowIcon="Right" Type="Secondary" Fill="None" />
-                                    <controls:StandardButton Text="Primary-Strong" ShowIcon="Right" Type="Primary" Fill="Strong" />
-                                    <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary" Fill="Weak" />
-                                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall"  />
+                                    <controls:StandardButton Text="Secondary-Strong" ShowIcon="Right" Type="Secondary"
+                                                             Fill="Strong" />
+                                    <controls:StandardButton Text="Secondary-Weak" ShowIcon="Right" Type="Secondary"
+                                                             Fill="Weak" />
+                                    <controls:StandardButton Text="Secondary-None" ShowIcon="Right" Type="Secondary"
+                                                             Fill="None" />
+                                    <controls:StandardButton Text="Primary-Strong" ShowIcon="Right" Type="Primary"
+                                                             Fill="Strong" />
+                                    <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary"
+                                                             Fill="Weak" />
+                                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" />
                                     <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Both" />
                                 </StackPanel>
                             </StackPanel>
@@ -175,28 +180,44 @@
                     <TabControl.Styles>
                         <Style Selector="StackPanel.ElementSection">
                             <Setter Property="Spacing" Value="4" />
+                            <Style Selector="^ > TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                            </Style>
                             <Style Selector="^ > TextBlock:nth-child(1)">
                                 <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
                             </Style>
                             <Style Selector="^ StackPanel.ColorRamp">
+                                <Style Selector="^ > TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                </Style>
                                 <Style Selector="^ > TextBlock:nth-child(1)">
                                     <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
                                 </Style>
                                 <Style Selector="^ Grid">
-                                    <Setter Property="Height" Value="20" />
+                                    <Setter Property="Height" Value="24" />
+                                    <Style Selector="^ > Border">
+                                        <Setter Property="Padding" Value="6,3,6,2" />
+                                    </Style>
                                 </Style>
                             </Style>
                         </Style>
                     </TabControl.Styles>
 
-                    <TabItem Header="Tier 1 - Primitives" />
+                    <TabItem Header="Tier 1 - Primitives">
+                        <ScrollViewer>
+                            <StackPanel Margin="0,16,0,0">
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Primitives" Theme="{StaticResource HeadingXSSemiTheme}" />
+                                    </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
                     <TabItem Header="Tier 2 - Brand">
                         <ScrollViewer>
-                            <StackPanel>
-                                <StackPanel>
+                            <StackPanel Margin="0,16,0,0">
+                                <StackPanel Classes="ElementSection">
                                     <TextBlock Text="Brand" Theme="{StaticResource HeadingXSSemiTheme}" />
-                                    <TextBlock Text="Description" />
-                                    <StackPanel>
+                                    <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="Neutral" />
                                         <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*" Height="20">
                                             <Border Grid.Column="0" Background="{StaticResource BrandNeutral950Brush}"
@@ -310,13 +331,10 @@
                     </TabItem>
                     <TabItem IsSelected="True" Header="Tier 3 - Elements">
                         <ScrollViewer>
-                            <StackPanel Spacing="16">
-
+                            <StackPanel Spacing="16" Margin="0,16,0,0">
 
                                 <StackPanel Classes="ElementSection">
                                     <TextBlock Text="Surface" />
-                                    <TextBlock Text="Description" />
-
                                     <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="NeutralTranslucent" />
                                         <Grid ColumnDefinitions="*,*,*,*,*">
@@ -350,25 +368,24 @@
 
                                 <StackPanel Classes="ElementSection">
                                     <TextBlock Text="Stroke" />
-                                    <TextBlock Text="Description" />
-                                    <StackPanel Classes="ColorRamp">
+                                     <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="NeutralTranslucent" />
                                         <Grid ColumnDefinitions="*,*,*,*,*">
                                             <Border Grid.Column="0" Background="{StaticResource NeutralWeakBrush}"
                                                     ToolTip.Tip="NeutralWeakBrush">
-                                                <TextBlock Text="Example" />
+                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="1" Background="{StaticResource NeutralSubduedBrush}"
                                                     ToolTip.Tip="NeutralSubduedBrush">
-                                                <TextBlock Text="Example" />
+                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="2" Background="{StaticResource NeutralModerateBrush}"
                                                     ToolTip.Tip="NeutralModerateBrush">
-                                                <TextBlock Text="Example" />
+                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="3" Background="{StaticResource NeutralStrongBrush}"
                                                     ToolTip.Tip="NeutralStrongBrush">
-                                                <TextBlock Text="Example" />
+                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="4" Background="{StaticResource NeutralInvertedBrush}"
                                                     ToolTip.Tip="NeutralInvertedBrush">
@@ -380,7 +397,6 @@
 
                                 <StackPanel Classes="ElementSection">
                                     <TextBlock Text="Foreground" Theme="{StaticResource HeadingXSSemiTheme}" />
-                                    <TextBlock Text="Description" />
                                     <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="NeutralTranslucent" />
                                         <Grid ColumnDefinitions="*,*,*,*,*">
