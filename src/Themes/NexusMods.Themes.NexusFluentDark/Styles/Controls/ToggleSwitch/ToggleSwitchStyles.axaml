@@ -12,36 +12,36 @@
 
                     <StackPanel Spacing="12">
                         
-                        <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Default</TextBlock>
+                        <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Default</TextBlock>
 
                         <ToggleSwitch />
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Unchecked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Unchecked</TextBlock>
                             <ToggleSwitch IsEnabled="True" IsChecked="False" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Checked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Checked</TextBlock>
                             <ToggleSwitch IsEnabled="True" IsChecked="True" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Indeterminate</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Indeterminate</TextBlock>
                             <ToggleSwitch IsEnabled="True" IsChecked="{x:Null}" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Unchecked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Unchecked</TextBlock>
                             <ToggleSwitch IsEnabled="False" IsChecked="False" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Checked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Checked</TextBlock>
                             <ToggleSwitch IsEnabled="False" IsChecked="True" />
                         </StackPanel>
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Indeterminate</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Indeterminate</TextBlock>
                             <ToggleSwitch IsEnabled="False" IsChecked="{x:Null}" />
                         </StackPanel>
                     </StackPanel>
@@ -50,39 +50,39 @@
 
                     <StackPanel Grid.Column="1" Spacing="12">
 
-                        <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Compact</TextBlock>
+                        <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Compact</TextBlock>
 
 
                         <ToggleSwitch Classes="Compact" />
 
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Unchecked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Unchecked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="False" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Checked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Checked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="True" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Indeterminate</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Indeterminate</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="True" IsChecked="{x:Null}" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Unchecked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Unchecked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="False" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Checked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Checked</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="True" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Indeterminate</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Indeterminate</TextBlock>
                             <ToggleSwitch Classes="Compact" IsEnabled="False" IsChecked="{x:Null}" />
                         </StackPanel>
                     </StackPanel>
@@ -91,37 +91,37 @@
 
                     <StackPanel Grid.Column="2" Spacing="12">
 
-                        <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Extra Small</TextBlock>
+                        <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Extra Small</TextBlock>
 
                         <ToggleSwitch Classes="ExtraSmall" />
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Unchecked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Unchecked</TextBlock>
                             <ToggleSwitch Classes="ExtraSmall" IsEnabled="True" IsChecked="False" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Checked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Checked</TextBlock>
                             <ToggleSwitch Classes="ExtraSmall" IsEnabled="True" IsChecked="True" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Enabled, Indeterminate</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Enabled, Indeterminate</TextBlock>
                             <ToggleSwitch Classes="ExtraSmall" IsEnabled="True" IsChecked="{x:Null}" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Unchecked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Unchecked</TextBlock>
                             <ToggleSwitch Classes="ExtraSmall" IsEnabled="False" IsChecked="False" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Checked</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Checked</TextBlock>
                             <ToggleSwitch Classes="ExtraSmall" IsEnabled="False" IsChecked="True" />
                         </StackPanel>
 
                         <StackPanel Spacing="4">
-                            <TextBlock Theme="{StaticResource BodyMDBoldTheme}">Disabled, Indeterminate</TextBlock>
+                            <TextBlock Theme="{StaticResource BodyMDSemiTheme}">Disabled, Indeterminate</TextBlock>
                             <ToggleSwitch Classes="ExtraSmall" IsEnabled="False" IsChecked="{x:Null}" />
                         </StackPanel>
                     </StackPanel>

@@ -157,9 +157,9 @@
                         <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" />
                         <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" />
                         <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" />
-                        <TextBlock Text="BodyMDBold" Theme="{StaticResource BodyMDBoldTheme}" />
+                        <TextBlock Text="BodyMDBold" Theme="{StaticResource BodyMDSemiTheme}" />
                         <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" />
-                        <TextBlock Text="BodySMBold" Theme="{StaticResource BodySMBoldTheme}" />
+                        <TextBlock Text="BodySMBold" Theme="{StaticResource BodySMSemiTheme}" />
                         <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" />
                     </StackPanel>
                 </ScrollViewer>
@@ -191,7 +191,7 @@
                                     <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                                 </Style>
                                 <Style Selector="^ > TextBlock:nth-child(1)">
-                                    <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
+                                    <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
                                 </Style>
                                 <Style Selector="^ Grid">
                                     <Setter Property="Height" Value="24" />

@@ -131,7 +131,7 @@
 
                             <Style Selector="^ > TextBlock#TitleText">
                                 <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
-                                <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+                                <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
                             </Style>
                         </Style>

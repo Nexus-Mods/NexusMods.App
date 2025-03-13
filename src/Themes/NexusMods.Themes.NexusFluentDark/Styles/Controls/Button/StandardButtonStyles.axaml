@@ -31,12 +31,12 @@
                     <StackPanel>
                         <TextBlock Text="Primary" Theme="{StaticResource HeadingSMSemiTheme}" />
                         <StackPanel>
-                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDSemiTheme}" />
                             <controls:StandardButton Text="Strong" Type="Primary" Fill="Strong" />
                             <controls:StandardButton Text="Weak" Type="Primary" Fill="Weak" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDSemiTheme}" />
                             <controls:StandardButton Text="Strong" Type="Primary" Fill="Strong" Size="Small" />
                             <controls:StandardButton Text="Weak" Type="Primary" Fill="Weak" Size="Small" />
                         </StackPanel>
@@ -44,13 +44,13 @@
                     <StackPanel>
                         <TextBlock Text="Secondary" Theme="{StaticResource HeadingSMSemiTheme}" />
                         <StackPanel>
-                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDSemiTheme}" />
                             <controls:StandardButton Text="Strong" Type="Secondary" Fill="Strong" />
                             <controls:StandardButton Text="Weak" Type="Secondary" Fill="Weak" />
                             <controls:StandardButton Text="None" Type="Secondary" Fill="None" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDSemiTheme}" />
                             <controls:StandardButton Text="Strong" Type="Secondary" Fill="Strong" Size="Small" />
                             <controls:StandardButton Text="Weak" Type="Secondary" Fill="Weak" Size="Small" />
                             <controls:StandardButton Text="None" Type="Secondary" Fill="None" Size="Small" />
@@ -59,13 +59,13 @@
                     <StackPanel>
                         <TextBlock Text="Tertiary" Theme="{StaticResource HeadingSMSemiTheme}" />
                         <StackPanel>
-                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <TextBlock Text="Size=Medium" Theme="{StaticResource BodyMDSemiTheme}" />
                             <controls:StandardButton Text="WeakAlt" Type="Tertiary" Fill="WeakAlt" />
                             <controls:StandardButton Text="Weak" Type="Tertiary" Fill="Weak" />
                             <controls:StandardButton Text="None" Type="Tertiary" Fill="None" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDBoldTheme}" />
+                            <TextBlock Text="Size=Small" Theme="{StaticResource BodyMDSemiTheme}" />
                             <controls:StandardButton Text="WeakAlt" Type="Tertiary" Fill="WeakAlt" Size="Small" />
                             <controls:StandardButton Text="Weak" Type="Tertiary" Fill="Weak" Size="Small" />
                             <controls:StandardButton Text="None" Type="Tertiary" Fill="None" Size="Small" />

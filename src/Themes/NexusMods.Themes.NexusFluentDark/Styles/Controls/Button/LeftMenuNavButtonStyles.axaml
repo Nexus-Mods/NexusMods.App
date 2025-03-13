@@ -61,7 +61,7 @@
                                     TextAlignment="Center"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Theme="{StaticResource BodySMSemiTheme}"
                                     Foreground="{StaticResource NeutralInverted}"
                                     Text="8" />
                             </Border>
@@ -84,7 +84,7 @@
                                     TextAlignment="Center"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Theme="{StaticResource BodySMSemiTheme}"
                                     Foreground="{StaticResource NeutralInverted}"
                                     Text="12" />
                             </Border>
@@ -107,7 +107,7 @@
                                     TextAlignment="Center"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Theme="{StaticResource BodySMSemiTheme}"
                                     Foreground="{StaticResource NeutralInverted}"
                                     Text="123" />
                             </Border>

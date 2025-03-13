@@ -51,7 +51,7 @@
                         Value="{x:Static icons:IconValues.Warning}"
                         Foreground="{StaticResource WarningStrongBrush}"/>
                     <TextBlock x:Name="RequiresRestartMessage"
-                               Theme="{StaticResource BodyMDBoldTheme}"
+                               Theme="{StaticResource BodyMDSemiTheme}"
                                Foreground="{StaticResource WarningStrongBrush}"  />
                 </StackPanel>
 

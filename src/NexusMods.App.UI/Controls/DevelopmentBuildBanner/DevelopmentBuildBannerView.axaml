@@ -28,13 +28,13 @@
         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
             <TextBlock
                 Text="{Binding AppName, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
-                Theme="{StaticResource BodyMDBoldTheme}"
+                Theme="{StaticResource BodyMDSemiTheme}"
                 Foreground="{StaticResource StardewLinearGradientBrush}"
                 VerticalAlignment="Center"/>
             
             <TextBlock
                 Text="{Binding AppVersion, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
-                Theme="{StaticResource BodyMDBoldTheme}"
+                Theme="{StaticResource BodyMDSemiTheme}"
                 Foreground="{StaticResource NeutralSubduedBrush}"
                 VerticalAlignment="Center" />
             

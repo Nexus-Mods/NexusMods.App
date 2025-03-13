@@ -15,6 +15,7 @@
         <AvaloniaResource Include="Assets\Fonts\Regular\RobotoMono-Regular.ttf" />
         <AvaloniaResource Include="Styles\Controls\Border\Toolbar.xaml" />
         <AvaloniaResource Include="Assets\Fonts\Regular\Inter-Regular.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Medium\Inter-Medium.ttf" />
         <AvaloniaResource Include="Assets\Fonts\SemiBold\Inter-SemiBold.ttf" />
     </ItemGroup>
 
