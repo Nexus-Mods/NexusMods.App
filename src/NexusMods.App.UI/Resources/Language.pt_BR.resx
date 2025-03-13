@@ -200,7 +200,7 @@
         <Value> permanecendo </valor>
     </data>
     <Data Name= "InProgressView_inProgressView_remaining" XML:Space="Preserve">
-        <Value> permanecendo </valor>
+        <Value> permanecendo </value>
     </data>
     <dados Name= "homeview__we_found_games" xml:space="preserve">
         <Value> Encontramos jogos prontos para mod! </alue>
