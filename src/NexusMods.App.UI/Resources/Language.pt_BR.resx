@@ -194,22 +194,22 @@
         <value>Arquivos Baixados</value>
     </data>
     <data name= "BoldMinutesRemEningTextBlock" xml:space="preserve">
-        <Value> 0 mins </valor>
+        <Value> 0 mins </Value>
     </data>
     <data name= "MinimRemeLingTextBlock" xml:space="preserve">
-        <Value> permanecendo </valor>
+        <Value> permanecendo </Value>
     </data>
     <Data Name= "InProgressView_inProgressView_remaining" XML:Space="Preserve">
         <Value> permanecendo </value>
     </data>
     <dados Name= "homeview__we_found_games" xml:space="preserve">
-        <Value> Encontramos jogos prontos para mod! </alue>
+        <Value> Encontramos jogos prontos para mod! </Value>
     </data>
     <nome Name= "homeview__cant_see_your_game" xml:space="preserve">
-        <Value> Não consigo ver seu jogo </alue>
+        <Value> Não consigo ver seu jogo </Value>
     </data>
     <dados Name= "homeview__browse_all_games" xml:space="preserve">
-        <Value> Navegue por todos os jogos </alue>
+        <Value> Navegue por todos os jogos </Value>
     </data>
     <data name="FileOriginPage_DeleteMod" xml:space="preserve">
         <value>Excluir</value>
