@@ -83,23 +83,7 @@
                 Margin="0,0,12,12"
                 x:Name="WorkspacesBorder">
 
-            <ItemsControl x:Name="WorkspacesItemsControl">
-
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid RowDefinitions="*" ColumnDefinitions="*" x:Name="WorkspaceContainerGrid"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type workspace:IWorkspaceViewModel}">
-                        <reactiveUi:ViewModelViewHost
-                            x:Name="WorkspaceViewHost"
-                            IsVisible="{CompiledBinding IsActive, Mode=OneWay}"
-                            ViewModel="{CompiledBinding Mode=OneWay}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <workspace:WorkspaceView x:Name="WorkspaceView"/>
         </Border>
 
         <reactiveUi:ViewModelViewHost
