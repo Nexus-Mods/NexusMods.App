@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.MnemonicDB.Abstractions;
@@ -42,8 +43,11 @@ public static class DiskStateExtensions
         // Get an as-of db for the last applied loadout
         var asOfDb = metadata.Db.Connection.AsOf(txId);
         // Get the attributes for the entries in the disk state
-        var segment = asOfDb.GetBackRefs(DiskStateEntry.Game, metadata.Id);
-        return new Entities<DiskStateEntry.ReadOnly>(segment, asOfDb);
+
+        var ret = DiskStateEntry.FindByGame(asOfDb, metadata.Id);
+        asOfDb.BulkCache(ret.EntityIds);
+        
+        return ret;
     }
     
     /// <summary>
