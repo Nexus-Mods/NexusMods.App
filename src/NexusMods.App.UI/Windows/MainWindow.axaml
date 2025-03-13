@@ -83,7 +83,7 @@
                 Margin="0,0,12,12"
                 x:Name="WorkspacesBorder">
 
-            <reactiveUi:ViewModelViewHost x:Name="WorkspaceViewHost"/>
+            <workspace:WorkspaceView x:Name="WorkspaceView"/>
         </Border>
 
         <reactiveUi:ViewModelViewHost
