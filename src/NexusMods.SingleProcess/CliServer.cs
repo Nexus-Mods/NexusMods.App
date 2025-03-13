@@ -86,24 +86,14 @@ public class CliServer : IHostedService, IDisposable
             {
                 CleanClosedConnections();
 
-                // Create a timeout token, and combine it with the main cancellation token
-                var timeout = new CancellationTokenSource(delay: _settings.ListenTimeout);
-                var combined = CancellationTokenSource.CreateLinkedTokenSource(Token, timeout.Token);
-
-                var found = await _tcpListener!.AcceptTcpClientAsync(combined.Token);
+                var found = await _tcpListener!.AcceptTcpClientAsync(Token);
                 found.NoDelay = true; // Disable Nagle's algorithm to reduce delay.
                 _runningClients.Add(Task.Run(() => HandleClientAsync(found), Token));
 
-                _logger.LogInformation("Accepted TCP connection from {RemoteEndPoint}",
-                    ((IPEndPoint)found.Client.RemoteEndPoint!).Port
-                );
+                _logger.LogInformation("Accepted TCP connection from {RemoteEndPoint}", ((IPEndPoint)found.Client.RemoteEndPoint!).Port);
             }
             catch (OperationCanceledException)
             {
-                // The cancellation could be from the timeout, or the main cancellation token, if it's the
-                // timeout, then we should just continue, if it's the main cancellation token, then we should stop
-                if (!Token.IsCancellationRequested)
-                    continue;
                 _logger.LogInformation("TCP listener was cancelled, stopping");
                 return;
             }
@@ -111,10 +101,9 @@ public class CliServer : IHostedService, IDisposable
             {
                 _logger.LogError(ex, "Got an exception while accepting a client connection");
             }
-
         }
     }
-    
+
     /// <summary>
     /// Handle a client connection
     /// </summary>
