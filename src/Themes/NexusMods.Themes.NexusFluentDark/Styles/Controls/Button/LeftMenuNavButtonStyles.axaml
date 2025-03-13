@@ -219,6 +219,7 @@
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Margin" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
         <Style Selector="^ > DockPanel">
             <Style Selector="^ > TextBlock">
@@ -252,6 +253,7 @@
 
         <Style Selector="^:pointerover:not(:selected)">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
     </Style>

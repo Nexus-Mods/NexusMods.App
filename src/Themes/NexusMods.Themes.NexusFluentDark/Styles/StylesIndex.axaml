@@ -17,11 +17,11 @@
     <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Border/Toolbar.xaml" />
     <StyleInclude Source="/Styles/Controls/Border/FooterBorder.axaml" />
-    <!-- <StyleInclude Source="/Styles/Controls/Button/StandardButtonStyles.axaml" /> -->
     <StyleInclude Source="/Styles/Controls/Button/SpineButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/LeftMenuNavButtonStyles.axaml" />
+    
     <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridBaseStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/SharedStyles.axaml" />
@@ -33,6 +33,8 @@
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridActionsColumnStyles.axaml" />
     
     
+    
+    
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml" />
@@ -41,6 +43,9 @@
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TabControl/TabControlStylesNew.axaml" />
     <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
+    
+    
+    
 
     <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml" />
 

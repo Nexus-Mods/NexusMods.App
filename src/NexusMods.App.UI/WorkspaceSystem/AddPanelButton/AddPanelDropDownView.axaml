@@ -16,6 +16,6 @@
         <TextBlock Text="{x:Static resources:Language.AddPanelToolTip}" />
     </ToolTip.Tip>
     
-    <ComboBox x:Name="CreatePanelComboBox" Classes="AddPanelDropDown"/>
+    <ComboBox x:Name="CreatePanelComboBox" />
     
 </reactiveUi:ReactiveUserControl>

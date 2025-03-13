@@ -5,14 +5,14 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
     
     <Design.PreviewWith>
-        <Border Width="1280" Height="200">
+        <Border Width="1280" Height="52">
             <ui:TopBarView />
         </Border>
     </Design.PreviewWith>
 
     <!-- Style Definitions -->
     <Style Selector="ui|TopBarView">
-
+        
         <!-- one off avatar button for the top bar -->
         <Style Selector="^ Button#AvatarMenuItemButton">
             <Setter Property="CornerRadius" Value="999" />

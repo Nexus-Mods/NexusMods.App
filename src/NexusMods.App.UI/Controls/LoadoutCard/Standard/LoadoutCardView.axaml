@@ -34,6 +34,7 @@
                                                  ToolTip.Tip="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}" />
 
                         <controls:StandardButton x:Name="CreateCopyButton"
+                                                 Size="Medium"
                                                  Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}"
                                                  HorizontalAlignment="Stretch" />
                     </DockPanel>
