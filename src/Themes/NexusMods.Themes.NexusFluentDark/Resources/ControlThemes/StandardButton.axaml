@@ -2,14 +2,32 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                     x:ClassModifier="internal">
+    
+    <!--
+    Control Theme for our StandardButton (src/NexusMods.App.UI/Controls/StandardButton.cs) which is based on the default 
+    Avalonia Button. This allows us to set properties like Type, Fill, Size and ShowIcon to get the desired button style 
+    to exactly match Figma.
+    -->    
+    
     <Design.PreviewWith>
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
                 <StackPanel Spacing="8">
-                    <Button Content="Click Me!" />
-                    <Button Content="Click Me!" />
-                    <controls:StandardButton Text="Default" />
+                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="None" />
+                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Right" Type="Tertiary"
+                                             Fill="WeakAlt" />
+                    <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="Left" ShowLabel="False" Size="Medium" />
+                    <controls:StandardButton ShowIcon="IconOnly" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="IconOnly" ShowLabel="False" Size="Medium" />
+                </StackPanel>
+                <StackPanel Spacing="8">
+                    <Button Content="Avalonia Button" />
+                    <controls:StandardButton Text="StandardButton Text" />
+                    <controls:StandardButton Content="StandardButton Content" />
                     <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
                     <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
                 </StackPanel>
@@ -46,16 +64,26 @@
                     <controls:StandardButton Text="Tertiary-None" ShowIcon="Right" Type="Tertiary" Fill="None"
                                              IsEnabled="False" />
                 </StackPanel>
-                <StackPanel Spacing="8">
-                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="None" />
-                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Right" Type="Tertiary"
-                                             Fill="WeakAlt" />
-                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Both" />
-                </StackPanel>
+                
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
+    <!-- RESOURCES -->
+    
+    <!-- Unusual values to account for rendering differences with Figma and rounding errors. This makes sure that we 
+    don't have to set fixed heights but the heights are ending up the same as Figma i.e. Medium button is 32 pixels high,
+     Small is 28 and ExtraSmall is 24. --> 
+    <Thickness x:Key="StandardButtonPaddingMedium">6,6,6,6</Thickness>
+    <Thickness x:Key="StandardButtonPaddingSmall">6,6,6,5</Thickness>
+    <Thickness x:Key="StandardButtonPaddingExtraSmall">6,4,6,3</Thickness>
+    
+    <sys:Double x:Key="StandardButtonIconSizeMedium">20</sys:Double>
+    <sys:Double x:Key="StandardButtonIconSizeSmall">16</sys:Double>
+    <sys:Double x:Key="StandardButtonIconSizeExtraSmall">16</sys:Double>
+    
+    <!-- The below will also be used when ComboBox and SplitButtons are extended by us so that the styling matches -->
+    
     <!-- Primary/Strong -->
     <Thickness x:Key="ButtonPrimaryStrongBorderThickness">0</Thickness>
     <StaticResource x:Key="ButtonPrimaryStrongBackground" ResourceKey="PrimaryModerateBrush" />
@@ -208,6 +236,8 @@
                      Color="{StaticResource StrokeTranslucentModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
+    <!-- CONTROL THEME -->
+    
     <!-- need original button theme as well as all the new stuff -->
     <!-- default colours are based on Small-Tertiary-Weak -->
     <ControlTheme x:Key="{x:Type controls:StandardButton}" TargetType="controls:StandardButton">
@@ -216,7 +246,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
         <Setter Property="BorderThickness" Value="{StaticResource ButtonBorderThemeThickness}" />
         <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
-        <Setter Property="Padding" Value="6,6,6,5" />
+        <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingSmall}" /> 
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="RenderTransform" Value="none" />
@@ -224,7 +254,8 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
-                    <!-- this is only shown if Content is set -->
+                    <!-- this is only shown if Content is set. This can be used interchaganbly with the regular Avalonia 
+                    button to show whatever content we need -->
                     <ContentPresenter x:Name="PART_ContentPresenter"
                                       Background="{TemplateBinding Background}"
                                       BorderBrush="{TemplateBinding BorderBrush}"
@@ -232,7 +263,7 @@
                                       CornerRadius="{TemplateBinding CornerRadius}"
                                       Content="{TemplateBinding Content}"
                                       ContentTemplate="{TemplateBinding ContentTemplate}"
-                                      Padding="{TemplateBinding Padding}"
+                                      Padding="{StaticResource ButtonPadding}"
                                       RecognizesAccessKey="True"
                                       HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                       VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
@@ -249,12 +280,12 @@
                                     HorizontalAlignment="Center"
                                     Spacing="{StaticResource Spacing-0.5}">
                             <icons:UnifiedIcon Name="PART_LeftIcon"
-                                               Size="16" />
+                                               Size="{StaticResource StandardButtonIconSizeSmall}" />
                             <TextBlock Name="PART_Label"
                                        Text="{TemplateBinding Text}"
                                        Margin="2,0" />
                             <icons:UnifiedIcon Name="PART_RightIcon"
-                                               Size="16" />
+                                               Size="{StaticResource StandardButtonIconSizeSmall}" />
                         </StackPanel>
                     </Border>
                 </Panel>
@@ -310,32 +341,36 @@
 
         <!-- extra small -->
         <Style Selector="^[Size=ExtraSmall]">
-            <Setter Property="Padding" Value="6,4,6,3" />
+            <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingExtraSmall}" />
+            
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeExtraSmall}" />
+            </Style>
         </Style>
 
         <!-- medium -->
         <Style Selector="^[Size=Medium]">
-            <Setter Property="Padding" Value="6" />
+            <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingMedium}" />
 
             <Style Selector="^ StackPanel">
                 <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
             </Style>
 
             <Style Selector="^ icons|UnifiedIcon">
-                <Setter Property="Size" Value="20" />
+                <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeMedium}" />
             </Style>
 
             <Style Selector="^ TextBlock#PART_Label">
                 <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
             </Style>
+            
         </Style>
 
         <!-- icon only variants -->
-
         <Style Selector="^[ShowIcon=IconOnly]">
-
+            <Setter Property="Padding" Value="0" />
         </Style>
-
+        
         <!-- fills and types -->
 
         <!-- PRIMARY -->
