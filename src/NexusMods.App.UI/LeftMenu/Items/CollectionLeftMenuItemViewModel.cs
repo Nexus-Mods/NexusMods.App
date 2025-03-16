@@ -15,9 +15,10 @@ namespace NexusMods.App.UI.LeftMenu.Items;
 public class CollectionLeftMenuItemViewModel : LeftMenuItemViewModel, ILeftMenuItemWithToggleViewModel
 {
     [Reactive] public bool IsEnabled { get; set; }
-    
-    public bool IsToggleVisible { get; } = true;
-    
+
+    public bool IsCollectionReadOnly { get; init; }
+    public bool IsToggleVisible => true;
+
     public ReactiveCommand<Unit, Unit> ToggleIsEnabledCommand { get; }
     
     public CollectionGroupId CollectionGroupId { get; }
