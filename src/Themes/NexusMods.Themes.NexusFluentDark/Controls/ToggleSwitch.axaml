@@ -2,20 +2,38 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <StackPanel Margin="20" Width="250" Spacing="24">
-            <StackPanel Spacing="12">
-                <Border Background="DarkSlateGray" HorizontalAlignment="Left" Padding="8">
-                    <ToggleSwitch DockPanel.Dock="Right" Background="DarkRed" />
-                </Border>
-                <ToggleSwitch 
-                    Classes="WithLabel"/>
-                <ToggleSwitch IsChecked="True" 
-                              Classes="WithContent"/>
-                <ToggleSwitch HorizontalContentAlignment="Left"
-                              Classes="WithContent"
-                              Content="Header"
-                              OffContent="Off"
-                              OnContent="On" />
-                <ToggleSwitch Background="DarkOrange" />
+            <StackPanel Spacing="12" Orientation="Horizontal">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Default"/>
+                    <Border Background="DarkSlateGray" HorizontalAlignment="Left" Padding="8">
+                        <ToggleSwitch Background="DarkRed" />
+                    </Border>
+                    <ToggleSwitch 
+                        Classes="WithLabel"/>
+                    <ToggleSwitch IsChecked="True" 
+                                  Classes="WithContent"/>
+                    <ToggleSwitch HorizontalContentAlignment="Left"
+                                  Classes="WithContent"
+                                  Content="Header"
+                                  OffContent="Off"
+                                  OnContent="On" />
+                    <ToggleSwitch Background="DarkOrange" />
+                </StackPanel>
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Extra Small"/>
+                    <Border Background="DarkSlateGray" HorizontalAlignment="Left" Padding="8">
+                        <ToggleSwitch Classes="ExtraSmall" Background="DarkRed" />
+                    </Border>
+                    <ToggleSwitch Classes="ExtraSmall" />
+                    <ToggleSwitch IsChecked="True" 
+                                  Classes="ExtraSmall WithContent"/>
+                    <ToggleSwitch HorizontalContentAlignment="Left"
+                                  Classes="ExtraSmall WithContent"
+                                  Content="Header"
+                                  OffContent="Off"
+                                  OnContent="On" />
+                    <ToggleSwitch Classes="ExtraSmall" Background="DarkOrange" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
     </Design.PreviewWith>
@@ -101,8 +119,7 @@
                             Content="{TemplateBinding OnContent}"
                             ContentTemplate="{TemplateBinding OnContentTemplate}" />
 
-                        <!--  OuterBorder, SwitchKnobBounds and PART_SwitchKnob all need a matching height  -->
-
+                        <!--  OuterBorder, SwitchKnobBounds need a matching height and width (the control height and width)  -->
                         <Border
                             x:Name="OuterBorder"
                             Grid.Row="1"
@@ -123,7 +140,8 @@
                             BorderThickness="{StaticResource ToggleSwitchOnStrokeThickness}"
                             CornerRadius="16" />
 
-                        <!-- switch start point, should be half of the above SwitchKnobBounds width -->
+                        <!--  PART_SwitchKnob is the switch start point should be the same height and half the width 
+                        of OuterBorder -->
                         <Canvas
                             x:Name="PART_SwitchKnob"
                             Grid.Row="1"
@@ -131,7 +149,7 @@
                             Height="20"
                             HorizontalAlignment="Left">
 
-                            <!-- switch end point, should match above size -->
+                            <!-- PART_MovingKnobs is the switch end point and should be same size as PART_SwitchKnob -->
                             <Grid x:Name="PART_MovingKnobs" Width="20" Height="20">
                                 <Ellipse
                                     x:Name="SwitchKnobOn"
@@ -280,6 +298,41 @@
             </Style>
             <Style Selector="^ /template/ ContentPresenter#PART_OffContentPresenter">
                 <Setter Property="IsVisible" Value="True" />
+            </Style>
+        </Style>
+        
+        <!-- extra small style -->
+        <Style Selector="^.ExtraSmall">
+            
+            <!--  OuterBorder, SwitchKnobBounds need a matching height and width (the control height and width)  -->
+            <Style Selector="^ /template/ Border#OuterBorder">
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="32" />
+            </Style>
+            <Style Selector="^ /template/ Border#SwitchKnobBounds">
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="32" />
+            </Style>
+            
+            <!--  PART_SwitchKnob should be the same height and half the width of OuterBorder -->
+            <Style Selector="^ /template/ Canvas#PART_SwitchKnob">
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="16" />
+            </Style>
+            
+            <!-- PART_MovingKnobs is the switch end point and should be same size as PART_SwitchKnob -->
+            <Style Selector="^ /template/ Grid#PART_MovingKnobs">
+                <Setter Property="Width" Value="16" />
+                <Setter Property="Height" Value="16" />
+                
+                <Style Selector="^ Ellipse#SwitchKnobOn">
+                    <Setter Property="Width" Value="12" />
+                    <Setter Property="Height" Value="12" />
+                </Style>
+                <Style Selector="^ Ellipse#SwitchKnobOff">
+                    <Setter Property="Width" Value="8" />
+                    <Setter Property="Height" Value="8" />
+                </Style>
             </Style>
         </Style>
     </ControlTheme>
