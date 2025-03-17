@@ -19,10 +19,11 @@
     </Design.PreviewWith>
 
     <Style Selector="ComboBox.AddPanelDropDown">
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
-        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-md}" />
+        <Setter Property="Padding" Value="4,2,0,2" />
 
         <Setter Property="Template">
             <ControlTemplate>

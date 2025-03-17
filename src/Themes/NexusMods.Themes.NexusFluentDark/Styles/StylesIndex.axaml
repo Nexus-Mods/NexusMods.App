@@ -46,6 +46,7 @@
     <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/SplitButton/SplitButtonStyles.axaml" />
     
+    <StyleInclude Source="/Styles/Controls/ComboBox/AddPanelComboBoxStyles.axaml" />
     
     
 
