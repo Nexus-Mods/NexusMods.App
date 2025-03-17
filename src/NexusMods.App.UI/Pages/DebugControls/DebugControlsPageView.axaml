@@ -112,6 +112,21 @@
                                     <controls:StandardButton Text="Extra Small" Size="ExtraSmall" />
                                     <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Both" />
                                 </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="StandardSplitButton" />
+                                    <SplitButton Classes="StandardSplitButton">
+                                        <TextBlock Text="Enabled" />
+                                        <SplitButton.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Install" />
+                                                <MenuItem Header="Advanced Install" />
+                                            </MenuFlyout>
+                                        </SplitButton.Flyout>
+                                    </SplitButton>
+                                    <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                                        <TextBlock Text="Disabled" />
+                                    </SplitButton>
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
@@ -208,7 +223,7 @@
                             <StackPanel Margin="0,16,0,0">
                                 <StackPanel Classes="ElementSection">
                                     <TextBlock Text="Primitives" Theme="{StaticResource HeadingXSSemiTheme}" />
-                                    </StackPanel>
+                                </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
@@ -368,24 +383,28 @@
 
                                 <StackPanel Classes="ElementSection">
                                     <TextBlock Text="Stroke" />
-                                     <StackPanel Classes="ColorRamp">
+                                    <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="NeutralTranslucent" />
                                         <Grid ColumnDefinitions="*,*,*,*,*">
                                             <Border Grid.Column="0" Background="{StaticResource NeutralWeakBrush}"
                                                     ToolTip.Tip="NeutralWeakBrush">
-                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
+                                                <TextBlock Text="Example"
+                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="1" Background="{StaticResource NeutralSubduedBrush}"
                                                     ToolTip.Tip="NeutralSubduedBrush">
-                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
+                                                <TextBlock Text="Example"
+                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="2" Background="{StaticResource NeutralModerateBrush}"
                                                     ToolTip.Tip="NeutralModerateBrush">
-                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
+                                                <TextBlock Text="Example"
+                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="3" Background="{StaticResource NeutralStrongBrush}"
                                                     ToolTip.Tip="NeutralStrongBrush">
-                                                <TextBlock Text="Example" Foreground="{StaticResource NeutralInvertedBrush}" />
+                                                <TextBlock Text="Example"
+                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
                                             </Border>
                                             <Border Grid.Column="4" Background="{StaticResource NeutralInvertedBrush}"
                                                     ToolTip.Tip="NeutralInvertedBrush">

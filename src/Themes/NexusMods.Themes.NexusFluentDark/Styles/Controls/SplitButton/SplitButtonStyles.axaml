@@ -1,0 +1,85 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="16">
+            <StackPanel>
+                <SplitButton>
+                    <TextBlock Text="Enabled" />
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <SplitButton IsEnabled="False">
+                    <TextBlock Text="Disabled" />
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <SplitButton Classes="StandardSplitButton">
+                    <TextBlock Text="Enabled" />
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                    <TextBlock Text="Enabled" />
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+
+    <!-- temporary for now until we subclass SplitButton -->
+    <Style Selector="SplitButton.StandardSplitButton">
+
+        <!-- base colors -->
+        <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrush}" />
+
+        <!-- templated buttons -->
+        <Style Selector="^ /template/ Button">
+
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPointerOver}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPointerOver}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPointerOver}" />
+            </Style>
+
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundDisabled}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundDisabled}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushDisabled}" />
+            </Style>
+            
+            <Style Selector="^[Tag=flyout-open] /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
+            </Style>
+        </Style>
+    </Style>
+
+</Styles>

@@ -53,7 +53,6 @@
       <Folder Include="Assets\Fonts\Bold\" />
       <Folder Include="Styles\Controls\CheckBox\" />
       <Folder Include="Styles\Controls\RadioButton\" />
-      <Folder Include="Styles\Controls\SplitButton\" />
       <Folder Include="Styles\Controls\TextBlock\" />
       <Folder Include="Styles\Controls\TextBox\" />
       <Folder Include="Styles\Controls\ToggleSwitch\" />
