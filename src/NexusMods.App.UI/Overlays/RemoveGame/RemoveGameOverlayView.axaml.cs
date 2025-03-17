@@ -1,4 +1,6 @@
 using Avalonia.ReactiveUI;
+using Humanizer;
+using Humanizer.Bytes;
 using R3;
 using ReactiveUI;
 
@@ -12,6 +14,17 @@ public partial class RemoveGameOverlayView : ReactiveUserControl<IRemoveGameOver
 
         this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .Subscribe(viewModel =>
+                {
+                    GameName.Text = viewModel.GameName;
+                    NumDownloads.Text = viewModel.NumDownloads.ToString("N0");
+                    SumDownloadsSize.Text = ByteSize.FromBytes(viewModel.SumDownloadsSize.Value).Humanize();
+                    NumCollections.Text = viewModel.NumCollections.ToString("N0");
+                })
+                .AddTo(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.GameName, view => view.GameName.Text)
                 .AddTo(disposables);
 

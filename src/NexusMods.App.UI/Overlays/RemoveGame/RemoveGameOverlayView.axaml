@@ -14,7 +14,9 @@
         <base:MessageBoxBackground.TopContent>
             <StackPanel Orientation="Vertical">
                 <TextBlock x:Name="GameName" />
-
+                <TextBlock x:Name="NumDownloads"/>
+                <TextBlock x:Name="SumDownloadsSize"/>
+                <TextBlock x:Name="NumCollections"/>
                 <ToggleSwitch x:Name="SwitchDeleteDownloads" />
             </StackPanel>
         </base:MessageBoxBackground.TopContent>
