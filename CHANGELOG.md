@@ -1,4 +1,4 @@
-# v0.8.2 - 2025-03-XX
+# v0.8.2 - 2025-03-17
 This release features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
 
 ## Better game versioning
