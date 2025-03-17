@@ -21,7 +21,7 @@ public partial class RemoveGameOverlayView : ReactiveUserControl<IRemoveGameOver
                 {
                     TitleText.Text = string.Format(Language.RemoveGameOverlayView_Title, viewModel.GameName);
                     DescriptionText.Text = string.Format(Language.RemoveGameOverlayView_Description, viewModel.GameName);
-                    ToggleDescription.Text = string.Format(Language.RemoveGameOverlayView_ToggleDescription, viewModel.NumDownloads.ToString("N0"), viewModel.NumCollections.ToString("N0"), viewModel.GameName, ByteSize.FromBytes(viewModel.SumDownloadsSize.Value).Humanize());
+                    ToggleDescription.Text = string.Format(Language.RemoveGameOverlayView_ToggleDescription, viewModel.NumDownloads.ToString("N0"), viewModel.NumCollections.ToString("N0"), viewModel.GameName);
                     ButtonCancel.Text = Language.RemoveGameOverlayView_CancelButton;
                 }).AddTo(disposables);
 
@@ -30,11 +30,12 @@ public partial class RemoveGameOverlayView : ReactiveUserControl<IRemoveGameOver
                     view => view.ViewModel!.SumDownloadsSize)
                 .Subscribe(tuple =>
                 {
-                    var (shouldDeleteDownloads, sumDownloadsSize) = tuple;
+                    var (shouldDeleteDownloads, _) = tuple;
 
                     if (shouldDeleteDownloads)
                     {
-                        ButtonRemove.Text = string.Format(Language.RemoveGameOverlayView_RemoveButton_AlsoDelete, ByteSize.FromBytes(sumDownloadsSize.Value).Humanize());
+                        ButtonRemove.Text = Language.RemoveGameOverlayView_RemoveButton_AlsoDelete;
+                        // ButtonRemove.Text = string.Format(Language.RemoveGameOverlayView_RemoveButton_AlsoDelete, ByteSize.FromBytes(sumDownloadsSize.Value).Humanize());
                     }
                     else
                     {

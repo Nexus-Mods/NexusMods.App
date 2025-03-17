@@ -841,7 +841,7 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Removing will uninstall all mods and collections for {0}, but your downloaded mods will remain. If you re-add the game, those mods will still be available in your Library.</value>
     </data>
     <data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
-        <value>Also delete {0} downloaded mods and {1} collections for {2} ({3}).</value>
+        <value>Also delete {0} downloaded mods and {1} collections for {2}.</value>
     </data>
     <data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
         <value>Cancel</value>
@@ -850,7 +850,7 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Remove game and mods</value>
     </data>
     <data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
-        <value>Remove game, mods and delete downloads ({0})</value>
+        <value>Remove game, mods and delete downloads</value>
     </data>
 
     <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
