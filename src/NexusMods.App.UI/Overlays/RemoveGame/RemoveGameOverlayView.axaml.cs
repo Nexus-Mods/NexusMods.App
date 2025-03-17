@@ -30,12 +30,16 @@ public partial class RemoveGameOverlayView : ReactiveUserControl<IRemoveGameOver
                     view => view.ViewModel!.SumDownloadsSize)
                 .Subscribe(tuple =>
                 {
-                    var (shouldDelete, sumDownloadsSize) = tuple;
+                    var (shouldDeleteDownloads, sumDownloadsSize) = tuple;
 
-                    ButtonRemove.Text = string.Format(shouldDelete ?
-                        Language.RemoveGameOverlayView_RemoveButton_AlsoDelete :
-                        Language.RemoveGameOverlayView_RemoveButton, ByteSize.FromBytes(sumDownloadsSize.Value).Humanize()
-                    );
+                    if (shouldDeleteDownloads)
+                    {
+                        ButtonRemove.Text = string.Format(Language.RemoveGameOverlayView_RemoveButton_AlsoDelete, ByteSize.FromBytes(sumDownloadsSize.Value).Humanize());
+                    }
+                    else
+                    {
+                        ButtonRemove.Text = Language.RemoveGameOverlayView_RemoveButton;
+                    }
                 })
                 .AddTo(disposables);
 

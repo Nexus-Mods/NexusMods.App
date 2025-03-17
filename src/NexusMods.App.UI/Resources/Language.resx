@@ -847,10 +847,10 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Cancel</value>
     </data>
     <data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
-        <value>Remove game and mods ({0})</value>
+        <value>Remove game and mods</value>
     </data>
     <data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
-        <value>Remove game and delete mods ({0})</value>
+        <value>Remove game, mods and delete downloads ({0})</value>
     </data>
 
     <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
