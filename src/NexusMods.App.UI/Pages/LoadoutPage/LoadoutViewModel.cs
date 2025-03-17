@@ -76,6 +76,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
             .Select(count => count > 0);
+            
+        
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
         
@@ -106,7 +108,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var isReadonly = group.Value.AsLoadoutItem()
                         .GetThisAndParents()
-                        .Any(item => NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired);
+                        .Any(item => IsRequired(item.LoadoutItemId, connection));
 
                     var pageData = new PageData
                     {
@@ -123,15 +125,30 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 },
                 false
             );
-
-        RemoveItemCommand = hasSelection
+        
+        var hasValidRemoveSelection = Adapter.SelectedModels
+            .ObserveChanged()
+            .SelectMany(_ =>
+            {
+                var observables = Adapter.SelectedModels.Select(model => 
+                    model.GetObservable<LoadoutComponents.LockedEnabledState>(LoadoutColumns.EnabledState.LockedEnabledStateComponentKey));
+                
+                return R3.Observable.CombineLatest(observables)
+                    // if all items are readonly, or list is empty, no valid selection
+                    .Select(list => !list.All(x => x.HasValue));
+            });
+            
+        
+        RemoveItemCommand = hasValidRemoveSelection
             .ToReactiveCommand<Unit>(async (_, _) =>
             {
                 var ids = Adapter.SelectedModels
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
-                    .ToHashSet();
+                    .ToHashSet()
+                    .Where(id => !IsRequired(id, connection))
+                    .ToArray();
 
-                if (ids.Count == 0) return;
+                if (ids.Length == 0) return;
                 using var tx = connection.BeginTransaction();
 
                 foreach (var id in ids)
@@ -197,7 +214,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         var toggleableItems = ids
             .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
             // Exclude collection required items
-            .Where(item => !(NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired))
+            .Where(item => !IsRequired(item.Id, connection))
             // Exclude items that are part of a collection that is disabled
             .Where(item => !(item.Parent.TryGetAsCollectionGroup(out var collectionGroup)
                              && collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
@@ -291,6 +308,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
     {
         return itemModel.Get<LoadoutComponents.LoadoutItemIds>(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey).ItemIds;
+    }
+
+    private static bool IsRequired(LoadoutItemId id, IConnection connection)
+    {
+        return NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(LoadoutItem.Load(connection.Db, id), out var isRequired) && isRequired;
     }
 }
 

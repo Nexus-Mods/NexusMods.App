@@ -173,9 +173,9 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
             if (disposing)
             {
                 Disposable.Dispose(
-                    _childrenCollectionInitialization,
                     _modelActivationDisposable,
                     _childrenObservableSerialDisposable,
+                    _childrenCollectionInitialization,
                     _childrenCollectionInitializationSerialDisposable,
                     _hasChildren,
                     IsSelected
