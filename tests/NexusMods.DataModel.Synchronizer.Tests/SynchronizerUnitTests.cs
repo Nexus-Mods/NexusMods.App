@@ -16,6 +16,33 @@ namespace NexusMods.DataModel.Synchronizer.Tests;
 /// </summary>
 public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberpunkIsolatedGameTest<SynchronizerUnitTests>(testOutputHelper)
 {
+    
+    [Fact]
+    [GithubIssue(2077)]
+    public async Task EmptyFoldersAreRemovedWhenSwitchingLoadouts()
+    {
+        var loadoutA = await CreateLoadout();
+
+        var nestedFile = new GamePath(LocationId.Game, "a/b/nested.txt");
+        var nestedFileFullPath = GameInstallation.LocationsRegister.GetResolvedPath(nestedFile);
+
+        nestedFileFullPath.Parent.CreateDirectory();
+        await nestedFileFullPath.WriteAllTextAsync("Nested File");
+
+        loadoutA = await Synchronizer.Synchronize(loadoutA);
+
+        loadoutA.Items.Should().ContainSingle(f => f.Name == "nested.txt");
+
+        // Create new empty loadout
+        var loadoutB = await CreateLoadout();
+
+        // Switch to empty loadout
+        loadoutB = await Synchronizer.Synchronize(loadoutB);
+        
+        // 'a/' directory should be deleted
+        nestedFileFullPath.Parent.Parent.DirectoryExists().Should().BeFalse();
+    }
+    
     [Fact]
     [GithubIssue(1925)]
     public async Task EmptyChildFoldersDontDeleteNonEmptyParents()
@@ -38,7 +65,6 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
         
         loadout.Items.Should().ContainSingle(f => f.Name == "parent.txt");
         loadout.Items.Should().ContainSingle(f => f.Name == "grandchild.txt");
-        
 
 
         using (var tx = Connection.BeginTransaction())
@@ -50,8 +76,15 @@ public class SynchronizerUnitTests(ITestOutputHelper testOutputHelper) : ACyberp
 
         loadout = loadout.Rebase();
         loadout = await Synchronizer.Synchronize(loadout);
-        
+         
+        // a/b/c/grandchild.txt
         grandChildFileFullPath.FileExists.Should().BeFalse();
+        // a/b/c
+        grandChildFileFullPath.Parent.DirectoryExists().Should().BeFalse();
+        // a/b
+        grandChildFileFullPath.Parent.Parent.DirectoryExists().Should().BeFalse();
+
+        // a/parent.txt
         parentFileFullPath.FileExists.Should().BeTrue();
     }
 
