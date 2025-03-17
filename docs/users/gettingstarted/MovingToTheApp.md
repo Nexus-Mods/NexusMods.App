@@ -8,22 +8,31 @@ In this guide, we will cover the basics of importing existing mods from other mo
 ## Vortex
 [Vortex](https://www.nexusmods.com/site/mods/1) is the predecessor to the app and is a popular choice among Stardew Valley modders. With full Nexus Mods integration, there are two options for importing your mods to the app. 
 
-=== "Option 1 - Making a Collection"
-    ??? note "Note - Customised and Off-site Mods"
-        If you have altered a mod in any way after installing it, these changes may not be preserved when importing into the app. Mods installed from sources other than Nexus Mods may not be exported. 
+=== "Option 1 - Making a Quick Collection"
+    !!! warning "Quick Collections require Vortex 1.14.0 or later"
 
-    Using the collections feature, your existing mod setup can be exported and re-downloaded through the app. To make a collection from your active profile in Vortex, follow the instructions below:
+    Using the Quick Collections feature, your existing mod setup can be exported and re-downloaded through the app. To make a collection from your active profile in Vortex, follow the instructions below:
 
     1. Open the "Collections" tab from the side menu in Vortex.
     2. Click on the "Workshop" tab at the top of the page. 
     3. Hover over "Create a collection" and select "From Profile". Give your collection a name and press "Create". 
-    ![The option to create a collection in Vortex.](../images/VortexCreateCollection.webp)
-        - (Optional) In the collection edit screen, we recommend selecting all the mods with ++ctrl+"A"++, clicking "Set version" on the bottom toolbar and choose "Exact only". This will ensure that the exact same mod file is downloaded into the app, rather than an updated version. 
-    4. Click "Upload New" at the top of the page to upload your collection to the Nexus Mods website. There may be some warnings to resolve, if you need help with these errors please post on the [Vortex forums](https://forums.nexusmods.com/forum/4306-vortex-support/).
-    5. Once the upload has completed, click "Open in Browser" in the notification.
-    6. On the collection webpage, set a title, summary, category, image and description. This can be anything as the collection isn't intended to be shared publicly. 
-    7. At the top of the page, click "Save & publish revision 1" and in the pop-up select "Unlisted" and click "Publish". 
-    8. Navigate to the "Mods" tab, select all your mods with ++ctrl+"A"++ and click "Disable" on the bottom toolbar, then click "Deploy Mods" on the top toolbar to confirm the changes. This will remove the mod files from the game.
+    ![The option to create a Quick Collection in Vortex.](../images/VortexCreateCollection.webp){ style="max-height: 400px; display: block;" }
+    4. Read through the list of what is and is not included to ensure the feature will do what you expect.
+    ![The Quick Collection creation wizard showing the limitations of the system.](../images/VortexQuickCollection1.webp){ style="max-height: 300px; display: block;" }
+    5. Give you collection a name (or use the default) and proceed to the upload step.
+    ![The Quick Collection creation wizard showing the limitations of the system.](../images/VortexQuickCollection2.webp){ style="max-height: 300px; display: block;" }
+    6. Click "Open in Browser" from the notification to see your draft collection on the website. 
+    ![The Quick Collection creation wizard showing the limitations of the system.](../images/VortexQuickCollection3.webp)
+    7. On the Nexus Mods website, you'll be presented with your collection page. You'll need to fill in a few options to make it postable.
+    ![The option to publish the collection on Nexus Mods.](../images/NexusModsCollectionPublish.webp)
+    The following steps are required to publish:
+        - Summary: Put anything you like in here.
+        - Category: Miscellaneous is recommended.
+        - Image: Add an image next to the title. 
+        - Description: Make an edit to the page description.
+    8. Next, click the "Save & Publish Revision 1" button and in the pop-up make sure you select **Unlisted**. This will ensure your collection isn't added to the searchable options visible to all users.
+    ![The option to publish the collection on Nexus Mods.](../images/NexusModsCollectionListing.webp){ style="max-height: 300px; display: block;" }
+    8. Back in Vortex, navigate to the "Mods" tab, select all your mods with ++ctrl+"A"++ and click "Disable" on the bottom toolbar, then click "Deploy Mods" on the top toolbar to confirm the changes. This will remove the mod files from the game.
     9. Close Vortex.
     10. Open the app and press the "Add collection" button on the collection page to begin the download/install process.
 
@@ -45,6 +54,7 @@ In this guide, we will cover the basics of importing existing mods from other mo
     8. Press ++ctrl+"A"++ to select all mod archives in the folder.
     9. Click "Open" and wait for the app to import all the mods (this can take several minutes).
     10. You can now start adding these mods to your loadout.
+    !!! tip "Select multiple mods from the library using ++ctrl+"Click"++ or ++shift+"click"++"
 
 
 ## Stardrop
@@ -85,7 +95,14 @@ By default, Stardrop uses a subfolder of "Mods" in the game directory. To preser
 9. You can now start adding these mods to your loadout.
 
 ## Manually Installed Mods
-Some users choose to install their mods by manually copying and pasting the downloaded mod files into their game folder. This method doesn't have a clean way to import files so the best we can do is clean up your game folder read for use with the app.
+!!! warning "Manual Mods will be deleted when uninstalling the app"
+    If you had manually installed mods when managing the game, they are added to the loadout as a special mod. Deleting the loadout of uninstalling the app will remove all of these files and revert your game folder back to game files only. 
+
+Some users choose to install their mods by manually copying and pasting the downloaded mod files into their game folder. If you manage the game with mods already installed, the app will figure out which files are from the base game and which are from mods then adds all non-game files to [External Changes](../features/ExternalChanges.md) in the loadout. 
+
+It is recommended that you reinstall the mods as part of the loadout and then remove them from "External Changes". 
+
+If you'd rather start fresh with the app, here's how to clean up your game folder.
 
 1. Open your game installation folder.
 2. Move the "Mods" folder so that it is no longer inside the Stardew Valley game folder (you can also delete it, but that is not recommended).
