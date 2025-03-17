@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
+using DynamicData.Binding;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
@@ -125,15 +126,16 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 },
                 false
             );
-        
+
         var hasValidRemoveSelection = Adapter.SelectedModels
-            .ObserveChanged()
-            .Select(changeEvent =>
-            {
-                // if all items are readonly, or list is empty, no valid selection
-                return !Adapter.SelectedModels.All(model => 
-                    model.TryGet<LoadoutComponents.LockedEnabledState>(LoadoutColumns.EnabledState.LockedEnabledStateComponentKey, out _));
-            });
+            .ToNotifyCollectionChanged()
+            .ToObservableChangeSet<NotifyCollectionChangedSynchronizedViewList<CompositeItemModel<EntityId>>,CompositeItemModel<EntityId>>()
+            .AddKey(item => item)
+            .TransformOnObservable(model => model.GetObservable<LoadoutComponents.LockedEnabledState>(LoadoutColumns.EnabledState.LockedEnabledStateComponentKey).AsSystemObservable())
+            // if all items are readonly, or list is empty, no valid selection
+            .QueryWhenChanged(query => !query.Items.All(lockedComponent => lockedComponent.HasValue))
+            .ToObservable();
+
 
         RemoveItemCommand = hasValidRemoveSelection
             .ToReactiveCommand<Unit>(async (_, _) =>
