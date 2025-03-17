@@ -41,7 +41,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             this.OneWayBind(ViewModel, vm => vm.DevelopmentBuildBanner, v => v.DevelopmentBuildBanner.ViewModel)
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.WorkspaceController.AllWorkspaces, view => view.WorkspacesItemsControl.ItemsSource)
+            this.OneWayBind(ViewModel, vm => vm.WorkspaceController.ActiveWorkspace, view => view.WorkspaceView.ViewModel)
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.LeftMenu)
