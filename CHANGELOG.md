@@ -28,7 +28,7 @@ When managing your game for the very first time, any files that aren't part of t
 * When installing collections for Stardew Valley, any unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
 * Conflicting mods within a collection are now installed in an order that respects the rules set by the curator. 
 * Large numbers are now displayed with comma separation or abbreviations.
-* File sizes now only show a decimal places above 1GB. 
+* File sizes now only show decimal places above 1GB. 
 * Edits to mod files are now saved to External Changes instead of merging into the source mod. 
 * Added a new "Give Feedback" button to the bottom of the main window.
 * When two different versions of the same SMAPI mod are installed into the loadout, diagnostics will use the most up to date version to display messages. 
