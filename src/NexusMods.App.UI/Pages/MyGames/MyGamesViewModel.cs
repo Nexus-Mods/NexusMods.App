@@ -123,8 +123,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             {
                                 if (GetJobRunningForGameInstallation(installation).IsT2) return;
 
+                                var result = await overlayController.EnqueueAndWait(new RemoveGameOverlayViewModel(installation));
+                                if (!result.ShouldRemoveGame) return;
+
                                 vm.State = GameWidgetState.RemovingGame;
-                                await Task.Run(async () => await RemoveAllLoadouts(installation));
+                                await Task.Run(async () => await RemoveGame(installation, shouldDeleteDownloads: result.ShouldDeleteDownloads));
                                 vm.State = GameWidgetState.DetectedGame;
 
                                 Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: installation.Game.Name));
@@ -206,9 +209,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         return OneOf<None, CreateLoadoutJob, UnmanageGameJob>.FromT0(new None());
     }
 
-    private async Task RemoveAllLoadouts(GameInstallation installation)
+    private async Task RemoveGame(GameInstallation installation, bool shouldDeleteDownloads)
     {
         await installation.GetGame().Synchronizer.UnManage(installation);
+
+        if (!shouldDeleteDownloads) return;
+        // TODO:
     }
 
     private async Task ManageGame(GameInstallation installation)

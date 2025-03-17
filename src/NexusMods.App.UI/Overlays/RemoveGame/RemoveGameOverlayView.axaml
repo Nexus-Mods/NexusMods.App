@@ -1,0 +1,35 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IRemoveGameOverlayViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Overlays"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Overlays.RemoveGameOverlayView">
+
+    <base:MessageBoxBackground>
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical">
+                <TextBlock x:Name="GameName" />
+
+                <ToggleSwitch x:Name="SwitchDeleteDownloads" />
+            </StackPanel>
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+            <StackPanel Orientation="Horizontal" >
+                <Button x:Name="ButtonCancel">
+                    <TextBlock Text="Cancel"/>
+                </Button>
+                <Button x:Name="ButtonRemove">
+                    <TextBlock Text="Remove"/>
+                </Button>
+            </StackPanel>
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+
+</reactive:ReactiveUserControl>
+
