@@ -1,6 +1,7 @@
 using Avalonia.ReactiveUI;
 using Humanizer;
 using Humanizer.Bytes;
+using NexusMods.App.UI.Resources;
 using R3;
 using ReactiveUI;
 
@@ -13,30 +14,45 @@ public partial class RemoveGameOverlayView : ReactiveUserControl<IRemoveGameOver
         InitializeComponent();
 
         this.WhenActivated(disposables =>
-        {
-            this.WhenAnyValue(view => view.ViewModel)
-                .WhereNotNull()
-                .Subscribe(viewModel =>
-                {
-                    GameName.Text = viewModel.GameName;
-                    NumDownloads.Text = viewModel.NumDownloads.ToString("N0");
-                    SumDownloadsSize.Text = ByteSize.FromBytes(viewModel.SumDownloadsSize.Value).Humanize();
-                    NumCollections.Text = viewModel.NumCollections.ToString("N0");
-                })
-                .AddTo(disposables);
+            {
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .Subscribe(viewModel =>
+                        {
+                            TitleText.Text = string.Format(Language.RemoveGameOverlayView_Title, viewModel.GameName);
+                            DescriptionText.Text = string.Format(Language.RemoveGameOverlayView_Description, viewModel.GameName);
+                            ToggleDescription.Text = string.Format(Language.RemoveGameOverlayView_ToggleDescription, 
+                                viewModel.NumDownloads.ToString("N0"), 
+                                viewModel.NumCollections.ToString("N0"), 
+                                viewModel.GameName,
+                                ByteSize.FromBytes(viewModel.SumDownloadsSize.Value).Humanize());
+                            
+                            ButtonCancel.Text = Language.RemoveGameOverlayView_CancelButton;
+                        }
+                    )
+                    .AddTo(disposables);
+                
+                this.WhenAnyValue(view => view.ViewModel!.ShouldDeleteDownloads.Value,
+                view => view.ViewModel!.SumDownloadsSize)
+                    .Subscribe(tuple =>
+                    {
+                        var (shouldDelete, sumDownloadsSize) = tuple;
 
-            this.OneWayBind(ViewModel, vm => vm.GameName, view => view.GameName.Text)
-                .AddTo(disposables);
+                        ButtonRemove.Text = string.Format(shouldDelete ?
+                            Language.RemoveGameOverlayView_RemoveButton_AlsoDelete :
+                            Language.RemoveGameOverlayView_RemoveButton, ByteSize.FromBytes(sumDownloadsSize.Value).Humanize());
+                    })
+                    .AddTo(disposables);
 
-            this.Bind(ViewModel, vm => vm.ShouldDeleteDownloads.Value, view => view.SwitchDeleteDownloads.IsChecked)
-                .AddTo(disposables);
+                this.Bind(ViewModel, vm => vm.ShouldDeleteDownloads.Value, view => view.SwitchDeleteDownloads.IsChecked)
+                    .AddTo(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.CommandCancel, view => view.ButtonCancel)
-                .AddTo(disposables);
+                this.BindCommand(ViewModel, vm => vm.CommandCancel, view => view.ButtonCancel)
+                    .AddTo(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.CommandRemove, view => view.ButtonRemove)
-                .AddTo(disposables);
-        });
+                this.BindCommand(ViewModel, vm => vm.CommandRemove, view => view.ButtonRemove)
+                    .AddTo(disposables);
+            }
+        );
     }
 }
-

@@ -2289,6 +2289,60 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string RemoveGameOverlayView_CancelButton {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing will uninstall all mods and collections for {0}, but your downloaded mods will remain. If you re-add the game, those mods will still be available in your Library..
+        /// </summary>
+        public static string RemoveGameOverlayView_Description {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove game and mods ({0}).
+        /// </summary>
+        public static string RemoveGameOverlayView_RemoveButton {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_RemoveButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove game and delete mods ({0}).
+        /// </summary>
+        public static string RemoveGameOverlayView_RemoveButton_AlsoDelete {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_RemoveButton_AlsoDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing {0}.
+        /// </summary>
+        public static string RemoveGameOverlayView_Title {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Also delete {0} downloaded mods and {1} collections for {2} ({3})..
+        /// </summary>
+        public static string RemoveGameOverlayView_ToggleDescription {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_ToggleDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Search.
         /// </summary>
         public static string SearchBox__Search {

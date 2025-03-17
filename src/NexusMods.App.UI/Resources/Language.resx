@@ -833,6 +833,26 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Install downloaded optional mods</value>
     </data>
 
+
+    <data name="RemoveGameOverlayView_Title" xml:space="preserve">
+        <value>Removing {0}</value>
+    </data>
+    <data name="RemoveGameOverlayView_Description" xml:space="preserve">
+        <value>Removing will uninstall all mods and collections for {0}, but your downloaded mods will remain. If you re-add the game, those mods will still be available in your Library.</value>
+    </data>
+    <data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+        <value>Also delete {0} downloaded mods and {1} collections for {2} ({3}).</value>
+    </data>
+    <data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+        <value>Remove game and mods ({0})</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
+        <value>Remove game and delete mods ({0})</value>
+    </data>
+
     <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
         <value>Manual Download Required</value>
     </data>

@@ -7,31 +7,56 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Overlays"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="350"
     x:Class="NexusMods.App.UI.Overlays.RemoveGameOverlayView">
 
-    <base:MessageBoxBackground>
+    <Design.DataContext>
+        <local:RemoveGameOverlayDesignViewModel />
+    </Design.DataContext>
+
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="GameName" />
-                <TextBlock x:Name="NumDownloads"/>
-                <TextBlock x:Name="SumDownloadsSize"/>
-                <TextBlock x:Name="NumCollections"/>
-                <ToggleSwitch x:Name="SwitchDeleteDownloads" />
-            </StackPanel>
+            <Border Padding="24">
+                <StackPanel Spacing="16">
+                    <TextBlock
+                        x:Name="TitleText"
+                        TextWrapping="Wrap"
+                        Theme="{StaticResource HeadingXSSemiTheme}" />
+                    <TextBlock
+                        x:Name="DescriptionText"
+                        TextWrapping="Wrap"
+                        Theme="{StaticResource BodyMDNormalTheme}" />
+
+                    <Grid ColumnDefinitions="Auto, *">
+                        <ToggleSwitch x:Name="SwitchDeleteDownloads"
+                                      Classes="ExtraSmall"
+                                      OnContent="{x:Null}"
+                                      OffContent="{x:Null}" />
+                        <TextBlock Grid.Column="1"
+                                   x:Name="ToggleDescription"
+                                   Margin="12,0,0,0"
+                                   TextWrapping="Wrap"
+                                   Theme="{StaticResource BodyMDNormalTheme}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-            <StackPanel Orientation="Horizontal" >
-                <Button x:Name="ButtonCancel">
-                    <TextBlock Text="Cancel"/>
-                </Button>
-                <Button x:Name="ButtonRemove">
-                    <TextBlock Text="Remove"/>
-                </Button>
+            <StackPanel Orientation="Horizontal"
+                        Margin="24"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Spacing="{StaticResource Spacing-2.5}">
+                <controls:StandardButton x:Name="ButtonCancel" />
+                <controls:StandardButton x:Name="ButtonRemove"
+                                         Type="Secondary"
+                                         Fill="None"
+                                         Foreground="{StaticResource DangerStrongBrush}"/>
             </StackPanel>
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
 
 </reactive:ReactiveUserControl>
-
