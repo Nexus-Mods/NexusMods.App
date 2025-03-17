@@ -40,7 +40,8 @@
 
             <reactiveUi:ViewModelViewHost x:Name="OverlayViewHost"
                                           HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
+                                          VerticalAlignment="Center"
+                                          ClipToBounds="False"/>
         </Border>
 
         <Border x:Name="TopBarBorder"
