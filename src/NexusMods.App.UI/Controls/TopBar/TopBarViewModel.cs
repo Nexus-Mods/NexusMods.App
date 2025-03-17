@@ -20,7 +20,6 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.DataModel.Extensions;
 using NexusMods.Paths;
 using NexusMods.Telemetry;
 using R3;
@@ -49,7 +48,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenForumsCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenGitHubCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenStatusPageCommand { get; }
-    public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public R3.ReactiveCommand<R3.Unit, R3.Unit> LoginCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
@@ -129,9 +128,13 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             overlayController.Enqueue(alphaWarningViewModel);
             Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
         });
-        
-        var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
-        LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin);
+
+        var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn).ToObservable();
+        LoginCommand = canLogin.ToReactiveCommand<R3.Unit, R3.Unit>(async (_, _) =>
+        {
+            await Login();
+            return R3.Unit.Default;
+        }, awaitOperation: AwaitOperation.Parallel, configureAwait: false);
 
         var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
         LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout);
