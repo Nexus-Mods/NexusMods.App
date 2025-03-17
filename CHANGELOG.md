@@ -35,7 +35,7 @@ When managing your game for the very first time, any files that aren't part of t
 * Errors communicating with the SMAPI server will now silently be recorded in the logs rather than showing a pop up.
 
 ## Bug Fixes
-* Mod updates now correctly show that number of mod files with updates rather than the number of new versions between the current and latest releases. 
+* Mod updates now correctly show the number of mod files with updates rather than the number of new versions between the current and latest releases. 
 * The left menu now displays the correct name of a collection if the internal manifest and website don't match.
 * A Command Prompt window will no longer be open behind the app on Windows. 
 * The Success Rating for a collection now shows the correct value.
