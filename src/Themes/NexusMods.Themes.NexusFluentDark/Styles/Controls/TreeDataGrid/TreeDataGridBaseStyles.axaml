@@ -24,10 +24,10 @@
         <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPointerOverBrush" Color="White" />
         <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="White" />
         <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
-        
-        <converters:TextCaseConverter x:Key="TextCaseConverter"/>
 
-        
+        <converters:TextCaseConverter x:Key="TextCaseConverter" />
+
+
         <!-- needs to be a resource and not set by a style so we can add Clasess based on DataContext -->
         <ControlTemplate x:Key="LoadOrderItemTreeRowTemplate"
                          TargetType="TreeDataGridRow"
@@ -169,7 +169,9 @@
                                     <ContentPresenter.DataTemplates>
                                         <DataTemplate DataType="x:String">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding ., Converter={StaticResource TextCaseConverter}, ConverterParameter=upper}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock
+                                                    Text="{Binding ., Converter={StaticResource TextCaseConverter}, ConverterParameter=upper}"
+                                                    TextTrimming="CharacterEllipsis" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ContentPresenter.DataTemplates>
@@ -230,7 +232,7 @@
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
 
-        
+
         <!-- needed to override the default coloring of this element -->
         <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
             <Setter Property="Background" Value="{x:Null}" />
@@ -312,7 +314,7 @@
     </Style>
 
     <!-- TreeDataGridTemplateCell -->
-    
+
     <Style Selector="TreeDataGridTemplateCell /template/ ContentPresenter#PART_ContentPresenter">
         <Style Selector="^ Border > TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -378,6 +380,12 @@
     <Style Selector="TreeDataGrid#ModFilesTreeDataGrid">
         <Style Selector="^ icons|UnifiedIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        </Style>
+
+        <Style Selector="^ TreeDataGridRow">
+            <Setter Property="Height" Value="52" />
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="Background" Value="{x:Null}" />
         </Style>
     </Style>
 

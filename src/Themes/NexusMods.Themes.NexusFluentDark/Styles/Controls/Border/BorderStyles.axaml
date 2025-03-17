@@ -1,0 +1,255 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Preview -->
+    <Design.PreviewWith>
+        <WrapPanel Margin="10" Width="600">
+            <Border Classes="Rounded-lg OutlineStrong" Padding="16">
+                <TextBlock Text="OUTLINE Strong" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineModerate" Padding="16">
+                <TextBlock Text="OUTLINE Moderate" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineSubdued" Padding="16">
+                <TextBlock Text="OUTLINE Subdued" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineWeak" Padding="16">
+                <TextBlock Text="OUTLINE Weak" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineInfoStrong" Padding="16">
+                <TextBlock Text="OUTLINE Info Strong" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineInfoModerate" Padding="16">
+                <TextBlock Text="OUTLINE Info Moderate" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineInfoSubdued" Padding="16">
+                <TextBlock Text="OUTLINE Info Subdued" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineInfoWeak" Padding="16">
+                <TextBlock Text="OUTLINE Info Weak" />
+            </Border>
+            <Border Classes="Rounded-lg OutlineWeak Base" Padding="16">
+                <TextBlock Text="BASE" />
+            </Border>
+            <Border Classes="Rounded-lg Low" Padding="16">
+                <TextBlock Text="LOW" />
+            </Border>
+            <Border Classes="Rounded-lg Mid" Padding="16">
+                <TextBlock Text="MID" />
+            </Border>
+            <Border Classes="Rounded-lg High" Padding="16">
+                <TextBlock Text="HIGH" />
+            </Border>
+            <Border Classes="Rounded-lg DangerWeak" Padding="16">
+                <TextBlock Text="DANGER weak" />
+            </Border>
+            <Border Classes="Rounded-lg DangerSubdued" Padding="16">
+                <TextBlock Text="DANGER subdued" />
+            </Border>
+            <Border Classes="Rounded-lg DangerModerate" Padding="16">
+                <TextBlock Text="DANGER moderate" />
+            </Border>
+            <Border Classes="Rounded-lg DangerStrong" Padding="16">
+                <TextBlock Text="DANGER strong"/>
+            </Border>
+            <Border Classes="Rounded-lg WarningStrong" Padding="16">
+                <TextBlock Text="WARNING strong" />
+            </Border>
+            <Border Classes="Rounded-lg WarningSubdued" Padding="16">
+                <TextBlock Text="WARNING subdued" />
+            </Border>
+            <Border Classes="LeftPaneTitle" Padding="16">
+                <TextBlock Text="LEFT PANEL TITLE" />
+            </Border>
+            <Border Classes="Rounded-lg Mid Disabled" Padding="16">
+                <TextBlock Text="MID disabled" />
+            </Border>
+        </WrapPanel>
+    </Design.PreviewWith>
+
+    <!-- Style Definitions -->
+
+    <!-- Corner Radius -->
+
+    <Style Selector="Border.Rounded-none">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-sm">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-sm}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-md">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-md}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-xl">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-xl}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-2xl">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-2xl}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-3xl">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-3xl}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-full">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
+    </Style>
+
+    <Style Selector="Border.Rounded-t-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" />
+    </Style>
+
+    <Style Selector="Border.Rounded-b-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-b-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-l-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-l-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-r-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-r-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-tl-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-tl-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-tr-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-tr-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-bl-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-bl-lg}" />
+    </Style>
+    
+    <Style Selector="Border.Rounded-br-lg">
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-br-lg}" />
+    </Style>
+    
+    <!-- Disabled opacity -->
+    <Style Selector="Border.Disabled">
+        <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
+    </Style>
+    <!-- Border Brushes -->
+
+    <Style Selector="Border.OutlineStrong">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentStrongBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineModerate">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineSubdued">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineWeak">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+    </Style>
+
+
+    <Style Selector="Border.OutlineInfoStrong">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource InfoStrongBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineInfoModerate">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource InfoModerateBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineInfoSubdued">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource InfoSubduedBrush}" />
+    </Style>
+
+    <Style Selector="Border.OutlineInfoWeak">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource InfoWeakBrush}" />
+    </Style>
+
+
+    <!-- Content Background -->
+
+    <Style Selector="Border.Base">
+        <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
+    </Style>
+
+    <Style Selector="Border.Low">
+        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+    </Style>
+
+    <Style Selector="Border.Mid">
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+    </Style>
+
+    <Style Selector="Border.High">
+        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+    </Style>
+
+    <Style Selector="Border.DangerWeak">
+        <Setter Property="Background" Value="{StaticResource DangerWeakBrush}" />
+    </Style>
+    <Style Selector="Border.DangerSubdued">
+        <Setter Property="Background" Value="{StaticResource DangerSubduedBrush}" />
+    </Style>
+    <Style Selector="Border.DangerModerate">
+        <Setter Property="Background" Value="{StaticResource DangerModerateBrush}" />
+    </Style>
+    <Style Selector="Border.DangerStrong">
+        <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
+    </Style>
+
+    <Style Selector="Border.WarningStrong">
+        <Setter Property="Background" Value="{StaticResource WarningStrongBrush}"/>
+    </Style>
+    <Style Selector="Border.WarningSubdued">
+        <Setter Property="Background" Value="{StaticResource WarningSubduedBrush}"/>
+    </Style>
+
+    <Style Selector="Border.WarningSubdued20">
+        <Setter Property="Background" Value="{StaticResource WarningSubdued20Brush}"/>
+    </Style>
+    
+    <Style Selector="Border.SuccessSubdued20">
+        <Setter Property="Background" Value="{StaticResource SuccessSubdued20Brush}"/>
+    </Style>
+
+    <Style Selector="Border.InfoStrong">
+        <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
+    </Style>
+
+    <!-- Left Panel Title -->
+    <Style Selector="Border.LeftPaneTitle">
+        <Setter Property="Background" Value="{DynamicResource BrandSecondaryDarker}"/>
+        <Setter Property="Padding" Value="24, 13.5"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"/>
+        </Style>
+    </Style>
+
+
+
+
+</Styles>
