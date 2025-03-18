@@ -553,7 +553,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var gameMetadataId = gameInstallation.GameMetadataId;
         var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
         var register = gameInstallation.LocationsRegister;
-        var deletedFiles = new HashSet<(GamePath GamePath, AbsolutePath FullPath)>();
+        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = [];
 
         foreach (var action in ActionsInOrder)
         {
@@ -574,7 +574,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, deletedFiles);
+                    ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, foldersWithDeletedFiles);
                     break;
 
                 case Actions.ExtractToDisk:
@@ -608,7 +608,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
-        await tx.Commit();
+        var result = await tx.Commit();
+
+        var newMetadata = gameMetadata.Rebase(result.Db);
+
+        // Clean up empty directories
+        if (foldersWithDeletedFiles.Count > 0)
+        {
+            CleanDirectories(foldersWithDeletedFiles, newMetadata.DiskStateEntries, gameInstallation);
+        }
     }
 
     private void WarnOfConflict(Dictionary<GamePath, SyncNode> tree)
@@ -757,12 +765,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 continue;
             var resolvedPath = register.GetResolvedPath(path);
             resolvedPath.Delete();
-            foldersWithDeletedFiles.Add((path, resolvedPath.Parent));
 
             
-            // Don't delete the entry if we're just going to replace it
+            // Only delete the entry if we're not going to replace it
             if (!node.Actions.HasFlag(Actions.ExtractToDisk))
             {
+                foldersWithDeletedFiles.Add((path, resolvedPath.Parent));
+
                 var id = node.Disk.EntityId;
                 tx.Retract(id, DiskStateEntry.Path, ((EntityId)gameMetadataId, path.LocationId, path.Path));
                 tx.Retract(id, DiskStateEntry.Hash, node.Disk.Hash);
@@ -828,7 +837,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
             {
-                await Synchronize(prevLoadout);
                 await DeactivateCurrentLoadout(loadout.InstallationInstance);
                 await ActivateLoadout(loadout);
                 return loadout.Rebase();

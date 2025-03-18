@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.WorkspaceSystem;
 
@@ -10,8 +11,23 @@ public record DiagnosticDetailsPageContext : IPageFactoryContext
 {
     public required Diagnostic Diagnostic { get; init; }
 
+    public required LoadoutId LoadoutId { get; init; }
+
     /// <inheritdoc/>
     public bool IsEphemeral => true;
+
+    /// <inheritdoc/>
+    public PageData GetSerializablePageData()
+    {
+        return new PageData
+        {
+            FactoryId = DiagnosticListPageFactory.StaticId,
+            Context = new DiagnosticListPageContext
+            {
+                LoadoutId = LoadoutId,
+            },
+        };
+    }
 }
 
 [UsedImplicitly]
