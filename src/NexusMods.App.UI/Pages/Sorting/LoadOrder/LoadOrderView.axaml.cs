@@ -1,7 +1,8 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
@@ -115,8 +116,28 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
 
     private void OnRowDrop(object? sender, TreeDataGridRowDragEventArgs e)
     {
+        
         // NOTE(Al12rs): This is important in case the source is read-only, otherwise TreeDataGrid will attempt to
         // move the items, updating the source collection, throwing an exception in the process.
         e.Handled = true;
+
+        var dataObject = e.Inner.Data as DataObject;
+        var a = dataObject?.Get("TreeDataGridDragInfo");
+        var dragInfo = a as DragInfo;
+        if (dragInfo is null) return;
+
+        var source = dragInfo.Source;
+        var indices = dragInfo.Indexes;
+
+        var models = new List<LoadOrderItemModel>();
+
+        foreach (var modelIndex in indices)
+        {
+            var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
+            var row = source.Rows[rowIndex];
+            var model = row.Model;
+            if (model is LoadOrderItemModel loadOrderItemModel)
+                models.Add(loadOrderItemModel);
+        }
     }
 }
