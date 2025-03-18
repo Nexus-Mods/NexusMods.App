@@ -24,10 +24,9 @@ Log files for the app are located in `%LOCALAPPDATA%\NexusMods.App\Logs` on Wind
 
 Log files for the app are located in `~/.local/state/NexusMods.App/Logs` on Linux. You can quickly find these files by following the steps below:
 
-1. Open the file explorer and ensure you're at the "Home" directory.
-2. Press ++ctrl+"L"++ to edit the file path.
-3. In the input box, enter
-+ `/.local/state/NexusMods.App/Logs/` to the end of the existing path. (e.g. `/home/mike/.local/state/NexusMods.App/Logs/`)
-![The file explorer in Ubuntu pre-filled with /home/mike/.local/state/NexusMods.App/Logs/](../images/RunCommandLogsLinux.webp)
+1. Open your file explorer.
+2. Press `Ctrl+L` to edit the file path.
+3. In the input box, paste `~/.local/state/NexusMods.App/Logs/`.
+    ![The file explorer in Ubuntu pre-filled with /home/mike/.local/state/NexusMods.App/Logs/](../images/RunCommandLogsLinux.webp)
 4. Identify that latest files starting with `nexusmods.app.main.` and ``nexusmods.app.slim.`. You can sort by "Date Modified" to make this easier.
 5. Share these files in your Discord, GitHub or Forum post by dragging and dropping them into the text field.
