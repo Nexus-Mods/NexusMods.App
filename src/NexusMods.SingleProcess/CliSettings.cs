@@ -47,11 +47,6 @@ public class CliSettings() : ISettings
     }
 
     /// <summary>
-    /// The amount of time the TCPListener will pause waiting for new connections before checking if it should exit.
-    /// </summary>
-    public TimeSpan ListenTimeout { get; set; } = TimeSpan.FromSeconds(1);
-    
-    /// <summary>
     /// If true the CLI backend will be started, otherwise it will not be started, and CLI commands will not be available.
     /// </summary>
     public bool StartCliBackend { get; set; } = true;
