@@ -3,25 +3,20 @@
     
     <ResourceDictionary.MergedDictionaries>
         
-        <ResourceInclude Source="/Resources/Palette/Colors/PrimitiveColors.axaml" />
-        <ResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Colors/ElementGradients.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Opacities/ElementOpacities.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
+        <!-- static values, mainly for colors, fonts, spacings from figma. -->
+        <MergeResourceInclude Source="/Resources/Palette/Colors/PrimitiveColors.axaml" />
+        <MergeResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Opacities/ElementOpacities.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
+        <MergeResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Colors/ElementGradients.axaml"/>
         
-        
+        <!-- values for avalonia controls -->
         <MergeResourceInclude Source="/Resources/BaseResources.axaml"/>
         <MergeResourceInclude Source="/Resources/ControlResources.axaml"/>
-        <MergeResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
-        
-        <MergeResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
-        <MergeResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
-        <MergeResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
-        <MergeResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
-        <MergeResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
                 
         <!-- avalonia controls -->
         <MergeResourceInclude Source="/Controls/TextBlock.axaml"/>
@@ -35,8 +30,18 @@
         <MergeResourceInclude Source="/Controls/RadioButton.axaml"/>
         <MergeResourceInclude Source="/Controls/TextBox.axaml"/>
         
-        <!-- custom controls -->
+        <!-- custom controls (standalone components, primarily to match Figma components 
+        and to replace Avalonia controls) -->
         <MergeResourceInclude Source="/Resources/ControlThemes/StandardButton.axaml"/>
+        <!-- <MergeResourceInclude Source="/Resources/ControlThemes/StandardComboBox.axaml"/> -->
+        <!-- <MergeResourceInclude Source="/Resources/ControlThemes/StandardSplitButton.axaml"/> -->
+        
+        <!-- control themes for other controls/components -->
+        <MergeResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
         
     </ResourceDictionary.MergedDictionaries>
     

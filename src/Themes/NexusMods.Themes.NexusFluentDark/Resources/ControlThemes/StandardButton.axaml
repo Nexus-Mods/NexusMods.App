@@ -254,8 +254,8 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel>
-                    <!-- this is only shown if Content is set. This can be used interchaganbly with the regular Avalonia 
-                    button to show whatever content we need -->
+                    <!-- this is only shown if Content is set. This can be used interchangeably with the regular 
+                    Avalonia button to show whatever content we need -->
                     <ContentPresenter x:Name="PART_ContentPresenter"
                                       Background="{TemplateBinding Background}"
                                       BorderBrush="{TemplateBinding BorderBrush}"

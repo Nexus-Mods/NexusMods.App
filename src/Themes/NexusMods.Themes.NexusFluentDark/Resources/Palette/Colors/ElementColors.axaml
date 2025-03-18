@@ -5,12 +5,6 @@
     <!-- These are the colors used for the elements of the UI, such as buttons, textboxes, etc. -->
     <!-- The Themes and Styles should always prefer to use colors from this layer, to make it easier to change them later. -->
 
-    <!-- used to show an error\shouldn't be used -->
-    <Color x:Key="DebugPrimitive">DeepPink</Color>
-    <StaticResource x:Key="DebugColor" ResourceKey="DebugPrimitive" />
-    <SolidColorBrush x:Key="DebugBrush" Color="DeepPink" />
-    
-    
     <!-- Background -->
 
     <!-- SURFACE    

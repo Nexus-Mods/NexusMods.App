@@ -11,7 +11,6 @@
 
     <!-- DropDown arrow icon -->
     <StreamGeometry x:Key="MenuDownGeometry">M0 0.5L5 5.5L10 0.5H0Z</StreamGeometry>
-
     <StreamGeometry x:Key="KeyBoardArrowDownGeometry">M1.0575 0.442383L4.5 3.87738L7.9425 0.442383L9 1.49988L4.5 5.99988L0 1.49988L1.0575 0.442383Z</StreamGeometry>
 
     <!-- start of copies from Avalonia.Themes.Fluent -->

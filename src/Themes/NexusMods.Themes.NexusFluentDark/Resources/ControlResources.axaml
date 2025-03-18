@@ -3,6 +3,7 @@
 
 
     <!-- Resources for Checkbox.xaml -->
+    
     <Thickness x:Key="CheckBoxBorderThemeThickness">2</Thickness>
 
     <!-- whole control (not just the box), mainly used for the text -->
@@ -165,12 +166,6 @@
                      Color="{StaticResource SurfaceTranslucentLow}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
-    <!-- not used yet -->
-    <StaticResource x:Key="SplitButtonBackgroundChecked" ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonBackgroundCheckedPointerOver" ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonBackgroundCheckedPressed" ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonBackgroundCheckedDisabled" ResourceKey="DebugBrush" />
-
     <StaticResource x:Key="SplitButtonForeground" ResourceKey="NeutralModerateBrush" />
     <StaticResource x:Key="SplitButtonForegroundPointerOver" ResourceKey="NeutralModerateBrush" />
     <StaticResource x:Key="SplitButtonForegroundPressed" ResourceKey="NeutralModerateBrush" />
@@ -178,27 +173,35 @@
                      Color="{StaticResource NeutralModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
-    <StaticResource x:Key="SplitButtonForegroundChecked" ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonForegroundCheckedPointerOver"
-                    ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonForegroundCheckedPressed"
-                    ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonForegroundCheckedDisabled"
-                    ResourceKey="DebugBrush" />
-
     <StaticResource x:Key="SplitButtonBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="SplitButtonBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="SplitButtonBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
     <SolidColorBrush x:Key="SplitButtonBorderBrushDisabled"
                      Color="{StaticResource StrokeTranslucentModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
-
-    <StaticResource x:Key="SplitButtonBorderBrushChecked" ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonBorderBrushCheckedPointerOver" ResourceKey="DebugBrush" />
-    <StaticResource x:Key="SplitButtonBorderBrushCheckedPressed" ResourceKey="DebugBrush" />
-    <SolidColorBrush x:Key="SplitButtonBorderBrushCheckedDisabled"
-                     Color="{StaticResource DebugColor}"
-                     Opacity="{StaticResource OpacityDisabledElement}" />
+    
+    
+    <!-- toggle split button not used yet -->
+    <!-- <StaticResource x:Key="SplitButtonBackgroundChecked" ResourceKey="SurfaceTranslucentMidBrush" /> -->
+    <!-- <StaticResource x:Key="SplitButtonBackgroundCheckedPointerOver" ResourceKey="SurfaceTranslucentHighBrush" /> -->
+    <!-- <StaticResource x:Key="SplitButtonBackgroundCheckedPressed" ResourceKey="SurfaceTranslucentLowBrush" /> -->
+    <!-- <SolidColorBrush x:Key="SplitButtonBackgroundCheckedDisabled" -->
+    <!--                  Color="{StaticResource SurfaceTranslucentLow}" -->
+    <!--                  Opacity="{StaticResource OpacityDisabledElement}" /> -->
+    <!-- -->
+    <!-- <StaticResource x:Key="SplitButtonForegroundChecked" ResourceKey="NeutralModerateBrush" /> -->
+    <!-- <StaticResource x:Key="SplitButtonForegroundCheckedPointerOver" ResourceKey="NeutralModerateBrush" /> -->
+    <!-- <StaticResource x:Key="SplitButtonForegroundCheckedPressed" ResourceKey="NeutralModerateBrush" /> -->
+    <!-- <SolidColorBrush x:Key="SplitButtonForegroundCheckedDisabled" -->
+    <!--                  Color="{StaticResource NeutralModerate}" -->
+    <!--                  Opacity="{StaticResource OpacityDisabledElement}" /> -->
+    <!-- -->
+    <!-- <StaticResource x:Key="SplitButtonBorderBrushChecked" ResourceKey="StrokeTranslucentModerateBrush" /> -->
+    <!-- <StaticResource x:Key="SplitButtonBorderBrushCheckedPointerOver" ResourceKey="StrokeTranslucentModerateBrush" /> -->
+    <!-- <StaticResource x:Key="SplitButtonBorderBrushCheckedPressed" ResourceKey="StrokeTranslucentModerateBrush" /> -->
+    <!-- <SolidColorBrush x:Key="SplitButtonBorderBrushCheckedDisabled" -->
+    <!--                  Color="{StaticResource StrokeTranslucentModerate}" -->
+    <!--                  Opacity="{StaticResource OpacityDisabledElement}" /> -->
 
     <Thickness x:Key="SplitButtonBorderThemeThickness">0</Thickness>
 
@@ -230,11 +233,11 @@
                      Color="{StaticResource NeutralModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
-    <StaticResource x:Key="ComboBoxForegroundFocused" ResourceKey="DebugBrush" />
-    <StaticResource x:Key="ComboBoxForegroundFocusedPressed" ResourceKey="DebugBrush" />
+    <StaticResource x:Key="ComboBoxForegroundFocused" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxForegroundFocusedPressed" ResourceKey="NeutralModerateBrush" />
 
     <StaticResource x:Key="ComboBoxPlaceHolderForeground" ResourceKey="NeutralModerateBrush" />
-    <StaticResource x:Key="ComboBoxPlaceHolderForegroundFocusedPressed" ResourceKey="DebugBrush" />
+    <StaticResource x:Key="ComboBoxPlaceHolderForegroundFocusedPressed" ResourceKey="NeutralModerateBrush" />
 
     <StaticResource x:Key="ComboBoxBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="ComboBoxBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
