@@ -207,6 +207,9 @@ public static class Services
             .AddView<ManualDownloadRequiredOverlayView, IManualDownloadRequiredOverlayViewModel>()
             .AddViewModel<ManualDownloadRequiredOverlayViewModel, IManualDownloadRequiredOverlayViewModel>()
 
+            .AddView<RemoveGameOverlayView, IRemoveGameOverlayViewModel>()
+            .AddViewModel<RemoveGameOverlayViewModel, IRemoveGameOverlayViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
