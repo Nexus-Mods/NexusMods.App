@@ -24,6 +24,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
+    // TODO: update once we have game information on Local Files
     public LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null) => [];
 
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter)
