@@ -735,6 +735,9 @@
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\UIntComponent.cs">
+          <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
