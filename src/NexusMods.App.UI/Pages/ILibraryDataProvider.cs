@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
@@ -19,6 +20,11 @@ public interface ILibraryDataProvider
     IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveLibraryItems(LibraryFilter libraryFilter);
 
     IObservable<int> CountLibraryItems(LibraryFilter libraryFilter);
+
+    /// <summary>
+    /// Returns all library files for the given game.
+    /// </summary>
+    LibraryFile.ReadOnly[] GetAllFiles(GameId gameId, IDb? db = null);
 }
 
 public record LibraryFilter(LoadoutId LoadoutId, ILocatableGame Game);
