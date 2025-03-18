@@ -38,8 +38,8 @@ public class SuggestedEntryViewModel : AViewModel<ISuggestedEntryViewModel>, ISu
         AssociatedLocation = associatedLocation;
         RelativeToTopLevelLocation = relativeToTopLevelLocation;
 
-        Title = title == string.Empty ? associatedLocation.Value.ToString() : title;
-        Subtitle = subtitle == string.Empty ? AbsolutePath.ToString() : subtitle;
+        Title = string.IsNullOrEmpty(title) ? associatedLocation.ToString() : title;
+        Subtitle = string.IsNullOrEmpty(subtitle) ? AbsolutePath.ToString() : subtitle;
 
         CreateMappingCommand = ReactiveCommand.Create(() => { });
     }
