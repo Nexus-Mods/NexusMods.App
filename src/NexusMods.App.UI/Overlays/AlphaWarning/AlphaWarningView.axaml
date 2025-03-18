@@ -14,10 +14,10 @@
 
     <Border MinWidth="576" MaxWidth="576"
             Background="{StaticResource SurfaceLowBrush}"
-            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
-            BorderThickness="2"
             CornerRadius="8"
             Padding="24"
+            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+            BorderThickness="2"
             BoxShadow="{StaticResource DropShadowMD}">
 
         <StackPanel HorizontalAlignment="Center" Spacing="32">
