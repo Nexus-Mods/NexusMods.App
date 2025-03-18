@@ -25,6 +25,7 @@
       <UpToDateCheckInput Remove="Styles\TextBox\TextBoxStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\Icons\IconsStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\UserControls\Banners\InfoBannerStyles.axaml" />
+      <UpToDateCheckInput Remove="Styles\UserControls\StandardButton\StandardButtonStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -35,7 +36,6 @@
       <AdditionalFiles Include="Resources\Palette\Fonts\SemanticFonts.axaml" />
       <AdditionalFiles Include="Styles\Controls\Button\SpineButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Button\SpineDownloadButtonStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\StandardButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Icons\IconsStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\ProgressBar\ProgressBarStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Window\DialogStyles.axaml" />
@@ -51,11 +51,6 @@
 
     <ItemGroup>
       <Folder Include="Assets\Fonts\Bold\" />
-      <Folder Include="Styles\Controls\CheckBox\" />
-      <Folder Include="Styles\Controls\RadioButton\" />
-      <Folder Include="Styles\Controls\TextBlock\" />
-      <Folder Include="Styles\Controls\TextBox\" />
-      <Folder Include="Styles\Controls\ToggleSwitch\" />
     </ItemGroup>
 
 </Project>

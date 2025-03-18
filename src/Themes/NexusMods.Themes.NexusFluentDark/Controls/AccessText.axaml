@@ -9,6 +9,6 @@
         </Border>
     </Design.PreviewWith>
     
-    <!-- Add Resources Here -->
+    <!-- Defaults all AccessText to BodySMNormalTheme -->
     <ControlTheme x:Key="{x:Type AccessText}" TargetType="AccessText" BasedOn="{StaticResource BodySMNormalTheme}" />
 </ResourceDictionary>

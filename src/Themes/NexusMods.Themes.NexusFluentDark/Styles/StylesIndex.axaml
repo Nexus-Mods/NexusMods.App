@@ -12,6 +12,8 @@
     then used in a more complex control (LoadoutBadge) where it's size and colors are based on it's usage and will be defined later.
     
     -->
+    
+    <!-- restyled avalonia controls -->
 
     <StyleInclude Source="/Styles/Controls/Separator/SeparatorStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml" />
@@ -22,36 +24,31 @@
     <StyleInclude Source="/Styles/Controls/Button/SpineDownloadButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/PanelTitlebarButtonStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Button/LeftMenuNavButtonStyles.axaml" />
-    
     <StyleInclude Source="/Styles/Controls/Window/DialogStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridBaseStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/SharedStyles.axaml" />
-    
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridLibraryStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridSortOrderStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridCollectionDownloadStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridOtherStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TreeDataGrid/TreeDataGridActionsColumnStyles.axaml" />
-    
-    
-    
-    
     <StyleInclude Source="/Styles/Controls/ProgressBar/ProgressBarStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Menu/MenuItemStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml" />
-    <StyleInclude Source="/Styles/Controls/TabControl/TabControlStylesNew.axaml" />
+    <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
+     
+    <!-- extended avalonia controls -->
+
     <StyleInclude Source="/Styles/Controls/SplitButton/SplitButtonStyles.axaml" />
-    
     <StyleInclude Source="/Styles/Controls/ComboBox/AddPanelComboBoxStyles.axaml" />
     
-    
+    <!-- custom controls -->
 
     <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml" />
-
     <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/CollectionLoadoutPage/CollectionLoadoutPageStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml" />

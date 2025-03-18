@@ -11,7 +11,7 @@
         </Border>
     </Design.PreviewWith>
 
-    <!-- Add Resources Here -->
+    <!-- Defaults all TextBlock to BodySMNormalTheme -->
     <ControlTheme x:Key="{x:Type TextBlock}" TargetType="TextBlock" BasedOn="{StaticResource BodySMNormalTheme}" />
 
 </ResourceDictionary>
