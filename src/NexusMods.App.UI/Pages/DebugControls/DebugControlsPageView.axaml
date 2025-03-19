@@ -209,7 +209,7 @@
                                     <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
                                 </Style>
                                 <Style Selector="^ Grid">
-                                    <Setter Property="Height" Value="24" />
+                                    <Setter Property="Height" Value="16" />
                                     <Style Selector="^ > Border">
                                         <Setter Property="Padding" Value="6,3,6,2" />
                                     </Style>
@@ -227,6 +227,7 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
+                    
                     <TabItem Header="Tier 2 - Brand">
                         <ScrollViewer>
                             <StackPanel Margin="0,16,0,0">
@@ -344,6 +345,7 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
+                    
                     <TabItem IsSelected="True" Header="Tier 3 - Elements">
                         <ScrollViewer>
                             <StackPanel Spacing="16" Margin="0,16,0,0">
@@ -366,7 +368,7 @@
                                     </StackPanel>
                                     <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="Neutral" />
-                                        <Grid ColumnDefinitions="*,*,*,*,*" Height="20">
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
                                             <Border Grid.Column="0" Background="{StaticResource SurfaceBaseBrush}"
                                                     ToolTip.Tip="SurfaceBaseBrush" />
                                             <Border Grid.Column="1" Background="{StaticResource SurfaceLowBrush}"
@@ -386,30 +388,14 @@
                                     <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="NeutralTranslucent" />
                                         <Grid ColumnDefinitions="*,*,*,*,*">
-                                            <Border Grid.Column="0" Background="{StaticResource NeutralWeakBrush}"
-                                                    ToolTip.Tip="NeutralWeakBrush">
-                                                <TextBlock Text="Example"
-                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                            </Border>
-                                            <Border Grid.Column="1" Background="{StaticResource NeutralSubduedBrush}"
-                                                    ToolTip.Tip="NeutralSubduedBrush">
-                                                <TextBlock Text="Example"
-                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                            </Border>
-                                            <Border Grid.Column="2" Background="{StaticResource NeutralModerateBrush}"
-                                                    ToolTip.Tip="NeutralModerateBrush">
-                                                <TextBlock Text="Example"
-                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                            </Border>
-                                            <Border Grid.Column="3" Background="{StaticResource NeutralStrongBrush}"
-                                                    ToolTip.Tip="NeutralStrongBrush">
-                                                <TextBlock Text="Example"
-                                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                            </Border>
-                                            <Border Grid.Column="4" Background="{StaticResource NeutralInvertedBrush}"
-                                                    ToolTip.Tip="NeutralInvertedBrush">
-                                                <TextBlock Text="Example" />
-                                            </Border>
+                                            <Border Grid.Column="0" Background="{StaticResource StrokeTranslucentWeakBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentWeakBrush"/>
+                                            <Border Grid.Column="1" Background="{StaticResource StrokeTranslucentSubduedBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentSubduedBrush"/>
+                                            <Border Grid.Column="2" Background="{StaticResource StrokeTranslucentModerateBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentModerateBrush"/>
+                                            <Border Grid.Column="3" Background="{StaticResource StrokeTranslucentStrongBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentStrongBrush"/>
                                         </Grid>
                                     </StackPanel>
                                 </StackPanel>
