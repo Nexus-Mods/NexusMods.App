@@ -55,17 +55,17 @@ public class StandardButton : Button
     public enum Sizes
     {
         /// <summary>
-        /// Medium size.
-        /// </summary>
-        Medium,
-
-        /// <summary>
-        /// Small size (Default).
+        /// Small size. (Default)
         /// </summary>
         Small,
         
         /// <summary>
-        /// Small size.
+        /// Medium size.
+        /// </summary>
+        Medium,
+        
+        /// <summary>
+        /// Extra Small size.
         /// </summary>
         ExtraSmall,
     }
@@ -76,9 +76,9 @@ public class StandardButton : Button
     public enum Types
     {
         /// <summary>
-        /// No specific type.
+        /// Tertiary type. (Default)
         /// </summary>
-        None,
+        Tertiary,
 
         /// <summary>
         /// Primary type.
@@ -89,11 +89,6 @@ public class StandardButton : Button
         /// Secondary type.
         /// </summary>
         Secondary,
-
-        /// <summary>
-        /// Tertiary type (Default).
-        /// </summary>
-        Tertiary,
     }
 
     /// <summary>
@@ -101,6 +96,11 @@ public class StandardButton : Button
     /// </summary>
     public enum Fills
     {
+        /// <summary>
+        /// Weak fill (translucent). (Default)
+        /// </summary>
+        Weak,
+        
         /// <summary>
         /// No fill.
         /// </summary>
@@ -110,14 +110,9 @@ public class StandardButton : Button
         /// Strong fill.
         /// </summary>
         Strong,
-
-        /// <summary>
-        /// Weak fill (translucent) (Default).
-        /// </summary>
-        Weak,
         
         /// <summary>
-        /// Weak solid fill.
+        /// Weak fill (solid).
         /// </summary>
         WeakAlt,
     }
