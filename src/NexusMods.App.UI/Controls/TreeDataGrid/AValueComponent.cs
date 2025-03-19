@@ -80,7 +80,7 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
 
 public class ValueComponent<T> : AValueComponent<T>, IItemModelComponent<ValueComponent<T>>, IComparable<ValueComponent<T>>
 {
-    private readonly IComparer<T>? _comparer;
+    private readonly IComparer<T> _comparer;
 
     public ValueComponent(
         T initialValue,
@@ -88,16 +88,18 @@ public class ValueComponent<T> : AValueComponent<T>, IItemModelComponent<ValueCo
         bool subscribeWhenCreated = false,
         IComparer<T>? comparer = null) : base(initialValue, valueObservable, subscribeWhenCreated)
     {
-        _comparer = comparer;
+        _comparer = comparer ?? Comparer<T>.Default;
     }
 
-    public ValueComponent(T value) : base(value) { }
+    public ValueComponent(T value, IComparer<T>? comparer = null) : base(value)
+    {
+        _comparer = comparer ?? Comparer<T>.Default;
+    }
     
     public int CompareTo(ValueComponent<T>? other)
     {
         if (other is null) return 1;
-        var comparer = _comparer ?? Comparer<T>.Default;
-        return comparer.Compare(Value.Value, other.Value.Value);
+        return _comparer.Compare(Value.Value, other.Value.Value);
     }
 }
 
