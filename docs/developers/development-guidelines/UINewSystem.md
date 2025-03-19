@@ -27,7 +27,9 @@ For example, if we want to change the structure of a `Button` control to have a 
 
 Copy the default `Button` control theme from the Avalonia repository into `src/Themes/NexusMods.Themes.NexusFluentDark/Controls/Button.axaml` and modify it to suit our needs.
 
-Styles and classes can be added as part of the `ControlTheme` or alternatively as a separate `Style` file. This will be determined by the complexity of the control and how many controls will use the same styles. Any created `ControlTheme`'s also need referencing in the `src/Themes/NexusMods.Themes.NexusFluentDark/Resources/ResourceIndex.axaml` file.
+Styles and classes can be added as part of the `ControlTheme` or alternatively as a separate `Style` file. This will be determined by the complexity of the control and how many controls will use the same styles. 
+
+Any created `ControlTheme`'s also need referencing in the `src/Themes/NexusMods.Themes.NexusFluentDark/Resources/ResourceIndex.axaml` file.
 
 !!! info Note:
 
