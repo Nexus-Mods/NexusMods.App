@@ -240,17 +240,21 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
     /// </summary>
     public void SetStyleFlag(string flag, bool value)
     {
+        var modified = false;
         if (value)
         {
-            _styleFlags.Add(flag);
+            modified = _styleFlags.Add(flag);
         }
         else
         {
-            _styleFlags.Remove(flag);
+            modified = _styleFlags.Remove(flag);
         }
-        
-        // Note(Al12rs): 
-        RaisePropertyChanged(new PropertyChangedEventArgs(nameof(StyleFlags)));
+
+        if (modified)
+        {
+            // Note(Al12rs): We need UI bindings to StyleFlags to be notified when the contents of the collection change
+            RaisePropertyChanged(new PropertyChangedEventArgs(nameof(StyleFlags)));
+        } 
     }
 
     /// <summary>
