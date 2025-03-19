@@ -150,7 +150,7 @@
             <TabItem>
                 <TabItem.Styles>
                     <Style Selector="TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"/>
+                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                     </Style>
                 </TabItem.Styles>
                 <TabItem.Header>
@@ -173,43 +173,43 @@
                         <TextBlock Text="TitleXSSemi" Theme="{StaticResource TitleXSSemiTheme}" />
 
                         <Grid ColumnDefinitions="Auto,16,Auto">
-                            <StackPanel  Grid.Column="0" Spacing="8">
+                            <StackPanel Grid.Column="0" Spacing="8">
                                 <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}" />
                                 <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" />
                                 <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" />
-                                <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}"/>
-                                <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}"/>
+                                <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" />
+                                <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}" />
                                 <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" />
                                 <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}" />
                                 <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}" />
                                 <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" />
                             </StackPanel>
                             <StackPanel Grid.Column="2" Spacing="8">
-                                <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}" 
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}"/>
-                                <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" 
+                                <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" 
+                                <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" 
+                                <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}" 
+                                <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" 
+                                <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}" 
+                                <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}" 
+                                <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" 
+                                <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}"
+                                           Background="{StaticResource SurfaceInvertedBrush}"
+                                           Foreground="{StaticResource NeutralInvertedBrush}" />
+                                <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}"
                                            Background="{StaticResource SurfaceInvertedBrush}"
                                            Foreground="{StaticResource NeutralInvertedBrush}" />
                             </StackPanel>
@@ -220,7 +220,7 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem IsSelected="True" >
+            <TabItem IsSelected="True">
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Colors" />
@@ -275,54 +275,76 @@
                                     <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="TranslucentLight" />
                                         <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
-                                            <Border Grid.Column="0" Background="{StaticResource BrandTranslucentLight950Brush}"
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource BrandTranslucentLight950Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight950Brush" />
-                                            <Border Grid.Column="1" Background="{StaticResource BrandTranslucentLight900Brush}"
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource BrandTranslucentLight900Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight900Brush" />
-                                            <Border Grid.Column="2" Background="{StaticResource BrandTranslucentLight800Brush}"
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource BrandTranslucentLight800Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight800Brush" />
-                                            <Border Grid.Column="3" Background="{StaticResource BrandTranslucentLight700Brush}"
+                                            <Border Grid.Column="3"
+                                                    Background="{StaticResource BrandTranslucentLight700Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight700Brush" />
-                                            <Border Grid.Column="4" Background="{StaticResource BrandTranslucentLight600Brush}"
+                                            <Border Grid.Column="4"
+                                                    Background="{StaticResource BrandTranslucentLight600Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight600Brush" />
-                                            <Border Grid.Column="5" Background="{StaticResource BrandTranslucentLight500Brush}"
+                                            <Border Grid.Column="5"
+                                                    Background="{StaticResource BrandTranslucentLight500Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight500Brush" />
-                                            <Border Grid.Column="6" Background="{StaticResource BrandTranslucentLight400Brush}"
+                                            <Border Grid.Column="6"
+                                                    Background="{StaticResource BrandTranslucentLight400Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight400Brush" />
-                                            <Border Grid.Column="7" Background="{StaticResource BrandTranslucentLight300Brush}"
+                                            <Border Grid.Column="7"
+                                                    Background="{StaticResource BrandTranslucentLight300Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight300Brush" />
-                                            <Border Grid.Column="8" Background="{StaticResource BrandTranslucentLight200Brush}"
+                                            <Border Grid.Column="8"
+                                                    Background="{StaticResource BrandTranslucentLight200Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight200Brush" />
-                                            <Border Grid.Column="9" Background="{StaticResource BrandTranslucentLight100Brush}"
+                                            <Border Grid.Column="9"
+                                                    Background="{StaticResource BrandTranslucentLight100Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight100Brush" />
-                                            <Border Grid.Column="10" Background="{StaticResource BrandTranslucentLight50Brush}"
+                                            <Border Grid.Column="10"
+                                                    Background="{StaticResource BrandTranslucentLight50Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight50Brush" />
                                         </Grid>
                                     </StackPanel>
                                     <StackPanel Classes="ColorRamp">
                                         <TextBlock Text="TranslucentDark" />
                                         <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
-                                            <Border Grid.Column="0" Background="{StaticResource BrandTranslucentDark950Brush}"
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource BrandTranslucentDark950Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark950Brush" />
-                                            <Border Grid.Column="1" Background="{StaticResource BrandTranslucentDark900Brush}"
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource BrandTranslucentDark900Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark900Brush" />
-                                            <Border Grid.Column="2" Background="{StaticResource BrandTranslucentDark800Brush}"
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource BrandTranslucentDark800Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark800Brush" />
-                                            <Border Grid.Column="3" Background="{StaticResource BrandTranslucentDark700Brush}"
+                                            <Border Grid.Column="3"
+                                                    Background="{StaticResource BrandTranslucentDark700Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark700Brush" />
-                                            <Border Grid.Column="4" Background="{StaticResource BrandTranslucentDark600Brush}"
+                                            <Border Grid.Column="4"
+                                                    Background="{StaticResource BrandTranslucentDark600Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark600Brush" />
-                                            <Border Grid.Column="5" Background="{StaticResource BrandTranslucentDark500Brush}"
+                                            <Border Grid.Column="5"
+                                                    Background="{StaticResource BrandTranslucentDark500Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark500Brush" />
-                                            <Border Grid.Column="6" Background="{StaticResource BrandTranslucentDark400Brush}"
+                                            <Border Grid.Column="6"
+                                                    Background="{StaticResource BrandTranslucentDark400Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark400Brush" />
-                                            <Border Grid.Column="7" Background="{StaticResource BrandTranslucentDark300Brush}"
+                                            <Border Grid.Column="7"
+                                                    Background="{StaticResource BrandTranslucentDark300Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark300Brush" />
-                                            <Border Grid.Column="8" Background="{StaticResource BrandTranslucentDark200Brush}"
+                                            <Border Grid.Column="8"
+                                                    Background="{StaticResource BrandTranslucentDark200Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark200Brush" />
-                                            <Border Grid.Column="9" Background="{StaticResource BrandTranslucentDark100Brush}"
+                                            <Border Grid.Column="9"
+                                                    Background="{StaticResource BrandTranslucentDark100Brush}"
                                                     ToolTip.Tip="BrandTranslucentDark100Brush" />
-                                            <Border Grid.Column="10" Background="{StaticResource BrandTranslucentDark50Brush}"
+                                            <Border Grid.Column="10"
+                                                    Background="{StaticResource BrandTranslucentDark50Brush}"
                                                     ToolTip.Tip="BrandTranslucentLight50Brush" />
                                         </Grid>
                                     </StackPanel>
@@ -542,15 +564,15 @@
                                                     ToolTip.Tip="BrandPrimary50Brush" />
                                         </Grid>
                                     </StackPanel>
-                                    
+
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
 
                     <TabItem IsSelected="True" Header="Tier 3 - Elements">
+
                         <ScrollViewer>
-                            
                             <StackPanel Spacing="16" Margin="0,16,0,0">
 
                                 <StackPanel Classes="ElementSection">
