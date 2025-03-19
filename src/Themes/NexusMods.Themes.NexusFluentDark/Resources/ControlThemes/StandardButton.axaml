@@ -16,8 +16,15 @@
             <StackPanel Spacing="8" Orientation="Horizontal">
                 <StackPanel Spacing="8">
                     <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="None" />
-                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Right" Type="Tertiary"
-                                             Fill="WeakAlt" />
+                    <controls:StandardButton Text="Open Menu" Size="ExtraSmall" ShowIcon="Right" Type="Primary"
+                                             Fill="Weak">
+                        <controls:StandardButton.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Item 1"/>
+                                <MenuItem Header="Item 2"/>
+                            </MenuFlyout>
+                        </controls:StandardButton.Flyout>
+                    </controls:StandardButton>
                     <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
                     <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
                     <controls:StandardButton ShowIcon="Left" ShowLabel="False" Size="Medium" />
@@ -332,9 +339,9 @@
             <Setter Property="Foreground" Value="{StaticResource ButtonForegroundDisabled}" />
         </Style>
         <Style Selector="^:flyout-open">
-            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
-            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
-            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPressed}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressed}" />
         </Style>
 
         <!-- sizes -->
@@ -400,6 +407,12 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushDisabled}" />
                 </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
+                </Style>
             </Style>
 
             <!-- PRIMARY/WEAK -->
@@ -425,6 +438,12 @@
                     <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundDisabled}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushPressed}" />
                 </Style>
             </Style>
         </Style>
@@ -456,6 +475,12 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrushDisabled}" />
                 </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryStrongBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrushPressed}" />
+                </Style>
             </Style>
 
             <!-- SECONDARY/WEAK -->
@@ -482,6 +507,12 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrushDisabled}" />
                 </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrushPressed}" />
+                </Style>
             </Style>
 
             <!-- SECONDARY/NONE -->
@@ -507,6 +538,12 @@
                     <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackgroundDisabled}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrushPressed}" />
                 </Style>
             </Style>
         </Style>
@@ -539,6 +576,12 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushDisabled}" />
                 </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushPressed}" />
+                </Style>
             </Style>
 
             <!-- TERTIARY/WEAKALT -->
@@ -565,6 +608,12 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushDisabled}" />
                 </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPressed}" />
+                </Style>
             </Style>
 
             <!-- TERTIARY/NONE -->
@@ -590,6 +639,12 @@
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundDisabled}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrushDisabled}" />
+                </Style> 
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrushPressed}" />
                 </Style>
             </Style>
 
