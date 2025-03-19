@@ -200,6 +200,13 @@
         <Setter Property="Foreground" Value="{StaticResource ComboBoxDropDownGlyphForegroundDisabled}" />
       </Style>
     </Style>
+    
+    <!--  DropDownOpen State  -->
+    <Style Selector="^:dropdownopen /template/ Border#Background">
+        <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundPressed}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushPressed}" />
+    </Style>
+    
   </ControlTheme>
 
 </ResourceDictionary>
