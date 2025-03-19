@@ -12,33 +12,27 @@ public static class LoadOrderComponents
     public sealed class IndexComponent : ReactiveR3Object, IItemModelComponent<IndexComponent>, IComparable<IndexComponent>
     {
         private readonly ValueComponent<int> _index;
-        private readonly ValueComponent<ListSortDirection> _sortDirection;
+        private readonly ValueComponent<string> _displaySortIndex;
 
         public ReactiveCommand<Unit> MoveUp { get; } = new();
         public ReactiveCommand<Unit> MoveDown { get; } = new();
 
         public IReadOnlyBindableReactiveProperty<int> SortIndex => _index.Value;
+        public IReadOnlyBindableReactiveProperty<string> DisplaySortIndex => _displaySortIndex.Value;
 
-        public IndexComponent(
-            ValueComponent<int> index,
-            ValueComponent<ListSortDirection> sortDirection)
+        public IndexComponent(ValueComponent<int> index, ValueComponent<string> displaySortIndex)
         {
             _index = index;
-            _sortDirection = sortDirection;
+            _displaySortIndex = displaySortIndex;
         }
 
         public int CompareTo(IndexComponent? other)
         {
-            // depends on sort direction
-            return _sortDirection.Value.Value switch
-            {
-                ListSortDirection.Ascending => SortIndex.Value.CompareTo(other?.SortIndex.Value),
-                ListSortDirection.Descending => -SortIndex.Value.CompareTo(other?.SortIndex.Value),
-                _ => throw new InvalidEnumArgumentException()
-            };
+            // Data is sorted by the Adapter, not the treeDataGrid, this should not be called
+            throw new NotSupportedException();
         }
 
-        internal static string ConvertZeroIndexToOrdinalNumber(int sortIndex)
+        internal static string IndexToOrdinal(int sortIndex)
         {
             var displayIndex = sortIndex + 1;
             var suffix = displayIndex switch
