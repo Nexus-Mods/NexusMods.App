@@ -85,10 +85,21 @@ public class ValueComponent<T> : AValueComponent<T>
         IObservable<T> valueObservable,
         bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
 
-    public ValueComponent(
+    public ValueComponent(T value) : base(value) { }
+}
+
+public class ComparableValueComponent<T> : AValueComponent<T>, IItemModelComponent<ComparableValueComponent<T>>, IComparable<ComparableValueComponent<T>>
+where T : IComparable<T>
+{
+    public int CompareTo(ComparableValueComponent<T>? other)
+    {
+        return other is null ? 1 : Value.Value.CompareTo(other.Value.Value);
+    }
+
+    public ComparableValueComponent(
         T initialValue,
-        Observable<T> valueObservable,
+        IObservable<T> valueObservable,
         bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
 
-    public ValueComponent(T value) : base(value) { }
+    public ComparableValueComponent(T value) : base(value) { }
 }
