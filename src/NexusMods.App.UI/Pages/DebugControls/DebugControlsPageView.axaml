@@ -220,7 +220,7 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem IsSelected="True">
+            <TabItem>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Colors" />

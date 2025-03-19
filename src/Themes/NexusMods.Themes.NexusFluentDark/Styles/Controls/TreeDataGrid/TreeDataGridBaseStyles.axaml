@@ -318,7 +318,6 @@
     <Style Selector="TreeDataGridTemplateCell /template/ ContentPresenter#PART_ContentPresenter">
         <Style Selector="^ Border > TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
     </Style>
