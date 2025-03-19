@@ -47,8 +47,7 @@
 
     <!-- Composite columns -->
     <!-- Index Column -->
-    <DataTemplate x:Key="{x:Static local:LoadOrderColumns+IndexColumn.ColumnTemplateResourceKey}"
-                  x:DataType="controls:CompositeItemModel(system:Guid)">
+    <DataTemplate x:Key="{x:Static local:LoadOrderColumns+IndexColumn.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="system:Guid" />
         </DataTemplate.DataType>
@@ -91,8 +90,7 @@
     </DataTemplate>
     
     <!-- Name Column -->
-    <DataTemplate x:Key="{x:Static local:LoadOrderColumns+NameColumn.ColumnTemplateResourceKey}"
-                  x:DataType="controls:CompositeItemModel(system:Guid)">
+    <DataTemplate x:Key="{x:Static local:LoadOrderColumns+NameColumn.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="system:Guid" />
         </DataTemplate.DataType>
