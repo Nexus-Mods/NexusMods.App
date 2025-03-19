@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
@@ -34,7 +33,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
 
         // IsActive
         compositeModel.Add(LoadOrderColumns.IsActiveComponentKey,
-            new ComparableValueComponent<bool>(sortableItem.IsActive, sortableItem.WhenAnyValue(item => item.IsActive)));
+            new ValueComponent<bool>(sortableItem.IsActive, sortableItem.WhenAnyValue(item => item.IsActive)));
 
         // SortIndex
         var displayIndexObservable = sortableItem.WhenAnyValue(item => item.SortIndex).Select(IndexComponent.IndexToOrdinal);

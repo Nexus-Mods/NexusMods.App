@@ -78,28 +78,26 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
     }
 }
 
-public class ValueComponent<T> : AValueComponent<T>
+public class ValueComponent<T> : AValueComponent<T>, IItemModelComponent<ValueComponent<T>>, IComparable<ValueComponent<T>>
 {
+    private readonly IComparer<T>? _comparer;
+
     public ValueComponent(
         T initialValue,
         IObservable<T> valueObservable,
-        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
-
-    public ValueComponent(T value) : base(value) { }
-}
-
-public class ComparableValueComponent<T> : AValueComponent<T>, IItemModelComponent<ComparableValueComponent<T>>, IComparable<ComparableValueComponent<T>>
-where T : IComparable<T>
-{
-    public int CompareTo(ComparableValueComponent<T>? other)
+        bool subscribeWhenCreated = false,
+        IComparer<T>? comparer = null) : base(initialValue, valueObservable, subscribeWhenCreated)
     {
-        return other is null ? 1 : Value.Value.CompareTo(other.Value.Value);
+        _comparer = comparer;
     }
 
-    public ComparableValueComponent(
-        T initialValue,
-        IObservable<T> valueObservable,
-        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
-
-    public ComparableValueComponent(T value) : base(value) { }
+    public ValueComponent(T value) : base(value) { }
+    
+    public int CompareTo(ValueComponent<T>? other)
+    {
+        if (other is null) return 1;
+        var comparer = _comparer ?? Comparer<T>.Default;
+        return comparer.Compare(Value.Value, other.Value.Value);
+    }
 }
+
