@@ -12,7 +12,9 @@ Depending on what the control will look like or what functionality is required w
 
 The most basic of visual changes when functionality stays the same. Styling is when the look of a control changes without changing any underlying markup and structure. Primarily used for color and font changes for various states but is used for layout changes such as margin, padding, alignment, spacing etc.
 
-For example, if we want to style an Avalonia `Seperator` control to match our system, we would create a new `SeperatorStyles.axaml` file inside of `src/Themes/NexusMods.Themes.NexusFluentDark/Styles/Controls/Separator`. Any created style files also need referencing in the `src/Themes/NexusMods.Themes.NexusFluentDark/Styles/StylesIndex.axaml` file.
+For example, if we want to style an Avalonia `Seperator` control to match our system, we would create a new `SeperatorStyles.axaml` file inside of `src/Themes/NexusMods.Themes.NexusFluentDark/Styles/Controls/Separator`. 
+
+Any created style files also need referencing in the `src/Themes/NexusMods.Themes.NexusFluentDark/Styles/StylesIndex.axaml` file.
 
 !!! info Note:
 
