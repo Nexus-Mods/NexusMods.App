@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
+using Humanizer;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using ReactiveUI;
@@ -36,11 +37,11 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
             new ValueComponent<bool>(sortableItem.IsActive, sortableItem.WhenAnyValue(item => item.IsActive)));
 
         // SortIndex
-        var displayIndexObservable = sortableItem.WhenAnyValue(item => item.SortIndex).Select(IndexComponent.IndexToOrdinal);
+        var displayIndexObservable = sortableItem.WhenAnyValue(item => item.SortIndex).Select(index => index.Ordinalize());
         compositeModel.Add(LoadOrderColumns.IndexColumn.IndexComponentKey,
             new IndexComponent(
                 new ValueComponent<int>(sortableItem.SortIndex, sortableItem.WhenAnyValue(item => item.SortIndex)),
-                new ValueComponent<string>(IndexComponent.IndexToOrdinal(sortableItem.SortIndex), displayIndexObservable)
+                new ValueComponent<string>(sortableItem.SortIndex.Ordinalize(), displayIndexObservable)
             )
         );
 
