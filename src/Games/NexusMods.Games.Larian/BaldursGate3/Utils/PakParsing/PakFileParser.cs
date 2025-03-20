@@ -48,7 +48,7 @@ public static class PakFileParser
     private static Optional<LspkPackageFormat.ScriptExtenderConfigMetadata> GetScriptExtenderConfigMetaData(List<LspkPackageFormat.FileEntryInfoCommon> fileList, BinaryReader br)
     {
         var seConfig = fileList.FirstOrOptional(
-            f => new RelativePath(f.Name).EndsWith(new RelativePath("ScriptExtender/Config.json"))
+            f => f.Name.EndsWith("ScriptExtender/Config.json")
         );
 
         if (seConfig.HasValue)
