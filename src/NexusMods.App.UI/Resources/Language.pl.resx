@@ -870,4 +870,19 @@
 	<data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
 		<value>Ocena sukcesu</value>
 	</data>
+	<data name="ManageGameWarning_Title" xml:space="preserve">
+		<value>Zarządzanie tą grą wpłynie na istniejące mody</value>
+	</data>
+	<data name="ManageGameWarning_Desc1" xml:space="preserve">
+		<value>Wszystkie istniejące mody zostaną wykryte i będą mogły być używane razem z aplikacją w sekcji „Zewnętrzne zmiany”. Jeśli jednak później przestaniesz zarządzać tą grą lub odinstalujesz aplikację, te mody zostaną trwale usunięte z folderu gry.</value>
+	</data>
+	<data name="ManageGameWarning_Desc2" xml:space="preserve">
+		<value>Przed kontynuowaniem wykonaj kopię zapasową modów, które chcesz zachować.</value>
+	</data>
+	<data name="ManageGameWarning_Cancel" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="ManageGameWarning_Continue" xml:space="preserve">
+		<value>Kontynuuj</value>
+	</data>
 </root>
