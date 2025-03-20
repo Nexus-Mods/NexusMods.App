@@ -72,10 +72,9 @@ Updated the new file and synced it.
 | {Game, Data/image.dds} | 0x9829BF9CBC5991D2 | 85.484 KB |
 | {Game, README.txt} | 0x284B31336E242FFA | 26 B |
 | {Game, StubbedGame.exe} | 0xAD76A8A9233B7238 | 209 KB |
-### Loadout A - (2)
+### Loadout A - (1)
 | Path | Hash | Size | Disabled | Deleted |
 | --- | --- | --- | --- | --- |
-| {Game, bin/newFile.txt} | 0x673E3C493921A2D5 | 12 B |   |   |
 | {Game, bin/newFile.txt} | 0xB4E7270703F5F646 | 21 B |   |   |
 
 
