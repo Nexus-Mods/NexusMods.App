@@ -11,7 +11,7 @@ namespace NexusMods.App.UI.Controls;
 public class Toolbar: ItemsControl
 {
     private static readonly FuncTemplate<Panel?> DefaultPanel =
-        new(() => new StackPanel() { Orientation = Orientation.Horizontal, Spacing = 8 });
+        new(() => new StackPanel() { Orientation = Orientation.Horizontal, Spacing = 4 });
 
     static Toolbar()
     {

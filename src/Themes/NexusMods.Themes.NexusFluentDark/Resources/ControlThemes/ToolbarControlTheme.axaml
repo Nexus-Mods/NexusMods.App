@@ -3,50 +3,63 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Height="80" Width="1000">
-            <controls:Toolbar>
-                <controls:StandardButton Text="Button 1" />
-                <controls:StandardButton Text="Button 2" />
-                <Separator />
-                <TextBlock Text="Text" />
-                <controls:StandardButton Text="Button 3" />
-                <SplitButton />
-                <ComboBox>
-                    <ComboBoxItem>Item 1</ComboBoxItem>
-                    <ComboBoxItem>Item 2</ComboBoxItem>
-                </ComboBox>
-                <Separator />
-                <controls:StandardButton Text="Button 4" />
-            </controls:Toolbar>
+        <Border Width="1000" Classes="Low">
+            <StackPanel>
+                <controls:Toolbar>
+                    <TextBox/>
+                </controls:Toolbar>
+                <controls:Toolbar>
+                    <controls:StandardButton Text="Button 1" Fill="None"/>
+                    <controls:StandardButton Text="Button 2" Fill="None" />
+                    <Separator />
+                    <controls:StandardButton Text="Button 3" Fill="None" />
+                    <SplitButton>SplitButton</SplitButton>
+                    <ComboBox PlaceholderText="Select an item">
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+                    <Separator />
+                    <controls:StandardButton Text="Button 4" Fill="None" />
+                </controls:Toolbar>
+                
+                <controls:Toolbar>
+                    <controls:StandardButton Text="Button 3" Fill="None" />
+                </controls:Toolbar>
+                
+            </StackPanel>
+            
         </Border>
     </Design.PreviewWith>
 
     <ControlTheme x:Key="{x:Type controls:Toolbar}" TargetType="controls:Toolbar">
-        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="24, 8" />
+        <Setter Property="Padding" Value="24, 12,24,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Padding="{TemplateBinding Padding}"
-                        Margin="{TemplateBinding Margin}"
-                        Height="{TemplateBinding Height}"
-                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                <Border Margin="{TemplateBinding Margin}"
+                        MinHeight="{TemplateBinding MinHeight}"
+                        HorizontalAlignment="Stretch"
                         VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        Background="{TemplateBinding Background}">
-                    <ItemsPresenter Name="PART_ItemsPresenter"
-                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        Background="{TemplateBinding Background}"
+                        Padding="{TemplateBinding Padding}">
+                    <Border Name="ButtonContainer"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{StaticResource SurfaceMidBrush}"
+                            Padding="4"
+                            HorizontalAlignment="Left">
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </Border>
                 </Border>
             </ControlTemplate>
         </Setter>
     </ControlTheme>
 
     <!-- Styles for expected child controls are in src/Themes/NexusMods.Themes.NexusFluentDark/Styles/UserControls/Toolbar/ToolbarStyles.axaml -->
-    
 
 </ResourceDictionary>
