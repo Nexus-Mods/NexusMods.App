@@ -14,6 +14,7 @@
         https://github.com/AvaloniaUI/Avalonia/issues/11092
     -->
     <FontFamily x:Key="InterRegular">/Assets/Fonts/Regular#Inter</FontFamily>
-    <FontFamily x:Key="InterSemiBold">/Assets/Fonts/SemiBold#Inter</FontFamily>    
+    <FontFamily x:Key="InterMedium">/Assets/Fonts/Medium#Inter</FontFamily>
+    <FontFamily x:Key="InterSemi">/Assets/Fonts/SemiBold#Inter</FontFamily>    
     <FontFamily x:Key="RobotoMonoRegular">/Assets/Fonts/Regular#Roboto Mono</FontFamily>
 </ResourceDictionary>

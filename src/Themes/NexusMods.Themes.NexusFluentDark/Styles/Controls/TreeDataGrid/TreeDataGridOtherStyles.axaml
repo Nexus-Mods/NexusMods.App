@@ -7,15 +7,24 @@
     <!-- No backgrounds for the advanced installer TreeDataGrid's -->
 
     <Style Selector="TreeDataGrid#SelectTreeDataGrid">
-        <Setter Property="Background" Value="{x:Null}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        <Style Selector="^ TreeDataGridRow">
+            <Setter Property="Background" Value="{x:Null}" />
+        </Style>
     </Style>
 
     <Style Selector="TreeDataGrid#ModContentTreeDataGrid">
-        <Setter Property="Background" Value="{x:Null}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        <Style Selector="^ TreeDataGridRow">
+            <Setter Property="Background" Value="{x:Null}" />
+        </Style>
     </Style>
 
     <Style Selector="TreeDataGrid#LocationPreviewTreeDataGrid">
-        <Setter Property="Background" Value="{x:Null}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        <Style Selector="^ TreeDataGridRow">
+            <Setter Property="Background" Value="{x:Null}" />
+        </Style>
     </Style>
 
 </Styles>

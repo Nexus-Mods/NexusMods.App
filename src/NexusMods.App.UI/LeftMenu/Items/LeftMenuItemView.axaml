@@ -53,7 +53,7 @@
                             <TextBlock TextAlignment="Center"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
-                                       Theme="{StaticResource BodySMBoldTheme}"
+                                       Theme="{StaticResource BodySMSemiTheme}"
                                        Foreground="{StaticResource NeutralInverted}"
                                        Text="{CompiledBinding Count}" />
                         </Border>

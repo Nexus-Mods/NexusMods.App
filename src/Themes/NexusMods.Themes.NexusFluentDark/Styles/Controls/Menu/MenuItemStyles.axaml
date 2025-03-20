@@ -100,10 +100,6 @@
         <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         <Setter Property="Padding" Value="12,6,12,6" />
 
-        <Style Selector="^ TextBlock,^ AccessText">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        </Style>
-
         <Style Selector="^ ContentPresenter#PART_HeaderPresenter">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>

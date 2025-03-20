@@ -36,6 +36,7 @@ using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
@@ -199,6 +200,9 @@ public static class Services
 
             .AddView<ObservableInfoPageView, IObservableInfoPageViewModel>()
             .AddViewModel<ObservableInfoPageViewModel, IObservableInfoPageViewModel>()
+            
+            .AddView<DebugControlsPageView, IDebugControlsPageViewModel>()
+            .AddViewModel<DebugControlsPageViewModel, IDebugControlsPageViewModel>()
 
             .AddView<ManualDownloadRequiredOverlayView, IManualDownloadRequiredOverlayViewModel>()
             .AddViewModel<ManualDownloadRequiredOverlayViewModel, IManualDownloadRequiredOverlayViewModel>()
@@ -241,6 +245,7 @@ public static class Services
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
+            .AddSingleton<IPageFactory, DebugControlsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()

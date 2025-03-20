@@ -116,7 +116,7 @@
                                 <Setter Property="Height" Value="42" />
 
                                 <Style Selector="^ > TextBlock#ItemIndex">
-                                    <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+                                    <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
                                     <Setter Property="HorizontalAlignment" Value="Center" />
                                     <Setter Property="Foreground"
                                             Value="{StaticResource NeutralTranslucentStrongBrush}" />

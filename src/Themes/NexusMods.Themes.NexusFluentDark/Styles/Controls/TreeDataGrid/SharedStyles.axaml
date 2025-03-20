@@ -43,7 +43,6 @@
                 <Setter Property="CornerRadius" Value="0,0,4,0" />
                 
                 <Style Selector="^ > TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
                     <Setter Property="HorizontalAlignment" Value="Center" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                 </Style>
