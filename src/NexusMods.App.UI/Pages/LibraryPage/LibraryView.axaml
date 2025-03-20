@@ -63,9 +63,26 @@
                 </StackPanel>
             </Expander.Header>
             <!-- Empty State -->
-            <Grid RowDefinitions="Auto, *">
+            <Grid RowDefinitions="Auto, Auto, *">
+                
+                <!-- New Toolbar -->
+                <controls:Toolbar>
+                    <controls:StandardButton Text="Button 1"/>
+                    <controls:StandardButton Text="Button 2" />
+                    <Separator/>
+                    <TextBlock Text="Text"/>
+                    <controls:StandardButton Text="Button 3"/>
+                    <SplitButton/>
+                    <ComboBox>
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+                    <Separator/>
+                    <controls:StandardButton Text="Button 4" />
+                </controls:Toolbar>
+                
                 <!-- Toolbar -->
-                <Border Grid.Row="0" Classes="Toolbar">
+                <Border Grid.Row="1" Classes="Toolbar">
                     <StackPanel>
 
                         <SplitButton x:Name="InstallModSplitButton" 
@@ -123,7 +140,7 @@
                     </StackPanel>
                 </Border>
 
-                <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
+                <controls:EmptyState x:Name="EmptyState" Grid.Row="2"
                                      Header="{x:Static resources:Language.EmptyLibraryTitleText}">
                     <controls:EmptyState.Subtitle>
                         <StackPanel Orientation="Vertical" Spacing="16">
