@@ -12,7 +12,7 @@
     x:Class="NexusMods.App.UI.Overlays.ManageGameWarning.ManageGameWarningView">
     <base:MessageBoxBackground MinWidth="300" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="24">
+            <StackPanel Orientation="Vertical" Margin="24" Classes="Spacing-6">
 
                 <!-- Title -->
                 <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
@@ -22,10 +22,7 @@
                 <!-- Message -->
                 <!-- If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page. -->
                 <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" Text="{x:Static resources:Language.ManageGameWarning_Desc1}" />
-                
-                <!-- Spacing between text, this dialog is semi-temporary, so this may be replaced soon -->
-                <Border Margin="0,16,0,0"></Border>
-                
+
                 <!-- Message (Bold) -->
                 <!-- To keep any mods you want to save, please back them up before continuing. -->
                 <TextBlock x:Name="MessageTextBlockBold" TextWrapping="WrapWithOverflow" Text="{x:Static resources:Language.ManageGameWarning_Desc2}" />
