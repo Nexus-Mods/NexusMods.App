@@ -64,8 +64,6 @@
                     <icons:UnifiedIcon Classes="DragVertical" />
                     <icons:UnifiedIcon Classes="Search" />
                     <icons:UnifiedIcon Classes="Home" />
-                    <icons:UnifiedIcon Classes="ToggleSwitchOn" />
-                    <icons:UnifiedIcon Classes="ToggleSwitchOff" />
                     <icons:UnifiedIcon Classes="Game" />
                     <icons:UnifiedIcon Classes="Undo" />
                     <icons:UnifiedIcon Classes="Redo" />
@@ -538,10 +536,6 @@
 
     <Style Selector="icons|UnifiedIcon.Info">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Info}" />
-    </Style>
-
-    <Style Selector="icons|UnifiedIcon.Check">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.Check}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.CheckCircle">
         <Setter Property="Value" Value="{x:Static icons:IconValues.CheckCircle}" />

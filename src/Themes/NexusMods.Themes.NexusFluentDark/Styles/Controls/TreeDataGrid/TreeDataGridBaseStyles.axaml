@@ -25,9 +25,6 @@
         <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="White" />
         <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
 
-        <converters:TextCaseConverter x:Key="TextCaseConverter" />
-
-
         <!-- needs to be a resource and not set by a style so we can add Clasess based on DataContext -->
         <ControlTemplate x:Key="LoadOrderItemTreeRowTemplate"
                          TargetType="TreeDataGridRow"
@@ -170,7 +167,7 @@
                                         <DataTemplate DataType="x:String">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock
-                                                    Text="{Binding ., Converter={StaticResource TextCaseConverter}, ConverterParameter=upper}"
+                                                    Text="{Binding ., Converter={x:Static  converters:TextCaseConverter.Instance}, ConverterParameter=upper}"
                                                     TextTrimming="CharacterEllipsis" />
                                             </StackPanel>
                                         </DataTemplate>
