@@ -228,7 +228,7 @@
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem x:Name="InstructionsTab" IsVisible="True">
+            <TabItem x:Name="InstructionsTab" IsVisible="False">
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Additional Instructions" />
