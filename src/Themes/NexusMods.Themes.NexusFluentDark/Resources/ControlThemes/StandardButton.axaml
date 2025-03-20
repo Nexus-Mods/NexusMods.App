@@ -15,7 +15,30 @@
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
                 <StackPanel Spacing="8">
-                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="None" />
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                    <controls:StandardButton Text="Extra Small 24px" Size="ExtraSmall" ShowIcon="None" />
+                    <controls:StandardButton Text="Left" Size="ExtraSmall" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Text="Right" Size="ExtraSmall" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Text="Both" Size="ExtraSmall" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <controls:StandardButton Text="Small 28px (Default)" Size="Small" ShowIcon="None" />
+                        <controls:StandardButton Text="Left" Size="Small" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Right" Size="Small" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Both" Size="Small" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <controls:StandardButton Text="Medium 36px" Size="Medium" ShowIcon="None" />
+                        <controls:StandardButton Text="Left" Size="Medium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Right" Size="Medium" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Both" Size="Medium" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    </StackPanel>
                     <controls:StandardButton Text="Open Menu" Size="ExtraSmall" ShowIcon="Right" Type="Primary"
                                              Fill="Weak">
                         <controls:StandardButton.Flyout>
@@ -28,6 +51,10 @@
                     <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
                     <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
                     <controls:StandardButton ShowIcon="Left" ShowLabel="False" Size="Medium" />
+                    <StackPanel Orientation="Horizontal">
+                        <controls:StandardButton ShowIcon="Left" Size="Medium" Text="View" />
+                        <controls:StandardButton ShowIcon="Left" ShowLabel="False" Size="Medium" />
+                    </StackPanel>
                     <controls:StandardButton ShowIcon="IconOnly" ShowLabel="False" />
                     <controls:StandardButton ShowIcon="IconOnly" ShowLabel="False" Size="Medium" />
                 </StackPanel>
@@ -79,11 +106,11 @@
     <!-- RESOURCES -->
     
     <!-- Unusual values to account for rendering differences with Figma and rounding errors. This makes sure that we 
-    don't have to set fixed heights but the heights are ending up the same as Figma i.e. Medium button is 32 pixels high,
+    don't have to set fixed heights but the heights are ending up the same as Figma i.e. Medium button is 36 pixels high,
      Small is 28 and ExtraSmall is 24. --> 
-    <Thickness x:Key="StandardButtonPaddingMedium">6,6,6,6</Thickness>
-    <Thickness x:Key="StandardButtonPaddingSmall">6,6,6,5</Thickness>
-    <Thickness x:Key="StandardButtonPaddingExtraSmall">6,4,6,3</Thickness>
+    <Thickness x:Key="StandardButtonPaddingMedium">6,6,6,5</Thickness>
+    <Thickness x:Key="StandardButtonPaddingSmall">6,4,6,3</Thickness>
+    <Thickness x:Key="StandardButtonPaddingExtraSmall">6,2,6,1</Thickness>
     
     <sys:Double x:Key="StandardButtonIconSizeMedium">20</sys:Double>
     <sys:Double x:Key="StandardButtonIconSizeSmall">16</sys:Double>
@@ -287,12 +314,15 @@
                                     HorizontalAlignment="Center"
                                     Spacing="{StaticResource Spacing-0.5}">
                             <icons:UnifiedIcon Name="PART_LeftIcon"
-                                               Size="{StaticResource StandardButtonIconSizeSmall}" />
+                                               Size="{StaticResource StandardButtonIconSizeSmall}"
+                                               Margin="0,2,0,3" />
                             <TextBlock Name="PART_Label"
                                        Text="{TemplateBinding Text}"
-                                       Margin="2,0" />
+                                       Margin="2,2"
+                                       VerticalAlignment="Center"/>
                             <icons:UnifiedIcon Name="PART_RightIcon"
-                                               Size="{StaticResource StandardButtonIconSizeSmall}" />
+                                               Size="{StaticResource StandardButtonIconSizeSmall}"
+                                               Margin="0,2,0,3"/>
                         </StackPanel>
                     </Border>
                 </Panel>
@@ -368,6 +398,7 @@
             </Style>
 
             <Style Selector="^ TextBlock#PART_Label">
+                <Setter Property="Margin" Value="2,0,2,1" />
                 <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
             </Style>
             

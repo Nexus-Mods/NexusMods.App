@@ -20,12 +20,6 @@
     <Setter Property="HorizontalAlignment" Value="Left" />
     <Setter Property="VerticalAlignment" Value="Center" />
     <Setter Property="RenderTransform" Value="none" />
-    <!-- unused -->
-    <!-- <Setter Property="Transitions"> -->
-    <!--   <Transitions> -->
-    <!--     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:.075" /> -->
-    <!--   </Transitions> -->
-    <!-- </Setter> -->
 
     <Setter Property="Template">
       <ControlTemplate>
@@ -49,11 +43,6 @@
       <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
     </Style>
 
-    <Style Selector="^:pressed">
-        <!-- unused -->
-        <!-- <Setter Property="RenderTransform" Value="scale(0.98)" /> -->
-    </Style>
-
     <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
       <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPressed}" />
@@ -65,32 +54,5 @@
       <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushDisabled}" />
       <Setter Property="Foreground" Value="{StaticResource ButtonForegroundDisabled}" />
     </Style>
-
-    <!-- unused -->
-    <!-- <Style Selector="^.accent"> -->
-    <!--   <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter"> -->
-    <!--     <Setter Property="Background" Value="{StaticResource AccentButtonBackground}" /> -->
-    <!--     <Setter Property="BorderBrush" Value="{StaticResource AccentButtonBorderBrush}" /> -->
-    <!--     <Setter Property="Foreground" Value="{StaticResource AccentButtonForeground}" /> -->
-    <!--   </Style> -->
-    <!-- -->
-    <!--   <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter"> -->
-    <!--     <Setter Property="Background" Value="{StaticResource AccentButtonBackgroundPointerOver}" /> -->
-    <!--     <Setter Property="BorderBrush" Value="{StaticResource AccentButtonBorderBrushPointerOver}" /> -->
-    <!--     <Setter Property="Foreground" Value="{StaticResource AccentButtonForegroundPointerOver}" /> -->
-    <!--   </Style> -->
-    <!-- -->
-    <!--   <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter"> -->
-    <!--     <Setter Property="Background" Value="{StaticResource AccentButtonBackgroundPressed}" /> -->
-    <!--     <Setter Property="BorderBrush" Value="{StaticResource AccentButtonBorderBrushPressed}" /> -->
-    <!--     <Setter Property="Foreground" Value="{StaticResource AccentButtonForegroundPressed}" /> -->
-    <!--   </Style> -->
-    <!-- -->
-    <!--   <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter"> -->
-    <!--     <Setter Property="Background" Value="{StaticResource AccentButtonBackgroundDisabled}" /> -->
-    <!--     <Setter Property="BorderBrush" Value="{StaticResource AccentButtonBorderBrushDisabled}" /> -->
-    <!--     <Setter Property="Foreground" Value="{StaticResource AccentButtonForegroundDisabled}" /> -->
-    <!--   </Style> -->
-    <!-- </Style> -->
   </ControlTheme>
 </ResourceDictionary>
