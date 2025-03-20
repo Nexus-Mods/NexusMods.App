@@ -42,13 +42,13 @@
                         Classes="Standard Tertiary"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_No}" />
+                    <TextBlock Text="{x:Static resources:Language.ManageGameWarning_Cancel}" />
                 </Button>
                 <Button x:Name="OkButton"
                         Classes="Standard Primary"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}" />
+                    <TextBlock Text="{x:Static resources:Language.ManageGameWarning_Continue}" />
                 </Button>
             </StackPanel>
 

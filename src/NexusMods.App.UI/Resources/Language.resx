@@ -932,4 +932,10 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="ManageGameWarning_Desc2" xml:space="preserve">
         <value>To keep any mods you want to save, please back them up before continuing.</value>
     </data>
+    <data name="ManageGameWarning_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="ManageGameWarning_Continue" xml:space="preserve">
+        <value>Continue</value>
+    </data>
 </root>
