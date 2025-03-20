@@ -30,6 +30,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
+using NexusMods.App.UI.Overlays.ManageGameWarning;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Telemetry;
@@ -109,6 +110,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                             vm.AddGameCommand = ReactiveCommand.CreateFromTask(async () =>
                             {
                                 if (GetJobRunningForGameInstallation(installation).IsT1) return;
+                                
+                                // Warn the user about overrides, if they deny, do not add the game
+                                var result = await overlayController.EnqueueAndWait(new ManageGameWarningViewModel());
+                                if (!result) return;
 
                                 vm.State = GameWidgetState.AddingGame;
                                 await Task.Run(async () => await ManageGame(installation));

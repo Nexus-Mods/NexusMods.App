@@ -739,6 +739,13 @@
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningView.axaml.cs">
+          <DependentUpon>MetricsOptInView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
+          <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

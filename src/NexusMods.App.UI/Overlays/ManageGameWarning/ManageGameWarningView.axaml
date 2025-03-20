@@ -1,0 +1,54 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="manageGameWarning:IManageGameWarningViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:manageGameWarning="clr-namespace:NexusMods.App.UI.Overlays.ManageGameWarning"
+    mc:Ignorable="d" d:DesignWidth="800"
+    x:Class="NexusMods.App.UI.Overlays.ManageGameWarning.ManageGameWarningView">
+    <base:MessageBoxBackground MinWidth="300" MaxWidth="576">
+        <base:MessageBoxBackground.TopContent>
+            <StackPanel Orientation="Vertical" Margin="24" Classes="Spacing-6">
+
+                <!-- Title -->
+                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
+                    <TextBlock x:Name="HeadingText" DockPanel.Dock="Left" Text="{x:Static resources:Language.ManageGameWarning_Title}" />
+                </DockPanel>
+
+                <!-- Message -->
+                <!-- If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page. -->
+                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" Text="{x:Static resources:Language.ManageGameWarning_Desc1}" />
+
+                <!-- Message (Bold) -->
+                <!-- To keep any mods you want to save, please back them up before continuing. -->
+                <TextBlock x:Name="MessageTextBlockBold" TextWrapping="WrapWithOverflow" Text="{x:Static resources:Language.ManageGameWarning_Desc2}" />
+            </StackPanel>
+
+        </base:MessageBoxBackground.TopContent>
+
+        <base:MessageBoxBackground.BottomContent>
+
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-6">
+
+                <Button x:Name="CancelButton"
+                        Classes="Standard Tertiary"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static resources:Language.ManageGameWarning_Cancel}" />
+                </Button>
+                <Button x:Name="OkButton"
+                        Classes="Standard Primary"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static resources:Language.ManageGameWarning_Continue}" />
+                </Button>
+            </StackPanel>
+
+        </base:MessageBoxBackground.BottomContent>
+    </base:MessageBoxBackground>
+</reactiveUi:ReactiveUserControl>

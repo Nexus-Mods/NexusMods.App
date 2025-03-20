@@ -1808,6 +1808,51 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string ManageGameWarning_Cancel {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        public static string ManageGameWarning_Continue {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Continue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page. /// ///However, if you later stop managing this game or uninstall the app, those mods will be permanently removed from your game folder..
+        /// </summary>
+        public static string ManageGameWarning_Desc1 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To keep any mods you want to save, please back them up before continuing..
+        /// </summary>
+        public static string ManageGameWarning_Desc2 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Managing this game will affect existing mods.
+        /// </summary>
+        public static string ManageGameWarning_Title {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please wait while we verify the added file..
         /// </summary>
         public static string ManualDownloadRequiredOverlayView_CheckingText {

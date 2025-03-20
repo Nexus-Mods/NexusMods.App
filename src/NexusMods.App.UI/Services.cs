@@ -38,6 +38,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
+using NexusMods.App.UI.Overlays.ManageGameWarning;
 using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages;
@@ -67,6 +68,7 @@ using DownloadSizeView = NexusMods.App.UI.Controls.DownloadGrid.Columns.Download
 using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
 using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
+using ManageGameWarningView = NexusMods.App.UI.Overlays.ManageGameWarning.ManageGameWarningView;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 using SettingToggleControl = NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl;
 
@@ -129,6 +131,7 @@ public static class Services
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
+            .AddViewModel<ManageGameWarningViewModel, IManageGameWarningViewModel>()
 
             // Views
             .AddView<CollectionCardView, ICollectionCardViewModel>()
@@ -155,6 +158,7 @@ public static class Services
             .AddView<MessageBoxOkView, IMessageBoxOkViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
             .AddView<LoginMessageBoxView, ILoginMessageBoxViewModel>()
+            .AddView<ManageGameWarningView, IManageGameWarningViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
