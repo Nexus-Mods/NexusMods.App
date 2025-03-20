@@ -18,12 +18,6 @@
                         </DockPanel>
                     </navigation:LeftMenuNavButton>
                     
-                    <navigation:LeftMenuNavButton>
-                        <TextBlock Text="Label Goes Here"
-                                       TextWrapping="NoWrap"
-                                       TextTrimming="CharacterEllipsis" />
-                    </navigation:LeftMenuNavButton>
-
                     <navigation:LeftMenuNavButton IsActive="True">
                         <DockPanel>
                             <icons:UnifiedIcon DockPanel.Dock="Left"
@@ -211,7 +205,7 @@
 
     <Style Selector="navigation|LeftMenuNavButton">
 
-        <Setter Property="Padding" Value="6,6" />
+        <Setter Property="Padding" Value="6,7" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="Fill" Value="None" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -223,12 +217,16 @@
 
         <Style Selector="^ > DockPanel">
             <Style Selector="^ > TextBlock">
-                <Setter Property="Margin" Value="4 0 4 0" />
+                <Setter Property="Margin" Value="6 0 6 0" />
                 <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
             </Style>
             <Style Selector="^ > ToggleSwitch">
                 <Setter Property="Margin" Value="0" />
                 <Setter Property="Padding" Value="0" />
+            </Style>
+            <Style Selector="^ > icons|UnifiedIcon">
+                <Setter Property="Size" Value="20" />
             </Style>
         </Style>
 
