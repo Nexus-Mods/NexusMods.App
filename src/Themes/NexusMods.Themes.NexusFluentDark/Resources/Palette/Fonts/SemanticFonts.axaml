@@ -8,12 +8,12 @@
 
 
     <StaticResource x:Key="FontHeadlinesRegular" ResourceKey="InterRegular"/>
-    <StaticResource x:Key="FontHeadlinesSemiBold" ResourceKey="InterSemiBold"/>
-    <StaticResource x:Key="FontHeadlinesBold" ResourceKey="InterSemiBold"/>
+    <StaticResource x:Key="FontHeadlinesSemiBold" ResourceKey="InterSemi"/>
+    <StaticResource x:Key="FontHeadlinesBold" ResourceKey="InterSemi"/>
 
     <StaticResource x:Key="FontBodyRegular" ResourceKey="InterRegular"/>
-    <StaticResource x:Key="FontBodySemiBold" ResourceKey="InterSemiBold"/>
-    <StaticResource x:Key="FontBodyBold" ResourceKey="InterSemiBold"/>
+    <StaticResource x:Key="FontBodyMedium" ResourceKey="InterMedium"/>
+    <StaticResource x:Key="FontBodySemi" ResourceKey="InterSemi"/>
     
     <StaticResource x:Key="FontBodyCode" ResourceKey="RobotoMonoRegular"/>
 

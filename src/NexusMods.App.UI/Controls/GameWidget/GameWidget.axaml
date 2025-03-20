@@ -76,6 +76,7 @@
                                              Text="{x:Static resources:Language.GameWidget__Add_game}"
                                              LeftIcon="{x:Static icons:IconValues.Add}"
                                              ShowIcon="Left"
+                                             Size="Medium"
                                              Type="Primary"
                                              Fill="Strong" />
                 </StackPanel>
@@ -107,6 +108,7 @@
                                              ShowIcon="Left"
                                              Type="Tertiary"
                                              Fill="Weak"
+                                             Size="Medium"
                                              HorizontalAlignment="Stretch" />
 
                     <controls:StandardButton Grid.Column="2" x:Name="RemoveGameButton"
@@ -115,6 +117,7 @@
                                              ShowIcon="Left"
                                              Type="Tertiary"
                                              Fill="Weak" 
+                                             Size="Medium"
                                              ToolTip.Tip="{x:Static resources:Language.GameWidget__RemoveGame_ToolTip}"/>
                 </Grid>
 
@@ -122,7 +125,6 @@
                 <StackPanel x:Name="RemovingGameStackPanel"
                             Orientation="Horizontal"
                             VerticalAlignment="Center"
-                            Classes="Spacing-1"
                             Spacing="8"
                             IsVisible="False">
                     <progressRing:ProgressRing Height="24" Width="24"

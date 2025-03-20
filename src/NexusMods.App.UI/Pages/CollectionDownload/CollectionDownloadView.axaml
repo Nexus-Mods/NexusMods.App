@@ -59,7 +59,7 @@
                                              Fill="Weak"
                                              LeftIcon="{x:Static icons:IconValues.Update}"
                                              ShowIcon="Left" />
-                    <Separator/>
+                    <Separator />
                     <TextBlock x:Name="TextCollectionStatus" />
                     <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
                     <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
@@ -75,7 +75,7 @@
                     <navigation:NavigationControl x:Name="ButtonViewCollection"
                                                   Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
                                                   Size="Small" />
-                    
+
                     <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
                                              Size="Small"
@@ -210,8 +210,8 @@
         <TabControl x:Name="TabControl">
             <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
                 <TabItem.Header>
-                    <StackPanel x:Name="RequiredModsPanel" Orientation="Horizontal">
-                        <TextBlock>Required</TextBlock>
+                    <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
+                        <TextBlock Text="Required" />
                         <Border>
                             <TextBlock x:Name="RequiredDownloadsCount" />
                         </Border>
@@ -220,7 +220,7 @@
             </TabItem>
             <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
                 <TabItem.Header>
-                    <StackPanel x:Name="OptionalModsPanel" Orientation="Horizontal">
+                    <StackPanel x:Name="OptionalModsPanel" Classes="TabItemHeaderStack">
                         <TextBlock>Optional</TextBlock>
                         <Border>
                             <TextBlock x:Name="OptionalDownloadsCount" />
@@ -230,7 +230,9 @@
             </TabItem>
             <TabItem x:Name="InstructionsTab" IsVisible="False">
                 <TabItem.Header>
-                    <TextBlock Text="Additional Instructions" />
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Additional Instructions" />
+                    </StackPanel>
                 </TabItem.Header>
 
                 <ScrollViewer>

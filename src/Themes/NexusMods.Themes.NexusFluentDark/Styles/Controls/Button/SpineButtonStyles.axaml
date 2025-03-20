@@ -28,6 +28,7 @@
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
 
         <Style Selector="^.Inactive Border#IconButtonInnerBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
@@ -67,7 +68,7 @@
                                            Padding="0"
                                            VerticalAlignment="Center" />
                         <Border x:Name="IconButtonInnerBorder"
-                                Classes="Rounded-full"
+                                CornerRadius="{StaticResource Rounded-full}"
                                 Height="48"
                                 Width="48">
                         </Border>
@@ -75,9 +76,7 @@
                 </ControlTemplate>
             </Setter>
         </Style>
-
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
-
+        
         <Style Selector="^.Add /template/ icons|UnifiedIcon#Icon">
             <Setter Property="Value">
                 <icons:IconValue MdiValueSetter="mdi-plus" />
