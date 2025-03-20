@@ -27,9 +27,9 @@ public class AdvancedManualInstaller : ALibraryArchiveInstaller
     /// <returns></returns>
     public static AdvancedManualInstaller Create(IServiceProvider provider) => new(provider);
 
-    public AdvancedManualInstaller(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<AdvancedManualInstaller>>())
+    public AdvancedManualInstaller(IServiceProvider serviceProvider, bool isDirect = false) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<AdvancedManualInstaller>>())
     {
-        _handler = new Lazy<IAdvancedInstallerHandler?>(() => GetAdvancedInstallerHandler(serviceProvider));
+        _handler = new Lazy<IAdvancedInstallerHandler?>(() => GetAdvancedInstallerHandler(serviceProvider, isDirect));
     }
 
     public override ValueTask<InstallerResult> ExecuteAsync(
@@ -47,18 +47,11 @@ public class AdvancedManualInstaller : ALibraryArchiveInstaller
     /// Attempts to obtain an <see cref="IAdvancedInstallerHandler"/> from the <paramref name="provider"/>.
     /// The main handler is AdvancedManualInstallerUI which might not be available if the current environment does not support UI.
     /// </summary>
-    /// <param name="provider"></param>
     /// <returns>Null if no handler is found</returns>
-    private static IAdvancedInstallerHandler? GetAdvancedInstallerHandler(IServiceProvider provider)
+    private static IAdvancedInstallerHandler? GetAdvancedInstallerHandler(IServiceProvider provider, bool isDirect)
     {
-        try
-        {
-            return provider.GetRequiredService<IAdvancedInstallerHandler>();
-        }
-        catch (InvalidOperationException)
-        {
-            // No handler registered -> no UI.
-            return null;
-        }
+        var handler = provider.GetService<IAdvancedInstallerHandler>();
+        if (handler is not null) handler.WasOpenedDirectly = isDirect;
+        return handler;
     }
 }

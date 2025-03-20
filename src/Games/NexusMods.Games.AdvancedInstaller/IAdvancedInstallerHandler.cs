@@ -10,4 +10,10 @@ namespace NexusMods.Games.AdvancedInstaller;
 /// for example, if executing in CLI without UI.
 /// </remarks>
 /// </summary>
-public interface IAdvancedInstallerHandler : ILibraryArchiveInstaller;
+public interface IAdvancedInstallerHandler : ILibraryArchiveInstaller
+{
+    /// <summary>
+    /// Whether the advanced installer was opened directly or as a fallback.
+    /// </summary>
+    bool WasOpenedDirectly { get; set; }
+}

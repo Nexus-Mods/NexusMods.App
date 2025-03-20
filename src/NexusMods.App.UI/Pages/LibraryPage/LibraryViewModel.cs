@@ -93,7 +93,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
 
-        _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
+        _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller_Direct");
 
         TabTitle = Language.LibraryPageTitle;
         TabIcon = IconValues.LibraryOutline;
