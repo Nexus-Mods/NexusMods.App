@@ -780,21 +780,50 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
+    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroupId)
     {
-        overridesGroup ??= GetOrCreateOverridesGroup(tx, loadout);
+        overridesGroupId ??= GetOrCreateOverridesGroup(tx, loadout);
+        var newGroup = true;
+        LoadoutItemGroup.ReadOnly? overridesGroup = null;
+        if (!overridesGroupId.Value.InPartition(PartitionId.Temp))
+        {
+            newGroup = false;
+            overridesGroup = LoadoutItemGroup.Load(loadout.Db, overridesGroupId.Value);
+        }
+
         var ingestedFiles = false;
         
         foreach (var (path, node) in syncTree)
         {
             if (!node.Actions.HasFlag(Actions.IngestFromDisk))
                 continue;
-            
-            // Entry was added or modified
+
+            // If the overrides group is not new, we need to check if the file is already in the overrides group
+            if (!newGroup)
+            {
+                var existingRecord = overridesGroup!.Value.Children
+                    .OfTypeLoadoutItemWithTargetPath()
+                    .FirstOrOptional(c => c.TargetPath == path);
+
+                if (existingRecord.HasValue)
+                {
+                    // Update the disk entry
+                    tx.Add(node.Disk.EntityId, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
+                    
+                    // Update the file entry
+                    tx.Add(existingRecord.Value.Id, LoadoutFile.Hash, node.Disk.Hash);
+                    tx.Add(existingRecord.Value.Id, LoadoutFile.Size, node.Disk.Size);
+                    
+                    // Skip the rest of this process
+                    continue;
+                }
+            }
+
+            // Entry was added
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
-                ParentId = overridesGroup.Value,
+                ParentId = overridesGroupId.Value,
                 LoadoutId = loadout.Id,
                 Name = path.FileName,
             };
