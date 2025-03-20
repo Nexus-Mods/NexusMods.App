@@ -8,6 +8,7 @@ namespace NexusMods.CrossPlatform.Process;
 [UsedImplicitly]
 internal class RuntimeDependencyChecker : IHostedService
 {
+    private readonly CancellationTokenSource _cts = new();
     private readonly IRuntimeDependency[] _runtimeDependencies;
     private readonly ILogger _logger;
 
@@ -17,28 +18,33 @@ internal class RuntimeDependencyChecker : IHostedService
         _logger = serviceProvider.GetRequiredService<ILogger<RuntimeDependencyChecker>>();
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        foreach (var dep in _runtimeDependencies)
+        _ = Task.Run(async () =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            try
+            foreach (var dep in _runtimeDependencies)
             {
-                var information = await dep.QueryInstallationInformation(cancellationToken);
-                if (information.HasValue)
+                cancellationToken.ThrowIfCancellationRequested();
+                try
                 {
-                    _logger.LogInformation("{Name}: {Information}", dep.DisplayName, information.Value);
-                } else {
-                    _logger.LogWarning("{Name}: couldn't query information", dep.DisplayName);
+                    var information = await dep.QueryInstallationInformation(_cts.Token);
+                    if (information.HasValue)
+                    {
+                        _logger.LogInformation("{Name}: {Information}", dep.DisplayName, information.Value);
+                    } else {
+                        _logger.LogWarning("{Name}: couldn't query information", dep.DisplayName);
+                    }
+                } catch (Exception e) {
+                    _logger.LogError(e, "{Name}: exception while querying information", dep.DisplayName);
                 }
-            } catch (Exception e) {
-                _logger.LogError(e, "{Name}: exception while querying information", dep.DisplayName);
             }
-        }
+        }, cancellationToken);
+
+        return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-        return Task.CompletedTask;
+        await _cts.CancelAsync();
     }
 }
