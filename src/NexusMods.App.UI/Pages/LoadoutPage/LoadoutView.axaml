@@ -39,7 +39,7 @@
                                                Value="{x:Static icons:IconValues.Info}"
                                                Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
                             <TextBlock Text="Collection disabled"
-                                       Theme="{StaticResource BodyMDBoldTheme}"
+                                       Theme="{StaticResource BodyMDSemiTheme}"
                                        Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
                             <TextBlock Text="- Mods will not be loaded"
                                        Theme="{StaticResource BodyMDNormalTheme}"

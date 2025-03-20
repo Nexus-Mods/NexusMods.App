@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +13,7 @@ namespace NexusMods.SingleProcess;
 /// A long-running service that listens for incoming connections from clients and executes them as if they ran
 /// on as CLI command.
 /// </summary>
-public class CliServer : IHostedService, IDisposable
+public sealed class CliServer : IHostedService, IDisposable
 {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private CancellationToken Token => _cancellationTokenSource.Token;
@@ -20,10 +21,7 @@ public class CliServer : IHostedService, IDisposable
     private bool _started;
 
     private TcpListener? _tcpListener;
-    private Task? _listenerTask;
-
-    private readonly List<Task> _runningClients = [];
-    private readonly CliSettings _settings;
+    private readonly ConcurrentDictionary<Guid, Task> _runningClients = [];
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<CliServer> _logger;
@@ -45,7 +43,7 @@ public class CliServer : IHostedService, IDisposable
         _configurator = configurator;
         _syncFile = syncFile;
 
-        _settings = settingsManager.Get<CliSettings>();
+        settingsManager.Get<CliSettings>();
     }
     
     /// <summary>
@@ -65,7 +63,7 @@ public class CliServer : IHostedService, IDisposable
     {
         _tcpListener = new TcpListener(IPAddress.Loopback, 0);
         _tcpListener.Start();
-        _listenerTask = Task.Run(async () => await StartListeningAsync(), _cancellationTokenSource.Token);
+        Task.Run(async () => await StartListeningAsync(), _cancellationTokenSource.Token);
         var port = ((IPEndPoint)_tcpListener.LocalEndpoint).Port;
 
         if (!_syncFile.TrySetMain(port))
@@ -84,26 +82,17 @@ public class CliServer : IHostedService, IDisposable
         {
             try
             {
-                CleanClosedConnections();
-
-                // Create a timeout token, and combine it with the main cancellation token
-                var timeout = new CancellationTokenSource(delay: _settings.ListenTimeout);
-                var combined = CancellationTokenSource.CreateLinkedTokenSource(Token, timeout.Token);
-
-                var found = await _tcpListener!.AcceptTcpClientAsync(combined.Token);
+                var found = await _tcpListener!.AcceptTcpClientAsync(Token);
                 found.NoDelay = true; // Disable Nagle's algorithm to reduce delay.
-                _runningClients.Add(Task.Run(() => HandleClientAsync(found), Token));
 
-                _logger.LogInformation("Accepted TCP connection from {RemoteEndPoint}",
-                    ((IPEndPoint)found.Client.RemoteEndPoint!).Port
-                );
+                var id = Guid.NewGuid();
+                var task = Task.Run(() => HandleClientAsync(id, found), Token);
+                _ = _runningClients.GetOrAdd(id, task);
+
+                _logger.LogInformation("Accepted TCP connection from {RemoteEndPoint}", ((IPEndPoint)found.Client.RemoteEndPoint!).Port);
             }
             catch (OperationCanceledException)
             {
-                // The cancellation could be from the timeout, or the main cancellation token, if it's the
-                // timeout, then we should just continue, if it's the main cancellation token, then we should stop
-                if (!Token.IsCancellationRequested)
-                    continue;
                 _logger.LogInformation("TCP listener was cancelled, stopping");
                 return;
             }
@@ -111,56 +100,42 @@ public class CliServer : IHostedService, IDisposable
             {
                 _logger.LogError(ex, "Got an exception while accepting a client connection");
             }
-
         }
     }
-    
+
     /// <summary>
     /// Handle a client connection
     /// </summary>
-    /// <param name="client"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    private async Task HandleClientAsync(TcpClient client)
+    private async Task HandleClientAsync(Guid id, TcpClient client)
     {
-        var stream = client.GetStream();
-
-        var (arguments, renderer) = await ProxiedRenderer.Create(_serviceProvider, stream);
-        await _configurator.RunAsync(arguments, renderer, Token);
-        client.Dispose();
-    }
-    
-    /// <summary>
-    /// Clears up any closed connections in the <see cref="_runningClients"/> dictionary
-    /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
-    private void CleanClosedConnections()
-    {
-        // Snapshot the dictionary before we modify it
-        foreach(var task in _runningClients.ToArray())
+        try
         {
-            if (task.IsCompleted)
-                _runningClients.Remove(task);
+            var stream = client.GetStream();
+
+            var (arguments, renderer) = await ProxiedRenderer.Create(_serviceProvider, stream);
+            await _configurator.RunAsync(arguments, renderer, Token);
+        }
+        finally
+        {
+            client.Dispose();
+            _runningClients.Remove(id, out _);
         }
     }
-    
+
     /// <inheritdoc />
-    public Task StartAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     /// <inheritdoc />
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         if (!_started) return; 
-        
+
         // Ditch this value and don't wait on it because it otherwise blocks the shutdown even when *no-one* is 
         // waiting on the token
         _ = _cancellationTokenSource.CancelAsync();
-        
+
         _tcpListener?.Stop();
-        await Task.WhenAll(_runningClients);
+        await Task.WhenAll(_runningClients.Values.ToArray());
         _started = false;
     }
 

@@ -93,9 +93,9 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
 
         this.WhenActivated(disposables =>
         {
-            // Workspace resizing
+            // Workspace resizing, see Arrange method for details
             this.WhenAnyValue(vm => vm.IsHorizontal)
-                .DistinctUntilChanged()
+                .Where(newValue => newValue != _lastIsHorizontal)
                 .Do(_ => ResetGridIfBroken(forceReset: true))
                 .Do(_ => UpdateStates())
                 .Do(_ => UpdateResizers())
@@ -278,14 +278,21 @@ public class WorkspaceViewModel : AViewModel<IWorkspaceViewModel>, IWorkspaceVie
     }
 
     private Size _lastWorkspaceSize;
+    private bool _lastIsHorizontal;
 
     [Reactive] public bool IsHorizontal { get; private set; }
 
     /// <inheritdoc/>
     public void Arrange(Size workspaceSize)
     {
+        // NOTE(erri120): don't change the panel sizes if the workspace size hasn't changed.
+        if (workspaceSize.Equals(_lastWorkspaceSize)) return;
         _lastWorkspaceSize = workspaceSize;
-        IsHorizontal = _lastWorkspaceSize.Width > _lastWorkspaceSize.Height;
+
+        // NOTE(erri120): If this VM gets re-activated, we don't want to reset the panel
+        // sizes if the orientation didn't change from what we had before.
+        IsHorizontal = workspaceSize.Width > workspaceSize.Height;
+        _lastIsHorizontal = IsHorizontal;
 
         foreach (var panelViewModel in Panels)
         {

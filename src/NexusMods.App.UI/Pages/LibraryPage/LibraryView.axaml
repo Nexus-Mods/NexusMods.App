@@ -69,7 +69,7 @@
                     <StackPanel>
 
                         <SplitButton x:Name="InstallModSplitButton" 
-                                     Classes="Compact" 
+                                     Classes="StandardSplitButton" 
                                      Content="{x:Static resources:Language.FileOriginPage_AddMod}"
                                      ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
                             <SplitButton.Flyout>

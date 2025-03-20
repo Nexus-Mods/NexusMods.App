@@ -14,6 +14,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
@@ -667,6 +668,14 @@ public class CollectionDownloader
         tx.Delete(collectionMetadataId, recursive: false);
 
         await tx.Commit();
+    }
+
+    /// <summary>
+    /// Returns all collections for the given game.
+    /// </summary>
+    public static CollectionMetadata.ReadOnly[] GetCollections(IDb db, GameId gameId)
+    {
+        return CollectionMetadata.FindByGameId(db, gameId).ToArray();
     }
 }
 

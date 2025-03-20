@@ -14,7 +14,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.MiniGameWidget;
-using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -26,12 +25,17 @@ using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData.Aggregation;
+using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.Paths;
 using NexusMods.Telemetry;
 
 namespace NexusMods.App.UI.Pages.MyGames;
@@ -41,6 +45,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 {
     private const string TrelloPublicRoadmapUrl = "https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap";
 
+    private readonly ILibraryService _libraryService;
+    private readonly CollectionDownloader _collectionDownloader;
     private readonly IWindowManager _windowManager;
     private readonly IJobMonitor _jobMonitor;
 
@@ -65,6 +71,10 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         var experimentalSettings = settingsManager.Get<ExperimentalSettings>();
 
+        var libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
+
+        _collectionDownloader = serviceProvider.GetRequiredService<CollectionDownloader>();
+        _libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
 
         TabTitle = Language.MyGames;
@@ -116,15 +126,31 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 
                                 Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: installation.Game.Name));
                                 
-                                NavigateToFirstLoadoutLibrary(conn, installation);
+                                NavigateToLoadoutLibrary(conn, installation);
                             });
 
                             vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
                             {
                                 if (GetJobRunningForGameInstallation(installation).IsT2) return;
 
+                                var filesToDelete = libraryDataProviders.SelectMany(dataProvider => dataProvider.GetAllFiles(gameId: installation.Game.GameId)).ToArray();
+                                var totalSize = filesToDelete.Sum(static Size (file) => file.Size);
+
+                                var collections = CollectionDownloader.GetCollections(conn.Db, installation.Game.GameId);
+
+                                var overlay = new RemoveGameOverlayViewModel
+                                {
+                                    GameName = installation.Game.Name,
+                                    NumDownloads = filesToDelete.Length,
+                                    SumDownloadsSize = totalSize,
+                                    NumCollections = collections.Length,
+                                };
+
+                                var result = await overlayController.EnqueueAndWait(overlay);
+                                if (!result.ShouldRemoveGame) return;
+
                                 vm.State = GameWidgetState.RemovingGame;
-                                await Task.Run(async () => await RemoveAllLoadouts(installation));
+                                await Task.Run(async () => await RemoveGame(installation, shouldDeleteDownloads: result.ShouldDeleteDownloads, filesToDelete, collections));
                                 vm.State = GameWidgetState.DetectedGame;
 
                                 Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: installation.Game.Name));
@@ -132,7 +158,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() =>
                             {
-                                NavigateToFirstLoadoutLibrary(conn, installation);
+                                NavigateToLoadoutLibrary(conn, installation);
                                 Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: installation.Game.Name));
                             });
 
@@ -206,9 +232,17 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         return OneOf<None, CreateLoadoutJob, UnmanageGameJob>.FromT0(new None());
     }
 
-    private async Task RemoveAllLoadouts(GameInstallation installation)
+    private async Task RemoveGame(GameInstallation installation, bool shouldDeleteDownloads, LibraryFile.ReadOnly[] filesToDelete, CollectionMetadata.ReadOnly[] collections)
     {
         await installation.GetGame().Synchronizer.UnManage(installation);
+
+        if (!shouldDeleteDownloads) return;
+        await _libraryService.RemoveItems(filesToDelete.Select(file => file.AsLibraryItem()));
+
+        foreach (var collection in collections)
+        {
+            await _collectionDownloader.DeleteCollection(collection);
+        }
     }
 
     private async Task ManageGame(GameInstallation installation)
@@ -216,19 +250,26 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         await installation.GetGame().Synchronizer.CreateLoadout(installation);
     }
     
-    private Optional<LoadoutId> GetFirstLoadoutId(IConnection conn, GameInstallation installation)
+    private Optional<LoadoutId> GetLoadout(IConnection conn, GameInstallation installation)
     {
         var db = conn.Db;
 
-        var loadout = Loadout.All(db).FirstOrOptional(loadout => 
-            loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
-        
+        var gameMetadata = GameInstallMetadata.Load(conn.Db, installation.GameMetadataId);
+        if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        {
+            return gameMetadata.LastSyncedLoadout.LoadoutId;
+        }
+
+        // no applied loadout, return the first one
+        var loadout = Loadout.All(db).FirstOrOptional(loadout =>
+        loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
+
         return loadout.HasValue ? loadout.Value.LoadoutId : Optional<LoadoutId>.None;
     }
     
-    private void NavigateToFirstLoadoutLibrary(IConnection conn, GameInstallation installation)
+    private void NavigateToLoadoutLibrary(IConnection conn, GameInstallation installation)
     {
-        var fistLoadout = GetFirstLoadoutId(conn, installation);
+        var fistLoadout = GetLoadout(conn, installation);
         if (!fistLoadout.HasValue) return;
         var loadoutId = fistLoadout.Value;
         Dispatcher.UIThread.Invoke(() =>

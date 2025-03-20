@@ -25,88 +25,57 @@
         <windows:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="72, 232, *" RowDefinitions="Auto, *, 48">
-        <Border Background="{StaticResource BrandTranslucentDark800Brush}"
+    <Grid ColumnDefinitions="72, 232, *" RowDefinitions="Auto, *, 48"
+          Background="{StaticResource SurfaceBaseBrush}">
+
+        <Border x:Name="OverlayBorder"
+                Background="{StaticResource BrandTranslucentDark800Brush}"
                 Grid.Column="0"
                 Grid.ColumnSpan="3"
                 Grid.Row="0"
                 Grid.RowSpan="2"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                ZIndex="1"
-                x:Name="OverlayBorder">
-            <reactiveUi:ViewModelViewHost
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                x:Name="OverlayViewHost" />
+                ZIndex="1">
+
+            <reactiveUi:ViewModelViewHost x:Name="OverlayViewHost"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          ClipToBounds="False"/>
         </Border>
 
-        <reactiveUi:ViewModelViewHost
-            Grid.Column="1"
-            Grid.ColumnSpan="2"
-            Grid.Row="0"
-            x:Name="TopBar" />
-
-        <reactiveUi:ViewModelViewHost
-            Grid.Column="0"
-            Grid.Row="0"
-            Grid.RowSpan="2"
-            x:Name="Spine" />
-
-        <Border Classes="OutlineWeak"
-                BorderThickness="0,0,1,0"
-                Grid.Column="0"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                x:Name="SpineBorder" />
-
-        <Border Classes="OutlineWeak"
-                BorderThickness="0,0,0,0"
+        <Border x:Name="TopBarBorder"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
-                Grid.Row="0"
-                x:Name="TopBarBorder" />
-
-        <Border Classes="OutlineWeak"
-                Grid.Column="1"
-                Grid.Row="1"
-                BorderThickness="0,0,0,0"
-                x:Name="LeftMenuBorder">
-
-            <reactiveUi:ViewModelViewHost
-                x:Name="LeftMenuViewModelHost" />
+                Grid.Row="0">
+            <reactiveUi:ViewModelViewHost x:Name="TopBarViewModelHost" />
         </Border>
 
-        <Border Classes="Rounded-lg"
+        <Border x:Name="SpineBorder"
+                Grid.Column="0"
+                Grid.Row="0"
+                Grid.RowSpan="2">
+            <reactiveUi:ViewModelViewHost x:Name="SpineViewModelHost" />
+        </Border>
+
+        <Border x:Name="LeftMenuBorder"
+                Grid.Column="1"
+                Grid.Row="1">
+            <reactiveUi:ViewModelViewHost x:Name="LeftMenuViewModelHost" />
+        </Border>
+
+        <Border x:Name="WorkspacesBorder"
                 Grid.Column="2"
                 Grid.Row="1"
-                Margin="0,0,12,12"
-                x:Name="WorkspacesBorder">
+                Padding="0,0,12,12">
 
-            <ItemsControl x:Name="WorkspacesItemsControl">
-
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid RowDefinitions="*" ColumnDefinitions="*" x:Name="WorkspaceContainerGrid"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type workspace:IWorkspaceViewModel}">
-                        <reactiveUi:ViewModelViewHost
-                            x:Name="WorkspaceViewHost"
-                            IsVisible="{CompiledBinding IsActive, Mode=OneWay}"
-                            ViewModel="{CompiledBinding Mode=OneWay}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <workspace:WorkspaceView x:Name="WorkspaceView" />
         </Border>
 
-        <reactiveUi:ViewModelViewHost
-            Grid.Column="0"
-            Grid.ColumnSpan="3"
-            Grid.Row="2"
-            x:Name="DevelopmentBuildBanner" />
+        <reactiveUi:ViewModelViewHost x:Name="DevelopmentBuildBanner"
+                                      Grid.Column="0"
+                                      Grid.ColumnSpan="3"
+                                      Grid.Row="2" />
     </Grid>
 
 </reactiveUi:ReactiveWindow>

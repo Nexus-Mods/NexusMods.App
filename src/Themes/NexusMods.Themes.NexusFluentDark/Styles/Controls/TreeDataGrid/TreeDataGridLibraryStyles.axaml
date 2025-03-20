@@ -39,7 +39,6 @@
                         <Style Selector="^ > TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="Foreground" Value="{DynamicResource InfoModerateBrush}" />
-                            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                         </Style>
                     </Style>
                 </Style>
@@ -48,7 +47,7 @@
                 <Style Selector="^.LibraryColumns_ItemSize">
                     <Setter Property="HorizontalAlignment" Value="Right" />
                 </Style>
-                
+
                 <!-- library -> actions cell -->
                 <Style Selector="^.LibraryColumns_Actions">
                     <Setter Property="HorizontalAlignment" Value="Right" />
@@ -68,17 +67,16 @@
                         <Style Selector="^ > TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                         </Style>
                     </Style>
-                </Style>
 
-                <!-- first cell of a row as it can expand -->
-                <Style Selector="^ TreeDataGridExpanderCell">
-                    <!-- <Setter Property="Background" Value="LightCoral" /> -->
+                    <!-- first cell of a row as it can expand -->
+                    <Style Selector="^ TreeDataGridExpanderCell">
+                        <!-- <Setter Property="Background" Value="LightCoral" /> -->
 
-                    <Style Selector="^ TreeDataGridTemplateCell">
-                        <!-- <Setter Property="Background" Value="Coral" /> -->
+                        <Style Selector="^ TreeDataGridTemplateCell">
+                            <!-- <Setter Property="Background" Value="Coral" /> -->
+                        </Style>
                     </Style>
                 </Style>
             </Style>

@@ -1,8 +1,10 @@
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.App.UI.Converters;
 using ObservableCollections;
 using R3;
 
@@ -23,11 +25,22 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
     private readonly Dictionary<ComponentKey, IDisposable> _observableSubscriptions = new();
     private readonly ObservableDictionary<ComponentKey, IItemModelComponent> _components = new();
     private readonly CompositeDisposable _trackedDisposables = new();
+    private readonly ObservableHashSet<string> _styleFlags = [];
+
 
     /// <summary>
     /// Gets the dictionary of all components currently in the item model.
     /// </summary>
     public IReadOnlyObservableDictionary<ComponentKey, IItemModelComponent> Components => _components;
+
+    /// <summary>
+    /// Gets the collection of style flags for the item model
+    /// These can be set from Adapters based on components and component values
+    /// Changes to the StyleFlags collection will raise PropertyChanged events to notify bindings
+    /// See <see cref="CompositeStyleFlagConverter"/> for binding to the presence of a specific flag.
+    /// </summary>
+    public NotifyCollectionChangedSynchronizedViewList<string> StyleFlags { get; }
+
 
     private readonly IDisposable _activationDisposable;
 
@@ -37,6 +50,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
     public CompositeItemModel(TKey key)
     {
         Key = key;
+        StyleFlags = _styleFlags.ToNotifyCollectionChanged();
 
         _activationDisposable = this.WhenActivated(static (self, disposables) =>
         {
@@ -219,6 +233,28 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
                 self.Add(key, component);
             }
         });
+    }
+    
+    /// <summary>
+    /// Add a flat to the Composite Item Model, to be used in styling
+    /// </summary>
+    public void SetStyleFlag(string flag, bool value)
+    {
+        var modified = false;
+        if (value)
+        {
+            modified = _styleFlags.Add(flag);
+        }
+        else
+        {
+            modified = _styleFlags.Remove(flag);
+        }
+
+        if (modified)
+        {
+            // Note(Al12rs): We need UI bindings to StyleFlags to be notified when the contents of the collection change
+            RaisePropertyChanged(new PropertyChangedEventArgs(nameof(StyleFlags)));
+        } 
     }
 
     /// <summary>

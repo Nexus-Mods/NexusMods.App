@@ -1,0 +1,92 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <Border Background="{StaticResource ComboBoxDropDownBackground}" 
+              BorderBrush="{StaticResource ComboBoxDropDownBorderBrush}" 
+              BorderThickness="{StaticResource ComboBoxDropdownBorderThickness}" 
+              Padding="{StaticResource ComboBoxDropdownBorderPadding}" 
+              CornerRadius="{StaticResource OverlayCornerRadius}">
+        <StackPanel HorizontalAlignment="Stretch">
+          <ComboBoxItem>Item 1</ComboBoxItem>
+          <ComboBoxItem>Item 2 long</ComboBoxItem>
+          <ComboBoxItem IsSelected="True">Item 3</ComboBoxItem>
+          <ComboBoxItem IsEnabled="False">Item 4</ComboBoxItem>
+          <ComboBoxItem IsSelected="True" IsEnabled="False">Item 5</ComboBoxItem>
+        </StackPanel>
+      </Border>
+    </Border>
+  </Design.PreviewWith>
+
+  <ControlTheme x:Key="{x:Type ComboBoxItem}" TargetType="ComboBoxItem">
+    <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForeground}" />
+    <Setter Property="Background" Value="{StaticResource ComboBoxItemBackground}" />
+    <Setter Property="Padding" Value="{StaticResource ComboBoxItemThemePadding}" />
+    <Setter Property="Margin" Value="{StaticResource ComboBoxItemThemeMargin}" />
+    <Setter Property="CornerRadius" Value="{StaticResource ComboBoxItemThemeCornerRadius}" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ContentPresenter Name="PART_ContentPresenter"
+                          Foreground="{TemplateBinding Foreground}"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                          Content="{TemplateBinding Content}"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                          Padding="{TemplateBinding Padding}" />
+      </ControlTemplate>
+    </Setter>
+
+    <!--  PointerOver state  -->
+    <Style Selector="^:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource ComboBoxItemBackgroundPointerOver}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ComboBoxItemBorderBrushPointerOver}" />
+      <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForegroundPointerOver}" />
+    </Style>
+
+    <!--  Disabled state  -->
+    <Style Selector="^:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource ComboBoxItemBackgroundDisabled}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ComboBoxItemBorderBrushDisabled}" />
+      <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForegroundDisabled}" />
+    </Style>
+
+    <!--  Pressed state  -->
+    <Style Selector="^:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource ComboBoxItemBackgroundPressed}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ComboBoxItemBorderBrushPressed}" />
+      <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForegroundPressed}" />
+    </Style>
+
+    <!--  Selected state  -->
+    <Style Selector="^:selected">
+      <Style Selector="^ /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ComboBoxItemBackgroundSelected}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxItemBorderBrushSelected}" />
+        <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForegroundSelected}" />
+      </Style>
+      <!--  Selected Disabled state  -->
+      <Style Selector="^:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ComboBoxItemBackgroundSelectedDisabled}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxItemBorderBrushSelectedDisabled}" />
+        <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForegroundSelectedDisabled}" />
+      </Style>
+      <!--  Selected PointerOver state  -->
+      <Style Selector="^:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ComboBoxItemBackgroundSelectedPointerOver}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxItemBorderBrushSelectedPointerOver}" />
+        <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForegroundSelectedPointerOver}" />
+      </Style>
+      <!--  Selected Pressed state  -->
+      <Style Selector="^:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ComboBoxItemBackgroundSelectedPressed}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxItemBorderBrushSelectedPressed}" />
+        <Setter Property="Foreground" Value="{StaticResource ComboBoxItemForegroundSelectedPressed}" />
+      </Style>
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

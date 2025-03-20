@@ -114,3 +114,13 @@ public class LeftMenuItemViewModel : AViewModel<ILeftMenuItemViewModel>, ILeftMe
         );
     }
 }
+
+public class LeftMenuItemWithRightIconViewModel : LeftMenuItemViewModel
+{
+    public required IconValue RightIcon { get; init; }
+
+    public LeftMenuItemWithRightIconViewModel(
+        IWorkspaceController workspaceController,
+        WorkspaceId workspaceId,
+        PageData pageData) : base(workspaceController, workspaceId, pageData) { }
+}

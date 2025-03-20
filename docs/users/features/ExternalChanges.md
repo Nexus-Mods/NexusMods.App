@@ -25,7 +25,7 @@ At a high level, the app works by keeping track of all the files in your game fo
 
 The changes collected by this feature will be available in the External Changes option for your active loadout - this option may not be visible until you've applied your mods at least once. 
 
-![The External Changes view showing added and removed files.](../images/0.7.4/ExternalChanges.webp)
+![The External Changes view showing added and removed files.](../images/0.8.2/ExternalChanges.webp)
 
 In this view, new files are displayed in their parents folders and deleted files are shown with a strike through. 
 

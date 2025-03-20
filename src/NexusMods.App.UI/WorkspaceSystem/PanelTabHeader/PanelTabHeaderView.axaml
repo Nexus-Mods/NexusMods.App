@@ -25,7 +25,7 @@
                                      ShowIcon="IconOnly"
                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                      Fill="None"
-                                     Size="Small"
+                                     Size="Medium"
                                      DockPanel.Dock="Right" Margin="0, 0, 8, 0" />
 
             <DockPanel
