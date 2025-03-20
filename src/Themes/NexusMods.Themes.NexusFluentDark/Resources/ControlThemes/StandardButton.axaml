@@ -22,6 +22,7 @@
                     <controls:StandardButton Text="Both" Size="ExtraSmall" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
                     <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
                     <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <controls:StandardButton Text="Small 28px (Default)" Size="Small" ShowIcon="None" />
@@ -30,6 +31,7 @@
                         <controls:StandardButton Text="Both" Size="Small" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <controls:StandardButton Text="Medium 36px" Size="Medium" ShowIcon="None" />
@@ -38,6 +40,7 @@
                         <controls:StandardButton Text="Both" Size="Medium" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
                     </StackPanel>
                     <controls:StandardButton Text="Open Menu" Size="ExtraSmall" ShowIcon="Right" Type="Primary"
                                              Fill="Weak">
@@ -407,6 +410,10 @@
         <!-- icon only variants -->
         <Style Selector="^[ShowIcon=IconOnly]">
             <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="Margin" Value="0" />
+            </Style>
         </Style>
         
         <!-- fills and types -->
