@@ -4,6 +4,7 @@ using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.TestFramework;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using Xunit.Abstractions;
 
@@ -84,6 +85,41 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
         loadoutA.Items.OfTypeLoadoutItemWithTargetPath().Select(f => (GamePath)f.TargetPath)
             .Should()
             .NotContain(extraFileGamePath);
+        
+    }
+
+    /// <summary>
+    /// (issue-2908) Changes to external files should be reflected in the external files after synchronizing
+    /// </summary>
+    [Fact]
+    public async Task ChangingExternalFileUpdatesExternalFiles()
+    {
+        await Synchronizer.RescanFiles(GameInstallation);
+        var loadoutA = await CreateLoadout();
+        var externalFile = loadoutA.InstallationInstance.LocationsRegister[LocationId.Game] / "config.json";
+        var gameFile = new GamePath(LocationId.Game, "config.json");
+
+        await externalFile.WriteAllTextAsync("version1");
+        
+        var loadout = await Synchronizer.Synchronize(loadoutA);
+        
+        var externalFileRecord = loadout.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+        if (!externalFileRecord.TryGetAsLoadoutFile(out var loadoutFile))
+            Assert.Fail("The file should be in the loadout");
+
+        loadoutFile.Hash.Should().Be("version1".xxHash3AsUtf8());
+        
+        await externalFile.WriteAllTextAsync("version2");
+        
+        loadout = await Synchronizer.Synchronize(loadout);
+        
+        var refreshedRecord = loadout.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+        refreshedRecord.Id.Should().Be(externalFileRecord.Id, "the file should be the same id");
+        
+        if (!refreshedRecord.TryGetAsLoadoutFile(out var refreshedFile))
+            Assert.Fail("The file should be in the loadout");
+        
+        refreshedFile.Hash.Should().Be("version2".xxHash3AsUtf8());
         
     }
 
