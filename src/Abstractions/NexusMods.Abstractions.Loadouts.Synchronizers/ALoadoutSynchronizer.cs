@@ -823,6 +823,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     tx.Add(existingRecord.Value.Id, LoadoutFile.Hash, node.Disk.Hash);
                     tx.Add(existingRecord.Value.Id, LoadoutFile.Size, node.Disk.Size);
                     
+                    // Mark that we ingested a file
+                    ingestedFiles = true;
+                    
                     // Skip the rest of this process
                     continue;
                 }
