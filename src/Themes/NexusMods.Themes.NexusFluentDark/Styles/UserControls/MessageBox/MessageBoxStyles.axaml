@@ -32,7 +32,7 @@
         </Style>
         
         <Style Selector="^ TextBlock#MessageTextBlockBold">
-            <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
         </Style>
     </Style>
     
