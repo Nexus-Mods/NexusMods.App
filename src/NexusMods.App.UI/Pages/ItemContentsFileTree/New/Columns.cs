@@ -21,7 +21,7 @@ public static class Columns
 
         public const string ColumnTemplateResourceKey = "ViewFilesColumn_" + "Name";
         public static readonly ComponentKey StringComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(StringComponent));
-        public static readonly ComponentKey IconComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(FileTreeIconComponent));
+        public static readonly ComponentKey IconComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(UnifiedIconComponent));
 
         public static string GetColumnHeader() => "Name";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
