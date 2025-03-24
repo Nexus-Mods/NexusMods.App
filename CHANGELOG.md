@@ -4,6 +4,8 @@ This release fixes a few high priority issued discovered during user testing of 
 ## New notice before managing a game
 We've included an important update for users who have already got mods installed when first using the app. A warning will show when managing a game for the first time to make it clear that if the app is uninstalled it will clean the game folder back to an unmodded state, deleting all files that are no part of the base game. We are exploring options for a better solution to this, but for now we recommend either starting with a clean game installation or backing up your mod files before using the app. 
 
+![The new warning that shows when managing a game for the first time.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1742806230-409751501.png)
+
 
 ## External Changes now behave as expected
 During testing, a bug was discovered where if a change was made outside the app it got added to "External Changes", however, if that file was then updated the app wouldn't save the new changes and would instead overwrite it with the original state it had imported. Now this issue is fixed, your config.json files for SMAPI mods should not get overwritten incorrect while using the app. Big thanks to [Abagaianye](https://next.nexusmods.com/profile/Abagaianye), [madeleineostoja](https://github.com/madeleineostoja), and [StandingPadAnimations](https://github.com/StandingPadAnimations) for discovering this issue and providing detailed feedback to help us fix it. 
