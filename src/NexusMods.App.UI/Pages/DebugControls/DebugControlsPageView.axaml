@@ -92,6 +92,33 @@
                                     <TextBox Watermark="Placeholder" />
                                     <TextBox IsEnabled="False">Disabled</TextBox>
                                 </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Expander" />
+                                    <Expander ExpandDirection="Down" Header="Expand Down">
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                    <Expander ExpandDirection="Down" Header="Expand Down" IsEnabled="False">
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                    <Expander ExpandDirection="Down">
+                                        <Expander.Header>
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="{StaticResource Spacing-2}">
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}"
+                                                                   Size="20"/>
+                                                <TextBlock Text="Collections"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Expander.Header>
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="16">
                                 <StackPanel Spacing="8">
@@ -148,11 +175,6 @@
                 <TreeDataGrid />
             </TabItem>
             <TabItem>
-                <TabItem.Styles>
-                    <Style Selector="TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                    </Style>
-                </TabItem.Styles>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Typography" />

@@ -5,11 +5,13 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Resources/Palette/Fonts/SemanticFonts.axaml"/>
     </ResourceDictionary.MergedDictionaries>
+    
+    <StaticResource x:Key="TextBlockForeground" ResourceKey="NeutralModerateBrush" />
 
     <!-- Preview -->
    <Design.PreviewWith>
-        <Border Padding="20">
-            <StackPanel Classes="Spacing-2_5">
+        <Border Padding="8">
+            <StackPanel>
                 <Border BorderThickness="1" BorderBrush="DimGray" >
                     <TextBlock Theme="{StaticResource Heading2XLSemiTheme}" Text="Sample Text Heading2XLSemi" />
                 </Border>

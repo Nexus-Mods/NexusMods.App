@@ -29,6 +29,96 @@
     </Border>
   </Design.PreviewWith>
 
+    <!-- Resources for ComboBox.axaml -->
+
+    <x:Double x:Key="ComboBoxThemeMinWidth">64</x:Double>
+    <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
+    <Thickness x:Key="ComboBoxDropdownBorderThickness">0</Thickness>
+    <Thickness x:Key="ComboBoxItemThemePadding">11,5,11,7</Thickness>
+    <Thickness x:Key="ComboBoxItemThemeMargin">0,0,0,0</Thickness>
+    <CornerRadius x:Key="ComboBoxItemThemeCornerRadius">0,0,0,0</CornerRadius>
+    <FontWeight x:Key="ComboBoxHeaderThemeFontWeight">Normal</FontWeight>
+    <Thickness x:Key="ComboBoxDropdownBorderPadding">0</Thickness>
+    <Thickness x:Key="ComboBoxDropdownContentMargin">0,4,0,4</Thickness>
+
+    <StaticResource x:Key="ComboBoxBackground" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="ComboBoxBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="ComboBoxBackgroundPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+    <SolidColorBrush x:Key="ComboBoxBackgroundDisabled"
+                     Color="{StaticResource SurfaceTranslucentMid}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ComboBoxBackgroundUnfocused" ResourceKey="SurfaceTranslucentLowBrush" />
+    <StaticResource x:Key="ComboBoxBackgroundBorderBrushFocused" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="ComboBoxBackgroundBorderBrushUnfocused" ResourceKey="SurfaceTranslucentMidBrush" />
+
+    <StaticResource x:Key="ComboBoxForeground" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="ComboBoxForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ComboBoxForegroundFocused" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxForegroundFocusedPressed" ResourceKey="NeutralModerateBrush" />
+
+    <StaticResource x:Key="ComboBoxPlaceHolderForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxPlaceHolderForegroundFocusedPressed" ResourceKey="NeutralModerateBrush" />
+
+    <StaticResource x:Key="ComboBoxBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="ComboBoxBorderBrushDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ComboBoxDropDownGlyphForeground" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="ComboBoxDropDownGlyphForegroundFocused"
+                    ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxDropDownGlyphForegroundFocusedPressed"
+                    ResourceKey="NeutralModerateBrush" />
+
+    <StaticResource x:Key="ComboBoxDropDownBackground" ResourceKey="SurfaceMidBrush" />
+    <StaticResource x:Key="ComboBoxDropDownBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+
+    <StaticResource x:Key="ComboBoxItemForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <SolidColorBrush x:Key="ComboBoxItemForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ComboBoxItemForegroundSelected" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemForegroundSelectedPressed"
+                    ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemForegroundSelectedPointerOver"
+                    ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="ComboBoxItemForegroundSelectedDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ComboBoxItemBackground" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ComboBoxItemBackgroundPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+    <StaticResource x:Key="ComboBoxItemBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="ComboBoxItemBackgroundDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ComboBoxItemBackgroundSelected" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ComboBoxItemBackgroundSelectedPressed"
+                    ResourceKey="SurfaceLowBrush" />
+    <StaticResource x:Key="ComboBoxItemBackgroundSelectedPointerOver"
+                    ResourceKey="SurfaceHighBrush" />
+    <StaticResource x:Key="ComboBoxItemBackgroundSelectedDisabled" ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="ComboBoxItemBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushSelected" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushSelectedPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushSelectedPointerOver"
+                    ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ComboBoxItemBorderBrushSelectedDisabled"
+                    ResourceKey="StrokeTranslucentModerateBrush" />
+    
   <Thickness x:Key="ComboBoxTopHeaderMargin">0,0,0,4</Thickness>
   <x:Int32 x:Key="ComboBoxPopupMaxNumberOfItems">15</x:Int32>
   <x:Int32 x:Key="ComboBoxPopupMaxNumberOfItemsThatCanBeShownOnOneSide">7</x:Int32>

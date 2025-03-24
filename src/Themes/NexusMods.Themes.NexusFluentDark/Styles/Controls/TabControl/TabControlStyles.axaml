@@ -8,34 +8,21 @@
             <StackPanel Spacing="8">
                 <TextBlock Text="TabControl" />
                 <TabControl>
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Classes="TabItemHeaderStack">
-                                <TextBlock Text="Tab 2" />
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Star}" />
-                            </StackPanel>
-                        </TabItem.Header>
+                    <TabItem Header="Header">
                         <TextBlock Text="Content for Tab 1" />
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <StackPanel Classes="TabItemHeaderStack">
-                                <TextBlock Text="Tab 2" />
-                            </StackPanel>
+                            <TextBlock Text="Content Header" />
                         </TabItem.Header>
                         <TextBlock Text="Content for Tab 2" />
                     </TabItem>
-                    <TabItem>
-                        <TabItem.Header>
-                            <StackPanel Classes="TabItemHeaderStack">
-                                <TextBlock Text="Tab 3" />
-                            </StackPanel>
-                        </TabItem.Header>
+                    <TabItem IsEnabled="False" Header="Disabled" >
                         <TextBlock Text="Content for Tab 3" />
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <StackPanel Classes="TabItemHeaderStack">
+                            <StackPanel>
                                 <TextBlock Text="Optional" />
                                 <Border>
                                     <TextBlock Text="123" />
@@ -48,29 +35,28 @@
 
                 <TextBlock Text="TabControl (Subtabs)" />
                 <TabControl Classes="Subtabs">
-                    <TabItem Header="Tab 1">
+                    <TabItem Header="Header">
                         <TextBlock Text="Content for Tab 1" />
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <StackPanel Classes="TabItemHeaderStack">
-                                <TextBlock Text="Tab 2" />
-                            </StackPanel>
+                            <TextBlock Text="Content Header" />
                         </TabItem.Header>
                         <TextBlock Text="Content for Tab 2" />
                     </TabItem>
-                    <TabItem>
+                    <TabItem IsEnabled="False">
                         <TabItem.Header>
-                            <StackPanel Classes="TabItemHeaderStack">
-                                <TextBlock Text="Tab 3" />
-                            </StackPanel>
+                                <TextBlock Text="Disabled" />
                         </TabItem.Header>
                         <TextBlock Text="Content for Tab 3" />
                     </TabItem>
                     <TabItem>
                         <TabItem.Header>
-                            <StackPanel Classes="TabItemHeaderStack">
+                            <StackPanel>
                                 <TextBlock Text="Optional" />
+                                <Border>
+                                    <TextBlock Text="123" />
+                                </Border>
                             </StackPanel>
                         </TabItem.Header>
                         <TextBlock Text="Content for Tab 4" />
@@ -83,168 +69,64 @@
                         <TextBlock Text="Content for Tab 1" />
                     </TabItem>
                 </TabControl>
-                
+
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
+    <Styles.Resources>
+
+        <!-- copied from src/Avalonia.Themes.Fluent/Accents/FluentControlResources.xaml -->
+
+        <!-- Resources for TabItem.xaml -->
+        <x:Double x:Key="TabItemHeaderFontSize">24</x:Double>
+        <Thickness x:Key="TabItemHeaderMargin">12,0,12,0</Thickness>
+        <Thickness x:Key="TabItemMargin">24,8</Thickness>
+        <FontWeight x:Key="TabItemHeaderThemeFontWeight">SemiLight</FontWeight>
+        <StaticResource x:Key="TabControlBackground" ResourceKey="SurfaceTransparentBrush" />
+
+        <!-- Resources for TabItem -->
+        <StaticResource x:Key="TabItemHeaderBackgroundUnselected" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="TabItemHeaderBackgroundUnselectedPointerOver"
+                        ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="TabItemHeaderBackgroundUnselectedPressed"
+                        ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="TabItemHeaderBackgroundSelected" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="TabItemHeaderBackgroundSelectedPointerOver"
+                        ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="TabItemHeaderBackgroundSelectedPressed"
+                        ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="TabItemHeaderBackgroundDisabled" ResourceKey="SurfaceTransparentBrush" />
+        
+        <StaticResource x:Key="TabItemHeaderForegroundUnselected" ResourceKey="NeutralSubduedBrush" />
+        <StaticResource x:Key="TabItemHeaderForegroundUnselectedPointerOver"
+                        ResourceKey="NeutralModerateBrush" />
+        <StaticResource x:Key="TabItemHeaderForegroundUnselectedPressed"
+                        ResourceKey="NeutralSubduedBrush" />
+        <StaticResource x:Key="TabItemHeaderForegroundSelected" ResourceKey="NeutralStrongBrush" />
+        <StaticResource x:Key="TabItemHeaderForegroundSelectedPointerOver"
+                        ResourceKey="NeutralStrongBrush" />
+        <StaticResource x:Key="TabItemHeaderForegroundSelectedPressed"
+                        ResourceKey="NeutralStrongBrush" />
+        <SolidColorBrush x:Key="TabItemHeaderForegroundDisabled"
+                         Color="{StaticResource NeutralModerate}"
+                         Opacity="{StaticResource OpacityDisabledElement}" />
+        
+        <StaticResource x:Key="TabItemHeaderSelectedPipeFill" ResourceKey="PrimaryModerateBrush" />
+
+        <!-- src/Avalonia.Themes.Fluent/Controls/TabItem.xaml -->
+
+        <x:Double x:Key="TabItemMinHeight">0</x:Double>
+        <x:Double x:Key="TabItemVerticalPipeHeight">24</x:Double>
+        <x:Double x:Key="TabItemPipeThickness">2</x:Double>
+
+        <!-- src/Avalonia.Themes.Fluent/Controls/TabControl.xaml -->
+
+        <Thickness x:Key="TabControlTopPlacementItemMargin">0 0 0 2</Thickness>
+
+    </Styles.Resources>
+
     <Style Selector="TabControl">
- 
-        <Style Selector="^ TabItem">
-
-            <Style Selector="^ StackPanel.TabItemHeaderStack">
-                <Setter Property="Orientation" Value="Horizontal" />
-                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-                <Style Selector="^ > TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                </Style>
-                <Style Selector="^ > Border">
-                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-                    <Setter Property="CornerRadius" Value="999" />
-                    <Setter Property="Padding" Value="8,2" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Style Selector="^ > TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                    </Style>
-                </Style>
-                <Style Selector="^ icons|UnifiedIcon">
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="Size" Value="16" />
-                </Style>
-            </Style>
-
-            <!-- selected state -->
-
-            <Style Selector="^:selected">
-                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-
-                <Style Selector="^ > StackPanel.TabItemHeaderStack">
-                    <Style Selector="^ > TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                    </Style>
-                    <Style Selector="^ > Border">
-                        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-                        <Style Selector="^ > TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                        </Style>
-                    </Style>
-                    <Style Selector="^ > icons|UnifiedIcon">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                    </Style>
-                </Style>
-            </Style>
-
-            <!-- pointerover tabs -->
-
-            <Style Selector="^:pointerover:not(:selected)">
-                <Style Selector="^ > StackPanel.TabItemHeaderStack">
-                    <Style Selector="^ > TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                    </Style>
-                    <Style Selector="^ > Border">
-                        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-                        <Style Selector="^ > TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                        </Style>
-                    </Style>
-                    <Style Selector="^ > icons|UnifiedIcon">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                    </Style>
-                </Style>
-            </Style>
-            
-            <!-- hide the underline element -->
-            <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
-                <Setter Property="Background" Value="{StaticResource PrimaryModerateBrush}"/>
-            </Style>
-
-        </Style>
-
-        <!-- subtabs -->
-
-        <Style Selector="^.Subtabs">
-
-            <!-- content padding -->
-            <Setter Property="Padding" Value="0,0" />
-
-            <!-- header padding -->
-            <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
-                <Setter Property="Margin" Value="0" />
-            </Style>
-
-            <Style Selector="^ TabItem">
-                <Setter Property="Padding" Value="12,0" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
-                <Setter Property="CornerRadius" Value="0" />
-                <Setter Property="MinHeight" Value="28" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-
-                <!-- this is our primary way with custom header -->
-                <Style Selector="^ > StackPanel.TabItemHeaderStack">
-                    <Style Selector="^ > TextBlock">
-                        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                    </Style>
-                    <!-- assuming no badges or icons if using subtabs -->
-                    <!-- <Style Selector="^ > Border"> -->
-                    <!--     <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" /> -->
-                    <!--     <Style Selector="^ > TextBlock"> -->
-                    <!--         <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" /> -->
-                    <!--     </Style> -->
-                    <!-- </Style> -->
-                    <!-- <Style Selector="^ > icons|UnifiedIcon"> -->
-                    <!--     <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" /> -->
-                    <!-- </Style> -->
-                </Style>
-
-                <!-- hide the underline element -->
-                <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
-                    <Setter Property="IsVisible" Value="False" />
-                </Style>
-
-                <!-- first child (rounded left corners) -->
-                <Style Selector="^:nth-child(1)">
-                    <Setter Property="CornerRadius" Value="4,0,0,4" />
-                </Style>
-
-                <!-- last child (rounded right corners) -->
-                <Style Selector="^:nth-last-child(1)">
-                    <Setter Property="CornerRadius" Value="0,4,4,0" />
-                </Style>
-
-                <!-- both first and last child (single item, rounded all corners) -->
-                <Style Selector="^:nth-child(1):nth-last-child(1)">
-                    <Setter Property="CornerRadius" Value="4" />
-                </Style>
-
-                <!-- selected state -->
-                <Style Selector="^:selected">
-                    <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
-                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-
-                    <Style Selector="^ > StackPanel.TabItemHeaderStack">
-                        <Style Selector="^ > TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-                        </Style>
-                    </Style>
-                </Style>
-
-                <!-- pointerover tabs -->
-                <Style Selector="^:pointerover:not(:selected) /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                </Style>
-
-                <!--  Selected PointerOver state (don't change background if it's selected and pointerover) -->
-                <Style Selector="^:selected:pointerover /template/ Border#PART_LayoutRoot">
-                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-                    <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
-                </Style>
-
-            </Style>
-
-        </Style>
 
     </Style>
 

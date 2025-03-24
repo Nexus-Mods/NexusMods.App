@@ -1,8 +1,12 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="using:System">
-
-
+    
+    <!-- Used when we need to see if something hasn't been overriden with our system, primarily in 
+    NexusMods.Themes.NexusFluentDark.NexusFluentDarkTheme.axaml when overriding native Fluent theme palette -->
+    <Color x:Key="DebugColor">DeepPink</Color>
+    <SolidColorBrush x:Key="DebugColorBrush" Color="{StaticResource DebugColor}" />
+    
     <!-- Defines misc resources for the Theme -->
 
     <!-- DataGrid Sort Icon replacements -->
@@ -27,6 +31,8 @@
     <sys:Double x:Key="IconElementThemeWidth">20</sys:Double>
     <sys:Double x:Key="RefreshVisualizerIndicatorSize">24</sys:Double>
     <Thickness x:Key="ButtonPadding">8,5,8,5</Thickness>
+    
+    
 
     <!-- Override system shape defaults -->
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>

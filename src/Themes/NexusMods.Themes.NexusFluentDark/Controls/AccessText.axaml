@@ -10,5 +10,6 @@
     </Design.PreviewWith>
     
     <!-- Defaults all AccessText to BodySMNormalTheme -->
-    <ControlTheme x:Key="{x:Type AccessText}" TargetType="AccessText" BasedOn="{StaticResource BodySMNormalTheme}" />
+    <ControlTheme x:Key="{x:Type AccessText}" TargetType="AccessText" BasedOn="{StaticResource BodySMNormalTheme}"/>
+    
 </ResourceDictionary>

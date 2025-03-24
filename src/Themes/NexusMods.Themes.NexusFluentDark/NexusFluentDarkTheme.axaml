@@ -10,7 +10,39 @@
         </ResourceDictionary>
     </Styles.Resources>
 
-    <FluentTheme />
+    <FluentTheme>
+        <FluentTheme.Palettes>
+            <ColorPaletteResources x:Key="Dark"
+                           Accent="{StaticResource DebugColor}"
+                           AltHigh="{StaticResource DebugColor}"
+                           AltLow="{StaticResource DebugColor}"
+                           AltMedium="{StaticResource DebugColor}"
+                           AltMediumHigh="{StaticResource DebugColor}"
+                           AltMediumLow="{StaticResource DebugColor}"
+                           BaseHigh="{StaticResource DebugColor}"
+                           BaseLow="{StaticResource DebugColor}"
+                           BaseMedium="{StaticResource DebugColor}"
+                           BaseMediumHigh="{StaticResource DebugColor}"
+                           BaseMediumLow="{StaticResource DebugColor}"
+                           ChromeAltLow="{StaticResource DebugColor}"
+                           ChromeBlackHigh="{StaticResource DebugColor}"
+                           ChromeBlackLow="{StaticResource DebugColor}"
+                           ChromeBlackMedium="{StaticResource DebugColor}"
+                           ChromeBlackMediumLow="{StaticResource DebugColor}"
+                           ChromeDisabledHigh="{StaticResource DebugColor}"
+                           ChromeDisabledLow="{StaticResource DebugColor}"
+                           ChromeGray="{StaticResource DebugColor}"
+                           ChromeHigh="{StaticResource DebugColor}"
+                           ChromeLow="{StaticResource DebugColor}"
+                           ChromeMedium="{StaticResource DebugColor}"
+                           ChromeMediumLow="{StaticResource DebugColor}"
+                           ChromeWhite="{StaticResource DebugColor}"
+                           ListLow="{StaticResource DebugColor}"
+                           ListMedium="{StaticResource DebugColor}"
+                           RegionColor="{StaticResource SurfaceBase}" />
+            <!-- RegionColor is used by <Design.PreviewWith> throughout the app  -->
+        </FluentTheme.Palettes>
+    </FluentTheme>
 
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
