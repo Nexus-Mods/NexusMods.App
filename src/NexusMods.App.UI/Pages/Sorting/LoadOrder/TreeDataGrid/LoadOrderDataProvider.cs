@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
 using Humanizer;
 using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
@@ -19,8 +18,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         ILoadoutSortableItemProvider sortableItemProvider,
         Observable<ListSortDirection> sortDirectionObservable)
     {
-        var lastIndexObservable = sortableItemProvider.SortableItems
-            .ToObservableChangeSet(item => item.ItemId)
+        var lastIndexObservable = sortableItemProvider.SortableItemsChangeSet
             .QueryWhenChanged(query => query.Count == 0 ? 0 : query.Items.Max(item => item.SortIndex))
             .ToObservable()
             .Prepend(sortableItemProvider.SortableItems.Count == 0 ? 0 : sortableItemProvider.SortableItems.Max(item => item.SortIndex));
@@ -41,8 +39,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
             .Publish()
             .RefCount();
         
-        return sortableItemProvider.SortableItems
-            .ToObservableChangeSet(item => item.ItemId)
+        return sortableItemProvider.SortableItemsChangeSet
             .Transform( item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable));
     }
 
