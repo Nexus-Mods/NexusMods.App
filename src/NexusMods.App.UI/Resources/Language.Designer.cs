@@ -1767,5 +1767,35 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("CollectionDownloadViewModel_StatsRating_ToolTip", resourceCulture);
             }
         }
+        
+        public static string ManageGameWarning_Title {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Title", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Desc1 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc1", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Desc2 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc2", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Cancel {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Cancel", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Continue {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Continue", resourceCulture);
+            }
+        }
     }
 }
