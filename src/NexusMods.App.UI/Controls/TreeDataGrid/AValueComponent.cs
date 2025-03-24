@@ -82,9 +82,20 @@ public class ValueComponent<T> : AValueComponent<T>, IItemModelComponent<ValueCo
 {
     private readonly IComparer<T> _comparer;
 
+    // System Observable variant
     public ValueComponent(
         T initialValue,
         IObservable<T> valueObservable,
+        bool subscribeWhenCreated = false,
+        IComparer<T>? comparer = null) : base(initialValue, valueObservable, subscribeWhenCreated)
+    {
+        _comparer = comparer ?? Comparer<T>.Default;
+    }
+    
+    // R3 Observable variant
+    public ValueComponent(
+        T initialValue,
+        R3.Observable<T> valueObservable,
         bool subscribeWhenCreated = false,
         IComparer<T>? comparer = null) : base(initialValue, valueObservable, subscribeWhenCreated)
     {

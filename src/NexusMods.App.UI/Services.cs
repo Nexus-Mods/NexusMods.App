@@ -278,6 +278,7 @@ public static class Services
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, BundledDataProvider>()
+            .AddSingleton<ILoadOrderDataProvider, LoadOrderDataProvider>()
             .AddSingleton<IEventBus, EventBus>()
             .AddSingleton<IAvaloniaInterop, AvaloniaInterop>()
             .AddFileSystem()

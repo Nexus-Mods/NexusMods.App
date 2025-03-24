@@ -11,6 +11,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 using Humanizer;
+using Microsoft.CodeAnalysis;
 using NexusMods.App.UI.Converters;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
@@ -166,14 +167,17 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             
             this.WhenAnyValue(
                     view => view.ViewModel!.OptionalDownloadsCount,
-                    view => view.ViewModel!.InstructionsRenderer,
-                    static (count, renderer) => count == 0 && renderer is null)
-                .Subscribe(hasSingleTab =>
+                    view => view.ViewModel!.InstructionsRenderer)
+                .Subscribe(tuple =>
                 {
+                    var (optionalDownloadsCount, renderer) = tuple;
+                    var hasSingleTab = optionalDownloadsCount == 0 && renderer is null;
+
                     if (hasSingleTab) TabControl.Classes.Add("SingleTab");
                     else TabControl.Classes.Remove("SingleTab");
-            
+
                     if (hasSingleTab) TabControl.SelectedItem = RequiredTab;
+                    OptionalTab.IsVisible = optionalDownloadsCount != 0;
                 }).DisposeWith(d);
             
             this.WhenAnyValue(view => view.ViewModel!.OverallRating)
