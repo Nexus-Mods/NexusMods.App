@@ -10,7 +10,7 @@ We've included an important update for users with mods installed when first usin
 ## External Changes now behave as expected
 During testing, a bug was discovered where if a change was made outside the app it got added to "External Changes", however, if that file was then updated the app wouldn't save the new changes and would instead overwrite it with the original state it had imported. Now this issue is fixed, your config.json files for SMAPI mods should not get overwritten incorrectly while using the app. Big thanks to [Abagaianye](https://next.nexusmods.com/profile/Abagaianye), [madeleineostoja](https://github.com/madeleineostoja), and [StandingPadAnimations](https://github.com/StandingPadAnimations) for discovering this issue and providing detailed feedback to help us fix it.
 
-**Important: If you have been affected by the bug mentioned above, you will need to delete the file(s) you are having this issue with from the "External Changes" tab.**
+**Important: If you experience or have experienced issues with file changes being reverted, you should delete the contents of your "External Changes" page after backing up anything important in it from the game folder.**
 
 # v0.8.2 - 2025-03-17
 This release features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
