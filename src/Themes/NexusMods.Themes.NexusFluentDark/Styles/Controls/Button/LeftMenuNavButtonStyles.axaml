@@ -6,28 +6,7 @@
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
 
-                <StackPanel Spacing="8" Orientation="Vertical" Width="80">
-                    <Border Height="34">
-                        <TextBlock Text="Default"
-                                   VerticalAlignment="Center"
-                                   Theme="{StaticResource BodyMDBoldTheme}"
-                                   Foreground="{StaticResource BrandNeutral500Brush}" />
-                    </Border>
-                    <Border Height="34">
-                        <TextBlock Text="Active"
-                                   VerticalAlignment="Center"
-                                   Theme="{StaticResource BodyMDBoldTheme}"
-                                   Foreground="{StaticResource BrandNeutral500Brush}" />
-                    </Border>
-                    <Border Height="34">
-                        <TextBlock Text="Selected"
-                                   VerticalAlignment="Center"
-                                   Theme="{StaticResource BodyMDBoldTheme}"
-                                   Foreground="{StaticResource BrandNeutral500Brush}" />
-                    </Border>
-                </StackPanel>
-
-                <StackPanel Spacing="8" Orientation="Vertical" Width="145">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="150">
 
                     <navigation:LeftMenuNavButton>
                         <DockPanel>
@@ -37,6 +16,12 @@
                                        TextWrapping="NoWrap"
                                        TextTrimming="CharacterEllipsis" />
                         </DockPanel>
+                    </navigation:LeftMenuNavButton>
+                    
+                    <navigation:LeftMenuNavButton>
+                        <TextBlock Text="Label Goes Here"
+                                       TextWrapping="NoWrap"
+                                       TextTrimming="CharacterEllipsis" />
                     </navigation:LeftMenuNavButton>
 
                     <navigation:LeftMenuNavButton IsActive="True">
@@ -61,7 +46,7 @@
 
                 </StackPanel>
 
-                <StackPanel Spacing="8" Orientation="Vertical" Width="165">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="160">
 
                     <navigation:LeftMenuNavButton>
                         <DockPanel>
@@ -76,9 +61,9 @@
                                     TextAlignment="Center"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Theme="{StaticResource BodySMSemiTheme}"
                                     Foreground="{StaticResource NeutralInverted}"
-                                    Text="1" />
+                                    Text="8" />
                             </Border>
                             <TextBlock Text="Label Goes Here"
                                        TextWrapping="NoWrap"
@@ -99,7 +84,7 @@
                                     TextAlignment="Center"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Theme="{StaticResource BodySMSemiTheme}"
                                     Foreground="{StaticResource NeutralInverted}"
                                     Text="12" />
                             </Border>
@@ -122,7 +107,7 @@
                                     TextAlignment="Center"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Theme="{StaticResource BodySMBoldTheme}"
+                                    Theme="{StaticResource BodySMSemiTheme}"
                                     Foreground="{StaticResource NeutralInverted}"
                                     Text="123" />
                             </Border>
@@ -132,7 +117,7 @@
                         </DockPanel>
                     </navigation:LeftMenuNavButton>
                 </StackPanel>
-                <StackPanel Spacing="8" Orientation="Vertical">
+                <StackPanel Spacing="8" Orientation="Vertical" Width="180">
                     <navigation:LeftMenuNavButton>
                         <DockPanel>
                             <icons:UnifiedIcon DockPanel.Dock="Left"
@@ -230,12 +215,21 @@
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="Fill" Value="None" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <!-- using margin to make up for the border on other states being inside the button -->
-        <Setter Property="Margin" Value="2" />
+        <!-- using transparent border to make up for other states needing border -->
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
-        <Style Selector="^ > DockPanel > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-            <Setter Property="Margin" Value="4 0 4 0" />
+        <Style Selector="^ > DockPanel">
+            <Style Selector="^ > TextBlock">
+                <Setter Property="Margin" Value="4 0 4 0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            <Style Selector="^ > ToggleSwitch">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="0" />
+            </Style>
         </Style>
 
         <!-- ACTIVE -->
@@ -259,6 +253,7 @@
 
         <Style Selector="^:pointerover:not(:selected)">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
 
     </Style>

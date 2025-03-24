@@ -33,7 +33,7 @@
                                        Padding="0"
                                        VerticalAlignment="Center" />
                     <Border x:Name="IconButtonInnerBorder"
-                            Classes="Rounded-full"
+                            CornerRadius="{StaticResource Rounded-full}"
                             Height="48"
                             Width="48" />
                 </Grid>

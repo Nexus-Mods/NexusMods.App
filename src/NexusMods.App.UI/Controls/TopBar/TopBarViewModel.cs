@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
@@ -57,8 +56,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
     [Reactive] public UserRole UserRole { get; [UsedImplicitly] set; }
 
-    private readonly ObservableAsPropertyHelper<IImage?> _avatar;
-    public IImage? Avatar => _avatar.Value;
+    [Reactive] public IImage? Avatar { get; private set; }
     
     [Reactive] public string? Username { get; set; } = string.Empty;
 
@@ -139,11 +137,6 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
         LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout);
 
-        _avatar = _loginManager.AvatarObservable
-            .OffUi()
-            .SelectMany(LoadImage)
-            .ToProperty(this, vm => vm.Avatar, scheduler: RxApp.MainThreadScheduler);
-
         OpenNexusModsProfileCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             var userInfo = await _loginManager.GetUserInfoAsync();
@@ -176,6 +169,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
         this.WhenActivated(d =>
         {
+            _loginManager.AvatarObservable
+                .SelectMany(LoadImage)
+                .OnUI()
+                .SubscribeWithErrorLogging(image => Avatar = image)
+                .DisposeWith(d);
+
             _loginManager.IsLoggedInObservable
                 .OnUI()
                 .BindToVM(this, vm => vm.IsLoggedIn)

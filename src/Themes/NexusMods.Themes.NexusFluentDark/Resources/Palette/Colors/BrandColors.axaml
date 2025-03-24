@@ -6,12 +6,6 @@
     <!-- When creating components the full range of these Brands can be used if required, although the curated selection in Layer 3 is preferred. -->
     <!-- Note: Only the translucent black and white colours maintain descriptive names as they will always be varying opacities of light and dark. -->
 
-    <!-- Include the Primitive colors -->
-    <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="/Resources/Palette/Colors/PrimitiveColors.axaml" />
-    </ResourceDictionary.MergedDictionaries>
-
-
     <!-- Neutral -->
 
     <!-- Colors -->
@@ -156,6 +150,34 @@
     <SolidColorBrush x:Key="BrandSuccess100Brush" Color="{StaticResource BrandSuccess100}" />
     <SolidColorBrush x:Key="BrandSuccess50Brush" Color="{StaticResource BrandSuccess50}" />
 
+    
+    <!-- Creators -->
+
+    <!-- Colors -->
+    <StaticResource x:Key="BrandCreators950" ResourceKey="PrimitiveTeal950" />
+    <StaticResource x:Key="BrandCreators900" ResourceKey="PrimitiveTeal900" />
+    <StaticResource x:Key="BrandCreators800" ResourceKey="PrimitiveTeal800" />
+    <StaticResource x:Key="BrandCreators700" ResourceKey="PrimitiveTeal700" />
+    <StaticResource x:Key="BrandCreators600" ResourceKey="PrimitiveTeal600" />
+    <StaticResource x:Key="BrandCreators500" ResourceKey="PrimitiveTeal500" />
+    <StaticResource x:Key="BrandCreators400" ResourceKey="PrimitiveTeal400" />
+    <StaticResource x:Key="BrandCreators300" ResourceKey="PrimitiveTeal300" />
+    <StaticResource x:Key="BrandCreators200" ResourceKey="PrimitiveTeal200" />
+    <StaticResource x:Key="BrandCreators100" ResourceKey="PrimitiveTeal100" />
+    <StaticResource x:Key="BrandCreators50" ResourceKey="PrimitiveTeal50" />
+
+    <!-- SolidColorBrushes -->
+    <SolidColorBrush x:Key="BrandCreators950Brush" Color="{StaticResource BrandCreators950}" />
+    <SolidColorBrush x:Key="BrandCreators900Brush" Color="{StaticResource BrandCreators900}" />
+    <SolidColorBrush x:Key="BrandCreators800Brush" Color="{StaticResource BrandCreators800}" />
+    <SolidColorBrush x:Key="BrandCreators700Brush" Color="{StaticResource BrandCreators700}" />
+    <SolidColorBrush x:Key="BrandCreators600Brush" Color="{StaticResource BrandCreators600}" />
+    <SolidColorBrush x:Key="BrandCreators500Brush" Color="{StaticResource BrandCreators500}" />
+    <SolidColorBrush x:Key="BrandCreators400Brush" Color="{StaticResource BrandCreators400}" />
+    <SolidColorBrush x:Key="BrandCreators300Brush" Color="{StaticResource BrandCreators300}" />
+    <SolidColorBrush x:Key="BrandCreators200Brush" Color="{StaticResource BrandCreators200}" />
+    <SolidColorBrush x:Key="BrandCreators100Brush" Color="{StaticResource BrandCreators100}" />
+    <SolidColorBrush x:Key="BrandCreators50Brush" Color="{StaticResource BrandCreators50}" />
 
     <!-- Info -->
 

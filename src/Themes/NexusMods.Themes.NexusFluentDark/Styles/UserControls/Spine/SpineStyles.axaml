@@ -1,9 +1,10 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:spine="clr-namespace:NexusMods.App.UI.Controls.Spine;assembly=NexusMods.App.UI"
-        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels">
+        xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+        xmlns:icon="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Icon;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
-        <Border Height="300">
+        <Border Height="500">
             <Border.Resources>
                 <spine:SpineDesignViewModel x:Key="DesignDataContext" />
             </Border.Resources>
@@ -15,7 +16,9 @@
     <!-- Add Styles Here -->
     <Style Selector="spine|Spine">
         <Setter Property="Width" Value="72" />
-        <Setter Property="Margin" Value="0,12,0,12" />
+        <Setter Property="Padding" Value="0,12,0,12" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
 
         <Style Selector="^ panels|FlexPanel#SpineFlexPanel">
             <Setter Property="Direction" Value="Column" />
@@ -23,6 +26,11 @@
             
             <Style Selector="^ > Border#HomeBorder">
                 <Setter Property="panels:Flex.Shrink" Value="0" />
+                
+                <Style Selector="^ icon|IconButton">
+                    <Setter Property="panels:Flex.Shrink" Value="0" />
+                
+                </Style>
             </Style>
             
             <Style Selector="^ > Border#DownloadBorder">

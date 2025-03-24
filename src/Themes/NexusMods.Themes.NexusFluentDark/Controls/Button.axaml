@@ -1,0 +1,58 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:ClassModifier="internal">
+  <Design.PreviewWith>
+    <Border Padding="16">
+      <StackPanel Spacing="8">
+        <Button Content="Click Me!" />
+        <Button IsEnabled="False" Content="Click Me!" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+    
+  <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
+    <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
+    <Setter Property="Foreground" Value="{StaticResource ButtonForeground}" />
+    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+    <Setter Property="BorderThickness" Value="{StaticResource ButtonBorderThemeThickness}" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+    <Setter Property="Padding" Value="{StaticResource ButtonPadding}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="RenderTransform" Value="none" />
+
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ContentPresenter x:Name="PART_ContentPresenter"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}"
+                          Content="{TemplateBinding Content}"
+                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                          Padding="{TemplateBinding Padding}"
+                          RecognizesAccessKey="True"
+                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
+      <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
+    </Style>
+
+    <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPressed}" />
+      <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressed}" />
+    </Style>
+
+    <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource ButtonBackgroundDisabled}" />
+      <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushDisabled}" />
+      <Setter Property="Foreground" Value="{StaticResource ButtonForegroundDisabled}" />
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

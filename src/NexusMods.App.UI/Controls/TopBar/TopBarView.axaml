@@ -1,5 +1,5 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignHeight="400"
+    d:DesignHeight="452"
     d:DesignWidth="1024"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
@@ -21,8 +21,7 @@
 
     <Grid x:Name="MainGrid"
           Height="52"
-          VerticalAlignment="Top"
-          Background="{StaticResource SurfaceBaseBrush}">
+          VerticalAlignment="Top">
 
         <Grid.ColumnDefinitions>
             <!-- min width is 232 to never go left of the left menu section -->
@@ -63,16 +62,18 @@
                                          ToolTip.Tip="{x:Static resources:Language.TopBar_Back_ToolTip}"
                                          ShowLabel="False"
                                          ShowIcon="Left"
+                                         Size="Medium"
                                          Type="Tertiary"
-                                         Fill="Strong"
+                                         Fill="None"
                                          LeftIcon="{x:Static icons:IconValues.ArrowBack}" />
 
                 <controls:StandardButton x:Name="GoForwardInHistory"
                                          ToolTip.Tip="{x:Static resources:Language.TopBar_Forward_ToolTip}"
                                          ShowLabel="False"
                                          ShowIcon="Left"
+                                         Size="Medium"
                                          Type="Tertiary"
-                                         Fill="Strong"
+                                         Fill="None"
                                          LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
             </StackPanel>
 
@@ -215,9 +216,7 @@
                                          ShowIcon="None">
                     <TextBlock
                         Text="{x:Static resources:Language.Nexus_Premium_Status__Supporter}"
-                        Theme="{StaticResource TitleSMSemiTheme}"
-                        VerticalAlignment="Center"
-                        Padding="4,4,4,2" />
+                        Theme="{StaticResource TitleSMSemiTheme}" />
                 </controls:StandardButton>
 
                 <!-- free button -->
@@ -228,9 +227,7 @@
                                          ShowIcon="None">
                     <TextBlock
                         Text="{x:Static resources:Language.Nexus_Premium_Status__Free}"
-                        Theme="{StaticResource TitleSMSemiTheme}"
-                        VerticalAlignment="Center"
-                        Padding="4,4,4,2" />
+                        Theme="{StaticResource TitleSMSemiTheme}"/>
                 </controls:StandardButton>
             </StackPanel>
         </StackPanel>

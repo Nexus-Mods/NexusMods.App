@@ -4,7 +4,7 @@
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <Design.PreviewWith>
-        <Border Padding="16">
+        <Border Padding="16" Width="100" Height="100">
             <StackPanel Orientation="Vertical" Classes="Spacing-1">
                 <ComboBox SelectedIndex="0" Classes="AddPanelDropDown">
                     <ComboBoxItem Content="Item 1" />
@@ -19,10 +19,10 @@
     </Design.PreviewWith>
 
     <Style Selector="ComboBox.AddPanelDropDown">
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
-        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-md}" />
+        <Setter Property="Padding" Value="4,2,0,2" />
 
         <Setter Property="Template">
             <ControlTemplate>

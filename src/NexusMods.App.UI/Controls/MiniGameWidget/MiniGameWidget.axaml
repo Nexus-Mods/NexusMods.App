@@ -40,11 +40,11 @@
                                Foreground="{StaticResource NeutralModerateBrush}" />
                     <TextBlock x:Name="IsFoundTextBlock"
                                Text="Installation Found"
-                               Theme="{StaticResource BodyMDBoldTheme}"
+                               Theme="{StaticResource BodyMDSemiTheme}"
                                Foreground="{StaticResource NeutralModerateBrush}"/>
                     <TextBlock x:Name="NotFoundTextBlock"
                                Text="Installation Not Found"
-                               Theme="{StaticResource BodyMDBoldTheme}"
+                               Theme="{StaticResource BodyMDSemiTheme}"
                                Foreground="{StaticResource NeutralSubduedBrush}" />
                 </StackPanel>
             </StackPanel>

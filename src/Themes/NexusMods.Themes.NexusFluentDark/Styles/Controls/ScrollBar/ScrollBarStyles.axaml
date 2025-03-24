@@ -1,0 +1,51 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="16">
+            <ScrollBar Orientation="Vertical" AllowAutoHide="True" HorizontalAlignment="Center" Height="100" />
+        </Border>
+    </Design.PreviewWith>
+
+    <Styles.Resources>
+        <!-- these will override default Avalonia values -->
+        <x:Double x:Key="ScrollBarSize">8</x:Double>
+        <TransformOperations x:Key="VerticalSmallScrollThumbScaleTransform">scaleX(0.25)</TransformOperations>
+    </Styles.Resources>
+
+    <Style Selector="ScrollBar">
+        <Setter Property="AllowAutoHide" Value="True" />
+        <Setter Property="ShowDelay" Value="0.1" />
+        <Setter Property="HideDelay" Value="0.4" />
+
+        <Style Selector="^ /template/ Thumb">
+            <Setter Property="CornerRadius" Value="1" />
+            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <CornerRadiusTransition Property="CornerRadius" Duration="0:0:0.05" />
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.05" />
+                </Transitions>
+            </Setter>
+
+            <Style Selector="^:pointerover /template/ Border">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+            </Style>
+            <Style Selector="^:pressed  /template/ Border">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+            </Style>
+            <Style Selector="^:disabled  /template/ Border">
+                <Setter Property="Background" Value="{DynamicResource ScrollBarThumbFillDisabled}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^[IsExpanded=true]">
+            <Style Selector="^ /template/ Grid#Root">
+                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+            </Style>
+            <Style Selector="^ /template/ Thumb">
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+                <Setter Property="CornerRadius" Value="4" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>
