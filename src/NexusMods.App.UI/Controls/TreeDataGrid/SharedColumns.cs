@@ -43,14 +43,9 @@ public static class SharedColumns
     }
     
     /// <summary>
-    /// An abstract base class for uint count columns.
+    /// A common class for counters using a 32-bit unsigned integer.
     /// </summary>
-    /// <remarks>
-    ///     This is meant to be inherited to allow for renaming the column header.
-    ///     For an example, see <see cref="Columns.FileCount"/>
-    /// </remarks>
-    public abstract class UIntCount<TSelf> : ICompositeColumnDefinition<UIntCount<TSelf>>
-        where TSelf : IHaveColumnHeader
+    public sealed class UIntCount : ICompositeColumnDefinition<UIntCount>
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
@@ -63,12 +58,7 @@ public static class SharedColumns
         public static readonly ComponentKey UIntComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(UIntComponent));
 
         // Default implementation that can be overridden
-        public static string GetColumnHeader() => TSelf.ColumnHeader;
+        public static string GetColumnHeader() => "Count";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
-    }
-    
-    public interface IHaveColumnHeader
-    {
-        static abstract string ColumnHeader { get; }
     }
 }

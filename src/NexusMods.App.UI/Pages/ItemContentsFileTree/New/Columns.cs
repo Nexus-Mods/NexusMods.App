@@ -8,14 +8,6 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New;
 public static class Columns
 {
     /// <summary>
-    /// An item count, that uses a signed 32-bit integer as the backing.
-    /// </summary>
-    public sealed class FileCount : SharedColumns.UIntCount<FileCount>, SharedColumns.IHaveColumnHeader 
-    {
-        public static string ColumnHeader => "File Count";
-    }
-    
-    /// <summary>
     /// Represents a file or folder name, accompanied by a file or folder icon.
     /// </summary>
     public sealed class NameWithFileIcon : ICompositeColumnDefinition<NameWithFileIcon>
@@ -29,7 +21,7 @@ public static class Columns
 
         public const string ColumnTemplateResourceKey = "ViewFilesColumn_" + "Name";
         public static readonly ComponentKey StringComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(StringComponent));
-        public static readonly ComponentKey IconComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(IconComponent));
+        public static readonly ComponentKey IconComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(FileTreeIconComponent));
 
         public static string GetColumnHeader() => "Name";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
