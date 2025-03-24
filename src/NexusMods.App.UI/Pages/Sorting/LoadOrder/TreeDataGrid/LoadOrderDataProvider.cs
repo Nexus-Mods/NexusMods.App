@@ -41,7 +41,10 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         compositeModel.Add(LoadOrderColumns.IndexColumn.IndexComponentKey,
             new IndexComponent(
                 new ValueComponent<int>(sortableItem.SortIndex, sortableItem.WhenAnyValue(item => item.SortIndex)),
-                new ValueComponent<string>(sortableItem.SortIndex.Ordinalize(), displayIndexObservable)
+                new ValueComponent<string>(sortableItem.SortIndex.Ordinalize(), displayIndexObservable),
+                // TODO: Implement canExecuteMoveUp and canExecuteMoveDown
+                R3.Observable.Return(true),
+                R3.Observable.Return(true)
             )
         );
 
