@@ -28,8 +28,8 @@ public static class LoadOrderComponents
             _index = index;
             _displaySortIndex = displaySortIndex;
             
-            MoveUp = canExecuteMoveUp.ToReactiveCommand();
-            MoveDown = canExecuteMoveDown.ToReactiveCommand();
+            MoveUp = canExecuteMoveUp.ObserveOnUIThreadDispatcher().ToReactiveCommand();
+            MoveDown = canExecuteMoveDown.ObserveOnUIThreadDispatcher().ToReactiveCommand();
         }
 
         public int CompareTo(IndexComponent? other)
