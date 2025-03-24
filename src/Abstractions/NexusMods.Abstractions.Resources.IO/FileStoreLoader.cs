@@ -23,9 +23,15 @@ public sealed class FileStoreLoader : IResourceLoader<Hash, byte[]>
         await using var stream = await _fileStore.GetFileStream(resourceIdentifier, cancellationToken);
 
         var bytes = GC.AllocateUninitializedArray<byte>(length: (int)stream.Length);
-        var count = await stream.ReadAsync(bytes, cancellationToken: cancellationToken);
+        var totalBytesRead = 0;
+        int bytesRead;
 
-        ArgumentOutOfRangeException.ThrowIfNotEqual(count, bytes.Length);
+        while ((bytesRead = await stream.ReadAsync(bytes.AsMemory(start: totalBytesRead), cancellationToken).ConfigureAwait(false)) != 0)
+        {
+            totalBytesRead += bytesRead;
+        }
+
+        ArgumentOutOfRangeException.ThrowIfNotEqual(totalBytesRead, bytes.Length);
         return new Resource<byte[]>
         {
             Data = bytes,
