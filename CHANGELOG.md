@@ -1,15 +1,14 @@
 # v0.8.3 - 2025-03-24
-This release fixes a few high priority issued discovered during user testing of 0.8.2. Thank you for your feedback and please keep it coming.
+This release fixes a few high-priority issues discovered during user testing of 0.8.2. Thank you for your feedback and please keep it coming.
 
 ## New notice before managing a game
-We've included an important update for users who have already got mods installed when first using the app. A warning will show when managing a game for the first time to make it clear that if the app is uninstalled it will clean the game folder back to an unmodded state, deleting all files that are no part of the base game. We are exploring options for a better solution to this, but for now we recommend either starting with a clean game installation or backing up your mod files before using the app. 
+We've included an important update for users with mods installed when first using the app. A warning will show when managing a game for the first time to make it clear that if the app is uninstalled it will clean the game folder back to an unmodded state, deleting all files that are no part of the base game. We are exploring options for a better solution, but for now, we recommend either starting with a clean game installation or backing up your mod files before using the app. 
 
 ![The new warning that shows when managing a game for the first time.](./docs/changelog-assets/2264297d178012ec96f139ffd5ea79aa.webp)
 
 
 ## External Changes now behave as expected
 During testing, a bug was discovered where if a change was made outside the app it got added to "External Changes", however, if that file was then updated the app wouldn't save the new changes and would instead overwrite it with the original state it had imported. Now this issue is fixed, your config.json files for SMAPI mods should not get overwritten incorrectly while using the app. Big thanks to [Abagaianye](https://next.nexusmods.com/profile/Abagaianye), [madeleineostoja](https://github.com/madeleineostoja), and [StandingPadAnimations](https://github.com/StandingPadAnimations) for discovering this issue and providing detailed feedback to help us fix it. 
-
 
 # v0.8.2 - 2025-03-17
 This release features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
