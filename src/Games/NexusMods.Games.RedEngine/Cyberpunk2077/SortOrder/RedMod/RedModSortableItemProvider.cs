@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -29,6 +30,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly CompositeDisposable _disposables = new();
     public ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
+    public IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
 
 
     public LoadoutId LoadoutId { get; }
@@ -61,7 +63,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
         // load the previously saved order
         var order = RetrieveSortableEntries();
         _orderCache.AddOrUpdate(order);
-
+        
         // populate read only list
         _orderCache.Connect()
             .Transform(item => item as ISortableItem)
@@ -69,6 +71,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
             .Bind(out _readOnlyOrderList)
             .Subscribe()
             .AddTo(_disposables);
+        
+        SortableItemsChangeSet = SortableItems.ToObservableChangeSet(item => item.ItemId).RefCount();
 
         // Observe RedMod groups changes
         RedModLoadoutGroup.ObserveAll(_connection)
