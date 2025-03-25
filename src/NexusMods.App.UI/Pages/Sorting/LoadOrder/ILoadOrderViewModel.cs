@@ -12,7 +12,7 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// <summary>
     /// TreeDataGridAdapter for the Load Order, for setting up the TreeDataGrid
     /// </summary>
-    TreeDataGridAdapter<ILoadOrderItemModel, Guid> Adapter { get; }
+    TreeDataGridAdapter<CompositeItemModel<Guid>, Guid> Adapter { get; }
     
     /// <summary>
     /// Name of this sort order type
