@@ -9,7 +9,6 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
@@ -100,43 +99,46 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<IGarbageCollectorRunner>()
     ) { }
 
-    private void CleanDirectories(IEnumerable<(GamePath GamePath, AbsolutePath ResolvedPath)> toDelete, DiskState newState, GameInstallation installation)
+    private void CleanDirectories(IEnumerable<GamePath> directoriesWithDeletions, DiskState newDiskState, GameInstallation installation)
     {
-        var seenDirectories = new HashSet<GamePath>();
+        var processedDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
         
-        var newStatePaths = newState.SelectMany(e =>
+        var newDiskStateDirs = newDiskState.SelectMany(e =>
             {
                 // We need folder paths, so skip first path as it is the file path itself
                 return ((GamePath)e.Path).GetAllParents().Skip(1);
             }
         ).ToHashSet();
 
-        foreach (var (gamePath, fullPath) in toDelete)
+        foreach (var dirWithDeletion in directoriesWithDeletions)
         {
-            var parentPath = gamePath.Parent;
-            GamePath? emptyStructureRoot = null;
-            while (parentPath != gamePath.GetRootComponent)
+            var rootComponent = dirWithDeletion.GetRootComponent;
+            GamePath? emptyDirStructureRoot = null;
+            
+            var currentDirectory = dirWithDeletion;
+
+            while (currentDirectory != rootComponent)
             {
-                if (seenDirectories.Contains(parentPath))
+                if (processedDirectories.Contains(currentDirectory))
                 {
-                    emptyStructureRoot = null;
+                    emptyDirStructureRoot = null;
                     break;
                 }
 
                 // newTree was build from files, so if the parent is in the new tree, it's not empty
-                if (newStatePaths.Contains(parentPath))
+                if (newDiskStateDirs.Contains(currentDirectory))
                 {
                     break;
                 }
 
-                seenDirectories.Add(parentPath);
-                emptyStructureRoot = parentPath;
-                parentPath = parentPath.Parent;
+                processedDirectories.Add(currentDirectory);
+                emptyDirStructureRoot = currentDirectory;
+                currentDirectory = currentDirectory.Parent;
             }
 
-            if (emptyStructureRoot != null)
-                directoriesToDelete.Add(emptyStructureRoot.Value);
+            if (emptyDirStructureRoot != null)
+                directoriesToDelete.Add(emptyDirStructureRoot.Value);
         }
 
         foreach (var dir in directoriesToDelete)
@@ -417,7 +419,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
-        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = [];
+        HashSet<GamePath> foldersWithDeletedFiles = [];
         EntityId? overridesGroup = null;
         
         foreach (var action in ActionsInOrder)
@@ -553,7 +555,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var gameMetadataId = gameInstallation.GameMetadataId;
         var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
         var register = gameInstallation.LocationsRegister;
-        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = [];
+        HashSet<GamePath> foldersWithDeletedFiles = [];
 
         foreach (var action in ActionsInOrder)
         {
@@ -756,7 +758,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionDeleteFromDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
+    private void ActionDeleteFromDisk(
+        Dictionary<GamePath, SyncNode> groupings,
+        IGameLocationsRegister register,
+        ITransaction tx,
+        GameInstallMetadataId gameMetadataId,
+        HashSet<GamePath> foldersWithDeletedFiles)
     {
         // Delete files from disk
         foreach (var (path, node) in groupings)
@@ -770,7 +777,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             // Only delete the entry if we're not going to replace it
             if (!node.Actions.HasFlag(Actions.ExtractToDisk))
             {
-                foldersWithDeletedFiles.Add((path, resolvedPath.Parent));
+                foldersWithDeletedFiles.Add(path.Parent);
 
                 var id = node.Disk.EntityId;
                 tx.Retract(id, DiskStateEntry.Path, ((EntityId)gameMetadataId, path.LocationId, path.Path));
