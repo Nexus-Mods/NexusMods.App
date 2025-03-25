@@ -4,6 +4,15 @@ using JetBrains.Annotations;
 
 namespace NexusMods.Abstractions.Resources.Caching;
 
+/// <summary>
+/// Cache for scoped pipeline results.
+/// </summary>
+/// <remarks>
+/// Prefer this over <see cref="ResourceCache{TResourceIdentifier,TKey,TData}"/> if <typeparamref name="TData"/>
+/// implements <see cref="IDisposable"/>. See the docs for more details: https://github.com/bitfaster/BitFaster.Caching/wiki/IDisposable-and-Scoped-values#scoped
+/// </remarks>
+/// <seealso cref="InMemoryStore{TResourceIdentifierIn,TResourceIdentifierOut,TKey,TData}"/>
+/// <seealso cref="ResourceCache{TResourceIdentifier,TKey,TData}"/>
 [PublicAPI]
 public sealed class ScopedResourceCache<TResourceIdentifier, TKey, TData> : IResourceLoader<TResourceIdentifier, Lifetime<TData>>
     where TResourceIdentifier : notnull

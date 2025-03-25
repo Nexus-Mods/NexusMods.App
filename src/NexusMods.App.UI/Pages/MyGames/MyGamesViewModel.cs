@@ -116,7 +116,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 
                                 Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: installation.Game.Name));
                                 
-                                NavigateToFirstLoadoutLibrary(conn, installation);
+                                NavigateToLoadoutLibrary(conn, installation);
                             });
 
                             vm.RemoveAllLoadoutsCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -132,7 +132,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() =>
                             {
-                                NavigateToFirstLoadoutLibrary(conn, installation);
+                                NavigateToLoadoutLibrary(conn, installation);
                                 Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: installation.Game.Name));
                             });
 
@@ -216,19 +216,26 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         await installation.GetGame().Synchronizer.CreateLoadout(installation);
     }
     
-    private Optional<LoadoutId> GetFirstLoadoutId(IConnection conn, GameInstallation installation)
+    private Optional<LoadoutId> GetLoadout(IConnection conn, GameInstallation installation)
     {
         var db = conn.Db;
 
-        var loadout = Loadout.All(db).FirstOrOptional(loadout => 
-            loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
-        
+        var gameMetadata = GameInstallMetadata.Load(conn.Db, installation.GameMetadataId);
+        if (gameMetadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        {
+            return gameMetadata.LastSyncedLoadout.LoadoutId;
+        }
+
+        // no applied loadout, return the first one
+        var loadout = Loadout.All(db).FirstOrOptional(loadout =>
+        loadout.IsVisible() && loadout.InstallationInstance.Equals(installation));
+
         return loadout.HasValue ? loadout.Value.LoadoutId : Optional<LoadoutId>.None;
     }
     
-    private void NavigateToFirstLoadoutLibrary(IConnection conn, GameInstallation installation)
+    private void NavigateToLoadoutLibrary(IConnection conn, GameInstallation installation)
     {
-        var fistLoadout = GetFirstLoadoutId(conn, installation);
+        var fistLoadout = GetLoadout(conn, installation);
         if (!fistLoadout.HasValue) return;
         var loadoutId = fistLoadout.Value;
         Dispatcher.UIThread.Invoke(() =>

@@ -247,7 +247,7 @@ public class Program
                 experimentalSettings: experimentalSettings,
                 gameLocatorSettings: gameLocatorSettings).Validate();
 
-            if (loggingSettings.ShowExceptions)
+            if (loggingSettings.ShowExceptions || telemetrySettings.IsEnabled)
                 s.AddSingleton<IObservableExceptionSource, ObservableLoggingTarget>(_ => observableTarget);
 
             if (startupMode.IsAvaloniaDesigner)

@@ -8,6 +8,7 @@ using NexusMods.App.UI.Extensions;
 using ObservableCollections;
 using R3;
 using System.Reactive.Linq;
+using DynamicData.Kernel;
 
 namespace NexusMods.App.UI.Controls;
 
@@ -125,6 +126,16 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 .AddTo(disposables);
 
             Disposable.Create(self._selectionModelsSerialDisposable, static serialDisposable => serialDisposable.Disposable = null).AddTo(disposables);
+
+            Disposable.Create(self, static self =>
+            {
+                foreach (var root in self.Roots)
+                {
+                    root.Dispose();
+                }
+
+                self.Roots.Clear();
+            }).AddTo(disposables);
         });
     }
 

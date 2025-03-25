@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
@@ -42,12 +43,12 @@ public static class LoadoutComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
                     Disposable.Dispose(_idsObservable ?? Disposable.Empty);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -56,12 +57,23 @@ public static class LoadoutComponents
     
     public sealed class ParentCollectionDisabled : ReactiveR3Object, IItemModelComponent<ParentCollectionDisabled>, IComparable<ParentCollectionDisabled>
     {
+        public ReactiveCommand<NavigationInformation, NavigationInformation> ButtonCommand { get; } = new(info => info);
+
         public int CompareTo(ParentCollectionDisabled? other) => 0;
     }
     
     public sealed class LockedEnabledState : ReactiveR3Object, IItemModelComponent<LockedEnabledState>, IComparable<LockedEnabledState>
     {
+        public ReactiveCommand<NavigationInformation, NavigationInformation> ButtonCommand { get; } = new(info => info);
+
         public int CompareTo(LockedEnabledState? other) => 0;
+    }
+
+    public sealed class MixLockedAndParentDisabled : ReactiveR3Object, IItemModelComponent<MixLockedAndParentDisabled>, IComparable<MixLockedAndParentDisabled>
+    {
+        public ReactiveCommand<NavigationInformation, NavigationInformation> ButtonCommand { get; } = new(info => info);
+        
+        public int CompareTo(MixLockedAndParentDisabled? other) => 0;
     }
 
     public sealed class EnabledStateToggle : ReactiveR3Object, IItemModelComponent<EnabledStateToggle>, IComparable<EnabledStateToggle>
@@ -85,8 +97,7 @@ public static class LoadoutComponents
 
         private readonly IDisposable _activationDisposable;
 
-        public EnabledStateToggle(
-            ValueComponent<bool?> valueComponent)
+        public EnabledStateToggle(ValueComponent<bool?> valueComponent)
         {
             _valueComponent = valueComponent;
 
@@ -101,12 +112,12 @@ public static class LoadoutComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
                     Disposable.Dispose(_activationDisposable, _valueComponent);
-                }
-
-                _isDisposed = true;
+                }                
             }
 
             base.Dispose(disposing);
@@ -122,7 +133,7 @@ public static class LoadoutColumns
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
             var aValue = a.GetOptional<StringComponent>(key: ComponentKey);
-            var bValue = a.GetOptional<StringComponent>(key: ComponentKey);
+            var bValue = b.GetOptional<StringComponent>(key: ComponentKey);
             return aValue.Compare(bValue);
         }
 
@@ -138,7 +149,7 @@ public static class LoadoutColumns
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
             var aValue = a.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
-            var bValue = a.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
+            var bValue = b.GetOptional<LoadoutComponents.EnabledStateToggle>(key: EnabledStateToggleComponentKey);
             return aValue.Compare(bValue);
         }
 
@@ -147,6 +158,7 @@ public static class LoadoutColumns
         public static readonly ComponentKey EnabledStateToggleComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.EnabledStateToggle));
         public static readonly ComponentKey ParentCollectionDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.ParentCollectionDisabled));
         public static readonly ComponentKey LockedEnabledStateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.LockedEnabledState));
+        public static readonly ComponentKey MixLockedAndParentDisabledComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(LoadoutComponents.MixLockedAndParentDisabled));
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

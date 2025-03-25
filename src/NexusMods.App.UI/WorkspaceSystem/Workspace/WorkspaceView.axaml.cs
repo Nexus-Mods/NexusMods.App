@@ -23,26 +23,35 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
         {
             Debug.Assert(WorkspaceCanvas.Children.Count == 0);
             var serialDisposable = new SerialDisposable();
+            serialDisposable.DisposeWith(disposables);
 
-            this.WhenAnyValue(property1: view => view.ViewModel!.Panels, property2: view => view.ViewModel!.Resizers)
-                .Do(tuple =>
+            this.WhenAnyValue(view => view.ViewModel)
+                .SubscribeWithErrorLogging(vm =>
                 {
-                    var (panels, resizers) = tuple;
+                    WorkspaceCanvas.Children.Clear();
 
-                    var panelsObservable = panels
+                    if (vm is null)
+                    {
+                        serialDisposable.Disposable = null;
+                        return;
+                    }
+
+                    vm.Arrange(_lastSize);
+
+                    var panelsObservable = vm.Panels
                         .ToObservableChangeSet()
-                        .Transform(panelViewModel => (Control)new PanelView
+                        .Transform(Control (panelViewModel) => new PanelView
                         {
-                            ViewModel = panelViewModel
+                            ViewModel = panelViewModel,
                         });
 
-                    var resizersObservable = resizers
+                    var resizersObservable = vm.Resizers
                         .ToObservableChangeSet()
                         .Transform(resizerViewModel =>
                         {
-                            var control = (Control)new PanelResizerView
+                            Control control = new PanelResizerView
                             {
-                                ViewModel = resizerViewModel
+                                ViewModel = resizerViewModel,
                             };
 
                             // NOTE(erri120): highest number is drawn last
@@ -54,16 +63,18 @@ public partial class WorkspaceView : ReactiveUserControl<IWorkspaceViewModel>
                         .Merge(resizersObservable)
                         .RemoveIndex()
                         .Adapt(new ListAdapter<Control>(WorkspaceCanvas.Children))
-                        .Subscribe();
+                        .SubscribeWithErrorLogging();
                 })
-                .Subscribe()
                 .DisposeWith(disposables);
         });
     }
 
+    private Size _lastSize;
     protected override Size ArrangeOverride(Size finalSize)
     {
+        _lastSize = finalSize;
         ViewModel?.Arrange(finalSize);
+
         return base.ArrangeOverride(finalSize);
     }
 }

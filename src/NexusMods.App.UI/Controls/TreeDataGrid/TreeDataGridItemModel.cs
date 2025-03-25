@@ -168,6 +168,8 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     {
         if (!_isDisposed)
         {
+            _isDisposed = true;
+            
             if (disposing)
             {
                 Disposable.Dispose(
@@ -181,7 +183,6 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
             }
 
             _children = null!;
-            _isDisposed = true;
         }
 
         base.Dispose(disposing);

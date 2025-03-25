@@ -75,7 +75,7 @@ public static class CollectionComponents
             {
                 var (_, downloadJobStatusObservable, isDownloadedObservable) = state;
 
-                downloadJobStatusObservable.CombineLatest(isDownloadedObservable, static (a, b) => (a, b)).Subscribe(self, static (tuple, self) =>
+                downloadJobStatusObservable.CombineLatest(isDownloadedObservable, static (a, b) => (a, b)).ObserveOnUIThreadDispatcher().Subscribe(self, static (tuple, self) =>
                 {
                     var (downloadStatus, isDownloaded) = tuple;
                     self._canDownload.OnNext(!isDownloaded && downloadStatus < JobStatus.Running);
@@ -113,12 +113,11 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandDownload, IsDownloading, _canDownload, _buttonText, _downloadStatus, _activationDisposable);
+                    Disposable.Dispose(_activationDisposable,IsDownloading, CommandDownload, _canDownload, _buttonText, _downloadStatus);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -182,12 +181,11 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandOpenModal, ButtonText, _activationDisposable);
+                    Disposable.Dispose(_activationDisposable, CommandOpenModal, ButtonText);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
@@ -237,12 +235,12 @@ public static class CollectionComponents
         {
             if (!_isDisposed)
             {
+                _isDisposed = true;
+
                 if (disposing)
                 {
-                    Disposable.Dispose(CommandInstall, _canInstall, _buttonText, _isInstalled, _activationDisposable);
+                    Disposable.Dispose(_activationDisposable, CommandInstall, _canInstall, _buttonText, _isInstalled);
                 }
-
-                _isDisposed = true;
             }
 
             base.Dispose(disposing);
