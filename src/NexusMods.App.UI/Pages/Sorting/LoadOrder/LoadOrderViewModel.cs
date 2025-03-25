@@ -66,10 +66,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent)
             .Publish(SortDirectionCurrent);
 
-        var lastIndexObservable = provider.SortableItemsChangeSet
-            .QueryWhenChanged(query => !query.Items.Any() ? 0 : query.Items.Max(item => item.SortIndex))
-            .Publish(!provider.SortableItems.Any() ? 0 : provider.SortableItems.Max(item => item.SortIndex));
-
         var adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, serviceProvider);
         Adapter = adapter;
         Adapter.ViewHierarchical.Value = true;
@@ -92,9 +88,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                 Adapter.Activate().DisposeWith(d);
 
                 sortDirectionObservable.Connect()
-                    .DisposeWith(d);
-
-                lastIndexObservable.Connect()
                     .DisposeWith(d);
 
                 // Update IsWinnerTop
@@ -145,15 +138,14 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     ITreeDataGirdMessageAdapter<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>>
 {
     private readonly ILoadoutSortableItemProvider _sortableItemsProvider;
-    private readonly R3.Observable<ListSortDirection> _sortDirectionObservable;
-    private readonly CompositeDisposable _disposables = new();
-    private readonly IObservable<ISortedChangeSet<CompositeItemModel<Guid>, Guid>> _sortedItems;
     private readonly ILoadOrderDataProvider[] _loadOrderDataProviders;
+    private readonly R3.Observable<ListSortDirection> _sortDirectionObservable;
+    private readonly IObservable<ISortedChangeSet<CompositeItemModel<Guid>, Guid>> _sortedItems;
+    private readonly System.Reactive.Subjects.Subject<IComparer<CompositeItemModel<Guid>>> _resortSubject = new(); 
+    private readonly CompositeDisposable _disposables = new();
 
     public Subject<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
     
-    private System.Reactive.Subjects.Subject<IComparer<CompositeItemModel<Guid>>> _resortSubject = new(); 
-
     public LoadOrderTreeDataGridAdapter(
         ILoadoutSortableItemProvider sortableItemsProvider,
         IObservable<ListSortDirection> sortDirectionObservable,
