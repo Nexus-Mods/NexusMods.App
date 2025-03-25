@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace NexusMods.CrossPlatform.Process;
 
 [UsedImplicitly]
-internal class RuntimeDependencyChecker : IHostedService
+internal class RuntimeDependencyChecker : BackgroundService
 {
     private readonly IRuntimeDependency[] _runtimeDependencies;
     private readonly ILogger _logger;
@@ -17,28 +17,27 @@ internal class RuntimeDependencyChecker : IHostedService
         _logger = serviceProvider.GetRequiredService<ILogger<RuntimeDependencyChecker>>();
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        foreach (var dep in _runtimeDependencies)
+        return Task.Run(async () =>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            try
+            foreach (var dep in _runtimeDependencies)
             {
-                var information = await dep.QueryInstallationInformation(cancellationToken);
-                if (information.HasValue)
-                {
-                    _logger.LogInformation("{Name}: {Information}", dep.DisplayName, information.Value);
-                } else {
-                    _logger.LogWarning("{Name}: couldn't query information", dep.DisplayName);
-                }
-            } catch (Exception e) {
-                _logger.LogError(e, "{Name}: exception while querying information", dep.DisplayName);
-            }
-        }
-    }
+                if (stoppingToken.IsCancellationRequested) return;
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
+                try
+                {
+                    var information = await dep.QueryInstallationInformation(stoppingToken).ConfigureAwait(false);
+                    if (information.HasValue)
+                    {
+                        _logger.LogInformation("{Name}: {Information}", dep.DisplayName, information.Value);
+                    } else {
+                        _logger.LogWarning("{Name}: couldn't query information", dep.DisplayName);
+                    }
+                } catch (Exception e) {
+                    _logger.LogError(e, "{Name}: exception while querying information", dep.DisplayName);
+                }
+            }
+        }, stoppingToken);
     }
 }

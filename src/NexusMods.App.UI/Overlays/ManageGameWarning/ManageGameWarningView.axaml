@@ -8,47 +8,53 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:manageGameWarning="clr-namespace:NexusMods.App.UI.Overlays.ManageGameWarning"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="800"
     x:Class="NexusMods.App.UI.Overlays.ManageGameWarning.ManageGameWarningView">
     <base:MessageBoxBackground MinWidth="300" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="24" Classes="Spacing-6">
+            <StackPanel 
+                Margin="24" 
+                Spacing="{StaticResource Spacing-4}">
 
                 <!-- Title -->
-                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
-                    <TextBlock x:Name="HeadingText" DockPanel.Dock="Left" Text="{x:Static resources:Language.ManageGameWarning_Title}" />
+                <DockPanel>
+                    <TextBlock x:Name="HeadingText" DockPanel.Dock="Left" 
+                               Text="{x:Static resources:Language.ManageGameWarning_Title}" />
                 </DockPanel>
-
+                
                 <!-- Message -->
-                <!-- If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page. -->
-                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" Text="{x:Static resources:Language.ManageGameWarning_Desc1}" />
+                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" 
+                           Text="{x:Static resources:Language.ManageGameWarning_Desc1}"
+                           Foreground="{StaticResource NeutralModerateBrush}"/>
 
-                <!-- Message (Bold) -->
-                <!-- To keep any mods you want to save, please back them up before continuing. -->
-                <TextBlock x:Name="MessageTextBlockBold" TextWrapping="WrapWithOverflow" Text="{x:Static resources:Language.ManageGameWarning_Desc2}" />
+                <TextBlock x:Name="MessageTextBlockBold" TextWrapping="WrapWithOverflow" 
+                           Text="{x:Static resources:Language.ManageGameWarning_Desc2}"
+                           Foreground="{StaticResource NeutralModerateBrush}"/>
             </StackPanel>
 
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-
             <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-6">
-
-                <Button x:Name="CancelButton"
-                        Classes="Standard Tertiary"
+            <StackPanel Orientation="Horizontal" 
+                        Margin="24" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Right" 
+                        Spacing="{StaticResource Spacing-3}">
+                <controls:StandardButton x:Name="CancelButton"
+                        Type="Tertiary"
+                        Fill="None"
                         HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.ManageGameWarning_Cancel}" />
-                </Button>
-                <Button x:Name="OkButton"
-                        Classes="Standard Primary"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.ManageGameWarning_Continue}" />
-                </Button>
+                        VerticalAlignment="Center"
+                        Text="{x:Static resources:Language.ManageGameWarning_Cancel}"/>
+                <controls:StandardButton  x:Name="OkButton"
+                                          Type="Primary"
+                                          Fill="Strong"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          Text="{x:Static resources:Language.ManageGameWarning_Continue}"/>
             </StackPanel>
-
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
 </reactiveUi:ReactiveUserControl>

@@ -17,7 +17,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
 
         this.WhenActivated(disposables =>
             {
-                TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadOrderView, ILoadOrderViewModel, ILoadOrderItemModel, Guid>(
+                TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadOrderView, ILoadOrderViewModel, CompositeItemModel<Guid>, Guid>(
                     this,
                     SortOrderTreeDataGrid,
                     vm => vm.Adapter
