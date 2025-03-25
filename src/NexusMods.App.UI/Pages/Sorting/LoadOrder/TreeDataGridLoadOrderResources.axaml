@@ -53,7 +53,8 @@
         </DataTemplate.DataType>
         
         <!-- IndexComponent -->
-        <controls:ComponentControl x:TypeArguments="system:Guid">
+        <controls:ComponentControl x:TypeArguments="system:Guid" 
+                                   Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LoadOrderComponents+IndexComponent"
                                    ComponentKey="{x:Static local:LoadOrderColumns+IndexColumn.IndexComponentKey}">
@@ -103,7 +104,8 @@
             <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                 
                 <!-- ModName -->
-                <controls:ComponentControl x:TypeArguments="system:Guid">
+                <controls:ComponentControl x:TypeArguments="system:Guid"
+                                           Content="{CompiledBinding}">
                     <controls:ComponentControl.ComponentTemplate>
                         <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
                                                     ComponentKey="{x:Static local:LoadOrderColumns+NameColumn.ModNameComponentKey}">
@@ -119,7 +121,8 @@
                 </controls:ComponentControl>
                 
                 <!-- DisplayName -->
-                <controls:ComponentControl x:TypeArguments="system:Guid">
+                <controls:ComponentControl x:TypeArguments="system:Guid"
+                                           Content="{CompiledBinding}">
                     <controls:ComponentControl.ComponentTemplate>
                         <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
                                                     ComponentKey="{x:Static local:LoadOrderColumns+NameColumn.NameComponentKey}">
