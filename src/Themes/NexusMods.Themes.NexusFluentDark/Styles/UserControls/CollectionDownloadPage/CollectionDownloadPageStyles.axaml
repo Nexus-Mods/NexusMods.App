@@ -202,21 +202,7 @@
 
             <Style Selector="^ TabControl">
                 <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-                <!-- <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" /> -->
-                <!-- <Setter Property="Padding" Value="0" /> -->
-                <!-- -->
-                <!-- ~1~ header @1@ -->
-                <!-- <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter"> -->
-                <!--     ~1~ negative bottom margin to pull up the toolbar below @1@ -->
-                <!--     <Setter Property="Margin" Value="24,12,0,-2" /> -->
-                <!-- </Style> -->
-                <!-- -->
-                <!-- <Style Selector="^ /template/ ContentPresenter#PART_SelectedContentHost"> -->
-                <!--     ~1~ can't do a bottom border on the tab header items @1@ -->
-                <!--     <Setter Property="BorderThickness" Value="0,1,0,0" /> -->
-                <!--     <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" /> -->
-                <!-- </Style> -->
-
+                
                 <!-- tab content -->
                 <Style Selector="^ TabItem#InstructionsTab">
 

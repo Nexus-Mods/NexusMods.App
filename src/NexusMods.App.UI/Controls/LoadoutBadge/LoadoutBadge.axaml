@@ -21,6 +21,7 @@
                            DockPanel.Dock="Right"/>
         <spinner:Spinner x:Name="Spinner" />
         <icons:UnifiedIcon x:Name="Icon" Value="{x:Static icons:IconValues.Check}" />
+        
     </DockPanel>
     
 </reactiveUi:ReactiveUserControl>
