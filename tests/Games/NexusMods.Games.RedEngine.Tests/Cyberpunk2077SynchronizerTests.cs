@@ -21,8 +21,8 @@ public class Cyberpunk2077SynchronizerTests(IServiceProvider serviceProvider) : 
         settings.DoFullGameBackup = false;
         
         // Setup the paths we want to edit, one will be in the `Content` folder, thus not backed up
-        var ignoredGamePath = new GamePath(LocationId.Game, "archive/pc/content/foo.dat".ToRelativePath());
-        var notIgnoredGamePath = new GamePath(LocationId.Game, "foo.dat".ToRelativePath());
+        var ignoredGamePath = new GamePath(LocationId.Game, "archive/pc/content/foo.dat");
+        var notIgnoredGamePath = new GamePath(LocationId.Game, "foo.dat");
         
         // Check if the paths are ignored
         Synchronizer.IsIgnoredBackupPath(ignoredGamePath).Should().BeTrue("The setting is now disabled");

@@ -5,6 +5,6 @@ namespace NexusMods.Games.StardewValley;
 
 public static class Constants
 {
-    public static readonly RelativePath ModsFolder = "Mods".ToRelativePath();
-    public static readonly RelativePath ManifestFile = "manifest.json".ToRelativePath();
+    public static readonly RelativePath ModsFolder = "Mods";
+    public static readonly RelativePath ManifestFile = "manifest.json";
 }

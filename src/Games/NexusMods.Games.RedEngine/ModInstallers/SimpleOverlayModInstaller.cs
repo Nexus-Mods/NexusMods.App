@@ -18,18 +18,16 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller
         base(serviceProvider, serviceProvider.GetRequiredService<ILogger<SimpleOverlayModInstaller>>())
     {
     }
-    
-    private static readonly RelativePath[] RootPaths = new[]
-        {
-            "bin/x64",
-            "engine",
-            "r6",
-            "red4ext",
-            "archive/pc/mod",
-        }
-        .Select(x => x.ToRelativePath())
-        .ToArray();
-    
+
+    private static readonly RelativePath[] RootPaths =
+    [
+        "bin/x64",
+        "engine",
+        "r6",
+        "red4ext",
+        "archive/pc/mod",
+    ];
+
     public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         LoadoutItemGroup.New loadoutGroup,

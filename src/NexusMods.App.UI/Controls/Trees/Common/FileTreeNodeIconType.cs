@@ -122,8 +122,8 @@ public static class FileTreeNodeIconTypeHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetIconClassFromFileName(this string fileName)
     {
-        return fileName.ToRelativePath().Extension.GetIconClass();
+        return RelativePath.FromUnsanitizedInput(fileName).Extension.GetIconClass();
     }
-    
+
     private static string ThrowArgumentOutOfRangeException(FileTreeNodeIconType iconType) => throw new ArgumentOutOfRangeException(nameof(iconType), iconType, null);
 }

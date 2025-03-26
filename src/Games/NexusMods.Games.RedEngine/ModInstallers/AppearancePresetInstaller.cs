@@ -18,8 +18,8 @@ namespace NexusMods.Games.RedEngine.ModInstallers;
 public class AppearancePresetInstaller : ALibraryArchiveInstaller
 {
     private static readonly RelativePath[] Paths = {
-        "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female".ToRelativePath(),
-        "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male".ToRelativePath()
+        "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/female",
+        "bin/x64/plugins/cyber_engine_tweaks/mods/AppearanceChangeUnlocker/character-preset/male"
     };
 
     /// <summary>

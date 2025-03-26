@@ -39,7 +39,7 @@ public class GamePathTests
         var ipath = (IPath)pathA;
 
         Assert.Equal(KnownExtensions.Zip, ipath.Extension);
-        Assert.Equal("bar.zip".ToRelativePath(), ipath.FileName);
+        Assert.Equal("bar.zip", ipath.FileName);
     }
 
     [Fact]
