@@ -28,7 +28,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
                 lastIndexObservable,
                 (sortDirection, lastIndex) => sortDirection == ListSortDirection.Ascending ? 0 : lastIndex
             )
-            .Publish()
+            .Replay(1)
             .RefCount();
 
         var bottomMostIndexObservable = R3.Observable.CombineLatest(
@@ -36,8 +36,8 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
                 lastIndexObservable,
                 (sortDirection, lastIndex) => sortDirection == ListSortDirection.Ascending ? lastIndex : 0
             )
-            .Publish()
-            .RefCount();
+            .Replay(1)
+            .RefCount();;
         
         return sortableItemProvider.SortableItemsChangeSet
             .Transform( item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable));
