@@ -22,7 +22,7 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
     public Version LatestVersion { get; }
     public InstallationMethod InstallationMethod { get; }
 
-    private UpdaterViewModel(
+    internal UpdaterViewModel(
         IOSInterop osInterop,
         ISettingsManager settingsManager,
         InstallationMethod installationMethod,
@@ -33,10 +33,10 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
     {
         CommandClose = new ReactiveCommand(_ =>
         {
-            settingsManager.Set(new UpdaterSettings
-            {
-                VersionToSkip = latestVersion,
-            });
+            // settingsManager.Set(new UpdaterSettings
+            // {
+            //     VersionToSkip = latestVersion,
+            // });
 
             base.Close();
         });
