@@ -290,13 +290,17 @@
         </Style>
         
         <Style Selector="^.Subtabs">
+            
+            <!-- selecting the ContentPresenter that contains content so we can hide it's top border --> 
+            <Style Selector="^ /template/ ContentPresenter#PART_SelectedContentHost">
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
 
             <Style Selector="^ TabItem">
                 <Setter Property="Padding" Value="12,0" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
+                <Setter Property="BorderThickness" Value="0,1,0,1" />
+                <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" />
                 <Setter Property="CornerRadius" Value="0" />
-                <Setter Property="MinHeight" Value="28" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
 
@@ -325,41 +329,46 @@
                 <!-- first child (rounded left corners) -->
                 <Style Selector="^:nth-child(1)">
                     <Setter Property="CornerRadius" Value="4,0,0,4" />
+                    <Setter Property="BorderThickness" Value="1,1,0,1" />
                 </Style>
 
                 <!-- last child (rounded right corners) -->
                 <Style Selector="^:nth-last-child(1)">
                     <Setter Property="CornerRadius" Value="0,4,4,0" />
+                    <Setter Property="BorderThickness" Value="0,1,1,1" />
                 </Style>
 
                 <!-- both first and last child (single item, rounded all corners) -->
                 <Style Selector="^:nth-child(1):nth-last-child(1)">
                     <Setter Property="CornerRadius" Value="4" />
+                    <Setter Property="BorderThickness" Value="1,1,1,1" />
                 </Style>
-
+                
                 <!-- selected state -->
                 <Style Selector="^:selected">
-                    <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource NeutralStrongBrush}" />
-                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                    <!-- <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" /> -->
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralStrongBrush}" />
 
                     <Style Selector="^ > StackPanel.TabItemHeaderStack">
                         <Style Selector="^ > TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         </Style>
                     </Style>
                 </Style>
-
+                
                 <!-- pointerover tabs -->
                 <Style Selector="^:pointerover:not(:selected) /template/ Border#PART_LayoutRoot">
-                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
                 </Style>
 
                 <!--  Selected PointerOver state (don't change background if it's selected and pointerover) -->
                 <Style Selector="^:selected:pointerover /template/ Border#PART_LayoutRoot">
-                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-                    <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
                 </Style>
+                
+
             </Style>
         </Style>
 
