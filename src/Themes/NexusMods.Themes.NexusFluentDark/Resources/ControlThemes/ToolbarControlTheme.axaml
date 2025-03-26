@@ -3,7 +3,7 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Width="400" Classes="Low">
+        <Border Width="400">
             <StackPanel>
                 <controls:Toolbar/>
                 <controls:Toolbar>
@@ -58,16 +58,6 @@
                         <StackPanel Orientation="Horizontal">
                             <ItemsPresenter Name="PART_ItemsPresenter"
                                             ItemsPanel="{TemplateBinding ItemsPanel}" />
-                            <controls:StandardButton Text="..." 
-                                                     Fill="WeakAlt"
-                                                     Size="ExtraSmall">
-                                <controls:StandardButton.Flyout>
-                                    <MenuFlyout>
-                                        <MenuItem Header="Item 1" />
-                                        <MenuItem Header="Item 2" />
-                                    </MenuFlyout>
-                                </controls:StandardButton.Flyout>
-                            </controls:StandardButton>
                         </StackPanel>
                     </Border>
                 </Border>

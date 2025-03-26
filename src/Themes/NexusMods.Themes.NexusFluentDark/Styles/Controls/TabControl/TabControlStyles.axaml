@@ -6,7 +6,6 @@
     <Design.PreviewWith>
         <Border Padding="0">
             <StackPanel Spacing="8">
-                <TextBlock Text="TabControl" />
                 <TabControl>
                     <TabItem Header="Header">
                         <TextBlock Text="Content for Tab 1" />
@@ -135,7 +134,7 @@
 
         <!-- Resources for TabItem.xaml -->
         <x:Double x:Key="TabItemHeaderFontSize">24</x:Double>
-        <Thickness x:Key="TabItemHeaderMargin">24,12,0,0</Thickness>
+        <Thickness x:Key="TabItemHeaderMargin">24,16,0,0</Thickness>
         <Thickness x:Key="TabItemMargin">0</Thickness>
         <FontWeight x:Key="TabItemHeaderThemeFontWeight">SemiLight</FontWeight>
         <StaticResource x:Key="TabControlBackground" ResourceKey="SurfaceTransparentBrush" />
@@ -173,15 +172,15 @@
 
         <x:Double x:Key="TabItemMinHeight">32</x:Double>
         <x:Double x:Key="TabItemVerticalPipeHeight">24</x:Double>
-        <x:Double x:Key="TabItemPipeThickness">2</x:Double>
+        <x:Double x:Key="TabItemPipeThickness">1</x:Double>
 
         <!-- src/Avalonia.Themes.Fluent/Controls/TabControl.xaml -->
 
-        <Thickness x:Key="TabControlTopPlacementItemMargin">0</Thickness>
+        <Thickness x:Key="TabControlTopPlacementItemMargin">0,0,0,0</Thickness>
 
         <!-- our resources -->
 
-        <StaticResource x:Key="TabItemHeaderTextTheme" ResourceKey="BodyXLNormalTheme" />
+        <StaticResource x:Key="TabItemHeaderTextTheme" ResourceKey="BodyMDNormalTheme" />
         <StaticResource x:Key="TabItemSubTabsHeaderTextTheme" ResourceKey="BodySMNormalTheme" />
         
         <StaticResource x:Key="TabItemHeaderBadgeBackground" ResourceKey="SurfaceTranslucentMidBrush" />
@@ -199,16 +198,30 @@
                          Opacity="{StaticResource OpacityDisabledElement}" />
 
     </Styles.Resources>
-
+    
     <Style Selector="TabControl">
+        
+        <!-- selecting the ContentPresenter that contains content so we can draw a top border --> 
+        <Style Selector="^ /template/ ContentPresenter#PART_SelectedContentHost">
+            <Setter Property="BorderBrush" Value="{StaticResource TabItemHeaderBadgeBackground}" />
+            <Setter Property="BorderThickness" Value="0,1,0,0" />
+        </Style>
         
         <Style Selector="^ TabItem">
             
             <Setter Property="VerticalContentAlignment" Value="Bottom" />
             
+            <!-- Needed so the SelectedPipe is drawn out of bounds below -->
+            <Setter Property="ClipToBounds" Value="False" />
+            
             <!-- AccessText is used when setting Header="Text Goes Here" -->
             <Style Selector="^ > AccessText">
                 <Setter Property="Theme" Value="{StaticResource TabItemHeaderTextTheme}" />
+            </Style>
+            
+            <!-- Negative bottom margin to put the SelectedPipe over the ContentPresenter top border -->
+            <Style Selector="^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe">
+                <Setter Property="Margin" Value="0,0,0,-1" />
             </Style>
             
             <!-- gap between bottom border and pipe -->
@@ -227,7 +240,7 @@
                 <Style Selector="^ > Border">
                     <Setter Property="Background" Value="{StaticResource TabItemHeaderBadgeBackground}" />
                     <Setter Property="CornerRadius" Value="999" />
-                    <Setter Property="Padding" Value="8,2" />
+                    <Setter Property="Padding" Value="6,1,6,0" />
                     <Setter Property="VerticalAlignment" Value="Center" />
                     <Style Selector="^ > TextBlock">
                         <Setter Property="Foreground" Value="{StaticResource TabItemHeaderBadgeForeground}" />
