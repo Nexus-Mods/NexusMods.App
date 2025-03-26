@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 
 namespace NexusMods.Abstractions.Games;
@@ -28,6 +29,11 @@ public interface ILoadoutSortableItemProvider : IDisposable
     /// Change set of sortable items in the sort order
     /// </summary>
     public IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
+    
+    /// <summary>
+    /// Returns the sortable item with the given id
+    /// </summary>
+    public Optional<ISortableItem> GetSortableItem(Guid itemId);
 
     /// <summary>
     /// Sets the relative position of a sortable item in the sort order

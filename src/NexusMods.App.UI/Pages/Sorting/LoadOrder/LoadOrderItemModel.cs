@@ -34,7 +34,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         ISortableItem sortableItem,
         IObservable<ListSortDirection> sortDirectionObservable,
         IObservable<int> lastIndexObservable,
-        Subject<MoveUpDownCommandPayload> commandSubject)
+        Subject<MoveUpCommandPayload> commandSubject)
     {
         InnerItem = sortableItem;
         SortIndex = sortableItem.SortIndex;
@@ -82,7 +82,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         MoveUp = ReactiveUI.ReactiveCommand.Create(() =>
             {
                 var delta = _sortDirection == ListSortDirection.Ascending ? -1 : +1;
-                commandSubject.OnNext(new MoveUpDownCommandPayload(this, delta));
+                // commandSubject.OnNext(new MoveUpDownCommandPayload(this, delta));
             },
             canExecuteUp
         );
@@ -90,7 +90,7 @@ public class LoadOrderItemModel : TreeDataGridItemModel<ILoadOrderItemModel, Gui
         MoveDown = ReactiveUI.ReactiveCommand.Create(() =>
             {
                 var delta = _sortDirection == ListSortDirection.Ascending ? +1 : -1;
-                commandSubject.OnNext(new MoveUpDownCommandPayload(this, delta));
+                // commandSubject.OnNext(new MoveUpDownCommandPayload(this, delta));
             },
             canExecuteDown
         );
