@@ -40,11 +40,20 @@ public interface IItemModelComponent<in TSelf> : IItemModelComponent
 public static partial class ColumnCreator
 {
     public static IColumn<CompositeItemModel<TKey>> Create<TKey, TColumn>(
+        Optional<string> columnHeader = default,
         Optional<ListSortDirection> sortDirection = default,
-        Optional<GridLength> width = default)
+        Optional<GridLength> width = default,
+        bool canUserSortColumn = true,
+        bool canUserResizeColumn = true)
         where TKey : notnull
         where TColumn : class, ICompositeColumnDefinition<TColumn>
     {
-        return TColumn.CreateColumn<TKey>(sortDirection, width);
+        return TColumn.CreateColumn<TKey>(
+            columnHeader: columnHeader,
+            sortDirection: sortDirection,
+            width: width,
+            canUserSortColumn: canUserSortColumn,
+            canUserResizeColumn: canUserResizeColumn
+        );
     }
 }

@@ -14,14 +14,38 @@
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
+    <reactive:ReactiveUserControl.Styles>
+        
+        <Style Selector="Expander">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="CornerRadius" Value="0" />
 
-    <Grid RowDefinitions="Auto, *" VerticalAlignment="Top" Background="{StaticResource SurfaceLowBrush}">
+            <!-- our library expander header class consisting of icon, text, and number -->
+            <Style Selector="^ StackPanel.LibraryHeader">
+                <Setter Property="Margin" Value="12,6"></Setter>
+                <Style Selector="^ > icons|UnifiedIcon">
+                    <Setter Property="Size" Value="20" />
+                </Style>
+                <Style Selector="^ > TextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+                </Style>
+                <Style Selector="^ > TextBlock#TextNumMods, ^ > TextBlock#TextNumCollections">
+                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                </Style>
+            </Style>
+        </Style>
+
+    </reactive:ReactiveUserControl.Styles>
+
+    <Grid RowDefinitions="Auto, *" VerticalAlignment="Top">
         <Expander x:Name="ExpanderCollections" Grid.Row="0" IsExpanded="True" ExpandDirection="Down"
                   HorizontalAlignment="Stretch">
+            
             <Expander.Header>
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
-                            Classes="ExpanderLibraryHeader">
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}" />
+                            Classes="LibraryHeader">
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}"/>
                     <TextBlock Text="Collections" />
                     <TextBlock x:Name="TextNumCollections" Text="0" />
                 </StackPanel>
@@ -56,12 +80,13 @@
                   HorizontalAlignment="Stretch">
             <Expander.Header>
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
-                            Classes="ExpanderLibraryHeader">
+                            Classes="LibraryHeader">
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
                     <TextBlock Text="Mods" />
                     <TextBlock x:Name="TextNumMods" Text="0" />
                 </StackPanel>
             </Expander.Header>
+            
             <!-- Empty State -->
             <Grid RowDefinitions="Auto, *">
                 
@@ -69,12 +94,15 @@
                 <controls:Toolbar>
                     <SplitButton x:Name="InstallModSplitButton"
                                  Height="24"
+                                     Classes="StandardSplitButton"
                                      Content="{x:Static resources:Language.FileOriginPage_AddMod}"
                                      ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
                             <SplitButton.Flyout>
                                 <MenuFlyout>
-                                    <MenuItem x:Name="InstallModMenuItem" Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
-                                    <MenuItem x:Name="AdvancedInstallModMenuItem" Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
+                                    <MenuItem x:Name="InstallModMenuItem"
+                                              Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
+                                    <MenuItem x:Name="AdvancedInstallModMenuItem"
+                                              Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
                                 </MenuFlyout>
                             </SplitButton.Flyout>
                         </SplitButton>
@@ -114,7 +142,7 @@
                         <!-- 'Updates' button. -->
                         <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="ExtraSmall"
                                                  Type="Tertiary" Fill="WeakAlt"
-                                                 LeftIcon="{x:Static icons:IconValues.Refresh}" 
+                                                 LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                  ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
                 </controls:Toolbar>
 

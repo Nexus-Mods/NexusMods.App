@@ -92,6 +92,34 @@
                                     <TextBox Watermark="Placeholder" />
                                     <TextBox IsEnabled="False">Disabled</TextBox>
                                 </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Expander" />
+                                    <Expander ExpandDirection="Down" Header="Expand Down">
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                    <Expander ExpandDirection="Down" Header="Expand Down" IsEnabled="False">
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                    <Expander ExpandDirection="Down">
+                                        <Expander.Header>
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="{StaticResource Spacing-2}">
+                                                <icons:UnifiedIcon
+                                                    Value="{x:Static icons:IconValues.CollectionsOutline}"
+                                                    Size="20" />
+                                                <TextBlock Text="Collections"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Expander.Header>
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="16">
                                 <StackPanel Spacing="8">
@@ -148,11 +176,6 @@
                 <TreeDataGrid />
             </TabItem>
             <TabItem>
-                <TabItem.Styles>
-                    <Style Selector="TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                    </Style>
-                </TabItem.Styles>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Typography" />
@@ -161,62 +184,69 @@
                 </TabItem.Header>
                 <ScrollViewer>
                     <StackPanel>
-                        <TextBlock Text="Heading2XLSemi" Theme="{StaticResource Heading2XLSemiTheme}" />
-                        <TextBlock Text="HeadingXLSemi" Theme="{StaticResource HeadingXLSemiTheme}" />
-                        <TextBlock Text="HeadingLGSemi" Theme="{StaticResource HeadingLGSemiTheme}" />
-                        <TextBlock Text="HeadingMDSemi" Theme="{StaticResource HeadingMDSemiTheme}" />
-                        <TextBlock Text="HeadingSMSemi" Theme="{StaticResource HeadingSMSemiTheme}" />
-                        <TextBlock Text="HeadingXSSemi" Theme="{StaticResource HeadingXSSemiTheme}" />
+                <TextBlock Text="Heading2XLSemi" Theme="{StaticResource Heading2XLSemiTheme}" />
+                <TextBlock Text="HeadingLGSemi" Theme="{StaticResource HeadingLGSemiTheme}" />
+                <TextBlock Text="HeadingMDSemi" Theme="{StaticResource HeadingMDSemiTheme}" />
+                <TextBlock Text="HeadingSMSemi" Theme="{StaticResource HeadingSMSemiTheme}" />
+                <TextBlock Text="HeadingXSSemi" Theme="{StaticResource HeadingXSSemiTheme}" />
 
-                        <TextBlock Text="TitleMDSemi" Theme="{StaticResource TitleMDSemiTheme}" />
-                        <TextBlock Text="TitleSMSemi" Theme="{StaticResource TitleSMSemiTheme}" />
-                        <TextBlock Text="TitleXSSemi" Theme="{StaticResource TitleXSSemiTheme}" />
+                <TextBlock Text="TitleMDSemi" Theme="{StaticResource TitleMDSemiTheme}" />
+                <TextBlock Text="TitleSMSemi" Theme="{StaticResource TitleSMSemiTheme}" />
+                <TextBlock Text="TitleXSSemi" Theme="{StaticResource TitleXSSemiTheme}" />
 
-                        <Grid ColumnDefinitions="Auto,16,Auto">
-                            <StackPanel Grid.Column="0" Spacing="8">
-                                <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}" />
-                                <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" />
-                                <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" />
-                                <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" />
-                                <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}" />
-                                <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" />
-                                <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}" />
-                                <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}" />
-                                <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="2" Spacing="8">
-                                <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                                <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}"
-                                           Background="{StaticResource SurfaceInvertedBrush}"
-                                           Foreground="{StaticResource NeutralInvertedBrush}" />
-                            </StackPanel>
-                        </Grid>
-
-
+                <Grid ColumnDefinitions="Auto,16,Auto">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}" />
+                        <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" Classes="Success" />
+                        <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" />
+                        <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}" />
+                        <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" />
+                        <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}" />
+                        <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" />
+                        <TextBlock Text="BodySMNormal" />
+                        <TextBlock Text="BodySMNormal" Classes="Warning" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodyXLBoldTheme}" Classes="Warning"  />
                     </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="8">
+                        <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                    </StackPanel>
+                </Grid>
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Success" Classes="Success" />
+                    <TextBlock Text="Suggestion" Classes="Suggestion" />
+                    <TextBlock Text="Warning" Classes="Warning" />
+                    <TextBlock Text="Critical" Classes="Critical" />
+                </StackPanel>
+            </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
@@ -764,7 +794,34 @@
                         </ScrollViewer>
                     </TabItem>
                 </TabControl>
-
+            </TabItem>
+            <TabItem Header="Icons">
+                <WrapPanel VerticalAlignment="Top">
+                    <WrapPanel.Styles>
+                        <Style Selector="icons|UnifiedIcon">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"></Setter>
+                        </Style>
+                    </WrapPanel.Styles>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Alert}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircle}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDown}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircleOutline}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDownThick}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUpThick}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropDown}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropUp}" />
+                </WrapPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Content Header" />
+                </TabItem.Header>
             </TabItem>
         </TabControl>
     </Border>

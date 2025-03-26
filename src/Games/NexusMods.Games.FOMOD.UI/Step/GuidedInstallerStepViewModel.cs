@@ -4,6 +4,8 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using DynamicData;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 using NexusMods.Abstractions.Jobs;
@@ -44,6 +46,8 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     public GuidedInstallerStepViewModel(IServiceProvider serviceProvider)
     {
+        var logger = serviceProvider.GetRequiredService<ILogger<GuidedInstallerStepViewModel>>();
+
         var remoteImagePipeline = ImagePipelines.GetGuidedInstallerRemoteImagePipeline(serviceProvider);
         var fileImagePipeline = ImagePipelines.GetGuidedInstallerFileImagePipeline(serviceProvider);
 
@@ -68,8 +72,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                         f1: imageHash => fileImagePipeline.LoadResourceAsync(imageHash.FileHash, CancellationToken.None)
                     );
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    logger.LogWarning(e, "Failed to load image");
                     return null;
                 }
             })

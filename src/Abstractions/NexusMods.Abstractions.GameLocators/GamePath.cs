@@ -5,6 +5,7 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.Abstractions.GameLocators;
 
@@ -46,7 +47,7 @@ public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>, ICompar
     /// <summary/>
     /// <param name="locationId">Id of the game location to be relative to.</param>
     /// <param name="path">The relative path to the item.</param>
-    public GamePath(LocationId locationId, string path) : this(locationId, path.ToRelativePath()) { }
+    public GamePath(LocationId locationId, string path) : this(locationId, RelativePath.FromUnsanitizedInput(path)) { }
 
     /// <inheritdoc />
     public bool Equals(GamePath other) => LocationId == other.LocationId && Path == other.Path;

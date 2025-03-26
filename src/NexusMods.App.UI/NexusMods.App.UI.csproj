@@ -663,9 +663,6 @@
           <DependentUpon>SortingSelectionView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemModel.cs">
-          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewModel.cs">
           <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
         </Compile>
@@ -677,9 +674,6 @@
         </Compile>
         <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionDesignViewModel.cs">
           <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemDesignModel.cs">
-          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
@@ -734,6 +728,16 @@
         </Compile>
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\TreeDataGrid\LoadOrderDataProvider.cs">
+          <DependentUpon>ILoadOrderDataProvider.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningView.axaml.cs">
+          <DependentUpon>MetricsOptInView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
+          <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

@@ -64,8 +64,6 @@
                     <icons:UnifiedIcon Classes="DragVertical" />
                     <icons:UnifiedIcon Classes="Search" />
                     <icons:UnifiedIcon Classes="Home" />
-                    <icons:UnifiedIcon Classes="ToggleSwitchOn" />
-                    <icons:UnifiedIcon Classes="ToggleSwitchOff" />
                     <icons:UnifiedIcon Classes="Game" />
                     <icons:UnifiedIcon Classes="Undo" />
                     <icons:UnifiedIcon Classes="Redo" />
@@ -172,11 +170,33 @@
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="48" />
                 </WrapPanel>
+                <WrapPanel>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Success" />
+                </WrapPanel>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
     
+    
+    <Style Selector="icons|UnifiedIcon.Suggestion">
+        <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Warning">
+        <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Critical">
+        <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Success">
+        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+    </Style>
+    
     <!-- Icon Selection -->
+    
+    
 
     <!-- NOTE: Material icon names are not standardized well, use this site to look them up:  -->
     <!-- https://pictogrammers.com/library/mdi/ -->
@@ -538,10 +558,6 @@
 
     <Style Selector="icons|UnifiedIcon.Info">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Info}" />
-    </Style>
-
-    <Style Selector="icons|UnifiedIcon.Check">
-        <Setter Property="Value" Value="{x:Static icons:IconValues.Check}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.CheckCircle">
         <Setter Property="Value" Value="{x:Static icons:IconValues.CheckCircle}" />

@@ -26,6 +26,7 @@
       <UpToDateCheckInput Remove="Styles\Icons\IconsStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\UserControls\Banners\InfoBannerStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\UserControls\StandardButton\StandardButtonStyles.axaml" />
+      <UpToDateCheckInput Remove="Styles\Controls\ListBox\ListBoxStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>

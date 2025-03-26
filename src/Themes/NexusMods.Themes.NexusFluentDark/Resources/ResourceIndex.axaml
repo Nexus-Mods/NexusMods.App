@@ -14,9 +14,8 @@
         <MergeResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
         <MergeResourceInclude Source="/Resources/Palette/Colors/ElementGradients.axaml"/>
         
-        <!-- values for avalonia controls -->
-        <MergeResourceInclude Source="/Resources/BaseResources.axaml"/>
-        <MergeResourceInclude Source="/Resources/ControlResources.axaml"/>
+        <!-- values that are shared across avalonia controls -->
+        <MergeResourceInclude Source="/Resources/SharedResources.axaml"/>
                 
         <!-- avalonia controls -->
         <MergeResourceInclude Source="/Controls/TextBlock.axaml"/>
@@ -33,12 +32,9 @@
         <!-- custom controls (standalone components, primarily to match Figma components 
         and to replace Avalonia controls) -->
         <MergeResourceInclude Source="/Resources/ControlThemes/StandardButton.axaml"/>
-        <!-- <MergeResourceInclude Source="/Resources/ControlThemes/StandardComboBox.axaml"/> -->
-        <!-- <MergeResourceInclude Source="/Resources/ControlThemes/StandardSplitButton.axaml"/> -->
         
         <!-- control themes for other controls/components -->
         <MergeResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
-        <MergeResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
         <MergeResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
         <MergeResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
         <MergeResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>

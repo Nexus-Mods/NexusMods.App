@@ -923,4 +923,19 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
         <value>Success Rating</value>
     </data>
+    <data name="ManageGameWarning_Title" xml:space="preserve">
+        <value>Managing this game will affect existing mods</value>
+    </data>
+    <data name="ManageGameWarning_Desc1" xml:space="preserve">
+        <value>If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page.  However, if you later stop managing this game or uninstall the app, those mods will be permanently removed from your game folder.</value>
+    </data>
+    <data name="ManageGameWarning_Desc2" xml:space="preserve">
+        <value>To keep any mods you want to save, please back them up before continuing.</value>
+    </data>
+    <data name="ManageGameWarning_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="ManageGameWarning_Continue" xml:space="preserve">
+        <value>Continue</value>
+    </data>
 </root>

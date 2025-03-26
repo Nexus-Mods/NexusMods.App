@@ -26,7 +26,9 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
     /// NOTE(halgari): this is an ugly hack, but we don't have a better tool for it at the moment.
     /// </summary>
     public static bool Headless { get; set; } = false;
-    
+
+    public bool WasOpenedDirectly { get; set; }
+
     private readonly Lazy<IConnection> _conn;
     private ILogger<AdvancedManualInstallerUI> _logger;
 
@@ -62,7 +64,7 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
         KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles,
         Loadout.ReadOnly loadout)
     {
-        var vm = new AdvancedInstallerWindowViewModel(title, archiveFiles, loadout);
+        var vm = new AdvancedInstallerWindowViewModel(title, archiveFiles, loadout, showUnsupportedStep: !WasOpenedDirectly);
         await ShowAdvancedInstallerDialog(vm);
 
         return (vm.AdvancedInstallerVM.ShouldInstall, vm.AdvancedInstallerVM.BodyViewModel.DeploymentData);

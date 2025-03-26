@@ -64,6 +64,7 @@
         </Style>
 
         <Style Selector="^ TextBlock#GameHeadingTextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
             <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
         </Style>
         

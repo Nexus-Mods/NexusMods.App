@@ -15,6 +15,7 @@
     
     <!-- restyled avalonia controls -->
 
+    <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Separator/SeparatorStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Border/BorderStyles.axaml" />
@@ -36,11 +37,11 @@
     <StyleInclude Source="/Styles/Controls/DataGrid/DataGridStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/StackPanel/StackPanelStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml" />
-    <StyleInclude Source="/Styles/Controls/Menu/MenuItemStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/ScrollBar/ScrollBarStyles.axaml" />
+    <StyleInclude Source="/Styles/Controls/Menu/MenuStyles.axaml" />
      
     <!-- extended avalonia controls -->
 
