@@ -5,48 +5,6 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
-    <!-- TODO: remove these after styling has been fixed for the new composite based columns -->
-    <!-- Only left here as reference -->
-    <!-- <DataTemplate x:Key="LoadOrderItemIndexColumnTemplate" -->
-    <!--               DataType="local:ILoadOrderItemModel"> -->
-    <!-- -->
-    <!--     <StackPanel x:Name="LoadOrderItemIndexColumnStack" Orientation="Horizontal" Spacing="12"> -->
-    <!--         <controls:StandardButton x:Name="UpButton" -->
-    <!--                                  Command="{CompiledBinding MoveUp}" -->
-    <!--                                  LeftIcon="{x:Static icons:IconValues.ArrowUp}" -->
-    <!--                                  ShowIcon="IconOnly" -->
-    <!--                                  Size="Medium" -->
-    <!--                                  Type="Tertiary" -->
-    <!--                                  Fill="None" /> -->
-    <!--         <Border x:Name="ItemIndexBorder"> -->
-    <!--             <TextBlock x:Name="ItemIndex" Text="{CompiledBinding DisplaySortIndex}" /> -->
-    <!--         </Border> -->
-    <!--         <controls:StandardButton x:Name="DownButton" -->
-    <!--                                  Command="{CompiledBinding MoveDown}" -->
-    <!--                                  LeftIcon="{x:Static icons:IconValues.ArrowDown}" -->
-    <!--                                  ShowIcon="IconOnly" -->
-    <!--                                  Size="Medium" -->
-    <!--                                  Type="Tertiary" -->
-    <!--                                  Fill="None" /> -->
-    <!--         <Border x:Name="ItemIndexSeparator" /> -->
-    <!--     </StackPanel> -->
-    <!-- </DataTemplate> -->
-    <!-- -->
-    <!-- <DataTemplate x:Key="LoadOrderItemNameColumnTemplate" -->
-    <!--               DataType="local:ILoadOrderItemModel"> -->
-    <!-- -->
-    <!--     <StackPanel x:Name="LoadOrderItemNameColumnStack" Orientation="Horizontal" Spacing="12"> -->
-    <!-- -->
-    <!--         <Border x:Name="ItemModImageBorder"> -->
-    <!--             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" /> -->
-    <!--         </Border> -->
-    <!--         <StackPanel Orientation="Vertical" VerticalAlignment="Center"> -->
-    <!--             <TextBlock x:Name="ModName" Text="{CompiledBinding ModName}" /> -->
-    <!--             <TextBlock x:Name="DisplayName" Text="{CompiledBinding DisplayName}" /> -->
-    <!--         </StackPanel> -->
-    <!--     </StackPanel> -->
-    <!-- </DataTemplate> -->
-
     <!-- Composite columns -->
     <!-- Index Column -->
     <DataTemplate x:Key="{x:Static local:LoadOrderColumns+IndexColumn.ColumnTemplateResourceKey}">
