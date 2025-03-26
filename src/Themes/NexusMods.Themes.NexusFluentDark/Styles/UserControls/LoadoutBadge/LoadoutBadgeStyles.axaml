@@ -63,6 +63,7 @@
 
         <Style Selector="^ TextBlock#ShortName">
             <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Margin" Value="2,0,0,0" />

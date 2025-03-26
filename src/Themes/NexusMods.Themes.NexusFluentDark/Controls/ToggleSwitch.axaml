@@ -43,6 +43,53 @@
     <GridLength x:Key="ToggleSwitchPostContentMargin">0</GridLength>
     <x:Double x:Key="ToggleSwitchThemeMinWidth">0</x:Double>
 
+    <Thickness x:Key="ToggleSwitchOnStrokeThickness">0</Thickness>
+    <Thickness x:Key="ToggleSwitchOuterBorderStrokeThickness">2</Thickness>
+
+    <StaticResource x:Key="ToggleSwitchContentForeground" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchHeaderForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="ToggleSwitchContainerBackground" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchContainerBackgroundPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchContainerBackgroundPressed" ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="ToggleSwitchFillOff" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOffPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOffPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOff" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOffPointerOver" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOffPressed" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOffDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchFillOn" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOnPointerOver" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOnPressed" ResourceKey="NeutralModerateBrush" />
+
+    <SolidColorBrush x:Key="ToggleSwitchFillOnDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchStrokeOn" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOnPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOnPressed" ResourceKey="SurfaceTransparentBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOnDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchKnobFillOff" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOffPointerOver" ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOffPressed" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOffDisabled" Color="{StaticResource NeutralTranslucentSubdued}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchKnobFillOn" ResourceKey="SurfaceMidBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOnPointerOver" ResourceKey="SurfaceHighBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOnPressed" ResourceKey="SurfaceMidBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOnDisabled" ResourceKey="SurfaceLowBrush" />
+    
     <ControlTheme x:Key="{x:Type ToggleSwitch}" TargetType="ToggleSwitch">
         <Setter Property="Foreground" Value="{StaticResource ToggleSwitchContentForeground}" />
         <Setter Property="HorizontalAlignment" Value="Left" />
