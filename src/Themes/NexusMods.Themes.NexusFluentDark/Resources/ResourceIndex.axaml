@@ -14,9 +14,8 @@
         <MergeResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
         <MergeResourceInclude Source="/Resources/Palette/Colors/ElementGradients.axaml"/>
         
-        <!-- values for avalonia controls -->
+        <!-- values that are shared across avalonia controls -->
         <MergeResourceInclude Source="/Resources/SharedResources.axaml"/>
-        <MergeResourceInclude Source="/Resources/ControlResources.axaml"/>
                 
         <!-- avalonia controls -->
         <MergeResourceInclude Source="/Controls/TextBlock.axaml"/>

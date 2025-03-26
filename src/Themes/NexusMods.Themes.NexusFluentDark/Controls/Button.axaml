@@ -10,6 +10,32 @@
     </Border>
   </Design.PreviewWith>
     
+    
+    <!-- Resources for Button.axaml -->
+
+    <Thickness x:Key="ButtonBorderThemeThickness">0</Thickness>
+    <StaticResource x:Key="ButtonBackground" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="ButtonBackgroundPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+    <SolidColorBrush x:Key="ButtonBackgroundDisabled"
+                     Color="{StaticResource SurfaceTranslucentMid}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ButtonForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="ButtonForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ButtonBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="ButtonBorderBrushDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    
+    
   <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
     <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
     <Setter Property="Foreground" Value="{StaticResource ButtonForeground}" />

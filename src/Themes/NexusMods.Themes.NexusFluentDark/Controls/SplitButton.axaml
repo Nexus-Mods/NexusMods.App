@@ -27,11 +27,61 @@
         </Border>
     </Design.PreviewWith>
 
+    <Thickness x:Key="SplitButtonBorderThemeThickness">0</Thickness>
     <x:Double x:Key="SplitButtonPrimaryButtonSize">32</x:Double>
     <x:Double x:Key="SplitButtonSecondaryButtonSize">28</x:Double>
     <x:Double x:Key="SplitButtonSeparatorWidth">1</x:Double>
     <!-- <x:Double x:Key="SplitButtonMinHeight">28</x:Double> -->
 
+    <!-- Resources for SplitButton.xaml (shared with ToggleSplitButton) -->
+
+    <StaticResource x:Key="SplitButtonBackground" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="SplitButtonBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="SplitButtonBackgroundPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+    <SolidColorBrush x:Key="SplitButtonBackgroundDisabled"
+                     Color="{StaticResource SurfaceTranslucentLow}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="SplitButtonForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="SplitButtonForegroundPointerOver" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="SplitButtonForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="SplitButtonForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="SplitButtonBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="SplitButtonBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="SplitButtonBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="SplitButtonBorderBrushDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    
+    <!-- toggle split button not used yet -->
+    <StaticResource x:Key="SplitButtonBackgroundChecked" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="SplitButtonBackgroundCheckedPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="SplitButtonBackgroundCheckedPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+    <SolidColorBrush x:Key="SplitButtonBackgroundCheckedDisabled"
+                     Color="{StaticResource SurfaceTranslucentLow}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    
+    <StaticResource x:Key="SplitButtonForegroundChecked" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="SplitButtonForegroundCheckedPointerOver" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="SplitButtonForegroundCheckedPressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="SplitButtonForegroundCheckedDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    
+    <StaticResource x:Key="SplitButtonBorderBrushChecked" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="SplitButtonBorderBrushCheckedPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="SplitButtonBorderBrushCheckedPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="SplitButtonBorderBrushCheckedDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+
+    
+    
     <ControlTheme x:Key="FluentSplitButtonComponent" TargetType="Button">
         <Setter Property="Template">
             <ControlTemplate>

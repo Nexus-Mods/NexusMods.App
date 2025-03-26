@@ -10,20 +10,41 @@
         </ResourceDictionary>
     </Styles.Resources>
 
-    <!-- inherited from FluentTheme and redefine the core colors -->
+    <!-- Inherited from FluentTheme and redefine the core colors -->
+    <!-- Some Avalonia controls access these directly so until we have to re-theme, it's safer to get this palette
+     fairly safe to use-->
     <FluentTheme>
         <FluentTheme.Palettes>
-            <ColorPaletteResources x:Key="Dark" Accent="#ffcc4d11" AltHigh="Black" AltLow="Black" AltMedium="Black"
-                                   AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff2f7bad"
-                                   BaseMedium="#ff8dbfdf" BaseMediumHigh="#ffa5d0ec" BaseMediumLow="#ff5e9dc6"
-                                   ChromeAltLow="#ffa5d0ec" ChromeBlackHigh="Black" ChromeBlackLow="#ffa5d0ec"
-                                   ChromeBlackMedium="Black" ChromeBlackMediumLow="Black"
-                                   ChromeDisabledHigh="#ff2f7bad" ChromeDisabledLow="#ff8dbfdf" ChromeGray="#ff76aed3"
-                                   ChromeHigh="#ff76aed3" ChromeLow="#ff093b73" ChromeMedium="#ff134b82"
-                                   ChromeMediumLow="#ff266b9f" ChromeWhite="White" ListLow="#ff134b82"
-                                   ListMedium="#ff2f7bad" RegionColor="#ff0d2644" />
             <!-- RegionColor is used for the background of the design view -->
             <!-- BaseHigh is used for the default text color -->
+            <ColorPaletteResources x:Key="Dark"
+                                   Accent="{StaticResource PrimaryWeak}"
+                                   AltHigh="Black"
+                                   AltLow="Black"
+                                   AltMedium="Black"
+                                   AltMediumHigh="Black"
+                                   AltMediumLow="Black"
+                                   BaseHigh="{StaticResource NeutralModerate}"
+                                   BaseLow="{StaticResource SurfaceLow}"
+                                   BaseMedium="#ff8dbfdf"
+                                   BaseMediumHigh="#ffa5d0ec"
+                                   BaseMediumLow="#ff5e9dc6"
+                                   ChromeAltLow="#ffa5d0ec"
+                                   ChromeBlackHigh="Black"
+                                   ChromeBlackLow="#ffa5d0ec"
+                                   ChromeBlackMedium="Black"
+                                   ChromeBlackMediumLow="Black"
+                                   ChromeDisabledHigh="#ff2f7bad"
+                                   ChromeDisabledLow="#ff8dbfdf"
+                                   ChromeGray="#ff76aed3"
+                                   ChromeHigh="#ff76aed3"
+                                   ChromeLow="#ff093b73"
+                                   ChromeMedium="{StaticResource SurfaceLow}"
+                                   ChromeMediumLow="{StaticResource SurfaceLow}"
+                                   ChromeWhite="White"
+                                   ListLow="{StaticResource SurfaceMid}"
+                                   ListMedium="{StaticResource SurfaceHigh}"
+                                   RegionColor="#ff0d2644" />
         </FluentTheme.Palettes>
     </FluentTheme>
 
