@@ -64,7 +64,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                       itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
 
         var sortDirectionObservable = this.WhenAnyValue(vm => vm.SortDirectionCurrent)
-            .Publish(SortDirectionCurrent);
+            .Replay(1);
 
         var adapter = new LoadOrderTreeDataGridAdapter(provider, sortDirectionObservable, serviceProvider);
         Adapter = adapter;
