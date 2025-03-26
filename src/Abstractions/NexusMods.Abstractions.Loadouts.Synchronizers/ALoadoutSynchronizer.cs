@@ -103,42 +103,52 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var processedDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
+        var directoriesInUse = new HashSet<GamePath>();
         
-        var newDiskStateDirs = newDiskState.SelectMany(e =>
+        // Build set of directories that are in use (are ancestors of at least one file)
+        foreach (var fileEntry in newDiskState)
+        {
+            var path = (GamePath)fileEntry.Path;
+            var parent = path.Parent;
+            var rootComponent = parent.GetRootComponent;
+        
+            // Add all parent directories to the set
+            while (parent != rootComponent)
             {
-                // We need folder paths, so skip first path as it is the file path itself
-                return ((GamePath)e.Path).GetAllParents().Skip(1);
+                directoriesInUse.Add(parent);
+                parent = parent.Parent;
             }
-        ).ToHashSet();
-
+        }
+        
+        // Find the highest directory not in use for each deletion 
         foreach (var dirWithDeletion in directoriesWithDeletions)
         {
             var rootComponent = dirWithDeletion.GetRootComponent;
-            GamePath? emptyDirStructureRoot = null;
+            GamePath? highestEmptyDirectory = null;
             
-            var currentDirectory = dirWithDeletion;
+            var currentParentDir = dirWithDeletion;
 
-            while (currentDirectory != rootComponent)
+            while (currentParentDir != rootComponent)
             {
-                if (processedDirectories.Contains(currentDirectory))
+                if (processedDirectories.Contains(currentParentDir))
                 {
-                    emptyDirStructureRoot = null;
+                    highestEmptyDirectory = null;
+                    break;
+                }
+                
+                // Check if directory contains files or is a parent of directories with files
+                if (directoriesInUse.Contains(currentParentDir))
+                {
                     break;
                 }
 
-                // newTree was build from files, so if the parent is in the new tree, it's not empty
-                if (newDiskStateDirs.Contains(currentDirectory))
-                {
-                    break;
-                }
-
-                processedDirectories.Add(currentDirectory);
-                emptyDirStructureRoot = currentDirectory;
-                currentDirectory = currentDirectory.Parent;
+                processedDirectories.Add(currentParentDir);
+                highestEmptyDirectory = currentParentDir;
+                currentParentDir = currentParentDir.Parent;
             }
 
-            if (emptyDirStructureRoot != null)
-                directoriesToDelete.Add(emptyDirStructureRoot.Value);
+            if (highestEmptyDirectory != null)
+                directoriesToDelete.Add(highestEmptyDirectory.Value);
         }
 
         foreach (var dir in directoriesToDelete)
