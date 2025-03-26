@@ -15,6 +15,7 @@
     
     <!-- restyled avalonia controls -->
 
+    <StyleInclude Source="/Styles/Controls/TextBlock/TextBlockStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Separator/SeparatorStyles.axaml"/>
     <StyleInclude Source="/Styles/Controls/Icons/IconsStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Border/BorderStyles.axaml" />

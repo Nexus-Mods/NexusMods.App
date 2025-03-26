@@ -1,9 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-
     <!-- Resources for Checkbox.xaml -->
-    
+
     <Thickness x:Key="CheckBoxBorderThemeThickness">2</Thickness>
 
     <!-- whole control (not just the box), mainly used for the text -->
@@ -153,7 +152,7 @@
     <StaticResource x:Key="ButtonBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
-    <SolidColorBrush x:Key="ButtonBorderBrusDisabled"
+    <SolidColorBrush x:Key="ButtonBorderBrushDisabled"
                      Color="{StaticResource StrokeTranslucentModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
@@ -179,8 +178,8 @@
     <SolidColorBrush x:Key="SplitButtonBorderBrushDisabled"
                      Color="{StaticResource StrokeTranslucentModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
-    
-    
+
+
     <!-- toggle split button not used yet -->
     <!-- <StaticResource x:Key="SplitButtonBackgroundChecked" ResourceKey="SurfaceTranslucentMidBrush" /> -->
     <!-- <StaticResource x:Key="SplitButtonBackgroundCheckedPointerOver" ResourceKey="SurfaceTranslucentHighBrush" /> -->
@@ -205,7 +204,6 @@
 
     <Thickness x:Key="SplitButtonBorderThemeThickness">0</Thickness>
 
-    
 
     <!--Recources ToggleSwitch-->
     <Thickness x:Key="ToggleSwitchOnStrokeThickness">0</Thickness>

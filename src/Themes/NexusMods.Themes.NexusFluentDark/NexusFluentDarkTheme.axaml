@@ -1,53 +1,36 @@
-﻿<Styles 
+﻿<Styles
     xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="/Resources/ResourceIndex.axaml"/>
+                <ResourceInclude Source="/Resources/ResourceIndex.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
 
+    <!-- inherited from FluentTheme and redefine the core colors -->
     <FluentTheme>
         <FluentTheme.Palettes>
-            <ColorPaletteResources x:Key="Dark"
-                           Accent="{StaticResource DebugColor}"
-                           AltHigh="{StaticResource DebugColor}"
-                           AltLow="{StaticResource DebugColor}"
-                           AltMedium="{StaticResource DebugColor}"
-                           AltMediumHigh="{StaticResource DebugColor}"
-                           AltMediumLow="{StaticResource DebugColor}"
-                           BaseHigh="{StaticResource DebugColor}"
-                           BaseLow="{StaticResource DebugColor}"
-                           BaseMedium="{StaticResource DebugColor}"
-                           BaseMediumHigh="{StaticResource DebugColor}"
-                           BaseMediumLow="{StaticResource DebugColor}"
-                           ChromeAltLow="{StaticResource DebugColor}"
-                           ChromeBlackHigh="{StaticResource DebugColor}"
-                           ChromeBlackLow="{StaticResource DebugColor}"
-                           ChromeBlackMedium="{StaticResource DebugColor}"
-                           ChromeBlackMediumLow="{StaticResource DebugColor}"
-                           ChromeDisabledHigh="{StaticResource DebugColor}"
-                           ChromeDisabledLow="{StaticResource DebugColor}"
-                           ChromeGray="{StaticResource DebugColor}"
-                           ChromeHigh="{StaticResource DebugColor}"
-                           ChromeLow="{StaticResource DebugColor}"
-                           ChromeMedium="{StaticResource DebugColor}"
-                           ChromeMediumLow="{StaticResource DebugColor}"
-                           ChromeWhite="{StaticResource DebugColor}"
-                           ListLow="{StaticResource DebugColor}"
-                           ListMedium="{StaticResource DebugColor}"
-                           RegionColor="{StaticResource SurfaceBase}" />
-            <!-- RegionColor is used by <Design.PreviewWith> throughout the app  -->
+            <ColorPaletteResources x:Key="Dark" Accent="#ffcc4d11" AltHigh="Black" AltLow="Black" AltMedium="Black"
+                                   AltMediumHigh="Black" AltMediumLow="Black" BaseHigh="White" BaseLow="#ff2f7bad"
+                                   BaseMedium="#ff8dbfdf" BaseMediumHigh="#ffa5d0ec" BaseMediumLow="#ff5e9dc6"
+                                   ChromeAltLow="#ffa5d0ec" ChromeBlackHigh="Black" ChromeBlackLow="#ffa5d0ec"
+                                   ChromeBlackMedium="Black" ChromeBlackMediumLow="Black"
+                                   ChromeDisabledHigh="#ff2f7bad" ChromeDisabledLow="#ff8dbfdf" ChromeGray="#ff76aed3"
+                                   ChromeHigh="#ff76aed3" ChromeLow="#ff093b73" ChromeMedium="#ff134b82"
+                                   ChromeMediumLow="#ff266b9f" ChromeWhite="White" ListLow="#ff134b82"
+                                   ListMedium="#ff2f7bad" RegionColor="#ff0d2644" />
+            <!-- RegionColor is used for the background of the design view -->
+            <!-- BaseHigh is used for the default text color -->
         </FluentTheme.Palettes>
     </FluentTheme>
+
 
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
 
-    <StyleInclude Source="Styles/StylesIndex.axaml"/>
+    <StyleInclude Source="Styles/StylesIndex.axaml" />
 </Styles>
-

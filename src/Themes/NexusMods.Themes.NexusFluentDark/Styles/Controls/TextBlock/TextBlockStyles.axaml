@@ -1,0 +1,40 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Design.PreviewWith>
+        <Border Padding="8">
+            <StackPanel>
+                <TextBlock Text="TextBlock" />
+                <TextBlock Text="BodyLGNormalTheme" Theme="{StaticResource BodyLGNormalTheme}" />
+                <TextBlock Text="Suggestion" Classes="Suggestion"  />
+                <TextBlock Text="Warning" Classes="Warning"  />
+                <TextBlock Text="Critical" Classes="Critical"  />
+                <TextBlock Text="Success" Classes="Success"  />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="AccessText">
+        
+    </Style>
+    
+    <Style Selector="TextBlock">
+        
+        <!-- Default TextBlock style -->
+        <!-- <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" /> -->
+        
+        <!-- Severity TextBlock styles -->
+        <Style Selector="^.Suggestion">
+            <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}" />
+        </Style>
+        <Style Selector="^.Warning">
+            <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+        </Style>
+        <Style Selector="^.Critical">
+            <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+        </Style>
+        <Style Selector="^.Success">
+            <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+        </Style>
+    </Style>
+</Styles>

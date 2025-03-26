@@ -319,7 +319,7 @@
                             <icons:UnifiedIcon Name="PART_LeftIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Margin="0,2,0,3" />
-                            <TextBlock Name="PART_Label"
+                            <AccessText Name="PART_Label"
                                        Foreground="{TemplateBinding Foreground}"
                                        Text="{TemplateBinding Text}"
                                        Margin="2,2"

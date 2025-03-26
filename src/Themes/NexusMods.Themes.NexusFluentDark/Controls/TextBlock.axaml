@@ -6,8 +6,13 @@
             <StackPanel>
                 <TextBlock Text="TextBlock" />
                 <TextBlock IsEnabled="False" Text="TextBlock" />
-                <TextBlock Text="Theme BodyLGNormalTheme" 
-                           Theme="{StaticResource BodyLGNormalTheme}"/>
+                <TextBlock Text="Theme BodyLGNormalTheme"
+                           Theme="{StaticResource BodyLGNormalTheme}" />
+                <TextBlock Text="Theme BodyLGNormalTheme"
+                           Theme="{StaticResource BodyLGNormalTheme}"
+                           Classes="Warning" />
+                <TextBlock Text="TextBlock" Classes="Suggestion" />
+                <TextBlock Text="TextBlock" Foreground="DarkOliveGreen" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
