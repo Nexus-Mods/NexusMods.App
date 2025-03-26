@@ -13,6 +13,7 @@ namespace NexusMods.Networking.GitHub.DTOs;
 public record Release(
     [property: JsonPropertyName("url")] string Url,
     [property: JsonPropertyName("assets_url")] string AssetsUrl,
+    [property: JsonPropertyName("html_url")] string HtmlUrl,
     [property: JsonPropertyName("id")] int Id,
     [property: JsonPropertyName("tag_name")] string TagName,
     [property: JsonPropertyName("target_commitish")] string TargetCommitish,

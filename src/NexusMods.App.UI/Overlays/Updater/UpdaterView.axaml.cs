@@ -1,8 +1,7 @@
-﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia.ReactiveUI;
+﻿using Avalonia.ReactiveUI;
+using NexusMods.App.BuildInfo;
 using ReactiveUI;
-using NexusMods.App.UI.Resources;
+using R3;
 
 namespace NexusMods.App.UI.Overlays.Updater;
 
@@ -12,34 +11,44 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
     {
         InitializeComponent();
 
-        this.WhenActivated(d =>
+        this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(view => view.ViewModel)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(vm =>
+                {
+                    TextHeader.Text = $"Update available {vm.LatestVersion}";
+                    TextGenericBody.Text = $"Your current version {vm.CurrentVersion} can be updated to the latest version {vm.LatestVersion}. Be sure to close the app completely before updating.";
 
-            this.WhenAnyValue(view => view.ViewModel!.NewVersion)
-                .Select(v => $"{Language.Updater_UpdateAvailable}: v{v}")
-                .BindToUi(this, view => view.UpdateHeadingTextBlock.Text)
-                .DisposeWith(d);
+                    var installationMethod = vm.InstallationMethod;
+                    if (installationMethod is InstallationMethod.PackageManager)
+                    {
+                        TextInstructions.Text = "You can update the app using the package manager you used to install the app with.";
+                    } else if (installationMethod is InstallationMethod.InnoSetup)
+                    {
+                        TextInstructions.Text = "You can update the app by clicking the downloading setup and running it after closing the app.";
+                    } else if (installationMethod is InstallationMethod.Flatpak)
+                    {
+                        TextInstructions.Text = "You can update the app using Flatpak.";
+                    }
+                    else
+                    {
+                        TextInstructions.IsVisible = false;
+                    }
+                })
+                .AddTo(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.ShowSystemUpdateMessage)
-                .Select(show => !show)
-                .BindToUi(this, view => view.UpdateButton.IsEnabled)
-                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.CommandClose, view => view.ButtonClose)
+                .AddTo(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.ShowSystemUpdateMessage)
-                .BindToUi(this, view => view.UseSystemUpdater.IsVisible)
-                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.CommandOpenReleaseInBrowser, view => view.ButtonOpenReleaseInBrowser)
+                .AddTo(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.ShowUninstallInstructionsCommand)
-                .BindToUi(this, view => view.ViewUninstallDocsButton.Command)
-                .DisposeWith(d);
-            
-            this.WhenAnyValue(view => view.ViewModel!.UpdateCommand)
-                .BindToUi(this, view => view.UpdateButton.Command)
-                .DisposeWith(d);
+            this.BindCommand(ViewModel, vm => vm.CommandDownloadReleaseAssetInBrowser, view => view.ButtonDownloadReleaseAssetInBrowser)
+                .AddTo(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.LaterCommand)
-                .BindToUi(this, view => view.LaterButton.Command)
-                .DisposeWith(d);
+            this.OneWayBind(ViewModel, vm => vm.HasAsset, view => view.ButtonDownloadReleaseAssetInBrowser.IsVisible)
+                .AddTo(disposables);
         });
     }
 }

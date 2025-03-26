@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using NexusMods.Networking.GitHub.DTOs;
 
@@ -24,9 +25,29 @@ public class ReleaseTagComparer : IComparer<Release>
 
         Debug.Assert(x is not null);
         Debug.Assert(y is not null);
-        if (!Version.TryParse(x!.TagName, out var a)) return -1;
-        if (!Version.TryParse(y!.TagName, out var b)) return 1;
+
+        if (!x.TryGetVersion(out var a)) return -1;
+        if (!y.TryGetVersion(out var b)) return -1;
 
         return a.CompareTo(b);
+    }
+}
+
+/// <summary>
+/// Extension methods.
+/// </summary>
+[PublicAPI]
+public static class ReleaseExtensions
+{
+    /// <summary>
+    /// Tries to parse the tag name as a semantic version.
+    /// </summary>
+    public static bool TryGetVersion(this Release release, [NotNullWhen(true)] out Version? version)
+    {
+        var tagName = release.TagName.AsSpan();
+        if (tagName.StartsWith('v'))
+            tagName = tagName[1..];
+
+        return Version.TryParse(tagName, out version);
     }
 }

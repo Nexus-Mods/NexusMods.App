@@ -56,7 +56,7 @@ internal class GitHubApi : IGitHubApi
         if (releases is null) return null;
 
         if (releases.Length > 1) Array.Sort(releases, comparer);
-        var latest = releases[0];
+        var latest = releases[^1];
 
         _logger.LogDebug("Latest release from GitHub for `{Organization}/{Repository}` is `{Name}`", organization, repository, latest.Name);
         return latest;
