@@ -21,8 +21,8 @@
             <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-            <Setter Property="Width" Value="45" />
-            <Setter Property="Height" Value="28" />
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="26" />
             <!-- easy way to get the rounded corner to mask the image below -->
             <Setter Property="ClipToBounds" Value="True" />
                         

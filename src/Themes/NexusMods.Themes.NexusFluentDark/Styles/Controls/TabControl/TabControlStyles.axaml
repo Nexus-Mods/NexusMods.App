@@ -299,9 +299,10 @@
             <Style Selector="^ TabItem">
                 <Setter Property="Padding" Value="12,0" />
                 <Setter Property="BorderThickness" Value="0,1,0,1" />
+                <Setter Property="Background" Value="{StaticResource BrandTranslucentDark200Brush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource SurfaceMidBrush}" />
                 <Setter Property="CornerRadius" Value="0" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
 
                 <!-- AccessText is used when setting Header="Text Goes Here" -->

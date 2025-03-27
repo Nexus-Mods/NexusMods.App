@@ -16,11 +16,10 @@
     </Design.DataContext>
 
     <navigation:NavigationControl x:Name="EntryButton"
-                                  Padding="16,12"
                                   HorizontalAlignment="Stretch"
                                   Height="62">
         
-        <DockPanel>
+        <DockPanel Margin="8,0">
             <icons:UnifiedIcon x:Name="SeverityIcon" 
                                DockPanel.Dock="Left" />
             <icons:UnifiedIcon x:Name="NavigationIcon" 
