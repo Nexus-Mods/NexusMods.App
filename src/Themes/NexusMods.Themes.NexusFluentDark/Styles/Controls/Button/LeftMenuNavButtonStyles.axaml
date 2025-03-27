@@ -228,6 +228,10 @@
             <Style Selector="^ > icons|UnifiedIcon">
                 <Setter Property="Size" Value="20" />
             </Style>
+            
+            <Style Selector="^ > ContentControl > icons|UnifiedIcon">
+                <Setter Property="Size" Value="20" />
+            </Style>
         </Style>
 
         <!-- ACTIVE -->
@@ -235,6 +239,22 @@
         <Style Selector="^:active">
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        </Style>
+
+        
+        <!-- POINTEROVER -->
+
+        <Style Selector="^:pointerover:not(:selected)">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+        </Style>
+
+        
+        <!-- PRESSED -->
+
+        <Style Selector="^:pressed">
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
 
         <!-- SELECTED -->
@@ -246,13 +266,5 @@
             <Setter Property="BorderBrush" Value="{StaticResource BrandNeutral600Brush}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
-
-        <!-- POINTEROVER -->
-
-        <Style Selector="^:pointerover:not(:selected)">
-            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-        </Style>
-
     </Style>
 </Styles>

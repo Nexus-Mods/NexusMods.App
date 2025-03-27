@@ -18,7 +18,8 @@
 
             <ContentControl x:Name="RightContentControl" DockPanel.Dock="Right">
                 <ContentControl.DataTemplates>
-                    <!-- Toggle -->
+                    
+                    <!-- Toggle and Collections In Progress -->
                     <DataTemplate DataType="items:ILeftMenuItemWithToggleViewModel">
                         <ToggleSwitch Classes="ExtraSmall"
                                       OnContent="{x:Null}"
