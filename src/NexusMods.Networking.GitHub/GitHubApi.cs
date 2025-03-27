@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using JetBrains.Annotations;
@@ -20,7 +19,7 @@ internal class GitHubApi : IGitHubApi
     private readonly ILogger _logger;
     private readonly HttpClient _httpClient;
 
-    public AuthenticationHeaderValue? AuthenticationHeaderValue { get; set; }
+    public AuthenticationHeaderValue? AuthenticationHeader { get; set; }
 
     public GitHubApi(ILogger<GitHubApi> logger, HttpClient httpClient)
     {
@@ -58,7 +57,7 @@ internal class GitHubApi : IGitHubApi
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             request.Headers.Add(HeaderApiVersion, ApiVersion);
 
-            if (AuthenticationHeaderValue is not null) request.Headers.Authorization = AuthenticationHeaderValue;
+            if (AuthenticationHeader is not null) request.Headers.Authorization = AuthenticationHeader;
 
             var response = await _httpClient.SendAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)

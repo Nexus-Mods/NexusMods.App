@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using JetBrains.Annotations;
 using NexusMods.Networking.GitHub.DTOs;
 
@@ -9,6 +10,11 @@ namespace NexusMods.Networking.GitHub;
 [PublicAPI]
 public interface IGitHubApi
 {
+    /// <summary>
+    /// Gets or sets the header to use for authentication.
+    /// </summary>
+    AuthenticationHeaderValue? AuthenticationHeader { get; set; }
+
     /// <summary>
     /// Fetches the latest releases.
     /// </summary>
