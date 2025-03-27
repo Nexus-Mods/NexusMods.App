@@ -229,6 +229,10 @@
                 <Setter Property="Size" Value="20" />
             </Style>
             
+            <Style Selector="^ StackPanel#HealthCheckIconStack > icons|UnifiedIcon">
+                <Setter Property="Size" Value="20" />
+            </Style>
+            
             <Style Selector="^ > ContentControl > icons|UnifiedIcon">
                 <Setter Property="Size" Value="20" />
             </Style>

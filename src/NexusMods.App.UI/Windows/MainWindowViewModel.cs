@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
@@ -70,9 +71,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         this.WhenActivated(d =>
         {
-            ConnectErrors(serviceProvider)
-                .DisposeWith(d);
-            
+            ConnectErrors(serviceProvider).DisposeWith(d);
+
             var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
             alphaWarningViewModel.WorkspaceController = WorkspaceController;
             alphaWarningViewModel.Controller = overlayController;
@@ -80,13 +80,24 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
             var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
             metricsOptInViewModel.Controller = overlayController;
+            metricsOptInViewModel.MaybeShow();
 
-            // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
-            if (!metricsOptInViewModel.MaybeShow())
-            {
-                var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
-                updaterViewModel.MaybeShow();
-            }
+            R3.Observable
+                .Return(UpdateChecker.ShouldCheckForUpdate())
+                .Where(shouldCheck => shouldCheck)
+                .ObserveOnThreadPool()
+                .SelectAwait(
+                    selector: (_, cancellationToken) => UpdaterViewModel.CreateIfNeeded(serviceProvider, cancellationToken),
+                    configureAwait: false
+                )
+                .ObserveOnUIThreadDispatcher()
+                .WhereNotNull()
+                .Subscribe(overlayController, static (overlay, overlayController) =>
+                {
+                    overlay.Controller = overlayController;
+                    overlayController.Enqueue(overlay);
+                })
+                .AddTo(d);
 
             loginManager.IsLoggedInObservable
                 .DistinctUntilChanged()

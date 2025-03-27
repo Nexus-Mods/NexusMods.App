@@ -7,54 +7,46 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:updater="clr-namespace:NexusMods.App.UI.Overlays.Updater"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="800"
     x:Class="NexusMods.App.UI.Overlays.Updater.UpdaterView">
-    <Design.DataContext>
-        <updater:UpdaterDesignViewModel/>
-    </Design.DataContext>
-    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
+
+    <base:MessageBoxBackground MinWidth="300" MaxWidth="576">
         <base:MessageBoxBackground.TopContent>
-                <StackPanel Orientation="Vertical" Margin="24, 16, 24, 24" Classes="Spacing-3_5">
-
-                    <TextBlock x:Name="UpdateHeadingTextBlock"
-                               Classes="HeadingXSSemi"
-                               Text="{x:Static resources:Language.Updater_UpdateAvailable}"/>
-
-                    <!-- Message -->
-                    <StackPanel Classes="Spacing-2">
-                        
-                        <TextBlock TextWrapping="WrapWithOverflow"
-                                   Text="{x:Static resources:Language.Updater_MainMessage}"
-                                   Classes="BodyMDNormal" />
-
-                        <TextBlock x:Name="UseSystemUpdater"
-                                   TextWrapping="WrapWithOverflow"
-                                   Text="{x:Static resources:Language.Updater_UseSystemUpdater}"
-                                   Classes="BodyMDNormal" />
-                        
-                        <Button Classes="Hyperlink Secondary" x:Name="ViewUninstallDocsButton">
-                            <TextBlock Classes="BodyMDNormal"
-                                       Text="{x:Static resources:Language.Updated_ViewUninstallDocs}"/>
-                        </Button>
-                        
-                    </StackPanel>
-                </StackPanel>
-
+            <StackPanel Orientation="Vertical"
+                        Margin="24" 
+                        Spacing="{StaticResource Spacing-4}">
+                
+                <!-- Title -->
+                <DockPanel>
+                    <TextBlock x:Name="HeadingText" DockPanel.Dock="Left"  />
+                </DockPanel>
+                <TextBlock x:Name="TextGenericBody" TextWrapping="WrapWithOverflow" />
+                <TextBlock x:Name="TextInstructions" TextWrapping="WrapWithOverflow" />
+            </StackPanel>
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-
-            <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
-                <Button x:Name="LaterButton" Classes="Standard Tertiary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="{x:Static resources:Language.Updater_LATER}" />
-                </Button>
-                <Button x:Name="UpdateButton" Classes="Standard Primary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="{x:Static resources:Language.Updater_UPDATE}"/>
-                </Button>
+            <StackPanel Orientation="Horizontal" 
+                        Spacing="{StaticResource Spacing-4}"
+                        Margin="24"
+                        HorizontalAlignment="Right">
+                <controls:StandardButton x:Name="ButtonClose"
+                                         Text="Close"
+                                         Type="Tertiary"
+                                         Fill="None"/>
+                <controls:StandardButton x:Name="ButtonOpenReleaseInBrowser"
+                                         Text="Open in Browser"
+                                         Type="Tertiary"
+                                         Fill="Weak"
+                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                         ShowIcon="Left"/>
+                <controls:StandardButton x:Name="ButtonDownloadReleaseAssetInBrowser"
+                                         Text="Download Update"
+                                         Type="Primary"
+                                         Fill="Strong"/>
             </StackPanel>
-
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
 </reactiveUi:ReactiveUserControl>

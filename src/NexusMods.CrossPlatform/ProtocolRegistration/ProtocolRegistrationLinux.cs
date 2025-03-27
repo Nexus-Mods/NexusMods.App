@@ -47,7 +47,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     /// <inheritdoc/>
     public async Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
     {
-        if (CompileConstants.InstallationMethod != InstallationMethod.PackageManager)
+        if (ApplicationConstants.InstallationMethod != InstallationMethod.PackageManager)
         {
             var applicationsDirectory = _fileSystem.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("applications");
             _logger.LogInformation("Using applications directory `{Path}`", applicationsDirectory);
