@@ -30,7 +30,7 @@ public class DebugControlsPageFactory : APageFactory<IDebugControlsPageViewModel
         [
             new PageDiscoveryDetails
             {
-                Icon = IconValues.Warning,
+                Icon = IconValues.ColorLens,
                 ItemName = "Debug Controls",
                 SectionName = "Utilities",
                 PageData = new PageData

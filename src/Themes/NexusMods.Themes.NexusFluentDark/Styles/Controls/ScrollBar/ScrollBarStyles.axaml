@@ -10,6 +10,42 @@
         <!-- these will override default Avalonia values -->
         <x:Double x:Key="ScrollBarSize">8</x:Double>
         <TransformOperations x:Key="VerticalSmallScrollThumbScaleTransform">scaleX(0.25)</TransformOperations>
+        <x:Double x:Key="ScrollBarTrackBorderThemeThickness">0</x:Double>
+        <x:Double x:Key="ScrollBarButtonArrowIconFontSize">4</x:Double>
+
+        <!-- Resources for ScrollBar.xaml -->
+        <StaticResource x:Key="ScrollBarBackground" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarBackgroundPointerOver" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarForeground" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarBorderBrush" ResourceKey="SurfaceTransparentBrush" />
+
+        <StaticResource x:Key="ScrollBarButtonBackground" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarButtonBackgroundPointerOver" ResourceKey="SurfaceTranslucentLowBrush" />
+        <StaticResource x:Key="ScrollBarButtonBackgroundPressed" ResourceKey="SurfaceTranslucentMidBrush" />
+        <StaticResource x:Key="ScrollBarButtonBorderBrush" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarButtonBorderBrushPointerOver" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarButtonBorderBrushPressed" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarButtonBorderBrushDisabled" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ScrollBarButtonArrowForeground" ResourceKey="StrokeTranslucentStrongBrush" />
+        <StaticResource x:Key="ScrollBarButtonArrowForegroundPointerOver"
+                        ResourceKey="StrokeTranslucentStrongBrush" />
+        <StaticResource x:Key="ScrollBarButtonArrowForegroundPressed" ResourceKey="StrokeTranslucentStrongBrush" />
+        <StaticResource x:Key="ScrollBarButtonArrowForegroundDisabled"
+                        ResourceKey="StrokeTranslucentStrongBrush" />
+        
+        <StaticResource x:Key="ScrollBarPanningThumbBackground" ResourceKey="SurfaceTranslucentHighBrush" />
+        
+        <StaticResource x:Key="ScrollBarThumbBackgroundColor" ResourceKey="SurfaceTranslucentMidBrush" />
+        <StaticResource x:Key="ScrollBarThumbFillPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+        <StaticResource x:Key="ScrollBarThumbFillPressed" ResourceKey="SurfaceTranslucentHighBrush" />
+        <StaticResource x:Key="ScrollBarThumbFillDisabled" ResourceKey="SurfaceTranslucentHighBrush" />
+        
+        <StaticResource x:Key="ScrollBarTrackFill" ResourceKey="SurfaceTranslucentLowBrush"/>
+        <StaticResource x:Key="ScrollBarTrackFillPointerOver" ResourceKey="SurfaceTranslucentLowBrush"/>
+        
+        
+        <StaticResource x:Key="ScrollBarTrackStroke" ResourceKey="StrokeTranslucentWeakBrush" />
+        <StaticResource x:Key="ScrollBarTrackStrokePointerOver" ResourceKey="StrokeTranslucentStrongBrush" />
     </Styles.Resources>
 
     <Style Selector="ScrollBar">
@@ -19,31 +55,16 @@
 
         <Style Selector="^ /template/ Thumb">
             <Setter Property="CornerRadius" Value="1" />
-            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
             <Setter Property="Transitions">
                 <Transitions>
                     <CornerRadiusTransition Property="CornerRadius" Duration="0:0:0.05" />
                     <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.05" />
                 </Transitions>
             </Setter>
-
-            <Style Selector="^:pointerover /template/ Border">
-                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-            </Style>
-            <Style Selector="^:pressed  /template/ Border">
-                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-            </Style>
-            <Style Selector="^:disabled  /template/ Border">
-                <Setter Property="Background" Value="{DynamicResource ScrollBarThumbFillDisabled}" />
-            </Style>
         </Style>
 
         <Style Selector="^[IsExpanded=true]">
-            <Style Selector="^ /template/ Grid#Root">
-                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
-            </Style>
             <Style Selector="^ /template/ Thumb">
-                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
                 <Setter Property="CornerRadius" Value="4" />
             </Style>
         </Style>

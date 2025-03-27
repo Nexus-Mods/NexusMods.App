@@ -1,0 +1,188 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:Avalonia.Controls.Converters;assembly=Avalonia.Controls"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+
+    <Design.PreviewWith>
+        <Border Width="720" Height="300">
+            <StackPanel>
+                <Border Background="{StaticResource SurfaceLowBrush}">
+                    <Menu>
+                        <MenuItem Header="Item 1">
+                            <MenuItem Header="SubItem 1" />
+                            <MenuItem Header="SubItem 2" />
+                            <MenuItem Header="SubItem 3" />
+                            <MenuItem Header="-" />
+                            <MenuItem Header="SubItem 4" />
+                        </MenuItem>
+                        <MenuItem Header="Item 2">
+                            <MenuItem Header="SubItem 1">
+                                <MenuItem Header="SubItem 3" />
+                                <MenuItem Header="SubItem 4" />
+                            </MenuItem>
+                            <MenuItem Header="SubItem 1" IsEnabled="False">
+                                <MenuItem Header="SubItem 5" />
+                            </MenuItem>
+                            <MenuItem Header="SubItem 2" />
+                        </MenuItem>
+                        <MenuItem Header="Disabled" IsEnabled="False" />
+                        <MenuItem Header="Third" IsSubMenuOpen="True">
+                    <MenuItem Header="With Icon">
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <Separator />
+
+                    <MenuItem Header="With Radio 1" ToggleType="Radio" GroupName="Group" IsChecked="True" />
+                    <MenuItem Header="With Radio 2" ToggleType="Radio" GroupName="Group" />
+
+                    <Separator />
+
+                    <MenuItem Header="With CheckBox" ToggleType="CheckBox" IsChecked="True" />
+                    <MenuItem Header="Nexus Mods">
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Something Critical" Classes="Critical">
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Get Premium" Classes="Premium">
+                        <MenuItem.Icon>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Premium}" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+                    </Menu>
+                </Border>
+                
+                <Button Content="Click Me" HorizontalAlignment="Center">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Item 1" />
+                            <MenuItem Header="Item 2" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    
+    <Styles.Resources>
+        <!-- Resources for MenuFlyout.xaml (Menu, ContextMenu, etc) -->
+      <x:Double x:Key="MenuFlyoutSeparatorThemeHeight">2</x:Double>
+      <x:Double x:Key="MenuFlyoutThemeMinHeight">32</x:Double>
+      <Thickness x:Key="MenuFlyoutPresenterThemePadding">0,0</Thickness>
+      <Thickness x:Key="MenuFlyoutItemChevronMargin">12,0,0,0</Thickness>
+      <Thickness x:Key="MenuFlyoutSeparatorThemePadding">12,4,12,4</Thickness>
+        
+        <StaticResource x:Key="MenuFlyoutPresenterBackground" ResourceKey="SurfaceMidBrush" />
+        <StaticResource x:Key="MenuFlyoutPresenterBorderBrush" ResourceKey="StrokeTranslucentWeakBrush" />
+        <Thickness x:Key="MenuFlyoutPresenterBorderThemeThickness">0</Thickness>
+        
+      <StaticResource x:Key="MenuFlyoutItemBackground" ResourceKey="SurfaceTransparentBrush" />
+      <StaticResource x:Key="MenuFlyoutItemBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+      <StaticResource x:Key="MenuFlyoutItemBackgroundPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+      <StaticResource x:Key="MenuFlyoutItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
+        
+      <StaticResource x:Key="MenuFlyoutItemForeground" ResourceKey="NeutralModerateBrush" />
+      <StaticResource x:Key="MenuFlyoutItemForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+      <StaticResource x:Key="MenuFlyoutItemForegroundPressed" ResourceKey="NeutralModerateBrush" />
+      <SolidColorBrush x:Key="MenuFlyoutItemForegroundDisabled" Color="{StaticResource NeutralModerate}"
+                       Opacity="{StaticResource OpacityDisabledElement}"/>
+        
+      <StaticResource x:Key="MenuFlyoutSubItemChevron" ResourceKey="NeutralModerateBrush" />
+      <StaticResource x:Key="MenuFlyoutSubItemChevronPointerOver" ResourceKey="NeutralStrongBrush" />
+      <StaticResource x:Key="MenuFlyoutSubItemChevronPressed" ResourceKey="NeutralModerateBrush" />
+      <StaticResource x:Key="MenuFlyoutSubItemChevronSubMenuOpened" ResourceKey="NeutralStrongBrush" />
+        <SolidColorBrush x:Key="MenuFlyoutSubItemChevronDisabled" Color="{StaticResource NeutralModerate}"
+                         Opacity="{StaticResource OpacityDisabledElement}"/>
+        
+      <StaticResource x:Key="MenuFlyoutItemKeyboardAcceleratorTextForeground"
+                      ResourceKey="NeutralModerateBrush" />
+      <StaticResource x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundPointerOver"
+                      ResourceKey="NeutralStrongBrush" />
+      <StaticResource x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundPressed"
+                      ResourceKey="NeutralModerateBrush" />
+        <SolidColorBrush x:Key="MenuFlyoutItemKeyboardAcceleratorTextForegroundDisabled" Color="{StaticResource NeutralModerate}"
+                         Opacity="{StaticResource OpacityDisabledElement}"/>
+        
+      <Thickness x:Key="MenuFlyoutItemThemePadding">11,9,11,10</Thickness>
+      <Thickness x:Key="MenuFlyoutItemThemePaddingNarrow">12,6,12,6</Thickness>
+        
+        <x:Double x:Key="MenuBarHeight">32</x:Double>
+        
+        <converters:PlatformKeyGestureConverter x:Key="KeyGestureConverter" />
+        <x:Double x:Key="MenuFlyoutSubItemPopupHorizontalOffset">-4</x:Double>
+        <Thickness x:Key="MenuIconPresenterMargin">0,0,12,0</Thickness>
+        <Thickness x:Key="MenuInputGestureTextMargin">24,0,0,0</Thickness>
+        <StreamGeometry x:Key="MenuItemChevronPathData">M 1,0 10,10 l -9,10 -1,-1 L 8,10 -0,1 Z</StreamGeometry>
+        
+        <!-- Moved from MenuItem.xaml -->
+        <Thickness x:Key="MenuFlyoutScrollerMargin">0,4,0,4</Thickness>
+
+        <!-- Moved from Menu.xaml -->
+        <Thickness x:Key="MenuBarItemPadding">12,0,12,0</Thickness>
+    </Styles.Resources>
+    
+    
+    <Style Selector="Menu">
+        <!--
+        https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/MenuFlyoutPresenter.xaml
+        -->
+        <!-- <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" /> -->
+        <!-- <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" /> -->
+    </Style>
+    
+    <Style Selector="MenuItem">
+        <!--
+        https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/MenuItem.xaml
+        https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Controls/MenuItem.cs
+        -->
+
+        <!-- seperator -->
+        <Style Selector="^ > Separator">
+            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+            <Setter Property="Height" Value="1" />
+        </Style>
+
+        <Style Selector="^.Critical">
+            <Style Selector="^ /template/ ContentControl#PART_IconPresenter">
+                <Setter Property="IsVisible" Value="True" />
+                <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+            </Style>
+        </Style>
+        
+        <Style Selector="^.Premium">
+            <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
+
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+            
+            <Style Selector="^ /template/ ContentControl#PART_IconPresenter">
+                <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+            </Style>
+            
+            <!-- Hover state (yes, this is using :selected) -->
+            <Style Selector="^:selected /template/ Border#PART_LayoutRoot">
+                <Setter Property="Background" Value="{StaticResource PremiumModerateBrush}" />
+            </Style>
+            
+            <!-- Pressed state -->
+            <Style Selector="^:pressed /template/ Border#PART_LayoutRoot:pointerover">
+                <Setter Property="Background" Value="{StaticResource PremiumWeakBrush}" />
+            </Style>
+        </Style>
+
+    </Style>
+
+</Styles>

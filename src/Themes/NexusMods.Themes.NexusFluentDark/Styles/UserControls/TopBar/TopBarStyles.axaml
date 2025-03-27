@@ -47,6 +47,10 @@
             </Style>
         </Style>
         
+        <Style Selector="^ TextBlock#PremiumTextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        </Style>
+        
         <!-- this specific icon fills the horizontal space a bit too much -->
         <Style Selector="^ controls|StandardButton#GiveFeedbackButton">
             <Style Selector="^ icons|UnifiedIcon#PART_LeftIcon">

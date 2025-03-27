@@ -28,7 +28,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
                 lastIndexObservable,
                 (sortDirection, lastIndex) => sortDirection == ListSortDirection.Ascending ? 0 : lastIndex
             )
-            .Publish()
+            .Replay(1)
             .RefCount();
 
         var bottomMostIndexObservable = R3.Observable.CombineLatest(
@@ -36,8 +36,8 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
                 lastIndexObservable,
                 (sortDirection, lastIndex) => sortDirection == ListSortDirection.Ascending ? lastIndex : 0
             )
-            .Publish()
-            .RefCount();
+            .Replay(1)
+            .RefCount();;
         
         return sortableItemProvider.SortableItemsChangeSet
             .Transform( item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable));
@@ -77,18 +77,26 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
             (sortIndex, bottomMost) => sortIndex != bottomMost
         );
         
-        var displayIndexObservable = sortableItem.WhenAnyValue(item => item.SortIndex).Select(index => index.Ordinalize());
+        
+        // The UI requires 1-based indexes, so we convert the 0-based index to a 1-based ordinalized string.
+        var displayIndexObservable = sortableItem.WhenAnyValue(item => item.SortIndex).Select(ToOneBasedOrdinalized);
         
         compositeModel.Add(LoadOrderColumns.IndexColumn.IndexComponentKey,
             new IndexComponent(
                 new ValueComponent<int>(sortableItem.SortIndex, sortIndexObservable),
-                new ValueComponent<string>(sortableItem.SortIndex.Ordinalize(), displayIndexObservable),
+                new ValueComponent<string>(ToOneBasedOrdinalized(sortableItem.SortIndex), displayIndexObservable),
                 canExecuteMoveUp,
                 canExecuteMoveDown
             )
         );
 
-        
         return compositeModel;
     }
+    
+    /// <summary>
+    /// Converts a 0-based index to a 1-based ordinalized string.
+    /// </summary>
+    /// <param name="index">The 0-based index.</param>
+    /// <returns>A 1-based ordinalized string.</returns>
+    private static string ToOneBasedOrdinalized(int index) => (index + 1).Ordinalize();
 }
