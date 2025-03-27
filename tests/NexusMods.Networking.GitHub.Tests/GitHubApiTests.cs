@@ -16,6 +16,7 @@ file class TestOutputHelperAccessor : ITestOutputHelperAccessor
     public ITestOutputHelper? Output { get; set; }
 }
 
+[Trait("RequiresNetworking", "True")]
 public class GitHubApiTests
 {
     private readonly IServiceProvider _serviceProvider;
@@ -41,10 +42,10 @@ public class GitHubApiTests
         var logger = _serviceProvider.GetRequiredService<ILogger<GitHubApi>>();
         var api = new GitHubApi(logger, client);
 
-        if (GitHubApi.TryGetGitHubToken(out var token))
-        {
-            api.AuthenticationHeaderValue = new AuthenticationHeaderValue(scheme: "token", token);
-        }
+        // if (GitHubApi.TryGetGitHubToken(out var token))
+        // {
+        //     api.AuthenticationHeaderValue = new AuthenticationHeaderValue(scheme: "token", token);
+        // }
 
         var releases = await api.FetchReleases("Nexus-Mods", "NexusMods.App");
         releases.Should().NotBeNullOrEmpty();
