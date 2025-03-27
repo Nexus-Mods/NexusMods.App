@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.CrossPlatform.Process;
@@ -74,8 +75,9 @@ public class ManualDownloadRequiredOverlayViewModel : AOverlayViewModel<IManualD
         Instructions = downloadEntity.AsCollectionDownload().Instructions.ValueOr(string.Empty);
         
         var gameDomain =  mappingCache.TryGetDomain(downloadEntity.AsCollectionDownload().CollectionRevision.Collection.GameId, CancellationToken.None);
-        var revisionBugsUri = downloadEntity.AsCollectionDownload().CollectionRevision.GetBugsUri(gameDomain.Value);
-        
+        var revision = downloadEntity.AsCollectionDownload().CollectionRevision;
+        var revisionBugsUri = NexusModsUrlBuilder.GetCollectionBugsUri(gameDomain.Value, revision.Collection.Slug, revision.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
+
         CommandCancel = new ReactiveCommand(_ => { base.Close(); });
 
         CommandOpenBrowser = new ReactiveCommand(

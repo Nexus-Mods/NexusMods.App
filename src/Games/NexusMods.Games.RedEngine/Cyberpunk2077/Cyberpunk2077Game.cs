@@ -11,6 +11,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.FOMOD;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
@@ -24,6 +25,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 [UsedImplicitly]
 public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 {
+    public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
     public static GameId GameIdStatic => GameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;

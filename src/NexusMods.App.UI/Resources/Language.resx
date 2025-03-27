@@ -793,10 +793,10 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Update All</value>
     </data>
     <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
-        <value>INSTALLED MODS</value>
+        <value>Installed Mods</value>
     </data>
     <data name="LeftMenu_Label_Utilities" xml:space="preserve">
-        <value>UTILITIES</value>
+        <value>Utilities</value>
     </data>
     <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed"
           xml:space="preserve">

@@ -250,7 +250,8 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem>
+            <TabItem IsSelected="True">
+                
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Colors" />
@@ -260,7 +261,8 @@
                     </StackPanel>
                 </TabItem.Header>
 
-                <TabControl Classes="Subtabs">
+                <TabControl Classes="Subtabs" Margin="24,12">
+                    
                     <TabControl.Styles>
                         <Style Selector="StackPanel.ElementSection">
                             <Setter Property="Spacing" Value="4" />

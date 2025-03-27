@@ -75,5 +75,6 @@
     <StyleInclude Source="/Styles/UserControls/LeftMenu/LeftMenuStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/LaunchButton/LaunchButtonStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/ApplyControl/ApplyControlStyles.axaml" />
+    <StyleInclude Source="/Styles/UserControls/Toolbar/ToolbarStyles.axaml" />
 
 </Styles>

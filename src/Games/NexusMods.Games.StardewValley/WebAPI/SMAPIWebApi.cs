@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics.Values;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Paths;
 using StardewModdingAPI;
@@ -86,7 +87,7 @@ internal sealed class SMAPIWebApi : ISMAPIWebApi
 
                         if (nexusId is not null)
                         {
-                            var uri = NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.DomainStatic.Value, nexusId.Value.ToString());
+                            var uri = NexusModsUrlBuilder.GetModUri(StardewValley.DomainStatic, ModId.From((uint)nexusId.Value));
                             nexusModsLink = uri.WithName("Nexus Mods");
                         }
 
