@@ -914,31 +914,69 @@
             </TabItem>
             <TabItem Header="Icons">
                 <Border Padding="24,12">
-
-                    <WrapPanel VerticalAlignment="Top">
-                        <WrapPanel.Styles>
-                            <Style Selector="icons|UnifiedIcon">
-                                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"></Setter>
-                            </Style>
-                        </WrapPanel.Styles>
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" ToolTip.Tip="Account" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" ToolTip.Tip="Add" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Alert}" ToolTip.Tip="Alert" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" ToolTip.Tip="AccountCog" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircle}" ToolTip.Tip="AddCircle" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" ToolTip.Tip="ArrowBack" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDown}" ToolTip.Tip="ArrowDown" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" ToolTip.Tip="ArrowForward" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}" ToolTip.Tip="ArrowUp" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircleOutline}"
-                                           ToolTip.Tip="AddCircleOutline" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDownThick}"
-                                           ToolTip.Tip="ArrowDownThick" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUpThick}" ToolTip.Tip="ArrowUpThick" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropDown}"
-                                           ToolTip.Tip="ArrowDropDown" />
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropUp}" ToolTip.Tip="ArrowDropUp" />
-                    </WrapPanel>
+                    <Border.Styles>
+                        <Style Selector="icons|UnifiedIcon">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"></Setter>
+                        </Style>
+                    </Border.Styles>
+                    <StackPanel Spacing="8">
+                        <WrapPanel VerticalAlignment="Top">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" ToolTip.Tip="Account" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" ToolTip.Tip="Add" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Alert}" ToolTip.Tip="Alert" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" ToolTip.Tip="AccountCog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircle}" ToolTip.Tip="AddCircle" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" ToolTip.Tip="ArrowBack" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDown}" ToolTip.Tip="ArrowDown" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"
+                                               ToolTip.Tip="ArrowForward" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}" ToolTip.Tip="ArrowUp" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircleOutline}"
+                                               ToolTip.Tip="AddCircleOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDownThick}"
+                                               ToolTip.Tip="ArrowDownThick" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUpThick}"
+                                               ToolTip.Tip="ArrowUpThick" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropDown}"
+                                               ToolTip.Tip="ArrowDropDown" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropUp}"
+                                               ToolTip.Tip="ArrowDropUp" />
+                        </WrapPanel>
+                        <WrapPanel>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" ToolTip.Tip="Nexus" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Steam}" ToolTip.Tip="Steam" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.EA}" ToolTip.Tip="EA" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Ubisoft}" ToolTip.Tip="Ubisoft" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.GOG}" ToolTip.Tip="GOG" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Xbox}" ToolTip.Tip="Xbox" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Epic}" ToolTip.Tip="Epic" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.GitHub}" ToolTip.Tip="GitHub" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Premium}" ToolTip.Tip="Premium" />
+                        </WrapPanel>
+                        <WrapPanel>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" ToolTip.Tip="PictogramHealth" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" Size="32" ToolTip.Tip="PictogramHealth, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" Size="48" ToolTip.Tip="PictogramHealth, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" ToolTip.Tip="PictogramGame3D" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" Size="32" ToolTip.Tip="PictogramGame3D, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" Size="48" ToolTip.Tip="PictogramGame3D, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" ToolTip.Tip="PictogramBox2" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" Size="32" ToolTip.Tip="PictogramBox2, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" Size="48" ToolTip.Tip="PictogramBox2, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" ToolTip.Tip="PictogramSettings" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" Size="32" ToolTip.Tip="PictogramSettings, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" Size="48" ToolTip.Tip="PictogramSettings, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" ToolTip.Tip="PictogramCelebrate" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" Size="32" ToolTip.Tip="PictogramCelebrate, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" Size="48" ToolTip.Tip="PictogramCelebrate, Size=48" />
+                        </WrapPanel>
+                        <WrapPanel>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning" ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical" ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Success" ToolTip.Tip="Cog" />
+                        </WrapPanel>
+                    </StackPanel>
                 </Border>
             </TabItem>
             <TabItem>
