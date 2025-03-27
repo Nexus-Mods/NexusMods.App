@@ -142,21 +142,18 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             var userInfo = await _loginManager.GetUserInfoAsync();
             if (userInfo is null) return;
 
-            var userId = userInfo.UserId.Value;
-            var uri = NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/users/{userId}");
+            var uri = NexusModsUrlBuilder.GetProfileUri(userInfo.UserId);
             await osInterop.OpenUrl(uri);
         });
 
         OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com");
-            await osInterop.OpenUrl(uri);
+            await osInterop.OpenUrl(NexusModsUrlBuilder.UserSettingsUri);
         });
 
         OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
-            await osInterop.OpenUrl(uri);
+            await osInterop.OpenUrl(NexusModsUrlBuilder.UpgradeToPremiumUri);
         });
         
         OpenDiscordCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.DiscordUri); });

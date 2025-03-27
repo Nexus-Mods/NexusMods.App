@@ -12,6 +12,7 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
@@ -181,7 +182,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
             {
                 // Missing mod
                 var parent = row.File.AsLoadoutItem().Parent;
-                var downloadLink = new NamedLink("Nexus Mods", new($"https://www.nexusmods.com/cyberpunk2077/mods/{row.Pattern.ModId}"));
+                var downloadLink = new NamedLink("Nexus Mods", NexusModsUrlBuilder.GetModUri(Cyberpunk2077Game.StaticDomain, row.Pattern.ModId, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
                 if (row.MatchingSegment.HasValue)
                 {
                     yield return Diagnostics.CreateMissingModWithKnownNexusUriWithStringSegment(

@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
@@ -17,8 +18,8 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 internal static class Helpers
 {
-    public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/stardewvalley"));
-    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.DomainStatic.Value, "2400"));
+    public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.GetGameUri(StardewValley.DomainStatic, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.GetModUri(StardewValley.DomainStatic, ModId.From(2400), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
 
     public static ISemanticVersion GetGameVersion(Loadout.ReadOnly loadout)
     {

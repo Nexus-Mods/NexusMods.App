@@ -63,10 +63,4 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// Back-reference to all files from this page.
     /// </summary>
     public static readonly BackReferenceAttribute<NexusModsFileMetadata> Files = new(NexusModsFileMetadata.ModPage);
-
-    public partial struct ReadOnly
-    {
-        public string GetBaseUrl() => $"https://nexusmods.com/{GameDomain}/mods/{Uid.ModId}";
-        public Uri GetUri() => NexusModsUrlBuilder.CreateGenericUri(GetBaseUrl());
-    }
 }
