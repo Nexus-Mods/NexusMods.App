@@ -208,13 +208,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             );
         }
         
-        var disabledGroups = GetDisabledGroups(loadout);
-
         foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
         {
             var targetPath = loadoutItem.TargetPath;
             // Ignore disabled Items
-            if (disabledGroups.Contains(loadoutItem.AsLoadoutItem().Parent))
+            if (!loadoutItem.AsLoadoutItem().IsEnabled())
                 continue;
 
             SyncNodePart sourceItem;
@@ -281,32 +279,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         MergeStates(currentState, previousState, syncTree);
         return syncTree;
-    }
-
-    /// <summary>
-    /// For a given loadout, get the disabled groups, also any groups in the disabled groups.
-    /// </summary>
-    private HashSet<EntityId> GetDisabledGroups(Loadout.ReadOnly loadout)
-    {
-        var disabledGroups = new HashSet<EntityId>();
-        var firstLevelDisabledGroups = loadout.Db
-            .Datoms((LoadoutItem.LoadoutId, loadout.Id), (LoadoutItem.Disabled, Null.Instance));
-        foreach (var disabledGroup in firstLevelDisabledGroups)
-        {
-            disabledGroups.Add(disabledGroup);
-            MarkChildren(loadout.Db, disabledGroup, disabledGroups);
-        }
-
-        return disabledGroups;
-        
-        void MarkChildren(IDb loadoutDb, EntityId currentItem, HashSet<EntityId> disabledSet)
-        {
-            foreach (var child in loadoutDb.Datoms((LoadoutItem.Parent, currentItem), (LoadoutItemGroup.Group, Null.Instance)))
-            {
-                disabledSet.Add(child);
-                MarkChildren(loadoutDb, child, disabledSet);
-            }
-        }
     }
 
     public IEnumerable<LoadoutSourceItem> GetNormalGameState(IDb referenceDb, Loadout.ReadOnly loadout)
