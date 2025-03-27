@@ -77,8 +77,8 @@ public class UpdateChecker
 
     internal static bool Matches(RelativePath fileName, IOSInformation os, InstallationMethod installationMethod)
     {
-        if (installationMethod is InstallationMethod.InnoSetup) return fileName.Extension.Equals(InnoSetupExtension);
-        if (installationMethod is InstallationMethod.AppImage) return fileName.Extension.Equals(AppImageExtension);
+        if (installationMethod is InstallationMethod.InnoSetup && os.IsWindows) return fileName.Extension.Equals(InnoSetupExtension);
+        if (installationMethod is InstallationMethod.AppImage && os.IsLinux) return fileName.Extension.Equals(AppImageExtension);
 
         if (installationMethod is InstallationMethod.Archive)
         {
