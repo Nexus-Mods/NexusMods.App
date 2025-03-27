@@ -32,7 +32,9 @@
                         Margin="24"
                         HorizontalAlignment="Right">
                 <controls:StandardButton x:Name="ButtonClose"
-                                         Text="Close"/>
+                                         Text="Close"
+                                         Type="Tertiary"
+                                         Fill="None"/>
                 <controls:StandardButton x:Name="ButtonOpenReleaseInBrowser"
                                          Text="Open in Browser"
                                          Type="Primary"
