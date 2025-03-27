@@ -477,22 +477,22 @@
 		<value>Zarządzaj pobranymi modami i kolekcjami</value>
 	</data>
 	<data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-		<value>NAZWA MODA</value>
+		<value>Nazwa moda</value>
 	</data>
 	<data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
-		<value>WERSJA</value>
+		<value>Wersja</value>
 	</data>
 	<data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
-		<value>ROZMIAR</value>
+		<value>Rozmiar</value>
 	</data>
 	<data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
-		<value>POBRANE</value>
+		<value>Pobrane</value>
 	</data>
 	<data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
-		<value>ZAINSTALOWANE</value>
+		<value>Zainstalowane</value>
 	</data>
 	<data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
-		<value>DZIAŁANIA</value>
+		<value>Działania</value>
 	</data>
 	<data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
 		<value>Anulowane</value>
