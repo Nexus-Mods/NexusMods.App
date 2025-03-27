@@ -18,7 +18,8 @@
 
             <ContentControl x:Name="RightContentControl" DockPanel.Dock="Right">
                 <ContentControl.DataTemplates>
-                    <!-- Toggle -->
+                    
+                    <!-- Toggle and Collections In Progress -->
                     <DataTemplate DataType="items:ILeftMenuItemWithToggleViewModel">
                         <ToggleSwitch Classes="ExtraSmall"
                                       OnContent="{x:Null}"
@@ -30,7 +31,7 @@
 
                     <!-- HealthCheck item -->
                     <DataTemplate DataType="items:HealthCheckLeftMenuItemViewModel">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" x:Name="HealthCheckIconStack">
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.InfoFilled}"
                                                Foreground="{StaticResource InfoStrongBrush}"
                                                IsVisible="{CompiledBinding IsSuggestionVisible}" />
