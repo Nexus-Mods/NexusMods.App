@@ -93,12 +93,6 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string Updater_LATER {
-            get {
-                return ResourceManager.GetString("Updater_LATER", resourceCulture);
-            }
-        }
-        
         public static string Updater_UPDATE {
             get {
                 return ResourceManager.GetString("Updater_UPDATE", resourceCulture);
@@ -111,21 +105,27 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string Updater_MainMessage {
+        public static string Updater_GenericMessage {
             get {
-                return ResourceManager.GetString("Updater_MainMessage", resourceCulture);
+                return ResourceManager.GetString("Updater_GenericMessage", resourceCulture);
             }
         }
         
-        public static string Updater_UseSystemUpdater {
+        public static string Updater_UsePackageManager {
             get {
-                return ResourceManager.GetString("Updater_UseSystemUpdater", resourceCulture);
+                return ResourceManager.GetString("Updater_UsePackageManager", resourceCulture);
             }
         }
         
-        public static string Updater_ViewChangelog {
+        public static string Updater_UseInnoSetup {
             get {
-                return ResourceManager.GetString("Updater_ViewChangelog", resourceCulture);
+                return ResourceManager.GetString("Updater_UseInnoSetup", resourceCulture);
+            }
+        }
+        
+        public static string Updater_UseFlatpak {
+            get {
+                return ResourceManager.GetString("Updater_UseFlatpak", resourceCulture);
             }
         }
         

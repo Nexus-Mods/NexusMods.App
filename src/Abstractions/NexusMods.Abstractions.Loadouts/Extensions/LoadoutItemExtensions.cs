@@ -19,8 +19,7 @@ public static class LoadoutItemExtensions
         {
             yield return item;
 
-            // TODO: Fix this once we fix Attr.TryGet on value types
-            if (item.Contains(LoadoutItem.Parent) && LoadoutItem.Parent.TryGetValue(item, out var parent))
+            if (LoadoutItem.Parent.TryGetValue(item, out var parent))
             {
                 item = LoadoutItem.Load(item.Db, parent);
             }
@@ -44,7 +43,7 @@ public static class LoadoutItemExtensions
         {
             yield return itemId;
             
-            if (model.Contains(LoadoutItem.Parent) && LoadoutItem.Parent.TryGetValue(model, out var parent))
+            if (LoadoutItem.Parent.TryGetValue(model, out var parent))
             {
                 itemId = parent;
                 model = LoadoutItem.Load(db, itemId);
@@ -88,7 +87,20 @@ public static class LoadoutItemExtensions
     /// </summary>
     public static bool IsEnabled(this LoadoutItem.ReadOnly item)
     {
-        return !item.GetThisAndParents().Any(i => i.IsDisabled);
+        var current = item;
+    
+        while (true)
+        {
+            if (current.IsDisabled)
+                return false;
+            
+            if (!LoadoutItem.Parent.TryGetValue(current, out var parentId))
+                break;
+            
+            current = LoadoutItem.Load(current.Db, parentId);
+        }
+    
+        return true;
     }
     
     /// <summary>

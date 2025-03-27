@@ -281,6 +281,7 @@ public static class Services
             .AddSingleton<ILoadOrderDataProvider, LoadOrderDataProvider>()
             .AddSingleton<IEventBus, EventBus>()
             .AddSingleton<IAvaloniaInterop, AvaloniaInterop>()
+            .AddSingleton<UpdateChecker>()
             .AddFileSystem()
             .AddImagePipelines();
     }

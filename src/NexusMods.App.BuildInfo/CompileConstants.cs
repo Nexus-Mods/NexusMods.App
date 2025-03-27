@@ -20,6 +20,8 @@ public static class CompileConstants
         InstallationMethod.PackageManager;
 #elif INSTALLATION_METHOD_INNO_SETUP
         InstallationMethod.InnoSetup;
+#elif INSTALLATION_METHOD_FLATPAK
+        InstallationMethod.Flatpak;
 #else
         InstallationMethod.Manually;
 #endif
@@ -65,4 +67,9 @@ public enum InstallationMethod
     /// The App was installed using the InnoSetup.
     /// </summary>
     InnoSetup,
+
+    /// <summary>
+    /// The App was installed as a Flatpak.
+    /// </summary>
+    Flatpak,
 }
