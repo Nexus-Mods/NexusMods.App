@@ -33,6 +33,7 @@ public class UpdaterViewModel : AOverlayViewModel<IUpdaterViewModel>, IUpdaterVi
     {
         CommandClose = new ReactiveCommand(_ =>
         {
+            // NOTE(erri120): something for later if we want to skip
             // settingsManager.Set(new UpdaterSettings
             // {
             //     VersionToSkip = latestVersion,

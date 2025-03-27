@@ -64,7 +64,7 @@
         <value>You can update the app using the package manager you used to install the app with.</value>
     </data>
     <data name="Updater_UseInnoSetup" xml:space="preserve">
-        <value>You can update the app by clicking the downloading setup and running it after closing the app.</value>
+        <value>You can update the app by downloading the setup and running it after closing the app.</value>
     </data>
     <data name="Updater_UseFlatpak" xml:space="preserve">
         <value>You can update the app using Flatpak.</value>

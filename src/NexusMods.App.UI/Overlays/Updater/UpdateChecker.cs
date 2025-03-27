@@ -26,10 +26,8 @@ public class UpdateChecker
 
     public static bool ShouldCheckForUpdate(Version currentVersion, InstallationMethod installationMethod)
     {
-        return true;
-
         // NOTE(erri120): don't check for updates if build from source
-        return installationMethod is not InstallationMethod.Manually || currentVersion == new Version(0, 0, 1);
+        return installationMethod is not InstallationMethod.Manually;
     }
 
     public async ValueTask<Release?> FetchUpdateRelease(Version currentVersion, CancellationToken cancellationToken = default)
