@@ -25,8 +25,8 @@ public class RedModInstaller : ALibraryArchiveInstaller
         _fileStore = serviceProvider.GetRequiredService<IFileStore>();
     }
     
-    private static readonly RelativePath InfoJson = "info.json".ToRelativePath();
-    private static readonly RelativePath Mods = "mods".ToRelativePath();
+    private static readonly RelativePath InfoJson = "info.json";
+    private static readonly RelativePath Mods = "mods";
     private readonly IFileStore _fileStore;
     
     private async Task<RedModInfo?> ReadInfoJson(Hash hash, IStreamFactory? streamFactory = null)

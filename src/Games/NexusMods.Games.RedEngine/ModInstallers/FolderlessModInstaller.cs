@@ -21,7 +21,7 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller
     {
     }
     
-    private static readonly RelativePath Destination = "archive/pc/mod".ToRelativePath();
+    private static readonly RelativePath Destination = "archive/pc/mod";
 
     private static readonly HashSet<Extension> IgnoreExtensions = new() {
         KnownExtensions.Txt,

@@ -129,7 +129,7 @@ public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connectio
             fileHashes[fileName] = hash;
 
             var entry = new ArchivedFileEntry(
-                new MemoryStreamFactory(fileName.ToRelativePath(), new MemoryStream(data)),
+                new MemoryStreamFactory(RelativePath.FromUnsanitizedInput(fileName), new MemoryStream(data)),
                 hash,
                 Size.FromLong(data.Length)
             );

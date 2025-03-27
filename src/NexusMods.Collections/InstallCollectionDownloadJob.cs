@@ -128,7 +128,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     private async Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(CollectionDownloadBundled.ReadOnly download)
     {
         // Bundled mods are found inside the collection archive, so we'll have to find the files that are prefixed with the mod's source file expression.
-        var prefixPath = "bundled".ToRelativePath().Join(download.BundledPath);
+        var prefixPath = RelativePath.FromUnsanitizedInput("bundled").Join(download.BundledPath);
         var prefixFiles = SourceCollectionArchive.Children.Where(f => f.Path.InFolder(prefixPath)).ToArray();
 
         using var tx = Connection.BeginTransaction();

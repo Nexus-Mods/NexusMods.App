@@ -11,7 +11,7 @@ public class RelativePathConverter : JsonConverter<RelativePath>
     /// <inheritdoc />
     public override RelativePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return reader.GetString()!.ToRelativePath();
+        return reader.GetString()!;
     }
 
     /// <inheritdoc />
