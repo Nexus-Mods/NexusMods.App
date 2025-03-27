@@ -64,6 +64,7 @@ public static class Services
             .AddSingleton<AssetConflictDiagnosticEmitter>()
             .AddSingleton<ModOverwritesGameFilesEmitter>()
             .AddSingleton<MissingScriptingSystemEmitter>()
+            .AddSingleton<MissingMemberVarLayout>()
 
             // Installers
             .AddSingleton<ScriptingSystemInstaller>()

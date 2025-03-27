@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.UnrealEngine.Emitters;
@@ -18,9 +19,11 @@ namespace NexusMods.Games.UnrealEngine;
 public abstract class AUnrealEngineGame : AGame, IUnrealEngineGameAddon
 {
     public abstract string GameFolderName { get; }
-    public abstract NamedLink UE4SSLink { get; }
-    public abstract FAesKey? AESKey { get; }
-    public abstract VersionContainer? VersionContainer { get; }
+    
+    public virtual NamedLink UE4SSLink => Helpers.UE4SSLink;
+    public virtual IEnumerable<FAesKey>? AESKeys => null;
+    public virtual VersionContainer? VersionContainer => VersionContainer.DEFAULT_VERSION_CONTAINER;
+    public virtual IStreamFactory? MemberVariableTemplate => null;
 
     protected readonly IServiceProvider _serviceProvider;
     protected readonly IFileSystem _fs;

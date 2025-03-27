@@ -19,9 +19,6 @@ namespace NexusMods.Games.UnrealEngine.PacificDrive;
 public class PacificDriveGame : AUnrealEngineGame, ISteamGame, IEpicGame
 {
     public override string GameFolderName => "PenDriverPro";
-    public override NamedLink UE4SSLink => Helpers.UE4SSLink;
-    public override FAesKey? AESKey { get; }
-    public override VersionContainer? VersionContainer { get; }
     
     public static GameDomain DomainStatic => GameDomain.From("pacificdrive");
     private readonly IServiceProvider _serviceProvider;

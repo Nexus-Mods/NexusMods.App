@@ -1,3 +1,4 @@
+using System.Collections;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Versions;
 using NexusMods.Abstractions.GameLocators;
@@ -32,8 +33,18 @@ public class HogwartsLegacyGame(IServiceProvider provider) : AUnrealEngineGame(p
 
     public override string GameFolderName => "Phoenix";
     public override NamedLink UE4SSLink => new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(DomainStatic.Value, "942"));
-    public override FAesKey? AESKey { get; }
-    public override VersionContainer? VersionContainer { get; }
+
+    public override VersionContainer? VersionContainer => new (EGame.GAME_HogwartsLegacy);
+    
+    public override IEnumerable<FAesKey> AESKeys => new List<FAesKey>
+    {
+        new ("0x00C0C645000070420000803F6F7E333E0AB8D13E0000803F1CB1F141DE93073D"),
+        new ("0xC51B693F6132AD3E5F298B3E0000803F0000803F9432B63D99A6933D0000803F"),
+        new ("0x000000419A99993F6F12833B6F12833B6F12833BCDCC4C3FED0DBE3B1B2F5D3C"),
+    };
+
+    public override IStreamFactory MemberVariableTemplate =>
+        new EmbededResourceStreamFactory<HogwartsLegacyGame>("NexusMods.Games.UnrealEngine.Resources.HogwartsLegacy.MemberVariableLayout.ini");
 
     public override string Name => "Hogwarts Legacy";
     public override GameId GameId => GameIdStatic;

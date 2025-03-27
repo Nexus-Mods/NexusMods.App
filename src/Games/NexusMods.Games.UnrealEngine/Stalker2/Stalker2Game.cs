@@ -30,9 +30,6 @@ public class Stalker2Game(IServiceProvider provider) : AUnrealEngineGame(provide
     public static GameId GameIdStatic => GameId.From(6944);
 
     public override string GameFolderName => "Stalker2";
-    public override NamedLink UE4SSLink => Helpers.UE4SSLink;
-    public override FAesKey? AESKey { get; }
-    public override VersionContainer? VersionContainer => VersionContainer.DEFAULT_VERSION_CONTAINER;
 
     public override string Name => "STALKER 2: Heart of Chornobyl";
     public override GameId GameId => GameIdStatic;

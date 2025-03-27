@@ -53,23 +53,6 @@ internal static partial class Utils
         return ue4ss.Length > 0;
     }
     
-    public static bool TryGetUnrealEngineLoadoutItems(Loadout.ReadOnly loadout, bool enabledOnly, out UnrealEngineLoadoutItem.ReadOnly[] items)
-    {
-        var result = new List<UnrealEngineLoadoutItem.ReadOnly>();
-        foreach (var item in loadout.Items)
-        {
-            if (enabledOnly && item.IsDisabled) continue;
-            if (item.Contains(UnrealEngineLoadoutItem.PakMetadata) &&
-                item.TryGetAsLoadoutItemGroup(out var group) &&
-                group.TryGetAsUnrealEngineLoadoutItem(out var ueGroup))
-            {
-                result.Add(ueGroup);
-            }
-        }
-        items = result.ToArray();
-        return items.Length > 0;
-    }
-
     public static LoadoutFile.ReadOnly[] GetAllLoadoutFilesWithExt(
         Loadout.ReadOnly loadout,
         IEnumerable<LocationId> locationIds,

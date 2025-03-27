@@ -1,7 +1,5 @@
 using System.Reactive;
-using System.Text;
 using BitFaster.Caching.Lru;
-using CUE4Parse.UE4.Versions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
@@ -14,6 +12,7 @@ using NexusMods.Games.UnrealEngine.Interfaces;
 using NexusMods.Games.UnrealEngine.Models;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 using Polly;
 
 namespace NexusMods.Games.UnrealEngine;
@@ -29,7 +28,8 @@ public static class Pipelines
             implementationFactory: static (serviceProvider, _) => CreateMetadataPipeline(
                 fileStore: serviceProvider.GetRequiredService<IFileStore>(),
                 connection: serviceProvider.GetRequiredService<IConnection>(),
-                gameRegistry: serviceProvider.GetRequiredService<IGameRegistry>()
+                gameRegistry: serviceProvider.GetRequiredService<IGameRegistry>(),
+                temporaryFileManager: serviceProvider.GetRequiredService<TemporaryFileManager>()
             )
         );
     }
@@ -40,10 +40,14 @@ public static class Pipelines
             Outcome<PakMetaData>>>(serviceKey: MetadataPipelineKey);
     }
     
-    private static IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<PakMetaData>> CreateMetadataPipeline(IFileStore fileStore, IConnection connection, IGameRegistry gameRegistry)
+    private static IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<PakMetaData>> CreateMetadataPipeline(
+        IFileStore fileStore,
+        IConnection connection,
+        IGameRegistry gameRegistry,
+        TemporaryFileManager temporaryFileManager)
     {
         var pipeline = new FileStoreStreamLoader(fileStore)
-            .ThenDo(Unit.Default, (_, hash, resource, _) =>
+            .ThenDo(Unit.Default, async (_, hash, resource, token) =>
             {
                 try
                 {
@@ -61,15 +65,19 @@ public static class Pipelines
                         .Select(game => game.GetGame())
                         .Cast<IUnrealEngineGameAddon>()
                         .FirstOrDefault();
-
-                    using var streamReader = new StreamReader(stream: resource.Data, encoding: Encoding.UTF8);
-                    var data = streamReader.ReadToEnd();
-                    var metaData = PakFileParser.ParsePakMeta(data, ueGameAddon?.VersionContainer ?? VersionContainer.DEFAULT_VERSION_CONTAINER, ueGameAddon?.AESKey);
-                    return ValueTask.FromResult(resource.WithData(Outcome.FromResult((metaData))));
+                    if (ueGameAddon == null)
+                        throw new InvalidDataException("Could not find UE game addon.");
+                    await using (var tempFile = temporaryFileManager.CreateFile(Constants.PakExt))
+                    {
+                        await using var fs = tempFile.Path.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+                        await resource.Data.CopyToAsync(fs, token);
+                        var metaData = await PakFileParser.ParsePakMeta(ueGameAddon, tempFile.Path.ToString());
+                        return resource.WithData(Outcome.FromResult(metaData));
+                    }
                 }
                 catch (InvalidDataException e)
                 {
-                    return ValueTask.FromResult(resource.WithData(Outcome.FromException<PakMetaData>(e)));
+                    return resource.WithData(Outcome.FromException<PakMetaData>(e));
                 }
             })
             .UseCache(

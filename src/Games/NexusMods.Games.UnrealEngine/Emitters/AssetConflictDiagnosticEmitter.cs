@@ -50,7 +50,6 @@ public class AssetConflictDiagnosticEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
         var pakFiles = Utils.GetAllLoadoutFilesWithExt(loadout, [Constants.PakModsLocationId], [Constants.PakExt], true);
-        
         var fileTasks = await pakFiles.ToAsyncEnumerable()
         .Select(async file =>
         {
@@ -64,11 +63,11 @@ public class AssetConflictDiagnosticEmitter : ILoadoutDiagnosticEmitter
             }).ToList();
         })
         .ToListAsync(cancellationToken: cancellationToken);
-
+        
         var ueAssetLookup = fileTasks
             .SelectMany(task => task.Result)
             .ToLookup(x => x.AssetName, x => x.ModFile);
-
+        
         var diagnostics = ueAssetLookup
             .Where(x => x.Count() > 1)
             .Select(x => Diagnostics.CreateUnrealEngineAssetConflict(

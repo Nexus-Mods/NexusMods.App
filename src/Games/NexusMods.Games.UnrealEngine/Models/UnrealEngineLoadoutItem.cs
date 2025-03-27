@@ -15,9 +15,4 @@ public partial class UnrealEngineLoadoutItem : IModelDefinition
     /// The prefix of the loadout item - this is used for load order.
     /// </summary>
     public static readonly StringAttribute LOPrefix = new(Namespace, nameof(LOPrefix)) { IsOptional = true };
-    
-    /// <summary>
-    /// Reference to the pak file metadata.
-    /// </summary>
-    public static readonly ReferenceAttribute<UnrealEnginePakLoadoutFile> PakMetadata = new(Namespace, nameof(UnrealEnginePakLoadoutFile)) { IsOptional = true };
 }

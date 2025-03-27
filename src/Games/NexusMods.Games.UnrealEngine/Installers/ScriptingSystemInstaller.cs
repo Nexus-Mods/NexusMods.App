@@ -6,6 +6,13 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using System.Diagnostics.CodeAnalysis;
 using NexusMods.Games.UnrealEngine.Models;
+using IniParser;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Games.FileHashes;
+using NexusMods.Abstractions.IO.StreamFactories;
+using NexusMods.Games.UnrealEngine.HogwartsLegacy;
+using NexusMods.Games.UnrealEngine.Interfaces;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine.Installers;
 
@@ -14,10 +21,15 @@ namespace NexusMods.Games.UnrealEngine.Installers;
 public class ScriptingSystemInstaller(
     ILogger<ScriptingSystemInstaller> logger,
     IConnection connection,
-    IServiceProvider serviceProvider
+    IServiceProvider serviceProvider,
+    IFileHashesService fileHashesService,
+    TemporaryFileManager temporaryFileManager
     ) : ALibraryArchiveInstaller(serviceProvider, logger)
 {
     private readonly IConnection _connection = connection;
+    private readonly ILogger<ScriptingSystemInstaller> _logger = logger;
+    private readonly IFileHashesService _fileHashesService = fileHashesService;
+    private readonly TemporaryFileManager _temporaryFileManager = temporaryFileManager;
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
@@ -56,7 +68,7 @@ public class ScriptingSystemInstaller(
 
             };
         }
-
+        
         _ = new ScriptingSystemLoadoutItemGroup.New(transaction, loadoutGroup.Id)
         {
             IsMarker = true,

@@ -7,7 +7,7 @@ namespace NexusMods.Games.UnrealEngine.Models;
 [Include<LoadoutFile>]
 public partial class UnrealEnginePakLoadoutFile : IModelDefinition
 {
-    private const string Namespace = "NexusMods.UnrealEngine.PakLoadoutFile";
+    private const string Namespace = "NexusMods.UnrealEngine.UnrealEnginePakLoadoutFile";
 
     /// <summary>
     /// Marker for pak file (if there is one).

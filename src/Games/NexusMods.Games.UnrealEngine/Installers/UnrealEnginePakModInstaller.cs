@@ -13,27 +13,29 @@ using NexusMods.Paths.Trees.Traits;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.IO;
+using NexusMods.Games.UnrealEngine.Interfaces;
 using NexusMods.Games.UnrealEngine.Models;
-
 
 namespace NexusMods.Games.UnrealEngine.Installers;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "IdentifierTypo")]
-public class UnrealEnginePakModInstaller : ALibraryArchiveInstaller
+public class UnrealEnginePakModInstaller(
+    ILogger<UnrealEnginePakModInstaller> logger,
+    IFileStore fileStore,
+    TemporaryFileManager temporaryFileManager,
+    IConnection connection,
+    IGameRegistry gameRegistry,
+    IServiceProvider serviceProvider)
+    : ALibraryArchiveInstaller(serviceProvider, logger)
 {
-    private readonly IConnection _connection;
-    private readonly TemporaryFileManager _temporaryFileManager;
-
-    public UnrealEnginePakModInstaller(
-        ILogger<UnrealEnginePakModInstaller> logger,
-        TemporaryFileManager temporaryFileManager,
-        IConnection connection,
-        IServiceProvider serviceProvider) : base(serviceProvider, logger)
-    {
-        _temporaryFileManager = temporaryFileManager;
-        _connection = connection;
-    }
+    private readonly IConnection _connection = connection;
+    private readonly ILogger<UnrealEnginePakModInstaller> _logger = logger;
+    private readonly IGameRegistry _gameRegistry = gameRegistry;
+    private readonly IFileStore _fileStore = fileStore;
+    private readonly TemporaryFileManager _temporaryFileManager = temporaryFileManager;
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
@@ -42,14 +44,27 @@ public class UnrealEnginePakModInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var pakEntityId = Optional<UnrealEnginePakLoadoutFileId>.None;
+        if (!IsSupported(libraryArchive))
+            return new NotSupported();
+        
+        var ueGameAddon = _gameRegistry.InstalledGames
+            .Where(game => game.Game.GameId == loadout.Installation.GameId)
+            .Select(game => game.GetGame())
+            .Cast<IUnrealEngineGameAddon>()
+            .FirstOrDefault();
+
+        if (ueGameAddon == null)
+            return new NotSupported();
+        
+        var pakMetadataDict = await GetPakMetadata(loadout, ueGameAddon, libraryArchive, cancellationToken);
         foreach (var fileEntry in libraryArchive.Children)
         {
             GamePath to;
             switch (fileEntry.Path.Extension)
             {
                 case var ext when Constants.ContentExts.Contains(ext):
-                    to = new GamePath(Constants.PakModsLocationId, fileEntry.Path.FileName);
+                    var key = Path.GetFileNameWithoutExtension(fileEntry.Path.FileName);
+                    to = new GamePath(pakMetadataDict[key].MountPoint, fileEntry.Path.FileName);
                     break;
                 case var ext when ext == Constants.DllExt:
                     to = new GamePath(Constants.BinariesLocationId, fileEntry.Path.FileName);
@@ -88,23 +103,57 @@ public class UnrealEnginePakModInstaller : ALibraryArchiveInstaller
             };
 
             if (fileEntry.Path.Extension != Constants.PakExt) continue;
-            var pakFile = new UnrealEnginePakLoadoutFile.New(transaction, entityId)
+            _ = new UnrealEnginePakLoadoutFile.New(transaction, entityId)
             {
                 IsPakFile = true,
                 LoadoutFile = loadoutFile,
             };
-                
-            pakEntityId = pakFile.UnrealEnginePakLoadoutFileId;
         }
         
-        // TODO: UELI should be able to store multiple pak files in a single group
         _ = new UnrealEngineLoadoutItem.New(transaction, loadoutGroup.Id)
         {
             LoadoutItemGroup = loadoutGroup,
-            PakMetadataId = pakEntityId.ValueOrDefault(),
         };
         
-
         return new Success();
+    }
+
+    private bool IsSupported(LibraryArchive.ReadOnly libraryArchive)
+    {
+        var pakFiles = libraryArchive.Children.Where(x => x.Path.Extension == Constants.PakExt);
+        var pakDirectories = pakFiles.Select(x => x.Path.Parent).Distinct().ToList();
+        return pakDirectories.Count == 1;
+    }
+    
+    private async ValueTask<Dictionary<string, PakMetaData>> GetPakMetadata(
+        Loadout.ReadOnly loadout,
+        IUnrealEngineGameAddon ueGameAddon,
+        LibraryArchive.ReadOnly libraryArchive,
+        CancellationToken cancellationToken)
+    {
+        var pakFiles = libraryArchive.Children.Where(x => x.Path.Extension == Constants.PakExt);
+        var results = new Dictionary<string, PakMetaData>();
+
+        foreach (var fileEntry in pakFiles)
+        {
+            var key = Path.GetFileNameWithoutExtension(fileEntry.Path.FileName);
+            try
+            {
+                var pakMetadata = await PakFileParser.Deserialize(
+                    ueGameAddon,
+                    _temporaryFileManager,
+                    _fileStore,
+                    fileEntry.AsLibraryFile(),
+                    cancellationToken);
+
+                results.Add(key, pakMetadata);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Exception while deserializing {Path} from {Archive}", fileEntry.Path, fileEntry.Parent.AsLibraryFile().FileName);
+            }
+        }
+
+        return results;
     }
 }

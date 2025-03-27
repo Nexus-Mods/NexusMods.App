@@ -19,7 +19,11 @@ public class AvowedGame(IServiceProvider provider) : AUnrealEngineGame(provider)
 {
     public override string GameFolderName => "Alabama";
     public override NamedLink UE4SSLink => Helpers.UE4SSLink;
-    public override FAesKey? AESKey => new ("0xDFA62F3EE8304BBF7A6E153F2F88203F823C47BF0A690D3D4793FB3EFA624F3F");
+    public override IEnumerable<FAesKey> AESKeys => new List<FAesKey>
+    {
+        new ("0xDFA62F3EE8304BBF7A6E153F2F88203F823C47BF0A690D3D4793FB3EFA624F3F"),
+    };
+    
     public override VersionContainer? VersionContainer => new (EGame.GAME_UE5_3);
     
     public static GameId GameIdStatic => GameId.From(7325);
