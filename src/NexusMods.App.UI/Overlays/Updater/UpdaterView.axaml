@@ -37,8 +37,8 @@
                                          Fill="None"/>
                 <controls:StandardButton x:Name="ButtonOpenReleaseInBrowser"
                                          Text="Open in Browser"
-                                         Type="Primary"
-                                         Fill="Strong"/>
+                                         Type="Tertiary"
+                                         Fill="None"/>
                 <controls:StandardButton x:Name="ButtonDownloadReleaseAssetInBrowser"
                                          Text="Download Update"
                                          Type="Primary"

@@ -1,5 +1,6 @@
 ﻿using Avalonia.ReactiveUI;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using R3;
@@ -13,47 +14,60 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
         InitializeComponent();
 
         this.WhenActivated(disposables =>
-        {
-            this.WhenAnyValue(view => view.ViewModel)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(vm =>
-                {
-                    HeadingText.Text = string.Format(Language.Updater_UpdateAvailable, vm.LatestVersion);
-                    TextGenericBody.Text = string.Format(Language.Updater_GenericMessage, vm.CurrentVersion, vm.LatestVersion);
-                    
-                    var installationMethod = vm.InstallationMethod;
-                    
-                    if (installationMethod is InstallationMethod.PackageManager)
-                    {
-                        TextInstructions.Text = Language.Updater_UsePackageManager;
-                    } 
-                    else if (installationMethod is InstallationMethod.InnoSetup)
-                    {
-                        TextInstructions.Text = Language.Updater_UseInnoSetup;
-                    } 
-                    else if (installationMethod is InstallationMethod.Flatpak)
-                    {
-                        TextInstructions.Text = Language.Updater_UseFlatpak;
-                    }
-                    else
-                    {
-                        TextInstructions.IsVisible = false;
-                    }
-                })
-                .AddTo(disposables);
+            {
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(vm =>
+                        {
+                            HeadingText.Text = string.Format(Language.Updater_UpdateAvailable, vm.LatestVersion);
+                            TextGenericBody.Text = string.Format(Language.Updater_GenericMessage, vm.CurrentVersion, vm.LatestVersion);
 
-            this.BindCommand(ViewModel, vm => vm.CommandClose, view => view.ButtonClose)
-                .AddTo(disposables);
+                            var installationMethod = vm.InstallationMethod;
 
-            this.BindCommand(ViewModel, vm => vm.CommandOpenReleaseInBrowser, view => view.ButtonOpenReleaseInBrowser)
-                .AddTo(disposables);
+                            if (installationMethod is InstallationMethod.PackageManager)
+                            {
+                                TextInstructions.Text = Language.Updater_UsePackageManager;
+                            }
+                            else if (installationMethod is InstallationMethod.InnoSetup)
+                            {
+                                TextInstructions.Text = Language.Updater_UseInnoSetup;
+                            }
+                            else if (installationMethod is InstallationMethod.Flatpak)
+                            {
+                                TextInstructions.Text = Language.Updater_UseFlatpak;
+                            }
+                            else
+                            {
+                                TextInstructions.IsVisible = false;
+                            }
 
-            this.BindCommand(ViewModel, vm => vm.CommandDownloadReleaseAssetInBrowser, view => view.ButtonDownloadReleaseAssetInBrowser)
-                .AddTo(disposables);
+                            // we need to change styling of the open browser button depending on if we have an asset or not
+                            if (vm.HasAsset)
+                            {
+                                ButtonOpenReleaseInBrowser.Type = StandardButton.Types.Tertiary;
+                                ButtonOpenReleaseInBrowser.Fill = StandardButton.Fills.None;
+                            }
+                            else
+                            {
+                                ButtonOpenReleaseInBrowser.Type = StandardButton.Types.Primary;
+                                ButtonOpenReleaseInBrowser.Fill = StandardButton.Fills.Strong;
+                            }
+                        }
+                    )
+                    .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.HasAsset, view => view.ButtonDownloadReleaseAssetInBrowser.IsVisible)
-                .AddTo(disposables);
-        });
+                this.BindCommand(ViewModel, vm => vm.CommandClose, view => view.ButtonClose)
+                    .AddTo(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.CommandOpenReleaseInBrowser, view => view.ButtonOpenReleaseInBrowser)
+                    .AddTo(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.CommandDownloadReleaseAssetInBrowser, view => view.ButtonDownloadReleaseAssetInBrowser)
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.HasAsset, view => view.ButtonDownloadReleaseAssetInBrowser.IsVisible)
+                    .AddTo(disposables);
+            }
+        );
     }
 }
-
