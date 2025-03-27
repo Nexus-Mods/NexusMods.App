@@ -8,6 +8,7 @@
     xmlns:updater="clr-namespace:NexusMods.App.UI.Overlays.Updater"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="800"
     x:Class="NexusMods.App.UI.Overlays.Updater.UpdaterView">
 
@@ -38,7 +39,9 @@
                 <controls:StandardButton x:Name="ButtonOpenReleaseInBrowser"
                                          Text="Open in Browser"
                                          Type="Tertiary"
-                                         Fill="None"/>
+                                         Fill="Weak"
+                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                         ShowIcon="Left"/>
                 <controls:StandardButton x:Name="ButtonDownloadReleaseAssetInBrowser"
                                          Text="Download Update"
                                          Type="Primary"

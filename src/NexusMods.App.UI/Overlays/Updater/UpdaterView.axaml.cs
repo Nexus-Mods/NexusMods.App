@@ -42,16 +42,8 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
                             }
 
                             // we need to change styling of the open browser button depending on if we have an asset or not
-                            if (vm.HasAsset)
-                            {
-                                ButtonOpenReleaseInBrowser.Type = StandardButton.Types.Tertiary;
-                                ButtonOpenReleaseInBrowser.Fill = StandardButton.Fills.None;
-                            }
-                            else
-                            {
-                                ButtonOpenReleaseInBrowser.Type = StandardButton.Types.Primary;
-                                ButtonOpenReleaseInBrowser.Fill = StandardButton.Fills.Strong;
-                            }
+                            ButtonOpenReleaseInBrowser.Type = vm.HasAsset ? StandardButton.Types.Tertiary : StandardButton.Types.Primary;
+                            ButtonOpenReleaseInBrowser.Fill = vm.HasAsset ? StandardButton.Fills.Weak : StandardButton.Fills.Strong;
                         }
                     )
                     .AddTo(disposables);
