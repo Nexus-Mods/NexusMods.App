@@ -54,7 +54,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrush}" />
 
         <Style Selector="^ TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" />
+            <!-- <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" /> -->
         </Style>
         
         <!-- templated buttons -->
