@@ -12,7 +12,7 @@
     mc:Ignorable="d" d:DesignHeight="400"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
 
-    <Border Background="{StaticResource SurfaceLowBrush}">
+    <Border>
         <TabControl>
             <TabItem>
                 <TabItem.Header>
