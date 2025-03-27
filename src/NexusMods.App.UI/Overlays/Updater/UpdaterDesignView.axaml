@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:updater="clr-namespace:NexusMods.App.UI.Overlays.Updater"
              xmlns:reactiveUi="http://reactiveui.net"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="1200"
              x:Class="NexusMods.App.UI.Overlays.Updater.UpdaterDesignView">
 
     <ItemsControl x:Name="ItemsControl">

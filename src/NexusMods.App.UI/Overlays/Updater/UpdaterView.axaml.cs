@@ -1,5 +1,6 @@
 ﻿using Avalonia.ReactiveUI;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.UI.Resources;
 using ReactiveUI;
 using R3;
 
@@ -17,19 +18,22 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(vm =>
                 {
-                    TextHeader.Text = $"Update available {vm.LatestVersion}";
-                    TextGenericBody.Text = $"Your current version {vm.CurrentVersion} can be updated to the latest version {vm.LatestVersion}. Be sure to close the app completely before updating.";
-
+                    HeadingText.Text = string.Format(Language.Updater_UpdateAvailable, vm.LatestVersion);
+                    TextGenericBody.Text = string.Format(Language.Updater_GenericMessage, vm.CurrentVersion, vm.LatestVersion);
+                    
                     var installationMethod = vm.InstallationMethod;
+                    
                     if (installationMethod is InstallationMethod.PackageManager)
                     {
-                        TextInstructions.Text = "You can update the app using the package manager you used to install the app with.";
-                    } else if (installationMethod is InstallationMethod.InnoSetup)
+                        TextInstructions.Text = Language.Updater_UsePackageManager;
+                    } 
+                    else if (installationMethod is InstallationMethod.InnoSetup)
                     {
-                        TextInstructions.Text = "You can update the app by clicking the downloading setup and running it after closing the app.";
-                    } else if (installationMethod is InstallationMethod.Flatpak)
+                        TextInstructions.Text = Language.Updater_UseInnoSetup;
+                    } 
+                    else if (installationMethod is InstallationMethod.Flatpak)
                     {
-                        TextInstructions.Text = "You can update the app using Flatpak.";
+                        TextInstructions.Text = Language.Updater_UseFlatpak;
                     }
                     else
                     {

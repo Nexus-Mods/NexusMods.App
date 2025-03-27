@@ -47,24 +47,31 @@
     <data name="MetricsOptIn_MainMessage" xml:space="preserve">
         <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
     </data>
-    <data name="Updater_LATER" xml:space="preserve">
-        <value>Later</value>
-    </data>
+    
+
     <data name="Updater_UPDATE" xml:space="preserve">
         <value>View update</value>
     </data>
     <data name="Updater_UpdateAvailable" xml:space="preserve">
-        <value>Update available</value>
+        <value>Update available {0}</value>
     </data>
-    <data name="Updater_MainMessage" xml:space="preserve">
-        <value>Important: In order to install this version you will need to uninstall first. This will delete all your mods.</value>
+    
+    <data name="Updater_GenericMessage" xml:space="preserve">
+        <value>Your current version {0} can be updated to the latest version {1}. Be sure to close the app completely before updating.</value>
     </data>
-    <data name="Updater_UseSystemUpdater" xml:space="preserve">
-        <value>It appears that your copy of the app was installed via a system managed package manager, please update via your operating system's update application.</value>
+
+    <data name="Updater_UsePackageManager" xml:space="preserve">
+        <value>You can update the app using the package manager you used to install the app with.</value>
     </data>
-    <data name="Updater_ViewChangelog" xml:space="preserve">
-        <value>View changelog on GitHub</value>
+    <data name="Updater_UseInnoSetup" xml:space="preserve">
+        <value>You can update the app by clicking the downloading setup and running it after closing the app.</value>
     </data>
+    <data name="Updater_UseFlatpak" xml:space="preserve">
+        <value>You can update the app using Flatpak.</value>
+    </data>   
+      
+    
+    
     <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
         <value>Please select a mod file to install.</value>
     </data>
