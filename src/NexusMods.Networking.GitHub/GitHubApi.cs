@@ -1,3 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -10,13 +13,39 @@ internal class GitHubApi : IGitHubApi
 {
     private const string BaseUrl = "https://api.github.com";
 
+    // https://docs.github.com/en/rest/about-the-rest-api/api-versions
+    private const string HeaderApiVersion = "X-GitHub-Api-Version";
+    private const string ApiVersion = "2022-11-28";
+
     private readonly ILogger _logger;
     private readonly HttpClient _httpClient;
+
+    public AuthenticationHeaderValue? AuthenticationHeaderValue { get; set; }
 
     public GitHubApi(ILogger<GitHubApi> logger, HttpClient httpClient)
     {
         _logger = logger;
         _httpClient = httpClient;
+    }
+
+    public static bool TryGetGitHubToken([NotNullWhen(true)] out string? token)
+    {
+        try
+        {
+            var environmentVariable = Environment.GetEnvironmentVariable("GITHUB_TOKEN");
+            if (!string.IsNullOrWhiteSpace(environmentVariable))
+            {
+                token = environmentVariable;
+                return true;
+            }
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+
+        token = null;
+        return false;
     }
 
     public async ValueTask<Release[]?> FetchReleases(string organization, string repository, CancellationToken cancellationToken = default)
@@ -26,7 +55,19 @@ internal class GitHubApi : IGitHubApi
 
         try
         {
-            var releases = await _httpClient.GetFromJsonAsync<Release[]>(uri, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Add(HeaderApiVersion, ApiVersion);
+
+            if (AuthenticationHeaderValue is not null) request.Headers.Authorization = AuthenticationHeaderValue;
+
+            var response = await _httpClient.SendAsync(request, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("GitHub Api returned with status code `{Code}`", response.StatusCode);
+                return null;
+            }
+
+            var releases = await response.Content.ReadFromJsonAsync<Release[]>(cancellationToken: cancellationToken).ConfigureAwait(false);
             if (releases is null)
             {
                 _logger.LogWarning("Failed to deserialize releases from GitHub for `{Organization}/{Repository}`", organization, repository);
