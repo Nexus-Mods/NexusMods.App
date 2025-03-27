@@ -1,8 +1,9 @@
-﻿using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
+﻿using Avalonia.ReactiveUI;
+using NexusMods.App.BuildInfo;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
+using ReactiveUI;
+using R3;
 
 namespace NexusMods.App.UI.Overlays.Updater;
 
@@ -12,35 +13,53 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
     {
         InitializeComponent();
 
-        this.WhenActivated(d =>
-        {
+        this.WhenActivated(disposables =>
+            {
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(vm =>
+                        {
+                            HeadingText.Text = string.Format(Language.Updater_UpdateAvailable, vm.LatestVersion);
+                            TextGenericBody.Text = string.Format(Language.Updater_GenericMessage, vm.CurrentVersion, vm.LatestVersion);
 
-            this.WhenAnyValue(view => view.ViewModel!.NewVersion)
-                .Select(v => $"{Language.Updater_UpdateAvailable}: v{v}")
-                .BindToUi(this, view => view.UpdateHeadingTextBlock.Text)
-                .DisposeWith(d);
+                            var installationMethod = vm.InstallationMethod;
 
-            this.WhenAnyValue(view => view.ViewModel!.ShowSystemUpdateMessage)
-                .Select(show => !show)
-                .BindToUi(this, view => view.UpdateButton.IsEnabled)
-                .DisposeWith(d);
+                            if (installationMethod is InstallationMethod.PackageManager)
+                            {
+                                TextInstructions.Text = Language.Updater_UsePackageManager;
+                            }
+                            else if (installationMethod is InstallationMethod.InnoSetup)
+                            {
+                                TextInstructions.Text = Language.Updater_UseInnoSetup;
+                            }
+                            else if (installationMethod is InstallationMethod.Flatpak)
+                            {
+                                TextInstructions.Text = Language.Updater_UseFlatpak;
+                            }
+                            else
+                            {
+                                TextInstructions.IsVisible = false;
+                            }
 
-            this.WhenAnyValue(view => view.ViewModel!.ShowSystemUpdateMessage)
-                .BindToUi(this, view => view.UseSystemUpdater.IsVisible)
-                .DisposeWith(d);
+                            // we need to change styling of the open browser button depending on if we have an asset or not
+                            ButtonOpenReleaseInBrowser.Type = vm.HasAsset ? StandardButton.Types.Tertiary : StandardButton.Types.Primary;
+                            ButtonOpenReleaseInBrowser.Fill = vm.HasAsset ? StandardButton.Fills.Weak : StandardButton.Fills.Strong;
+                        }
+                    )
+                    .AddTo(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.ShowUninstallInstructionsCommand)
-                .BindToUi(this, view => view.ViewUninstallDocsButton.Command)
-                .DisposeWith(d);
-            
-            this.WhenAnyValue(view => view.ViewModel!.UpdateCommand)
-                .BindToUi(this, view => view.UpdateButton.Command)
-                .DisposeWith(d);
+                this.BindCommand(ViewModel, vm => vm.CommandClose, view => view.ButtonClose)
+                    .AddTo(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.LaterCommand)
-                .BindToUi(this, view => view.LaterButton.Command)
-                .DisposeWith(d);
-        });
+                this.BindCommand(ViewModel, vm => vm.CommandOpenReleaseInBrowser, view => view.ButtonOpenReleaseInBrowser)
+                    .AddTo(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.CommandDownloadReleaseAssetInBrowser, view => view.ButtonDownloadReleaseAssetInBrowser)
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.HasAsset, view => view.ButtonDownloadReleaseAssetInBrowser.IsVisible)
+                    .AddTo(disposables);
+            }
+        );
     }
 }
-

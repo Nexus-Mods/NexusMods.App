@@ -92,6 +92,7 @@
 
                     <Style Selector="^ > TextBlock#TitleText">
                         <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                         <Setter Property="Margin" Value="0,0,0,4" />
                         <Setter Property="TextWrapping" Value="Wrap" />
                         <Setter Property="TextTrimming" Value="CharacterEllipsis" />

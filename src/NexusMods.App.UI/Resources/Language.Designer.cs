@@ -93,12 +93,6 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string Updater_LATER {
-            get {
-                return ResourceManager.GetString("Updater_LATER", resourceCulture);
-            }
-        }
-        
         public static string Updater_UPDATE {
             get {
                 return ResourceManager.GetString("Updater_UPDATE", resourceCulture);
@@ -111,21 +105,27 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string Updater_MainMessage {
+        public static string Updater_GenericMessage {
             get {
-                return ResourceManager.GetString("Updater_MainMessage", resourceCulture);
+                return ResourceManager.GetString("Updater_GenericMessage", resourceCulture);
             }
         }
         
-        public static string Updater_UseSystemUpdater {
+        public static string Updater_UsePackageManager {
             get {
-                return ResourceManager.GetString("Updater_UseSystemUpdater", resourceCulture);
+                return ResourceManager.GetString("Updater_UsePackageManager", resourceCulture);
             }
         }
         
-        public static string Updater_ViewChangelog {
+        public static string Updater_UseInnoSetup {
             get {
-                return ResourceManager.GetString("Updater_ViewChangelog", resourceCulture);
+                return ResourceManager.GetString("Updater_UseInnoSetup", resourceCulture);
+            }
+        }
+        
+        public static string Updater_UseFlatpak {
+            get {
+                return ResourceManager.GetString("Updater_UseFlatpak", resourceCulture);
             }
         }
         
@@ -1765,6 +1765,36 @@ namespace NexusMods.App.UI.Resources {
         public static string CollectionDownloadViewModel_StatsRating_ToolTip {
             get {
                 return ResourceManager.GetString("CollectionDownloadViewModel_StatsRating_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Title {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Title", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Desc1 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc1", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Desc2 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc2", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Cancel {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Cancel", resourceCulture);
+            }
+        }
+        
+        public static string ManageGameWarning_Continue {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Continue", resourceCulture);
             }
         }
     }

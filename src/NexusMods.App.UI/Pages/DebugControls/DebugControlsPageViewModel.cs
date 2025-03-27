@@ -1,5 +1,6 @@
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
@@ -14,6 +15,8 @@ public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewM
 {
     public DebugControlsPageViewModel(IWindowManager windowManager) : base(windowManager)
     {
-        //this.WhenActivated(disposables => { });
+        TabTitle = "Debug Controls";
+        TabIcon = IconValues.ColorLens;
+        
     }
 }

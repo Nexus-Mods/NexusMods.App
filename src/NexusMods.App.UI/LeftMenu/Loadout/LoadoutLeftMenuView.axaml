@@ -18,7 +18,7 @@
             
             <StackPanel>
                 <Separator />
-                <TextBlock Text="{x:Static resources:Language.LeftMenu_Label_Installed_Mods}"/>
+                <TextBlock x:Name="InstalledModsSectionText" />
             </StackPanel>
             
             <items:LeftMenuItemView x:Name="LoadoutItem" />
@@ -33,7 +33,7 @@
             
             <StackPanel>
                 <Separator />
-                <TextBlock Text="{x:Static resources:Language.LeftMenu_Label_Utilities}"/>
+                <TextBlock x:Name="UtilitiesSectionText" />
             </StackPanel>
             
             <items:LeftMenuItemView x:Name="HealthCheckItem" />

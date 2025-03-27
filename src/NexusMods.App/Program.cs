@@ -95,7 +95,7 @@ public class Program
         cliServer?.StartCliServerAsync().Wait(timeout: TimeSpan.FromSeconds(5));
 
         _logger = services.GetRequiredService<ILogger<Program>>();
-        LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription, CompileConstants.InstallationMethod);
+        LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription, ApplicationConstants.InstallationMethod);
         TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
             LogMessages.UnobservedTaskException(_logger, eventArgs.Exception, sender, sender?.GetType());

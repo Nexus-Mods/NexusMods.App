@@ -13,6 +13,7 @@ public static class ServiceExtensions
             .AddSettings<AlphaSettings>()
             .AddSettings<LoginSettings>()
             .AddSettings<AlertSettings>()
-            .AddSettings<BehaviorSettings>();
+            .AddSettings<BehaviorSettings>()
+            .AddSettings<UpdaterSettings>();
     }
 }

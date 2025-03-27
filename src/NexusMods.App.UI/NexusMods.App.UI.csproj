@@ -104,6 +104,7 @@
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
         <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.GitHub\NexusMods.Networking.GitHub.csproj" />
         <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
     </ItemGroup>
 
@@ -254,9 +255,6 @@
         </Compile>
         <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml.cs">
           <DependentUpon>DevelopmentBuildBannerView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Overlays\Updater\UpdaterDesignViewModel.cs">
-          <DependentUpon>IUpdaterViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\TopBar\TopBarDesignViewModel.cs">
           <DependentUpon>ITopBarViewModel.cs</DependentUpon>
@@ -663,9 +661,6 @@
           <DependentUpon>SortingSelectionView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemModel.cs">
-          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewModel.cs">
           <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
         </Compile>
@@ -677,9 +672,6 @@
         </Compile>
         <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionDesignViewModel.cs">
           <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemDesignModel.cs">
-          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
@@ -737,6 +729,13 @@
         </Compile>
         <Compile Update="Pages\Sorting\LoadOrder\TreeDataGrid\LoadOrderDataProvider.cs">
           <DependentUpon>ILoadOrderDataProvider.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningView.axaml.cs">
+          <DependentUpon>MetricsOptInView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
+          <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 
