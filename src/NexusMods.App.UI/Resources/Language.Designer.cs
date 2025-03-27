@@ -1052,7 +1052,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACTIONS.
+        ///   Looks up a localized string similar to Action.
         /// </summary>
         public static string FileOriginsPageView_ActionHeader {
             get {
@@ -1061,7 +1061,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DOWNLOADED.
+        ///   Looks up a localized string similar to Downloaded.
         /// </summary>
         public static string FileOriginsPageView_DownloadedHeader {
             get {
@@ -1070,7 +1070,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSTALLED.
+        ///   Looks up a localized string similar to Installed.
         /// </summary>
         public static string FileOriginsPageView_InstalledHeader {
             get {
@@ -1079,7 +1079,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOD NAME.
+        ///   Looks up a localized string similar to Mod name.
         /// </summary>
         public static string FileOriginsPageView_NameHeader {
             get {
@@ -1088,7 +1088,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SIZE.
+        ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string FileOriginsPageView_SizeHeader {
             get {
@@ -1097,7 +1097,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VERSION.
+        ///   Looks up a localized string similar to Version.
         /// </summary>
         public static string FileOriginsPageView_VersionHeader {
             get {
@@ -1804,6 +1804,51 @@ namespace NexusMods.App.UI.Resources {
         public static string LoginMessageView_Title {
             get {
                 return ResourceManager.GetString("LoginMessageView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string ManageGameWarning_Cancel {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        public static string ManageGameWarning_Continue {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Continue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page. /// ///However, if you later stop managing this game or uninstall the app, those mods will be permanently removed from your game folder..
+        /// </summary>
+        public static string ManageGameWarning_Desc1 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To keep any mods you want to save, please back them up before continuing..
+        /// </summary>
+        public static string ManageGameWarning_Desc2 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Managing this game will affect existing mods.
+        /// </summary>
+        public static string ManageGameWarning_Title {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Title", resourceCulture);
             }
         }
         
@@ -2645,36 +2690,6 @@ namespace NexusMods.App.UI.Resources {
         public static string ViewModInfoPage_Title {
             get {
                 return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
-            }
-        }
-        
-        public static string ManageGameWarning_Title {
-            get {
-                return ResourceManager.GetString("ManageGameWarning_Title", resourceCulture);
-            }
-        }
-        
-        public static string ManageGameWarning_Desc1 {
-            get {
-                return ResourceManager.GetString("ManageGameWarning_Desc1", resourceCulture);
-            }
-        }
-        
-        public static string ManageGameWarning_Desc2 {
-            get {
-                return ResourceManager.GetString("ManageGameWarning_Desc2", resourceCulture);
-            }
-        }
-        
-        public static string ManageGameWarning_Cancel {
-            get {
-                return ResourceManager.GetString("ManageGameWarning_Cancel", resourceCulture);
-            }
-        }
-        
-        public static string ManageGameWarning_Continue {
-            get {
-                return ResourceManager.GetString("ManageGameWarning_Continue", resourceCulture);
             }
         }
     }
