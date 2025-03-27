@@ -36,23 +36,23 @@
 	<data name="MetricsOptIn_MainMessage" xml:space="preserve">
 		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
 	</data>
-	<data name="Updater_LATER" xml:space="preserve">
-		<value>Później</value>
-	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
 		<value>Zobacz aktualizację</value>
 	</data>
 	<data name="Updater_UpdateAvailable" xml:space="preserve">
-		<value>Dostępna aktualizacja</value>
+		<value>Dostępna aktualizacja {0}</value>
 	</data>
 	<data name="Updater_MainMessage" xml:space="preserve">
-		<value>Ważne: Odinstaluj aktualną wersję aplikacji przed dokonaniem aktualizacji. Aktualizacja usuwa wszystkie mody.</value>
+		<value>Aktualna wersja {0} może zostać zaktualizowana do najnowszej wersji {1}. Przed przystąpieniem do aktualizacji należy całkowicie zamknąć aplikację.</value>
 	</data>
 	<data name="Updater_UseSystemUpdater" xml:space="preserve">
-		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
+		<value>Aplikację można zaktualizować za pomocą menedżera pakietów, który został użyty do jej zainstalowania.</value>
 	</data>
-	<data name="Updater_ViewChangelog" xml:space="preserve">
-		<value>Pokaż dziennik zmian na GitHub</value>
+	<data name="Updater_UseInnoSetup" xml:space="preserve">
+		<value>Aplikację można zaktualizować, pobierając instalator i uruchamiając go po zamknięciu aplikacji.</value>
+	</data>
+	<data name="Updater_UseFlatpak" xml:space="preserve">
+		<value>Aplikację można zaktualizować za pomocą Flatpaka.</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
 		<value>Proszę wybrać plik moda do zainstalowania</value>
@@ -766,10 +766,10 @@
 		<value>Zaktualizuj wszystko</value>
 	</data>
 	<data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
-		<value>ZAINSTALOWANE MODY</value>
+		<value>Zainstalowane mody</value>
 	</data>
 	<data name="LeftMenu_Label_Utilities" xml:space="preserve">
-		<value>NARZĘDZIA</value>
+		<value>Narzędzia</value>
 	</data>
 	<data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
 		<value>Gotów do gry - zainstalowano wszystkie wymagane mody</value>
@@ -809,6 +809,24 @@
 	</data>
 	<data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
 		<value>Zainstaluj pobrane opcjonalne mody</value>
+	</data>
+	<data name="RemoveGameOverlayView_Title" xml:space="preserve">
+		<value>Usuwanie {0}</value>
+	</data>
+	<data name="RemoveGameOverlayView_Description" xml:space="preserve">
+		<value>Usunięcie spowoduje odinstalowanie wszystkich modów i kolekcji dla {0}, jednak pobrane mody pozostaną na dysku. Po ponownym dodaniu gry, mody te będą nadal dostępne w bibliotece.</value>
+	</data>
+	<data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+		<value>Proces usunie również pobrane mody ({0}) oraz kolekcje ({1}) związane z grą {2}.</value>
+	</data>
+	<data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+		<value>Usuń grę</value>
+	</data>
+	<data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
+		<value>Usuń grę i mody</value>
 	</data>
 	<data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
 		<value>Wymagane ręczne pobranie</value>
