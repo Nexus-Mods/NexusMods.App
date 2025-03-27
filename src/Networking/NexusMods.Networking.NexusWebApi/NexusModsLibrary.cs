@@ -11,6 +11,7 @@ using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
@@ -210,7 +211,8 @@ public partial class NexusModsLibrary
 
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
 
-        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, modPage.GetUri(), destination);
+        var domain = await _mappingCache.TryGetDomainAsync(gameId, cancellationToken);
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain.Value, modId), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
         return nexusJob;
@@ -223,7 +225,8 @@ public partial class NexusModsLibrary
     {
         var uri = await GetDownloadUri(fileMetadata, Optional<(NXMKey, DateTime)>.None, cancellationToken: cancellationToken);
 
-        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, fileMetadata.ModPage.GetUri(), destination);
+        var domain = await _mappingCache.TryGetDomainAsync(fileMetadata.Uid.GameId, cancellationToken);
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain.Value, fileMetadata.ModPage.Uid.ModId), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, fileMetadata);
 
         return nexusJob;
