@@ -12,15 +12,15 @@ namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 /// <typeparamref name="TTreeItemWithPath">The type used to denote the file in the tree.</typeparamref>
 public class TreeFolderGenerator<TTreeItemWithPath> where TTreeItemWithPath : ITreeItemWithPath
 {
-    private readonly Dictionary<LocationId, TreeFolderGeneratorForLocationId<TTreeItemWithPath>> _locationIdToTree = new();
-    private readonly SourceCache<CompositeItemModel<EntityId>, EntityId> _rootCache = new(model => model.Key); // Assuming CompositeItemModel<EntityId> has EntityId Key
+    internal readonly Dictionary<LocationId, TreeFolderGeneratorForLocationId<TTreeItemWithPath>> LocationIdToTree = new();
+    internal readonly SourceCache<CompositeItemModel<EntityId>, EntityId> RootCache = new(model => model.Key); // Assuming CompositeItemModel<EntityId> has EntityId Key
 
     /// <summary>
     /// Returns an observable changeset of root items, suitable for binding to a TreeDataGrid.
     /// </summary>
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObservableRoots()
     {
-        return _rootCache.Connect();
+        return RootCache.Connect();
     }
 
     /// <summary>
@@ -32,11 +32,11 @@ public class TreeFolderGenerator<TTreeItemWithPath> where TTreeItemWithPath : IT
     public void OnReceiveFile(TTreeItemWithPath item, CompositeItemModel<EntityId> itemModel)
     {
         var path = item.GetPath();
-        if (!_locationIdToTree.TryGetValue(path.LocationId, out var tree))
+        if (!LocationIdToTree.TryGetValue(path.LocationId, out var tree))
         {
             tree = new TreeFolderGeneratorForLocationId<TTreeItemWithPath>();
-            _locationIdToTree.Add(path.LocationId, tree);
-            _rootCache.AddOrUpdate(tree.ModelForRoot());
+            LocationIdToTree.Add(path.LocationId, tree);
+            RootCache.AddOrUpdate(tree.ModelForRoot());
         }
 
         tree.OnReceiveFile(path.Path, itemModel);
@@ -51,14 +51,15 @@ public class TreeFolderGenerator<TTreeItemWithPath> where TTreeItemWithPath : IT
     public void OnDeleteFile(TTreeItemWithPath item, CompositeItemModel<EntityId> itemModel)
     {
         var path = item.GetPath();
-        if (_locationIdToTree.TryGetValue(path.LocationId, out var tree))
-        {
-            var rootBecameEmpty = tree.OnDeleteFile(path.Path, itemModel);
-            if (rootBecameEmpty)
-            {
-                _rootCache.Remove(tree.ModelForRoot());
-                _locationIdToTree.Remove(path.LocationId);
-            }
-        }
+        if (!LocationIdToTree.TryGetValue(path.LocationId, out var tree))
+            return;
+        
+        var rootBecameEmpty = tree.OnDeleteFile(path.Path, itemModel);
+        if (!rootBecameEmpty)
+            return;
+        
+        // Root is empty, remove the model and location id.
+        RootCache.Remove(tree.ModelForRoot());
+        LocationIdToTree.Remove(path.LocationId);
     }
 }
