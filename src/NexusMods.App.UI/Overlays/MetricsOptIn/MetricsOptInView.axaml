@@ -9,6 +9,7 @@
     xmlns:metricsOptIn="clr-namespace:NexusMods.App.UI.Overlays.MetricsOptIn"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Overlays.MetricsOptIn.MetricsOptInView">
     <base:MessageBoxBackground MinWidth="576" MaxWidth="576" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -50,6 +51,8 @@
                                          Fill="Weak"
                                          HorizontalAlignment="Right"
                                          VerticalAlignment="Center"
+                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                         ShowIcon="Left"
                                          Text="View Privacy Policy" />
                 
                 <controls:StandardButton x:Name="AllowButton"
