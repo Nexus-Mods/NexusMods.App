@@ -19,7 +19,6 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath> where TTreeItem
     
     // TODO: Deletion of folders with file deletions
     // TODO: Wiring up children in `CompositeItemModel` instances.
-    // TODO: Wire up root folder.
     
     /// <summary>
     /// Obtains an observable set of <see cref="CompositeItemModel{TKey}"/> for the specified folder.
@@ -48,12 +47,15 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath> where TTreeItem
     /// </summary>
     /// <param name="path">The relative path of the item (file) to be removed.</param>
     /// <param name="itemModel">The <see cref="CompositeItemModel{TKey}"/> (tree node) for the file.</param>
-    internal void OnDeleteFile(RelativePath path, CompositeItemModel<EntityId> itemModel)
+    /// <returns>True if the root folder for this LocationId is now empty.</returns>
+    internal bool OnDeleteFile(RelativePath path, CompositeItemModel<EntityId> itemModel)
     {
         var folder = GetOrCreateFolder(path.Parent, out var parentFolder, out var parentFolderName);
         var deleteFolder = folder.DeleteFileItemModel(itemModel.Key);
         if (deleteFolder)
             parentFolder.DeleteSubfolder(parentFolderName);
+
+        return deleteFolder; 
     }
 
     /// <summary>
@@ -63,7 +65,7 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath> where TTreeItem
     /// <param name="path">The path of the folder to obtain.</param>
     /// <param name="parentFolder">The parent of the folder returned.</param>
     /// <param name="parentFolderName">Name of the parent folder.</param>
-    private GeneratedFolder<TTreeItemWithPath> GetOrCreateFolder(RelativePath path, out GeneratedFolder<TTreeItemWithPath> parentFolder, out RelativePath parentFolderName)
+    internal GeneratedFolder<TTreeItemWithPath> GetOrCreateFolder(RelativePath path, out GeneratedFolder<TTreeItemWithPath> parentFolder, out RelativePath parentFolderName)
     {
         // Go through all parents of the path, and create them if they don't exist.
         parentFolder = _rootFolder;
@@ -116,9 +118,9 @@ internal struct GeneratedFolder<TTreeItemWithPath> where TTreeItemWithPath : ITr
     public GeneratedFolder() { }
 
     /// <summary>
-    /// Adds a file CompositeItemModel to this folder
+    /// Adds a file <see cref="CompositeItemModel{EntityId}"/> to this folder
     /// </summary>
-    /// <param name="child">The child <see cref="CompositeItemModel{TKey}"/></param>
+    /// <param name="child">The child <see cref="CompositeItemModel{EntityId}"/></param>
     public void AddFileItemModel(CompositeItemModel<EntityId> child)
     {
         var alreadyPresent = Files.Lookup(child.Key).HasValue;
