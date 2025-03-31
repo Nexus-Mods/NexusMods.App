@@ -12,7 +12,7 @@
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
 
     <Design.DataContext>
@@ -105,11 +105,11 @@
         </DataTemplate>
     </reactiveUi:ReactiveUserControl.Resources>
 
-    <DockPanel x:Name="Body">
+    <Border x:Name="HeaderBorderBackground">
+        <DockPanel x:Name="Body">
 
-        <!-- first row (header) -->
-        <Border x:Name="HeaderBorderBackground" DockPanel.Dock="Top">
-            <Border x:Name="HeaderBorder">
+            <!-- first row (header) -->
+            <Border x:Name="HeaderBorder" DockPanel.Dock="Top">
 
                 <StackPanel x:Name="Header">
 
@@ -204,88 +204,89 @@
 
                 </StackPanel>
             </Border>
-        </Border>
 
-        <!-- second row (tab control and datagrid) -->
-        <TabControl x:Name="TabControl">
-            <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
-                <TabItem.Header>
-                    <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
-                        <TextBlock Text="Required" />
-                        <Border>
-                            <TextBlock x:Name="RequiredDownloadsCount" />
-                        </Border>
-                    </StackPanel>
-                </TabItem.Header>
-            </TabItem>
-            <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
-                <TabItem.Header>
-                    <StackPanel x:Name="OptionalModsPanel" Classes="TabItemHeaderStack">
-                        <TextBlock>Optional</TextBlock>
-                        <Border>
-                            <TextBlock x:Name="OptionalDownloadsCount" />
-                        </Border>
-                    </StackPanel>
-                </TabItem.Header>
-            </TabItem>
-            <TabItem x:Name="InstructionsTab" IsVisible="False">
-                <TabItem.Header>
-                    <StackPanel Classes="TabItemHeaderStack">
-                        <TextBlock Text="Additional Instructions" />
-                    </StackPanel>
-                </TabItem.Header>
+            <!-- second row (tab control and datagrid) -->
+            <TabControl x:Name="TabControl">
+                <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
+                    <TabItem.Header>
+                        <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
+                            <TextBlock Text="Required" />
+                            <Border>
+                                <TextBlock x:Name="RequiredDownloadsCount" />
+                            </Border>
+                        </StackPanel>
+                    </TabItem.Header>
+                </TabItem>
+                <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
+                    <TabItem.Header>
+                        <StackPanel x:Name="OptionalModsPanel" Classes="TabItemHeaderStack">
+                            <TextBlock>Optional</TextBlock>
+                            <Border>
+                                <TextBlock x:Name="OptionalDownloadsCount" />
+                            </Border>
+                        </StackPanel>
+                    </TabItem.Header>
+                </TabItem>
+                <TabItem x:Name="InstructionsTab" IsVisible="False">
+                    <TabItem.Header>
+                        <StackPanel Classes="TabItemHeaderStack">
+                            <TextBlock Text="Additional Instructions" />
+                        </StackPanel>
+                    </TabItem.Header>
 
-                <ScrollViewer>
-                    <StackPanel Orientation="Vertical">
+                    <ScrollViewer>
+                        <StackPanel Orientation="Vertical">
 
-                        <Expander Header="Collection Instructions" x:Name="CollectionInstructionsExpander"
-                                  IsVisible="False" IsExpanded="True">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="1024" />
-                                </Grid.ColumnDefinitions>
-                                <reactiveUi:ViewModelViewHost x:Name="CollectionInstructionsRendererHost" />
-                            </Grid>
-                        </Expander>
+                            <Expander Header="Collection Instructions" x:Name="CollectionInstructionsExpander"
+                                      IsVisible="False" IsExpanded="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="1024" />
+                                    </Grid.ColumnDefinitions>
+                                    <reactiveUi:ViewModelViewHost x:Name="CollectionInstructionsRendererHost" />
+                                </Grid>
+                            </Expander>
 
-                        <Expander Header="Mod Instructions" x:Name="RequiredModsInstructionsExpander" IsVisible="False"
-                                  IsExpanded="True">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="1024" />
-                                </Grid.ColumnDefinitions>
-                                <ItemsControl x:Name="RequiredModsInstructions"
-                                              ItemTemplate="{StaticResource InstructionsTemplate}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                            </Grid>
-                        </Expander>
+                            <Expander Header="Mod Instructions" x:Name="RequiredModsInstructionsExpander"
+                                      IsVisible="False"
+                                      IsExpanded="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="1024" />
+                                    </Grid.ColumnDefinitions>
+                                    <ItemsControl x:Name="RequiredModsInstructions"
+                                                  ItemTemplate="{StaticResource InstructionsTemplate}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </Grid>
+                            </Expander>
 
-                        <Expander Header="Optional Mod Instructions" x:Name="OptionalModsInstructionsExpander"
-                                  IsVisible="False"
-                                  IsExpanded="True">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="1024" />
-                                </Grid.ColumnDefinitions>
-                                <ItemsControl x:Name="OptionalModsInstructions"
-                                              ItemTemplate="{StaticResource InstructionsTemplate}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                            </Grid>
-                        </Expander>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-        </TabControl>
-    </DockPanel>
+                            <Expander Header="Optional Mod Instructions" x:Name="OptionalModsInstructionsExpander"
+                                      IsVisible="False"
+                                      IsExpanded="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="1024" />
+                                    </Grid.ColumnDefinitions>
+                                    <ItemsControl x:Name="OptionalModsInstructions"
+                                                  ItemTemplate="{StaticResource InstructionsTemplate}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </Grid>
+                            </Expander>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Border>
 
 </reactiveUi:ReactiveUserControl>

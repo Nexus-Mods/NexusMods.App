@@ -125,107 +125,107 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     }
                 }).DisposeWith(d);
             
-            this.WhenAnyValue(view => view.TabControl.SelectedItem)
-                .Subscribe(selectedItem =>
-                {
-                    CollectionDownloadsFilter filter;
-            
-                    if (ReferenceEquals(selectedItem, RequiredTab))
-                    {
-                        filter = CollectionDownloadsFilter.OnlyRequired;
-                    } else if (ReferenceEquals(selectedItem, OptionalTab))
-                    {
-                        filter = CollectionDownloadsFilter.OnlyOptional;
-                    } else
-                    {
-                        return;
-                    }
-            
-                    ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
-                }).DisposeWith(d);
-            
-            this.WhenAnyValue(
-                view => view.ViewModel!.CountDownloadedRequiredItems,
-                view => view.ViewModel!.CountDownloadedOptionalItems,
-                view => view.ViewModel!.IsInstalled.Value,
-                view => view.ViewModel!.HasInstalledAllOptionalItems.Value)
-                .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, a.Item3, a.Item4, b))
-                .Subscribe(tuple =>
-                {
-                    var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, hasInstalledAllOptionals, filter) = tuple;
-                    var hasDownloadedAllRequiredItems = countDownloadedRequiredItems == ViewModel!.RequiredDownloadsCount;
-                    var hasDownloadedAllOptionalItems = countDownloadedOptionalItems == ViewModel!.OptionalDownloadsCount;
-            
-                    ButtonViewCollection.IsVisible = isInstalled;
-            
-                    ButtonDownloadRequiredItems.IsVisible = !hasDownloadedAllRequiredItems;
-                    ButtonInstallRequiredItems.IsVisible = !isInstalled && hasDownloadedAllRequiredItems;
-            
-                    ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
-                    ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && hasDownloadedAllOptionalItems && !hasInstalledAllOptionals;
-                }).DisposeWith(d);
-            
-            this.WhenAnyValue(
-                    view => view.ViewModel!.OptionalDownloadsCount,
-                    view => view.ViewModel!.InstructionsRenderer)
-                .Subscribe(tuple =>
-                {
-                    var (optionalDownloadsCount, renderer) = tuple;
-                    var hasSingleTab = optionalDownloadsCount == 0 && renderer is null;
-
-                    if (hasSingleTab) TabControl.Classes.Add("SingleTab");
-                    else TabControl.Classes.Remove("SingleTab");
-
-                    if (hasSingleTab) TabControl.SelectedItem = RequiredTab;
-                    OptionalTab.IsVisible = optionalDownloadsCount != 0;
-                }).DisposeWith(d);
-            
-            this.WhenAnyValue(view => view.ViewModel!.OverallRating)
-                .Select(rating =>
-                {
-                    return rating.Value switch
-                    {
-                        >= 0.75 => "HighRating",
-                        >= 0.5 => "MidRating",
-                        >= 0.01 => "LowRating",
-                        _ => "NoRating",
-                    };
-                })
-                .Subscribe(className =>
-                    {
-                        OverallRatingPanel.Classes.Add(className);
-                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P0");
-                    }
-                )
-                .DisposeWith(d);
-            
-            this.WhenAnyValue(view => view.ViewModel!.CanDownloadAutomatically)
-                .Subscribe(canDownloadAutomatically =>
-                {
-                    ButtonDownloadRequiredItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
-                    ButtonDownloadOptionalItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
-                }).DisposeWith(d);
-            
-            this.WhenAnyValue(
-                    view => view.ViewModel!.InstructionsRenderer,
-                    view => view.ViewModel!.RequiredModsInstructions,
-                    view => view.ViewModel!.OptionalModsInstructions)
-                .Subscribe(tuple =>
-                {
-                    var (instructionsRenderer, requiredModsInstructions, optionalModsInstructions) = tuple;
-            
-                    var hasInstructions = instructionsRenderer is not null || requiredModsInstructions.Length > 0 || optionalModsInstructions.Length > 0;
-                    InstructionsTab.IsVisible = hasInstructions;
-            
-                    CollectionInstructionsExpander.IsVisible = instructionsRenderer is not null;
-                    CollectionInstructionsRendererHost.ViewModel = instructionsRenderer;
-            
-                    RequiredModsInstructionsExpander.IsVisible = requiredModsInstructions.Length > 0;
-                    RequiredModsInstructions.ItemsSource = requiredModsInstructions;
-            
-                    OptionalModsInstructionsExpander.IsVisible = optionalModsInstructions.Length > 0;
-                    OptionalModsInstructions.ItemsSource = optionalModsInstructions;
-                }).DisposeWith(d);
+            // this.WhenAnyValue(view => view.TabControl.SelectedItem)
+            //     .Subscribe(selectedItem =>
+            //     {
+            //         CollectionDownloadsFilter filter;
+            //
+            //         if (ReferenceEquals(selectedItem, RequiredTab))
+            //         {
+            //             filter = CollectionDownloadsFilter.OnlyRequired;
+            //         } else if (ReferenceEquals(selectedItem, OptionalTab))
+            //         {
+            //             filter = CollectionDownloadsFilter.OnlyOptional;
+            //         } else
+            //         {
+            //             return;
+            //         }
+            //
+            //         ViewModel!.TreeDataGridAdapter.Filter.Value = filter;
+            //     }).DisposeWith(d);
+            //
+            // this.WhenAnyValue(
+            //     view => view.ViewModel!.CountDownloadedRequiredItems,
+            //     view => view.ViewModel!.CountDownloadedOptionalItems,
+            //     view => view.ViewModel!.IsInstalled.Value,
+            //     view => view.ViewModel!.HasInstalledAllOptionalItems.Value)
+            //     .CombineLatest(ViewModel!.TreeDataGridAdapter.Filter.AsSystemObservable(), (a, b) => (a.Item1, a.Item2, a.Item3, a.Item4, b))
+            //     .Subscribe(tuple =>
+            //     {
+            //         var (countDownloadedRequiredItems, countDownloadedOptionalItems, isInstalled, hasInstalledAllOptionals, filter) = tuple;
+            //         var hasDownloadedAllRequiredItems = countDownloadedRequiredItems == ViewModel!.RequiredDownloadsCount;
+            //         var hasDownloadedAllOptionalItems = countDownloadedOptionalItems == ViewModel!.OptionalDownloadsCount;
+            //
+            //         ButtonViewCollection.IsVisible = isInstalled;
+            //
+            //         ButtonDownloadRequiredItems.IsVisible = !hasDownloadedAllRequiredItems;
+            //         ButtonInstallRequiredItems.IsVisible = !isInstalled && hasDownloadedAllRequiredItems;
+            //
+            //         ButtonDownloadOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && !hasDownloadedAllOptionalItems;
+            //         ButtonInstallOptionalItems.IsVisible = filter == CollectionDownloadsFilter.OnlyOptional && hasDownloadedAllOptionalItems && !hasInstalledAllOptionals;
+            //     }).DisposeWith(d);
+            //
+            // this.WhenAnyValue(
+            //         view => view.ViewModel!.OptionalDownloadsCount,
+            //         view => view.ViewModel!.InstructionsRenderer)
+            //     .Subscribe(tuple =>
+            //     {
+            //         var (optionalDownloadsCount, renderer) = tuple;
+            //         var hasSingleTab = optionalDownloadsCount == 0 && renderer is null;
+            //
+            //         if (hasSingleTab) TabControl.Classes.Add("SingleTab");
+            //         else TabControl.Classes.Remove("SingleTab");
+            //
+            //         if (hasSingleTab) TabControl.SelectedItem = RequiredTab;
+            //         OptionalTab.IsVisible = optionalDownloadsCount != 0;
+            //     }).DisposeWith(d);
+            //
+            // this.WhenAnyValue(view => view.ViewModel!.OverallRating)
+            //     .Select(rating =>
+            //     {
+            //         return rating.Value switch
+            //         {
+            //             >= 0.75 => "HighRating",
+            //             >= 0.5 => "MidRating",
+            //             >= 0.01 => "LowRating",
+            //             _ => "NoRating",
+            //         };
+            //     })
+            //     .Subscribe(className =>
+            //         {
+            //             OverallRatingPanel.Classes.Add(className);
+            //             OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P0");
+            //         }
+            //     )
+            //     .DisposeWith(d);
+            //
+            // this.WhenAnyValue(view => view.ViewModel!.CanDownloadAutomatically)
+            //     .Subscribe(canDownloadAutomatically =>
+            //     {
+            //         ButtonDownloadRequiredItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
+            //         ButtonDownloadOptionalItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
+            //     }).DisposeWith(d);
+            //
+            // this.WhenAnyValue(
+            //         view => view.ViewModel!.InstructionsRenderer,
+            //         view => view.ViewModel!.RequiredModsInstructions,
+            //         view => view.ViewModel!.OptionalModsInstructions)
+            //     .Subscribe(tuple =>
+            //     {
+            //         var (instructionsRenderer, requiredModsInstructions, optionalModsInstructions) = tuple;
+            //
+            //         var hasInstructions = instructionsRenderer is not null || requiredModsInstructions.Length > 0 || optionalModsInstructions.Length > 0;
+            //         InstructionsTab.IsVisible = hasInstructions;
+            //
+            //         CollectionInstructionsExpander.IsVisible = instructionsRenderer is not null;
+            //         CollectionInstructionsRendererHost.ViewModel = instructionsRenderer;
+            //
+            //         RequiredModsInstructionsExpander.IsVisible = requiredModsInstructions.Length > 0;
+            //         RequiredModsInstructions.ItemsSource = requiredModsInstructions;
+            //
+            //         OptionalModsInstructionsExpander.IsVisible = optionalModsInstructions.Length > 0;
+            //         OptionalModsInstructions.ItemsSource = optionalModsInstructions;
+            //     }).DisposeWith(d);
         });
     }
 

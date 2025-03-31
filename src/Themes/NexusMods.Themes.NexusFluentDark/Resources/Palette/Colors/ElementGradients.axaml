@@ -9,7 +9,7 @@
         <GradientStop Color="#2563EB" Offset="1" />
     </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="CollectionHeaderImageLinearGradientBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <LinearGradientBrush x:Key="CollectionHeaderImageLinearGradientBrush" StartPoint="0%,0%" EndPoint="0%,20%">
         <GradientStop Offset="0" Color="#BF0F0F10" />
         <GradientStop Offset="1" Color="#F20F0F10" />
     </LinearGradientBrush>
