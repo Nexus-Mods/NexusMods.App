@@ -48,18 +48,14 @@ public class FileStoreTests : ACyberpunkIsolatedGameTest<FileStoreTests>
         await using var dataFileBStreamBefore = await _fileStore.GetFileStream(dataFileBHashBefore);
         var dataFileBCheckedHashBefore = await dataFileBStreamBefore.xxHash3Async();
         dataFileBCheckedHashBefore.Should().Be(dataFileBHashBefore);
-        dataFileBStreamBefore.Position = 0;
-
-        using var memoryStreamBBefore = new MemoryStream();
-        
-        await dataFileBStreamBefore.CopyToAsync(memoryStreamBBefore);
         
         // Act
+        // Remove item A, and re-add it
         await _libraryService.RemoveItems([libraryItemA.AsLibraryFile().AsLibraryItem()]);
         var libraryItemA2 = await _libraryService.AddLocalFile(pathA);
         
         // Assert
-        // Removing item A should not affect item B
+        // Removing item A and re-adding it should not affect item B
 
         var hashesBAfter = LibraryArchiveFileEntry.FindByParent(_connection.Db, libraryItemB)
             .Select(x => x.AsLibraryFile());
@@ -69,15 +65,7 @@ public class FileStoreTests : ACyberpunkIsolatedGameTest<FileStoreTests>
 
         await using var dataFileBStreamAfter = await _fileStore.GetFileStream(dataFileBAfter.Value.Hash);
         var dataFileBCheckedHashAfter = await dataFileBStreamAfter.xxHash3Async();
+        
         dataFileBCheckedHashAfter.Should().Be(dataFileBHashBefore);
-        dataFileBStreamAfter.Position = 0;
-        
-        using var memoryStreamBAfter = new MemoryStream();
-        await dataFileBStreamAfter.CopyToAsync(memoryStreamBAfter);
-        
-        var memoryArrayBefore = memoryStreamBBefore.ToArray();
-        var memoryArrayAfter = memoryStreamBAfter.ToArray();
-        
-        memoryArrayAfter.Should().BeEquivalentTo(memoryArrayBefore, "the data.json file should be the same as before");
     }
 }
