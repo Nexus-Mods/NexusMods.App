@@ -2024,24 +2024,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Help us provide you with the best modding experience.
+        ///   Looks up a localized string similar to We’d like to collect diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.
         ///
-        ///With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.
+        ///Your data will be processed in accordance with our Privacy Policy. You can change your preference anytime in settings.
         ///
-        ///This information is sent anonymously and will never be shared with a 3rd party..
+        ///Would you like to enable data collection?.
         /// </summary>
         public static string MetricsOptIn_MainMessage {
             get {
                 return ResourceManager.GetString("MetricsOptIn_MainMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to More info about the data we track.
-        /// </summary>
-        public static string MetricsOptIn_MoreInfoAboutTheDataWeTrack {
-            get {
-                return ResourceManager.GetString("MetricsOptIn_MoreInfoAboutTheDataWeTrack", resourceCulture);
             }
         }
         
