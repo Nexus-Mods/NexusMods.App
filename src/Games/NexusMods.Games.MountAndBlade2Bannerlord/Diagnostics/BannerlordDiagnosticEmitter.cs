@@ -7,7 +7,9 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Resources;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 
@@ -19,8 +21,8 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord.Diagnostics;
 /// </summary>
 internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
 {
-    private static NamedLink _blseLink = new("Bannerlord Software Extender", new Uri("https://www.nexusmods.com/mountandblade2bannerlord/mods/1"));
-    private static NamedLink _harmonyLink = new("Harmony", new Uri("https://www.nexusmods.com/mountandblade2bannerlord/mods/2006"));
+    private static readonly NamedLink BlseLink = new("Bannerlord Software Extender", NexusModsUrlBuilder.GetModUri(Bannerlord.DomainStatic, ModId.From(1), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    private static readonly NamedLink HarmonyLink = new("Harmony",NexusModsUrlBuilder.GetModUri(Bannerlord.DomainStatic, ModId.From(2006), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
     private readonly IResourceLoader<BannerlordModuleLoadoutItem.ReadOnly, ModuleInfoExtended> _manifestPipeline;
     private readonly ILogger _logger;
 
@@ -58,7 +60,7 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
         // Emit diagnostics
         var isBlseInstalled = loadout.IsBLSEInstalled();
         if (isBlseInstalled && !IsHarmonyAvailable(modulesOnly, isEnabledDict))
-            yield return Diagnostics.CreateMissingHarmony(_harmonyLink);
+            yield return Diagnostics.CreateMissingHarmony(HarmonyLink);
 
         foreach (var moduleAndMod in isEnabledDict)
         {
@@ -96,7 +98,7 @@ internal partial class BannerlordDiagnosticEmitter : ILoadoutDiagnosticEmitter
                 ModId: missingUnversioned.Module.Id,
                 ModName: missingUnversioned.Module.Name,
                 DependencyId: missingUnversioned.Dependency.Id,
-                BLSELink: _blseLink
+                BLSELink: BlseLink
             ),
             
             // Missing Unversioned Dependency

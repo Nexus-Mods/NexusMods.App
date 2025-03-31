@@ -31,27 +31,30 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
     }
 
     /// <inheritdoc />
-    public async ValueTask<Optional<GameId>> TryGetIdAsync(GameDomain gameDomain, CancellationToken cancellationToken)
+    public ValueTask<Optional<GameId>> TryGetIdAsync(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         // Check if we have a value in the DB
         var found = GameDomainToGameIdMapping.FindByDomain(_conn.Db, gameDomain);
-        if (found.TryGetFirst(out var mapping))
-            return mapping.GameId;
+        return found.TryGetFirst(out var mapping) ? ValueTask.FromResult<Optional<GameId>>(mapping.GameId) : ImplAsync();
 
-        // If we don't have a value, query the API for it, and then return the value from the DB
-        var gameId = await QueryIdFromDomainAsync(gameDomain, cancellationToken).ConfigureAwait(false);
-        return !gameId.Equals(GameId.DefaultValue) ? gameId : Optional<GameId>.None;
+        async ValueTask<Optional<GameId>> ImplAsync()
+        {
+            var gameId = await QueryIdFromDomainAsync(gameDomain, cancellationToken).ConfigureAwait(false);
+            return !gameId.Equals(GameId.DefaultValue) ? gameId : Optional<GameId>.None;
+        }
     }
 
     /// <inheritdoc />
-    public async ValueTask<Optional<GameDomain>> TryGetDomainAsync(GameId gameId, CancellationToken cancellationToken)
+    public ValueTask<Optional<GameDomain>> TryGetDomainAsync(GameId gameId, CancellationToken cancellationToken)
     {
         var found = GameDomainToGameIdMapping.FindByGameId(_conn.Db, gameId);
-        if (found.TryGetFirst(out var mapping))
-            return mapping.Domain;
+        return found.TryGetFirst(out var mapping) ? ValueTask.FromResult<Optional<GameDomain>>(mapping.Domain) : ImplAsync();
 
-        var gameDomain = await QueryDomainFromIdAsync(gameId, cancellationToken).ConfigureAwait(false);
-        return !gameDomain.Equals(GameDomain.DefaultValue) ? gameDomain : Optional<GameDomain>.None;
+        async ValueTask<Optional<GameDomain>> ImplAsync()
+        {
+            var gameDomain = await QueryDomainFromIdAsync(gameId, cancellationToken).ConfigureAwait(false);
+            return !gameDomain.Equals(GameDomain.DefaultValue) ? gameDomain : Optional<GameDomain>.None;
+        }
     }
 
     /// <inheritdoc />

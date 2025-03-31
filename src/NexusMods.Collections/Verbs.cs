@@ -58,7 +58,7 @@ internal static class Verbs
         }
         else
         {
-            var tuples = CollectionDownloader.GetMissingDownloadLinks(revisionMetadata, db: connection.Db, itemType: CollectionDownloader.ItemType.Required);
+            var tuples = collectionDownloader.GetMissingDownloadLinks(revisionMetadata, db: connection.Db, itemType: CollectionDownloader.ItemType.Required);
             if (tuples.Count > 0)
             {
                 await renderer.TextLine($"Missing {tuples.Count} downloads:");

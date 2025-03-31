@@ -15,6 +15,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
@@ -46,6 +47,7 @@ public class CollectionDownloader
     private readonly IOSInterop _osInterop;
     private readonly HttpClient _httpClient;
     private readonly IJobMonitor _jobMonitor;
+    private readonly IGameDomainToGameIdMappingCache _mappingCache;
 
     /// <summary>
     /// Constructor.
@@ -62,6 +64,7 @@ public class CollectionDownloader
         _osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         _httpClient = serviceProvider.GetRequiredService<HttpClient>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        _mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
     }
 
     /// <summary>
@@ -187,7 +190,8 @@ public class CollectionDownloader
         }
         else
         {
-            await _osInterop.OpenUrl(download.FileMetadata.GetUri(), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            var domain = await _mappingCache.TryGetDomainAsync(download.FileUid.GameId, cancellationToken);
+            await _osInterop.OpenUrl(NexusModsUrlBuilder.GetFileDownloadUri(domain.Value, download.ModUid.ModId, download.FileUid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignCollections), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
         }
     }
 
@@ -285,7 +289,7 @@ public class CollectionDownloader
     /// <summary>
     /// Returns all missing downloads and Uris.
     /// </summary>
-    public static IReadOnlyList<(CollectionDownload.ReadOnly Download, Uri Uri)> GetMissingDownloadLinks(CollectionRevisionMetadata.ReadOnly revision, IDb db, ItemType itemType = ItemType.Required)
+    public IReadOnlyList<(CollectionDownload.ReadOnly Download, Uri Uri)> GetMissingDownloadLinks(CollectionRevisionMetadata.ReadOnly revision, IDb db, ItemType itemType = ItemType.Required)
     {
         var results = new List<(CollectionDownload.ReadOnly Download, Uri Uri)>();
         var downloads = GetItems(revision, itemType).Where(download => GetStatus(download, db).IsNotDownloaded());
@@ -294,7 +298,9 @@ public class CollectionDownloader
         {
             if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
             {
-                results.Add((download, nexusModsDownload.FileMetadata.GetUri()));
+                var domain = _mappingCache.TryGetDomain(nexusModsDownload.FileUid.GameId, CancellationToken.None).Value;
+                var uri = NexusModsUrlBuilder.GetFileDownloadUri(domain, nexusModsDownload.ModUid.ModId, nexusModsDownload.FileUid.FileId, useNxmLink: false, source: null);
+                results.Add((download, uri));
             } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))
             {
                 results.Add((download, externalDownload.Uri));
