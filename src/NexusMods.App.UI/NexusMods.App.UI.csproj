@@ -737,6 +737,12 @@
         <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
           <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\UnifiedIconComponent.cs">
+          <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Helpers\TreeDataGrid\New\FolderGenerator\LoadoutItemTreeItemWithPath.cs">
+          <DependentUpon>ITreeItemWithPath.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
