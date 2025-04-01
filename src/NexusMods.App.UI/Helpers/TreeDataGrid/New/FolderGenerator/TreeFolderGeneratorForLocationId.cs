@@ -3,6 +3,8 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using System.Reactive.Linq;
+
 namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 
 /// <summary>
@@ -87,7 +89,7 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath> where TTreeItem
 ///     Note: Sewer. This should ideally be a struct, but due to limitations with DynamicData's API,
 ///     we're forced to make this a class.
 /// </remarks>
-internal class GeneratedFolder<TTreeItemWithPath> where TTreeItemWithPath : ITreeItemWithPath
+internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemWithPath : ITreeItemWithPath
 {
     /// <summary>
     /// The reference count.
@@ -101,10 +103,8 @@ internal class GeneratedFolder<TTreeItemWithPath> where TTreeItemWithPath : ITre
     /// <remarks>
     ///     We default to an invalid entity of type <see cref="EntityId.MaxValueNoPartition"/>, as this will need
     ///     to store children (files) which are MnemonicDB entities and thus require it (unlike folders).
-    ///
-    /// 
     /// </remarks>
-    public CompositeItemModel<EntityId> Model = new(EntityId.MaxValueNoPartition);
+    public CompositeItemModel<EntityId> Model { get; }
 
     /// <summary>
     /// All of the <see cref="CompositeItemModel{TKey}"/>(s) for each file in this folder.
@@ -122,7 +122,30 @@ internal class GeneratedFolder<TTreeItemWithPath> where TTreeItemWithPath : ITre
     public SourceCache<GeneratedFolder<TTreeItemWithPath>, RelativePath> Folders = new(_ => null!);
     
     /// <summary/>
-    public GeneratedFolder() { }
+    public GeneratedFolder()
+    {
+        // Create observables for the children and hasChildren status.
+        var filesCount = Files.CountChanged.Select(count => count > 0);
+        var foldersCount = Folders.CountChanged.Select(count => count > 0);
+        var hasChildrenObservable = Observable.CombineLatest(filesCount, foldersCount, (hasFiles, hasFolders) => hasFiles || hasFolders)
+            .StartWith(false); // Start with false until counts are known
+
+        var fileChildren = Files.Connect();
+        // Transform the folder cache: connect, get the GeneratedFolder, then select its Model.
+        // KeySelector is needed because the keys are different (EntityId for files, RelativePath for folders).
+        var folderChildren = Folders.Connect()
+            .Transform(folder => folder.Model)
+            .ChangeKey(model => model.Key); // Ensure keys are EntityId
+
+        var childrenObservable = fileChildren.Merge(folderChildren);
+
+        // Initialize the Model property passing the created observables.
+        Model = new CompositeItemModel<EntityId>(EntityId.MaxValueNoPartition)
+        {
+            HasChildrenObservable = hasChildrenObservable,
+            ChildrenObservable = childrenObservable
+        };
+    }
 
     /// <summary>
     /// Adds a file <see cref="CompositeItemModel{EntityId}"/> to this folder
@@ -185,5 +208,12 @@ internal class GeneratedFolder<TTreeItemWithPath> where TTreeItemWithPath : ITre
         Folders.Remove(folderName);
     }
 
-    private GeneratedFolder<TTreeItemWithPath> CreateChildFolder() => new();
+    private static GeneratedFolder<TTreeItemWithPath> CreateChildFolder() => new();
+
+    public void Dispose()
+    {
+        Files.Dispose();
+        Folders.Dispose();
+        Model.Dispose();
+    }
 }
