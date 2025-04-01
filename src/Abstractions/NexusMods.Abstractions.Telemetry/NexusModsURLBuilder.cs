@@ -143,7 +143,7 @@ public static class NexusModsUrlBuilder
     /// <example>
     /// <c>https://www.nexusmods.com/premium</c>
     /// </example>
-    public static readonly Uri LearAboutPremiumUri = CreateUri($"{BaseUrl}/premium", campaign: CampaignPremium);
+    public static readonly Uri LearnAboutPremiumUri = CreateUri($"{BaseUrl}/premium", campaign: CampaignPremium);
 
     /// <summary>
     /// Uri for the upgrade to premium page.

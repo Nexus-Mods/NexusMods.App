@@ -245,11 +245,6 @@
         <Compile Update="Overlays\MetricsOptIn\MetricsOptInViewModel.cs">
           <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Resources\Language.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Language.resx</DependentUpon>
-        </Compile>
         <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerViewModel.cs">
           <DependentUpon>IDevelopmentBuildBannerViewModel.cs</DependentUpon>
         </Compile>
