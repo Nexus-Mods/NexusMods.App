@@ -1052,7 +1052,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACTIONS.
+        ///   Looks up a localized string similar to Action.
         /// </summary>
         public static string FileOriginsPageView_ActionHeader {
             get {
@@ -1061,7 +1061,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DOWNLOADED.
+        ///   Looks up a localized string similar to Downloaded.
         /// </summary>
         public static string FileOriginsPageView_DownloadedHeader {
             get {
@@ -1070,7 +1070,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSTALLED.
+        ///   Looks up a localized string similar to Installed.
         /// </summary>
         public static string FileOriginsPageView_InstalledHeader {
             get {
@@ -1079,7 +1079,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOD NAME.
+        ///   Looks up a localized string similar to Mod name.
         /// </summary>
         public static string FileOriginsPageView_NameHeader {
             get {
@@ -1088,7 +1088,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SIZE.
+        ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string FileOriginsPageView_SizeHeader {
             get {
@@ -1097,7 +1097,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VERSION.
+        ///   Looks up a localized string similar to Version.
         /// </summary>
         public static string FileOriginsPageView_VersionHeader {
             get {

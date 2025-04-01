@@ -489,22 +489,22 @@
         <value>Manage downloaded mods and collections</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-        <value>MOD NAME</value>
+        <value>Mod name</value>
     </data>
     <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
-        <value>VERSION</value>
+        <value>Version</value>
     </data>
     <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
-        <value>SIZE</value>
+        <value>Size</value>
     </data>
     <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
-        <value>DOWNLOADED</value>
+        <value>Downloaded</value>
     </data>
     <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
-        <value>INSTALLED</value>
+        <value>Installed</value>
     </data>
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
-        <value>ACTIONS</value>
+        <value>Action</value>
     </data>
     <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
         <value>Cancelled</value>
@@ -951,12 +951,6 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list.</value>
     </data>
 
-    <data name="UpgradeToPremiumView_Title" xml:space="preserve">
-        <value>Go Premium for one-click collection downloads</value>
-    </data>
-    <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
-        <value>Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list.</value>
-    </data>
     <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
         <value>Premium users also get:</value>
     </data>

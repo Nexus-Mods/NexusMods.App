@@ -258,7 +258,7 @@ public static class ImagePipelines
         return pipeline;
     }
 
-    private static IResourceLoader<Uri, IImage> CreateMarkdownRendererRemoteImagePipeline(HttpClient httpClient)
+    internal static IResourceLoader<Uri, IImage> CreateMarkdownRendererRemoteImagePipeline(HttpClient httpClient)
     {
         var pipeline = new HttpLoader(httpClient)
             .EnableSvgSupport(static inner => inner
