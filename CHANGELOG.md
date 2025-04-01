@@ -1,3 +1,41 @@
+# v0.9.0 - 2025-04-XX
+This release includes improvements to the discovery of collection installs that are still in progress, separates mods and collections into tabs in the Library, and includes multiple UI enhancements. 
+
+# In-progress collection installs in the left menu
+To improve visibility and ease of access, collections that are not yet fully installed will now be displayed in the left-hand menu. This allows users to quickly jump back into the installation flow without having to find the item in their Library. 
+
+![The app showing an in-progress collection in the left menu.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1743503241-1477227753.png)
+
+# Re-organised Library
+In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs as we feel most users don't need to see both at the same time. 
+
+# More Features
+* Continued to refine the UI to make it more compact. 
+* The "Optional" tab is now only shown for collections with optional mods.
+* Updated the toggle indicator in the "All" section under "Installed Mods" to better communicate why a mod cannot be toggled when it is part of a collection. 
+
+# Technical Changes
+* Improved the "Update available" pop-up to give more relevant advice depending on how the app was installed (Windows EXE, Linux AppImage, Linux Package Manager).
+* Updated the Load Order page to use the newer display technologies.
+* The "Advanced Install" option no longer shows a screen saying the mod is unsupported before showing the options to install files. 
+* The view button on the games page will now open the last applied loadout rather than the first one that was created. 
+* The "Login" button will no longer be disabled for a short time after clicking on it.
+* If a download fails, it will no longer abort further collection downloads.
+* Updated Nexus Mods links to the new format. 
+* Updated Privacy Policy links.
+
+# Bug Fixes
+* Fixed a few instances where the app would not clean up empty directories on swapping loadouts or uninstalling. 
+* In the Advanced Installer, the "Suggested" folder will now correctly show a name instead of a number.
+* The spine menu will now correctly show which loadout is active after the app starts up. 
+* Fixed an issue where some Cyberpunk 2077 mod installers (FOMODs) would not trigger correctly.
+* Fixed an issue preventing mods installed by FOMOD from being deleted/disabled.
+
+## Known Issues
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and reset each time the view is loaded.
+
 # v0.8.3 - 2025-03-24
 This release fixes a few high-priority issues discovered during user testing of 0.8.2. Thank you for your feedback and please keep it coming.
 
