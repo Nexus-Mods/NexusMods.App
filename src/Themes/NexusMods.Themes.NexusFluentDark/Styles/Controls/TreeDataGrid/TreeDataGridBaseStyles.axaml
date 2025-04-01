@@ -49,9 +49,9 @@
         <!-- if we have this control theme here, we can override styles properly -->
         <ControlTheme x:Key="TreeDataGridExpandCollapseChevron" TargetType="ToggleButton">
             <Setter Property="Margin" Value="0" />
-            <Setter Property="Width" Value="24" />
-            <Setter Property="Height" Value="24" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border Background="Transparent"
@@ -95,8 +95,9 @@
 
         <Style Selector="^ /template/ Border#ColumnHeadersPresenterBorder">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-            <Setter Property="Height" Value="36" />
+            <Setter Property="Height" Value="32" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
         </Style>
 
         <!-- NOTE (insomnious): I think it makes sense to go with 'Compact' class at the parent TreeDataGrid level
@@ -125,7 +126,7 @@
         <Setter Property="Padding" Value="10,0,0,0" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="BorderThickness" Value="0,0,0,0" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Name="DataGridBorder"
@@ -169,7 +170,7 @@
                                         <DataTemplate DataType="x:String">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock
-                                                    Text="{Binding ., Converter={x:Static  converters:TextCaseConverter.Instance}, ConverterParameter=upper}"
+                                                    Text="{Binding .}"
                                                     TextTrimming="CharacterEllipsis" />
                                             </StackPanel>
                                         </DataTemplate>
@@ -197,7 +198,7 @@
 
         <Style Selector="^ TextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
         </Style>
 
         <!-- Sort Icon replacements now that we aren't using Path -->
@@ -227,7 +228,7 @@
 
     <Style Selector="TreeDataGridRow">
 
-        <Setter Property="Height" Value="52" />
+        <Setter Property="Height" Value="46" />
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
 
@@ -353,13 +354,11 @@
                         </Border>
 
                         <DockPanel>
-                            <Border DockPanel.Dock="Left"
-                                    Margin="0">
+                            <Border DockPanel.Dock="Left" Margin="0,0,2,0">
                                 <ToggleButton Theme="{StaticResource TreeDataGridExpandCollapseChevron}"
                                               Focusable="False"
                                               IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
                                               IsVisible="{TemplateBinding ShowExpander}" />
-
                             </Border>
                             <Decorator Name="PART_Content" />
                         </DockPanel>

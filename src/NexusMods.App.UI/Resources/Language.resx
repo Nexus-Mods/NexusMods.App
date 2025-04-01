@@ -492,22 +492,22 @@
         <value>Manage downloaded mods and collections</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-        <value>MOD NAME</value>
+        <value>Mod name</value>
     </data>
     <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
-        <value>VERSION</value>
+        <value>Version</value>
     </data>
     <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
-        <value>SIZE</value>
+        <value>Size</value>
     </data>
     <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
-        <value>DOWNLOADED</value>
+        <value>Downloaded</value>
     </data>
     <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
-        <value>INSTALLED</value>
+        <value>Installed</value>
     </data>
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
-        <value>ACTIONS</value>
+        <value>Action</value>
     </data>
     <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
         <value>Cancelled</value>
