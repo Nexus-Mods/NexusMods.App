@@ -14,7 +14,7 @@
 
     <Border Background="{StaticResource SurfaceLowBrush}">
         <TabControl>
-            <TabItem>
+            <TabItem x:Name="TabControls">
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Controls" />
@@ -160,14 +160,14 @@
                     </ScrollViewer>
                 </Border>
             </TabItem>
-            <TabItem>
+            <TabItem x:Name="TabModals">
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Modals" />
                     </StackPanel>
                 </TabItem.Header>
             </TabItem>
-            <TabItem>
+            <TabItem x:Name="TabTreeDataGrid">
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="TreeDataGrid" />
@@ -175,7 +175,7 @@
                 </TabItem.Header>
                 <TreeDataGrid />
             </TabItem>
-            <TabItem>
+            <TabItem x:Name="TabTypography">
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
                         <TextBlock Text="Typography" />
@@ -250,7 +250,7 @@
                 </ScrollViewer>
             </TabItem>
 
-            <TabItem IsSelected="True">
+            <TabItem x:Name="TabColors" IsSelected="True">
                 
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
@@ -797,7 +797,7 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Header="Icons">
+            <TabItem Header="Icons" x:Name="TabIcons">
                 <WrapPanel VerticalAlignment="Top">
                     <WrapPanel.Styles>
                         <Style Selector="icons|UnifiedIcon">

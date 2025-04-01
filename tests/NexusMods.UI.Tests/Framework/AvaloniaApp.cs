@@ -123,6 +123,36 @@ public class AvaloniaApp : IDisposable
         return host;
     }
 
+    public async Task OnUI(Action callback)
+    {
+        var tsc = new TaskCompletionSource();
+        await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+
+                callback();
+                tsc.SetResult();
+            }
+        );
+        await tsc.Task;
+    }
+
+    public async Task<Window> CreateWindow()
+    {
+        var window = await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var window = new Window
+            {
+                Width = 1280,
+                Height = 720,
+            };
+
+            window.Show();
+            return window;
+        });
+
+        return window;
+    }
+
     /// <summary>
     /// Constructs a window host that can be used to interact with the window, this will be a fully functional
     /// version of the app with all services connected and using a normal MainWindowViewModel
