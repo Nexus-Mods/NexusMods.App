@@ -10,9 +10,11 @@ To improve visibility and ease of access, collections that are not yet fully ins
 In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections, it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs, as we feel most users don't need to see both at the same time. 
 
 # More Features
+* To prevent accidental modification breaking the collection, files inside mods that are part of a Nexus Mods collection cannot be edited.
+* Mods that are a required part of a Nexus Mod collections can now only be enabled/disabled with the collection toggle.
+* Updated the toggle indicator for mods to better communicate why a mod cannot be toggled when it is part of a collection, clicking this new button will open the Installed Collection page. 
 * Continued to refine the UI to make it more compact. 
 * The "Optional" tab is now only shown for collections with optional mods.
-* Updated the toggle indicator in the "All" section under "Installed Mods" to better communicate why a mod cannot be toggled when it is part of a collection. 
 
 # Technical Changes
 * Improved the "Update available" pop-up to give more relevant advice depending on how the app was installed (Windows EXE, Linux AppImage, Linux Package Manager).
