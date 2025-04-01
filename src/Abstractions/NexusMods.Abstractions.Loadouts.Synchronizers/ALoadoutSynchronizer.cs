@@ -1193,10 +1193,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     {
                         var gamePath = installation.LocationsRegister.ToGamePath(file);
-                        
-                        if (IsIgnoredPath(gamePath))
-                            return;
-                        
+
                         lock (seen)
                         {
                             seen.Add(gamePath);
@@ -1431,16 +1428,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual bool IsIgnoredBackupPath(GamePath path)
-    {
-        return false;
-    }
-
-    /// <inheritdoc />
-    public virtual bool IsIgnoredPath(GamePath path)
-    {
-        return false;
-    }
+    public virtual bool IsIgnoredBackupPath(GamePath path) => false;
 
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> CopyLoadout(LoadoutId loadoutId)

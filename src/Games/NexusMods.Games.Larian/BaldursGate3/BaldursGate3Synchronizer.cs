@@ -23,18 +23,7 @@ public class BaldursGate3Synchronizer : ALoadoutSynchronizer
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
         _settings = settingsManager.Get<BaldursGate3Settings>();
     }
-    
-    public override bool IsIgnoredPath(GamePath path)
-    {
-        // Always ignore all PlayerProfile files except the modsettings file.
-        if (path.InFolder(PublicPlayerProfiles))
-            return path.Path != ModSettingsFile.Path;
-        
-        if (_settings.DoFullGameBackup) return false;
 
-        return path.InFolder(DataFolder) && path.Extension == Bg3Constants.PakFileExtension;
-    }
-    
     public override bool IsIgnoredBackupPath(GamePath path)
     {
         if (_settings.DoFullGameBackup) return false;

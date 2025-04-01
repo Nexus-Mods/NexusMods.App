@@ -92,8 +92,6 @@ public class BannerlordLoadoutSynchronizer : ALoadoutSynchronizer
         if (_settings.DoFullGameBackup) return false;
         return path.LocationId == LocationId.Game && IsIgnoredPathInner(path);
     }
-    
-    public override bool IsIgnoredPath(GamePath path) => !_settings.DoFullGameBackup && IsIgnoredPathInner(path);
 
     private static bool IsIgnoredPathInner(GamePath path)
     {
