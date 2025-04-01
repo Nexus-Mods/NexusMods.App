@@ -50,7 +50,7 @@ public class FileStoreTests : ACyberpunkIsolatedGameTest<FileStoreTests>
         
         // Act
         await _libraryService.RemoveItems([libraryItemA.AsLibraryFile().AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
-        _gcRunner.Run();
+        await _gcRunner.RunAsync();
         
         // Assert
         // Changing A should not affect B
@@ -68,6 +68,5 @@ public class FileStoreTests : ACyberpunkIsolatedGameTest<FileStoreTests>
             var dataFileBCheckedHashAfter = await dataFileBStreamAfter.xxHash3Async();
             dataFileBCheckedHashAfter.Should().Be(dataFileBHashBefore, "Hash should be the same after changing A");
         }
-        
     }
 }
