@@ -17,9 +17,6 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath> where TTreeItem
     /// </example>
     private readonly GeneratedFolder<TTreeItemWithPath> _rootFolder = new();
     
-    // TODO: Deletion of folders with file deletions
-    // TODO: Wiring up children in `CompositeItemModel` instances.
-    
     /// <summary>
     /// Obtains an observable set of <see cref="CompositeItemModel{TKey}"/> for the specified folder.
     /// </summary>
