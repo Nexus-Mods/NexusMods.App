@@ -18,10 +18,10 @@ public partial class UpgradeToPremiumView : ReactiveUserControl<IUpgradeToPremiu
             this.BindCommand(ViewModel, vm => vm.CommandCancel, view => view.ButtonCancel)
                 .DisposeWith(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.CommandUpgrade, view => view.ButtonUpgrade)
+            this.BindCommand(ViewModel, vm => vm.CommandLearnMore, view => view.ButtonLearnMore)
                 .DisposeWith(disposables);
-
-            this.OneWayBind(ViewModel, vm => vm.MarkdownRendererViewModel, view => view.ViewModelViewHostMarkdownRenderer.ViewModel)
+            
+            this.BindCommand(ViewModel, vm => vm.CommandUpgrade, view => view.ButtonUpgrade)
                 .DisposeWith(disposables);
         });
     }

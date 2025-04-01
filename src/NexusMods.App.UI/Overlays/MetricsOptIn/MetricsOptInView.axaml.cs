@@ -17,9 +17,6 @@ public partial class MetricsOptInView : ReactiveUserControl<IMetricsOptInViewMod
 
             this.BindCommand(ViewModel, vm => vm.Deny, view => view.DenyButton)
                 .DisposeWith(d);
-
-            this.OneWayBind(ViewModel, vm => vm.MarkdownRendererViewModel, view => view.MarkdownRendererViewModelViewHost.ViewModel)
-                .DisposeWith(d);
         });
     }
 }

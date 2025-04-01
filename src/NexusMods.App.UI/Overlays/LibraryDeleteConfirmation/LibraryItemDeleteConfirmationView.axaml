@@ -7,13 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
-    xmlns:rsrc="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:deleteConf="clr-namespace:NexusMods.App.UI.Overlays.LibraryDeleteConfirmation"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:library="clr-namespace:NexusMods.App.UI.Pages.Library"
-    mc:Ignorable="d"
-    d:DesignWidth="1280"
-    d:DesignHeight="800"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"
     d:DataContext="{x:Static deleteConf:LibraryItemDeleteConfirmationDesignViewModels.InLoadoutsInMultipleStardewValleyLoadout}">
     <!-- 👆 Design ViewModel, Since `Design.DataContext` can't bind -->
     <!-- For design width/height. We set the design width/height to 1280x800.
@@ -91,27 +90,33 @@
         </Style>
     </reactiveUi:ReactiveUserControl.Styles>
     
-    <base:MessageBoxBackground MinWidth="700" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576" HorizontalAlignment="Center" VerticalAlignment="Center">
         <base:MessageBoxBackground.TopContent>
             <StackPanel Orientation="Vertical" Margin="24">
+                
                 <!-- Title -->
                 <DockPanel x:Name="ModalTitlePanel">
-                    <icons:UnifiedIcon Classes="Alert" x:Name="HeadingIcon" />
-                    <TextBlock DockPanel.Dock="Left" x:Name="HeadingText" />
+
+                    <icons:UnifiedIcon x:Name="HeadingIcon" DockPanel.Dock="Left" 
+                                       Value="{x:Static icons:IconValues.Warning}"  />
 
                     <!-- 'Cross' button. -->
-                    <Button
-                        x:Name="CloseButton"
-                        DockPanel.Dock="Right"
-                        Classes="BareIcon WindowClose"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"/>
+                    <controls:StandardButton x:Name="CloseButton" DockPanel.Dock="Right" 
+                                    LeftIcon="{x:Static icons:IconValues.Close}"
+                                    ShowIcon="Left"
+                                    ShowLabel="False"
+                                    Type="Tertiary"
+                                    Fill="None"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"/>
+                    
+                        <TextBlock x:Name="HeadingText" VerticalAlignment="Center" />
                 </DockPanel>
 
                 <ScrollViewer MaxHeight="300">
                     <StackPanel x:Name="ModalContentsPanel" Classes="CommonPanel">
                         <!-- 'Deleting these mods removes them from the App' -->
-                        <TextBlock Classes="BodyMDBold" x:Name="QuestionTitle" Text="{x:Static rsrc:Language.LibraryItemDeleteConfirmation_HeaderQuestion}"/>
+                        <TextBlock Classes="BodyMDBold" x:Name="QuestionTitle" Text="{x:Static resources:Language.LibraryItemDeleteConfirmation_HeaderQuestion}"/>
                 
                         <!-- Items -->
                         <ItemsControl x:Name="RemovedItemsList" Classes="ModsList"/>
@@ -126,23 +131,28 @@
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-            <!-- Yes / No Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-2_5">
-                <Button x:Name="NoButton"
-                        Classes="Standard SecondaryOutlined"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static rsrc:Language.DialogButton_CANCEL}" Foreground="{StaticResource NeutralModerateBrush}" />
-                </Button>
-                <Button x:Name="DeleteButton"
-                        Classes="Standard SecondaryOutlined"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <icons:UnifiedIcon Classes="DeleteForever" Foreground="{StaticResource DangerStrongBrush}" />
-                        <TextBlock Classes="BodyLGNormal" Text="{x:Static rsrc:Language.DialogButton_DELETE_MODS}"  Foreground="{StaticResource DangerStrongBrush}" />
-                    </StackPanel>
-                </Button>
+            
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" 
+                        Margin="24" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Right" 
+                        Spacing="{StaticResource Spacing-3}">
+                <controls:StandardButton x:Name="NoButton"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         Text="{x:Static resources:Language.DialogButton_CANCEL}"/>
+                <controls:StandardButton  x:Name="DeleteButton"
+                                          Type="Tertiary"
+                                          Fill="Weak"
+                                          Foreground="{StaticResource DangerStrongBrush}"
+                                          LeftIcon="{x:Static icons:IconValues.DeleteForever}"
+                                          ShowIcon="Left"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          Text="{x:Static resources:Language.DialogButton_DELETE_MODS}"/>
             </StackPanel>
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
