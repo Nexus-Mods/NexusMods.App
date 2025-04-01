@@ -7,7 +7,7 @@ To improve visibility and ease of access, collections that are not yet fully ins
 ![The app showing an in-progress collection in the left menu.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1743503241-1477227753.png)
 
 # Re-organised Library
-In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs as we feel most users don't need to see both at the same time. 
+In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections, it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs, as we feel most users don't need to see both at the same time. 
 
 # More Features
 * Continued to refine the UI to make it more compact. 
@@ -33,8 +33,8 @@ In testing, we found that the Library was starting to get a little cluttered wit
 
 ## Known Issues
 * The sort order for some columns does not work as expected.
-* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
-* The table header sorting and active tab states are not saved and reset each time the view is loaded.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
 
 # v0.8.3 - 2025-03-24
 This release fixes a few high-priority issues discovered during user testing of 0.8.2. Thank you for your feedback and please keep it coming.
