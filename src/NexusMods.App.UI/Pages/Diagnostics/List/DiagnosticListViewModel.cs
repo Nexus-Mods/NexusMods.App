@@ -152,6 +152,7 @@ internal class DiagnosticListViewModel : APageViewModel<IDiagnosticListViewModel
                                     Context = new DiagnosticDetailsPageContext
                                     {
                                         Diagnostic = diagnostic,
+                                        LoadoutId = LoadoutId,
                                     },
                                 };
 

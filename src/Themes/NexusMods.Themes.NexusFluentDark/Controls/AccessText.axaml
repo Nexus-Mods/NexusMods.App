@@ -1,0 +1,19 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <Border Padding="16" Width="360" Height="240">
+            <StackPanel>
+                <AccessText Text="AccessText" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    
+    <!-- 
+    Defaults all AccessText to BodySMNormalTheme 
+    AccessText is used by built in controls when setting Control properties to just text i.e. Header="Text Goes Here"
+    Found at src/Themes/NexusMods.Themes.NexusFluentDark/Resources/Typography/TextBlockControlThemes.axaml
+     -->
+    <ControlTheme x:Key="{x:Type AccessText}" TargetType="AccessText" BasedOn="{StaticResource BodySMNormalTheme}"/>
+    
+</ResourceDictionary>

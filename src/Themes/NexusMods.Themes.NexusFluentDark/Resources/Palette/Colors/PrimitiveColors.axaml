@@ -1,5 +1,8 @@
 ﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    
+    
     <!--
         Color Primitives (Layer 1):
         These base colours define the building blocks of our colour system.
@@ -72,7 +75,20 @@
     <Color x:Key="PrimitiveGreen200">#BBF7D0</Color>
     <Color x:Key="PrimitiveGreen100">#DCFCE7</Color>
     <Color x:Key="PrimitiveGreen50">#F0FDF4</Color>
-
+    
+    <!-- Teal -->
+    <Color x:Key="PrimitiveTeal950">#042F2E</Color>
+    <Color x:Key="PrimitiveTeal900">#134E4A</Color>
+    <Color x:Key="PrimitiveTeal800">#115E59</Color>
+    <Color x:Key="PrimitiveTeal700">#0F766E</Color>
+    <Color x:Key="PrimitiveTeal600">#0D9488</Color>
+    <Color x:Key="PrimitiveTeal500">#14B8A6</Color>
+    <Color x:Key="PrimitiveTeal400">#2DD4BF</Color>
+    <Color x:Key="PrimitiveTeal300">#5EEAD4</Color>
+    <Color x:Key="PrimitiveTeal200">#99F6E4</Color>
+    <Color x:Key="PrimitiveTeal100">#CCFBF1</Color>
+    <Color x:Key="PrimitiveTeal50">#F0FDFA</Color>
+    
     <!-- Blue -->
     <Color x:Key="PrimitiveBlue950">#172554</Color>
     <Color x:Key="PrimitiveBlue900">#1E3A8A</Color>
@@ -99,8 +115,9 @@
     <Color x:Key="PrimitiveViolet100">#EDE9FE</Color>
     <Color x:Key="PrimitiveViolet50">#F5F3FF</Color>
 
+    
     <!-- TranslucentWhite -->
-    <!-- NOTE: Avalonia uses ARGB, while figma uses RGBA -->
+    <!-- NOTE: Avalonia uses ARGB, while Figma uses RGBA -->
     <Color x:Key="PrimitiveTranslucentWhite950">#F2FFFFFF</Color>
     <Color x:Key="PrimitiveTranslucentWhite900">#E5FFFFFF</Color>
     <Color x:Key="PrimitiveTranslucentWhite800">#CCFFFFFF</Color>
@@ -114,7 +131,7 @@
     <Color x:Key="PrimitiveTranslucentWhite50">#0DFFFFFF</Color>
 
     <!-- TranslucentBlack -->
-    <!-- NOTE: Avalonia uses ARGB, while figma uses RGBA -->
+    <!-- NOTE: Avalonia uses ARGB, while Figma uses RGBA -->
     <Color x:Key="PrimitiveTranslucentBlack950">#F2000000</Color>
     <Color x:Key="PrimitiveTranslucentBlack900">#E5000000</Color>
     <Color x:Key="PrimitiveTranslucentBlack800">#CC000000</Color>

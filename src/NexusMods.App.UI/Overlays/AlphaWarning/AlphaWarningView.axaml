@@ -6,17 +6,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Overlays.AlphaWarning"
-    xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
     mc:Ignorable="d"
-    x:Class="NexusMods.App.UI.Overlays.AlphaWarning.AlphaWarningView">
+    x:Class="NexusMods.App.UI.Overlays.AlphaWarning.AlphaWarningView"
+    ClipToBounds="False">
 
     <Border MinWidth="576" MaxWidth="576"
             Background="{StaticResource SurfaceLowBrush}"
             CornerRadius="8"
-            Padding="24">
+            Padding="24"
+            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+            BorderThickness="2"
+            BoxShadow="{StaticResource DropShadowMD}">
 
         <StackPanel HorizontalAlignment="Center" Spacing="32">
             <StackPanel Spacing="8">
@@ -26,7 +28,8 @@
                 <TextBlock Theme="{StaticResource BodyXLBoldTheme}"
                            TextAlignment="Center"
                            Foreground="{StaticResource NeutralStrongBrush}">
-                    Welcome to the <Span Foreground="{StaticResource StardewLinearGradientBrush}">Stardew Valley Preview</Span>
+                    Welcome to the
+                    <Span Foreground="{StaticResource StardewLinearGradientBrush}">Stardew Valley Preview</Span>
                 </TextBlock>
 
                 <TextBlock Theme="{StaticResource BodyMDNormalTheme}"

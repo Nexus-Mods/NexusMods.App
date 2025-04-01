@@ -24,7 +24,7 @@ public class StandardButton : Button
     public enum ShowIconOptions
     {
         /// <summary>
-        /// No icon is displayed.
+        /// No icon is displayed (Default).
         /// </summary>
         None,
 
@@ -55,14 +55,19 @@ public class StandardButton : Button
     public enum Sizes
     {
         /// <summary>
+        /// Small size. (Default)
+        /// </summary>
+        Small,
+        
+        /// <summary>
         /// Medium size.
         /// </summary>
         Medium,
-
+        
         /// <summary>
-        /// Small size.
+        /// Extra Small size.
         /// </summary>
-        Small,
+        ExtraSmall,
     }
 
     /// <summary>
@@ -71,9 +76,9 @@ public class StandardButton : Button
     public enum Types
     {
         /// <summary>
-        /// No specific type.
+        /// Tertiary type. (Default)
         /// </summary>
-        None,
+        Tertiary,
 
         /// <summary>
         /// Primary type.
@@ -84,11 +89,6 @@ public class StandardButton : Button
         /// Secondary type.
         /// </summary>
         Secondary,
-
-        /// <summary>
-        /// Tertiary type.
-        /// </summary>
-        Tertiary,
     }
 
     /// <summary>
@@ -96,6 +96,11 @@ public class StandardButton : Button
     /// </summary>
     public enum Fills
     {
+        /// <summary>
+        /// Weak fill (translucent). (Default)
+        /// </summary>
+        Weak,
+        
         /// <summary>
         /// No fill.
         /// </summary>
@@ -105,14 +110,9 @@ public class StandardButton : Button
         /// Strong fill.
         /// </summary>
         Strong,
-
-        /// <summary>
-        /// Weak fill (translucent).
-        /// </summary>
-        Weak,
         
         /// <summary>
-        /// Weak solid fill.
+        /// Weak fill (solid).
         /// </summary>
         WeakAlt,
     }
@@ -154,7 +154,7 @@ public class StandardButton : Button
     /// <summary>
     /// Defines the Size attached property of the <see cref="StandardButton"/>.
     /// </summary>
-    public static readonly AttachedProperty<Sizes> SizeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Sizes>("Size", defaultValue: Sizes.Medium);
+    public static readonly AttachedProperty<Sizes> SizeProperty = AvaloniaProperty.RegisterAttached<StandardButton, TemplatedControl, Sizes>("Size", defaultValue: Sizes.Small);
 
     /// <summary>
     /// Defines the Fill attached property of the <see cref="StandardButton"/>.

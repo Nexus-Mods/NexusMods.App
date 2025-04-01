@@ -93,7 +93,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         Adapter = new LibraryTreeDataGridAdapter(serviceProvider, libraryFilter);
 
-        _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller");
+        _advancedInstaller = serviceProvider.GetRequiredKeyedService<ILibraryItemInstaller>("AdvancedManualInstaller_Direct");
 
         TabTitle = Language.LibraryPageTitle;
         TabIcon = IconValues.LibraryOutline;
@@ -156,7 +156,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             executeAsync: async (_, cancellationToken) =>
             {
                 var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
-                var gameUri = NexusModsUrlBuilder.CreateGenericUri($"https://www.nexusmods.com/{gameDomain}");
+                var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain.Value);
                 await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Parallel,
@@ -245,9 +245,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             // Open download page for every unique file.
             foreach (var file in updatesOnPage.NewestUniqueFileForEachMod())
             {
-                var modFileUrl = NexusModsUrlBuilder.CreateModFileDownloadUri(file.Uid.FileId, file.Uid.GameId);
                 var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-                await osInterop.OpenUrl(modFileUrl, cancellationToken: cancellationToken);
+                var uri = NexusModsUrlBuilder.GetFileDownloadUri(file.ModPage.GameDomain, file.ModPage.Uid.ModId, file.Uid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignUpdates);
+                await osInterop.OpenUrl(uri, cancellationToken: cancellationToken);
             }
         }
         else

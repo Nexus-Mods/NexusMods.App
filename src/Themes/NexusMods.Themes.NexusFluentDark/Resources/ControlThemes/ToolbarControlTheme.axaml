@@ -1,0 +1,70 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Width="400">
+            <StackPanel>
+                <controls:Toolbar/>
+                <controls:Toolbar>
+                    <controls:StandardButton Text="Button 1" Fill="WeakAlt"
+                                             Size="ExtraSmall"/>
+                    <controls:StandardButton Text="Button 2" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                    <Separator />
+                    <controls:StandardButton Text="Button 3" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                    <SplitButton Height="24">SplitButton</SplitButton>
+                    <ComboBox Height="24" PlaceholderText="Select an item">
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
+                    <Separator />
+                    <controls:StandardButton Text="Button 4" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                </controls:Toolbar>
+                
+                <controls:Toolbar>
+                    <controls:StandardButton Text="Button 3" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                </controls:Toolbar>
+                
+            </StackPanel>
+            
+        </Border>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type controls:Toolbar}" TargetType="controls:Toolbar">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="24, 12,24,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Margin="{TemplateBinding Margin}"
+                        MinHeight="{TemplateBinding MinHeight}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                        Background="{TemplateBinding Background}"
+                        Padding="{TemplateBinding Padding}">
+                    <Border Name="ButtonContainer"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Background="{StaticResource SurfaceMidBrush}"
+                            Padding="4"
+                            HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <ItemsPresenter Name="PART_ItemsPresenter"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        </StackPanel>
+                    </Border>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Styles for expected child controls are in src/Themes/NexusMods.Themes.NexusFluentDark/Styles/UserControls/Toolbar/ToolbarStyles.axaml -->
+
+</ResourceDictionary>

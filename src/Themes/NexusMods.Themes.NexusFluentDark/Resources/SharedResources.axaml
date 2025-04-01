@@ -1,0 +1,48 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System">
+    
+    <!-- Used when we need to see if something hasn't been overriden with our system, primarily in 
+    NexusMods.Themes.NexusFluentDark.NexusFluentDarkTheme.axaml when overriding native Fluent theme palette -->
+    <Color x:Key="DebugColor">DeepPink</Color>
+    <SolidColorBrush x:Key="DebugColorBrush" Color="{StaticResource DebugColor}" />
+    
+    <!-- Defines misc resources for the Theme -->
+
+    <!-- DataGrid Sort Icon replacements -->
+    <StreamGeometry x:Key="DataGridSortIconDescendingPath">m4 12 1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z</StreamGeometry>
+    <StreamGeometry x:Key="DataGridSortIconAscendingPath">m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z</StreamGeometry>
+
+    <!-- DropDown arrow icon -->
+    <StreamGeometry x:Key="MenuDownGeometry">M0 0.5L5 5.5L10 0.5H0Z</StreamGeometry>
+    <StreamGeometry x:Key="KeyBoardArrowDownGeometry">M1.0575 0.442383L4.5 3.87738L7.9425 0.442383L9 1.49988L4.5 5.99988L0 1.49988L1.0575 0.442383Z</StreamGeometry>
+
+    <!-- start of copies from Avalonia.Themes.Fluent -->
+
+    <!-- <FontFamily x:Key="ContentControlThemeFontFamily">fonts:Inter#Inter, $Default</FontFamily> -->
+    <sys:Double x:Key="ControlContentThemeFontSize">14</sys:Double>
+
+    <SolidColorBrush x:Key="SystemControlTransparentBrush" Color="Transparent" />
+    <x:Boolean x:Key="UseSystemFocusVisuals">True</x:Boolean>
+    <Thickness x:Key="TextControlBorderThemeThickness">1</Thickness>
+    <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+    <Thickness x:Key="TextControlThemePadding">8,5,6,4</Thickness>
+    <sys:Double x:Key="IconElementThemeHeight">20</sys:Double>
+    <sys:Double x:Key="IconElementThemeWidth">20</sys:Double>
+    <sys:Double x:Key="RefreshVisualizerIndicatorSize">24</sys:Double>
+    <Thickness x:Key="ButtonPadding">8,5,8,5</Thickness>
+    
+    
+
+    <!-- Override system shape defaults -->
+    <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+    <CornerRadius x:Key="OverlayCornerRadius">6</CornerRadius>
+
+    <x:Double x:Key="AutoCompleteListMaxHeight">374</x:Double>
+    <Thickness x:Key="AutoCompleteListMargin">0,2,0,2</Thickness>
+    <Thickness x:Key="AutoCompleteListBorderThemeThickness">1</Thickness>
+    <Thickness x:Key="AutoCompleteListPadding">-1,0,-1,0</Thickness>
+    <x:Double x:Key="TextControlThemeMinHeight">28</x:Double>
+    <x:Double x:Key="TextControlThemeMinWidth">64</x:Double>
+
+</ResourceDictionary>

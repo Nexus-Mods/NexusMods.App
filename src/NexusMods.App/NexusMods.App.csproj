@@ -35,6 +35,7 @@
         <ProjectReference Include="..\NexusMods.Games.FileHashes\NexusMods.Games.FileHashes.csproj" />
         <ProjectReference Include="..\NexusMods.Jobs\NexusMods.Jobs.csproj" />
         <ProjectReference Include="..\NexusMods.Library\NexusMods.Library.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.GitHub\NexusMods.Networking.GitHub.csproj" />
         <ProjectReference Include="..\NexusMods.ProxyConsole\NexusMods.ProxyConsole.csproj" />
         <ProjectReference Include="..\NexusMods.Settings\NexusMods.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.SingleProcess\NexusMods.SingleProcess.csproj" />

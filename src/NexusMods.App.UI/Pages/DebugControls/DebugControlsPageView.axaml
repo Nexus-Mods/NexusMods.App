@@ -1,0 +1,832 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IDebugControlsPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages.DebugControls"
+    xmlns:r3="clr-namespace:R3;assembly=R3"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignHeight="400"
+    x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
+
+    <Border Background="{StaticResource SurfaceLowBrush}">
+        <TabControl>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Controls" />
+                    </StackPanel>
+                </TabItem.Header>
+                <Border Padding="8">
+                    <ScrollViewer>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Button" />
+                                    <Button>Enabled</Button>
+                                    <Button IsEnabled="False">Disabled</Button>
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="SplitButton" />
+                                    <SplitButton>
+                                        <TextBlock Text="Enabled" />
+                                        <SplitButton.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Install" />
+                                                <MenuItem Header="Advanced Install" />
+                                            </MenuFlyout>
+                                        </SplitButton.Flyout>
+                                    </SplitButton>
+                                    <SplitButton IsEnabled="False">
+                                        <TextBlock Text="Disabled" />
+                                    </SplitButton>
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="ComboBox" />
+                                    <ComboBox PlaceholderText="Placeholder">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                        <ComboBoxItem>Item 2</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox SelectedIndex="0">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                        <ComboBoxItem>Item 2</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox PlaceholderText="Placeholder" IsEnabled="False">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                        <ComboBoxItem>Item 2</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox IsEnabled="False" SelectedIndex="0">
+                                        <ComboBoxItem>Item 1</ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="ToggleSwitch" />
+                                    <ToggleSwitch />
+                                    <ToggleSwitch IsChecked="True" />
+                                    <ToggleSwitch IsChecked="{x:Null}" IsThreeState="True" />
+                                    <ToggleSwitch IsEnabled="False" />
+                                    <ToggleSwitch IsChecked="True" IsEnabled="False" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="CheckBox" />
+                                    <CheckBox>Enabled</CheckBox>
+                                    <CheckBox IsChecked="True">Checked</CheckBox>
+                                    <CheckBox IsChecked="{x:Null}" IsThreeState="True">3-State</CheckBox>
+                                    <CheckBox IsEnabled="False">Disabled</CheckBox>
+                                    <CheckBox IsChecked="True" IsEnabled="False">Checked</CheckBox>
+                                    <CheckBox IsChecked="{x:Null}" IsEnabled="False">3-State</CheckBox>
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="RadioButton" />
+                                    <RadioButton>Enabled</RadioButton>
+                                    <RadioButton IsChecked="True">Checked</RadioButton>
+                                    <RadioButton IsEnabled="False">Disabled</RadioButton>
+                                    <RadioButton IsChecked="True" IsEnabled="False">Checked</RadioButton>
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="TextBox" />
+                                    <TextBox>Enabled</TextBox>
+                                    <TextBox Watermark="Placeholder" />
+                                    <TextBox IsEnabled="False">Disabled</TextBox>
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Expander" />
+                                    <Expander ExpandDirection="Down" Header="Expand Down">
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                    <Expander ExpandDirection="Down" Header="Expand Down" IsEnabled="False">
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                    <Expander ExpandDirection="Down">
+                                        <Expander.Header>
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="{StaticResource Spacing-2}">
+                                                <icons:UnifiedIcon
+                                                    Value="{x:Static icons:IconValues.CollectionsOutline}"
+                                                    Size="20" />
+                                                <TextBlock Text="Collections"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Expander.Header>
+                                        <StackPanel>
+                                            <TextBlock>Expanded content</TextBlock>
+                                        </StackPanel>
+                                    </Expander>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="StandardButton" />
+                                    <controls:StandardButton Text="Default" />
+                                    <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
+                                    <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
+                                    <controls:StandardButton Text="Secondary-Strong" ShowIcon="Right" Type="Secondary"
+                                                             Fill="Strong" />
+                                    <controls:StandardButton Text="Secondary-Weak" ShowIcon="Right" Type="Secondary"
+                                                             Fill="Weak" />
+                                    <controls:StandardButton Text="Secondary-None" ShowIcon="Right" Type="Secondary"
+                                                             Fill="None" />
+                                    <controls:StandardButton Text="Primary-Strong" ShowIcon="Right" Type="Primary"
+                                                             Fill="Strong" />
+                                    <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary"
+                                                             Fill="Weak" />
+                                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" />
+                                    <controls:StandardButton Text="Extra Small" Size="ExtraSmall" ShowIcon="Both" />
+                                </StackPanel>
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="StandardSplitButton" />
+                                    <SplitButton Classes="StandardSplitButton">
+                                        <TextBlock Text="Enabled" />
+                                        <SplitButton.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="Install" />
+                                                <MenuItem Header="Advanced Install" />
+                                            </MenuFlyout>
+                                        </SplitButton.Flyout>
+                                    </SplitButton>
+                                    <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                                        <TextBlock Text="Disabled" />
+                                    </SplitButton>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Modals" />
+                    </StackPanel>
+                </TabItem.Header>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="TreeDataGrid" />
+                    </StackPanel>
+                </TabItem.Header>
+                <TreeDataGrid />
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Typography" />
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Star}" />
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer>
+                    <StackPanel>
+                <TextBlock Text="Heading2XLSemi" Theme="{StaticResource Heading2XLSemiTheme}" />
+                <TextBlock Text="HeadingLGSemi" Theme="{StaticResource HeadingLGSemiTheme}" />
+                <TextBlock Text="HeadingMDSemi" Theme="{StaticResource HeadingMDSemiTheme}" />
+                <TextBlock Text="HeadingSMSemi" Theme="{StaticResource HeadingSMSemiTheme}" />
+                <TextBlock Text="HeadingXSSemi" Theme="{StaticResource HeadingXSSemiTheme}" />
+
+                <TextBlock Text="TitleMDSemi" Theme="{StaticResource TitleMDSemiTheme}" />
+                <TextBlock Text="TitleSMSemi" Theme="{StaticResource TitleSMSemiTheme}" />
+                <TextBlock Text="TitleXSSemi" Theme="{StaticResource TitleXSSemiTheme}" />
+
+                <Grid ColumnDefinitions="Auto,16,Auto">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}" />
+                        <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" Classes="Success" />
+                        <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" />
+                        <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}" />
+                        <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" />
+                        <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}" />
+                        <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" />
+                        <TextBlock Text="BodySMNormal" />
+                        <TextBlock Text="BodySMNormal" Classes="Warning" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodyXLBoldTheme}" Classes="Warning"  />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="8">
+                        <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                    </StackPanel>
+                </Grid>
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Success" Classes="Success" />
+                    <TextBlock Text="Suggestion" Classes="Suggestion" />
+                    <TextBlock Text="Warning" Classes="Warning" />
+                    <TextBlock Text="Critical" Classes="Critical" />
+                </StackPanel>
+            </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem IsSelected="True">
+                
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Colors" />
+                        <Border>
+                            <TextBlock Text="123" />
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <TabControl Classes="Subtabs" Margin="24,12">
+                    
+                    <TabControl.Styles>
+                        <Style Selector="StackPanel.ElementSection">
+                            <Setter Property="Spacing" Value="4" />
+                            <Style Selector="^ > TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                            </Style>
+                            <Style Selector="^ > TextBlock:nth-child(1)">
+                                <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+                            </Style>
+                            <Style Selector="^ StackPanel.ColorRamp">
+                                <Style Selector="^ > TextBlock">
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                </Style>
+                                <Style Selector="^ > TextBlock:nth-child(1)">
+                                    <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
+                                </Style>
+                                <Style Selector="^ Grid">
+                                    <Setter Property="Height" Value="20" />
+                                    <Style Selector="^ > Border">
+                                        <Setter Property="Padding" Value="6,3,6,2" />
+                                    </Style>
+                                </Style>
+                            </Style>
+                        </Style>
+                    </TabControl.Styles>
+
+                    <TabItem Header="Tier 1 - Primitives">
+                        <ScrollViewer>
+                            <StackPanel Margin="0,16,0,0">
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Primitives" Theme="{StaticResource HeadingXSSemiTheme}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <TabItem Header="Tier 2 - Brand">
+                        <ScrollViewer>
+                            <StackPanel Margin="0,16,0,0">
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Brand" Theme="{StaticResource HeadingXSSemiTheme}" />
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="TranslucentLight" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource BrandTranslucentLight950Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight950Brush" />
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource BrandTranslucentLight900Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight900Brush" />
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource BrandTranslucentLight800Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight800Brush" />
+                                            <Border Grid.Column="3"
+                                                    Background="{StaticResource BrandTranslucentLight700Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight700Brush" />
+                                            <Border Grid.Column="4"
+                                                    Background="{StaticResource BrandTranslucentLight600Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight600Brush" />
+                                            <Border Grid.Column="5"
+                                                    Background="{StaticResource BrandTranslucentLight500Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight500Brush" />
+                                            <Border Grid.Column="6"
+                                                    Background="{StaticResource BrandTranslucentLight400Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight400Brush" />
+                                            <Border Grid.Column="7"
+                                                    Background="{StaticResource BrandTranslucentLight300Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight300Brush" />
+                                            <Border Grid.Column="8"
+                                                    Background="{StaticResource BrandTranslucentLight200Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight200Brush" />
+                                            <Border Grid.Column="9"
+                                                    Background="{StaticResource BrandTranslucentLight100Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight100Brush" />
+                                            <Border Grid.Column="10"
+                                                    Background="{StaticResource BrandTranslucentLight50Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="TranslucentDark" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource BrandTranslucentDark950Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark950Brush" />
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource BrandTranslucentDark900Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark900Brush" />
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource BrandTranslucentDark800Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark800Brush" />
+                                            <Border Grid.Column="3"
+                                                    Background="{StaticResource BrandTranslucentDark700Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark700Brush" />
+                                            <Border Grid.Column="4"
+                                                    Background="{StaticResource BrandTranslucentDark600Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark600Brush" />
+                                            <Border Grid.Column="5"
+                                                    Background="{StaticResource BrandTranslucentDark500Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark500Brush" />
+                                            <Border Grid.Column="6"
+                                                    Background="{StaticResource BrandTranslucentDark400Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark400Brush" />
+                                            <Border Grid.Column="7"
+                                                    Background="{StaticResource BrandTranslucentDark300Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark300Brush" />
+                                            <Border Grid.Column="8"
+                                                    Background="{StaticResource BrandTranslucentDark200Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark200Brush" />
+                                            <Border Grid.Column="9"
+                                                    Background="{StaticResource BrandTranslucentDark100Brush}"
+                                                    ToolTip.Tip="BrandTranslucentDark100Brush" />
+                                            <Border Grid.Column="10"
+                                                    Background="{StaticResource BrandTranslucentDark50Brush}"
+                                                    ToolTip.Tip="BrandTranslucentLight50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Neutral" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandNeutral950Brush}"
+                                                    ToolTip.Tip="BrandNeutral950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandNeutral900Brush}"
+                                                    ToolTip.Tip="BrandNeutral900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandNeutral800Brush}"
+                                                    ToolTip.Tip="BrandNeutral800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandNeutral700Brush}"
+                                                    ToolTip.Tip="BrandNeutral700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandNeutral600Brush}"
+                                                    ToolTip.Tip="BrandNeutral600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandNeutral500Brush}"
+                                                    ToolTip.Tip="BrandNeutral500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandNeutral400Brush}"
+                                                    ToolTip.Tip="BrandNeutral400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandNeutral300Brush}"
+                                                    ToolTip.Tip="BrandNeutral300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandNeutral200Brush}"
+                                                    ToolTip.Tip="BrandNeutral200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandNeutral100Brush}"
+                                                    ToolTip.Tip="BrandNeutral100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandNeutral50Brush}"
+                                                    ToolTip.Tip="BrandNeutral50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Danger" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandDanger950Brush}"
+                                                    ToolTip.Tip="BrandDanger950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandDanger900Brush}"
+                                                    ToolTip.Tip="BrandDanger900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandDanger800Brush}"
+                                                    ToolTip.Tip="BrandDanger800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandDanger700Brush}"
+                                                    ToolTip.Tip="BrandDanger700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandDanger600Brush}"
+                                                    ToolTip.Tip="BrandDanger600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandDanger500Brush}"
+                                                    ToolTip.Tip="BrandDanger500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandDanger400Brush}"
+                                                    ToolTip.Tip="BrandDanger400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandDanger300Brush}"
+                                                    ToolTip.Tip="BrandDanger300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandDanger200Brush}"
+                                                    ToolTip.Tip="BrandDanger200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandDanger100Brush}"
+                                                    ToolTip.Tip="BrandDanger100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandDanger50Brush}"
+                                                    ToolTip.Tip="BrandDanger50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Primary" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandPrimary950Brush}"
+                                                    ToolTip.Tip="BrandPrimary950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandPrimary900Brush}"
+                                                    ToolTip.Tip="BrandPrimary900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandPrimary800Brush}"
+                                                    ToolTip.Tip="BrandPrimary800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandPrimary700Brush}"
+                                                    ToolTip.Tip="BrandPrimary700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandPrimary600Brush}"
+                                                    ToolTip.Tip="BrandPrimary600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandPrimary500Brush}"
+                                                    ToolTip.Tip="BrandPrimary500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandPrimary400Brush}"
+                                                    ToolTip.Tip="BrandPrimary400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandPrimary300Brush}"
+                                                    ToolTip.Tip="BrandPrimary300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandPrimary200Brush}"
+                                                    ToolTip.Tip="BrandPrimary200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandPrimary100Brush}"
+                                                    ToolTip.Tip="BrandPrimary100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandPrimary50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Warning" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandWarning950Brush}"
+                                                    ToolTip.Tip="BrandWarning950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandWarning900Brush}"
+                                                    ToolTip.Tip="BrandWarning900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandWarning800Brush}"
+                                                    ToolTip.Tip="BrandWarning800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandWarning700Brush}"
+                                                    ToolTip.Tip="BrandWarning700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandWarning600Brush}"
+                                                    ToolTip.Tip="BrandWarning600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandWarning500Brush}"
+                                                    ToolTip.Tip="BrandWarning500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandWarning400Brush}"
+                                                    ToolTip.Tip="BrandWarning400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandWarning300Brush}"
+                                                    ToolTip.Tip="BrandWarning300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandWarning200Brush}"
+                                                    ToolTip.Tip="BrandWarning200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandWarning100Brush}"
+                                                    ToolTip.Tip="BrandWarning100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandWarning50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Success" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandSuccess950Brush}"
+                                                    ToolTip.Tip="BrandSuccess950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandSuccess900Brush}"
+                                                    ToolTip.Tip="BrandSuccess900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandSuccess800Brush}"
+                                                    ToolTip.Tip="BrandSuccess800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandSuccess700Brush}"
+                                                    ToolTip.Tip="BrandSuccess700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandSuccess600Brush}"
+                                                    ToolTip.Tip="BrandSuccess600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandSuccess500Brush}"
+                                                    ToolTip.Tip="BrandSuccess500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandSuccess400Brush}"
+                                                    ToolTip.Tip="BrandSuccess400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandSuccess300Brush}"
+                                                    ToolTip.Tip="BrandSuccess300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandSuccess200Brush}"
+                                                    ToolTip.Tip="BrandSuccess200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandSuccess100Brush}"
+                                                    ToolTip.Tip="BrandSuccess100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandSuccess50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Creators" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandCreators950Brush}"
+                                                    ToolTip.Tip="BrandCreators950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandCreators900Brush}"
+                                                    ToolTip.Tip="BrandCreators900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandCreators800Brush}"
+                                                    ToolTip.Tip="BrandCreators800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandCreators700Brush}"
+                                                    ToolTip.Tip="BrandCreators700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandCreators600Brush}"
+                                                    ToolTip.Tip="BrandCreators600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandCreators500Brush}"
+                                                    ToolTip.Tip="BrandCreators500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandCreators400Brush}"
+                                                    ToolTip.Tip="BrandCreators400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandCreators300Brush}"
+                                                    ToolTip.Tip="BrandCreators300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandCreators200Brush}"
+                                                    ToolTip.Tip="BrandCreators200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandCreators100Brush}"
+                                                    ToolTip.Tip="BrandCreators100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandCreators50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Info" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandInfo950Brush}"
+                                                    ToolTip.Tip="BrandInfo950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandInfo900Brush}"
+                                                    ToolTip.Tip="BrandInfo900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandInfo800Brush}"
+                                                    ToolTip.Tip="BrandInfo800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandInfo700Brush}"
+                                                    ToolTip.Tip="BrandInfo700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandInfo600Brush}"
+                                                    ToolTip.Tip="BrandInfo600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandInfo500Brush}"
+                                                    ToolTip.Tip="BrandInfo500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandInfo400Brush}"
+                                                    ToolTip.Tip="BrandInfo400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandInfo300Brush}"
+                                                    ToolTip.Tip="BrandInfo300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandInfo200Brush}"
+                                                    ToolTip.Tip="BrandInfo200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandInfo100Brush}"
+                                                    ToolTip.Tip="BrandInfo100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandInfo50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Premium" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource BrandPremium950Brush}"
+                                                    ToolTip.Tip="BrandPremium950Brush" />
+                                            <Border Grid.Column="1" Background="{StaticResource BrandPremium900Brush}"
+                                                    ToolTip.Tip="BrandPremium900Brush" />
+                                            <Border Grid.Column="2" Background="{StaticResource BrandPremium800Brush}"
+                                                    ToolTip.Tip="BrandPremium800Brush" />
+                                            <Border Grid.Column="3" Background="{StaticResource BrandPremium700Brush}"
+                                                    ToolTip.Tip="BrandPremium700Brush" />
+                                            <Border Grid.Column="4" Background="{StaticResource BrandPremium600Brush}"
+                                                    ToolTip.Tip="BrandPremium600Brush" />
+                                            <Border Grid.Column="5" Background="{StaticResource BrandPremium500Brush}"
+                                                    ToolTip.Tip="BrandPremium500Brush" />
+                                            <Border Grid.Column="6" Background="{StaticResource BrandPremium400Brush}"
+                                                    ToolTip.Tip="BrandPremium400Brush" />
+                                            <Border Grid.Column="7" Background="{StaticResource BrandPremium300Brush}"
+                                                    ToolTip.Tip="BrandPremium300Brush" />
+                                            <Border Grid.Column="8" Background="{StaticResource BrandPremium200Brush}"
+                                                    ToolTip.Tip="BrandPremium200Brush" />
+                                            <Border Grid.Column="9" Background="{StaticResource BrandPremium100Brush}"
+                                                    ToolTip.Tip="BrandPremium100Brush" />
+                                            <Border Grid.Column="10" Background="{StaticResource BrandWarning50Brush}"
+                                                    ToolTip.Tip="BrandPrimary50Brush" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <TabItem IsSelected="True" Header="Tier 3 - Elements">
+
+                        <ScrollViewer>
+                            <StackPanel Spacing="16" Margin="0,16,0,0">
+
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Surface" />
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="NeutralTranslucent" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource SurfaceTranslucentLowBrush}"
+                                                    ToolTip.Tip="SurfaceTranslucentLowBrush" />
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource SurfaceTranslucentMidBrush}"
+                                                    ToolTip.Tip="SurfaceTranslucentMidBrush" />
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource SurfaceTranslucentHighBrush}"
+                                                    ToolTip.Tip="SurfaceTranslucentHighBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Neutral" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource SurfaceBaseBrush}"
+                                                    ToolTip.Tip="SurfaceBaseBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource SurfaceLowBrush}"
+                                                    ToolTip.Tip="SurfaceLowBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource SurfaceMidBrush}"
+                                                    ToolTip.Tip="SurfaceMidBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource SurfaceHighBrush}"
+                                                    ToolTip.Tip="SurfaceHighBrush" />
+                                            <Border Grid.Column="4" Background="{StaticResource SurfaceInvertedBrush}"
+                                                    ToolTip.Tip="SurfaceInvertedBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Stroke" />
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="NeutralTranslucent" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource StrokeTranslucentWeakBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentWeakBrush" />
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource StrokeTranslucentSubduedBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentSubduedBrush" />
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource StrokeTranslucentModerateBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentModerateBrush" />
+                                            <Border Grid.Column="3"
+                                                    Background="{StaticResource StrokeTranslucentStrongBrush}"
+                                                    ToolTip.Tip="StrokeTranslucentStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Classes="ElementSection">
+                                    <TextBlock Text="Foreground" Theme="{StaticResource HeadingXSSemiTheme}" />
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="NeutralTranslucent" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0"
+                                                    Background="{StaticResource NeutralTranslucentWeakerBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentWeakerBrush" />
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource NeutralTranslucentWeakBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentWeakBrush" />
+                                            <Border Grid.Column="2"
+                                                    Background="{StaticResource NeutralTranslucentSubduedBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentSubduedBrush" />
+                                            <Border Grid.Column="3"
+                                                    Background="{StaticResource NeutralTranslucentModerateBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentModerateBrush" />
+                                            <Border Grid.Column="4"
+                                                    Background="{StaticResource NeutralTranslucentStrongBrush}"
+                                                    ToolTip.Tip="NeutralTranslucentStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Neutral" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource NeutralWeakBrush}"
+                                                    ToolTip.Tip="NeutralWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource NeutralSubduedBrush}"
+                                                    ToolTip.Tip="NeutralSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource NeutralModerateBrush}"
+                                                    ToolTip.Tip="NeutralModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource NeutralStrongBrush}"
+                                                    ToolTip.Tip="NeutralStrongBrush" />
+                                            <Border Grid.Column="4" Background="{StaticResource NeutralInvertedBrush}"
+                                                    ToolTip.Tip="NeutralInvertedBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Danger" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource DangerWeakBrush}"
+                                                    ToolTip.Tip="DangerWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource DangerSubduedBrush}"
+                                                    ToolTip.Tip="DangerSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource DangerModerateBrush}"
+                                                    ToolTip.Tip="DangerModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource DangerStrongBrush}"
+                                                    ToolTip.Tip="DangerStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Primary" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource PrimaryWeakBrush}"
+                                                    ToolTip.Tip="PrimaryWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource PrimarySubduedBrush}"
+                                                    ToolTip.Tip="PrimarySubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource PrimaryModerateBrush}"
+                                                    ToolTip.Tip="PrimaryModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource PrimaryStrongBrush}"
+                                                    ToolTip.Tip="PrimaryStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Warning" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource WarningWeakBrush}"
+                                                    ToolTip.Tip="WarningWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource WarningSubduedBrush}"
+                                                    ToolTip.Tip="WarningSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource WarningModerateBrush}"
+                                                    ToolTip.Tip="WarningModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource WarningStrongBrush}"
+                                                    ToolTip.Tip="WarningStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Success" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource SuccessWeakBrush}"
+                                                    ToolTip.Tip="SuccessWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource SuccessSubduedBrush}"
+                                                    ToolTip.Tip="SuccessSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource SuccessModerateBrush}"
+                                                    ToolTip.Tip="SuccessModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource SuccessStrongBrush}"
+                                                    ToolTip.Tip="SuccessStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Creators" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource CreatorsWeakBrush}"
+                                                    ToolTip.Tip="CreatorsWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource CreatorsSubduedBrush}"
+                                                    ToolTip.Tip="CreatorsSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource CreatorsModerateBrush}"
+                                                    ToolTip.Tip="CreatorsModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource CreatorsStrongBrush}"
+                                                    ToolTip.Tip="CreatorsStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Info" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource InfoWeakBrush}"
+                                                    ToolTip.Tip="InfoWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource InfoSubduedBrush}"
+                                                    ToolTip.Tip="InfoSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource InfoModerateBrush}"
+                                                    ToolTip.Tip="InfoModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource InfoStrongBrush}"
+                                                    ToolTip.Tip="InfoStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Classes="ColorRamp">
+                                        <TextBlock Text="Premium" />
+                                        <Grid ColumnDefinitions="*,*,*,*,*">
+                                            <Border Grid.Column="0" Background="{StaticResource PremiumWeakBrush}"
+                                                    ToolTip.Tip="PremiumWeakBrush" />
+                                            <Border Grid.Column="1" Background="{StaticResource PremiumSubduedBrush}"
+                                                    ToolTip.Tip="PremiumSubduedBrush" />
+                                            <Border Grid.Column="2" Background="{StaticResource PremiumModerateBrush}"
+                                                    ToolTip.Tip="PremiumModerateBrush" />
+                                            <Border Grid.Column="3" Background="{StaticResource PremiumStrongBrush}"
+                                                    ToolTip.Tip="PremiumStrongBrush" />
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Header="Icons">
+                <WrapPanel VerticalAlignment="Top">
+                    <WrapPanel.Styles>
+                        <Style Selector="icons|UnifiedIcon">
+                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}"></Setter>
+                        </Style>
+                    </WrapPanel.Styles>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Alert}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircle}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDown}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircleOutline}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDownThick}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUpThick}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropDown}" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropUp}" />
+                </WrapPanel>
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Content Header" />
+                </TabItem.Header>
+            </TabItem>
+        </TabControl>
+    </Border>
+
+
+</reactive:ReactiveUserControl>

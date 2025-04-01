@@ -3,7 +3,6 @@
         xmlns:converters1="clr-namespace:NexusMods.Themes.NexusFluentDark.Converters"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
-        xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI"
         xmlns:converters="clr-namespace:NexusMods.App.UI.Converters;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
@@ -25,19 +24,19 @@
         <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="White" />
         <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
         
-        <converters:TextCaseConverter x:Key="TextCaseConverter"/>
-
-        
+        <!-- TODO: Fix this to work with CompositeItemModel<Guid>-->
         <!-- needs to be a resource and not set by a style so we can add Clasess based on DataContext -->
         <ControlTemplate x:Key="LoadOrderItemTreeRowTemplate"
-                         TargetType="TreeDataGridRow"
-                         x:DataType="sorting:ILoadOrderItemModel">
+                         TargetType="TreeDataGridRow">
             <Border x:Name="RowBorder"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="{TemplateBinding CornerRadius}"
-                    Classes.IsActive="{CompiledBinding IsActive}">
+                    >
+                    <!-- Classes.IsActive="{CompiledBinding StyleFlags, -->
+                    <!--     Converter={x:Static converters:CompositeStyleFlagConverter.Instance}, -->
+                    <!--     ConverterParameter=IsActive}"> -->
                 <TreeDataGridCellsPresenter Name="PART_CellsPresenter"
                                             CornerRadius="{TemplateBinding CornerRadius}"
                                             ElementFactory="{TemplateBinding ElementFactory}"
@@ -169,7 +168,9 @@
                                     <ContentPresenter.DataTemplates>
                                         <DataTemplate DataType="x:String">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="{Binding ., Converter={StaticResource TextCaseConverter}, ConverterParameter=upper}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock
+                                                    Text="{Binding ., Converter={x:Static  converters:TextCaseConverter.Instance}, ConverterParameter=upper}"
+                                                    TextTrimming="CharacterEllipsis" />
                                             </StackPanel>
                                         </DataTemplate>
                                     </ContentPresenter.DataTemplates>
@@ -230,7 +231,7 @@
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
 
-        
+
         <!-- needed to override the default coloring of this element -->
         <Style Selector="^:selected /template/ TreeDataGridCellsPresenter#PART_CellsPresenter">
             <Setter Property="Background" Value="{x:Null}" />
@@ -312,11 +313,10 @@
     </Style>
 
     <!-- TreeDataGridTemplateCell -->
-    
+
     <Style Selector="TreeDataGridTemplateCell /template/ ContentPresenter#PART_ContentPresenter">
         <Style Selector="^ Border > TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
         </Style>
     </Style>
@@ -378,6 +378,12 @@
     <Style Selector="TreeDataGrid#ModFilesTreeDataGrid">
         <Style Selector="^ icons|UnifiedIcon">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        </Style>
+
+        <Style Selector="^ TreeDataGridRow">
+            <Setter Property="Height" Value="52" />
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="Background" Value="{x:Null}" />
         </Style>
     </Style>
 

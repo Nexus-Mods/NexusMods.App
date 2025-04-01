@@ -123,8 +123,15 @@ public abstract class AReactiveContentControl<TContent> : ContentControl
         // because the parent is generic, and generics don't work in style selectors...
         var border = new Border();
         if (newClass.HasValue) border.Classes.Set(newClass.Value, true);
-        border.Child = contentControl;
 
+        // NOTE(erri120): need to make sure that the fallback control is properly detached from
+        // the old border before attaching to the new border.
+        if (contentControl?.Parent is Border existingBorder)
+        {
+            existingBorder.Child = null;
+        }
+
+        border.Child = contentControl;
         Presenter.Content = border;
     }
 

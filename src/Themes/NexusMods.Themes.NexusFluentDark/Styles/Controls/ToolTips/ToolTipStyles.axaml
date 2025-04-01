@@ -15,32 +15,20 @@
 
     <!-- Add Styles Here -->
     <Style Selector="ToolTip">
-        <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="BorderThickness" Value="0" />
         <!-- NOTE(Al12rs) ClipToBounds doesn't work on ToolTips, make outer container bigger and transparent instead -->
-        <Setter Property="Padding" Value="10,1,10,10" />
+        <Setter Property="Padding" Value="12,2,12,12" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="ClipToBounds" Value="False" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="Margin" Value="0" />
-
-            <Setter Property="BoxShadow">
-                <extensions:BoxShadows
-                    VerticalLength="3" BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
-                    VerticalLength1="1" BlurRadius1="10" ShadowColor1="{StaticResource BrandTranslucentDark100}"
-                    VerticalLength2="6" BlurRadius2="10" ShadowColor2="{StaticResource BrandTranslucentDark100}" />
-            </Setter>
-
-        </Style>
-
-        <Style Selector="^ TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}"/>
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
         </Style>
     </Style>
 

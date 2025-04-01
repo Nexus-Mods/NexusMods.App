@@ -1,0 +1,386 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel Margin="20" Width="250" Spacing="24">
+            <StackPanel Spacing="12" Orientation="Horizontal">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Default"/>
+                    <Border Background="DarkSlateGray" HorizontalAlignment="Left" Padding="8">
+                        <ToggleSwitch Background="DarkRed" />
+                    </Border>
+                    <ToggleSwitch 
+                        Classes="WithLabel"/>
+                    <ToggleSwitch IsChecked="True" 
+                                  Classes="WithContent"/>
+                    <ToggleSwitch HorizontalContentAlignment="Left"
+                                  Classes="WithContent"
+                                  Content="Header"
+                                  OffContent="Off"
+                                  OnContent="On" />
+                    <ToggleSwitch Background="DarkOrange" />
+                </StackPanel>
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Extra Small"/>
+                    <Border Background="DarkSlateGray" HorizontalAlignment="Left" Padding="8">
+                        <ToggleSwitch Classes="ExtraSmall" Background="DarkRed" />
+                    </Border>
+                    <ToggleSwitch Classes="ExtraSmall" />
+                    <ToggleSwitch IsChecked="True" 
+                                  Classes="ExtraSmall WithContent"/>
+                    <ToggleSwitch HorizontalContentAlignment="Left"
+                                  Classes="ExtraSmall WithContent"
+                                  Content="Header"
+                                  OffContent="Off"
+                                  OnContent="On" />
+                    <ToggleSwitch Classes="ExtraSmall" Background="DarkOrange" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <Thickness x:Key="ToggleSwitchTopHeaderMargin">0,0,0,0</Thickness>
+    <GridLength x:Key="ToggleSwitchPreContentMargin">0</GridLength>
+    <GridLength x:Key="ToggleSwitchPostContentMargin">0</GridLength>
+    <x:Double x:Key="ToggleSwitchThemeMinWidth">0</x:Double>
+
+    <Thickness x:Key="ToggleSwitchOnStrokeThickness">0</Thickness>
+    <Thickness x:Key="ToggleSwitchOuterBorderStrokeThickness">2</Thickness>
+
+    <StaticResource x:Key="ToggleSwitchContentForeground" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchHeaderForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="ToggleSwitchContainerBackground" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchContainerBackgroundPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchContainerBackgroundPressed" ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="ToggleSwitchFillOff" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOffPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOffPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOff" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOffPointerOver" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOffPressed" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOffDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchFillOn" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOnPointerOver" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ToggleSwitchFillOnPressed" ResourceKey="NeutralModerateBrush" />
+
+    <SolidColorBrush x:Key="ToggleSwitchFillOnDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchStrokeOn" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOnPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ToggleSwitchStrokeOnPressed" ResourceKey="SurfaceTransparentBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchStrokeOnDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchKnobFillOff" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOffPointerOver" ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOffPressed" ResourceKey="NeutralTranslucentSubduedBrush" />
+    <SolidColorBrush x:Key="ToggleSwitchKnobFillOffDisabled" Color="{StaticResource NeutralTranslucentSubdued}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="ToggleSwitchKnobFillOn" ResourceKey="SurfaceMidBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOnPointerOver" ResourceKey="SurfaceHighBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOnPressed" ResourceKey="SurfaceMidBrush" />
+    <StaticResource x:Key="ToggleSwitchKnobFillOnDisabled" ResourceKey="SurfaceLowBrush" />
+    
+    <ControlTheme x:Key="{x:Type ToggleSwitch}" TargetType="ToggleSwitch">
+        <Setter Property="Foreground" Value="{StaticResource ToggleSwitchContentForeground}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="KnobTransitions">
+            <Transitions>
+                <DoubleTransition
+                    Easing="CubicEaseOut"
+                    Property="Canvas.Left"
+                    Duration="0:0:0.2" />
+            </Transitions>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Background="{TemplateBinding Background}" RowDefinitions="Auto,*">
+
+                    <ContentPresenter
+                        x:Name="PART_ContentPresenter"
+                        Grid.Row="0"
+                        VerticalAlignment="Top"
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        Margin="{StaticResource ToggleSwitchTopHeaderMargin}"
+                        RecognizesAccessKey="True" />
+
+                    <Grid
+                        Grid.Row="1"
+                        MinWidth="{StaticResource ToggleSwitchThemeMinWidth}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="{StaticResource ToggleSwitchPreContentMargin}" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="{StaticResource ToggleSwitchPostContentMargin}" />
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid
+                            x:Name="SwitchAreaGrid"
+                            Grid.RowSpan="3"
+                            Grid.ColumnSpan="2"
+                            Background="{StaticResource ToggleSwitchContainerBackground}"
+                            Margin="0,5"
+                            TemplatedControl.IsTemplateFocusTarget="True" />
+
+                        <!-- Defaults to no labels or content, use the WithContent class to show the content -->
+                        <ContentPresenter
+                            x:Name="PART_OffContentPresenter"
+                            Grid.RowSpan="3"
+                            Grid.Column="1"
+                            IsVisible="False"
+                            Margin="12,0,0,0"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding OffContent}"
+                            ContentTemplate="{TemplateBinding OffContentTemplate}" />
+                        
+                        <!-- Defaults to no labels or content, use the WithContent class to show the content -->
+                        <ContentPresenter
+                            x:Name="PART_OnContentPresenter"
+                            Grid.RowSpan="3"
+                            Grid.Column="1"
+                            IsVisible="False"
+                            Margin="12,0,0,0"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding OnContent}"
+                            ContentTemplate="{TemplateBinding OnContentTemplate}" />
+
+                        <!--  OuterBorder, SwitchKnobBounds need a matching height and width (the control height and width)  -->
+                        <Border
+                            x:Name="OuterBorder"
+                            Grid.Row="1"
+                            Width="40"
+                            Height="20"
+                            Background="{StaticResource ToggleSwitchFillOff}"
+                            BorderBrush="{StaticResource ToggleSwitchStrokeOff}"
+                            BorderThickness="{StaticResource ToggleSwitchOuterBorderStrokeThickness}"
+                            CornerRadius="16" />
+
+                        <Border
+                            x:Name="SwitchKnobBounds"
+                            Grid.Row="1"
+                            Width="40"
+                            Height="20"
+                            Background="{StaticResource ToggleSwitchFillOn}"
+                            BorderBrush="{StaticResource ToggleSwitchStrokeOn}"
+                            BorderThickness="{StaticResource ToggleSwitchOnStrokeThickness}"
+                            CornerRadius="16" />
+
+                        <!--  PART_SwitchKnob is the switch start point should be the same height and half the width 
+                        of OuterBorder -->
+                        <Canvas
+                            x:Name="PART_SwitchKnob"
+                            Grid.Row="1"
+                            Width="20"
+                            Height="20"
+                            HorizontalAlignment="Left">
+
+                            <!-- PART_MovingKnobs is the switch end point and should be same size as PART_SwitchKnob -->
+                            <Grid x:Name="PART_MovingKnobs" Width="20" Height="20">
+                                <Ellipse
+                                    x:Name="SwitchKnobOn"
+                                    Fill="{StaticResource ToggleSwitchKnobFillOn}"
+                                    Width="16"
+                                    Height="16" />
+                                <Ellipse
+                                    x:Name="SwitchKnobOff"
+                                    Fill="{StaticResource ToggleSwitchKnobFillOff}"
+                                    Width="12"
+                                    Height="12" />
+                            </Grid>
+                        </Canvas>
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter:empty">
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <!--  PointerOverState  -->
+        <Style Selector="^:pointerover /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffPointerOver}" />
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOffPointerOver}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Ellipse#SwitchKnobOff">
+            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPointerOver}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOnPointerOver}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOnPointerOver}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOnPointerOver}" />
+        </Style>
+
+        <Style Selector="^:pointerover /template/ Grid#SwitchAreaGrid">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchContainerBackgroundPointerOver}" />
+        </Style>
+
+        <!--  PressedState  -->
+        <Style Selector="^:pressed /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffPressed}" />
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOffPressed}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOnPressed}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOnPressed}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Ellipse#SwitchKnobOff">
+            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPressed}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOnPressed}" />
+        </Style>
+
+        <Style Selector="^:pressed /template/ Grid#SwitchAreaGrid">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchContainerBackgroundPressed}" />
+        </Style>
+
+        <!--  DisabledState  -->
+        <Style Selector="^:disabled">
+            <Setter Property="Foreground" Value="{DynamicResource ToggleSwitchHeaderForegroundDisabled}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#OuterBorder">
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffDisabled}" />
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOffDisabled}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Ellipse#SwitchKnobOff">
+            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffDisabled}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOnDisabled}" />
+        </Style>
+
+        <Style Selector="^:disabled /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="{DynamicResource ToggleSwitchFillOnDisabled}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOnDisabled}" />
+        </Style>
+
+        <!--  CheckedState  -->
+        <Style Selector="^:checked /template/ Border#OuterBorder">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:checked  /template/ Ellipse#SwitchKnobOff">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:checked  /template/ Border#SwitchKnobBounds">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:checked /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:checked /template/ ContentPresenter#PART_OffContentPresenter">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:checked /template/ ContentPresenter#PART_OnContentPresenter">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <!--  UncheckedState  -->
+        <Style Selector="^:unchecked /template/ Border#OuterBorder">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ Ellipse#SwitchKnobOff">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ Ellipse#SwitchKnobOn">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:unchecked  /template/ Border#SwitchKnobBounds">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ ContentPresenter#PART_OffContentPresenter">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="^:unchecked /template/ ContentPresenter#PART_OnContentPresenter">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+        
+        <!-- our toggleswitch is defaulting to no labels or content, use this class to show the content -->
+        <Style Selector="^.WithContent">
+            <Style Selector="^ /template/ ContentPresenter#PART_OnContentPresenter">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+            <Style Selector="^ /template/ ContentPresenter#PART_OffContentPresenter">
+                <Setter Property="IsVisible" Value="True" />
+            </Style>
+        </Style>
+        
+        <!-- extra small style -->
+        <Style Selector="^.ExtraSmall">
+            
+            <!--  OuterBorder, SwitchKnobBounds need a matching height and width (the control height and width)  -->
+            <Style Selector="^ /template/ Border#OuterBorder">
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="32" />
+            </Style>
+            <Style Selector="^ /template/ Border#SwitchKnobBounds">
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="32" />
+            </Style>
+            
+            <!--  PART_SwitchKnob should be the same height and half the width of OuterBorder -->
+            <Style Selector="^ /template/ Canvas#PART_SwitchKnob">
+                <Setter Property="Height" Value="16" />
+                <Setter Property="Width" Value="16" />
+            </Style>
+            
+            <!-- PART_MovingKnobs is the switch end point and should be same size as PART_SwitchKnob -->
+            <Style Selector="^ /template/ Grid#PART_MovingKnobs">
+                <Setter Property="Width" Value="16" />
+                <Setter Property="Height" Value="16" />
+                
+                <Style Selector="^ Ellipse#SwitchKnobOn">
+                    <Setter Property="Width" Value="12" />
+                    <Setter Property="Height" Value="12" />
+                </Style>
+                <Style Selector="^ Ellipse#SwitchKnobOff">
+                    <Setter Property="Width" Value="8" />
+                    <Setter Property="Height" Value="8" />
+                </Style>
+            </Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

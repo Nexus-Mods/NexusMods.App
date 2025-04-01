@@ -14,8 +14,8 @@
         <AvaloniaResource Include="Assets\DesignTime\fantasy_game.png" />
         <AvaloniaResource Include="Assets\Fonts\Regular\RobotoMono-Regular.ttf" />
         <AvaloniaResource Include="Styles\Controls\Border\Toolbar.xaml" />
-        <AvaloniaResource Include="Styles\Controls\Button\PillStyles.xaml" />
         <AvaloniaResource Include="Assets\Fonts\Regular\Inter-Regular.ttf" />
+        <AvaloniaResource Include="Assets\Fonts\Medium\Inter-Medium.ttf" />
         <AvaloniaResource Include="Assets\Fonts\SemiBold\Inter-SemiBold.ttf" />
     </ItemGroup>
 
@@ -25,6 +25,8 @@
       <UpToDateCheckInput Remove="Styles\TextBox\TextBoxStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\Icons\IconsStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\UserControls\Banners\InfoBannerStyles.axaml" />
+      <UpToDateCheckInput Remove="Styles\UserControls\StandardButton\StandardButtonStyles.axaml" />
+      <UpToDateCheckInput Remove="Styles\Controls\ListBox\ListBoxStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,19 +35,10 @@
       <AdditionalFiles Include="Resources\Palette\Colors\PrimitiveColors.axaml" />
       <AdditionalFiles Include="Resources\Palette\Fonts\PrimitiveFonts.axaml" />
       <AdditionalFiles Include="Resources\Palette\Fonts\SemanticFonts.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Border\BorderStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\BareIconStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\HyperlinkStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\RoundedButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Button\SpineButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Button\SpineDownloadButtonStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\Button\StandardButtonStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\CheckBox\CheckBoxStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Icons\IconsStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\ProgressBar\ProgressBarStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\RadioButton\RadioButtonStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\TextBlock\TextBlockStyles.axaml" />
-      <AdditionalFiles Include="Styles\Controls\TextBox\TextBoxStyles.axaml" />
       <AdditionalFiles Include="Styles\Controls\Window\DialogStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LaunchButton\LaunchButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LoadoutBadge\LoadoutBadgeStyles.axaml" />
@@ -55,12 +48,6 @@
       <ProjectReference Include="..\..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
       <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
       <ProjectReference Include="..\..\NexusMods.Icons\NexusMods.Icons.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <AvaloniaXaml Update="Styles\Controls\ComboBox\ComboBoxStyles.addPanelDropDown.axaml">
-        <DependentUpon>ComboBoxStyles.axaml</DependentUpon>
-      </AvaloniaXaml>
     </ItemGroup>
 
     <ItemGroup>

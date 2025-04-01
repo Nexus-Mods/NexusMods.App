@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <Border Padding="16" Width="360" Height="240">
+            <StackPanel>
+                <TextBlock Text="TextBlock" />
+                <TextBlock IsEnabled="False" Text="TextBlock" />
+                <TextBlock Text="Theme BodyLGNormalTheme"
+                           Theme="{StaticResource BodyLGNormalTheme}" />
+                <TextBlock Text="Theme BodyLGNormalTheme"
+                           Theme="{StaticResource BodyLGNormalTheme}"
+                           Classes="Warning" />
+                <TextBlock Text="TextBlock" Classes="Suggestion" />
+                <TextBlock Text="TextBlock" Foreground="DarkOliveGreen" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- 
+    Defaults all TextBlock to BodySMNormalTheme 
+    Found at src/Themes/NexusMods.Themes.NexusFluentDark/Resources/Typography/TextBlockControlThemes.axaml
+     -->
+    <ControlTheme x:Key="{x:Type TextBlock}" TargetType="TextBlock" BasedOn="{StaticResource BodySMNormalTheme}"/>
+
+</ResourceDictionary>

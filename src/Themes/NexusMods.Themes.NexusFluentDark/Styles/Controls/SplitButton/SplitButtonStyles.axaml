@@ -1,19 +1,10 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="16">
             <StackPanel>
-                <SplitButton Content="Medium">
-                    <SplitButton.Flyout>
-                        <MenuFlyout>
-                            <MenuItem Header="Install" />
-                            <MenuItem Header="Advanced Install" />
-                        </MenuFlyout>
-                    </SplitButton.Flyout>
-                </SplitButton>
                 <SplitButton>
-                    <TextBlock Text="Medium TextBlock" />
+                    <TextBlock Text="Enabled" />
                     <SplitButton.Flyout>
                         <MenuFlyout>
                             <MenuItem Header="Install" />
@@ -21,7 +12,26 @@
                         </MenuFlyout>
                     </SplitButton.Flyout>
                 </SplitButton>
-                <SplitButton Content="Compact" Classes="Compact">
+                <SplitButton IsEnabled="False">
+                    <TextBlock Text="Disabled" />
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <SplitButton Classes="StandardSplitButton">
+                    <TextBlock Text="Enabled" />
+                    <SplitButton.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Install" />
+                            <MenuItem Header="Advanced Install" />
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+                <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                    <TextBlock Text="Enabled" />
                     <SplitButton.Flyout>
                         <MenuFlyout>
                             <MenuItem Header="Install" />
@@ -34,35 +44,46 @@
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
-    <Style Selector="SplitButton">
 
-        <Style Selector="^/template/ Button#PART_PrimaryButton">
-            <Style Selector="^ > AccessText">
-                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-            </Style>
+    <!-- temporary for now until we subclass SplitButton -->
+    <Style Selector="SplitButton.StandardSplitButton">
+
+        <!-- base colors -->
+        <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrush}" />
+
+        <Style Selector="^ TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" />
         </Style>
         
-        <Style Selector="^ > TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-        </Style>
+        <!-- templated buttons -->
+        <Style Selector="^ /template/ Button">
 
-        <Style Selector="^.Compact">
-            <Setter Property="MinHeight" Value="28" />
-            <Setter Property="Height" Value="28" />
-
-            <Style Selector="^/template/ Button#PART_PrimaryButton">
-                <Style Selector="^ AccessText">
-                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                </Style>
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPointerOver}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPointerOver}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPointerOver}" />
             </Style>
 
-            <Style Selector="^ /template/ Button#PART_SecondaryButton">
-                <Setter Property="MinWidth" Value="28" />
-                <Style Selector="^ icons|UnifiedIcon">
-                    <Setter Property="Size" Value="16" />
-                </Style>
+            <Style Selector="^:pressed /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundDisabled}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundDisabled}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushDisabled}" />
+            </Style>
+            
+            <Style Selector="^[Tag=flyout-open] /template/ ContentPresenter">
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
             </Style>
         </Style>
-
     </Style>
+
 </Styles>

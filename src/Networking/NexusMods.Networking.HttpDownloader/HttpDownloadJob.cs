@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.App.BuildInfo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using Polly;
@@ -274,6 +275,8 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             DefaultRequestVersion = HttpVersion.Version11,
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
         };
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
 
         return client;
     }

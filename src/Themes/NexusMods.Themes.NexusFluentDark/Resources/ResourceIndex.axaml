@@ -1,20 +1,44 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
     <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Opacities/ElementOpacities.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
-        <ResourceInclude Source="/Resources/Palette/Gradients.axaml"/>
-        <ResourceInclude Source="/Resources/ThemeBaseResources.axaml"/>
-        <ResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/TopLevelMenuItemHeader.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
-        <ResourceInclude Source="/Resources/ControlThemes/SplitButton.axaml"/>
+        
+        <!-- static values, mainly for colors, fonts, spacings from figma. -->
+        <MergeResourceInclude Source="/Resources/Palette/Colors/PrimitiveColors.axaml" />
+        <MergeResourceInclude Source="/Resources/Palette/Colors/BrandColors.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Colors/ElementColors.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Opacities/ElementOpacities.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/CornerRadiuses/ElementCornerRadius.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Spacings/ElementSpacing.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/BoxShadows/BoxShadowsPalette.axaml"/>
+        <MergeResourceInclude Source="/Resources/Typography/TextBlockControlThemes.axaml"/>
+        <MergeResourceInclude Source="/Resources/Palette/Colors/ElementGradients.axaml"/>
+        
+        <!-- values that are shared across avalonia controls -->
+        <MergeResourceInclude Source="/Resources/SharedResources.axaml"/>
+                
+        <!-- avalonia controls -->
+        <MergeResourceInclude Source="/Controls/TextBlock.axaml"/>
+        <MergeResourceInclude Source="/Controls/AccessText.axaml"/>
+        <MergeResourceInclude Source="/Controls/Button.axaml"/>
+        <MergeResourceInclude Source="/Controls/SplitButton.axaml"/>
+        <MergeResourceInclude Source="/Controls/ComboBox.axaml"/>
+        <MergeResourceInclude Source="/Controls/ComboBoxItem.axaml"/>
+        <MergeResourceInclude Source="/Controls/ToggleSwitch.axaml"/>
+        <MergeResourceInclude Source="/Controls/CheckBox.axaml"/>
+        <MergeResourceInclude Source="/Controls/RadioButton.axaml"/>
+        <MergeResourceInclude Source="/Controls/TextBox.axaml"/>
+        
+        <!-- custom controls (standalone components, primarily to match Figma components 
+        and to replace Avalonia controls) -->
+        <MergeResourceInclude Source="/Resources/ControlThemes/StandardButton.axaml"/>
+        
+        <!-- control themes for other controls/components -->
+        <MergeResourceInclude Source="/Resources/ControlThemes/UnifiedIconControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/EmptyStateControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/ToolbarControlTheme.axaml"/>
     </ResourceDictionary.MergedDictionaries>
+    
 </ResourceDictionary>

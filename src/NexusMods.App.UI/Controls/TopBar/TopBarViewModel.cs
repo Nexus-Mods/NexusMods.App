@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
@@ -20,7 +19,6 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.DataModel.Extensions;
 using NexusMods.Paths;
 using NexusMods.Telemetry;
 using R3;
@@ -49,7 +47,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenForumsCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenGitHubCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenStatusPageCommand { get; }
-    public ReactiveUI.ReactiveCommand<Unit, Unit> LoginCommand { get; }
+    public R3.ReactiveCommand<R3.Unit, R3.Unit> LoginCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LogoutCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
@@ -58,8 +56,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
     [Reactive] public UserRole UserRole { get; [UsedImplicitly] set; }
 
-    private readonly ObservableAsPropertyHelper<IImage?> _avatar;
-    public IImage? Avatar => _avatar.Value;
+    [Reactive] public IImage? Avatar { get; private set; }
     
     [Reactive] public string? Username { get; set; } = string.Empty;
 
@@ -129,38 +126,34 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
             overlayController.Enqueue(alphaWarningViewModel);
             Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
         });
-        
-        var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn);
-        LoginCommand = ReactiveCommand.CreateFromTask(Login, canLogin);
+
+        var canLogin = this.WhenAnyValue(x => x.IsLoggedIn).Select(isLoggedIn => !isLoggedIn).ToObservable();
+        LoginCommand = canLogin.ToReactiveCommand<R3.Unit, R3.Unit>(async (_, _) =>
+        {
+            await Login();
+            return R3.Unit.Default;
+        }, awaitOperation: AwaitOperation.Parallel, configureAwait: false);
 
         var canLogout = this.WhenAnyValue(x => x.IsLoggedIn);
         LogoutCommand = ReactiveCommand.CreateFromTask(Logout, canLogout);
-
-        _avatar = _loginManager.AvatarObservable
-            .OffUi()
-            .SelectMany(LoadImage)
-            .ToProperty(this, vm => vm.Avatar, scheduler: RxApp.MainThreadScheduler);
 
         OpenNexusModsProfileCommand = ReactiveCommand.CreateFromTask(async () =>
         {
             var userInfo = await _loginManager.GetUserInfoAsync();
             if (userInfo is null) return;
 
-            var userId = userInfo.UserId.Value;
-            var uri = NexusModsUrlBuilder.CreateGenericUri($"https://nexusmods.com/users/{userId}");
+            var uri = NexusModsUrlBuilder.GetProfileUri(userInfo.UserId);
             await osInterop.OpenUrl(uri);
         });
 
         OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com");
-            await osInterop.OpenUrl(uri);
+            await osInterop.OpenUrl(NexusModsUrlBuilder.UserSettingsUri);
         });
 
         OpenNexusModsPremiumCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var uri = NexusModsUrlBuilder.CreateGenericUri("https://users.nexusmods.com/account/billing/premium");
-            await osInterop.OpenUrl(uri);
+            await osInterop.OpenUrl(NexusModsUrlBuilder.UpgradeToPremiumUri);
         });
         
         OpenDiscordCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(ConstantLinks.DiscordUri); });
@@ -173,6 +166,12 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
         this.WhenActivated(d =>
         {
+            _loginManager.AvatarObservable
+                .SelectMany(LoadImage)
+                .OnUI()
+                .SubscribeWithErrorLogging(image => Avatar = image)
+                .DisposeWith(d);
+
             _loginManager.IsLoggedInObservable
                 .OnUI()
                 .BindToVM(this, vm => vm.IsLoggedIn)

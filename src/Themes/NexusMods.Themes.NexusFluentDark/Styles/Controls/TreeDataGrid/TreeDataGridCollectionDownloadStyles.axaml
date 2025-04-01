@@ -50,7 +50,6 @@
                         <Style Selector="^ > TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
                         </Style>
                     </Style>
                 </Style>

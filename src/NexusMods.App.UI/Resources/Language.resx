@@ -47,24 +47,31 @@
     <data name="MetricsOptIn_MainMessage" xml:space="preserve">
         <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
     </data>
-    <data name="Updater_LATER" xml:space="preserve">
-        <value>Later</value>
-    </data>
+    
+
     <data name="Updater_UPDATE" xml:space="preserve">
         <value>View update</value>
     </data>
     <data name="Updater_UpdateAvailable" xml:space="preserve">
-        <value>Update available</value>
+        <value>Update available {0}</value>
     </data>
-    <data name="Updater_MainMessage" xml:space="preserve">
-        <value>Important: In order to install this version you will need to uninstall first. This will delete all your mods.</value>
+    
+    <data name="Updater_GenericMessage" xml:space="preserve">
+        <value>Your current version {0} can be updated to the latest version {1}. Be sure to close the app completely before updating.</value>
     </data>
-    <data name="Updater_UseSystemUpdater" xml:space="preserve">
-        <value>It appears that your copy of the app was installed via a system managed package manager, please update via your operating system's update application.</value>
+
+    <data name="Updater_UsePackageManager" xml:space="preserve">
+        <value>You can update the app using the package manager you used to install the app with.</value>
     </data>
-    <data name="Updater_ViewChangelog" xml:space="preserve">
-        <value>View changelog on GitHub</value>
+    <data name="Updater_UseInnoSetup" xml:space="preserve">
+        <value>You can update the app by downloading the installer and running it after closing the app.</value>
     </data>
+    <data name="Updater_UseFlatpak" xml:space="preserve">
+        <value>You can update the app using Flatpak.</value>
+    </data>   
+      
+    
+    
     <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
         <value>Please select a mod file to install.</value>
     </data>
@@ -786,10 +793,10 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Update All</value>
     </data>
     <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
-        <value>INSTALLED MODS</value>
+        <value>Installed Mods</value>
     </data>
     <data name="LeftMenu_Label_Utilities" xml:space="preserve">
-        <value>UTILITIES</value>
+        <value>Utilities</value>
     </data>
     <data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed"
           xml:space="preserve">
@@ -831,6 +838,26 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
         <value>Install downloaded optional mods</value>
+    </data>
+
+
+    <data name="RemoveGameOverlayView_Title" xml:space="preserve">
+        <value>Removing {0}</value>
+    </data>
+    <data name="RemoveGameOverlayView_Description" xml:space="preserve">
+        <value>Removing will uninstall all mods and collections for {0}, but your downloaded mods will remain. If you re-add the game, those mods will still be available in your Library.</value>
+    </data>
+    <data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+        <value>Also delete {0} downloaded mods and {1} collections for {2}.</value>
+    </data>
+    <data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+        <value>Remove game and mods</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
+        <value>Remove game and delete mods</value>
     </data>
 
     <data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
@@ -902,5 +929,20 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
         <value>Success Rating</value>
+    </data>
+    <data name="ManageGameWarning_Title" xml:space="preserve">
+        <value>Managing this game will affect existing mods</value>
+    </data>
+    <data name="ManageGameWarning_Desc1" xml:space="preserve">
+        <value>If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page.  However, if you later stop managing this game or uninstall the app, those mods will be permanently removed from your game folder.</value>
+    </data>
+    <data name="ManageGameWarning_Desc2" xml:space="preserve">
+        <value>To keep any mods you want to save, please back them up before continuing.</value>
+    </data>
+    <data name="ManageGameWarning_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="ManageGameWarning_Continue" xml:space="preserve">
+        <value>Continue</value>
     </data>
 </root>

@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-        xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI">
+        xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
         <Border Classes="Low" Width="800" Height="600">
@@ -17,7 +18,7 @@
 
         <Style Selector="^ StackPanel#LoadOrderAlertStackPanel">
             <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
-            <Setter Property="Margin" Value="24,24,24,12" />
+            <Setter Property="Margin" Value="24,0,24,12" />
 
             <Style Selector="^ StackPanel#TitleStackPanel">
                 <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
@@ -25,6 +26,7 @@
 
                 <Style Selector="^ TextBlock#TitleTextBlock">
                     <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
                 </Style>
             </Style>
         </Style>
@@ -37,7 +39,7 @@
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
                 <Setter Property="HorizontalAlignment" Value="Left" />
                 <Setter Property="Margin" Value="0,56,0,0" />
-                
+
                 <Style Selector="^ icons|UnifiedIcon#TrophyIcon">
                     <Setter Property="Size" Value="20" />
                 </Style>
@@ -101,9 +103,14 @@
             <!-- right column (load order tree data grid) -->
             <Style Selector="^ TreeDataGrid#SortOrderTreeDataGrid">
 
+                <Style Selector="^ TreeDataGridRow">
+                    <Setter Property="Background" Value="Red" />
+                </Style>
+                
                 <Style Selector="^ TreeDataGridTemplateCell">
 
-                    <Style Selector="^.Index">
+                    <!-- first column (index) -->
+                    <Style Selector="^.LoadOrderColumns_IndexColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
@@ -116,22 +123,23 @@
                                 <Setter Property="Height" Value="42" />
 
                                 <Style Selector="^ > TextBlock#ItemIndex">
-                                    <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
+                                    <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
                                     <Setter Property="HorizontalAlignment" Value="Center" />
                                     <Setter Property="Foreground"
                                             Value="{StaticResource NeutralTranslucentStrongBrush}" />
                                 </Style>
-
-                                <Style Selector="^ > Border#ItemIndexSeparator">
-                                    <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                                    <Setter Property="Width" Value="1" />
-                                    <Setter Property="Height" Value="42" />
-                                </Style>
+                            </Style>
+                            
+                            <Style Selector="^ Border#ItemIndexSeparator">
+                                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+                                <Setter Property="Width" Value="1" />
+                                <Setter Property="Height" Value="42" />
                             </Style>
                         </Style>
                     </Style>
-
-                    <Style Selector="^.Name">
+                    
+                    <!-- second column (name) -->
+                    <Style Selector="^.LoadOrderColumns_NameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
 
                             <Style Selector="^ Border#ItemModImageBorder">
@@ -150,6 +158,10 @@
                             <Style Selector="^ TextBlock#ModName">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                            </Style>
+                            <Style Selector="^ TextBlock#DisplayName">
+                                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
                             </Style>
                         </Style>
                     </Style>

@@ -1,0 +1,231 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui" 
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <StackPanel Spacing="10">
+        <RadioButton Content="Option 1" Background="Green" />
+        <RadioButton Content="Option 2" />
+        <RadioButton IsEnabled="False" Content="Option 3" />
+        <RadioButton Content="Option 2" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+  
+  <!-- Resources for RadioButton.xaml -->
+    <x:Double x:Key="RadioButtonBorderThemeThickness">2</x:Double>
+
+    <StaticResource x:Key="RadioButtonForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="RadioButtonForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="RadioButtonForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="RadioButtonForegroundDisabled" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="RadioButtonBackground" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonBackgroundPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonBackgroundPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonBackgroundDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonBorderBrush" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonBorderBrushPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonBorderBrushPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonBorderBrushDisabled" ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="RadioButtonOuterEllipseStroke" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseStrokePointerOver"
+                    ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseStrokePressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseStrokeDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="RadioButtonOuterEllipseFill" ResourceKey="SurfaceLowBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseFillPointerOver" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseFillPressed"
+                    ResourceKey="SurfaceLowBrush" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseFillDisabled"
+                     Color="{StaticResource SurfaceLow}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="RadioButtonOuterEllipseCheckedStroke" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokePointerOver"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokePressed"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseCheckedStrokeDisabled"
+                    ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="RadioButtonOuterEllipseCheckedFill" ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseCheckedFillPointerOver"
+                    ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="RadioButtonOuterEllipseCheckedFillPressed"
+                    ResourceKey="PrimaryModerateBrush" />
+    <SolidColorBrush x:Key="RadioButtonOuterEllipseCheckedFillDisabled"
+                     Color="{StaticResource PrimaryModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="RadioButtonCheckGlyphFill" ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphFillPointerOver"
+                    ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphFillPressed" ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphFillDisabled" ResourceKey="NeutralTranslucentStrongBrush" />
+
+    <StaticResource x:Key="RadioButtonCheckGlyphStroke" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphStrokePointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphStrokePressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphStrokeDisabled" ResourceKey="SurfaceTransparentBrush" />  
+    
+    
+  <ControlTheme x:Key="{x:Type RadioButton}" TargetType="RadioButton">
+    <Setter Property="Background" Value="{StaticResource RadioButtonBackground}" />
+    <Setter Property="Foreground" Value="{StaticResource RadioButtonForeground}" />
+    <Setter Property="BorderBrush" Value="{StaticResource RadioButtonBorderBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+    <Setter Property="Padding" Value="8,0,0,0" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Template">
+      <ControlTemplate TargetType="RadioButton">
+        <Border
+            Name="RootBorder"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="{TemplateBinding CornerRadius}">
+          <Grid ColumnDefinitions="20,*">
+            <Grid Height="20" VerticalAlignment="Top">
+
+              <Ellipse
+                  Name="OuterEllipse"
+                  Width="20"
+                  Height="20"
+                  Fill="{StaticResource RadioButtonOuterEllipseFill}"
+                  Stroke="{StaticResource RadioButtonOuterEllipseStroke}"
+                  StrokeThickness="{StaticResource RadioButtonBorderThemeThickness}"
+                  UseLayoutRounding="False" />
+
+              <Ellipse
+                  Name="CheckOuterEllipse"
+                  Width="20"
+                  Height="20"
+                  Fill="{StaticResource RadioButtonOuterEllipseCheckedFill}"
+                  Opacity="0"
+                  Stroke="{StaticResource RadioButtonOuterEllipseCheckedStroke}"
+                  StrokeThickness="{StaticResource RadioButtonBorderThemeThickness}"
+                  UseLayoutRounding="False" />
+
+              <Ellipse
+                  Name="CheckGlyph"
+                  Width="12"
+                  Height="12"
+                  Fill="{StaticResource RadioButtonCheckGlyphFill}"
+                  Opacity="0"
+                  Stroke="{StaticResource RadioButtonCheckGlyphStroke}"
+                  UseLayoutRounding="False" />
+            </Grid>
+
+            <ContentPresenter
+                Name="PART_ContentPresenter"
+                Grid.Column="1"
+                Margin="{TemplateBinding Padding}"
+                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                Content="{TemplateBinding Content}"
+                ContentTemplate="{TemplateBinding ContentTemplate}"
+                Foreground="{TemplateBinding Foreground}"
+                RecognizesAccessKey="True" />
+          </Grid>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+
+    <!--  PointerOver State  -->
+    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="{StaticResource RadioButtonForegroundPointerOver}" />
+    </Style>
+
+    <Style Selector="^:pointerover /template/ Border#RootBorder">
+      <Setter Property="Background" Value="{StaticResource RadioButtonBackgroundPointerOver}" />
+      <Setter Property="BorderBrush" Value="{StaticResource RadioButtonBorderBrushPointerOver}" />
+    </Style>
+
+    <Style Selector="^:pointerover /template/ Ellipse#OuterEllipse">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonOuterEllipseStrokePointerOver}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonOuterEllipseFillPointerOver}" />
+    </Style>
+
+    <Style Selector="^:pointerover /template/ Ellipse#CheckOuterEllipse">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonOuterEllipseCheckedStrokePointerOver}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonOuterEllipseCheckedFillPointerOver}" />
+    </Style>
+
+    <Style Selector="^:pointerover /template/ Ellipse#CheckGlyph">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonCheckGlyphStrokePointerOver}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonCheckGlyphFillPointerOver}" />
+    </Style>
+
+
+    <!--  Pressed State  -->
+    <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="{StaticResource RadioButtonForegroundPressed}" />
+    </Style>
+
+    <Style Selector="^:pressed /template/ Border#RootBorder">
+      <Setter Property="Background" Value="{StaticResource RadioButtonBackgroundPressed}" />
+      <Setter Property="BorderBrush" Value="{StaticResource RadioButtonBorderBrushPressed}" />
+    </Style>
+
+    <Style Selector="^:pressed /template/ Ellipse#OuterEllipse">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonOuterEllipseStrokePressed}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonOuterEllipseFillPressed}" />
+    </Style>
+
+    <Style Selector="^:pressed /template/ Ellipse#CheckOuterEllipse">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonOuterEllipseCheckedStrokePressed}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonOuterEllipseCheckedFillPressed}" />
+    </Style>
+
+    <Style Selector="^:pressed /template/ Ellipse#CheckGlyph">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonCheckGlyphStrokePressed}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonCheckGlyphFillPressed}" />
+    </Style>
+
+
+    <!--  Disabled State  -->
+    <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="{StaticResource RadioButtonForegroundDisabled}" />
+    </Style>
+
+    <Style Selector="^:disabled /template/ Border#RootBorder">
+      <Setter Property="Background" Value="{StaticResource RadioButtonBackgroundDisabled}" />
+      <Setter Property="BorderBrush" Value="{StaticResource RadioButtonBorderBrushDisabled}" />
+    </Style>
+
+    <Style Selector="^:disabled /template/ Ellipse#OuterEllipse">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonOuterEllipseStrokeDisabled}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonOuterEllipseFillDisabled}" />
+    </Style>
+
+    <Style Selector="^:disabled /template/ Ellipse#CheckOuterEllipse">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonOuterEllipseCheckedStrokeDisabled}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonOuterEllipseCheckedFillDisabled}" />
+    </Style>
+
+    <Style Selector="^:disabled /template/ Ellipse#CheckGlyph">
+      <Setter Property="Stroke" Value="{StaticResource RadioButtonCheckGlyphFillDisabled}" />
+      <Setter Property="Fill" Value="{StaticResource RadioButtonCheckGlyphStrokeDisabled}" />
+    </Style>
+
+
+    <!--  Checked State  -->
+    <Style Selector="^:checked /template/ Ellipse#CheckGlyph">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="^:checked /template/ Ellipse#OuterEllipse">
+      <Setter Property="Opacity" Value="0" />
+    </Style>
+
+    <Style Selector="^:checked /template/ Ellipse#CheckOuterEllipse">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

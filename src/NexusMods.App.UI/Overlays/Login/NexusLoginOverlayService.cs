@@ -15,7 +15,6 @@ public class NexusLoginOverlayService : IHostedService
     private readonly CompositeDisposable _compositeDisposable;
 
     private NexusLoginOverlayViewModel? _overlayViewModel;
-    private IJob? _currentJob;
 
     public NexusLoginOverlayService(IOverlayController overlayController, IJobMonitor jobMonitor)
     {
@@ -31,21 +30,18 @@ public class NexusLoginOverlayService : IHostedService
             .OnUI()
             .SubscribeWithErrorLogging(changeSet =>
             {
-                if (changeSet.Removes > 0 && _currentJob is not null)
-                {
-                    if (changeSet.Any(x => x.Reason == ChangeReason.Remove && x.Current == _currentJob))
-                    {
-                        _currentJob = null;
-                        _overlayViewModel?.Close();
-                    }
-                }
+                if (changeSet.Removes > 0) _overlayViewModel?.Close();
 
                 if (changeSet.Adds > 0)
                 {
-                    if (_currentJob is not null) return;
+                    if (_overlayViewModel is not null)
+                    {
+                        _overlayViewModel.Close();
+                        _overlayViewModel = null;
+                    }
 
-                    _currentJob = changeSet.First(x => x.Reason == ChangeReason.Add).Current;
-                    _overlayViewModel = new NexusLoginOverlayViewModel(_currentJob);
+                    var job = changeSet.First(x => x.Reason == ChangeReason.Add).Current;
+                    _overlayViewModel = new NexusLoginOverlayViewModel(job);
 
                     _overlayController.Enqueue(_overlayViewModel);
                 }
@@ -57,7 +53,6 @@ public class NexusLoginOverlayService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _currentJob = null;
         _overlayViewModel?.Close();
 
         _compositeDisposable.Dispose();

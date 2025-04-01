@@ -294,6 +294,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FileHashes"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.EventBus", "src\Abstractions\NexusMods.Abstractions.EventBus\NexusMods.Abstractions.EventBus.csproj", "{653CF228-7CD2-4C1B-8B4F-1332B66A33A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.GitHub", "src\NexusMods.Networking.GitHub\NexusMods.Networking.GitHub.csproj", "{16847A6C-EADC-45E3-8354-52C7DE356941}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.GitHub.Tests", "tests\NexusMods.Networking.GitHub.Tests\NexusMods.Networking.GitHub.Tests.csproj", "{5B201091-811F-4931-8FD2-0F64EFD5A6CA}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.UnrealEngine", "src\Games\NexusMods.Games.UnrealEngine\NexusMods.Games.UnrealEngine.csproj", "{D67088E5-9677-4B03-9D8C-70A47E11E803}"
 EndProject
 Global
@@ -778,10 +782,6 @@ Global
 		{653CF228-7CD2-4C1B-8B4F-1332B66A33A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{653CF228-7CD2-4C1B-8B4F-1332B66A33A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{653CF228-7CD2-4C1B-8B4F-1332B66A33A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D67088E5-9677-4B03-9D8C-70A47E11E803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D67088E5-9677-4B03-9D8C-70A47E11E803}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D67088E5-9677-4B03-9D8C-70A47E11E803}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D67088E5-9677-4B03-9D8C-70A47E11E803}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -919,7 +919,6 @@ Global
 		{E2DB1DF4-9934-4119-BA90-196FDDB0904A} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{71D8CF63-A287-45AB-B251-676A54576C1D} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 		{653CF228-7CD2-4C1B-8B4F-1332B66A33A2} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
-		{D67088E5-9677-4B03-9D8C-70A47E11E803} = {70D38D24-79AE-4600-8E83-17F3C11BA81F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}

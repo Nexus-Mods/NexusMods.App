@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Icons;
@@ -32,15 +33,15 @@ public partial class DiagnosticEntryView : ReactiveUserControl<IDiagnosticEntryV
         {
             case DiagnosticSeverity.Suggestion:
                 SeverityIcon.Value = IconValues.InfoFilled;
-                SeverityIcon.Classes.Add("ForegroundInfoStrong");
+                SeverityIcon.Classes.Add("Suggestion");
                 break;
             case DiagnosticSeverity.Warning:
                 SeverityIcon.Value = IconValues.Warning;
-                SeverityIcon.Classes.Add("ForegroundWarningStrong");
+                SeverityIcon.Classes.Add("Warning");
                 break;
             case DiagnosticSeverity.Critical:
                 SeverityIcon.Value = IconValues.Error;
-                SeverityIcon.Classes.Add("ForegroundDangerStrong");
+                SeverityIcon.Classes.Add("Critical");
                 break;
             default:
                 SeverityIcon.Value = IconValues.NotificationImportant;

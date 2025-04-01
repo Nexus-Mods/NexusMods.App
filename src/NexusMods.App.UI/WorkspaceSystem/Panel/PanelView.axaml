@@ -19,6 +19,7 @@
                     <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
                         <Border Grid.Column="0" x:Name="ScrollLeftButtonBorder">
                             <controls:StandardButton x:Name="ScrollLeftButton"
+                                                     Size="Medium"
                                  ShowIcon="IconOnly"
                                  LeftIcon="{x:Static icons:IconValues.ChevronLeft}"
                                  Fill="None"
@@ -53,6 +54,7 @@
                                         HorizontalAlignment="Stretch">
                                     
                                     <controls:StandardButton x:Name="AddTabButton1"
+                                                             Size="Medium"
                                                              ShowIcon="IconOnly"
                                                              LeftIcon="{x:Static icons:IconValues.Add}"
                                                              Fill="None"
@@ -70,12 +72,14 @@
                             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
                                 
                                 <controls:StandardButton x:Name="AddTabButton2"
+                                                         Size="Medium"
                                                          ShowIcon="IconOnly"
                                                          LeftIcon="{x:Static icons:IconValues.Add}"
                                                          Fill="None"
                                                          Margin="8,0,0,0" />
                                 
                                 <controls:StandardButton x:Name="ScrollRightButton"
+                                                         Size="Medium"
                                                          ShowIcon="IconOnly"
                                                          LeftIcon="{x:Static icons:IconValues.ChevronRight}"
                                                          Fill="None" />
@@ -98,6 +102,7 @@
                             </Border>
 
                             <controls:StandardButton x:Name="ClosePanelButton"
+                                                     Size="Medium"
                                                      ShowIcon="IconOnly"
                                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                                      Fill="None" />

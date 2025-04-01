@@ -3,9 +3,78 @@
 
     <!-- Imports -->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="/Resources/Palette/Fonts/SemanticFonts.axaml"/>
+        <ResourceInclude Source="/Resources/Palette/Fonts/SemanticFonts.axaml" />
     </ResourceDictionary.MergedDictionaries>
 
+    <!-- Preview -->
+    <Design.PreviewWith>
+        <Border Padding="8">
+            <StackPanel>
+                <TextBlock Text="Heading2XLSemi" Theme="{StaticResource Heading2XLSemiTheme}" />
+                <TextBlock Text="HeadingLGSemi" Theme="{StaticResource HeadingLGSemiTheme}" />
+                <TextBlock Text="HeadingMDSemi" Theme="{StaticResource HeadingMDSemiTheme}" />
+                <TextBlock Text="HeadingSMSemi" Theme="{StaticResource HeadingSMSemiTheme}" />
+                <TextBlock Text="HeadingXSSemi" Theme="{StaticResource HeadingXSSemiTheme}" />
+
+                <TextBlock Text="TitleMDSemi" Theme="{StaticResource TitleMDSemiTheme}" />
+                <TextBlock Text="TitleSMSemi" Theme="{StaticResource TitleSMSemiTheme}" />
+                <TextBlock Text="TitleXSSemi" Theme="{StaticResource TitleXSSemiTheme}" />
+
+                <Grid ColumnDefinitions="Auto,16,Auto">
+                    <StackPanel Grid.Column="0" Spacing="8">
+                        <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}" />
+                        <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}" Classes="Success" />
+                        <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}" />
+                        <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}" />
+                        <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}" />
+                        <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}" />
+                        <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}" />
+                        <TextBlock Text="BodySMNormal" />
+                        <TextBlock Text="BodySMNormal" Classes="Warning" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodyXLBoldTheme}" Classes="Warning"  />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Spacing="8">
+                        <TextBlock Text="BodyXLBold" Theme="{StaticResource BodyXLBoldTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyXLNormal" Theme="{StaticResource BodyXLNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyLGBold" Theme="{StaticResource BodyLGBoldTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyLGNormal" Theme="{StaticResource BodyLGNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyMDSemi" Theme="{StaticResource BodyMDSemiTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodyMDNormal" Theme="{StaticResource BodyMDNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMSemi" Theme="{StaticResource BodySMSemiTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMMedium" Theme="{StaticResource BodySMMediumTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                        <TextBlock Text="BodySMNormal" Theme="{StaticResource BodySMNormalTheme}"
+                                   Background="{StaticResource SurfaceInvertedBrush}"
+                                   Foreground="{StaticResource NeutralInvertedBrush}" />
+                    </StackPanel>
+                </Grid>
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Success" Classes="Success" />
+                    <TextBlock Text="Suggestion" Classes="Suggestion" />
+                    <TextBlock Text="Warning" Classes="Warning" />
+                    <TextBlock Text="Critical" Classes="Critical" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
 
     <!-- NOTE(erri120): dynamic font loading via weights isn't really supported in Avalonia. -->
     <!-- You need to explicitly use the BOLD font AND change the weight. -->
@@ -86,7 +155,7 @@
     </ControlTheme>
 
     <ControlTheme x:Key="BodyXLBoldTheme" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource FontBodySemiBold}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBodySemi}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="18" />
         <Setter Property="LineHeight" Value="27" />
@@ -100,7 +169,7 @@
     </ControlTheme>
 
     <ControlTheme x:Key="BodyLGBoldTheme" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource FontBodySemiBold}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontBodySemi}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="LineHeight" Value="24" />
@@ -113,8 +182,8 @@
         <Setter Property="LineHeight" Value="24" />
     </ControlTheme>
 
-    <ControlTheme x:Key="BodyMDBoldTheme" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource FontBodySemiBold}" />
+    <ControlTheme x:Key="BodyMDSemiTheme" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontBodySemi}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="LineHeight" Value="21" />
@@ -127,9 +196,17 @@
         <Setter Property="LineHeight" Value="21" />
     </ControlTheme>
 
-    <ControlTheme x:Key="BodySMBoldTheme" TargetType="TextBlock">
-        <Setter Property="FontFamily" Value="{StaticResource FontBodySemiBold}" />
+    <ControlTheme x:Key="BodySMSemiTheme" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontBodySemi}" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LetterSpacing" Value="0.3" />
+        <Setter Property="LineHeight" Value="16.5" />
+    </ControlTheme>
+
+    <ControlTheme x:Key="BodySMMediumTheme" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource FontBodyMedium}" />
+        <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="LetterSpacing" Value="0.3" />
         <Setter Property="LineHeight" Value="16.5" />
@@ -142,63 +219,5 @@
         <Setter Property="LetterSpacing" Value="0.3" />
         <Setter Property="LineHeight" Value="16.5" />
     </ControlTheme>
-    
-    <!-- Preview -->
-   <Design.PreviewWith>
-        <Border Padding="20">
-            <StackPanel Classes="Spacing-2_5">
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource Heading2XLSemiTheme}" Text="Sample Text Heading2XLSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource HeadingXLSemiTheme}" Text="Sample Text HeadingXLSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource HeadingLGSemiTheme}" Text="Sample Text HeadingLGSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource HeadingMDSemiTheme}" Text="Sample Text HeadingMDSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource HeadingSMSemiTheme}" Text="Sample Text HeadingSMSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource HeadingXSSemiTheme}" Text="Sample Text HeadingXSSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource TitleMDSemiTheme}" Text="Sample Text TitleMDSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource TitleSMSemiTheme}" Text="Sample Text TitleSMSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource TitleXSSemiTheme}" Text="Sample Text TitleXSSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodyXLBoldTheme}" Text="Sample Text BodyXLBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodyXLNormalTheme}" Text="Sample Text BodyXLNormal" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodyLGBoldTheme}" Text="Sample Text BodyLGBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodyLGNormalTheme}" Text="Sample Text BodyLGNormal" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodyMDBoldTheme}" Text="Sample Text BodyMDBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodyMDNormalTheme}" Text="Sample Text BodyMDNormal" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodySMBoldTheme}" Text="Sample Text BodySMBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Theme="{StaticResource BodySMNormalTheme}" Text="Sample Text BodySMNormal" />
-                </Border>
-            </StackPanel>
-        </Border>
-    </Design.PreviewWith>
+
 </ResourceDictionary>

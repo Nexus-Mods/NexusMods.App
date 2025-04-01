@@ -27,7 +27,7 @@
                 DockPanel.Dock="Right" 
                 Value="{x:Static icons:IconValues.ChevronRight}"/>
             
-            <StackPanel Margin="16,0" Spacing="0">
+            <StackPanel Margin="16,0" Spacing="0" VerticalAlignment="Center">
                 <TextBlock x:Name="TitleText" 
                            Text="Name"
                            Theme="{StaticResource BodyMDNormalTheme}"

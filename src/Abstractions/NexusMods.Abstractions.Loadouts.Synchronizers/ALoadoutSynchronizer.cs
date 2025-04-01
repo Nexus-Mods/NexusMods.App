@@ -9,7 +9,6 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.Games.FileHashes.Values;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
@@ -100,43 +99,56 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         provider.GetRequiredService<IGarbageCollectorRunner>()
     ) { }
 
-    private void CleanDirectories(IEnumerable<(GamePath GamePath, AbsolutePath ResolvedPath)> toDelete, DiskState newState, GameInstallation installation)
+    private void CleanDirectories(IEnumerable<GamePath> directoriesWithDeletions, DiskState newDiskState, GameInstallation installation)
     {
-        var seenDirectories = new HashSet<GamePath>();
+        var processedDirectories = new HashSet<GamePath>();
         var directoriesToDelete = new HashSet<GamePath>();
+        var directoriesInUse = new HashSet<GamePath>();
         
-        var newStatePaths = newState.SelectMany(e =>
-            {
-                // We need folder paths, so skip first path as it is the file path itself
-                return ((GamePath)e.Path).GetAllParents().Skip(1);
-            }
-        ).ToHashSet();
-
-        foreach (var (gamePath, fullPath) in toDelete)
+        // Build set of directories that are in use (are ancestors of at least one file)
+        foreach (var fileEntry in newDiskState)
         {
-            var parentPath = gamePath.Parent;
-            GamePath? emptyStructureRoot = null;
-            while (parentPath != gamePath.GetRootComponent)
+            var path = (GamePath)fileEntry.Path;
+            var parent = path.Parent;
+            var rootComponent = parent.GetRootComponent;
+        
+            // Add all parent directories to the set
+            while (parent != rootComponent)
             {
-                if (seenDirectories.Contains(parentPath))
+                directoriesInUse.Add(parent);
+                parent = parent.Parent;
+            }
+        }
+        
+        // Find the highest directory not in use for each deletion 
+        foreach (var dirWithDeletion in directoriesWithDeletions)
+        {
+            var rootComponent = dirWithDeletion.GetRootComponent;
+            GamePath? highestEmptyDirectory = null;
+            
+            var currentParentDir = dirWithDeletion;
+
+            while (currentParentDir != rootComponent)
+            {
+                if (processedDirectories.Contains(currentParentDir))
                 {
-                    emptyStructureRoot = null;
+                    highestEmptyDirectory = null;
+                    break;
+                }
+                
+                // Check if directory contains files or is a parent of directories with files
+                if (directoriesInUse.Contains(currentParentDir))
+                {
                     break;
                 }
 
-                // newTree was build from files, so if the parent is in the new tree, it's not empty
-                if (newStatePaths.Contains(parentPath))
-                {
-                    break;
-                }
-
-                seenDirectories.Add(parentPath);
-                emptyStructureRoot = parentPath;
-                parentPath = parentPath.Parent;
+                processedDirectories.Add(currentParentDir);
+                highestEmptyDirectory = currentParentDir;
+                currentParentDir = currentParentDir.Parent;
             }
 
-            if (emptyStructureRoot != null)
-                directoriesToDelete.Add(emptyStructureRoot.Value);
+            if (highestEmptyDirectory != null)
+                directoriesToDelete.Add(highestEmptyDirectory.Value);
         }
 
         foreach (var dir in directoriesToDelete)
@@ -196,13 +208,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             );
         }
         
-        var disabledGroups = GetDisabledGroups(loadout);
-
         foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
         {
             var targetPath = loadoutItem.TargetPath;
             // Ignore disabled Items
-            if (disabledGroups.Contains(loadoutItem.AsLoadoutItem().Parent))
+            if (!loadoutItem.AsLoadoutItem().IsEnabled())
                 continue;
 
             SyncNodePart sourceItem;
@@ -269,32 +279,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         MergeStates(currentState, previousState, syncTree);
         return syncTree;
-    }
-
-    /// <summary>
-    /// For a given loadout, get the disabled groups, also any groups in the disabled groups.
-    /// </summary>
-    private HashSet<EntityId> GetDisabledGroups(Loadout.ReadOnly loadout)
-    {
-        var disabledGroups = new HashSet<EntityId>();
-        var firstLevelDisabledGroups = loadout.Db
-            .Datoms((LoadoutItem.LoadoutId, loadout.Id), (LoadoutItem.Disabled, Null.Instance));
-        foreach (var disabledGroup in firstLevelDisabledGroups)
-        {
-            disabledGroups.Add(disabledGroup);
-            MarkChildren(loadout.Db, disabledGroup, disabledGroups);
-        }
-
-        return disabledGroups;
-        
-        void MarkChildren(IDb loadoutDb, EntityId currentItem, HashSet<EntityId> disabledSet)
-        {
-            foreach (var child in loadoutDb.Datoms((LoadoutItem.Parent, currentItem), (LoadoutItemGroup.Group, Null.Instance)))
-            {
-                disabledSet.Add(child);
-                MarkChildren(loadoutDb, child, disabledSet);
-            }
-        }
     }
 
     public IEnumerable<LoadoutSourceItem> GetNormalGameState(IDb referenceDb, Loadout.ReadOnly loadout)
@@ -417,7 +401,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
         var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         var register = loadout.InstallationInstance.LocationsRegister;
-        HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles = [];
+        HashSet<GamePath> foldersWithDeletedFiles = [];
         EntityId? overridesGroup = null;
         
         foreach (var action in ActionsInOrder)
@@ -553,7 +537,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var gameMetadataId = gameInstallation.GameMetadataId;
         var gameMetadata = GameInstallMetadata.Load(Connection.Db, gameMetadataId);
         var register = gameInstallation.LocationsRegister;
-        var deletedFiles = new HashSet<(GamePath GamePath, AbsolutePath FullPath)>();
+        HashSet<GamePath> foldersWithDeletedFiles = [];
 
         foreach (var action in ActionsInOrder)
         {
@@ -574,7 +558,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, deletedFiles);
+                    ActionDeleteFromDisk(syncTree, register, tx, gameInstallation.GameMetadataId, foldersWithDeletedFiles);
                     break;
 
                 case Actions.ExtractToDisk:
@@ -608,7 +592,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
 
-        await tx.Commit();
+        var result = await tx.Commit();
+
+        var newMetadata = gameMetadata.Rebase(result.Db);
+
+        // Clean up empty directories
+        if (foldersWithDeletedFiles.Count > 0)
+        {
+            CleanDirectories(foldersWithDeletedFiles, newMetadata.DiskStateEntries, gameInstallation);
+        }
     }
 
     private void WarnOfConflict(Dictionary<GamePath, SyncNode> tree)
@@ -748,7 +740,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionDeleteFromDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, GameInstallMetadataId gameMetadataId, HashSet<(GamePath GamePath, AbsolutePath FullPath)> foldersWithDeletedFiles)
+    private void ActionDeleteFromDisk(
+        Dictionary<GamePath, SyncNode> groupings,
+        IGameLocationsRegister register,
+        ITransaction tx,
+        GameInstallMetadataId gameMetadataId,
+        HashSet<GamePath> foldersWithDeletedFiles)
     {
         // Delete files from disk
         foreach (var (path, node) in groupings)
@@ -757,12 +754,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 continue;
             var resolvedPath = register.GetResolvedPath(path);
             resolvedPath.Delete();
-            foldersWithDeletedFiles.Add((path, resolvedPath.Parent));
 
             
-            // Don't delete the entry if we're just going to replace it
+            // Only delete the entry if we're not going to replace it
             if (!node.Actions.HasFlag(Actions.ExtractToDisk))
             {
+                foldersWithDeletedFiles.Add(path.Parent);
+
                 var id = node.Disk.EntityId;
                 tx.Retract(id, DiskStateEntry.Path, ((EntityId)gameMetadataId, path.LocationId, path.Path));
                 tx.Retract(id, DiskStateEntry.Hash, node.Disk.Hash);
@@ -780,21 +778,53 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
+    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroupId)
     {
-        overridesGroup ??= GetOrCreateOverridesGroup(tx, loadout);
+        overridesGroupId ??= GetOrCreateOverridesGroup(tx, loadout);
+        var newGroup = true;
+        LoadoutItemGroup.ReadOnly? overridesGroup = null;
+        if (!overridesGroupId.Value.InPartition(PartitionId.Temp))
+        {
+            newGroup = false;
+            overridesGroup = LoadoutItemGroup.Load(loadout.Db, overridesGroupId.Value);
+        }
+
         var ingestedFiles = false;
         
         foreach (var (path, node) in syncTree)
         {
             if (!node.Actions.HasFlag(Actions.IngestFromDisk))
                 continue;
-            
-            // Entry was added or modified
+
+            // If the overrides group is not new, we need to check if the file is already in the overrides group
+            if (!newGroup)
+            {
+                var existingRecord = overridesGroup!.Value.Children
+                    .OfTypeLoadoutItemWithTargetPath()
+                    .FirstOrOptional(c => c.TargetPath == path);
+
+                if (existingRecord.HasValue)
+                {
+                    // Update the disk entry
+                    tx.Add(node.Disk.EntityId, DiskStateEntry.LastModified, new DateTimeOffset(node.Disk.LastModifiedTicks, TimeSpan.Zero));
+                    
+                    // Update the file entry
+                    tx.Add(existingRecord.Value.Id, LoadoutFile.Hash, node.Disk.Hash);
+                    tx.Add(existingRecord.Value.Id, LoadoutFile.Size, node.Disk.Size);
+                    
+                    // Mark that we ingested a file
+                    ingestedFiles = true;
+                    
+                    // Skip the rest of this process
+                    continue;
+                }
+            }
+
+            // Entry was added
             var id = tx.TempId();
             var loadoutItem = new LoadoutItem.New(tx, id)
             {
-                ParentId = overridesGroup.Value,
+                ParentId = overridesGroupId.Value,
                 LoadoutId = loadout.Id,
                 Name = path.FileName,
             };
@@ -828,7 +858,6 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             var prevLoadout = Loadout.Load(loadout.Db, lastAppliedId);
             if (prevLoadout.IsValid())
             {
-                await Synchronize(prevLoadout);
                 await DeactivateCurrentLoadout(loadout.InstallationInstance);
                 await ActivateLoadout(loadout);
                 return loadout.Rebase();

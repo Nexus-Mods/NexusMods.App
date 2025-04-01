@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.UI;
@@ -45,12 +46,20 @@ public class PanelTabViewModel : AViewModel<IPanelTabViewModel>, IPanelTabViewMo
 
     public TabData? ToData()
     {
-        if (Contents.PageData.Context.IsEphemeral) return null;
+        var pageData = Contents.PageData;
+        if (pageData.Context.IsEphemeral)
+        {
+            var serializablePageData = pageData.Context.GetSerializablePageData();
+            if (serializablePageData is null) return null;
+
+            Debug.Assert(!serializablePageData.Context.IsEphemeral);
+            pageData = serializablePageData;
+        }
 
         return new TabData
         {
             Id = Id,
-            PageData = Contents.PageData,
+            PageData = pageData,
         };
     }
 }

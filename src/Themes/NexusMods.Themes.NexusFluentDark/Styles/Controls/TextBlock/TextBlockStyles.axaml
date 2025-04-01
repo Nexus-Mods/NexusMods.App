@@ -1,232 +1,37 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
-    <!-- Preview -->
+    
     <Design.PreviewWith>
-        <Border Padding="20">
-            <StackPanel Classes="Spacing-2_5">
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="Heading2XLSemi" Text="Sample Text Heading2XLSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="HeadingXLSemi" Text="Sample Text HeadingXLSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="HeadingLGSemi" Text="Sample Text HeadingLGSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="HeadingMDSemi" Text="Sample Text HeadingMDSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="HeadingSMSemi" Text="Sample Text HeadingSMSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="HeadingXSSemi" Text="Sample Text HeadingXSSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="TitleMDSemi" Text="Sample Text TitleMDSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="TitleSMSemi" Text="Sample Text TitleSMSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="TitleXSSemi" Text="Sample Text TitleXSSemi" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyXLBold" Text="Sample Text BodyXLBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyXLNormal" Text="Sample Text BodyXLNormal" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyLGBold" Text="Sample Text BodyLGBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyLGNormal" Text="Sample Text BodyLGNormal" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyMDBold" Text="Sample Text BodyMDBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyMDNormal" Text="Sample Text BodyMDNormal" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodySMBold" Text="Sample Text BodySMBold" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodySMNormal" Text="Sample Text BodySMNormal" />
-                </Border>
-
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyMDNormal ForegroundStrong" Text="Sample Text ForegroundStrong" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyMDNormal ForegroundModerate" Text="Sample Text ForegroundModerate" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyMDNormal ForegroundSubdued" Text="Sample Text ForegroundSubdued" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyMDNormal ForegroundWeak" Text="Sample Text ForegroundWeak" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White"
-                        Background="{StaticResource SurfaceInverted}"
-                        Padding="2">
-                    <TextBlock Classes="BodyMDNormal ForegroundInverted" Text="Sample Text ForegroundInverted" />
-                </Border>
-                <Border BorderThickness="1" BorderBrush="White" Padding="2">
-                    <TextBlock Classes="BodyMDNormal ForegroundTranslucentSubdued" 
-                               Text="Sample Text ForegroundTranslucentSubdued" />
-                </Border>
+        <Border Padding="8">
+            <StackPanel>
+                <TextBlock Text="TextBlock" />
+                <TextBlock Text="BodyLGNormalTheme" Theme="{StaticResource BodyLGNormalTheme}" />
+                <TextBlock Text="Suggestion" Classes="Suggestion"  />
+                <TextBlock Text="Warning" Classes="Warning"  />
+                <TextBlock Text="Critical" Classes="Critical"  />
+                <TextBlock Text="Success" Classes="Success"  />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
-    <!-- Style Definitions-->
-
-    <Style Selector="TextBlock.Heading2XLSemi">
-        <Setter Property="Theme" Value="{StaticResource Heading2XLSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.HeadingXLSemi">
-        <Setter Property="Theme" Value="{StaticResource HeadingXLSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.HeadingLGSemi">
-        <Setter Property="Theme" Value="{StaticResource HeadingLGSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.HeadingMDSemi">
-        <Setter Property="Theme" Value="{StaticResource HeadingMDSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.HeadingSMSemi">
-        <Setter Property="Theme" Value="{StaticResource HeadingSMSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.HeadingXSSemi">
-        <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.TitleMDSemi">
-        <Setter Property="Theme" Value="{StaticResource TitleMDSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.TitleSMSemi">
-        <Setter Property="Theme" Value="{StaticResource TitleSMSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.TitleXSSemi">
-        <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodyXLBold">
-        <Setter Property="Theme" Value="{StaticResource BodyXLBoldTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodyXLNormal">
-        <Setter Property="Theme" Value="{StaticResource BodyXLNormalTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodyLGBold">
-        <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodyLGNormal">
-        <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodyMDBold">
-        <Setter Property="Theme" Value="{StaticResource BodyMDBoldTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodyMDNormal">
-        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodySMBold">
-        <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
-    </Style>
-
-    <Style Selector="TextBlock.BodySMNormal">
-        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-    </Style>
-
-    <!-- Foreground color classes -->
-    <Style Selector="TextBlock.ForegroundStrong">
-        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ForegroundModerate">
-        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ForegroundSubdued">
-        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ForegroundWeak">
-        <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ForegroundInverted">
-        <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+    <Style Selector="AccessText">
+        
     </Style>
     
-    <Style Selector="TextBlock.ForegroundTranslucentSubdued">
-        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
-    </Style>
+    <Style Selector="TextBlock">
 
-    <Style Selector="TextBlock.ForegroundInfoStrong">
-        <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}" />
+        <!-- Severity TextBlock styles -->
+        <Style Selector="^.Suggestion">
+            <Setter Property="Foreground" Value="{StaticResource InfoStrongBrush}" />
+        </Style>
+        <Style Selector="^.Warning">
+            <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+        </Style>
+        <Style Selector="^.Critical">
+            <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+        </Style>
+        <Style Selector="^.Success">
+            <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+        </Style>
     </Style>
-
-    <Style Selector="TextBlock.ForegroundInfoModerate">
-        <Setter Property="Foreground" Value="{StaticResource InfoModerateBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ForegroundInfoSubdued">
-        <Setter Property="Foreground" Value="{StaticResource InfoSubduedBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ForegroundInfoWeak">
-        <Setter Property="Foreground" Value="{StaticResource InfoWeakBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundDangerStrong">
-        <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundDangerModerate">
-        <Setter Property="Foreground" Value="{StaticResource DangerModerateBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundDangerSubdued">
-        <Setter Property="Foreground" Value="{StaticResource DangerSubduedBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundDangerWeak">
-        <Setter Property="Foreground" Value="{StaticResource DangerWeakBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundWarningStrong">
-        <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundWarningModerate">
-        <Setter Property="Foreground" Value="{StaticResource WarningModerateBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundWarningSubdued">
-        <Setter Property="Foreground" Value="{StaticResource WarningSubduedBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundWarningWeak">
-        <Setter Property="Foreground" Value="{StaticResource WarningWeakBrush}" />
-    </Style>
-    
-    <Style Selector="TextBlock.ForegroundSuccessStrong">
-        <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
-    </Style>
-
 </Styles>

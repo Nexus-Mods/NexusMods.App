@@ -21,33 +21,9 @@
             <TextBlock x:Name="EmptySpaceMessageTextBlock" />
         </controls:EmptyState.Subtitle>
 
-        <Grid RowDefinitions="Auto, Auto, *">
+        <Grid RowDefinitions="Auto, *">
 
-            <!-- toolbar -->
-            <!-- NOTE(insomnious): I've not stripped these styles into a styles file
-            as this toolbar is only temporary and mostly for show -->
-            <Border x:Name="ToolbarBorder" Grid.Row="0" Classes="Toolbar">
-                <StackPanel>
-                    <CheckBox Content="Hide Disabled Collections" IsEnabled="False" />
-                    <Separator />
-                    <controls:StandardButton
-                        Size="Small"
-                        Text="Add to group"
-                        IsEnabled="False" />
-                    <ComboBox SelectedIndex="0" Classes="Secondary Compact" IsEnabled="False">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="New group" Theme="{StaticResource BodyMDNormalTheme}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                        <ComboBoxItem Content="Item 1" />
-                        <ComboBoxItem Content="Item 2" />
-                        <ComboBoxItem Content="Item 3" />
-                    </ComboBox>
-                </StackPanel>
-            </Border>
-
-            <StackPanel x:Name="LoadOrderAlertStackPanel" Grid.Row="1">
+            <StackPanel x:Name="LoadOrderAlertStackPanel" Grid.Row="0">
                 <alerts:Alert x:Name="LoadOrderAlert"
                               Severity="Info"
                               ShowDismiss="True" />
@@ -58,11 +34,12 @@
                                              ShowIcon="IconOnly"
                                              LeftIcon="{x:Static icons:IconValues.Info}"
                                              Type="Tertiary"
-                                             Fill="None" />
+                                             Fill="None"
+                                             Size="Medium"/>
                 </StackPanel>
             </StackPanel>
 
-            <Grid x:Name="MainGrid" Grid.Row="2" ColumnDefinitions="32, *">
+            <Grid x:Name="MainGrid" Grid.Row="1" ColumnDefinitions="32, *">
 
                 <!-- left column (trophy bar) -->
                 <!-- Transparent Background so the tooltip hit box covers the whole control -->
