@@ -4,7 +4,7 @@ This release includes improvements to the discovery of collection installs that 
 # In-progress collection installs in the left menu
 To improve visibility and ease of access, collections that are not yet fully installed will now be displayed in the left-hand menu. This allows users to quickly jump back into the installation flow without having to find the item in their Library. 
 
-![The app showing an in-progress collection in the left menu.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1743503241-1477227753.png)
+![The app showing an in-progress collection in the left menu.](./docs/changelog-assets/b9eba6bd73a0421b9a9c0e017db10d50.webp)
 
 # Re-organised Library
 In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs as we feel most users don't need to see both at the same time. 
