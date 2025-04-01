@@ -352,6 +352,116 @@ public class TreeFolderGeneratorForLocationIdTests
         rootHasChildren.Should().BeFalse(); // Root has no children
         rootChildrenCollection.Should().BeEmpty(); // No folders left
     }
+    
+    [Fact]
+    public void NestedFolderObservables_UpdateCorrectly_WhenFileAddedAndRemoved()
+    {
+        // Arrange
+        var fileId = EntityId.From(0UL);
+        var filePath = new RelativePath("folder1/folder2/folder3/file.txt");
+        var fileModel = CreateFileModel(fileId);
+        var generator = CreateGenerator();
+        var rootHasChildren = false;
+        
+        using var rootHasChildrenSub = generator.ModelForRoot().GetHasChildrenObservable_ForTestingOnly().Subscribe(x => rootHasChildren = x);
+        using var rootChildren = BindChildren(generator.ModelForRoot().GetChildrenObservable_ForTestingOnly(), out var rootChildrenCollection);
+        
+        // Assert initial state
+        rootHasChildren.Should().BeFalse();
+        rootChildrenCollection.Should().BeEmpty();
+        
+        // Act - Add file to deeply nested folder
+        generator.OnReceiveFile(filePath, fileModel);
+        
+        // Assert root observables
+        rootHasChildren.Should().BeTrue();
+        rootChildrenCollection.Should().ContainSingle(); // Contains folder1
+        
+        // Get all folders
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var folder1 = rootFolder.Folders.Lookup("folder1").Value;
+        var folder2 = folder1.Folders.Lookup("folder2").Value;
+        var folder3 = folder2.Folders.Lookup("folder3").Value;
+        
+        // Check folder1 observables
+        var folder1HasChildren = false;
+        using var folder1HasChildrenSub = folder1.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folder1HasChildren = x);
+        using var folder1Children = BindChildren(folder1.Model.GetChildrenObservable_ForTestingOnly(), out var folder1ChildrenCollection);
+        folder1HasChildren.Should().BeTrue();
+        folder1ChildrenCollection.Should().ContainSingle(); // Contains folder2
+        
+        // Check folder2 observables
+        var folder2HasChildren = false;
+        using var folder2HasChildrenSub = folder2.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folder2HasChildren = x);
+        using var folder2Children = BindChildren(folder2.Model.GetChildrenObservable_ForTestingOnly(), out var folder2ChildrenCollection);
+        folder2HasChildren.Should().BeTrue();
+        folder2ChildrenCollection.Should().ContainSingle(); // Contains folder3
+        
+        // Check folder3 observables
+        var folder3HasChildren = false;
+        using var folder3HasChildrenSub = folder3.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folder3HasChildren = x);
+        using var folder3Children = BindChildren(folder3.Model.GetChildrenObservable_ForTestingOnly(), out var folder3ChildrenCollection);
+        folder3HasChildren.Should().BeTrue();
+        folder3ChildrenCollection.Should().ContainSingle().Which.Should().Be(fileModel); // Contains file
+        
+        // Act - Remove the file
+        generator.OnDeleteFile(filePath, fileModel);
+        
+        // Assert observables after deletion
+        rootHasChildren.Should().BeFalse(); // No folders should be left, because inner folders became empty and started a delete chain
+        rootChildrenCollection.Should().BeEmpty();
+        folder1HasChildren.Should().BeFalse();
+        folder1ChildrenCollection.Should().BeEmpty();
+        folder2HasChildren.Should().BeFalse();
+        folder2ChildrenCollection.Should().BeEmpty();
+        folder3HasChildren.Should().BeFalse();
+        folder3ChildrenCollection.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void OnDeleteFile_RemovesEmptyFolderChain_WhenFileDeletedFromNestedFolder()
+    {
+        // Arrange - Create a deeply nested folder structure with a single file
+        var fileId = EntityId.From(0UL);
+        var filePath = new RelativePath("parent1/parent2/parent3/file.txt");
+        var fileModel = CreateFileModel(fileId);
+        
+        var generator = CreateGenerator();
+        
+        // Add the file to the nested folder structure
+        generator.OnReceiveFile(filePath, fileModel);
+        
+        // Verify initial structure
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        rootFolder.Folders.Count.Should().Be(1);
+        
+        var parent1 = rootFolder.Folders.Lookup("parent1").Value;
+        parent1.Folders.Count.Should().Be(1);
+        parent1.RefCount.Should().Be(0);
+        
+        var parent2 = parent1.Folders.Lookup("parent2").Value;
+        parent2.Folders.Count.Should().Be(1);
+        parent2.RefCount.Should().Be(0);
+        
+        var parent3 = parent2.Folders.Lookup("parent3").Value;
+        parent3.Files.Count.Should().Be(1);
+        parent3.RefCount.Should().Be(1);
+        parent3.Files.Lookup(fileId).HasValue.Should().BeTrue();
+        
+        // Act - Delete the file
+        var result = generator.OnDeleteFile(filePath, fileModel);
+        
+        // Assert
+        result.Should().BeTrue(); // The folder should be empty and deleted
+        
+        // Verify that all parent folders were deleted
+        rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        rootFolder.Folders.Count.Should().Be(0); // parent1 should be deleted
+        
+        // Try to get the folders that should no longer exist
+        var parent1Lookup = rootFolder.Folders.Lookup("parent1");
+        parent1Lookup.HasValue.Should().BeFalse(); // parent1 should not exist
+    }
 
     private static TreeFolderGeneratorForLocationId<TestTreeItemWithPath> CreateGenerator() => new();
 

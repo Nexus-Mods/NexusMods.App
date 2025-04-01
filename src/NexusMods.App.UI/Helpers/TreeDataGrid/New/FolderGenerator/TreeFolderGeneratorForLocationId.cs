@@ -46,15 +46,42 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath> where TTreeItem
     /// </summary>
     /// <param name="path">The relative path of the item (file) to be removed.</param>
     /// <param name="itemModel">The <see cref="CompositeItemModel{TKey}"/> (tree node) for the file.</param>
-    /// <returns>True if the root folder for this LocationId is now empty.</returns>
+    /// <returns>True if the folder in which the path resides was deleted.</returns>
     internal bool OnDeleteFile(RelativePath path, CompositeItemModel<EntityId> itemModel)
     {
         var folder = GetOrCreateFolder(path.Parent, out var parentFolder, out var parentFolderName);
         var deleteFolder = folder.DeleteFileItemModel(itemModel.Key);
+
         if (deleteFolder)
+        {
             parentFolder.DeleteSubfolder(parentFolderName);
+            
+            // Note(sewer): This is a very rare path in practice, deletes are very infrequent, so this
+            //              path isn't necessarily super optimized.
+            //              We should ideally be avoiding allocations there, and it is possible, but
+            //              the paths library lacks what we need in Span'ified form.
+            DeleteEmptyFolderChain(path.Parent);
+        }
 
         return deleteFolder; 
+    }
+    
+    /// <summary>
+    /// Deletes empty folders along the path chain.
+    /// </summary>
+    /// <param name="folderPath">The path of the folder to check for emptiness.</param>
+    private void DeleteEmptyFolderChain(RelativePath folderPath)
+    {
+        // Get all parent paths, from nearest to farthest (root)
+        // Note: We use '.Parent' because `GetAllParents` includes the path itself.
+        foreach (var parentPath in folderPath.Parent.GetAllParents())
+        {
+            var folder = GetOrCreateFolder(parentPath, out var parentFolder, out var parentFolderName);
+            if (folder.ShouldDeleteFolder())
+                parentFolder.DeleteSubfolder(parentFolderName);
+            else
+                break;
+        }
     }
 
     /// <summary>
@@ -173,8 +200,14 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
             RefCount -= 1;
         }
 
-        return RefCount == 0;
+        return ShouldDeleteFolder();
     }
+
+    /// <summary>
+    /// Checks if this folder should be deleted.
+    /// </summary>
+    /// <returns>True if the folder is empty (no files) and has no subfolders.</returns>
+    public bool ShouldDeleteFolder() => RefCount == 0 && Folders.Count == 0;
     
     /// <summary>
     /// Gets or creates a child folder within this <see cref="GeneratedFolder{TTreeItemWithPath}"/>
