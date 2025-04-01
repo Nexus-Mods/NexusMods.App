@@ -13,7 +13,7 @@
     x:Class="NexusMods.App.UI.Controls.MarkdownRenderer.MarkdownRendererView">
 
     <Design.DataContext>
-        <local:MarkdownRendererDesignViewModel />
+        <local:MarkdownRendererViewModel Contents="{x:Static local:MarkdownRendererViewModel.DebugText}"/>
     </Design.DataContext>
 
     <!--
