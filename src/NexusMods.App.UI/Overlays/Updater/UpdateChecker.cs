@@ -41,9 +41,10 @@ public class UpdateChecker
             return null;
         }
 
-        if (latestVersion.Equals(currentVersion))
+        var isLatestNewerThanCurrent = latestVersion.CompareTo(currentVersion) > 0;
+        if (!isLatestNewerThanCurrent)
         {
-            _logger.LogInformation("Latest version on GitHub `{LatestVersion}` matches current version `{CurrentVersion}`", latestVersion, currentVersion);
+            _logger.LogInformation("Latest version on GitHub `{LatestVersion}` is older or the same as current `{CurrentVersion}`", latestVersion, currentVersion);
             return null;
         }
 
