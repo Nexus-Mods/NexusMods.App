@@ -10,6 +10,15 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     public DebugControlsPageView()
     {
         InitializeComponent();
+        
+        this.WhenActivated(disposables =>
+        {
+            this.OneWayBind(ViewModel, vm => vm.ShowAlphaViewCommand, v => v.OverlayOpenAlphaView.Command)
+                .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.ShowMessageBoxOKCommand, v => v.OverlayShowMessageBoxOK.Command)
+                .DisposeWith(disposables);
+        });
     }
 }
 

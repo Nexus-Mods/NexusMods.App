@@ -280,7 +280,14 @@
                     </StackPanel>
                 </TabItem.Header>
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
-                    <TextBlock>TODO: Add buttons to launch overlays/modals</TextBlock>
+                    <StackPanel Spacing="8">
+                        <controls:StandardButton x:Name="OverlayOpenAlphaView"
+                                                 Text="Open Alpha View"
+                            />
+                        <controls:StandardButton x:Name="OverlayShowMessageBoxOK"
+                                                 Text="ShowMessageBoxOK"
+                        />
+                    </StackPanel>
                 </Border>
             </TabItem>
             <TabItem>

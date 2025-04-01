@@ -1,5 +1,7 @@
 <reactiveUi:ReactiveUserControl
     mc:Ignorable="d"
+    d:DesignWidth="1280"
+    d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Overlays.Generic.MessageBox.Ok.MessageBoxOkView"
     x:TypeArguments="ok:IMessageBoxOkViewModel"
     xmlns="https://github.com/avaloniaui"
@@ -12,8 +14,15 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+    
+    <reactiveUi:ReactiveUserControl.DataContext>
+        <ok:MessageBoxOkDesignViewModel/>
+    </reactiveUi:ReactiveUserControl.DataContext>
 
-    <base:MessageBoxBackground MinWidth="300" MaxWidth="640">
+    <base:MessageBoxBackground MinWidth="576" 
+                               MaxWidth="576"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
         <base:MessageBoxBackground.TopContent>
 
             <DockPanel Margin="24, 16">
@@ -31,7 +40,7 @@
                         Fill="None" />
 
                     <TextBlock x:Name="HeadingText"
-                               Text="Title Text"
+                               Text=""
                                VerticalAlignment="Center"
                                TextWrapping="NoWrap"
                                TextTrimming="CharacterEllipsis" />
@@ -42,7 +51,7 @@
                     <TextBlock x:Name="MessageTextBlock" 
                                TextWrapping="WrapWithOverflow" 
                                MaxLines="50"
-                               Text="Description" />
+                               Text="" />
 
                     <!-- Supporting Markdown -->
                     <StackPanel Orientation="Vertical" x:Name="DetailsSection">
@@ -50,8 +59,9 @@
                                                  LeftIcon="{x:Static icons:IconValues.Copy}"
                                                  ShowIcon="Left" 
                                                  ShowLabel="False"/>
-                        <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" MaxHeight="640"
-                                                      MaxWidth="600" />
+                        <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" MaxHeight="640" MaxWidth="600" IsVisible="True">
+                            <TextBlock Text="Whatever"/>
+                        </reactiveUi:ViewModelViewHost>
                     </StackPanel>
                     
                 </StackPanel>
