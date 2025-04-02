@@ -28,7 +28,7 @@ public class TreeFolderGeneratorForLocationIdTests
         var rootFolder = generator.GetOrCreateFolder("", out _, out _);
         rootFolder.Files.Lookup(fileId).HasValue.Should().BeTrue();
         rootFolder.Files.Lookup(fileId).Value.Should().Be(fileModel);
-        rootFolder.RefCount.Should().Be(1);
+        rootFolder.Files.Count.Should().Be(1);
         rootFolder.Folders.Count.Should().Be(0);
     }
 
@@ -46,17 +46,17 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         var rootFolder = generator.GetOrCreateFolder("", out _, out _);
-        rootFolder.RefCount.Should().Be(0);
+        rootFolder.Files.Count.Should().Be(0);
         rootFolder.Folders.Count.Should().Be(1);
 
         // Navigate to folder1
         var folder1 = rootFolder.Folders.Lookup("folder1").Value;
-        folder1.RefCount.Should().Be(0);
+        folder1.Files.Count.Should().Be(0);
         folder1.Folders.Count.Should().Be(1);
         
         // Navigate to folder2
         var folder2 = folder1.Folders.Lookup("folder2").Value;
-        folder2.RefCount.Should().Be(1);
+        folder2.Files.Count.Should().Be(1);
         folder2.Files.Lookup(fileId).HasValue.Should().BeTrue();
         folder2.Files.Lookup(fileId).Value.Should().Be(fileModel);
     }
@@ -75,13 +75,12 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Get folder and check initial refcount
         var folder = generator.GetOrCreateFolder("folder", out _, out _);
-        folder.RefCount.Should().Be(1);
+        folder.Files.Count.Should().Be(1);
 
         // Act again with same file - should not increment refcount
         generator.OnReceiveFile(filePath, fileModel);
         
         // Assert
-        folder.RefCount.Should().Be(1);
         folder.Files.Count.Should().Be(1);
         
         // Act again with different file - should increment refcount
@@ -90,7 +89,6 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath.Parent.Join("file2.txt"), fileModel2);
         
         // Assert
-        folder.RefCount.Should().Be(2);
         folder.Files.Count.Should().Be(2);
     }
     
@@ -137,7 +135,6 @@ public class TreeFolderGeneratorForLocationIdTests
         // Assert
         result.Should().BeFalse(); // Folder should not be empty
         var folder = generator.GetOrCreateFolder("folder", out _, out _);
-        folder.RefCount.Should().Be(1);
         folder.Files.Count.Should().Be(1);
         folder.Files.Lookup(fileId1).HasValue.Should().BeFalse();
         folder.Files.Lookup(fileId2).HasValue.Should().BeTrue();
@@ -437,15 +434,14 @@ public class TreeFolderGeneratorForLocationIdTests
         
         var parent1 = rootFolder.Folders.Lookup("parent1").Value;
         parent1.Folders.Count.Should().Be(1);
-        parent1.RefCount.Should().Be(0);
+        parent1.Files.Count.Should().Be(0);
         
         var parent2 = parent1.Folders.Lookup("parent2").Value;
         parent2.Folders.Count.Should().Be(1);
-        parent2.RefCount.Should().Be(0);
+        parent2.Files.Count.Should().Be(0);
         
         var parent3 = parent2.Folders.Lookup("parent3").Value;
         parent3.Files.Count.Should().Be(1);
-        parent3.RefCount.Should().Be(1);
         parent3.Files.Lookup(fileId).HasValue.Should().BeTrue();
         
         // Act - Delete the file

@@ -119,11 +119,6 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath> where TTreeItem
 internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemWithPath : ITreeItemWithPath
 {
     /// <summary>
-    /// The reference count.
-    /// </summary>
-    public uint RefCount = 0;
-
-    /// <summary>
     /// The <see cref="CompositeItemModel{TKey}"/> representing the current folder node
     /// in the tree visually.
     /// </summary>
@@ -178,13 +173,7 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
     /// Adds a file <see cref="CompositeItemModel{EntityId}"/> to this folder
     /// </summary>
     /// <param name="child">The child <see cref="CompositeItemModel{EntityId}"/></param>
-    public void AddFileItemModel(CompositeItemModel<EntityId> child)
-    {
-        var alreadyPresent = Files.Lookup(child.Key).HasValue;
-        var incrementSize = Convert.ToUInt32(!alreadyPresent);
-        Files.AddOrUpdate(child);
-        RefCount += incrementSize;
-    }
+    public void AddFileItemModel(CompositeItemModel<EntityId> child) => Files.AddOrUpdate(child);
 
     /// <summary>
     /// Removes a file CompositeItemModel from this folder
@@ -195,10 +184,7 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
     {
         var alreadyPresent = Files.Lookup(key).HasValue;
         if (alreadyPresent)
-        {
             Files.Remove(key);
-            RefCount -= 1;
-        }
 
         return ShouldDeleteFolder();
     }
@@ -207,7 +193,7 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
     /// Checks if this folder should be deleted.
     /// </summary>
     /// <returns>True if the folder is empty (no files) and has no subfolders.</returns>
-    public bool ShouldDeleteFolder() => RefCount == 0 && Folders.Count == 0;
+    public bool ShouldDeleteFolder() => Files.Count == 0 && Folders.Count == 0;
     
     /// <summary>
     /// Gets or creates a child folder within this <see cref="GeneratedFolder{TTreeItemWithPath}"/>
