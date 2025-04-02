@@ -183,51 +183,16 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
         
         // Set up recursive file tracking
         // 1. Add all direct files to the recursive collection
-        _subscriptions.Add(
-            Files.Connect().Subscribe(changes =>
-            {
-                _allFilesRecursive.Edit(updater =>
-                {
-                    foreach (var change in changes)
-                    {
-                        if (change.Reason == ChangeReason.Add || change.Reason == ChangeReason.Update)
-                            updater.AddOrUpdate(change.Current);
-                        else if (change.Reason == ChangeReason.Remove)
-                            updater.Remove(change.Key);
-                    }
-                });
-            })
-        );
+        _subscriptions.Add(Files.Connect().PopulateInto(_allFilesRecursive));
         
         // 2. Track subfolders and their files recursively
         _subscriptions.Add(
-            Folders.Connect().Subscribe(changes =>
-            {
-                foreach (var change in changes)
-                {
-                    if (change.Reason == ChangeReason.Add || change.Reason == ChangeReason.Update)
-                    {
-                        var subfolder = change.Current;
-                        
-                        // Add this subscription to our composite disposable
-                        _subscriptions.Add(
-                            subfolder.GetAllFilesRecursiveObservable().Subscribe(subfolderChanges =>
-                            {
-                                _allFilesRecursive.Edit(updater =>
-                                {
-                                    foreach (var subChange in subfolderChanges)
-                                    {
-                                        if (subChange.Reason == ChangeReason.Add || subChange.Reason == ChangeReason.Update)
-                                            updater.AddOrUpdate(subChange.Current);
-                                        else if (subChange.Reason == ChangeReason.Remove)
-                                            updater.Remove(subChange.Key);
-                                    }
-                                });
-                            })
-                        );
-                    }
-                }
-            })
+            Folders.Connect()
+                .SubscribeMany(folder => 
+                    folder.GetAllFilesRecursiveObservable()
+                        .PopulateInto(_allFilesRecursive)
+                )
+                .Subscribe()
         );
     }
 
