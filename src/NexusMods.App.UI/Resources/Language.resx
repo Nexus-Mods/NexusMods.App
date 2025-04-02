@@ -181,7 +181,7 @@
         <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience.</value>
     </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>Please click "Authorize" on the website</value>
+        <value>Please click "Authorise" on the website</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
         <value>Browser didn't open automatically?</value>
