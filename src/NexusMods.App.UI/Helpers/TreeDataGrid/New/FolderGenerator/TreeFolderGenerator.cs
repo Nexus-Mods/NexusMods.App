@@ -9,10 +9,13 @@ namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 /// A class responsible for creating 'folders' where we have views of files in a tree
 /// using <see cref="CompositeItemModel{TKey}"/>.
 /// </summary>
-/// <typeparamref name="TTreeItemWithPath">The type used to denote the file in the tree.</typeparamref>
-public class TreeFolderGenerator<TTreeItemWithPath> where TTreeItemWithPath : ITreeItemWithPath
+/// <typeparam name="TTreeItemWithPath">The type used to denote the file in the tree.</typeparam>
+/// <typeparam name="TFolderModelInitializer">The initializer for folder models.</typeparam>
+public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> 
+    where TTreeItemWithPath : ITreeItemWithPath
+    where TFolderModelInitializer : IFolderModelInitializer<TTreeItemWithPath>
 {
-    internal readonly Dictionary<LocationId, TreeFolderGeneratorForLocationId<TTreeItemWithPath>> LocationIdToTree = new();
+    internal readonly Dictionary<LocationId, TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>> LocationIdToTree = new();
     internal readonly SourceCache<CompositeItemModel<EntityId>, EntityId> RootCache = new(model => model.Key); // Assuming CompositeItemModel<EntityId> has EntityId Key
 
     /// <summary>
@@ -34,7 +37,7 @@ public class TreeFolderGenerator<TTreeItemWithPath> where TTreeItemWithPath : IT
         var path = item.GetPath();
         if (!LocationIdToTree.TryGetValue(path.LocationId, out var tree))
         {
-            tree = new TreeFolderGeneratorForLocationId<TTreeItemWithPath>();
+            tree = new TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>();
             LocationIdToTree.Add(path.LocationId, tree);
             RootCache.AddOrUpdate(tree.ModelForRoot());
         }

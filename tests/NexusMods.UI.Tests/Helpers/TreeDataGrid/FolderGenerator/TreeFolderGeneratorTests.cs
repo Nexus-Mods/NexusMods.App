@@ -399,7 +399,7 @@ public class TreeFolderGeneratorTests
         idToTree.Count.Should().Be(2);
     }
 
-    private static TreeFolderGenerator<TestTreeItemWithPath> CreateGenerator() => new();
+    private static TreeFolderGenerator<TestTreeItemWithPath, DefaultFolderModelInitializer<TestTreeItemWithPath>> CreateGenerator() => new();
 
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id)
     {
