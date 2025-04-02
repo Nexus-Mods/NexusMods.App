@@ -16,13 +16,15 @@ public sealed class StringComponent : AValueComponent<string>, IItemModelCompone
     public StringComponent(
         string initialValue,
         IObservable<string> valueObservable,
-        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+        bool subscribeWhenCreated = false,
+        bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread) { }
 
     /// <inheritdoc/>
     public StringComponent(
         string initialValue,
         Observable<string> valueObservable,
-        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+        bool subscribeWhenCreated = false,
+        bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread) { }
 
     /// <inheritdoc/>
     public StringComponent(string value) : base(value) { }
