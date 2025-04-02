@@ -476,14 +476,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     private async ValueTask<Loadout.ReadOnly> ReprocessGameUpdates(Loadout.ReadOnly loadout)
     {
-        var diskState = loadout.Installation.DiskStateEntries
-            .Select(part => ((GamePath)part.Path, part.Hash));
-        
-        var suggestedVersionDefinition = _fileHashService.SuggestVersionData(loadout.InstallationInstance, diskState);
-        if (!suggestedVersionDefinition.HasValue)
+        var gameLocatorResults = loadout.InstallationInstance.Locator.Find(loadout.InstallationInstance.Game);
+
+        // NOTE(erri120): It would be very odd if we re-query the game, and it's not installed anymore
+        if (!gameLocatorResults.TryGetFirst(result => result.Store == loadout.InstallationInstance.Store, out var gameLocatorResult))
+        {
+            _logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.InstallationInstance.Store, loadout.InstallationInstance.Game.Name);
             return loadout;
-        
-        var newLocatorIds = suggestedVersionDefinition.Value.LocatorIds;
+        }
+
+        var newLocatorIds = gameLocatorResult.Metadata.ToLocatorIds().ToArray();
 
         var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds).Count();
         var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds).Count();
@@ -512,11 +514,17 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             tx.Delete(file, false);
         }
-        
-        
-        
-        // Update the version and locator ids
-        tx.Add(loadout, Loadout.GameVersion, suggestedVersionDefinition.Value.VanityVersion);
+
+        if (_fileHashService.TryGetVanityVersion((gameLocatorResult.Store, newLocatorIds), out var vanityVersion))
+        {
+            tx.Add(loadout, Loadout.GameVersion, vanityVersion);
+        }
+        else
+        {
+            tx.Add(loadout, Loadout.GameVersion, VanityVersion.DefaultValue);
+            _logger.LogWarning("Found no vanity version for locator IDs `{LocatorIds}` (`{Store}`)", newLocatorIds, gameLocatorResult.Store);
+        }
+
         foreach (var id in loadout.LocatorIds) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
         foreach (var id in newLocatorIds)
