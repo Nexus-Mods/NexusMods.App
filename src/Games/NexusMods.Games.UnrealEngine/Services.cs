@@ -58,13 +58,12 @@ public static class Services
     {
         services
             // Misc
-            //.AddSingleton<UESynchronizer>()
+            .AddSingleton<UESynchronizer>()
 
             // Diagnostics
             .AddSingleton<AssetConflictDiagnosticEmitter>()
             .AddSingleton<ModOverwritesGameFilesEmitter>()
             .AddSingleton<MissingScriptingSystemEmitter>()
-            .AddSingleton<MissingMemberVarLayout>()
 
             // Installers
             .AddSingleton<ScriptingSystemInstaller>()

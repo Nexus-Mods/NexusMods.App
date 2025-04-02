@@ -46,7 +46,7 @@ public class ScriptingSystemLuaInstaller(
                 continue;
             
             var to = new GamePath(Constants.LuaModsLocationId, fileEntry.Path.DropFirst(fileEntry.Path.Depth - 1));
-            var loadoutFile = new LoadoutFile.New(transaction, out var entityId)
+            _ = new LoadoutFile.New(transaction, out var entityId)
             {
                 Hash = fileEntry.AsLibraryFile().Hash,
                 Size = fileEntry.AsLibraryFile().Size,

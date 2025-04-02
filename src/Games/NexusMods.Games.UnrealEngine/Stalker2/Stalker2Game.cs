@@ -29,7 +29,7 @@ public class Stalker2Game(IServiceProvider provider) : AUnrealEngineGame(provide
     public static GameDomain DomainStatic => GameDomain.From("stalker2heartofchornobyl");
     public static GameId GameIdStatic => GameId.From(6944);
 
-    public override string GameFolderName => "Stalker2";
+    public override RelativePath RelPathGameName => "Stalker2";
 
     public override string Name => "STALKER 2: Heart of Chornobyl";
     public override GameId GameId => GameIdStatic;
@@ -50,9 +50,11 @@ public class Stalker2Game(IServiceProvider provider) : AUnrealEngineGame(provide
 
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<Stalker2Game>("NexusMods.Games.UnrealEngine.Resources.Stalker2.icon.png");
-
+    
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        return new Stalker2LoadoutSynchronizer(provider);
+        var ueSync = provider.GetRequiredService<UESynchronizer>();
+        ueSync.InitializeSettings<Stalker2Settings>(GameIdStatic);
+        return ueSync;
     }
 }

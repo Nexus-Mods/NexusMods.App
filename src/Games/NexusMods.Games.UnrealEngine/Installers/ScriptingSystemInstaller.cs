@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Games.UnrealEngine.HogwartsLegacy;
 using NexusMods.Games.UnrealEngine.Interfaces;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine.Installers;
@@ -23,13 +24,15 @@ public class ScriptingSystemInstaller(
     IConnection connection,
     IServiceProvider serviceProvider,
     IFileHashesService fileHashesService,
-    TemporaryFileManager temporaryFileManager
+    TemporaryFileManager temporaryFileManager,
+    IGameRegistry gameRegistry
     ) : ALibraryArchiveInstaller(serviceProvider, logger)
 {
     private readonly IConnection _connection = connection;
     private readonly ILogger<ScriptingSystemInstaller> _logger = logger;
     private readonly IFileHashesService _fileHashesService = fileHashesService;
     private readonly TemporaryFileManager _temporaryFileManager = temporaryFileManager;
+    private readonly IGameRegistry _gameRegistry = gameRegistry;
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
@@ -39,8 +42,32 @@ public class ScriptingSystemInstaller(
         CancellationToken cancellationToken)
     {
         var ue4ss = libraryArchive.Children.Where(x => x.Path.FileName == Constants.ScriptingSystemFileName).ToArray();
-        if (ue4ss.Length == 0)
+        if (!Utils.TryGetUnrealEngineGameAddon(_gameRegistry, loadout.Installation.GameId, out var ueGameAddon)
+            || ueGameAddon == null
+            || ue4ss.Length == 0)
             return new NotSupported();
+
+        if (ueGameAddon.MemberVariableTemplate != null)
+        {
+            var stream = await ueGameAddon.MemberVariableTemplate.GetStreamAsync();
+            var hash = await stream.xxHash3Async(cancellationToken);
+            var to = new GamePath(Constants.BinariesLocationId, "MemberVariableLayout.ini");
+            _ = new LoadoutFile.New(transaction, out var id)
+            {
+                Hash = hash,
+                Size = Size.From((ulong)(stream.Length)),
+                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
+                {
+                    TargetPath = to.ToGamePathParentTuple(loadout.Id),
+                    LoadoutItem = new LoadoutItem.New(transaction, id)
+                    {
+                        Name = to.FileName,
+                        LoadoutId = loadout,
+                        ParentId = loadoutGroup,
+                    },
+                },
+            };
+        }
 
         var directoriesToDrop = ue4ss.FirstOrDefault().Path.Depth;
 

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.Caching;
@@ -23,7 +24,7 @@ public static class Pipelines
 
     public static IServiceCollection AddPipelines(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddKeyedSingleton<IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<PakMetaData>>>(
+        return serviceCollection.AddKeyedSingleton<IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<Dictionary<string, PakMetaData>>>>(
             serviceKey: MetadataPipelineKey,
             implementationFactory: static (serviceProvider, _) => CreateMetadataPipeline(
                 fileStore: serviceProvider.GetRequiredService<IFileStore>(),
@@ -34,13 +35,13 @@ public static class Pipelines
         );
     }
     
-    public static IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<PakMetaData>> GetMetadataPipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<Dictionary<string, PakMetaData>>> GetMetadataPipeline(IServiceProvider serviceProvider)
     {
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, 
-            Outcome<PakMetaData>>>(serviceKey: MetadataPipelineKey);
+            Outcome<Dictionary<string, PakMetaData>>>>(serviceKey: MetadataPipelineKey);
     }
     
-    private static IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<PakMetaData>> CreateMetadataPipeline(
+    private static IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<Dictionary<string, PakMetaData>>> CreateMetadataPipeline(
         IFileStore fileStore,
         IConnection connection,
         IGameRegistry gameRegistry,
@@ -60,24 +61,28 @@ public static class Pipelines
                             .Contains(hash)
                         );
                     if (!loadout.IsValid()) throw new InvalidDataException("Could not find valid loadout for file hash.");
-                    var ueGameAddon = gameRegistry.InstalledGames
-                        .Where(game => game.Game.GameId == loadout.Installation.GameId)
-                        .Select(game => game.GetGame())
-                        .Cast<IUnrealEngineGameAddon>()
-                        .FirstOrDefault();
-                    if (ueGameAddon == null)
+                    if (!Utils.TryGetUnrealEngineGameAddon(gameRegistry, loadout.Installation.GameId, out var ueGameAddon))
                         throw new InvalidDataException("Could not find UE game addon.");
-                    await using (var tempFile = temporaryFileManager.CreateFile(Constants.PakExt))
-                    {
-                        await using var fs = tempFile.Path.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
-                        await resource.Data.CopyToAsync(fs, token);
-                        var metaData = await PakFileParser.ParsePakMeta(ueGameAddon, tempFile.Path.ToString());
-                        return resource.WithData(Outcome.FromResult(metaData));
-                    }
+                    
+                    var pakFile = loadout.Items
+                        .OfTypeLoadoutItemGroup()
+                        .SelectMany(group => group.Children.OfTypeLoadoutItemWithTargetPath()
+                            .OfTypeLoadoutFile())
+                        .FirstOrDefault(file => file.Hash == hash).ToUnrealEnginePakLoadoutFile();
+                    if (!LibraryArchive.TryGet(connection.Db, pakFile.LibraryArchiveId, out var archive)) 
+                        throw new InvalidDataException("Could not find library archive.");
+                    
+                    var pakMetadata = await PakFileParser.ExtractAndDeserialize(
+                        ueGameAddon!,
+                        temporaryFileManager,
+                        fileStore,
+                        archive.Value,
+                        token);
+                    return resource.WithData(Outcome.FromResult(pakMetadata));
                 }
                 catch (InvalidDataException e)
                 {
-                    return resource.WithData(Outcome.FromException<PakMetaData>(e));
+                    return resource.WithData(Outcome.FromException<Dictionary<string, PakMetaData>>(e));
                 }
             })
             .UseCache(
@@ -85,7 +90,7 @@ public static class Pipelines
                 keyComparer: EqualityComparer<Hash>.Default,
                 capacityPartition: new FavorWarmPartition(totalCapacity: 100)
             )
-            .ChangeIdentifier<UnrealEnginePakLoadoutFile.ReadOnly, Hash, Outcome<PakMetaData>>(
+            .ChangeIdentifier<UnrealEnginePakLoadoutFile.ReadOnly, Hash, Outcome<Dictionary<string, PakMetaData>>>(
                 static mod => mod.AsLoadoutFile().Hash
             );
     

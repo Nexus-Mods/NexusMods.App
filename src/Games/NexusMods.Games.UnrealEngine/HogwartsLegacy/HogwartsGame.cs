@@ -31,8 +31,9 @@ public class HogwartsLegacyGame(IServiceProvider provider) : AUnrealEngineGame(p
     private static GameDomain DomainStatic => GameDomain.From("hogwartslegacy");
     public static GameId GameIdStatic => GameId.From(5113);
 
-    public override string GameFolderName => "Phoenix";
-    public override NamedLink UE4SSLink => new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(DomainStatic.Value, "942"));
+    public override RelativePath RelPathGameName => "Phoenix";
+    public override RelativePath? RelPathPakMods => new RelativePath("Content/Paks/WindowsNoEditor");
+    public override NamedLink UE4SSLink => new("Nexus Mods", NexusModsUrlBuilder.GetModUri(DomainStatic, ModId.From(942)));
 
     public override VersionContainer? VersionContainer => new (EGame.GAME_HogwartsLegacy);
     
@@ -61,9 +62,11 @@ public class HogwartsLegacyGame(IServiceProvider provider) : AUnrealEngineGame(p
 
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<HogwartsLegacyGame>("NexusMods.Games.UnrealEngine.Resources.HogwartsLegacy.icon.png");
-
+    
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        return new HogwartsLegacyLoadoutSynchronizer(provider);
+        var ueSync = provider.GetRequiredService<UESynchronizer>();
+        ueSync.InitializeSettings<HogwartsLegacySettings>(GameIdStatic);
+        return ueSync;
     }
 }

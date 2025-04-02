@@ -1,5 +1,9 @@
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Games.UnrealEngine.Interfaces;
 using NexusMods.Games.UnrealEngine.Models;
 using NexusMods.Paths;
 
@@ -10,34 +14,35 @@ internal static partial class Utils
     public static Dictionary<LocationId, AbsolutePath> StandardUnrealEngineLocations(
         IFileSystem fileSystem,
         GameLocatorResult installation,
-        string gameFolderName)
+        AUnrealEngineGame game)
     {
         var installationPath = installation.Path;
-        var isXbox = installation.Store == GameStore.XboxGamePass;
-        var arcPath = isXbox ? "WinGDK" : "Win64";
-
+        var arcPath = game.ArchitectureSegmentRetriever?.Invoke(installation) 
+            ?? throw new InvalidOperationException("Architecture segment retriever is not set.");
+        
+        var (relPathGameName, relPathPakMods) = (game.RelPathGameName, game.RelPathPakMods);
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installationPath },
             {
                 LocationId.AppData,
                 fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                    .Combine(gameFolderName)
+                    .Combine(relPathGameName)
             },
-            { Constants.GameMainLocationId, installationPath.Combine(gameFolderName) },
-            { Constants.BinariesLocationId, installationPath.Combine($"{gameFolderName}/Binaries/{arcPath}") },
-            { Constants.LuaModsLocationId, installationPath.Combine($"{gameFolderName}/Binaries/{arcPath}/Mods") },
-            { Constants.PakModsLocationId, installationPath.Combine($"{gameFolderName}/Content/Paks/~mods") },
-            { Constants.LogicModsLocationId, installationPath.Combine($"{gameFolderName}/Content/Paks/LogicMods")},
+            { Constants.GameMainLocationId, installationPath.Combine(relPathGameName) },
+            { Constants.BinariesLocationId, installationPath.Combine(relPathGameName.Join($"Binaries/){arcPath}")) },
+            { Constants.LuaModsLocationId, installationPath.Combine(relPathGameName.Join($"Binaries/{arcPath}/Mods")) },
+            { Constants.PakModsLocationId, installationPath.Combine(relPathPakMods!.Value)},
+            { Constants.LogicModsLocationId, installationPath.Combine(relPathGameName.Join($"Content/Paks/LogicMods"))},
             {
                 Constants.ConfigLocationId,
                 fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                    .Combine($"{gameFolderName}/Saved/Config/Windows")
+                    .Combine(relPathGameName.Join($"Saved/Config/Windows"))
             },
             {
                 LocationId.Saves,
                 fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory)
-                    .Combine($"{gameFolderName}/Saved/SaveGames")
+                    .Combine(relPathGameName.Join($"Saved/SaveGames"))
             },
         };
     }
@@ -51,6 +56,35 @@ internal static partial class Utils
             .ToArray();
         
         return ue4ss.Length > 0;
+    }
+    
+    public static bool TryGetGameAddon(IGameRegistry gameRegistry, GameId gameId, out IGame? gameAddon)
+    {
+        gameAddon = gameRegistry.InstalledGames
+            .Where(game => game.Game.GameId == gameId)
+            .Select(game => game.GetGame())
+            .FirstOrDefault();
+        return gameAddon != null;
+    }
+    
+    public static bool TryGetUnrealEngineGameAddon(IGameRegistry gameRegistry, GameId gameId, out IUnrealEngineGameAddon? ueGameAddon)
+    {
+        ueGameAddon = gameRegistry.InstalledGames
+            .Where(game => game.Game.GameId == gameId)
+            .Select(game => game.GetGame())
+            .Cast<IUnrealEngineGameAddon>()
+            .FirstOrDefault();
+        return ueGameAddon != null;
+    }
+    
+    public static Dictionary<string, LibraryFile.ReadOnly[]> GroupFilesByFileName(LibraryArchive.ReadOnly libraryArchive)
+    {
+        return libraryArchive.Children
+            .GroupBy(x => Path.GetFileNameWithoutExtension(x.Path.FileName))
+            .ToDictionary(g =>
+                g.Key,
+                g => g.Select(x => x.AsLibraryFile())
+                    .ToArray());
     }
     
     public static LoadoutFile.ReadOnly[] GetAllLoadoutFilesWithExt(

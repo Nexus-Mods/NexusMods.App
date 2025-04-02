@@ -8,7 +8,6 @@ using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.UnrealEngine.Emitters;
 using NexusMods.Games.UnrealEngine.Installers;
 using NexusMods.Games.UnrealEngine.Interfaces;
@@ -16,29 +15,35 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine;
 
-public abstract class AUnrealEngineGame : AGame, IUnrealEngineGameAddon
+public abstract class AUnrealEngineGame(IServiceProvider provider) : AGame(provider), IUnrealEngineGameAddon
 {
-    public abstract string GameFolderName { get; }
+    protected readonly IServiceProvider _serviceProvider = provider;
+    protected readonly IFileSystem _fs = provider.GetRequiredService<IFileSystem>();
     
+    public virtual RelativePath RelPathGameName => new("");
+    public virtual RelativePath? RelPathPakMods => RelPathGameName.Join(new RelativePath("Content/Paks/~mods"));
     public virtual NamedLink UE4SSLink => Helpers.UE4SSLink;
-    public virtual IEnumerable<FAesKey>? AESKeys => null;
     public virtual VersionContainer? VersionContainer => VersionContainer.DEFAULT_VERSION_CONTAINER;
+    public virtual IEnumerable<FAesKey>? AESKeys => null;
     public virtual IStreamFactory? MemberVariableTemplate => null;
-
-    protected readonly IServiceProvider _serviceProvider;
-    protected readonly IFileSystem _fs;
-    // protected readonly IOSInformation _osInformation;
-
-    protected AUnrealEngineGame(IServiceProvider provider) : base(provider)
+    
+    public virtual Func<GameLocatorResult, Task<string>>? ArchitectureSegmentRetriever
     {
-        _serviceProvider = provider;
-        _fs = provider.GetRequiredService<IFileSystem>();
-        // _osInformation = provider.GetRequiredService<IOSInformation>();
+        get
+        {
+            // Seems silly to write an async method that just returns a string, but we
+            // may want to run some async operations to ascertain the architecture segment in the future.
+            return async (installation) =>
+            {
+                var architectureSegment = installation.Store == GameStore.XboxGamePass ? "WinGDK" : "Win64";
+                return await Task.FromResult(architectureSegment);
+            };
+        }
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {
-        return Utils.StandardUnrealEngineLocations(fileSystem, installation, GameFolderName);
+        return Utils.StandardUnrealEngineLocations(fileSystem, installation, this);
     }
 
     public override ILibraryItemInstaller[] LibraryItemInstallers => [

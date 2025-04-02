@@ -19,7 +19,7 @@ public class AssetConflictDiagnosticEmitter : ILoadoutDiagnosticEmitter
     private readonly ILogger _logger;
     private readonly IFileStore _fileStore;
     private readonly IGameRegistry _gameRegistry;
-    private readonly IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<PakMetaData>> _metadataPipeline;
+    private readonly IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<Dictionary<string, PakMetaData>>> _metadataPipeline;
 
     public AssetConflictDiagnosticEmitter(
         ILogger<AssetConflictDiagnosticEmitter> logger,
@@ -38,28 +38,20 @@ public class AssetConflictDiagnosticEmitter : ILoadoutDiagnosticEmitter
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
-
-        var ueAddon = _gameRegistry.InstalledGames
-            .Where(x => x.Game.GameId == loadout.Installation.GameId)
-            .Select(x => x.GetGame())
-            .Cast<IUnrealEngineGameAddon>()
-            .FirstOrDefault();
-        if (ueAddon is null)
-        {
-            _logger.LogWarning("UE Game addon not found in registry: {GameId}", loadout.Installation.GameId);
-            yield break;
-        }
+        
         var pakFiles = Utils.GetAllLoadoutFilesWithExt(loadout, [Constants.PakModsLocationId], [Constants.PakExt], true);
         var fileTasks = await pakFiles.ToAsyncEnumerable()
         .Select(async file =>
         {
             file.TryGetAsUnrealEnginePakLoadoutFile(out var pakFile);
             var meta = await _metadataPipeline.LoadResourceAsync(pakFile, cancellationToken);
-            var assets = meta.Data.Result.PakAssets;
-            return assets.Select(file => new
+            var assets =  meta.Data.Result?.Values
+                .SelectMany(x => x.PakAssets)
+                .ToList();
+            return assets!.Select(file => new
             {
                 AssetName = file.Name,
-                ModFile = pakFile,
+                ModFile = pakFile.LoadoutItemGroup.AsLoadoutItem().Name,
             }).ToList();
         })
         .ToListAsync(cancellationToken: cancellationToken);
@@ -71,7 +63,7 @@ public class AssetConflictDiagnosticEmitter : ILoadoutDiagnosticEmitter
         var diagnostics = ueAssetLookup
             .Where(x => x.Count() > 1)
             .Select(x => Diagnostics.CreateUnrealEngineAssetConflict(
-                ConflictingItems: string.Join(", ", x.ToArray().Select(x => x.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Name)),
+                ConflictingItems: string.Join(", ", x.ToArray()),
                 ModifiedUEAsset: x.Key
             ));
 

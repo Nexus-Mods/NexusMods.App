@@ -8,24 +8,15 @@ using NexusMods.Games.UnrealEngine.Interfaces;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine;
-/*
- * Ignore this for now - still WIP
- */
-public class UESynchronizer : ALoadoutSynchronizer
+
+public class UESynchronizer(IServiceProvider provider) : ALoadoutSynchronizer(provider)
 {
     private readonly Dictionary<GameId, object> _settingsDictionary = new();
     private readonly Dictionary<GameId, GamePath[]> _ignoreDictionary = new();
     
-    private readonly ISettingsManager _settingsManager;
-    private readonly IGameRegistry _gameRegistry;
-    private readonly IFileSystem _fs;
-
-    public UESynchronizer(IServiceProvider provider) : base(provider)
-    {
-        _settingsManager = provider.GetRequiredService<ISettingsManager>();
-        _gameRegistry = provider.GetRequiredService<IGameRegistry>();
-        _fs = provider.GetRequiredService<IFileSystem>();
-    }
+    private readonly ISettingsManager _settingsManager = provider.GetRequiredService<ISettingsManager>();
+    private readonly IGameRegistry _gameRegistry = provider.GetRequiredService<IGameRegistry>();
+    private readonly IFileSystem _fs = provider.GetRequiredService<IFileSystem>();
 
     private bool IgnoreExecutables { get; set; } = false;
     
@@ -39,28 +30,26 @@ public class UESynchronizer : ALoadoutSynchronizer
 
     private GamePath[] IgnoreFolders(GameId id)
     {
+        if (_ignoreDictionary.TryGetValue(id, out var ignorePaths))
+            return ignorePaths;
+        
         var gameInstallation = _gameRegistry.InstalledGames.FirstOrDefault(game => game.GetGame().GameId == id);
         var game = gameInstallation?.GetGame();
+        if (game == null) return [];
         var ueGame = game as IUnrealEngineGameAddon;
-        IgnoreExecutables = gameInstallation?.Store == GameStore.XboxGamePass;
         if (ueGame == null) return [];
+        
+        IgnoreExecutables = gameInstallation?.Store == GameStore.XboxGamePass;
 
         var ignoredGamePaths = IgnoreExecutables
-            ? new[] { Constants.EnginePath, Constants.ResourcesPath }
+            ? new[] { Constants.EnginePath, Constants.ResourcesPath, game.GetPrimaryFile(GameStore.XboxGamePass) }
             : [];
-        return ignoredGamePaths?.ToArray() ?? [];
+        return ignoredGamePaths;
     }
 
     public override bool IsIgnoredPath(GamePath path)
     {
         if (IgnoreExecutables && path.Extension == Constants.ExeExt) return true;
-        foreach (var installation in _gameRegistry.InstalledGames)
-        {
-            var locations = installation.LocationsRegister.GetTopLevelLocations();
-            var isIgnored = locations.Any(kvp => path.LocationId == kvp.Key && path.InFolder(new GamePath(kvp.Key, kvp.Value.GetNonRootPart())));
-            if (isIgnored) return true;
-        }
-
         return false;
     }
 }

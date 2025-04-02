@@ -15,8 +15,10 @@ using System.Text.RegularExpressions;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
+using NexusMods.Abstractions.Resources;
 using NexusMods.Games.UnrealEngine.Interfaces;
 using NexusMods.Games.UnrealEngine.Models;
+using Polly;
 
 namespace NexusMods.Games.UnrealEngine.Installers;
 
@@ -36,6 +38,7 @@ public class UnrealEnginePakModInstaller(
     private readonly IGameRegistry _gameRegistry = gameRegistry;
     private readonly IFileStore _fileStore = fileStore;
     private readonly TemporaryFileManager _temporaryFileManager = temporaryFileManager;
+    private readonly IResourceLoader<UnrealEnginePakLoadoutFile.ReadOnly, Outcome<Dictionary<string, PakMetaData>>> _metadataPipeline = Pipelines.GetMetadataPipeline(serviceProvider);
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
@@ -44,19 +47,12 @@ public class UnrealEnginePakModInstaller(
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        if (!IsSupported(libraryArchive))
+        if (!IsSupported(libraryArchive)
+            || !Utils.TryGetUnrealEngineGameAddon(_gameRegistry, loadout.Installation.GameId, out var ueGameAddon)
+            || ueGameAddon == null)
             return new NotSupported();
         
-        var ueGameAddon = _gameRegistry.InstalledGames
-            .Where(game => game.Game.GameId == loadout.Installation.GameId)
-            .Select(game => game.GetGame())
-            .Cast<IUnrealEngineGameAddon>()
-            .FirstOrDefault();
-
-        if (ueGameAddon == null)
-            return new NotSupported();
-        
-        var pakMetadataDict = await GetPakMetadata(loadout, ueGameAddon, libraryArchive, cancellationToken);
+        var pakMetadataDict = await GetPakMetadata(ueGameAddon, libraryArchive, cancellationToken);
         foreach (var fileEntry in libraryArchive.Children)
         {
             GamePath to;
@@ -106,7 +102,9 @@ public class UnrealEnginePakModInstaller(
             _ = new UnrealEnginePakLoadoutFile.New(transaction, entityId)
             {
                 IsPakFile = true,
+                LibraryArchiveId = libraryArchive,
                 LoadoutFile = loadoutFile,
+                LoadoutItemGroupId = loadoutGroup,
             };
         }
         
@@ -126,34 +124,24 @@ public class UnrealEnginePakModInstaller(
     }
     
     private async ValueTask<Dictionary<string, PakMetaData>> GetPakMetadata(
-        Loadout.ReadOnly loadout,
         IUnrealEngineGameAddon ueGameAddon,
         LibraryArchive.ReadOnly libraryArchive,
         CancellationToken cancellationToken)
     {
-        var pakFiles = libraryArchive.Children.Where(x => x.Path.Extension == Constants.PakExt);
-        var results = new Dictionary<string, PakMetaData>();
-
-        foreach (var fileEntry in pakFiles)
+        try
         {
-            var key = Path.GetFileNameWithoutExtension(fileEntry.Path.FileName);
-            try
-            {
-                var pakMetadata = await PakFileParser.Deserialize(
-                    ueGameAddon,
-                    _temporaryFileManager,
-                    _fileStore,
-                    fileEntry.AsLibraryFile(),
-                    cancellationToken);
-
-                results.Add(key, pakMetadata);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Exception while deserializing {Path} from {Archive}", fileEntry.Path, fileEntry.Parent.AsLibraryFile().FileName);
-            }
+            return await PakFileParser.ExtractAndDeserialize(
+                ueGameAddon,
+                _temporaryFileManager,
+                _fileStore,
+                libraryArchive,
+                cancellationToken);
         }
-
-        return results;
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception while deserializing pak assets from {Archive}", libraryArchive.AsLibraryFile().FileName);
+        }
+        
+        return new Dictionary<string, PakMetaData>();
     }
 }

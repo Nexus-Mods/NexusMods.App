@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -13,4 +14,14 @@ public partial class UnrealEnginePakLoadoutFile : IModelDefinition
     /// Marker for pak file (if there is one).
     /// </summary>
     public static readonly MarkerAttribute PakFile = new(Namespace, nameof(PakFile));
+    
+    /// <summary>
+    /// Reference to the archive that installed this pak file.
+    /// </summary>
+    public static readonly ReferenceAttribute<LibraryArchive> LibraryArchive = new(Namespace, nameof(LibraryArchive));
+    
+    /// <summary>
+    /// Reference to the loadout item group that this file is part of.
+    /// </summary>
+    public static readonly ReferenceAttribute<LoadoutItemGroup> LoadoutItemGroup = new(Namespace, nameof(LoadoutItemGroup));
 }

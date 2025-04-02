@@ -8,28 +8,33 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Games.UnrealEngine.Emitters;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine.PacificDrive;
 
 [UsedImplicitly]
 public class PacificDriveGame : AUnrealEngineGame, ISteamGame, IEpicGame
 {
-    public override string GameFolderName => "PenDriverPro";
+    public override RelativePath RelPathGameName => "PenDriverPro";
     
     public static GameDomain DomainStatic => GameDomain.From("pacificdrive");
+    public static GameId GameIdStatic => GameId.From(6169);
+    
     private readonly IServiceProvider _serviceProvider;
 
     public PacificDriveGame(IEnumerable<IGameLocator> gameLocators, IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
     }
+    
 
     public override string Name => "Pacific Drive";
-    public override GameId GameId => GameId.From(6169);
+    public override GameId GameId => GameIdStatic;
     public override SupportType SupportType => SupportType.Community;
     public override GamePath GetPrimaryFile(GameStore store) => new(Constants.BinariesLocationId, "PenDriverPro-Win64-Shipping.exe");
 
@@ -41,9 +46,11 @@ public class PacificDriveGame : AUnrealEngineGame, ISteamGame, IEpicGame
 
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<PacificDriveGame>("NexusMods.Games.UnrealEngine.Resources.PacificDrive.game_image.jpg");
-
+    
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        return new PacificDriveLoadoutSynchronizer(provider);
+        var ueSync = provider.GetRequiredService<UESynchronizer>();
+        ueSync.InitializeSettings<PacificDriveSettings>(GameIdStatic);
+        return ueSync;
     }
 }

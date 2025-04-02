@@ -78,21 +78,4 @@ overwrite game files.
             .AddValue<int>("ModCount")
         )
         .Finish();
-    
-    [DiagnosticTemplate]
-    [UsedImplicitly]
-    internal static IDiagnosticTemplate ScriptingSystemMissingMemberVarLayoutTemplate = DiagnosticTemplateBuilder
-        .Start()
-        .WithId(new DiagnosticId(Source, number: 5))
-        .WithTitle("Scripting System Missing Member Var Layout")
-        .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("The Unreal Engine Scripting System is missing the Member Variable Layout configuration file. This can cause some mods to not function correctly.")
-        .WithDetails("""
-            The game "{GameName}" does not use default Unreal Engine offsets for its data. This can cause some mods to not function correctly.
-        """)
-        .WithMessageData(messageBuilder => messageBuilder
-            .AddValue<string>("GameName")
-            .AddDataReference<LoadoutItemGroupReference>("Group")
-        )
-        .Finish();
 }

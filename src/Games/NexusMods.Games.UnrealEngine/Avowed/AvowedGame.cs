@@ -7,17 +7,19 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Games.UnrealEngine.Emitters;
+using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine.Avowed;
 
 [UsedImplicitly]
 public class AvowedGame(IServiceProvider provider) : AUnrealEngineGame(provider), ISteamGame
 {
-    public override string GameFolderName => "Alabama";
+    public override RelativePath RelPathGameName => "Alabama";
     public override NamedLink UE4SSLink => Helpers.UE4SSLink;
     public override IEnumerable<FAesKey> AESKeys => new List<FAesKey>
     {
@@ -40,9 +42,11 @@ public class AvowedGame(IServiceProvider provider) : AUnrealEngineGame(provider)
 
     public override IStreamFactory GameImage =>
         new EmbededResourceStreamFactory<AvowedGame>("NexusMods.Games.UnrealEngine.Resources.Avowed.icon.png");
-
+    
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        return new AvowedLoadoutSynchronizer(provider);
+        var ueSync = provider.GetRequiredService<UESynchronizer>();
+        ueSync.InitializeSettings<AvowedSettings>(GameIdStatic);
+        return ueSync;
     }
 }
