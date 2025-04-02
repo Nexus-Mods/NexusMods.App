@@ -171,16 +171,17 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             {
                 var smapiMod = SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId);
                 var modDetails = apiMods.GetValueOrDefault(missingDependency);
-                // TODO: diagnostic even if the API doesn't return anything
-                if (modDetails?.Name is null) return null;
+
+                var name = modDetails?.Name ?? missingDependency;
+                var link = modDetails is null ? Helpers.NexusModsLink : modDetails.NexusModsLink.ValueOr(() => Helpers.NexusModsLink);
 
                 return Diagnostics.CreateMissingRequiredDependency(
                     SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
-                    MissingDependencyModId: modDetails.UniqueId,
-                    MissingDependencyModName: modDetails.Name,
-                    NexusModsDependencyUri: modDetails.NexusModsLink.ValueOr(() => Helpers.NexusModsLink)
+                    MissingDependencyModId: missingDependency,
+                    MissingDependencyModName: name,
+                    NexusModsDependencyUri: link
                 );
-            }).Where(x => x is not null).Select(x => x!);
+            });
         });
     }
 
