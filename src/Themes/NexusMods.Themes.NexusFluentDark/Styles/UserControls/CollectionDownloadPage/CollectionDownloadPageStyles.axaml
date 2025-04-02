@@ -18,265 +18,265 @@
     <Style Selector="collections|CollectionDownloadView">
 
         <Style Selector="^ DockPanel#Body">
-                <Setter Property="Background" Value="{StaticResource CollectionHeaderImageLinearGradientBrush}" />
+            <Style Selector="^ Border#HeaderBorderBackground">
 
-            <Style Selector="^ Border#HeaderBorder">
-                <Setter Property="HorizontalAlignment" Value="Stretch" />
-                <Setter Property="Padding" Value="24" />
+                <Style Selector="^ Border#HeaderBorder">
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="24" />
+                    <Setter Property="Background" Value="{StaticResource CollectionHeaderImageLinearGradientBrush}" />
 
-                <Style Selector="^ StackPanel#Header">
-                    <Style Selector="^ Border#MainContentBorder">
-                        <Setter Property="Padding" Value="0" />
+                    <Style Selector="^ StackPanel#Header">
+                        <Style Selector="^ Border#MainContentBorder">
+                            <Setter Property="Padding" Value="0" />
 
-                        <Style Selector="^ Grid#MainContent">
+                            <Style Selector="^ Grid#MainContent">
 
-                            <!-- left column -->
-                            <Style Selector="^ DockPanel#CollectionTitles">
+                                <!-- left column -->
+                                <Style Selector="^ DockPanel#CollectionTitles">
 
-                                <Style Selector="^ TextBlock#Title">
-                                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentStrongBrush}" />
-                                </Style>
+                                    <Style Selector="^ TextBlock#Title">
+                                        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                                    </Style>
 
-                                <Style Selector="^ TextBlock#Heading">
-                                    <Setter Property="Theme" Value="{StaticResource HeadingMDSemiTheme}" />
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentStrongBrush}" />
-                                    <Setter Property="TextWrapping" Value="NoWrap" />
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                </Style>
+                                    <Style Selector="^ TextBlock#Heading">
+                                        <Setter Property="Theme" Value="{StaticResource HeadingMDSemiTheme}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                                        <Setter Property="TextWrapping" Value="NoWrap" />
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                    </Style>
 
-                                <Style Selector="^ Border#CollectionImageBorder">
-                                    <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-                                    <Setter Property="ClipToBounds" Value="True" />
-                                    <Setter Property="Width" Value="54" />
-                                    <Setter Property="Height" Value="67" />
-
-                                    <Style Selector="^ Image#CollectionImage">
-                                        <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
+                                    <Style Selector="^ Border#CollectionImageBorder">
+                                        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+                                        <Setter Property="ClipToBounds" Value="True" />
                                         <Setter Property="Width" Value="54" />
                                         <Setter Property="Height" Value="67" />
-                                        <Setter Property="Stretch" Value="UniformToFill" />
+
+                                        <Style Selector="^ Image#CollectionImage">
+                                            <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
+                                            <Setter Property="Width" Value="54" />
+                                            <Setter Property="Height" Value="67" />
+                                            <Setter Property="Stretch" Value="UniformToFill" />
+                                        </Style>
                                     </Style>
                                 </Style>
-                            </Style>
 
-                            <!-- right column -->
-                            <Style Selector="^ StackPanel#CollectionDetails">
-                                <Setter Property="HorizontalAlignment" Value="Right" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                                <Setter Property="Spacing" Value="20" />
-
-                                <Style Selector="^ > StackPanel#TagsPanel">
+                                <!-- right column -->
+                                <Style Selector="^ StackPanel#CollectionDetails">
                                     <Setter Property="HorizontalAlignment" Value="Right" />
-                                    <Setter Property="Orientation" Value="Horizontal" />
-                                    <Setter Property="Spacing" Value="{StaticResource Spacing-2.5}" />
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="Spacing" Value="20" />
 
-                                    <Style Selector="^ StackPanel#AuthorStackPanel">
+                                    <Style Selector="^ > StackPanel#TagsPanel">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
                                         <Setter Property="Orientation" Value="Horizontal" />
-                                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+                                        <Setter Property="Spacing" Value="{StaticResource Spacing-2.5}" />
 
-                                        <Style Selector="^ TextBlock#AuthorName">
+                                        <Style Selector="^ StackPanel#AuthorStackPanel">
+                                            <Setter Property="Orientation" Value="Horizontal" />
+                                            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+
+                                            <Style Selector="^ TextBlock#AuthorName">
+                                                <Setter Property="VerticalAlignment" Value="Center" />
+                                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                                                <Setter Property="Foreground"
+                                                        Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                            </Style>
+
+                                            <Style Selector="^ Border#AuthorAvatarBorder">
+                                                <Setter Property="Clip">
+                                                    <EllipseGeometry Rect="0, 0, 20, 20" />
+                                                </Setter>
+                                                <Setter Property="Width" Value="20" />
+                                                <Setter Property="Height" Value="20" />
+                                            </Style>
+                                        </Style>
+
+                                        <Style Selector="^ StackPanel#RevisionsPanel">
+                                            <Setter Property="Orientation" Value="Horizontal" />
                                             <Setter Property="VerticalAlignment" Value="Center" />
-                                            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                                            <Setter Property="Foreground"
-                                                    Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                                        </Style>
+                                            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
-                                        <Style Selector="^ Border#AuthorAvatarBorder">
-                                            <Setter Property="Clip">
-                                                <EllipseGeometry Rect="0, 0, 20, 20" />
-                                            </Setter>
-                                            <Setter Property="Width" Value="20" />
-                                            <Setter Property="Height" Value="20" />
-                                        </Style>
-                                    </Style>
-
-                                    <Style Selector="^ StackPanel#RevisionsPanel">
-                                        <Setter Property="Orientation" Value="Horizontal" />
-                                        <Setter Property="VerticalAlignment" Value="Center" />
-                                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-
-                                        <Style Selector="^ TextBlock#Revision">
-                                            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                                            <Setter Property="Foreground"
-                                                    Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                                        </Style>
-
-                                        <Style Selector="^ icons|UnifiedIcon#ArrowRight">
-                                            <Setter Property="Size" Value="16" />
-                                            <Setter Property="Foreground"
-                                                    Value="{StaticResource InfoStrongBrush}" />
-                                        </Style>
-
-                                        <Style Selector="^ TextBlock#NewestRevision">
-                                            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                                            <Setter Property="Foreground"
-                                                    Value="{StaticResource InfoStrongBrush}" />
-                                        </Style>
-                                    </Style>
-
-
-                                </Style>
-
-                                <Style Selector="^ > StackPanel#StatsPanel">
-                                    <Setter Property="HorizontalAlignment" Value="Right" />
-                                    <Setter Property="Spacing" Value="{StaticResource Spacing-4}" />
-                                    <Setter Property="Orientation" Value="Horizontal" />
-
-                                    <!-- all stats -->
-                                    <Style Selector="^ > StackPanel">
-                                        <Setter Property="Orientation" Value="Horizontal" />
-                                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-                                        <!-- we need a transparent brush for pointerover to work correctly to show tooltips -->
-                                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-
-                                        <Style Selector="^ > icons|UnifiedIcon">
-                                            <Setter Property="Foreground"
-                                                    Value="{StaticResource NeutralTranslucentSubduedBrush}" />
-                                            <Setter Property="Size" Value="16" />
-                                        </Style>
-
-                                        <Style Selector="^ > TextBlock">
-                                            <Setter Property="Foreground"
-                                                    Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                                            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                                        </Style>
-                                    </Style>
-
-                                    <!-- color changes for rating values -->
-                                    <Style Selector="^ StackPanel#OverallRatingPanel">
-                                        <Style Selector="^.NoRating">
-                                            <Style Selector="^ TextBlock#OverallRating">
+                                            <Style Selector="^ TextBlock#Revision">
+                                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                                 <Setter Property="Foreground"
                                                         Value="{StaticResource NeutralTranslucentModerateBrush}" />
                                             </Style>
-                                            <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+
+                                            <Style Selector="^ icons|UnifiedIcon#ArrowRight">
+                                                <Setter Property="Size" Value="16" />
+                                                <Setter Property="Foreground"
+                                                        Value="{StaticResource InfoStrongBrush}" />
+                                            </Style>
+
+                                            <Style Selector="^ TextBlock#NewestRevision">
+                                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                                                <Setter Property="Foreground"
+                                                        Value="{StaticResource InfoStrongBrush}" />
+                                            </Style>
+                                        </Style>
+
+
+                                    </Style>
+
+                                    <Style Selector="^ > StackPanel#StatsPanel">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                        <Setter Property="Spacing" Value="{StaticResource Spacing-4}" />
+                                        <Setter Property="Orientation" Value="Horizontal" />
+
+                                        <!-- all stats -->
+                                        <Style Selector="^ > StackPanel">
+                                            <Setter Property="Orientation" Value="Horizontal" />
+                                            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+                                            <!-- we need a transparent brush for pointerover to work correctly to show tooltips -->
+                                            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+
+                                            <Style Selector="^ > icons|UnifiedIcon">
+                                                <Setter Property="Foreground"
+                                                        Value="{StaticResource NeutralTranslucentSubduedBrush}" />
+                                                <Setter Property="Size" Value="16" />
+                                            </Style>
+
+                                            <Style Selector="^ > TextBlock">
                                                 <Setter Property="Foreground"
                                                         Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                             </Style>
                                         </Style>
-                                        <Style Selector="^.LowRating">
-                                            <Style Selector="^ TextBlock#OverallRating">
-                                                <Setter Property="Foreground"
-                                                        Value="{StaticResource DangerStrongBrush}" />
+
+                                        <!-- color changes for rating values -->
+                                        <Style Selector="^ StackPanel#OverallRatingPanel">
+                                            <Style Selector="^.NoRating">
+                                                <Style Selector="^ TextBlock#OverallRating">
+                                                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                                </Style>
+                                                <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                                                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                                </Style>
                                             </Style>
-                                            <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
-                                                <Setter Property="Foreground"
-                                                        Value="{StaticResource DangerStrongBrush}" />
+                                            <Style Selector="^.LowRating">
+                                                <Style Selector="^ TextBlock#OverallRating">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource DangerStrongBrush}" />
+                                                </Style>
+                                                <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource DangerStrongBrush}" />
+                                                </Style>
                                             </Style>
-                                        </Style>
-                                        <Style Selector="^.MidRating">
-                                            <Style Selector="^ TextBlock#OverallRating">
-                                                <Setter Property="Foreground"
-                                                        Value="{StaticResource WarningStrongBrush}" />
+                                            <Style Selector="^.MidRating">
+                                                <Style Selector="^ TextBlock#OverallRating">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource WarningStrongBrush}" />
+                                                </Style>
+                                                <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource WarningStrongBrush}" />
+                                                </Style>
                                             </Style>
-                                            <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
-                                                <Setter Property="Foreground"
-                                                        Value="{StaticResource WarningStrongBrush}" />
-                                            </Style>
-                                        </Style>
-                                        <Style Selector="^.HighRating">
-                                            <Style Selector="^ TextBlock#OverallRating">
-                                                <Setter Property="Foreground"
-                                                        Value="{StaticResource SuccessStrongBrush}" />
-                                            </Style>
-                                            <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
-                                                <Setter Property="Foreground"
-                                                        Value="{StaticResource SuccessStrongBrush}" />
+                                            <Style Selector="^.HighRating">
+                                                <Style Selector="^ TextBlock#OverallRating">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource SuccessStrongBrush}" />
+                                                </Style>
+                                                <Style Selector="^ icons|UnifiedIcon#OverallRatingIcon">
+                                                    <Setter Property="Foreground"
+                                                            Value="{StaticResource SuccessStrongBrush}" />
+                                                </Style>
                                             </Style>
                                         </Style>
                                     </Style>
+
+
                                 </Style>
 
-
-                            </Style>
-
-                        </Style>
-                    </Style>
-
-
-                </Style>
-            </Style>
-        </Style>
-
-        <Style Selector="^ TabControl">
-            <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-
-            <!-- tab content -->
-            <Style Selector="^ TabItem#InstructionsTab">
-
-                <!-- all expanders -->
-                <Style Selector="^ > ScrollViewer > StackPanel > Expander">
-                    <Setter Property="HorizontalAlignment" Value="Stretch" />
-
-                    <!-- header -->
-                    <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
-                        <Style Selector="^ > TextBlock">
-                            <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
-                        </Style>
-                    </Style>
-
-                    <!-- content -->
-                    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-                    </Style>
-
-                    <!-- collections instructions -->
-                    <Style Selector="^ markdownRenderer|MarkdownRendererView">
-                        <Setter Property="Padding" Value="24" />
-                    </Style>
-
-                    <!-- required and optional mods instructions -->
-                    <Style Selector="^ ItemsControl">
-                        <Setter Property="Padding" Value="24" />
-
-                        <!-- all mods -->
-                        <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
-                            <Setter Property="Margin" Value="0" />
-
-                            <Style Selector="^ > StackPanel">
-                                <Setter Property="Spacing" Value="20" />
                             </Style>
                         </Style>
 
-                        <!-- each mod -->
-                        <Style Selector="^ Border.ModInstructionBorder">
-                            <Setter Property="Padding" Value="0,0,0,20" />
-                            <Setter Property="Margin" Value="0" />
-                            <Setter Property="BorderThickness" Value="0,0,0,1" />
-                            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
-
-                            <Style Selector="^ > StackPanel">
-                                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-
-                                <Style Selector="^ TextBlock">
-                                    <Setter Property="TextWrapping" Value="Wrap" />
-                                </Style>
-
-                                <!-- mod name -->
-                                <Style Selector="^ TextBlock:nth-child(1)">
-                                    <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
-                                    <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                                </Style>
-                                <!-- mod instruction -->
-                                <Style Selector="^ TextBlock:nth-last-child(1)">
-                                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
-                                </Style>
-                            </Style>
-                        </Style>
 
                     </Style>
                 </Style>
             </Style>
-        </Style>
 
-        <!-- NOTE(erri120): Hide the tab strip when there's only one tab -->
-        <Style Selector="^ TabControl.SingleTab">
-            <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
-                <Setter Property="IsVisible" Value="False" />
+            <Style Selector="^ TabControl">
+                <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
+                
+                <!-- tab content -->
+                <Style Selector="^ TabItem#InstructionsTab">
+
+                    <!-- all expanders -->
+                    <Style Selector="^ > ScrollViewer > StackPanel > Expander">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+
+                        <!-- header -->
+                        <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
+                            <Style Selector="^ > TextBlock">
+                                <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+                            </Style>
+                        </Style>
+
+                        <!-- content -->
+                        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+                        </Style>
+
+                        <!-- collections instructions -->
+                        <Style Selector="^ markdownRenderer|MarkdownRendererView">
+                            <Setter Property="Padding" Value="24" />
+                        </Style>
+
+                        <!-- required and optional mods instructions -->
+                        <Style Selector="^ ItemsControl">
+                            <Setter Property="Padding" Value="24" />
+
+                            <!-- all mods -->
+                            <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                                <Setter Property="Margin" Value="0" />
+
+                                <Style Selector="^ > StackPanel">
+                                    <Setter Property="Spacing" Value="20" />
+                                </Style>
+                            </Style>
+
+                            <!-- each mod -->
+                            <Style Selector="^ Border.ModInstructionBorder">
+                                <Setter Property="Padding" Value="0,0,0,20" />
+                                <Setter Property="Margin" Value="0" />
+                                <Setter Property="BorderThickness" Value="0,0,0,1" />
+                                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+
+                                <Style Selector="^ > StackPanel">
+                                    <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+
+                                    <Style Selector="^ TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+
+                                    <!-- mod name -->
+                                    <Style Selector="^ TextBlock:nth-child(1)">
+                                        <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                                    </Style>
+                                    <!-- mod instruction -->
+                                    <Style Selector="^ TextBlock:nth-last-child(1)">
+                                        <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                                        <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                                    </Style>
+                                </Style>
+                            </Style>
+
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
+
+            <!-- NOTE(erri120): Hide the tab strip when there's only one tab -->
+            <Style Selector="^ TabControl.SingleTab">
+                <Style Selector="^ /template/ ItemsPresenter#PART_ItemsPresenter">
+                    <Setter Property="IsVisible" Value="False" />
+                </Style>
             </Style>
         </Style>
     </Style>
