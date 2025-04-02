@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
 namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
@@ -143,6 +144,17 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
     /// <remarks>The key is the folder name, without any separators.</remarks>
     public SourceCache<GeneratedFolder<TTreeItemWithPath>, RelativePath> Folders = new(_ => null!);
     
+    /// <summary>
+    /// A source cache containing all files from this folder and all its subfolders recursively.
+    /// </summary>
+    /// <remarks>Used to power recursive file views.</remarks>
+    private readonly SourceCache<CompositeItemModel<EntityId>, EntityId> _allFilesRecursive = new(x => x.Key);
+    
+    /// <summary>
+    /// Subscription disposables for recursive file tracking.
+    /// </summary>
+    private readonly CompositeDisposable _subscriptions = new();
+    
     /// <summary/>
     public GeneratedFolder()
     {
@@ -167,7 +179,63 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable
         };
+        
+        // Set up recursive file tracking
+        
+        // 1. Add all direct files to the recursive collection
+        _subscriptions.Add(
+            Files.Connect().Subscribe(changes =>
+            {
+                _allFilesRecursive.Edit(updater =>
+                {
+                    foreach (var change in changes)
+                    {
+                        if (change.Reason == ChangeReason.Add || change.Reason == ChangeReason.Update)
+                            updater.AddOrUpdate(change.Current);
+                        else if (change.Reason == ChangeReason.Remove)
+                            updater.Remove(change.Key);
+                    }
+                });
+            })
+        );
+        
+        // 2. Track subfolders and their files recursively
+        _subscriptions.Add(
+            Folders.Connect().Subscribe(changes =>
+            {
+                foreach (var change in changes)
+                {
+                    if (change.Reason == ChangeReason.Add || change.Reason == ChangeReason.Update)
+                    {
+                        var subfolder = change.Current;
+                        
+                        // Add this subscription to our composite disposable
+                        _subscriptions.Add(
+                            subfolder.GetAllFilesRecursiveObservable().Subscribe(subfolderChanges =>
+                            {
+                                _allFilesRecursive.Edit(updater =>
+                                {
+                                    foreach (var subChange in subfolderChanges)
+                                    {
+                                        if (subChange.Reason == ChangeReason.Add || subChange.Reason == ChangeReason.Update)
+                                            updater.AddOrUpdate(subChange.Current);
+                                        else if (subChange.Reason == ChangeReason.Remove)
+                                            updater.Remove(subChange.Key);
+                                    }
+                                });
+                            })
+                        );
+                    }
+                }
+            })
+        );
     }
+
+    /// <summary>
+    /// Gets an observable of all files in this folder and all its subfolders recursively.
+    /// </summary>
+    /// <returns>An observable changeset of all file <see cref="CompositeItemModel{EntityId}"/> items.</returns>
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetAllFilesRecursiveObservable() => _allFilesRecursive.Connect();
 
     /// <summary>
     /// Adds a file <see cref="CompositeItemModel{EntityId}"/> to this folder
@@ -234,5 +302,7 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
         Files.Dispose();
         Folders.Dispose();
         Model.Dispose();
+        _allFilesRecursive.Dispose();
+        _subscriptions.Dispose();
     }
 }

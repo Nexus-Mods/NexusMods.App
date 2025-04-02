@@ -459,6 +459,230 @@ public class TreeFolderGeneratorForLocationIdTests
         parent1Lookup.HasValue.Should().BeFalse(); // parent1 should not exist
     }
 
+    [Fact]
+    public void GetAllFilesRecursiveObservable_ReturnsEmpty_WhenFolderHasNoFiles()
+    {
+        // Arrange
+        var generator = CreateGenerator();
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        
+        // Act
+        using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
+            .Bind(out var filesCollection)
+            .Subscribe();
+        
+        // Assert
+        filesCollection.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void GetAllFilesRecursiveObservable_ReturnsDirectFiles_WhenFolderHasOnlyDirectFiles()
+    {
+        // Arrange
+        var fileId1 = EntityId.From(0UL);
+        var fileId2 = EntityId.From(1UL);
+        var filePath1 = new RelativePath("file1.txt");
+        var filePath2 = new RelativePath("file2.txt");
+        var fileModel1 = CreateFileModel(fileId1);
+        var fileModel2 = CreateFileModel(fileId2);
+        
+        var generator = CreateGenerator();
+        generator.OnReceiveFile(filePath1, fileModel1);
+        generator.OnReceiveFile(filePath2, fileModel2);
+        
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        
+        // Act
+        using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
+            .Bind(out var filesCollection)
+            .Subscribe();
+        
+        // Assert
+        filesCollection.Should().HaveCount(2);
+        filesCollection.Should().Contain(fileModel1);
+        filesCollection.Should().Contain(fileModel2);
+    }
+    
+    [Fact]
+    public void GetAllFilesRecursiveObservable_ReturnsAllFiles_WhenFilesAreInSubfolders()
+    {
+        // Arrange
+        var fileId1 = EntityId.From(0UL);
+        var fileId2 = EntityId.From(1UL);
+        var fileId3 = EntityId.From(2UL);
+        
+        var filePath1 = new RelativePath("file1.txt");                // Root file
+        var filePath2 = new RelativePath("folder1/file2.txt");        // In subfolder
+        var filePath3 = new RelativePath("folder1/folder2/file3.txt"); // In nested subfolder
+        
+        var fileModel1 = CreateFileModel(fileId1);
+        var fileModel2 = CreateFileModel(fileId2);
+        var fileModel3 = CreateFileModel(fileId3);
+        
+        var generator = CreateGenerator();
+        generator.OnReceiveFile(filePath1, fileModel1);
+        generator.OnReceiveFile(filePath2, fileModel2);
+        generator.OnReceiveFile(filePath3, fileModel3);
+        
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        
+        // Act - Get recursive files from root
+        using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
+            .Bind(out var rootFilesCollection)
+            .Subscribe();
+        
+        // Assert - Root should see all files
+        rootFilesCollection.Should().HaveCount(3);
+        rootFilesCollection.Should().Contain(fileModel1);
+        rootFilesCollection.Should().Contain(fileModel2);
+        rootFilesCollection.Should().Contain(fileModel3);
+        
+        // Act - Get recursive files from folder1
+        var folder1 = rootFolder.Folders.Lookup("folder1").Value;
+        using var folder1FilesSubscription = folder1.GetAllFilesRecursiveObservable()
+            .Bind(out var folder1FilesCollection)
+            .Subscribe();
+        
+        // Assert - folder1 should see its file and the one in its subfolder
+        folder1FilesCollection.Should().HaveCount(2);
+        folder1FilesCollection.Should().Contain(fileModel2);
+        folder1FilesCollection.Should().Contain(fileModel3);
+        
+        // Act - Get recursive files from folder2
+        var folder2 = folder1.Folders.Lookup("folder2").Value;
+        using var folder2FilesSubscription = folder2.GetAllFilesRecursiveObservable()
+            .Bind(out var folder2FilesCollection)
+            .Subscribe();
+        
+        // Assert - folder2 should see only its file
+        folder2FilesCollection.Should().HaveCount(1);
+        folder2FilesCollection.Should().Contain(fileModel3);
+    }
+    
+    [Fact]
+    public void GetAllFilesRecursiveObservable_UpdatesCorrectly_WhenFilesAreAddedOrRemoved()
+    {
+        // Arrange
+        var fileId1 = EntityId.From(0UL);
+        var fileId2 = EntityId.From(1UL);
+        var fileId3 = EntityId.From(2UL);
+        
+        var filePath1 = new RelativePath("file1.txt");
+        var filePath2 = new RelativePath("folder1/file2.txt");
+        var filePath3 = new RelativePath("folder1/folder2/file3.txt");
+        
+        var fileModel1 = CreateFileModel(fileId1);
+        var fileModel2 = CreateFileModel(fileId2);
+        var fileModel3 = CreateFileModel(fileId3);
+        
+        var generator = CreateGenerator();
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        
+        // Set up subscription to monitor changes
+        using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
+            .Bind(out var rootFilesCollection)
+            .Subscribe();
+        
+        // Assert initial state
+        rootFilesCollection.Should().BeEmpty();
+        
+        // Act 1 - Add a file to root
+        generator.OnReceiveFile(filePath1, fileModel1);
+        
+        // Assert 1
+        rootFilesCollection.Should().HaveCount(1);
+        rootFilesCollection.Should().Contain(fileModel1);
+        
+        // Act 2 - Add a file to subfolder
+        generator.OnReceiveFile(filePath2, fileModel2);
+        
+        // Assert 2 - Root should see the file
+        rootFilesCollection.Should().HaveCount(2);
+        rootFilesCollection.Should().Contain(fileModel1);
+        rootFilesCollection.Should().Contain(fileModel2);
+        
+        // Act 3 - Add a file to nested subfolder
+        generator.OnReceiveFile(filePath3, fileModel3);
+        
+        // Assert 3 - Root should see the file
+        rootFilesCollection.Should().HaveCount(3);
+        rootFilesCollection.Should().Contain(fileModel1);
+        rootFilesCollection.Should().Contain(fileModel2);
+        rootFilesCollection.Should().Contain(fileModel3);
+        
+        // Act 4 - Remove file from nested subfolder
+        generator.OnDeleteFile(filePath3, fileModel3);
+        
+        // Assert 4 - Root should no longer see the file
+        rootFilesCollection.Should().HaveCount(2);
+        rootFilesCollection.Should().Contain(fileModel1);
+        rootFilesCollection.Should().Contain(fileModel2);
+        rootFilesCollection.Should().NotContain(fileModel3);
+        
+        // Act 5 - Remove file from subfolder
+        generator.OnDeleteFile(filePath2, fileModel2);
+        
+        // Assert 5 - Root should no longer see the file
+        rootFilesCollection.Should().HaveCount(1);
+        rootFilesCollection.Should().Contain(fileModel1);
+        rootFilesCollection.Should().NotContain(fileModel2);
+        
+        // Act 6 - Remove file from root
+        generator.OnDeleteFile(filePath1, fileModel1);
+        
+        // Assert 6 - No files
+        rootFilesCollection.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public void GetAllFilesRecursiveObservable_HandlesNewlyAddedSubfoldersCorrectly()
+    {
+        // Arrange
+        var fileId1 = EntityId.From(0UL);
+        var fileId2 = EntityId.From(1UL);
+        var fileId3 = EntityId.From(2UL);
+        
+        var filePath1 = new RelativePath("file1.txt");
+        var filePath2 = new RelativePath("folder1/file2.txt");
+        var filePath3 = new RelativePath("folder1/folder2/file3.txt");
+        
+        var fileModel1 = CreateFileModel(fileId1);
+        var fileModel2 = CreateFileModel(fileId2);
+        var fileModel3 = CreateFileModel(fileId3);
+        
+        var generator = CreateGenerator();
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        
+        // Set up subscription to monitor changes
+        using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
+            .Bind(out var rootFilesCollection)
+            .Subscribe();
+        
+        // Act 1 - Add file to root
+        generator.OnReceiveFile(filePath1, fileModel1);
+        
+        // Assert 1
+        rootFilesCollection.Should().HaveCount(1);
+        rootFilesCollection.Should().Contain(fileModel1);
+        
+        // Act 2 - Add file to a subfolder that doesn't exist yet (will be created)
+        generator.OnReceiveFile(filePath2, fileModel2);
+        
+        // Assert 2
+        rootFilesCollection.Should().HaveCount(2);
+        rootFilesCollection.Should().Contain(fileModel1);
+        rootFilesCollection.Should().Contain(fileModel2);
+        
+        // Act 3 - Add file to a nested subfolder that doesn't exist yet (will be created)
+        generator.OnReceiveFile(filePath3, fileModel3);
+        
+        // Assert 3
+        rootFilesCollection.Should().HaveCount(3);
+        rootFilesCollection.Should().Contain(fileModel1);
+        rootFilesCollection.Should().Contain(fileModel2);
+        rootFilesCollection.Should().Contain(fileModel3);
+    }
+
     private static TreeFolderGeneratorForLocationId<TestTreeItemWithPath> CreateGenerator() => new();
 
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id) => new(id);
