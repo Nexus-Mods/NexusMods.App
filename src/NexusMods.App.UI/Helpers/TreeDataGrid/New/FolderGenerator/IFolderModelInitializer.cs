@@ -1,4 +1,3 @@
-using DynamicData;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -14,8 +13,11 @@ public interface IFolderModelInitializer<TTreeItemWithPath> where TTreeItemWithP
     /// Initializes the <see cref="CompositeItemModel{EntityId}"/>.
     /// </summary>
     /// <param name="model">The model to initialize.</param>
-    /// <param name="recursiveChildFiles">Provides access to all child models, including subfolders.</param>
-    static abstract void InitializeModel(CompositeItemModel<EntityId> model, SourceCache<CompositeItemModel<EntityId>, EntityId> recursiveChildFiles);
+    /// <param name="folder">The folder containing this model.</param>
+    static abstract void InitializeModel<TFolderModelInitializer>(
+        CompositeItemModel<EntityId> model, 
+        GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> folder)
+        where TFolderModelInitializer : IFolderModelInitializer<TTreeItemWithPath>;
 }
 
 /// <summary>
@@ -27,7 +29,10 @@ public class DefaultFolderModelInitializer<TTreeItemWithPath> : IFolderModelInit
     where TTreeItemWithPath : ITreeItemWithPath
 {
     /// <inheritdoc/>
-    public static void InitializeModel(CompositeItemModel<EntityId> model, SourceCache<CompositeItemModel<EntityId>, EntityId> recursiveChildFiles)
+    public static void InitializeModel<TFolderModelInitializer>(
+        CompositeItemModel<EntityId> model, 
+        GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> folder)
+        where TFolderModelInitializer : IFolderModelInitializer<TTreeItemWithPath>
     {
         
     }

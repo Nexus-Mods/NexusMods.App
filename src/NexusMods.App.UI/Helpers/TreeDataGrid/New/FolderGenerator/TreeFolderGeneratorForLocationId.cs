@@ -193,7 +193,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
         };
         
         // Initialize the model using the user provided function
-        TFolderModelInitializer.InitializeModel(Model, _allFilesRecursive);
+        TFolderModelInitializer.InitializeModel(Model, this);
         
         // Set up recursive file tracking
         // 1. Add all direct files to the recursive collection
