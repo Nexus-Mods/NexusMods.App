@@ -1278,8 +1278,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             if (hash.MinimalHash == diskMinimalHash)
                 return hash.XxHash3;
         }
-        
-        // If we didn't find a match, then we need to hash the file
+
+        _logger.LogDebug("Didn't find matching hash data for file `{Path}`, falling back to doing a full hash", file);
         return await file.XxHash3Async(token: token);
     }
 
