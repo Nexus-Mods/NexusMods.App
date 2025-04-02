@@ -26,7 +26,12 @@
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             <Setter Property="Margin" Value="2,-4" />
             <Setter Property="Height" Value="{Binding $parent}" />
-            <Setter Property="Width" Value="2" />
+            <Setter Property="Width" Value="1" />
+        </Style>
+        
+        <Style Selector="^ > StackPanel">
+            <Setter Property="Orientation" Value="Horizontal" />
+            <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
         </Style>
     </Style>
 </Styles>

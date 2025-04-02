@@ -42,6 +42,7 @@
       <AdditionalFiles Include="Styles\Controls\Window\DialogStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LaunchButton\LaunchButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LoadoutBadge\LoadoutBadgeStyles.axaml" />
+      <AdditionalFiles Include="Styles\UserControls\Statusbar\StatusbarStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>

@@ -39,6 +39,7 @@
         <MergeResourceInclude Source="/Resources/ControlThemes/AlertControlTheme.axaml"/>
         <MergeResourceInclude Source="/Resources/ControlThemes/PageHeaderControlTheme.axaml"/>
         <MergeResourceInclude Source="/Resources/ControlThemes/ToolbarControlTheme.axaml"/>
+        <MergeResourceInclude Source="/Resources/ControlThemes/StatusbarControlTheme.axaml"/>
     </ResourceDictionary.MergedDictionaries>
     
 </ResourceDictionary>

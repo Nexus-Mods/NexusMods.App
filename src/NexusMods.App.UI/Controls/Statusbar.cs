@@ -8,13 +8,13 @@ using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Controls;
 
-public class Toolbar : ItemsControl
+public class Statusbar : ItemsControl
 {
     private static readonly FuncTemplate<Panel?> DefaultPanel =
         new(() => new StackPanel() { Orientation = Orientation.Horizontal, Spacing = 8 });
 
-    static Toolbar()
+    static Statusbar()
     {
-        ItemsPanelProperty.OverrideDefaultValue<Toolbar>(DefaultPanel);
+        ItemsPanelProperty.OverrideDefaultValue<Statusbar>(DefaultPanel);
     }
 }
