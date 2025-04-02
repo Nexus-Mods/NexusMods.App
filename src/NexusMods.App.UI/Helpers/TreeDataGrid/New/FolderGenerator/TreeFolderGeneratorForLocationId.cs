@@ -154,7 +154,12 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
     /// Subscription disposables for recursive file tracking.
     /// </summary>
     private readonly CompositeDisposable _subscriptions = new();
-    
+
+#if DEBUG
+    // Flag indicating if this folder has been disposed. For test code only.
+    public bool IsDisposed { get; private set; } = false;
+#endif
+
     /// <summary/>
     public GeneratedFolder()
     {
@@ -257,7 +262,15 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
     /// <param name="folderName">The name of the folder to delete from.</param>
     public void DeleteSubfolder(RelativePath folderName)
     {
-        Folders.Remove(folderName);
+        // Note(sewer): This sucks. In DynamicData you can't get value from the delete, neither
+        // in the Edit API or the parent Remove API.
+        var lookup = Folders.Lookup(folderName);
+        if (lookup.HasValue)
+        {
+            var subfolder = lookup.Value;
+            Folders.Remove(folderName);
+            subfolder.Dispose();
+        }
     }
 
     private static GeneratedFolder<TTreeItemWithPath> CreateChildFolder() => new();
@@ -269,5 +282,8 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
         Model.Dispose();
         _allFilesRecursive.Dispose();
         _subscriptions.Dispose();
+#if DEBUG
+        IsDisposed = true;
+#endif
     }
 }

@@ -59,7 +59,9 @@ public class TreeFolderGenerator<TTreeItemWithPath> where TTreeItemWithPath : IT
             return;
         
         // Root is empty, remove the model and location id.
-        RootCache.Remove(tree.ModelForRoot());
+        var rootModel = tree.ModelForRoot();
+        RootCache.Remove(rootModel);
         LocationIdToTree.Remove(path.LocationId);
+        rootModel.Dispose();
     }
 }

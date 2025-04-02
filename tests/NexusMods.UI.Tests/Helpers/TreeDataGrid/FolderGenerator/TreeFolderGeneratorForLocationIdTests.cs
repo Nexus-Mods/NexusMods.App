@@ -683,6 +683,77 @@ public class TreeFolderGeneratorForLocationIdTests
         rootFilesCollection.Should().Contain(fileModel3);
     }
 
+#if DEBUG
+    [Fact]
+    public void DeleteSubfolder_DisposesTheFolder_WhenRemoved_DebugOnly()
+    {
+        // Arrange
+        var generator = CreateGenerator();
+        
+        // Create a nested folder structure
+        var filePath = new RelativePath("parent1/parent2/file.txt");
+        var fileId = EntityId.From(0UL);
+        var fileModel = CreateFileModel(fileId);
+        
+        generator.OnReceiveFile(filePath, fileModel);
+        
+        // Get the root folder and verify the structure
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        rootFolder.Folders.Count.Should().Be(1);
+        
+        // Get parent1 folder
+        var parent1 = rootFolder.Folders.Lookup("parent1").Value;
+        parent1.Folders.Count.Should().Be(1);
+        
+        // Get parent2 folder
+        var parent2 = parent1.Folders.Lookup("parent2").Value;
+        parent2.Files.Count.Should().Be(1);
+        
+        // Act - Delete the parent2 folder
+        parent1.DeleteSubfolder("parent2");
+        
+        // Assert
+        parent1.Folders.Count.Should().Be(0);
+        parent2.IsDisposed.Should().BeTrue("The subfolder should be disposed when deleted");
+    }
+
+    [Fact]
+    public void DeleteEmptyFolderChain_DisposesAllFolders_WhenRemoved_DebugOnly()
+    {
+        // Arrange
+        var generator = CreateGenerator();
+        
+        // Create a nested folder structure
+        var filePath = new RelativePath("parent1/parent2/parent3/file.txt");
+        var fileId = EntityId.From(0UL);
+        var fileModel = CreateFileModel(fileId);
+        
+        generator.OnReceiveFile(filePath, fileModel);
+        
+        // Get the root folder and verify the structure
+        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var parent1 = rootFolder.Folders.Lookup("parent1").Value;
+        var parent2 = parent1.Folders.Lookup("parent2").Value;
+        var parent3 = parent2.Folders.Lookup("parent3").Value;
+        
+        // Store references for later assertions
+        var parent1Ref = parent1;
+        var parent2Ref = parent2;
+        var parent3Ref = parent3;
+        
+        // Act - Delete the file and check if empty folders are removed
+        var result = generator.OnDeleteFile(filePath, fileModel);
+        
+        // Assert
+        result.Should().BeTrue("All folders should be empty and removed");
+        rootFolder.Folders.Count.Should().Be(0);
+        
+        parent1Ref.IsDisposed.Should().BeTrue("parent1 should be disposed when empty");
+        parent2Ref.IsDisposed.Should().BeTrue("parent2 should be disposed when empty");
+        parent3Ref.IsDisposed.Should().BeTrue("parent3 should be disposed when empty");
+    }
+#endif
+
     private static TreeFolderGeneratorForLocationId<TestTreeItemWithPath> CreateGenerator() => new();
 
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id) => new(id);
