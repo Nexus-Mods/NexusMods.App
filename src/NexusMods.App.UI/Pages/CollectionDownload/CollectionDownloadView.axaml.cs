@@ -83,7 +83,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
             this.OneWayBind(ViewModel, vm => vm.AuthorAvatar, view => view.AuthorAvatar.Source)
                 .DisposeWith(d);
             
-            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.NumDownloads.Text, v => v.ToString("N0"))
+            this.OneWayBind(ViewModel, vm => vm.DownloadCount, view => view.NumDownloads.Text, v => $"{v:N0} Mods" )
                 .DisposeWith(d);
 
             this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text, v => Convert.ToInt32(v).ToMetric(null, 1))
@@ -172,10 +172,10 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 {
                     var (optionalDownloadsCount, renderer) = tuple;
                     var hasSingleTab = optionalDownloadsCount == 0 && renderer is null;
-
+            
                     if (hasSingleTab) TabControl.Classes.Add("SingleTab");
                     else TabControl.Classes.Remove("SingleTab");
-
+            
                     if (hasSingleTab) TabControl.SelectedItem = RequiredTab;
                     OptionalTab.IsVisible = optionalDownloadsCount != 0;
                 }).DisposeWith(d);
@@ -205,6 +205,7 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                     ButtonDownloadRequiredItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
                     ButtonDownloadOptionalItems.LeftIcon = canDownloadAutomatically ? null : IconValues.Lock;
                 }).DisposeWith(d);
+            
             
             this.WhenAnyValue(
                     view => view.ViewModel!.InstructionsRenderer,

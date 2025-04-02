@@ -201,8 +201,6 @@
 
                         </Grid>
                     </Border>
-
-
                 </StackPanel>
             </Border>
 
@@ -228,7 +226,7 @@
                         </StackPanel>
                     </TabItem.Header>
                 </TabItem>
-                <TabItem x:Name="InstructionsTab" IsVisible="False">
+                <TabItem x:Name="InstructionsTab">
                     <TabItem.Header>
                         <StackPanel Classes="TabItemHeaderStack">
                             <TextBlock Text="Additional Instructions" />
