@@ -7,7 +7,11 @@ using DynamicData.Aggregation;
 
 namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 
-public class FolderModelInitializerTests
+/// <summary>
+/// An example of how to use the <see cref="IFolderModelInitializer{TTreeItemWithPath}"/> for measuring file counts; 
+/// i.e. data that does not require any sort of aggregation.
+/// </summary>
+public class FileCountAggregationTests
 {
     [Fact]
     public void FileCountInitializer_ShouldTrackRecursiveFileCount()
@@ -150,14 +154,8 @@ public class FolderModelInitializerTests
     }
 }
 
-/// <summary>
-/// Component key for the file count component
-/// </summary>
 public static class FileCountComponentKey
 {
-    /// <summary>
-    /// The key for the file count component
-    /// </summary>
     public static readonly ComponentKey Key = ComponentKey.From("FileCount");
 }
 
