@@ -1183,81 +1183,96 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     public async Task<bool> ReindexState(GameInstallation installation, IConnection connection, ITransaction tx)
     {
-        var seen = new HashSet<GamePath>();
-        var metadata = GameInstallMetadata.Load(connection.Db, installation.GameMetadataId);
-        var inState = metadata.DiskStateEntries.ToDictionary(e => (GamePath)e.Path);
-        var changes = false;
-        
-        
         var hashDb = await _fileHashService.GetFileHashesDb();
-        
-        foreach (var location in installation.LocationsRegister.GetTopLevelLocations())
+
+        var gameInstallMetadata = GameInstallMetadata.Load(connection.Db, installation.GameMetadataId);
+
+        var previousDiskStateEntities = gameInstallMetadata.DiskStateEntries;
+        var previousDiskState = new Dictionary<GamePath, DiskStateEntry.ReadOnly>(capacity: previousDiskStateEntities.Count);
+
+        foreach (var previousDiskStateEntity in previousDiskStateEntities)
         {
-            if (!location.Value.DirectoryExists())
-                continue;
+            GamePath path = previousDiskStateEntity.Path;
 
-            await Parallel.ForEachAsync(location.Value.EnumerateFiles(), async (file, token) =>
+            ref var diskStateEntity = ref CollectionsMarshal.GetValueRefOrAddDefault(previousDiskState, path, out var hasExistingDiskStateEntity);
+            if (hasExistingDiskStateEntity)
+            {
+                _logger.LogWarning("Duplicate path in disk state: `{Path}`", path);
+            }
+
+            diskStateEntity = previousDiskStateEntity;
+        }
+
+        var hasDiskStateChanged = false;
+
+        var seenPaths = new HashSet<GamePath>();
+        var seenPathsLock = new Lock();
+
+        foreach (var locationPair in installation.LocationsRegister.GetTopLevelLocations())
+        {
+            var (_, locationPath) = locationPair;
+            if (!locationPath.DirectoryExists()) continue;
+
+            await Parallel.ForEachAsync(locationPath.EnumerateFiles(), async (file, token) =>
+            {
+                var gamePath = installation.LocationsRegister.ToGamePath(file);
+                if (ShouldIgnorePathWhenIndexing(gamePath)) return;
+
+                bool isNewPath;
+                lock (seenPathsLock)
                 {
+                    isNewPath = seenPaths.Add(gamePath);
+                }
+
+                if (!isNewPath)
+                {
+                    _logger.LogDebug("Skipping already indexed file at `{Path}`", file);
+                    return;
+                }
+
+                if (previousDiskState.TryGetValue(gamePath, out var previousDiskStateEntry))
+                {
+                    var fileInfo = file.FileInfo;
+                    var writeTimeUtc = new DateTimeOffset(fileInfo.LastWriteTimeUtc);
+
+                    // If the files don't match, update the entry
+                    if (writeTimeUtc != previousDiskStateEntry.LastModified || fileInfo.Size != previousDiskStateEntry.Size)
                     {
-                        var gamePath = installation.LocationsRegister.ToGamePath(file);
-                        if (ShouldIgnorePathWhenIndexing(gamePath)) return;
-
-                        lock (seen)
-                        {
-                            seen.Add(gamePath);
-                        }
-
-                        if (inState.TryGetValue(gamePath, out var entry))
-                        {
-                            var fileInfo = file.FileInfo;
-                            var writeTimeUtc = new DateTimeOffset(fileInfo.LastWriteTimeUtc);
-
-                            // If the files don't match, update the entry
-                            if (writeTimeUtc != entry.LastModified || fileInfo.Size != entry.Size)
-                            {
-                                var newHash = await MaybeHashFile(hashDb, gamePath, file, fileInfo, token);
-                                tx.Add(entry.Id, DiskStateEntry.Size, fileInfo.Size);
-                                tx.Add(entry.Id, DiskStateEntry.Hash, newHash);
-                                tx.Add(entry.Id, DiskStateEntry.LastModified, writeTimeUtc);
-                                changes = true;
-                            }
-                        }
-                        else
-                        {
-                            // No previous entry found, so create a new one
-                            var newHash = await MaybeHashFile(hashDb, gamePath, file, file.FileInfo, token);
-                            var diskState = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
-                            {
-                                Path = gamePath.ToGamePathParentTuple(metadata.Id),
-                                Hash = newHash,
-                                Size = file.FileInfo.Size,
-                                LastModified = file.FileInfo.LastWriteTimeUtc,
-                                GameId = metadata.Id,
-                            };
-                            changes = true;
-                        }
+                        var newHash = await MaybeHashFile(hashDb, gamePath, file, fileInfo, token);
+                        tx.Add(previousDiskStateEntry.Id, DiskStateEntry.Size, fileInfo.Size);
+                        tx.Add(previousDiskStateEntry.Id, DiskStateEntry.Hash, newHash);
+                        tx.Add(previousDiskStateEntry.Id, DiskStateEntry.LastModified, writeTimeUtc);
+                        hasDiskStateChanged = true;
                     }
                 }
-            );
+                else
+                {
+                    var newHash = await MaybeHashFile(hashDb, gamePath, file, file.FileInfo, token);
+
+                    _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                    {
+                        Path = gamePath.ToGamePathParentTuple(gameInstallMetadata.Id),
+                        Hash = newHash,
+                        Size = file.FileInfo.Size,
+                        LastModified = file.FileInfo.LastWriteTimeUtc,
+                        GameId = gameInstallMetadata.Id,
+                    };
+
+                    hasDiskStateChanged = true;
+                }
+            });
         }
-        
-        foreach (var entry in inState.Values)
+
+        // NOTE(erri120): remove files from the disk state that don't exist on disk anymore
+        foreach (var entry in previousDiskState.Values)
         {
-            if (seen.Contains(entry.Path))
-                continue;
-            tx.Retract(entry.Id, DiskStateEntry.Path, entry.Path);
-            tx.Retract(entry.Id, DiskStateEntry.Hash, entry.Hash);
-            tx.Retract(entry.Id, DiskStateEntry.Size, entry.Size);
-            tx.Retract(entry.Id, DiskStateEntry.LastModified, entry.LastModified);
-            tx.Retract(entry.Id, DiskStateEntry.Game, metadata.Id);
-            changes = true;
+            if (seenPaths.Contains(entry.Path)) continue;
+            tx.Delete(entry.Id, recursive: false);
+            hasDiskStateChanged = true;
         }
-        
-        
-        if (changes) 
-            tx.Add(metadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
-        
-        return changes;
+
+        if (hasDiskStateChanged) tx.Add(gameInstallMetadata.Id, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(TxId.Tmp.Value));
+        return hasDiskStateChanged;
     }
 
     private async ValueTask<Hash> MaybeHashFile(IDb hashDb, GamePath gamePath, AbsolutePath file, IFileEntry fileInfo, CancellationToken token)
