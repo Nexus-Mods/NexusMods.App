@@ -12,7 +12,7 @@ public partial class MessageBoxOkCancelView : ReactiveUserControl<IMessageBoxOkC
 
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly StyledProperty<string> DescriptionProperty =
-        AvaloniaProperty.Register<MessageBoxOkCancelView, string>(nameof(Description), "This is some very long text that spans multiple lines!! This text is super cool!!");
+        AvaloniaProperty.Register<MessageBoxOkCancelView, string>(nameof(Description), "This is some very long text that spans multiple lines!! This text is super cool!! This text is super cool!! This text is super cool!!This text is super cool!!This text is super cool!!This text is super cool!!");
 
     public string Title
     {

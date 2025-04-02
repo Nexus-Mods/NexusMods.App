@@ -729,6 +729,9 @@
         <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
           <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
+          <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
