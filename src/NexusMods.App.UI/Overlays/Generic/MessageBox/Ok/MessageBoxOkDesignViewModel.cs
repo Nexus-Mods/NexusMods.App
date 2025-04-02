@@ -25,6 +25,12 @@ public class MessageBoxOkDesignViewModel: IMessageBoxOkViewModel
     }
 
     public string Title { get; set; } = "Title";
-    public string Description { get; set; } = "Description";
-    public IMarkdownRendererViewModel? MarkdownRenderer { get; set; } = new MarkdownRendererViewModel { Contents = "### h3 hello" };
+
+    public string Description { get; set; } = """
+                                              Integrate seamlessly with Nexus Mods with direct access to the world’s largest modding platform. 
+                                              
+                                              Stay updated with automatic version checks and enjoy unmatched compatibility.
+                                              """;
+
+    public IMarkdownRendererViewModel? MarkdownRenderer { get; set; } = null;
 }
