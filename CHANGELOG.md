@@ -22,7 +22,7 @@ In testing, we found that the Library was starting to get a little cluttered wit
 * The "Advanced Install" option no longer shows a screen saying the mod is unsupported before showing the options to install files. 
 * The view button on the games page will now open the last applied loadout rather than the first one that was created. 
 * The "Login" button will no longer be disabled for a short time after clicking on it.
-* If a download fails, it will no longer abort further collection downloads.
+* If a download fails during a collection installation, subsequent downloads will no longer be aborted.
 * Updated Nexus Mods links to the new format. 
 * Updated Privacy Policy links.
 
