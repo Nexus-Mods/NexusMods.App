@@ -24,7 +24,6 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -1201,10 +1200,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 {
                     {
                         var gamePath = installation.LocationsRegister.ToGamePath(file);
-                        
-                        if (IsIgnoredPath(gamePath))
-                            return;
-                        
+                        if (ShouldIgnorePathWhenIndexing(gamePath)) return;
+
                         lock (seen)
                         {
                             seen.Add(gamePath);
@@ -1439,16 +1436,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual bool IsIgnoredBackupPath(GamePath path)
-    {
-        return false;
-    }
+    public virtual bool IsIgnoredBackupPath(GamePath path) => false;
 
-    /// <inheritdoc />
-    public virtual bool IsIgnoredPath(GamePath path)
-    {
-        return false;
-    }
+    /// <summary>
+    /// Whether to ignore the file at the given path when indexing.
+    /// </summary>
+    /// <remarks>
+    /// Files ignored by this method will not be included in the sync tree. Prefer not including
+    /// the path in the first place instead of using this method.
+    /// </remarks>
+    protected virtual bool ShouldIgnorePathWhenIndexing(GamePath path) => false;
 
     /// <inheritdoc />
     public async Task<Loadout.ReadOnly> CopyLoadout(LoadoutId loadoutId)
