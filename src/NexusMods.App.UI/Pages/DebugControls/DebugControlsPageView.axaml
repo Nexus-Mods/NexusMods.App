@@ -9,8 +9,14 @@
     xmlns:r3="clr-namespace:R3;assembly=R3"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer"
+    xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
     mc:Ignorable="d" d:DesignHeight="400"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
+    
+    <Design.DataContext>
+        <local:DebugControlsPageDesignViewModel />
+    </Design.DataContext>
 
     <Border>
         <TabControl>
@@ -281,15 +287,27 @@
                 </TabItem.Header>
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
                     <StackPanel Spacing="8">
-                        <controls:StandardButton x:Name="OverlayOpenAlphaView"
-                                                 Text="Open Alpha View"
-                            />
-                        <controls:StandardButton x:Name="OverlayShowMessageBoxOK"
-                                                 Text="ShowMessageBoxOK"
-                        />
+                        <controls:StandardButton x:Name="GenerateUnhandledException"
+                                                 Text="GenerateUnhandledException" />
                     </StackPanel>
                 </Border>
             </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Classes="TabItemHeaderStack">
+                        <TextBlock Text="Markdown" />
+                    </StackPanel>
+                </TabItem.Header>
+                
+                <Border
+                    x:Name="MarkdownWrapperBorder"
+                    VerticalAlignment="Top"
+                    Margin="24,12"
+                    Padding="8">
+                    <reactive:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost"  />
+                </Border>
+            </TabItem>
+
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
@@ -961,27 +979,46 @@
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Premium}" ToolTip.Tip="Premium" />
                         </WrapPanel>
                         <WrapPanel>
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" ToolTip.Tip="PictogramHealth" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" Size="32" ToolTip.Tip="PictogramHealth, Size=32" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" Size="48" ToolTip.Tip="PictogramHealth, Size=48" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" ToolTip.Tip="PictogramGame3D" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" Size="32" ToolTip.Tip="PictogramGame3D, Size=32" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" Size="48" ToolTip.Tip="PictogramGame3D, Size=48" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" ToolTip.Tip="PictogramBox2" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" Size="32" ToolTip.Tip="PictogramBox2, Size=32" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" Size="48" ToolTip.Tip="PictogramBox2, Size=48" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" ToolTip.Tip="PictogramSettings" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" Size="32" ToolTip.Tip="PictogramSettings, Size=32" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" Size="48" ToolTip.Tip="PictogramSettings, Size=48" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" ToolTip.Tip="PictogramCelebrate" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" Size="32" ToolTip.Tip="PictogramCelebrate, Size=32" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" Size="48" ToolTip.Tip="PictogramCelebrate, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}"
+                                               ToolTip.Tip="PictogramHealth" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" Size="32"
+                                               ToolTip.Tip="PictogramHealth, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}" Size="48"
+                                               ToolTip.Tip="PictogramHealth, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}"
+                                               ToolTip.Tip="PictogramGame3D" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" Size="32"
+                                               ToolTip.Tip="PictogramGame3D, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramGame3D}" Size="48"
+                                               ToolTip.Tip="PictogramGame3D, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}"
+                                               ToolTip.Tip="PictogramBox2" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" Size="32"
+                                               ToolTip.Tip="PictogramBox2, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramBox2}" Size="48"
+                                               ToolTip.Tip="PictogramBox2, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}"
+                                               ToolTip.Tip="PictogramSettings" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" Size="32"
+                                               ToolTip.Tip="PictogramSettings, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSettings}" Size="48"
+                                               ToolTip.Tip="PictogramSettings, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}"
+                                               ToolTip.Tip="PictogramCelebrate" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" Size="32"
+                                               ToolTip.Tip="PictogramCelebrate, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" Size="48"
+                                               ToolTip.Tip="PictogramCelebrate, Size=48" />
                         </WrapPanel>
                         <WrapPanel>
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" ToolTip.Tip="Cog" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning" ToolTip.Tip="Cog" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical" ToolTip.Tip="Cog" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Success" ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion"
+                                               ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning"
+                                               ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical"
+                                               ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Success"
+                                               ToolTip.Tip="Cog" />
                         </WrapPanel>
                     </StackPanel>
                 </Border>

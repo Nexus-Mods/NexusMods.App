@@ -6,14 +6,16 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using System.Reactive;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.DebugControls;
 
 public interface IDebugControlsPageViewModel : IPageViewModelInterface
 {
-    public ReactiveCommand<Unit, Unit> ShowAlphaViewCommand { get; }   
-    public ReactiveCommand<Unit, Unit> ShowMessageBoxOKCommand { get; }      
+    public ReactiveCommand<Unit, Unit> GenerateUnhandledException { get; }
+    
+    IMarkdownRendererViewModel MarkdownRenderer { get; }
 }
 
 public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewModel>, IDebugControlsPageViewModel
@@ -24,29 +26,29 @@ public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewM
     {
         TabTitle = "Debug Controls";
         TabIcon = IconValues.ColorLens;
-        
-        //var workspaceController = windowManager.ActiveWorkspaceController;
+
         var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
-        
-        ShowAlphaViewCommand = ReactiveCommand.Create(() =>
-        {
-            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-            //alphaWarningViewModel.WorkspaceController = workspaceController;
 
-            overlayController.Enqueue(alphaWarningViewModel);
-        });
+        GenerateUnhandledException = ReactiveCommand.Create(() => throw new Exception("Help me! This is an unhandled exception"));
         
-        ShowMessageBoxOKCommand = ReactiveCommand.Create(() =>
-        {
-            //var messageBoxOkViewModel = serviceProvider.GetRequiredService<IMessageBoxOkViewModel>();
-            //alphaWarningViewModel.WorkspaceController = workspaceController;
-
-            //overlayController.Enqueue(messageBoxOkViewModel);
-            
-            Task.Run(() => MessageBoxOkViewModel.Show(serviceProvider, "Simon", "Great", "### h3 hello"));
-        });
+        var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
+        MarkdownRenderer = markdownRendererViewModel;
     }
 
-    public ReactiveCommand<Unit, Unit> ShowAlphaViewCommand { get; }
-    public ReactiveCommand<Unit, Unit> ShowMessageBoxOKCommand { get; }
+    public ReactiveCommand<Unit, Unit> GenerateUnhandledException { get; }
+
+    public IMarkdownRendererViewModel MarkdownRenderer { get; }
+}
+
+public class DebugControlsPageDesignViewModel : APageViewModel<IDebugControlsPageViewModel>, IDebugControlsPageViewModel
+{
+    public DebugControlsPageDesignViewModel() : base(new DesignWindowManager()) { }
+    
+    public ReactiveCommand<Unit, Unit> GenerateUnhandledException { get; }= ReactiveCommand.Create(() => { });
+
+    public IMarkdownRendererViewModel MarkdownRenderer { get; } = new MarkdownRendererViewModel() 
+    {
+        Contents = MarkdownRendererViewModel.DebugText,
+    };
 }

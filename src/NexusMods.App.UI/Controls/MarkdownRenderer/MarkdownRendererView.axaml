@@ -51,9 +51,9 @@
                     <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
                     <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
                     <Setter Property="FontWeight" Value="Normal" />
-                    <Setter Property="FontSize" Value="14" />
-                    <Setter Property="Margin" Value="0, 0, 0, 12" />
-                    <Setter Property="LineSpacing" Value="4" />
+                    <Setter Property="FontSize" Value="12" />
+                    <Setter Property="Margin" Value="0, 0, 0, 10" />
+                    <Setter Property="LineSpacing" Value="2" />
                     <!-- <Setter Property="LineHeight" Value="25" /> -->
                     <!--
                             NOTE(erri120): LineHeight can't be used because every image gets put into a paragraph.
@@ -71,8 +71,8 @@
                         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
                         <Setter Property="FontWeight" Value="SemiBold" />
-                        <Setter Property="FontSize" Value="36" />
-                        <Setter Property="LineHeight" Value="43.2" />
+                        <Setter Property="FontSize" Value="24" />
+                        <Setter Property="LineHeight" Value="30" />
                         <Setter Property="Margin" Value="0, 0, 0, 8" />
                     </Style>
 
@@ -81,9 +81,9 @@
                         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
                         <Setter Property="FontWeight" Value="SemiBold" />
-                        <Setter Property="FontSize" Value="24" />
-                        <Setter Property="LineHeight" Value="30" />
-                        <Setter Property="Margin" Value="0, 0, 0, 8" />
+                        <Setter Property="FontSize" Value="18" />
+                        <Setter Property="LineHeight" Value="22.5" />
+                        <Setter Property="Margin" Value="0, 0, 0, 4" />
                     </Style>
 
                     <!-- heading 3 -->
@@ -91,9 +91,9 @@
                         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
                         <Setter Property="FontWeight" Value="SemiBold" />
-                        <Setter Property="FontSize" Value="18" />
-                        <Setter Property="LineHeight" Value="22.5" />
-                        <Setter Property="Margin" Value="0, 0, 0, 4" />
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="LineHeight" Value="24" />
+                        <Setter Property="Margin" Value="0, 0, 0, 8" />
                     </Style>
 
                     <!-- heading 4 -->
@@ -101,8 +101,8 @@
                         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         <Setter Property="FontFamily" Value="{StaticResource FontBodySemi}" />
                         <Setter Property="FontWeight" Value="SemiBold" />
-                        <Setter Property="FontSize" Value="16" />
-                        <Setter Property="LineHeight" Value="24" />
+                        <Setter Property="FontSize" Value="12" />
+                        <Setter Property="LineHeight" Value="16.5" />
                         <Setter Property="Margin" Value="0, 0, 0, 8" />
                     </Style>
 
@@ -111,8 +111,8 @@
                         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
                         <Setter Property="FontWeight" Value="SemiBold" />
-                        <Setter Property="FontSize" Value="12" />
-                        <Setter Property="LineHeight" Value="16.5" />
+                        <Setter Property="FontSize" Value="10" />
+                        <Setter Property="LineHeight" Value="15" />
                         <Setter Property="Margin" Value="0, 0, 0, 8" />
                     </Style>
 
@@ -121,14 +121,13 @@
                         <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
                         <Setter Property="FontFamily" Value="{StaticResource FontHeadlinesSemiBold}" />
                         <Setter Property="FontWeight" Value="SemiBold" />
-                        <Setter Property="FontSize" Value="10" />
-                        <Setter Property="LineHeight" Value="15" />
+                        <Setter Property="FontSize" Value="8" />
+                        <Setter Property="LineHeight" Value="14" />
                         <Setter Property="Margin" Value="0, 0, 0, 8" />
                     </Style>
 
                     <!-- paragraph -->
                     <Style Selector="^.Paragraph">
-
 
                         <!-- bold -->
                         <Style Selector="^ ctxt|CBold">
@@ -154,12 +153,18 @@
                 <!-- inline code -->
                 <Style Selector="^ ctxt|CCode">
                     <Setter Property="MonospaceFontFamily" Value="{StaticResource FontBodyCode}" />
-                    <Setter Property="FontSize" Value="13" />
+                    <Setter Property="FontSize" Value="12" />
                     <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                     <Setter Property="Padding" Value="4,2" />
                     <Setter Property="Margin" Value="2,0" />
+                    <Setter Property="BorderThickness" Value="1" />
+                    <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentHighBrush}" />
                     <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                     <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+                    
+                    <Style Selector="^ ctxt|CRun">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                    </Style>
                 </Style>
 
                 <!-- links and their states -->
@@ -174,8 +179,8 @@
 
                 <!-- code block (separate to inline code) -->
                 <Style Selector="^ Border.CodeBlock">
-                    <Setter Property="Padding" Value="8,8" />
-                    <Setter Property="Margin" Value="0,8" />
+                    <Setter Property="Padding" Value="8,4" />
+                    <Setter Property="Margin" Value="0,0,0,8" />
                     <Setter Property="BorderThickness" Value="2" />
                     <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentHighBrush}" />
                     <Setter Property="CornerRadius" Value="4" />
@@ -183,7 +188,7 @@
 
                     <Style Selector="^ TextBlock">
                         <Setter Property="FontFamily" Value="{StaticResource FontBodyCode}" />
-                        <Setter Property="FontSize" Value="13" />
+                        <Setter Property="FontSize" Value="12" />
                         <Setter Property="LineHeight" Value="19.5" />
                         <Setter Property="Padding" Value="0" />
                         <Setter Property="Margin" Value="0" />
