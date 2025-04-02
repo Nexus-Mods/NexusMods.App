@@ -167,6 +167,7 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
         var fileChildren = Files.Connect();
         // Transform the folder cache: connect, get the GeneratedFolder, then select its Model.
         // KeySelector is needed because the keys are different (EntityId for files, RelativePath for folders).
+        // In the folders we use invalid EntityID(s) [EntityId.MaxValueNoPartition] to power the tree structure.
         var folderChildren = Folders.Connect()
             .Transform(folder => folder.Model)
             .ChangeKey(model => model.Key); // Ensure keys are EntityId
@@ -181,7 +182,6 @@ internal class GeneratedFolder<TTreeItemWithPath> : IDisposable where TTreeItemW
         };
         
         // Set up recursive file tracking
-        
         // 1. Add all direct files to the recursive collection
         _subscriptions.Add(
             Files.Connect().Subscribe(changes =>
