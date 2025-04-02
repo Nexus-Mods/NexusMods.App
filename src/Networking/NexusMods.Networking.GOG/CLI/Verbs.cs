@@ -40,16 +40,11 @@ public static class Verbs
         [Injected] IRenderer renderer,
         [Injected] JsonSerializerOptions jsonSerializerOptions,
         [Injected] IClient client, 
-        [Option("g", "gameName", "Game to index")] ILocatableGame game,
+        [Option("p", "productId", "Product Id to index")] long productId,
         [Option("o", "output", "The output folder to write the index to")] AbsolutePath output,
         [Option("v", "verify", "Verify the files are hashed properly. This takes longer to execute but ensures the files are downloaded correctly.", true)] bool verify,
         [Injected] CancellationToken token)
     {
-        if (game is not IGogGame gogGame)
-        {
-            await renderer.Error("Game is not a GOG game");
-            return -1;
-        }
 
         var indentedOptions = new JsonSerializerOptions(jsonSerializerOptions)
         {
@@ -59,7 +54,6 @@ public static class Verbs
 
         await using (var _ = await renderer.WithProgress())
         {
-            await foreach (var productId in gogGame.GogIds.WithProgress(renderer, "Product Ids").WithCancellation(token))
             {
                 await foreach (var os in Enum.GetValues<OS>().WithProgress(renderer, "Operating Systems Builds").WithCancellation(token))
                 {
