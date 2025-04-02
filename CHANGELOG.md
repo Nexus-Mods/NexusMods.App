@@ -11,8 +11,8 @@ In testing, we found that the Library was starting to get a little cluttered wit
 
 # More Features
 * Files in mods from a Nexus Mods collection are now read-only to prevent users accidentally breaking the collection by editing them.
-* Mods that are a required part of a Nexus Mod collections can now only be enabled/disabled with the collection toggle.
-* Updated the toggle indicator for mods to better communicate why a mod cannot be toggled when it is part of a collection, clicking this new button will open the Installed Collection page. 
+* Mods that are required as part of a Nexus Mods collection can now only be enabled or disabled using the collection toggle.
+* The toggle indicator for mods has been updated to better explain why a mod cannot be toggled when part of a collection. Clicking this indicator will now open the Installed Collection page. 
 * Continued to refine the UI to make it more compact. 
 * The "Optional" tab is now only shown for collections with optional mods.
 
