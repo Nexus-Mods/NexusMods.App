@@ -109,7 +109,7 @@ internal class ProcessFactory : IProcessFactory
             return _fileSystem.FromUnsanitizedFullPath(command.TargetFilePath).FileName;
         }
 
-        return new RelativePath(command.TargetFilePath).FileName.ToString();
+        return RelativePath.FromUnsanitizedInput(command.TargetFilePath).FileName.ToString();
     }
 
     private async Task<CommandResult> ExecuteAsync(Command command, CancellationToken cancellationToken)
