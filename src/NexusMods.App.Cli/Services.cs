@@ -30,6 +30,7 @@ public static class Services
                 .AddOptionParser<Uri>(u => (new Uri(u), null))
                 .AddOptionParser<Version>(v => (Version.Parse(v), null))
                 .AddOptionParser<string>(s => (s, null))
+                .AddOptionParser<long>(l => (long.Parse(l), null))
                 .AddOptionParser<Matcher, MatcherParser>()
                 .AddOptionParser<ILocatableGame, LocatableGameParser>()
                 .AddOptionParser<ITool, ToolParser>();
