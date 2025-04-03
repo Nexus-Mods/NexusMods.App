@@ -69,11 +69,16 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
         var db = _connection.Db;
         var (entityId, innerResourceIdentifier) = resourceIdentifier;
 
+        var persistedResourceId = Optional<EntityId>.None;
         var indexSegment = db.Datoms(entityId);
-        if (!_referenceAttribute.TryGetValue(indexSegment, out var persistedResourceId))
-            return null;
-        
-        var persistedResource = PersistedDbResource.Load(db, persistedResourceId);
+        foreach (var datom in indexSegment)
+        {
+            if (!datom.A.Equals(_referenceAttributeId)) continue;
+            persistedResourceId = _referenceAttribute.ReadValue(datom.ValueSpan, datom.Prefix.ValueTag, _connection.AttributeResolver);
+        }
+
+        if (!persistedResourceId.HasValue) return null;
+        var persistedResource = PersistedDbResource.Load(db, persistedResourceId.Value);
 
         if (!persistedResource.IsValid()) return null;
         if (persistedResource.IsExpired) return null;
