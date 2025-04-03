@@ -44,7 +44,7 @@
                 <Setter Property="Margin" Value="24" />
                 <Setter Property="HorizontalAlignment" Value="Right" />
                 <Setter Property="VerticalAlignment" Value="Center" />
-                <Setter Property="Spacing" Value="{StaticResource Spacing-2.5}" />
+                <Setter Property="Spacing" Value="{StaticResource Spacing-2}" />
             </Style>
         </Style>
 
