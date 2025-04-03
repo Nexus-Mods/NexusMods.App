@@ -4,8 +4,11 @@
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
         xmlns:converters="clr-namespace:NexusMods.App.UI.Converters;assembly=NexusMods.App.UI"
-        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
-
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <!-- NOTE(Al12rs): Keep: `xmlns:system="clr-namespace:System;assembly=System.Runtime"` even if marked as unused -->
+    <!-- See false positive error and note for CompositeItemModel later down the file -->
+    
     <Design.PreviewWith>
         <Border Classes="Low" Padding="16">
             <TreeDataGrid Width="400" Height="200" />
