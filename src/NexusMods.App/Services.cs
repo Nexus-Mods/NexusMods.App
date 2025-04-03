@@ -128,6 +128,7 @@ public static class Services
         Games.StardewValley.Services.AddStardewValley(services);
         Games.Larian.BaldursGate3.Services.AddBaldursGate3(services);
         Games.MountAndBlade2Bannerlord.Services.AddMountAndBlade2Bannerlord(services);
+        Games.UnrealEngine.Services.AddUnrealEngineGames(services);
         return services;
     }
 }
