@@ -25,10 +25,10 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
         var settingsManager = provider.GetRequiredService<ISettingsManager>();
         _gameRegistry = provider.GetRequiredService<IGameRegistry>();
         _fs = provider.GetRequiredService<IFileSystem>();
-        _ignorePaths = IgnoreFolders();
         _settings = settingsManager.Get<TSettings>();
         void AssignmentFunc(TSettings x) => _settings = x;
         settingsManager.GetChanges<TSettings>().Subscribe(AssignmentFunc);
+        _ignorePaths = IgnoreFolders();
     }
 
     private bool IgnoreExecutables { get; set; } = false;
@@ -49,17 +49,23 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
         return ignoredGamePaths;
     }
     
-    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
-    {
-        loadout = await base.Synchronize(loadout);
-        return await base.Synchronize(loadout);
-    }
+    // public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    // {
+    //     loadout = await base.Synchronize(loadout);
+    //     return await base.Synchronize(loadout);
+    // }
 
-    public override bool IsIgnoredBackupPath(GamePath path)
-    {
-        if (IgnoreExecutables && path.Extension == Constants.ExeExt) return true;
-        return false;
-    }
+    // public override bool IsIgnoredBackupPath(GamePath path)
+    // {
+    //     return false;
+    //      if (IgnoreExecutables && path.Extension == Constants.ExeExt) return true;
+    //      return false;
+    // }
+
+    // protected override bool ShouldIgnorePathWhenIndexing(GamePath path) =>
+    //     _ignorePaths.Any(path.StartsWith) ||
+    //     path.StartsWith(Constants.EnginePath) ||
+    //     path.StartsWith(Constants.ResourcesPath);
 
     // public override bool IsIgnoredPath(GamePath path)
     // {

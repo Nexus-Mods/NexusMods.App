@@ -40,15 +40,15 @@ public static class PakFileParser
     
     private static LocationId IdentifyMountPoint(GameFile[] files)
     {
+        var ue4ssMountPoints = new RelativePath[] { "Mods", "LogicMods" };
         var mountPoint = files
             .Select(file => file.Path)
-            .Where(filePath =>
+            .FirstOrDefault(filePath =>
                 {
-                    var segments = filePath.Split(Path.DirectorySeparatorChar);
-                    return new[] { "Mods", "LogicMods" }.Any(segments.Contains);
+                    var segments = new RelativePath(filePath).Parts;
+                    return ue4ssMountPoints.Any(segments.Contains);
                 }
-            )
-            .FirstOrDefault();
+            );
         return mountPoint != null ? Constants.LogicModsLocationId : Constants.PakModsLocationId;
     }
     

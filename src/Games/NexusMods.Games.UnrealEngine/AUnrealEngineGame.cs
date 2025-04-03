@@ -8,7 +8,6 @@ using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.UnrealEngine.Emitters;
 using NexusMods.Games.UnrealEngine.Installers;
 using NexusMods.Games.UnrealEngine.Interfaces;
@@ -39,9 +38,7 @@ public abstract class AUnrealEngineGame(IServiceProvider provider) : AGame(provi
     }
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
-    {
-        return Utils.StandardUnrealEngineLocations(fileSystem, installation, this);
-    }
+        => Utils.StandardUnrealEngineLocations(fileSystem, installation, this);
 
     public override ILibraryItemInstaller[] LibraryItemInstallers => [
         _serviceProvider.GetRequiredService<ScriptingSystemInstaller>(),
