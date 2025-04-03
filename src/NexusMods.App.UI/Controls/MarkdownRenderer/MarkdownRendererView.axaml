@@ -48,7 +48,7 @@
                 <Style Selector="^ ctxt|CTextBlock">
 
                     <!-- set CTextBlock defaults to paragraph -->
-                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                     <Setter Property="FontFamily" Value="{StaticResource FontBodyRegular}" />
                     <Setter Property="FontWeight" Value="Normal" />
                     <Setter Property="FontSize" Value="14" />
