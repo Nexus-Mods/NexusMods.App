@@ -97,4 +97,5 @@ public static class LoadOrderColumns
     }
 
     public static readonly ComponentKey IsActiveComponentKey = ComponentKey.From(nameof(LoadOrderColumns) + "_" + "IsActiveComponent");
+    public static readonly string IsActiveStyleTag = "IsActive";
 }
