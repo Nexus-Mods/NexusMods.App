@@ -2244,7 +2244,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please click &quot;Authorize&quot; on the website.
+        ///   Looks up a localized string similar to Please click &quot;Authorise&quot; on the website.
         /// </summary>
         public static string NexusLoginOverlayView__Please_Click_Authorize {
             get {

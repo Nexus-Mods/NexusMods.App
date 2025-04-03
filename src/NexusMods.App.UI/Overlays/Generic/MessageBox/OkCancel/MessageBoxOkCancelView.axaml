@@ -9,50 +9,60 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:okCancel="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
-    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
-    <base:MessageBoxBackground MinWidth="300" MaxWidth="450">
+    <base:MessageBoxBackground>
+        
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="24">
+            <DockPanel Margin="24, 16">
 
                 <!-- Title -->
-                <DockPanel HorizontalAlignment="Stretch" Margin="0,0,0,16">
-                    <TextBlock DockPanel.Dock="Left" x:Name="HeadingText" />
+                <DockPanel DockPanel.Dock="Top" Margin="0 0 0 8">
 
                     <!-- 'Cross' button. -->
-                    <Button
-                        x:Name="CloseButton"
-                        DockPanel.Dock="Right"
-                        Classes="BareIcon WindowClose"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"/>
+                    <controls:StandardButton
+                        x:Name="CloseButton" DockPanel.Dock="Right"
+                        LeftIcon="{x:Static icons:IconValues.Close}"
+                        ShowIcon="Left"
+                        ShowLabel="False"
+                        Type="Tertiary"
+                        Fill="None" />
 
+                    <TextBlock x:Name="HeadingText"
+                               Text="HeadingText"
+                               VerticalAlignment="Center"
+                               TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis" />
                 </DockPanel>
 
-                <!-- Message -->
-                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" />
+                <StackPanel Orientation="Vertical" Spacing="8">
+                    <!-- Message -->
+                    <TextBlock x:Name="MessageTextBlock"
+                               TextWrapping="Wrap"
+                               TextTrimming="WordEllipsis" />
 
-            </StackPanel>
+                </StackPanel>
+
+            </DockPanel>
 
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
 
             <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Right" Classes="Spacing-6">
-
-                <Button x:Name="CancelButton"
-                        Classes="Standard Tertiary"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_No}" />
-                </Button>
-                <Button x:Name="OkButton"
-                        Classes="Standard Primary"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                    <TextBlock Text="{x:Static resources:Language.MessageBox_Button_Yes}" />
-                </Button>
+            <StackPanel>
+                <controls:StandardButton
+                    x:Name="CancelButton"
+                    Text="{x:Static resources:Language.MessageBox_Button_No}"
+                    Type="Tertiary"
+                    Fill="None" />
+                <controls:StandardButton
+                    x:Name="OkButton"
+                    Text="{x:Static resources:Language.MessageBox_Button_Yes}"
+                    Type="Primary"
+                    Fill="Strong" />
             </StackPanel>
 
         </base:MessageBoxBackground.BottomContent>
