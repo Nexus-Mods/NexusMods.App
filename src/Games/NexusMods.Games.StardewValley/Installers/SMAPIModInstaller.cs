@@ -57,7 +57,7 @@ public class SMAPIModInstaller : ALibraryArchiveInstaller
             {
                 var path = isParentEmpty
                     ? RelativePath.FromUnsanitizedInput(manifest.Name).Join(fileEntry.Path)
-                    : fileEntry.Path.DropFirst(parent.Depth - 1);
+                    : fileEntry.Path.DropFirst(Math.Max(0, parent.Depth - 1));
 
                 var to = new GamePath(LocationId.Game, Constants.ModsFolder.Join(path));
 
