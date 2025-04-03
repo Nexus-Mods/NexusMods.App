@@ -53,8 +53,6 @@ public class Stalker2Game(IServiceProvider provider) : AUnrealEngineGame(provide
     
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        var ueSync = provider.GetRequiredService<UESynchronizer>();
-        ueSync.InitializeSettings<Stalker2Settings>(GameIdStatic);
-        return ueSync;
+        return new UESynchronizer<Stalker2Settings>(provider, GameIdStatic);
     }
 }

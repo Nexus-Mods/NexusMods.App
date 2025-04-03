@@ -8,6 +8,7 @@ using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.UnrealEngine.Emitters;
 using NexusMods.Games.UnrealEngine.Installers;
 using NexusMods.Games.UnrealEngine.Interfaces;

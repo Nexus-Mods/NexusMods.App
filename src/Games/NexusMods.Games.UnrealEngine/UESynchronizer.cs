@@ -9,31 +9,32 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine;
 
-public class UESynchronizer(IServiceProvider provider) : ALoadoutSynchronizer(provider)
+public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : class, ISettings, new()
 {
-    private readonly Dictionary<GameId, object> _settingsDictionary = new();
-    private readonly Dictionary<GameId, GamePath[]> _ignoreDictionary = new();
-    
-    private readonly ISettingsManager _settingsManager = provider.GetRequiredService<ISettingsManager>();
-    private readonly IGameRegistry _gameRegistry = provider.GetRequiredService<IGameRegistry>();
-    private readonly IFileSystem _fs = provider.GetRequiredService<IFileSystem>();
+    private IEnumerable<GamePath> _ignorePaths;
+    private TSettings _settings;
+    private GameId _gameId;
 
-    private bool IgnoreExecutables { get; set; } = false;
-    
-    public void InitializeSettings<T>(GameId id) where T : class, ISettings, new()
+    private readonly IGameRegistry _gameRegistry;
+    private readonly IFileSystem _fs;
+
+    public UESynchronizer(IServiceProvider provider, GameId gameId) : base(provider)
     {
-        _settingsDictionary[id] = _settingsManager.Get<T>();
-        void AssignmentFunc(ISettings x) => _settingsDictionary[id] = x;
-        _ignoreDictionary[id] = IgnoreFolders(id);
-        _settingsManager.GetChanges<T>().Subscribe(AssignmentFunc);
+        _gameId = gameId;
+        var settingsManager = provider.GetRequiredService<ISettingsManager>();
+        _gameRegistry = provider.GetRequiredService<IGameRegistry>();
+        _fs = provider.GetRequiredService<IFileSystem>();
+        _ignorePaths = IgnoreFolders();
+        _settings = settingsManager.Get<TSettings>();
+        void AssignmentFunc(TSettings x) => _settings = x;
+        settingsManager.GetChanges<TSettings>().Subscribe(AssignmentFunc);
     }
 
-    private GamePath[] IgnoreFolders(GameId id)
+    private bool IgnoreExecutables { get; set; } = false;
+
+    private GamePath[] IgnoreFolders()
     {
-        if (_ignoreDictionary.TryGetValue(id, out var ignorePaths))
-            return ignorePaths;
-        
-        var gameInstallation = _gameRegistry.InstalledGames.FirstOrDefault(game => game.GetGame().GameId == id);
+        var gameInstallation = _gameRegistry.InstalledGames.FirstOrDefault(game => game.GetGame().GameId == _gameId);
         var game = gameInstallation?.GetGame();
         if (game == null) return [];
         var ueGame = game as IUnrealEngineGameAddon;
@@ -47,9 +48,15 @@ public class UESynchronizer(IServiceProvider provider) : ALoadoutSynchronizer(pr
         return ignoredGamePaths;
     }
 
-    public override bool IsIgnoredPath(GamePath path)
+    public override bool IsIgnoredBackupPath(GamePath path)
     {
         if (IgnoreExecutables && path.Extension == Constants.ExeExt) return true;
         return false;
     }
+
+    // public override bool IsIgnoredPath(GamePath path)
+    // {
+    //     if (IgnoreExecutables && path.Extension == Constants.ExeExt) return true;
+    //     return false;
+    // }
 }

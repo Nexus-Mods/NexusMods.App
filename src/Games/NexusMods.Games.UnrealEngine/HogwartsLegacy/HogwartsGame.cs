@@ -65,8 +65,6 @@ public class HogwartsLegacyGame(IServiceProvider provider) : AUnrealEngineGame(p
     
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        var ueSync = provider.GetRequiredService<UESynchronizer>();
-        ueSync.InitializeSettings<HogwartsLegacySettings>(GameIdStatic);
-        return ueSync;
+        return new UESynchronizer<HogwartsLegacySettings>(provider, GameIdStatic);
     }
 }

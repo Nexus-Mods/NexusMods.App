@@ -45,8 +45,6 @@ public class AvowedGame(IServiceProvider provider) : AUnrealEngineGame(provider)
     
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        var ueSync = provider.GetRequiredService<UESynchronizer>();
-        ueSync.InitializeSettings<AvowedSettings>(GameIdStatic);
-        return ueSync;
+        return new UESynchronizer<AvowedSettings>(provider, GameIdStatic);
     }
 }

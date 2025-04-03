@@ -57,9 +57,6 @@ public static class Services
     public static IServiceCollection AddUnrealEngineGames(this IServiceCollection services)
     {
         services
-            // Misc
-            .AddSingleton<UESynchronizer>()
-
             // Diagnostics
             .AddSingleton<AssetConflictDiagnosticEmitter>()
             .AddSingleton<ModOverwritesGameFilesEmitter>()

@@ -49,8 +49,6 @@ public class PacificDriveGame : AUnrealEngineGame, ISteamGame, IEpicGame
     
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
-        var ueSync = provider.GetRequiredService<UESynchronizer>();
-        ueSync.InitializeSettings<PacificDriveSettings>(GameIdStatic);
-        return ueSync;
+        return new UESynchronizer<PacificDriveSettings>(provider, GameIdStatic);
     }
 }
