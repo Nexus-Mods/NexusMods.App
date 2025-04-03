@@ -14,13 +14,13 @@ internal static partial class Utils
     public static Dictionary<LocationId, AbsolutePath> StandardUnrealEngineLocations(
         IFileSystem fileSystem,
         GameLocatorResult installation,
-        AUnrealEngineGame game)
+        IUnrealEngineGameAddon game)
     {
         var installationPath = installation.Path;
-        var arcPath = game.ArchitectureSegmentRetriever?.Invoke(installation) 
-            ?? throw new InvalidOperationException("Architecture segment retriever is not set.");
-        
+        var arcPath = game.ArchitectureSegmentRetriever?.Invoke(installation) ?? new RelativePath("Win64");
         var (relPathGameName, relPathPakMods) = (game.RelPathGameName, game.RelPathPakMods);
+        var relPathBinaries = relPathGameName.Join(new RelativePath($"Binaries/{arcPath}"));
+        var relPathLuaMods = new RelativePath(relPathBinaries.Join("ue4ss/Mods"));
         return new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installationPath },
@@ -30,8 +30,8 @@ internal static partial class Utils
                     .Combine(relPathGameName)
             },
             { Constants.GameMainLocationId, installationPath.Combine(relPathGameName) },
-            { Constants.BinariesLocationId, installationPath.Combine(relPathGameName.Join($"Binaries/){arcPath}")) },
-            { Constants.LuaModsLocationId, installationPath.Combine(relPathGameName.Join($"Binaries/{arcPath}/Mods")) },
+            { Constants.BinariesLocationId, installationPath.Combine(relPathBinaries) },
+            { Constants.LuaModsLocationId, installationPath.Combine(relPathLuaMods) },
             { Constants.PakModsLocationId, installationPath.Combine(relPathPakMods!.Value)},
             { Constants.LogicModsLocationId, installationPath.Combine(relPathGameName.Join($"Content/Paks/LogicMods"))},
             {

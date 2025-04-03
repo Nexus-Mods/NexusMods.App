@@ -7,7 +7,6 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Diagnostics.Values;
@@ -24,6 +23,7 @@ public class AvowedGame(IServiceProvider provider) : AUnrealEngineGame(provider)
     public override IEnumerable<FAesKey> AESKeys => new List<FAesKey>
     {
         new ("0xDFA62F3EE8304BBF7A6E153F2F88203F823C47BF0A690D3D4793FB3EFA624F3F"),
+        new ("0x8B5C24306F12833AA69B443ABD3786356F12833A6F12833A6F12833A00000040"),
     };
     
     public override VersionContainer? VersionContainer => new (EGame.GAME_UE5_3);

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
@@ -46,6 +47,12 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
             ? new[] { Constants.EnginePath, Constants.ResourcesPath, game.GetPrimaryFile(GameStore.XboxGamePass) }
             : [];
         return ignoredGamePaths;
+    }
+    
+    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    {
+        loadout = await base.Synchronize(loadout);
+        return await base.Synchronize(loadout);
     }
 
     public override bool IsIgnoredBackupPath(GamePath path)

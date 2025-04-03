@@ -28,17 +28,13 @@ public abstract class AUnrealEngineGame(IServiceProvider provider) : AGame(provi
     public virtual IEnumerable<FAesKey>? AESKeys => null;
     public virtual IStreamFactory? MemberVariableTemplate => null;
     
-    public virtual Func<GameLocatorResult, Task<string>>? ArchitectureSegmentRetriever
+    public virtual Func<GameLocatorResult, RelativePath>? ArchitectureSegmentRetriever
     {
         get
         {
-            // Seems silly to write an async method that just returns a string, but we
-            // may want to run some async operations to ascertain the architecture segment in the future.
-            return async (installation) =>
-            {
-                var architectureSegment = installation.Store == GameStore.XboxGamePass ? "WinGDK" : "Win64";
-                return await Task.FromResult(architectureSegment);
-            };
+            return (installation) => installation.Store == GameStore.XboxGamePass
+                ? new RelativePath("WinGDK")
+                : new RelativePath("Win64");
         }
     }
 

@@ -16,5 +16,5 @@ public interface IUnrealEngineGameAddon
     public IEnumerable<FAesKey>? AESKeys { get; }
     public VersionContainer? VersionContainer { get; }
     public IStreamFactory? MemberVariableTemplate { get; }
-    public Func<GameLocatorResult, Task<string>>? ArchitectureSegmentRetriever { get; }
+    public Func<GameLocatorResult, RelativePath>? ArchitectureSegmentRetriever { get; }
 }

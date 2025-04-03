@@ -32,7 +32,6 @@ public class PacificDriveGame : AUnrealEngineGame, ISteamGame, IEpicGame
         _serviceProvider = provider;
     }
     
-
     public override string Name => "Pacific Drive";
     public override GameId GameId => GameIdStatic;
     public override SupportType SupportType => SupportType.Community;
