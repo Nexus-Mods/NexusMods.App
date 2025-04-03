@@ -1,8 +1,6 @@
-using System.Collections;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Versions;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
@@ -10,18 +8,11 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Paths;
-using NexusMods.Games.UnrealEngine.Installers;
-using Microsoft.Extensions.DependencyInjection;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Telemetry;
-
-using NexusMods.Games.UnrealEngine;
-using NexusMods.Games.UnrealEngine.Emitters;
 
 namespace NexusMods.Games.UnrealEngine.HogwartsLegacy;
 
@@ -43,9 +34,6 @@ public class HogwartsLegacyGame(IServiceProvider provider) : AUnrealEngineGame(p
         new ("0xC51B693F6132AD3E5F298B3E0000803F0000803F9432B63D99A6933D0000803F"),
         new ("0x000000419A99993F6F12833B6F12833B6F12833BCDCC4C3FED0DBE3B1B2F5D3C"),
     };
-
-    public override IStreamFactory MemberVariableTemplate =>
-        new EmbededResourceStreamFactory<HogwartsLegacyGame>("NexusMods.Games.UnrealEngine.Resources.HogwartsLegacy.MemberVariableLayout.ini");
 
     public override string Name => "Hogwarts Legacy";
     public override GameId GameId => GameIdStatic;
