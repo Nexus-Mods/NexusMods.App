@@ -39,7 +39,7 @@ public class GamePathTests
         var ipath = (IPath)pathA;
 
         Assert.Equal(KnownExtensions.Zip, ipath.Extension);
-        Assert.Equal("bar.zip".ToRelativePath(), ipath.FileName);
+        Assert.Equal("bar.zip", ipath.FileName);
     }
 
     [Fact]
@@ -110,7 +110,7 @@ public class GamePathTests
     public void Test_Parts(string locationId, string input, string[] expectedParts)
     {
         var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
-        path.Parts.Should().BeEquivalentTo(expectedParts.Select(x => new RelativePath(x)));
+        path.Parts.Should().BeEquivalentTo(expectedParts.Select(RelativePath (x) => x));
     }
 
     [Theory]
