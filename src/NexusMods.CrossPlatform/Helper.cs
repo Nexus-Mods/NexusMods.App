@@ -2,9 +2,9 @@ using Microsoft.Extensions.Logging;
 
 namespace NexusMods.CrossPlatform;
 
-internal static class Helper
+public static class Helper
 {
-    private static void FireAndForget(
+    public static void FireAndForget(
         this Task task,
         ILogger logger,
         CancellationToken cancellationToken = default)
