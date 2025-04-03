@@ -47,3 +47,5 @@ Please attach both `nexusmods.app.main` and `nexusmods.app.slim` log files with 
 - [ ] Add repro steps
 - [ ] Add expected behaviour
 - [ ] Add known limitations with the fix or issues
+- [ ] QA test Windows
+- [ ] QA test Linux

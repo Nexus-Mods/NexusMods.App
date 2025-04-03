@@ -30,3 +30,5 @@ _(Any test data required to test the imrpovement, e.g. links to mods, required s
 - [ ] Add QA label if relevant
 - [ ] Add DODs
 - [ ] Add test data/scenarios
+- [ ] QA test Windows
+- [ ] QA test Linux
