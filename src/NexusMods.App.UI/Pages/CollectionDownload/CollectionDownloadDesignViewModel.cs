@@ -39,7 +39,8 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public Bitmap TileImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/collection_tile_image.png")));
     public Bitmap BackgroundImage { get; } = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/header-background.webp")));
     public string CollectionStatusText { get; } = "0 of 9 mods downloaded";
-    public IMarkdownRendererViewModel? InstructionsRenderer { get; } = new MarkdownRendererDesignViewModel("This is a collection of mods that make the game better. Please read the instructions carefully.");
+
+    public IMarkdownRendererViewModel? InstructionsRenderer { get; } = new MarkdownRendererViewModel { Contents = "This is a collection of mods that make the game better. Please read the instructions carefully." };
     public ModInstructions[] RequiredModsInstructions { get; set; } = [ 
         new ModInstructions("Mod 1", "This required mod needs special instructions", CollectionDownloader.ItemType.Required),
         new ModInstructions("Mod 4", "This required mod also needs some special instructions. This does need to be really long so that we can test that it wraps correctly.", CollectionDownloader.ItemType.Required) ];

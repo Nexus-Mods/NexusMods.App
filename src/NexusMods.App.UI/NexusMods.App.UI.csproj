@@ -245,11 +245,6 @@
         <Compile Update="Overlays\MetricsOptIn\MetricsOptInViewModel.cs">
           <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Resources\Language.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Language.resx</DependentUpon>
-        </Compile>
         <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerViewModel.cs">
           <DependentUpon>IDevelopmentBuildBannerViewModel.cs</DependentUpon>
         </Compile>
@@ -477,9 +472,6 @@
           <DependentUpon>IApplyDiffViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererViewModel.cs">
-          <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\MarkdownRenderer\MarkdownRendererDesignViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Settings\SettingsPageDesignViewModel.cs">
@@ -736,6 +728,9 @@
         </Compile>
         <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
           <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
+          <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

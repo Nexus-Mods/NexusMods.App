@@ -10,6 +10,8 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
     private readonly TemporaryPath _path;
     private readonly Version? _version;
 
+    public LocatorId[] LocatorIds { get; set; } = [LocatorId.From("StubbedGameState.zip")];
+
     public UniversalStubbedGameLocator(
         IFileSystem fileSystem,
         TemporaryFileManager fileManager,
@@ -37,7 +39,7 @@ public class UniversalStubbedGameLocator<TGame> : IGameLocator, IDisposable
             _path,
             _path.Path.FileSystem,
             GameStore.Unknown,
-            new UnknownLocatorResultMetadata(),
+            new UnknownLocatorResultMetadata(LocatorIds),
             _version ?? new Version(1, 0, 0, 0));
     }
 

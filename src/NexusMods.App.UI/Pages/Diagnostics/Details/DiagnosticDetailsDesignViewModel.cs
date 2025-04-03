@@ -10,7 +10,10 @@ public class DiagnosticDetailsDesignViewModel : APageViewModel<IDiagnosticDetail
     private const string Details = "This is an example diagnostic details, lots of stuff here.";
     public DiagnosticSeverity Severity => DiagnosticSeverity.Critical;
 
-    public IMarkdownRendererViewModel MarkdownRendererViewModel => new MarkdownRendererDesignViewModel(Details);
+    public IMarkdownRendererViewModel MarkdownRendererViewModel => new MarkdownRendererViewModel
+    {
+        Contents = Details
+    };
 
     public DiagnosticDetailsDesignViewModel() : base(new DesignWindowManager()) { }
 

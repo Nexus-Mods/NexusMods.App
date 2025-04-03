@@ -8,28 +8,60 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:metricsOptIn="clr-namespace:NexusMods.App.UI.Overlays.MetricsOptIn"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="800"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Overlays.MetricsOptIn.MetricsOptInView">
-    <base:MessageBoxBackground MinWidth="576" MaxWidth="576">
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576" HorizontalAlignment="Center" VerticalAlignment="Center">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Classes="Spacing-3_5">
-                <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost"/>
-            </StackPanel>
 
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="{StaticResource Spacing-4}">
+
+                <!-- Title -->
+                <DockPanel x:Name="ModalTitlePanel">
+                    <TextBlock x:Name="HeadingText" VerticalAlignment="Center"
+                               Text="{x:Static resources:Language.MetricsOptIn_OverlayTitle}" />
+                </DockPanel>
+
+
+                <!-- Message -->
+                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow"
+                           Text="{x:Static resources:Language.MetricsOptIn_MainMessage}" />
+            </StackPanel>
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
 
             <!-- Buttons -->
-            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
-                <Button x:Name="DenyButton" Classes="Standard Tertiary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="{x:Static resources:Language.MetricsOptIn_DENY}" />
-                </Button>
-                <Button x:Name="AllowButton" Classes="Standard Primary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="{x:Static resources:Language.MetricsOptIn_ALLOW}" />
-                </Button>
-            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                        Margin="24"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Spacing="{StaticResource Spacing-3}">
 
+                <controls:StandardButton x:Name="DenyButton"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         Text="{x:Static resources:Language.MetricsOptIn_DENY}" />
+                
+                <controls:StandardButton x:Name="PrivacyPolicyButton"
+                                         Type="Tertiary"
+                                         Fill="Weak"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                         ShowIcon="Left"
+                                         Text="View Privacy Policy" />
+                
+                <controls:StandardButton x:Name="AllowButton"
+                                         Type="Primary"
+                                         Fill="Strong"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         Text="{x:Static resources:Language.MetricsOptIn_ALLOW}" />
+            </StackPanel>
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
 </reactiveUi:ReactiveUserControl>
