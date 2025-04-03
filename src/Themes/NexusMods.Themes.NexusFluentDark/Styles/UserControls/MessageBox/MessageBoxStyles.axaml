@@ -1,12 +1,15 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:messageBox="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base;assembly=NexusMods.App.UI"
-        xmlns:okCancel="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;assembly=NexusMods.App.UI">
+        xmlns:okCancel="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;assembly=NexusMods.App.UI"
+        xmlns:ok="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;assembly=NexusMods.App.UI">
+
     <Design.PreviewWith>
-        <Border Padding="20">
-            <StackPanel Classes="Spacing-2">
+        <Border Padding="32">
+            <StackPanel Spacing="8">
                 <messageBox:MessageBoxBackground />
-                <okCancel:MessageBoxOkCancelView />
+                <okCancel:MessageBoxOkCancelView ClipToBounds="False" />
+                <ok:MessageBoxOkView ClipToBounds="False" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -15,25 +18,47 @@
 
     <!-- MessageBoxBackground -->
     <Style Selector="messageBox|MessageBoxBackground">
-        <Style Selector="^ Border#TopBorder">
-            <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+
+        <Style Selector="^ Border#RootBorder">
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
+
+            <Style Selector="^ Border#ContainerBorder">
+                <Setter Property="ClipToBounds" Value="True" />
+                <Setter Property="CornerRadius" Value="8" />
+                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
+            </Style>
         </Style>
 
-        <Style Selector="^ Border#BottomBorder">
-            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Style Selector="^ ContentPresenter#TopContentControl">
+
         </Style>
-        
+
+        <Style Selector="^ ContentPresenter#BottomContentControl">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+
+            <Style Selector="^ > StackPanel">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Margin" Value="24" />
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Spacing" Value="{StaticResource Spacing-2.5}" />
+            </Style>
+        </Style>
+
         <Style Selector="^ TextBlock#HeadingText">
             <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
         </Style>
 
         <Style Selector="^ TextBlock#MessageTextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
         </Style>
-        
+
         <Style Selector="^ TextBlock#MessageTextBlockBold">
             <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
         </Style>
     </Style>
-    
+
 </Styles>
