@@ -110,7 +110,7 @@ public class GamePathTests
     public void Test_Parts(string locationId, string input, string[] expectedParts)
     {
         var path = new GamePath(LocationId.From(locationId), (RelativePath)input);
-        path.Parts.Should().BeEquivalentTo(expectedParts.Select(x => x));
+        path.Parts.Should().BeEquivalentTo(expectedParts.Select(RelativePath (x) => x));
     }
 
     [Theory]
