@@ -32,23 +32,20 @@
     <data name="BrowseGames" xml:space="preserve">
         <value>Browse Games</value>
     </data>
+    
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Diagnostics and usage data</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value>We’d like to collect diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.&#x0a;&#x0a;Your data will be processed in accordance with our Privacy Policy. You can change your preference anytime in settings.&#x0a;&#x0a;Would you like to enable data collection?</value>
+    </data>
     <data name="MetricsOptIn_ALLOW" xml:space="preserve">
         <value>Allow</value>
     </data>
     <data name="MetricsOptIn_DENY" xml:space="preserve">
         <value>Deny</value>
     </data>
-    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
-        <value>Diagnostics and usage data</value>
-    </data>
-    <data name="MetricsOptIn_MoreInfoAboutTheDataWeTrack" xml:space="preserve">
-        <value>More info about the data we track</value>
-    </data>
-    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
-        <value>Help us provide you with the best modding experience.&#x0a;&#x0a;With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.&#x0a;&#x0a;This information is sent anonymously and will never be shared with a 3rd party.</value>
-    </data>
     
-
     <data name="Updater_UPDATE" xml:space="preserve">
         <value>View update</value>
     </data>
@@ -184,7 +181,7 @@
         <value>The Downloads page is currently being reworked and will be replaced in a future update. We apologise for the inconvenience.</value>
     </data>
     <data name="NexusLoginOverlayView__Please_Click_Authorize" xml:space="preserve">
-        <value>Please click "Authorize" on the website</value>
+        <value>Please click "Authorise" on the website</value>
     </data>
     <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
         <value>Browser didn't open automatically?</value>
@@ -492,22 +489,22 @@
         <value>Manage downloaded mods and collections</value>
     </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-        <value>MOD NAME</value>
+        <value>Mod name</value>
     </data>
     <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
-        <value>VERSION</value>
+        <value>Version</value>
     </data>
     <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
-        <value>SIZE</value>
+        <value>Size</value>
     </data>
     <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
-        <value>DOWNLOADED</value>
+        <value>Downloaded</value>
     </data>
     <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
-        <value>INSTALLED</value>
+        <value>Installed</value>
     </data>
     <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
-        <value>ACTIONS</value>
+        <value>Action</value>
     </data>
     <data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
         <value>Cancelled</value>
@@ -944,5 +941,37 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="ManageGameWarning_Continue" xml:space="preserve">
         <value>Continue</value>
+    </data>
+
+
+    <data name="UpgradeToPremiumView_Title" xml:space="preserve">
+        <value>Go Premium for one-click collection downloads</value>
+    </data>
+    <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
+        <value>Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list.</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+        <value>Premium users also get:</value>
+    </data>
+    
+    <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
+        <value>Uncapped downloads speeds</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
+        <value>No Ads for life, even if you cancel!</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
+        <value>Support the creators - Premium helps reward mod authors</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="UpgradeToPremiumView_LearnMoreButton" xml:space="preserve">
+        <value>Learn more</value>
+    </data>
+    <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
+        <value>Upgrade to Premium</value>
     </data>
 </root>

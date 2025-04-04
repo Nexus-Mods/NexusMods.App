@@ -14,7 +14,7 @@ public static class SharedColumns
         {
             var aValue = a.GetOptional<StringComponent>(StringComponentKey);
             var bValue = b.GetOptional<StringComponent>(StringComponentKey);
-            return aValue.Compare(bValue);
+            return aValue.Compare(bValue, (x, y) => StringComparer.OrdinalIgnoreCase.Compare(x.Value.Value, y.Value.Value));
         }
 
         public const string ColumnTemplateResourceKey = Prefix + "Name";

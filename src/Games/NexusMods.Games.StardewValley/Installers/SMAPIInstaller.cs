@@ -16,10 +16,10 @@ namespace NexusMods.Games.StardewValley.Installers;
 
 public class SMAPIInstaller : ALibraryArchiveInstaller
 {
-    private static readonly RelativePath InstallDatFile = "install.dat".ToRelativePath();
-    private static readonly RelativePath LinuxFolder = "linux".ToRelativePath();
-    private static readonly RelativePath WindowsFolder = "windows".ToRelativePath();
-    private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
+    private static readonly RelativePath InstallDatFile = "install.dat";
+    private static readonly RelativePath LinuxFolder = "linux";
+    private static readonly RelativePath WindowsFolder = "windows";
+    private static readonly RelativePath MacOSFolder = "macOS";
 
     private readonly IOSInformation _osInformation;
     private readonly TemporaryFileManager _temporaryFileManager;

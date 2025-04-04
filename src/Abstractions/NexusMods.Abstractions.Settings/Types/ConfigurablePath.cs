@@ -78,7 +78,7 @@ public readonly struct ConfigurablePath
                 throw new JsonException($"Unknown: {baseDirectoryString}");
 
             if (fileString is null) throw new JsonException("File can't be null");
-            return new ConfigurablePath(baseDirectory, new RelativePath(fileString));
+            return new ConfigurablePath(baseDirectory, fileString);
         }
 
         /// <inheritdoc/>

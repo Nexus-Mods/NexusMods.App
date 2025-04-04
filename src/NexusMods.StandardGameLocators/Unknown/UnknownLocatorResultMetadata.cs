@@ -7,7 +7,7 @@ namespace NexusMods.StandardGameLocators.Unknown;
 /// <see cref="IGameLocatorResultMetadata"/> implementation for nothing.
 /// </summary>
 [PublicAPI]
-public record UnknownLocatorResultMetadata : IGameLocatorResultMetadata
+public record UnknownLocatorResultMetadata(LocatorId[] LocatorIds) : IGameLocatorResultMetadata
 {
-    public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From("StubbedGameState.zip")];
+    public IEnumerable<LocatorId> ToLocatorIds() => LocatorIds;
 }
