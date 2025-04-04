@@ -220,7 +220,7 @@
 		<value>Dodaj</value>
 	</data>
 	<data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
-		<value>Dodaj (zaawansowane)</value>
+		<value>Zaawansowana instalacja</value>
 	</data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
 		<value>Dodane gry</value>
@@ -902,5 +902,32 @@
 	</data>
 	<data name="ManageGameWarning_Continue" xml:space="preserve">
 		<value>Kontynuuj</value>
+	</data>
+	<data name="UpgradeToPremiumView_Title" xml:space="preserve">
+		<value>Przejdź na Premium, aby pobierać kolekcje jednym kliknięciem</value>
+	</data>
+	<data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
+		<value>Pobierz całą kolekcję modów z pełną prędkością jednym kliknięciem, nie opuszczając aplikacji. Użytkownicy darmowych kont mogą instalować mody pojedynczo z listy.</value>
+	</data>
+	<data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+		<value>Użytkownicy Premium otrzymują także:</value>
+	</data>
+	<data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
+		<value>Nieograniczona prędkość pobierania,</value>
+	</data>
+	<data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
+		<value>Dożywotni brak reklam, nawet po anulowaniu!</value>
+	</data>
+	<data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
+		<value>Wspieraj twórców – premium pomaga nagradzać autorów modów.</value>
+	</data>
+	<data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="UpgradeToPremiumView_LearnMoreButton" xml:space="preserve">
+		<value>Dowiedz się więcej</value>
+	</data>
+	<data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
+		<value>Przejdź na premium</value>
 	</data>
 </root>
