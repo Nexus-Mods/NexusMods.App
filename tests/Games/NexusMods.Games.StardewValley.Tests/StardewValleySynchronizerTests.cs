@@ -46,7 +46,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
                     Size = Size.FromLong(manifestData.Length),
                     LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, fileId)
                     {
-                        TargetPath = (loadout.Id, LocationId.Game, "Mods/test_mod_42/manifest.json".ToRelativePath()),
+                        TargetPath = (loadout.Id, LocationId.Game, "Mods/test_mod_42/manifest.json"),
                         LoadoutItem = new LoadoutItem.New(tx, fileId)
                         {
                             LoadoutId = loadout,
@@ -64,7 +64,7 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         loadout = loadout.Rebase();
         loadout = await Synchronizer.Synchronize(loadout);
         
-        var newFilePath = new GamePath(LocationId.Game, "Mods/test_mod_42/foo.dat".ToRelativePath());
+        var newFilePath = new GamePath(LocationId.Game, "Mods/test_mod_42/foo.dat");
 
         var absPath = loadout.InstallationInstance.LocationsRegister.GetResolvedPath(newFilePath);
 
@@ -90,8 +90,8 @@ public class StardewValleySynchronizerTests(IServiceProvider serviceProvider) : 
         settings.DoFullGameBackup = false;
         
         // Setup the paths we want to edit, one will be in the `Content` folder, thus not backed up
-        var ignoredGamePath = new GamePath(LocationId.Game, "Content/foo.dat".ToRelativePath());
-        var notIgnoredGamePath = new GamePath(LocationId.Game, "foo.dat".ToRelativePath());
+        var ignoredGamePath = new GamePath(LocationId.Game, "Content/foo.dat");
+        var notIgnoredGamePath = new GamePath(LocationId.Game, "foo.dat");
 
         // Check if the paths are ignored
         Synchronizer.IsIgnoredBackupPath(ignoredGamePath).Should().BeTrue("The setting is now disabled");

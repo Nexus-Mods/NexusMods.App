@@ -1,33 +1,35 @@
 <UserControl
     x:Class="NexusMods.App.UI.Overlays.Generic.MessageBox.Base.MessageBoxBackground"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    ClipToBounds="False"
+    MaxWidth="576"
+    MinWidth="576">
 
-    <!-- Top/Bottom Splitter -->
-    <Grid RowDefinitions="Auto, Auto">
+    <Border x:Name="RootBorder">
+        <Border x:Name="ContainerBorder">
 
-        <!-- Note: https://github.com/AvaloniaUI/Avalonia/issues/2105 , issues with radius. -->
-        <!-- Using two borders here for rendering is not ideal, but it will have to do -->
+            <!-- Top/Bottom Splitter -->
+            <DockPanel>
 
-        <!-- Top Part -->
-        <!-- Expected Size: `MinWidth="386" MinHeight="138"` -->
-        <Border Grid.Row="0"
-                x:Name="TopBorder"
-                Classes="Rounded-t-lg"
-                HorizontalAlignment="Stretch">
-            <ContentPresenter x:Name="TopContentControl"
-                              Content="{Binding TopContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                <!-- Bottom Part -->
+                <!-- Expected Size: `MinWidth="386" MinHeight="126" -->
+                <ContentPresenter x:Name="BottomContentControl" 
+                                  Grid.Row="1"
+                                  DockPanel.Dock="Bottom"
+                                  Content="{Binding BottomContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+
+                <!-- Top Part -->
+                <!-- Expected Size: `MinWidth="386" MinHeight="138"` -->
+
+                <ContentPresenter x:Name="TopContentControl"
+                                  Grid.Row="0"
+                                  Content="{Binding TopContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                
+            </DockPanel>
+
         </Border>
+    </Border>
 
-        <!-- Bottom Part -->
-        <!-- Expected Size: `MinWidth="386" MinHeight="126" -->
-        <Border Grid.Row="1"
-                x:Name="BottomBorder"
-                Classes="Rounded-b-lg"
-                HorizontalAlignment="Stretch">
-            <ContentPresenter x:Name="BottomContentControl"
-                              Content="{Binding BottomContent, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
-        </Border>
 
-    </Grid>
 </UserControl>

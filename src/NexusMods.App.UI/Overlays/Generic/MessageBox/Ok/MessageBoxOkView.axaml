@@ -1,5 +1,5 @@
 <reactiveUi:ReactiveUserControl
-    mc:Ignorable="d"
+    mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
     x:Class="NexusMods.App.UI.Overlays.Generic.MessageBox.Ok.MessageBoxOkView"
     x:TypeArguments="ok:IMessageBoxOkViewModel"
     xmlns="https://github.com/avaloniaui"
@@ -13,14 +13,19 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
-    <base:MessageBoxBackground MinWidth="300" MaxWidth="640">
+    <reactiveUi:ReactiveUserControl.DataContext>
+        <ok:MessageBoxOkDesignViewModel />
+    </reactiveUi:ReactiveUserControl.DataContext>
+
+    <base:MessageBoxBackground VerticalAlignment="Center" HorizontalAlignment="Center">
+
         <base:MessageBoxBackground.TopContent>
 
-            <DockPanel Margin="24, 16">
+            <DockPanel Margin="24, 16" MaxHeight="450">
 
                 <!-- Title -->
-                <DockPanel DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="0">
-                    
+                <DockPanel DockPanel.Dock="Top" Margin="0 0 0 8">
+
                     <!-- 'Cross' button. -->
                     <controls:StandardButton
                         x:Name="CloseButton" DockPanel.Dock="Right"
@@ -31,54 +36,52 @@
                         Fill="None" />
 
                     <TextBlock x:Name="HeadingText"
-                               Text="Title Text"
+                               Text="HeadingText"
                                VerticalAlignment="Center"
                                TextWrapping="NoWrap"
                                TextTrimming="CharacterEllipsis" />
                 </DockPanel>
-
-                <StackPanel Orientation="Vertical" Spacing="8">
-                    <!-- Message -->
-                    <TextBlock x:Name="MessageTextBlock" 
-                               TextWrapping="WrapWithOverflow" 
-                               MaxLines="50"
-                               Text="Description" />
-
-                    <!-- Supporting Markdown -->
-                    <StackPanel Orientation="Vertical" x:Name="DetailsSection">
-                        <controls:StandardButton x:Name="CopyDetailsButton" 
-                                                 LeftIcon="{x:Static icons:IconValues.Copy}"
-                                                 ShowIcon="Left" 
-                                                 ShowLabel="False"/>
-                        <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" MaxHeight="640"
-                                                      MaxWidth="600" />
-                    </StackPanel>
+                
+                <DockPanel>
                     
-                </StackPanel>
-
+                    <!-- Supporting Markdown -->
+                    <Border x:Name="DetailsSection"
+                            DockPanel.Dock="Bottom" 
+                            Margin="0, 8, 0, 0"
+                            Padding="0"
+                            CornerRadius="8"
+                            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+                            BorderThickness="0">
+                        <DockPanel>
+                            <controls:StandardButton x:Name="CopyDetailsButton"
+                                                     DockPanel.Dock="Top"
+                                                     LeftIcon="{x:Static icons:IconValues.Copy}"
+                                                     ShowIcon="Left"
+                                                     Size="Small"
+                                                     ShowLabel="False"
+                                                     ToolTip.Tip="Copy to Clipboard" />
+                            <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
+                        </DockPanel>
+                    </Border>
+                    
+                    <ScrollViewer>
+                        <TextBlock x:Name="MessageTextBlock"
+                                   TextWrapping="WrapWithOverflow" />
+                    </ScrollViewer>
+                </DockPanel>
             </DockPanel>
 
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-
             <!-- Buttons -->
-            <StackPanel Orientation="Horizontal"
-                        Margin="24"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Right"
-                        Spacing="{StaticResource Spacing-2.5}">
-
+            <StackPanel>
                 <controls:StandardButton
                     x:Name="OkButton"
                     Text="{x:Static resources:Language.MessageBox_Button_Ok}"
                     Type="Primary"
-                    Fill="Strong"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center" />
-
+                    Fill="Strong" />
             </StackPanel>
-
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
 
