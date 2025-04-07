@@ -1,8 +1,8 @@
 # v0.9.2 - 2025-04-07
-This is a bugfix release that correct an issue causing the "Update Available" pop up for appearing even when on the latest version.
+This is a bug-fix release that corrects an issue causing the "Update Available" pop-up to appear even when on the latest version.
 
 ## Bug Fixes
-* Fixed an error in the version checking logic which resulted in the "Update Available" message appearing even when the latest version is installed.
+* Fixed an error in the version checking logic, which resulted in the "Update Available" message appearing even when the latest version is installed.
 
 # v0.9.1 - 2025-04-07
 This release includes improvements to the discovery of collection installs that are still in progress, separates mods and collections into tabs in the Library, and includes multiple UI enhancements. 
