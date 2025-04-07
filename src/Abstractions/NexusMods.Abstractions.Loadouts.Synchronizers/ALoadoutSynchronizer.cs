@@ -1568,7 +1568,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
         
         // Execute the garbage collector
-        _garbageCollectorRunner.RunWithMode(gcRunMode);
+        await _garbageCollectorRunner.RunWithMode(gcRunMode);
     }
 
     public async Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds)

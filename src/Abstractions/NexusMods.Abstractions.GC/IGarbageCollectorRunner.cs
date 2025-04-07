@@ -20,5 +20,5 @@ public interface IGarbageCollectorRunner
     /// </summary>
     /// <param name="gcRunMode">The mode to run the GC in.</param>
     // ReSharper disable once InconsistentNaming
-    void RunWithMode(GarbageCollectorRunMode gcRunMode);
+    Task RunWithMode(GarbageCollectorRunMode gcRunMode);
 }

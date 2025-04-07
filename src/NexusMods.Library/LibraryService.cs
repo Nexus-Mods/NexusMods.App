@@ -70,6 +70,6 @@ public sealed class LibraryService : ILibraryService
             tx.Delete(item.Id, true);
 
         await tx.Commit();
-        _gcRunner.RunWithMode(gcRunMode);
+        await _gcRunner.RunWithMode(gcRunMode);
     }
 }
