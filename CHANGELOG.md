@@ -1,24 +1,30 @@
+# v0.9.2 - 2025-04-07
+This is a bugfix release that correct an issue causing the "Update Available" pop up for appearing even when on the latest version.
+
+## Bug Fixes
+* Fixed an error in the version checking logic which resulted in the "Update Available" message appearing even when the latest version is installed.
+
 # v0.9.1 - 2025-04-07
 This release includes improvements to the discovery of collection installs that are still in progress, separates mods and collections into tabs in the Library, and includes multiple UI enhancements. 
 
 **Note: The "Update Available" pop-up may display incorrect instructions. On Windows, run the latest installer to update the current build. On Linux, replace the AppImage file you were using with the latest one. You do not need to uninstall the app.**
 
-# In-progress collection installs in the left menu
+## In-progress collection installs in the left menu
 To improve visibility and ease of access, collections that are not yet fully installed will now be displayed in the left-hand menu. This allows users to quickly jump back into the installation flow without having to find the item in their Library. 
 
 ![The app showing an in-progress collection in the left menu.](./docs/changelog-assets/b9eba6bd73a0421b9a9c0e017db10d50.webp)
 
-# Re-organised Library
+## Re-organised Library
 In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections, it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs, as we feel most users don't need to see both at the same time. 
 
-# More Features
+## More Features
 * Files in mods from a Nexus Mods collection are now read-only to prevent users from accidentally breaking the collection by editing them.
 * Mods that are required as part of a Nexus Mods collection can now only be enabled or disabled using the collection toggle.
 * The toggle indicator for mods has been updated to explain better why a mod cannot be toggled when part of a collection. Clicking this indicator will now open the Installed Collection page. 
 * Continued to refine the UI to make it more compact. 
 * The "Optional" tab is now only shown for collections with optional mods.
 
-# Technical Changes
+## Technical Changes
 * Improved the "Update available" pop-up to give more relevant advice depending on how the app was installed (Windows EXE, Linux AppImage, Linux Package Manager).
 * Updated the Load Order page to use the newer display technologies.
 * The "Advanced Install" option no longer shows a screen saying the mod is unsupported before showing the options to install files. 
@@ -28,7 +34,7 @@ In testing, we found that the Library was starting to get a little cluttered wit
 * Updated Nexus Mods links to the new format. 
 * Updated Privacy Policy links.
 
-# Bug Fixes
+## Bug Fixes
 * Fixed a few instances where the app would not clean up empty directories on swapping loadouts or uninstalling. 
 * In the Advanced Installer, the "Suggested" folder will now correctly show a name instead of a number.
 * The spine menu will now correctly show which loadout is active after the app starts up. 
