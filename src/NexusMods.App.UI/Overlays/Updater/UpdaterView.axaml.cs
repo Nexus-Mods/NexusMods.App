@@ -19,8 +19,8 @@ public partial class UpdaterView : ReactiveUserControl<IUpdaterViewModel>
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(vm =>
                         {
-                            HeadingText.Text = string.Format(Language.Updater_UpdateAvailable, vm.LatestVersion);
-                            TextGenericBody.Text = string.Format(Language.Updater_GenericMessage, vm.CurrentVersion, vm.LatestVersion);
+                            HeadingText.Text = string.Format(Language.Updater_UpdateAvailable, vm.LatestVersion.ToString(fieldCount: 3));
+                            TextGenericBody.Text = string.Format(Language.Updater_GenericMessage, vm.CurrentVersion.ToString(fieldCount: 3), vm.LatestVersion.ToString(fieldCount: 3));
 
                             var installationMethod = vm.InstallationMethod;
 
