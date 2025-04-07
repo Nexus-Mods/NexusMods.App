@@ -3,7 +3,7 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x1B52EB13AA31E1EE
+   - Fingerprint: 0xC3377645908FD300
    - Total attributes: 195
    - Total namespaces: 68
    
@@ -202,6 +202,6 @@ models in the app, then validate the tests to update this file.
 | NexusMods.StandardGameLocators.ManuallyAddedGame/Version                           | Utf8                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPILoadoutItem/ModDatabase                               | Reference               | False   | False | False     | 
 | NexusMods.StardewValley.SMAPILoadoutItem/Version                                   | Utf8                    | False   | False | False     | 
-| NexusMods.StardewValley.SMAPIManifestLoadoutFile/ManifestFile                      | Null                    | False   | False | False     | 
+| NexusMods.StardewValley.SMAPIManifestLoadoutFile/ManifestFile                      | Null                    | True    | False | False     | 
 | NexusMods.StardewValley.SMAPIModDatabaseLoadoutFile/ModDatabaseFile                | Null                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPIModLoadoutItem/Manifest                               | Reference               | False   | False | False     | 
