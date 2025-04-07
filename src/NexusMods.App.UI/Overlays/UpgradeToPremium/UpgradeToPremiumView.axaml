@@ -6,26 +6,78 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Overlays"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     x:Class="NexusMods.App.UI.Overlays.UpgradeToPremiumView">
 
-    <base:MessageBoxBackground>
+    <base:MessageBoxBackground MinWidth="576" MaxWidth="576" HorizontalAlignment="Center" VerticalAlignment="Center">
         <base:MessageBoxBackground.TopContent>
-            <StackPanel Orientation="Vertical" Margin="16, 24, 24, 24" Classes="Spacing-3_5">
-                <reactive:ViewModelViewHost x:Name="ViewModelViewHostMarkdownRenderer"/>
+            <StackPanel Orientation="Vertical" Margin="24" Spacing="{StaticResource Spacing-4}">
+                
+                <!-- Title -->
+                <DockPanel x:Name="ModalTitlePanel">
+                    <TextBlock x:Name="HeadingText" VerticalAlignment="Center" 
+                               Text="{x:Static resources:Language.UpgradeToPremiumView_Title}" />
+                </DockPanel>
+                
+                
+                <!-- Message -->
+                <TextBlock x:Name="MessageTextBlock" TextWrapping="WrapWithOverflow" 
+                           Text="{x:Static resources:Language.UpgradeToPremiumView_Desc1}" />
+
+                <!-- Message -->
+                <TextBlock x:Name="MessageTextBlock2" TextWrapping="WrapWithOverflow" 
+                           Theme="{StaticResource BodyMDSemiTheme}"
+                           Text="{x:Static resources:Language.UpgradeToPremiumView_Desc2}"/>
+                
+                <Grid ColumnDefinitions="20, *" RowDefinitions="Auto,10,Auto,10,Auto">
+                    <Ellipse Grid.Column="0" Grid.Row="0" Fill="{StaticResource NeutralModerateBrush}" Width="4" Height="4" />
+                    <TextBlock Grid.Column="1" Grid.Row="0" TextWrapping="WrapWithOverflow" 
+                               Text="{x:Static resources:Language.UpgradeToPremiumView_Bullet1}" />
+                    <Ellipse Grid.Column="0" Grid.Row="2"  Fill="{StaticResource NeutralModerateBrush}" Width="4" Height="4" />
+                    <TextBlock Grid.Column="1" Grid.Row="2" TextWrapping="WrapWithOverflow" 
+                               Text="{x:Static resources:Language.UpgradeToPremiumView_Bullet2}" />
+                    <Ellipse Grid.Column="0" Grid.Row="4"  Fill="{StaticResource NeutralModerateBrush}" Width="4" Height="4" />
+                    <TextBlock Grid.Column="1" Grid.Row="4" TextWrapping="WrapWithOverflow" 
+                               Text="{x:Static resources:Language.UpgradeToPremiumView_Bullet3}" />
+                </Grid>
             </StackPanel>
+            
         </base:MessageBoxBackground.TopContent>
 
         <base:MessageBoxBackground.BottomContent>
-            <StackPanel Orientation="Horizontal" Margin="24" HorizontalAlignment="Right" Classes="Spacing-2">
-                <Button x:Name="ButtonCancel" Classes="Standard Tertiary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="Cancel"/>
-                </Button>
-                <Button x:Name="ButtonUpgrade" Classes="Standard Primary" HorizontalAlignment="Stretch">
-                    <TextBlock Text="Upgrade to Premium"/>
-                </Button>
+            
+            <!-- Buttons -->
+            <StackPanel Orientation="Horizontal" 
+                        Margin="24" 
+                        VerticalAlignment="Center" 
+                        HorizontalAlignment="Right" 
+                        Spacing="{StaticResource Spacing-3}">
+                
+                <controls:StandardButton x:Name="ButtonCancel"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         Text="{x:Static resources:Language.UpgradeToPremiumView_CancelButton}"/>
+                
+                <controls:StandardButton x:Name="ButtonLearnMore"
+                                         Type="Tertiary"
+                                         Fill="Weak"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         Text="{x:Static resources:Language.UpgradeToPremiumView_LearnMoreButton}"/>
+                
+                <controls:StandardButton  x:Name="ButtonUpgrade"
+                                          Type="Primary"
+                                          Fill="Strong"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          Text="{x:Static resources:Language.UpgradeToPremiumView_UpgradeButton}"/>
             </StackPanel>
+            
         </base:MessageBoxBackground.BottomContent>
     </base:MessageBoxBackground>
 

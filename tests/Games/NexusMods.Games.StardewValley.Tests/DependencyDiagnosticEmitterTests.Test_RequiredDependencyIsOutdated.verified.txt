@@ -5,7 +5,7 @@
 The mod **Farm Type Manager** requires **Content Patcher** version 2.0.0 or higher to function, but an older version of **Content Patcher** (1.30.4) is installed.
 
 ### How to Resolve
-1. Download the latest version of **Content Patcher** (version 2.0.0 or newer) from [Nexus Mods](https://nexusmods.com/stardewvalley/mods/1915?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
+1. Download the latest version of **Content Patcher** (version 2.0.0 or newer) from [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/1915?mtm_source=nexusmodsapp)
 2. Add the latest version of **Content Patcher** to the loadout
 3. Remove version 1.30.4 of **Content Patcher** from the loadout
 

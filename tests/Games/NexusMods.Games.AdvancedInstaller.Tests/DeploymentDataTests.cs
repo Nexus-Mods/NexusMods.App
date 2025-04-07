@@ -5,7 +5,7 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.AdvancedInstaller.Tests;
 
-public partial class DeploymentDataTests
+public class DeploymentDataTests
 {
     // Note: Paths use / as separator on all platforms to ensure conformance with our backend decisions.
     [Fact]
@@ -13,7 +13,7 @@ public partial class DeploymentDataTests
     {
         // Arrange
         var data = new DeploymentData();
-        var archivePath = new RelativePath("archive/file1");
+        RelativePath archivePath = "archive/file1";
         var outputPath = new GamePath(LocationId.Game, "Data/file1");
 
         // Act
@@ -32,7 +32,7 @@ public partial class DeploymentDataTests
     {
         // Arrange
         var data = new DeploymentData();
-        var archivePath = new RelativePath("archive/file1");
+        RelativePath archivePath = "archive/file1";
         var outputPath = new GamePath(LocationId.Game, "Data/file1");
         data.AddMapping(archivePath, outputPath);
 
@@ -50,8 +50,8 @@ public partial class DeploymentDataTests
     {
         // Arrange
         var data = new DeploymentData();
-        data.AddMapping(new RelativePath("archive/file1"), new GamePath(LocationId.Game, "Data/file1"));
-        data.AddMapping(new RelativePath("archive/file2"), new GamePath(LocationId.Game, "Data/file2"));
+        data.AddMapping("archive/file1", new GamePath(LocationId.Game, "Data/file1"));
+        data.AddMapping("archive/file2", new GamePath(LocationId.Game, "Data/file2"));
 
         // Act
         data.ClearMappings();
@@ -66,8 +66,8 @@ public partial class DeploymentDataTests
     {
         // Arrange
         var data = new DeploymentData();
-        var archivePath1 = new RelativePath("archive/file1");
-        var archivePath2 = new RelativePath("archive/file2");
+        RelativePath archivePath1 = "archive/file1";
+        RelativePath archivePath2 = "archive/file2";
         var outputPath = new GamePath(LocationId.Game, "Data/file1");
 
         // Act
@@ -83,8 +83,8 @@ public partial class DeploymentDataTests
     {
         // Arrange
         var data = new DeploymentData();
-        var archivePath1 = new RelativePath("archive/file1");
-        var archivePath2 = new RelativePath("archive/file2");
+        RelativePath archivePath1 = "archive/file1";
+        RelativePath archivePath2 = "archive/file2";
         var outputPath = new GamePath(LocationId.Game, "Data/file1");
 
         // Act

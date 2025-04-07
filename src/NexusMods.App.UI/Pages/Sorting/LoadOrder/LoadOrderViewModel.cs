@@ -202,7 +202,8 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     protected override void BeforeModelActivationHook(CompositeItemModel<Guid> model)
     {
         base.BeforeModelActivationHook(model);
-
+        
+        // Move up command
         model.SubscribeToComponentAndTrack<LoadOrderComponents.IndexComponent, LoadOrderTreeDataGridAdapter>(
             key: LoadOrderColumns.IndexColumn.IndexComponentKey,
             state: this,
@@ -216,6 +217,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
                 )
         );
         
+        // Move down command
         model.SubscribeToComponentAndTrack<LoadOrderComponents.IndexComponent, LoadOrderTreeDataGridAdapter>(
             key: LoadOrderColumns.IndexColumn.IndexComponentKey,
             state: this,
@@ -225,6 +227,20 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
                     {
                         var (adapter, itemModel, _) = tuple;
                         adapter.MessageSubject.OnNext(new MoveDownCommandPayload(itemModel));
+                    }
+                )
+        );
+        
+        // IsActive styling
+        model.SubscribeToComponentAndTrack<ValueComponent<bool>, LoadOrderTreeDataGridAdapter>(
+            key: LoadOrderColumns.IsActiveComponentKey,
+            state: this,
+            factory: static (adapter, itemModel, component) => component.Value
+                .Subscribe((adapter, itemModel, component),
+                    static (_, tuple) =>
+                    {
+                        var (_, itemModel, component) = tuple;
+                        itemModel.SetStyleFlag(LoadOrderColumns.IsActiveStyleTag, component.Value.Value);
                     }
                 )
         );

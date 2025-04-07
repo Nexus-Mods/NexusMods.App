@@ -40,15 +40,11 @@ public static class Verbs
         [Injected] IRenderer renderer,
         [Injected] JsonSerializerOptions jsonSerializerOptions,
         [Injected] ISteamSession steamSession,
-        [Option("g", "game", "The game to index")] ILocatableGame locatableGame,
+        [Option("a", "appId", "The steam app id to index")] long appId,
         [Option("o", "output", "The output folder to write the index to")] AbsolutePath output,
         [Injected] CancellationToken token)
     {
-        if (locatableGame is not ISteamGame steamGame)
-        {
-            await renderer.Error("Game is not a Steam game");
-            return -1;
-        }
+        var steamAppId = AppId.From((uint)appId);
         
         var indentedOptions = new JsonSerializerOptions(jsonSerializerOptions)
         {
@@ -60,10 +56,8 @@ public static class Verbs
 
         await using (var _ = await renderer.WithProgress())
         {
-            await foreach (var appId in steamGame.SteamIds.Select(AppId.From)
-                               .WithProgress(renderer, "Indexing Steam App").WithCancellation(token))
             {
-                var productInfo = await steamSession.GetProductInfoAsync(appId, token);
+                var productInfo = await steamSession.GetProductInfoAsync(steamAppId, token);
 
                 var hashFolder = output / "hashes";
                 hashFolder.CreateDirectory();
@@ -90,7 +84,7 @@ public static class Verbs
                 {
                     await Parallel.ForEachAsync(depot.Manifests, options, async (manifestInfo, token) =>
                     {
-                        var manifest = await steamSession.GetManifestContents(appId, depot.DepotId, manifestInfo.Value.ManifestId,
+                        var manifest = await steamSession.GetManifestContents(steamAppId, depot.DepotId, manifestInfo.Value.ManifestId,
                             manifestInfo.Key, token
                         );
 
@@ -103,7 +97,7 @@ public static class Verbs
                             );
                         }
 
-                        await IndexManifest(steamSession, renderer, appId,
+                        await IndexManifest(steamSession, renderer, steamAppId,
                             output, manifest, indentedOptions,
                             existingHashes, options);
                     });
@@ -121,9 +115,17 @@ public static class Verbs
         
         await Parallel.ForEachAsync(hashFiles, token, async (file, token) =>
         {
-            await using var stream = file.Read();
-            var hash = await JsonSerializer.DeserializeAsync<MultiHash>(stream, options, token);
-            bag.Add(hash!.Sha1);
+            try
+            {
+                await using var stream = file.Read();
+                var hash = await JsonSerializer.DeserializeAsync<MultiHash>(stream, options, token);
+                bag.Add(hash!.Sha1);
+            }
+            catch (Exception ex)
+            {
+                // Ignore errors
+                Console.WriteLine($"Error loading hash file {file}: {ex.Message}");
+            }
         });
 
         return bag;

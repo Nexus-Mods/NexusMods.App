@@ -2024,24 +2024,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Help us provide you with the best modding experience.
+        ///   Looks up a localized string similar to We’d like to collect diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.
         ///
-        ///With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.
+        ///Your data will be processed in accordance with our Privacy Policy. You can change your preference anytime in settings.
         ///
-        ///This information is sent anonymously and will never be shared with a 3rd party..
+        ///Would you like to enable data collection?.
         /// </summary>
         public static string MetricsOptIn_MainMessage {
             get {
                 return ResourceManager.GetString("MetricsOptIn_MainMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to More info about the data we track.
-        /// </summary>
-        public static string MetricsOptIn_MoreInfoAboutTheDataWeTrack {
-            get {
-                return ResourceManager.GetString("MetricsOptIn_MoreInfoAboutTheDataWeTrack", resourceCulture);
             }
         }
         
@@ -2253,7 +2244,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please click &quot;Authorize&quot; on the website.
+        ///   Looks up a localized string similar to Please click &quot;Authorise&quot; on the website.
         /// </summary>
         public static string NexusLoginOverlayView__Please_Click_Authorize {
             get {
@@ -2636,6 +2627,87 @@ namespace NexusMods.App.UI.Resources {
         public static string Updater_UsePackageManager {
             get {
                 return ResourceManager.GetString("Updater_UsePackageManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncapped downloads speeds.
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet1 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Ads for life, even if you cancel!.
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet2 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Support the creators - Premium helps reward mod authors.
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet3 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string UpgradeToPremiumView_CancelButton {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list..
+        /// </summary>
+        public static string UpgradeToPremiumView_Desc1 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Desc1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Premium users also get:.
+        /// </summary>
+        public static string UpgradeToPremiumView_Desc2 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Desc2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Learn more.
+        /// </summary>
+        public static string UpgradeToPremiumView_LearnMoreButton {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_LearnMoreButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go Premium for one-click collection downloads.
+        /// </summary>
+        public static string UpgradeToPremiumView_Title {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade to Premium.
+        /// </summary>
+        public static string UpgradeToPremiumView_UpgradeButton {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_UpgradeButton", resourceCulture);
             }
         }
         

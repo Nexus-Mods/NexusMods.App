@@ -93,6 +93,5 @@ public interface ISelectableTreeEntryViewModel : IViewModelInterface, IExpandabl
     /// <summary>
     /// Invalid RelativePath for the CreateFolder nodes, necessary since RelativePath is used as the key in DynamicData.
     /// </summary>
-    public static readonly RelativePath CreateFolderEntryName = new("*CreateFolder*");
+    public static readonly RelativePath CreateFolderEntryName = "*CreateFolder*";
 }
-
