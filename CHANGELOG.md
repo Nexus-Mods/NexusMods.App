@@ -1,4 +1,4 @@
-# v0.9.0 - 2025-04-XX
+# v0.9.1 - 2025-04-07
 This release includes improvements to the discovery of collection installs that are still in progress, separates mods and collections into tabs in the Library, and includes multiple UI enhancements. 
 
 # In-progress collection installs in the left menu
@@ -32,6 +32,10 @@ In testing, we found that the Library was starting to get a little cluttered wit
 * The spine menu will now correctly show which loadout is active after the app starts up. 
 * Fixed an issue where some Cyberpunk 2077 mod installers (FOMODs) would not trigger correctly.
 * Fixed an issue preventing mods installed by FOMOD from being deleted/disabled.
+* Fixed a critical bug that would cause data to be written to the wrong file when install or removing mods that shared some identical files.
+* Fixed an error relating to "Duplicate Keys" when applying mods.
+* Fixed an issue re-indexing the game files after a game update which could result in DLCs (e.g. REDmod, Phantom Liberty) being unintentionally deleted when applying a loadout. 
+* Fixed an issue where large files skipped during indexing of the game were not properly tracked by the app causing errors when applying a loadout. 
 
 ## Known Issues
 * The sort order for some columns does not work as expected.
