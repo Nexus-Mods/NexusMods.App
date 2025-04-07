@@ -1,0 +1,2 @@
+﻿{Game}/Mods/ContentPatcher/ContentPatcher.dll
+{Game}/Mods/ContentPatcher/manifest.json

@@ -1,0 +1,5 @@
+﻿{Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Agricultures Bag.json
+{Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Comprehensive Bag.json
+{Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Cooking Bag.json
+{Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Fish Bag.json
+{Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Forage Bag.json

@@ -1,0 +1,11 @@
+﻿{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Earrings_overlay.png
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Ohodavi_swap.png
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Scars_overlay.png
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/sprite_patch.png
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Witch_32.png
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/content.json
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/data/ChangedLinesFromRRRR.json
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/data/Lannah_comp.json
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/i18n/default.json
+{Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/manifest.json
