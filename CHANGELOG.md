@@ -1,6 +1,8 @@
 # v0.9.1 - 2025-04-07
 This release includes improvements to the discovery of collection installs that are still in progress, separates mods and collections into tabs in the Library, and includes multiple UI enhancements. 
 
+**Note: The "Update Available" pop-up may display incorrect information about how to update. On Windows, run the latest installer to update the current build. On Linux, replace the AppImage file you were using with the latest one. You do not need to uninstall the app.**
+
 # In-progress collection installs in the left menu
 To improve visibility and ease of access, collections that are not yet fully installed will now be displayed in the left-hand menu. This allows users to quickly jump back into the installation flow without having to find the item in their Library. 
 
