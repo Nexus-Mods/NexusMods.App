@@ -10,9 +10,9 @@ To improve visibility and ease of access, collections that are not yet fully ins
 In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections, it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs, as we feel most users don't need to see both at the same time. 
 
 # More Features
-* Files in mods from a Nexus Mods collection are now read-only to prevent users accidentally breaking the collection by editing them.
+* Files in mods from a Nexus Mods collection are now read-only to prevent users from accidentally breaking the collection by editing them.
 * Mods that are required as part of a Nexus Mods collection can now only be enabled or disabled using the collection toggle.
-* The toggle indicator for mods has been updated to better explain why a mod cannot be toggled when part of a collection. Clicking this indicator will now open the Installed Collection page. 
+* The toggle indicator for mods has been updated to explain better why a mod cannot be toggled when part of a collection. Clicking this indicator will now open the Installed Collection page. 
 * Continued to refine the UI to make it more compact. 
 * The "Optional" tab is now only shown for collections with optional mods.
 
@@ -32,10 +32,10 @@ In testing, we found that the Library was starting to get a little cluttered wit
 * The spine menu will now correctly show which loadout is active after the app starts up. 
 * Fixed an issue where some Cyberpunk 2077 mod installers (FOMODs) would not trigger correctly.
 * Fixed an issue preventing mods installed by FOMOD from being deleted/disabled.
-* Fixed a critical bug that would cause data to be written to the wrong file when install or removing mods that shared some identical files.
+* Fixed a critical bug that would cause data to be written to the wrong file when installing or removing mods that shared some identical files.
 * Fixed an error relating to "Duplicate Keys" when applying mods.
-* Fixed an issue re-indexing the game files after a game update which could result in DLCs (e.g. REDmod, Phantom Liberty) being unintentionally deleted when applying a loadout. 
-* Fixed an issue where large files skipped during indexing of the game were not properly tracked by the app causing errors when applying a loadout. 
+* Fixed an issue re-indexing the game files after a game update, which could result in DLCs (e.g. REDmod, Phantom Liberty) being unintentionally deleted when applying a loadout. 
+* Fixed an issue where large files skipped during the indexing of the game were not properly tracked by the app, causing errors when applying a loadout. 
 
 ## Known Issues
 * The sort order for some columns does not work as expected.
