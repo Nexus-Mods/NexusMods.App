@@ -43,7 +43,7 @@ public class ArchiveManagerTests
 
         // Create the tuples for compression
         var records = Enumerable.Range(0, fileCount).Select(idx => (
-            new ArchivedFileEntry(new MemoryStreamFactory($"{idx}.txt".ToRelativePath(), new MemoryStream(datas[idx])),
+            new ArchivedFileEntry(new MemoryStreamFactory(RelativePath.FromUnsanitizedInput($"{idx}.txt"), new MemoryStream(datas[idx])),
             hashes[idx], Size.FromLong(datas[idx].Length))));
 
         // Backup the files

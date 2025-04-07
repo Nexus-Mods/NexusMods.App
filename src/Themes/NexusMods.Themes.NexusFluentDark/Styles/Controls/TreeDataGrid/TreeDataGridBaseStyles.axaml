@@ -3,8 +3,12 @@
         xmlns:converters1="clr-namespace:NexusMods.Themes.NexusFluentDark.Converters"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
-        xmlns:converters="clr-namespace:NexusMods.App.UI.Converters;assembly=NexusMods.App.UI">
-
+        xmlns:converters="clr-namespace:NexusMods.App.UI.Converters;assembly=NexusMods.App.UI"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <!-- NOTE(Al12rs): Keep: `xmlns:system="clr-namespace:System;assembly=System.Runtime"` even if marked as unused -->
+    <!-- See false positive error and note for CompositeItemModel later down the file -->
+    
     <Design.PreviewWith>
         <Border Classes="Low" Padding="16">
             <TreeDataGrid Width="400" Height="200" />
@@ -24,19 +28,19 @@
         <SolidColorBrush x:Key="TreeDataGridHeaderForegroundPressedBrush" Color="White" />
         <SolidColorBrush x:Key="TreeDataGridSelectedCellBackgroundBrush" Color="White" Opacity="0.4" />
         
-        <!-- TODO: Fix this to work with CompositeItemModel<Guid>-->
         <!-- needs to be a resource and not set by a style so we can add Clasess based on DataContext -->
+        <!-- NOTE(Al12rs): CompositeItemModel with new x:TypeArguments syntax works fine, but Rider doesn't like it. -->
         <ControlTemplate x:Key="LoadOrderItemTreeRowTemplate"
-                         TargetType="TreeDataGridRow">
+                         TargetType="TreeDataGridRow"
+                         x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=system:Guid}">
             <Border x:Name="RowBorder"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="{TemplateBinding CornerRadius}"
-                    >
-                    <!-- Classes.IsActive="{CompiledBinding StyleFlags, -->
-                    <!--     Converter={x:Static converters:CompositeStyleFlagConverter.Instance}, -->
-                    <!--     ConverterParameter=IsActive}"> -->
+                    Classes.IsActive="{CompiledBinding StyleFlags,
+                        Converter={x:Static converters:CompositeStyleFlagConverter.Instance},
+                        ConverterParameter=IsActive}">
                 <TreeDataGridCellsPresenter Name="PART_CellsPresenter"
                                             CornerRadius="{TemplateBinding CornerRadius}"
                                             ElementFactory="{TemplateBinding ElementFactory}"

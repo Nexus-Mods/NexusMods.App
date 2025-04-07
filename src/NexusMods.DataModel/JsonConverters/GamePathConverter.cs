@@ -20,7 +20,7 @@ public class GamePathConverter : JsonConverter<GamePath>
         var folder = locationIdString is null ? LocationId.Unknown : LocationId.From(locationIdString);
 
         reader.Read();
-        var path = reader.GetString()!.ToRelativePath();
+        var path = reader.GetString()!;
         reader.Read();
         return new GamePath(folder, path);
     }

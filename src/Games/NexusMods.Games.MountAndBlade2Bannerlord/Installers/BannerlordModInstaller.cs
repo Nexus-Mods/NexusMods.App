@@ -68,8 +68,8 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
             var filesToCopy = installResult.Instructions.OfType<CopyInstallInstruction>();
             foreach (var instruction in filesToCopy)
             {
-                var source = instruction.Source.ToRelativePath();
-                var destination = instruction.Destination.ToRelativePath();
+                RelativePath source = instruction.Source;
+                RelativePath destination = instruction.Destination;
                 moduleInfoLoadoutItemId = AddFileFromFilesToCopy(libraryArchive, transaction, loadout,
                     source, destination, modGroup, moduleInfoFile,
                     moduleInfoLoadoutItemId
@@ -86,8 +86,8 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
                 // Note(sewer) Alias Xbox store with Steam store files, in case mod author
                 //      included files for only one version of the game.
                 //      For more info, see `0004-MountAndBlade2Bannerlord.md`.
-                var source = instruction.Source.ToRelativePath();
-                var destination = instruction.Destination.ToRelativePath();
+                RelativePath source = instruction.Source;
+                RelativePath destination = instruction.Destination;
                 
                 // If this mod has no files for Xbox store, and we're on Xbox store.
                 // InstallModuleContent emits multiple stores for `Win64_Shipping_Client`,
@@ -96,7 +96,7 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
                 // Alias non-Xbox files onto Xbox files, if only non-Xbox files exist.
                 if (!hasXboxFiles && isXboxStore && !usedDestinations.Contains(destination))
                 {
-                    destination = destination.Path.Replace("Win64_Shipping_Client", "Gaming.Desktop.x64_Shipping_Client").ToRelativePath();
+                    destination = destination.Path.Replace("Win64_Shipping_Client", "Gaming.Desktop.x64_Shipping_Client");
                     if (!usedDestinations.Contains(destination))
                     {
                         moduleInfoLoadoutItemId = AddFileFromFilesToCopy(libraryArchive, transaction, loadout,
@@ -109,7 +109,7 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
                 // Alias Xbox files onto non-Xbox files, if only Xbox files exist.
                 if (!hasNonXboxFiles && isNonXboxStore)
                 {
-                    destination = destination.Path.Replace("Gaming.Desktop.x64_Shipping_Client", "Win64_Shipping_Client").ToRelativePath();
+                    destination = destination.Path.Replace("Gaming.Desktop.x64_Shipping_Client", "Win64_Shipping_Client");
                     if (!usedDestinations.Contains(destination))
                     {
                         moduleInfoLoadoutItemId = AddFileFromFilesToCopy(libraryArchive, transaction, loadout,
