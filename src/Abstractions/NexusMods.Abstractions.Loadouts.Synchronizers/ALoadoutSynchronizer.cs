@@ -1550,7 +1550,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
 
     /// <inheritdoc />
-    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
+    public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
         var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
@@ -1568,7 +1568,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         await tx.Commit();
         
         // Execute the garbage collector
-        _garbageCollectorRunner.RunWithMode(gcRunMode);
+        await _garbageCollectorRunner.RunWithMode(gcRunMode);
     }
 
     public async Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds)
