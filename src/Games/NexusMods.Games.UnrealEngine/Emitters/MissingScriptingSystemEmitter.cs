@@ -18,21 +18,24 @@ public class MissingScriptingSystemEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
         
-        var luaFileCount = Utils.GetAllLoadoutFilesWithExt(
-            loadout,
-            [Constants.LuaModsLocationId, Constants.BinariesLocationId],
-            [Constants.LuaExt], 
-            false).Length;
+        var luaMods = ScriptingSystemLuaLoadoutItem.All(loadout.Db)
+            .Where(l => l.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId)
+            .ToArray();
+        
+        var logicMods = UnrealEngineLogicLoadoutItem.All(loadout.Db)
+            .Where(l => l.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId)
+            .ToArray();
 
-        if (luaFileCount == 0) yield break;
+        var count = luaMods.Length + logicMods.Length;
+        if (count == 0) yield break;
 
         var found = Utils.TryGetScriptingSystemLoadoutGroup(loadout, false, out var ue4ssLoadoutItems);
-        if (found && ue4ssLoadoutItems.Length == 0)
+        if (!found)
         {
             var ueAddon = loadout.InstallationInstance.GetGame() as IUnrealEngineGameAddon;
             if (ueAddon is null) yield break;
             yield return Diagnostics.CreateScriptingSystemRequiredButNotInstalled(
-                ModCount: luaFileCount,
+                ModCount: count,
                 NexusModsUE4SSUri: ueAddon.UE4SSLink
             );
 
@@ -43,7 +46,7 @@ public class MissingScriptingSystemEmitter : ILoadoutDiagnosticEmitter
         if (isUE4SSEnabled) yield break;
         
         yield return Diagnostics.CreateScriptingSystemRequiredButDisabled(
-            ModCount: luaFileCount
+            ModCount: count
         );
     }
 }

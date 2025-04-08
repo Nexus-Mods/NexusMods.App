@@ -51,6 +51,7 @@ public class ScriptingSystemInstaller(
         {
             var stream = await ueGameAddon.MemberVariableTemplate.GetStreamAsync();
             var hash = await stream.xxHash3Async(cancellationToken);
+            
             var to = new GamePath(Constants.BinariesLocationId, "MemberVariableLayout.ini");
             _ = new LoadoutFile.New(transaction, out var id)
             {

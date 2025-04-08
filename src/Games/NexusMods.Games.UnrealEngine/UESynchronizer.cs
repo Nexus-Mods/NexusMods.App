@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Games.UnrealEngine.Interfaces;
+using NexusMods.Games.UnrealEngine.Models;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.UnrealEngine;
@@ -18,6 +19,7 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
 
     private readonly IGameRegistry _gameRegistry;
     private readonly IFileSystem _fs;
+    private static GamePath LuaModsLoadOrderFile => new(Constants.LuaModsLocationId, "Mods.txt");
 
     public UESynchronizer(IServiceProvider provider, GameId gameId) : base(provider)
     {
@@ -49,11 +51,30 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
         return ignoredGamePaths;
     }
     
-    // public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
-    // {
-    //     loadout = await base.Synchronize(loadout);
-    //     return await base.Synchronize(loadout);
-    // }
+    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    {
+        loadout = await base.Synchronize(loadout);
+        var luaMods = ScriptingSystemLuaLoadoutItem.All(loadout.Db)
+            .Where(l => l.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId)
+            .ToArray();
+        
+        if (!luaMods.Any()) 
+            return loadout;
+        
+        using var stream = new MemoryStream();
+        await using var writer = new StreamWriter(stream);
+        
+        foreach (var luaMod in luaMods)
+        {
+            var loEnabledState = luaMod.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled ? "0" : "1";
+            await writer.WriteLineAsync($"{luaMod.LoadOrderName} : {loEnabledState}");
+        }
+        
+        await using var newFile = _fs.OpenFile(LuaModsLoadOrderFile.CombineChecked(loadout.InstallationInstance), FileMode.Create, FileAccess.Write);
+        await stream.CopyToAsync(newFile);
+        newFile.Close();
+        return await base.Synchronize(loadout);
+    }
 
     // public override bool IsIgnoredBackupPath(GamePath path)
     // {

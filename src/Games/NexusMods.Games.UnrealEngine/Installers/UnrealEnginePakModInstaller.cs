@@ -3,17 +3,9 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Files;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using NexusMods.Paths.Trees.Traits;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
-using DynamicData.Kernel;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Games.UnrealEngine.Interfaces;
@@ -60,6 +52,24 @@ public class UnrealEnginePakModInstaller(
             {
                 case var ext when Constants.ContentExts.Contains(ext):
                     var key = Path.GetFileNameWithoutExtension(fileEntry.Path.FileName);
+                    if (fileEntry.Path.Extension == Constants.PakExt)
+                    {
+                        if (pakMetadataDict[key].MountPoint == Constants.LogicModsLocationId)
+                        {
+                            _ = new UnrealEngineLogicLoadoutItem.New(transaction, loadoutGroup)
+                            {
+                                LoadoutItemGroup = loadoutGroup,
+                                IsMarker = true,
+                            };
+                        }
+                        else
+                        {
+                            _ = new UnrealEngineLoadoutItem.New(transaction, loadoutGroup.Id)
+                            {
+                                LoadoutItemGroup = loadoutGroup,
+                            };
+                        }
+                    }
                     to = new GamePath(pakMetadataDict[key].MountPoint, fileEntry.Path.FileName);
                     break;
                 case var ext when ext == Constants.DllExt:
@@ -107,11 +117,6 @@ public class UnrealEnginePakModInstaller(
                 LoadoutItemGroupId = loadoutGroup,
             };
         }
-        
-        _ = new UnrealEngineLoadoutItem.New(transaction, loadoutGroup.Id)
-        {
-            LoadoutItemGroup = loadoutGroup,
-        };
         
         return new Success();
     }

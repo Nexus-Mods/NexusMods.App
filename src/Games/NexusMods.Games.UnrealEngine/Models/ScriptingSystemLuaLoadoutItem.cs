@@ -12,9 +12,10 @@ namespace NexusMods.Games.UnrealEngine.Models;
 public partial class ScriptingSystemLuaLoadoutItem : IModelDefinition
 {
     private const string Namespace = "NexusMods.UnrealEngine.ScriptingSystemLuaLoadoutItem";
-
+    
     /// <summary>
-    /// Marker for lua mods
+    /// The Lua mod's parent folder in the game's content folder. It's used to tell UE4SS the
+    ///  order in which to load these mods.
     /// </summary>
-    public static readonly MarkerAttribute Marker = new(Namespace, nameof(Marker)) { IsOptional = true };
+    public static readonly StringAttribute LoadOrderName = new(Namespace, nameof(LoadOrderName)) { IsOptional = false };
 }

@@ -12,7 +12,9 @@ using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees.Traits;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using NexusMods.Abstractions.IO;
 using NexusMods.Games.UnrealEngine.Models;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 
 
 namespace NexusMods.Games.UnrealEngine.Installers;
@@ -26,7 +28,7 @@ public class ScriptingSystemLuaInstaller(
     ) : ALibraryArchiveInstaller(serviceProvider, logger)
 {
     private readonly IConnection _connection = connection;
-
+    
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
         LoadoutItemGroup.New loadoutGroup,
@@ -34,35 +36,53 @@ public class ScriptingSystemLuaInstaller(
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var luaFiles = libraryArchive.Children.Where(x => x.Path.Extension == Constants.LuaExt).ToArray();
-        if (luaFiles.Length == 0)
+        var luaFiles = libraryArchive.Children.Where(IsMainLua).ToList();
+        if (!luaFiles.Any())
             return new NotSupported();
         
-        _ = new ScriptingSystemLuaLoadoutItem.New(transaction, loadoutGroup.Id) { LoadoutItemGroup = loadoutGroup,  };
+        var luaFileMappings = luaFiles.ToDictionary(
+            luaFile => luaFile.Path.Parent.Parent,
+            luaFile => libraryArchive.Children
+                .Where(child => child.Path.InFolder(luaFile.Path.Parent.Parent))
+                .ToList()
+        );
 
-        foreach (var fileEntry in libraryArchive.Children)
+        foreach (var kvp in luaFileMappings)
         {
-            if (!luaFiles.Any(x => fileEntry.Path.InFolder(x.Path.Parent)))
-                continue;
-            
-            var to = new GamePath(Constants.LuaModsLocationId, fileEntry.Path.DropFirst(fileEntry.Path.Depth - 1));
-            _ = new LoadoutFile.New(transaction, out var entityId)
+            var (key, luaPath) = kvp;
+            foreach (var fileEntry in luaPath)
             {
-                Hash = fileEntry.AsLibraryFile().Hash,
-                Size = fileEntry.AsLibraryFile().Size,
-                LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
+                var to = new GamePath(Constants.LuaModsLocationId, fileEntry.Path.RelativeTo(key.Parent));
+                _ = new LoadoutFile.New(transaction, out var entityId)
                 {
-                    TargetPath = to.ToGamePathParentTuple(loadout.Id),
-                    LoadoutItem = new LoadoutItem.New(transaction, entityId)
+                    Hash = fileEntry.AsLibraryFile().Hash,
+                    Size = fileEntry.AsLibraryFile().Size,
+                    LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, entityId)
                     {
-                        Name = fileEntry.Path.FileName,
-                        LoadoutId = loadout.LoadoutId,
+                        TargetPath = to.ToGamePathParentTuple(loadout.Id),
+                        LoadoutItem = new LoadoutItem.New(transaction, entityId)
+                        {
+                            Name = fileEntry.Path.FileName,
+                            LoadoutId = loadout.LoadoutId,
+                        },
                     },
-                },
                 
-            };
+                };
+
+                if (IsMainLua(fileEntry))
+                {
+                    _ = new ScriptingSystemLuaLoadoutItem.New(transaction, loadoutGroup)
+                    {
+                        LoadoutItemGroup = loadoutGroup,
+                        LoadOrderName = key.Parts.Last().ToString(),
+                    };
+                }
+            }
         }
 
         return new Success();
     }
+    
+    private bool IsMainLua(LibraryArchiveFileEntry.ReadOnly libraryFile) =>
+        libraryFile.Path.FileName.Equals("main.lua");
 }

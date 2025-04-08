@@ -14,5 +14,5 @@ public partial class UnrealEngineLogicLoadoutItem : IModelDefinition
     /// <summary>
     /// Marker for logic mods - currently unused.
     /// </summary>
-    public static readonly MarkerAttribute Marker = new(Namespace, nameof(Marker)) { IsOptional = true };
+    public static readonly MarkerAttribute Marker = new(Namespace, nameof(Marker)) { IsOptional = false };
 }
