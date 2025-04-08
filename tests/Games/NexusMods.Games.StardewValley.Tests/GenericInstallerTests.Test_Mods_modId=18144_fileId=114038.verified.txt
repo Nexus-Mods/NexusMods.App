@@ -1,11 +1,11 @@
-﻿0x824136ED2664B255: Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json
-0xC291955ADCD61887: [CP] Romanceable Rasmodia - RRRR Patch/assets/Earrings_overlay.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Earrings_overlay.png
-0x03119F334CAF54B7: [CP] Romanceable Rasmodia - RRRR Patch/assets/Ohodavi_swap.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Ohodavi_swap.png
-0xF7FD4A8014A20033: [CP] Romanceable Rasmodia - RRRR Patch/assets/Scars_overlay.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Scars_overlay.png
-0x69FDB3BF4825FBAC: [CP] Romanceable Rasmodia - RRRR Patch/assets/sprite_patch.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/sprite_patch.png
-0x809C5BD89BB0B933: [CP] Romanceable Rasmodia - RRRR Patch/assets/Witch_32.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Witch_32.png
-0x777450EE38E74111: [CP] Romanceable Rasmodia - RRRR Patch/content.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/content.json
-0x18A95B2B9493593E: [CP] Romanceable Rasmodia - RRRR Patch/data/ChangedLinesFromRRRR.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/data/ChangedLinesFromRRRR.json
-0x423AD6870BFA28ED: [CP] Romanceable Rasmodia - RRRR Patch/data/Lannah_comp.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/data/Lannah_comp.json
-0xA91E97CB58AC8C50: [CP] Romanceable Rasmodia - RRRR Patch/i18n/default.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/i18n/default.json
-0xEC8816E73FD70EAC: [CP] Romanceable Rasmodia - RRRR Patch/manifest.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/manifest.json
+﻿0x824136ED2664B255 - 1.957 MB: Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json
+0xC291955ADCD61887 - 1.695 KB: [CP] Romanceable Rasmodia - RRRR Patch/assets/Earrings_overlay.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Earrings_overlay.png
+0x03119F334CAF54B7 - 16.937 KB: [CP] Romanceable Rasmodia - RRRR Patch/assets/Ohodavi_swap.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Ohodavi_swap.png
+0xF7FD4A8014A20033 - 1.495 KB: [CP] Romanceable Rasmodia - RRRR Patch/assets/Scars_overlay.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Scars_overlay.png
+0x69FDB3BF4825FBAC - 16.691 KB: [CP] Romanceable Rasmodia - RRRR Patch/assets/sprite_patch.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/sprite_patch.png
+0x809C5BD89BB0B933 - 46.063 KB: [CP] Romanceable Rasmodia - RRRR Patch/assets/Witch_32.png -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/assets/Witch_32.png
+0x777450EE38E74111 - 25.706 KB: [CP] Romanceable Rasmodia - RRRR Patch/content.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/content.json
+0x18A95B2B9493593E - 328.329 KB: [CP] Romanceable Rasmodia - RRRR Patch/data/ChangedLinesFromRRRR.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/data/ChangedLinesFromRRRR.json
+0x423AD6870BFA28ED - 35.44 KB: [CP] Romanceable Rasmodia - RRRR Patch/data/Lannah_comp.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/data/Lannah_comp.json
+0xA91E97CB58AC8C50 - 36.786 KB: [CP] Romanceable Rasmodia - RRRR Patch/i18n/default.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/i18n/default.json
+0xEC8816E73FD70EAC - 777 B: [CP] Romanceable Rasmodia - RRRR Patch/manifest.json -> {Game}/Mods/[CP] Romanceable Rasmodia - RRRR Patch/manifest.json

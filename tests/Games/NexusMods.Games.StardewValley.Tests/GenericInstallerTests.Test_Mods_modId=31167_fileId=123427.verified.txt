@@ -1,5 +1,5 @@
-﻿0xE41BDDCEFCA4B549: ItemBags/assets/Modded Bags/Stardew Valley Expanded Agricultures Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Agricultures Bag.json
-0x409DF0F096EF8A8A: ItemBags/assets/Modded Bags/Stardew Valley Expanded Comprehensive Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Comprehensive Bag.json
-0xE12CF9A9F837924D: ItemBags/assets/Modded Bags/Stardew Valley Expanded Cooking Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Cooking Bag.json
-0x9268ED06BF718964: ItemBags/assets/Modded Bags/Stardew Valley Expanded Fish Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Fish Bag.json
-0x3AF183027A2A0ABF: ItemBags/assets/Modded Bags/Stardew Valley Expanded Forage Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Forage Bag.json
+﻿0xE41BDDCEFCA4B549 - 8.451 KB: ItemBags/assets/Modded Bags/Stardew Valley Expanded Agricultures Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Agricultures Bag.json
+0x409DF0F096EF8A8A - 11.056 KB: ItemBags/assets/Modded Bags/Stardew Valley Expanded Comprehensive Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Comprehensive Bag.json
+0xE12CF9A9F837924D - 7.634 KB: ItemBags/assets/Modded Bags/Stardew Valley Expanded Cooking Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Cooking Bag.json
+0x9268ED06BF718964 - 10.368 KB: ItemBags/assets/Modded Bags/Stardew Valley Expanded Fish Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Fish Bag.json
+0x3AF183027A2A0ABF - 5.867 KB: ItemBags/assets/Modded Bags/Stardew Valley Expanded Forage Bag.json -> {Game}/Mods/ItemBags/assets/Modded Bags/Stardew Valley Expanded Forage Bag.json

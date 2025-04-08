@@ -109,6 +109,7 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
                     .TryGetFirst(x => x.Path.FileName == file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName, out var libraryArchiveFileEntry)
                     .Should().BeTrue();
 
+                libraryArchiveFileEntry.AsLibraryFile().Size.Value.Should().Be(file.Size.Value);
                 libraryArchiveFileEntry.IsValid().Should().BeTrue();
                 return (libraryArchiveFileEntry, file.AsLoadoutItemWithTargetPath().TargetPath);
             })
@@ -122,7 +123,7 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
             var (_, locationId, path) = targetPath;
             var gamePath = new GamePath(locationId, path);
 
-            sb.AppendLine($"{libraryArchiveFileEntry.AsLibraryFile().Hash}: {libraryArchiveFileEntry.Path} -> {gamePath}");
+            sb.AppendLine($"{libraryArchiveFileEntry.AsLibraryFile().Hash} - {libraryArchiveFileEntry.AsLibraryFile().Size}: {libraryArchiveFileEntry.Path} -> {gamePath}");
         }
 
         var result = sb.ToString();
