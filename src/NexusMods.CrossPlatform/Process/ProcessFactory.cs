@@ -76,7 +76,7 @@ internal class ProcessFactory : IProcessFactory
 
         var fileName = GetFileName(command);
 
-        var logFileName = $"{fileName}-{DateTime.Now:O}.{(Random.Shared.Next())}";
+        var logFileName = $"{fileName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fffff}";
         var stdOutFilePath = _processLogsFolder.Combine(logFileName + ".stdout.log");
         var stdErrFilePath = _processLogsFolder.Combine(logFileName + ".stderr.log");
         _logger.LogInformation("Using process logs {StdOutLogPath} and {StdErrLogPath}", stdOutFilePath, stdErrFilePath);
