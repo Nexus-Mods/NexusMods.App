@@ -87,23 +87,6 @@
                                          Size="ExtraSmall" />
                 <TextBlock x:Name="TextCollectionStatus" />
             </controls:Statusbar>
-            
-            <!-- <controls:Toolbar DockPanel.Dock="Top"> -->
-            <!--     <controls:StandardButton ShowLabel="True" -->
-            <!--                              Text="View mod files" -->
-            <!--                              LeftIcon="{x:Static icons:IconValues.PlaylistAdd}" -->
-            <!--                              ShowIcon="Left" -->
-            <!--                              Type="Tertiary" -->
-            <!--                              Fill="None" -->
-            <!--                              Size="ExtraSmall" /> -->
-            <!--     <controls:StandardButton ShowLabel="False" -->
-            <!--                              Text="View mod files" -->
-            <!--                              LeftIcon="{x:Static icons:IconValues.MoreVertical}" -->
-            <!--                              ShowIcon="Left" -->
-            <!--                              Type="Tertiary" -->
-            <!--                              Fill="None" -->
-            <!--                              Size="ExtraSmall" /> -->
-            <!-- </controls:Toolbar> -->
 
             <Border x:Name="DownloadsTreeContainer" 
                     Padding="0 8 0 0" 

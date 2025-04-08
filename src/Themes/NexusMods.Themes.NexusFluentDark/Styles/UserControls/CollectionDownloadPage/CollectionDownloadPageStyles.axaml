@@ -212,11 +212,14 @@
 
         <Style Selector="^ TabControl">
             <Setter Property="panels:Flex.AlignSelf" Value="Stretch" />
-
-            <!-- this is to match the darkest point of the gradient on Border#HeaderBorder above it -->
             <Setter Property="Background" Value="{StaticResource CollectionHeaderImageLinearGradientEndColor}" />
+            
+            <Style Selector="^ /template/ ContentPresenter#PART_SelectedContentHost">
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            </Style>
+            
 
-            <!-- tab content -->
+                <!-- tab content -->
             <Style Selector="^ TabItem#InstructionsTab">
 
                 <!-- all expanders -->
