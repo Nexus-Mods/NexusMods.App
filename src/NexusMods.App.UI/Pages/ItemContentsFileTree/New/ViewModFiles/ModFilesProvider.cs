@@ -62,10 +62,21 @@ public class ModFilesProvider
             HasChildrenObservable = Observable.Return(false),
             ChildrenObservable = Observable.Empty<IChangeSet<CompositeItemModel<EntityId>, EntityId>>(),
         };
-
-        fileItemModel.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(value: modFile.Name));
-        fileItemModel.Add(Columns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(value: FileToIconValue(modFile)));
-        fileItemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: FileToSize(modFile)));
+    
+        // Observe changes to the name
+        // Note(sewer): This could maybe? be more efficient, possibly, by filtering only on attribute
+        //              which we're looking for. However, at the same time, that is overhead.
+        //              And we check if a value is the same as before when we assign the inner
+        //              BindableReactiveProperty from the component, so actually, not filtering
+        //              might be better. Food for thought.
+        var itemUpdates = LoadoutItem.Observe(_connection, modFile.Id);
+        var nameUpdates = itemUpdates.Select(x => x.Name);
+        var iconUpdates = itemUpdates.Select(FileToIconValue);
+        var sizeUpdates = itemUpdates.Select(FileToSize);
+        
+        fileItemModel.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: modFile.Name, valueObservable: nameUpdates));
+        fileItemModel.Add(Columns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(initialValue: FileToIconValue(modFile), valueObservable: iconUpdates));
+        fileItemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(initialValue: FileToSize(modFile), valueObservable: sizeUpdates));
         // Note(sewer): File Count omitted to avoid rendering a '1' for every file for cleanliness.
         //              Will see how this goes once the columns are actually there.
 
