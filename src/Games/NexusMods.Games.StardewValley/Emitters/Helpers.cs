@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
 using StardewModdingAPI.Toolkit.Serialization.Models;
@@ -65,39 +66,31 @@ internal static class Helpers
         return foundSMAPI;
     }
 
-    public static async IAsyncEnumerable<ValueTuple<SMAPIModLoadoutItem.ReadOnly, Manifest>> GetAllManifestsAsync(
+    public static async ValueTask<IReadOnlyList<ValueTuple<SMAPIManifestLoadoutFile.ReadOnly, Manifest>>> GetAllManifestsAsync(
         ILogger logger,
-        Loadout.ReadOnly loadout,
-        IResourceLoader<SMAPIModLoadoutItem.ReadOnly, Manifest> pipeline,
-        bool onlyEnabledMods,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
+        IDb db,
+        LoadoutId loadoutId,
+        bool onlyEnabled,
+        IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, Manifest> pipeline,
+        CancellationToken cancellationToken = default)
     {
-        var asyncEnumerable = loadout.Items
-            .OfTypeLoadoutItemGroup()
-            .OfTypeSMAPIModLoadoutItem()
-            .Where(x => !onlyEnabledMods || x.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled())
-            .ToAsyncEnumerable()
-            .ConfigureAwait(continueOnCapturedContext: false)
-            .WithCancellation(cancellationToken);
-
-        await using var enumerator = asyncEnumerable.GetAsyncEnumerator();
-        while (await enumerator.MoveNextAsync())
+        var result = new List<ValueTuple<SMAPIManifestLoadoutFile.ReadOnly, Manifest>>();
+        var manifestLoadoutItems = SMAPIManifestLoadoutFile.GetAllInLoadout(db, loadoutId, onlyEnabled: onlyEnabled);
+        foreach (var manifestLoadoutItem in manifestLoadoutItems)
         {
-            var smapiMod = enumerator.Current;
-
-            Resource<Manifest> resource;
+            cancellationToken.ThrowIfCancellationRequested();
 
             try
             {
-                resource = await pipeline.LoadResourceAsync(smapiMod, cancellationToken);
+                var manifest = await pipeline.LoadResourceAsync(manifestLoadoutItem, cancellationToken);
+                result.Add((manifestLoadoutItem, manifest.Data));
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Exception while getting manifest for `{Name}`", smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name);
-                continue;
+                logger.LogError(e, "Exception while loading manifest for `{GroupName}`", manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name);
             }
-
-            yield return (smapiMod, resource.Data);
         }
+
+        return result;
     }
 }
