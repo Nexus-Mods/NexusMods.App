@@ -6,6 +6,7 @@ using DynamicData;
 using DynamicData.Aggregation;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using ZLinq;
 
@@ -96,11 +97,14 @@ internal static class ModFilesObservableExtensions
     {
         return source.Filter(datom =>
         {
-            // TODO: Direct GET on LoadoutItem.ParentId to avoid unnecessary DB fetches.
-            var item = LoadoutItem.Load(connection.Db, datom.E);
+            // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
+            var hasParent = LoadoutItem.Parent.TryGetValue(connection.Db.Get(datom.E), out var parentId);
+            if (!hasParent)
+                return false;
+            
             return modFilesFilter.ModIds
                 .AsValueEnumerable()
-                .Any(filter => item.ParentId.Equals(filter.Value));
+                .Any(filter => parentId.Equals(filter.Value));
         });
     }
 }
