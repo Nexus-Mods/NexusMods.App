@@ -1,3 +1,16 @@
+# v0.10.0 - 2025-04-XX
+
+* Stardew Valley - Better support for mods that don't include a manifest.json (e.g. translations). 
+
+## Technical Changes
+* The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
+
+
+## Bug Fixes
+* Fixed an issue with the text alignment in the "Delete mods" pop-up.
+* Fixed an issue caused by folder names with trailing whitespace characters.
+
+
 # v0.9.2 - 2025-04-07
 This is a bug-fix release that corrects an issue causing the "Update Available" pop-up to appear even when on the latest version.
 
