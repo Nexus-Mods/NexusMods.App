@@ -103,7 +103,7 @@ public class CollectionDataProvider
         itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: download.FileMetadata.Version));
 
         if (download.FileMetadata.Size.TryGet(out var size))
-            itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
+            itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
         var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();
         var downloadJobStatusObservable = GetJobStatusObservable<NexusModsDownloadJob>(job => job.FileMetadata.Id == download.FileMetadata);
@@ -135,7 +135,7 @@ public class CollectionDataProvider
         itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: download.AsCollectionDownload().Name));
         itemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
         itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: download.Md5.ToString()));
-        itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: download.Size));
+        itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: download.Size));
 
         var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable().Publish(initialValue: new CollectionDownloadStatus(new CollectionDownloadStatus.NotDownloaded())).RefCount();
         var downloadJobStatusObservable = GetJobStatusObservable<ExternalDownloadJob>(job => job.ExpectedMd5 == download.Md5);
