@@ -42,7 +42,9 @@ public class ScriptingSystemInstaller(
         CancellationToken cancellationToken)
     {
         var ue4ss = libraryArchive.Children.Where(x => x.Path.FileName == Constants.ScriptingSystemFileName).ToArray();
+        
         if (!Utils.TryGetUnrealEngineGameAddon(_gameRegistry, loadout.Installation.GameId, out var ueGameAddon)
+            || !libraryArchive.Children.Any(x => x.Path.Parts.Contains("ue4ss")) // We do not support the legacy archive structure
             || ueGameAddon == null
             || ue4ss.Length == 0)
             return new NotSupported();
