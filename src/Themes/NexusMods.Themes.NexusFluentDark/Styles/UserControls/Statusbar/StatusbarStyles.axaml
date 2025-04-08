@@ -8,57 +8,79 @@
             <StackPanel>
                 <controls:Statusbar />
                 <controls:Statusbar>
-
                     <controls:StandardButton Text="Button 1" Fill="Weak"
-                                             Size="Small" />
+                                             Size="ExtraSmall" />
                     <controls:StandardButton Text="Button 2" Fill="Weak"
-                                             Size="Small" />
+                                             Size="ExtraSmall" />
                     <Separator />
                     <controls:StandardButton Text="Button 3" Fill="Weak"
-                                             Size="Small" />
-                    <SplitButton Height="28">SplitButton</SplitButton>
-                    <ComboBox Height="28" PlaceholderText="Select an item">
+                                             Size="ExtraSmall" />
+                    <SplitButton MaxHeight="24">SplitButton</SplitButton>
+                    <ComboBox MaxHeight="24" PlaceholderText="Select an item">
                         <ComboBoxItem>Item 1</ComboBoxItem>
                         <ComboBoxItem>Item 2</ComboBoxItem>
                     </ComboBox>
                     <Separator />
                     <controls:StandardButton Text="Button 4" Fill="Weak"
-                                             Size="Small" />
+                                             Size="ExtraSmall" />
                 </controls:Statusbar>
 
                 <controls:Statusbar>
                     <StackPanel>
                         <controls:StandardButton Text="Button 3" Fill="Weak"
-                                                 Size="Small"
+                                                 Size="ExtraSmall"
                                                  ShowLabel="False"
                                                  ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
                         <controls:StandardButton Text="Button 3" Fill="Weak"
-                                                 Size="Small" />
+                                                 Size="ExtraSmall" />
                     </StackPanel>
                     <TextBlock Text="1 of 9 required mods" />
                 </controls:Statusbar>
-
+                <controls:Statusbar Classes="Info">
+                    <StackPanel>
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall"
+                                                 ShowLabel="False"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                    </StackPanel>
+                    <TextBlock Text="1 of 9 required mods" />
+                </controls:Statusbar>
+                <controls:Statusbar Classes="Primary">
+                    <StackPanel>
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall"
+                                                 ShowLabel="False"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                    </StackPanel>
+                    <TextBlock Text="1 of 9 required mods" />
+                </controls:Statusbar>
             </StackPanel>
-
         </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
     <Style Selector="controls|Statusbar">
-        
+
         <Style Selector="^ > Separator">
             <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="Margin" Value="2,0" />
             <Setter Property="Height" Value="{Binding $parent}" />
             <Setter Property="Width" Value="1" />
         </Style>
-        
+
+        <!-- button group -->
         <Style Selector="^ > StackPanel">
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
         </Style>
-        
+
         <Style Selector="^ > TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
