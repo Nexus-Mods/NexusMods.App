@@ -63,7 +63,7 @@ public sealed class LibraryService : ILibraryService
 
         return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller, fallbackInstaller);
     }
-    public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground)
+    public async Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {
         using var tx = _connection.BeginTransaction();
         foreach (var item in libraryItems)
