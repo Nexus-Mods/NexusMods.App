@@ -26,7 +26,7 @@ public class ModFilesProvider
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    private IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> FilterModFiles(ModFilesFilter filesFilter)
+    private IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> FilteredModFiles(ModFilesFilter filesFilter)
     {
         return LoadoutItem
             .ObserveAll(_connection)
@@ -44,7 +44,7 @@ public class ModFilesProvider
     /// <param name="filesFilter">A filter which specifies one or more mod groups of items to display.</param>
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveModFiles(ModFilesFilter filesFilter)
     {
-        return FilterModFiles(filesFilter)
+        return FilteredModFiles(filesFilter)
               .Transform(modFile => ToModFileItemModel(filesFilter, modFile));
     }
 
