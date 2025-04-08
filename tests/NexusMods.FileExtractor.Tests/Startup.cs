@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Settings;
+using NexusMods.CrossPlatform;
 using NexusMods.Paths;
 using NexusMods.Settings;
 
@@ -10,7 +12,9 @@ public class Startup
     {
         container.AddFileSystem()
             .AddSettingsManager()
-            .AddFileExtractors();
+            .AddFileExtractors()
+            .AddCrossPlatform()
+            .AddSettings<LoggingSettings>();
     }
 }
 
