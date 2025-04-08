@@ -3,8 +3,10 @@ using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
@@ -70,7 +72,7 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
 
         groupFiles.Should().NotBeEmpty().And.AllSatisfy(file =>
         {
-            var (_, locationId, path) = file.TargetPath;
+            var (_, locationId, path) = file.AsLoadoutItemWithTargetPath().TargetPath;
             locationId.Value.Should().Be(LocationId.Game.Value);
             path.TopParent.Should().Be(Constants.ModsFolder);
         });
@@ -78,34 +80,49 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
         var numManifests = groupFiles.Count(static loadoutItem => SMAPIManifestLoadoutFile.Load(loadoutItem.Db, loadoutItem.Id).IsValid());
         numManifests.Should().Be(expectedManifestCount);
 
-        await VerifyGroup(group, modId, fileId);
+        await VerifyGroup(libraryArchive, group, modId, fileId);
     }
 
-    private static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> GetFiles(LoadoutItemGroup.ReadOnly group)
+    private static IEnumerable<LoadoutFile.ReadOnly> GetFiles(LoadoutItemGroup.ReadOnly group)
     {
         foreach (var loadoutItem in group.Children)
         {
             loadoutItem.TryGetAsLoadoutItemWithTargetPath(out var targetPath).Should().BeTrue();
             targetPath.IsValid().Should().BeTrue();
 
-            yield return targetPath;
+            targetPath.TryGetAsLoadoutFile(out var loadoutFile).Should().BeTrue();
+            loadoutFile.IsValid().Should().BeTrue();
+
+            yield return loadoutFile;
         }
     }
 
-    private static async Task VerifyGroup(LoadoutItemGroup.ReadOnly group, uint modId, uint fileId, [CallerFilePath] string sourceFile = "")
+    private static async Task VerifyGroup(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.ReadOnly group, uint modId, uint fileId, [CallerFilePath] string sourceFile = "")
     {
         var sb = new StringBuilder();
 
         var paths = GetFiles(group)
-            .Select(static file => file.TargetPath)
-            .OrderBy(static targetPath => targetPath.Item2)
-            .ThenBy(static targetPath => targetPath.Item3)
+            .Select(file =>
+            {
+                libraryArchive.Children
+                    .Where(x => x.AsLibraryFile().Hash == file.Hash)
+                    .TryGetFirst(x => x.Path.FileName == file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName, out var libraryArchiveFileEntry)
+                    .Should().BeTrue();
+
+                libraryArchiveFileEntry.IsValid().Should().BeTrue();
+                return (libraryArchiveFileEntry, file.AsLoadoutItemWithTargetPath().TargetPath);
+            })
+            .OrderBy(static targetPath => targetPath.Item2.Item2)
+            .ThenBy(static targetPath => targetPath.Item2.Item3)
             .ToArray();
 
         foreach (var tuple in paths)
         {
-            var (_, locationId, path) = tuple;
-            sb.AppendLine(new GamePath(locationId, path).ToString());
+            var (libraryArchiveFileEntry, targetPath) = tuple;
+            var (_, locationId, path) = targetPath;
+            var gamePath = new GamePath(locationId, path);
+
+            sb.AppendLine($"{libraryArchiveFileEntry.AsLibraryFile().Hash}: {libraryArchiveFileEntry.Path} -> {gamePath}");
         }
 
         var result = sb.ToString();

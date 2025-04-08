@@ -1,2 +1,2 @@
-﻿{Game}/Mods/ContentPatcher/ContentPatcher.dll
-{Game}/Mods/ContentPatcher/manifest.json
+﻿0x3FAF2629AC0F109F: ContentPatcher/ContentPatcher.dll -> {Game}/Mods/ContentPatcher/ContentPatcher.dll
+0x26FDDDE779823EC3: ContentPatcher/manifest.json -> {Game}/Mods/ContentPatcher/manifest.json

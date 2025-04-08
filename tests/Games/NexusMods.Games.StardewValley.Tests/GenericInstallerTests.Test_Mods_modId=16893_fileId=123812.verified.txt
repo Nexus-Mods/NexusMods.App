@@ -1,123 +1,123 @@
-﻿{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Book_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Campfire_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/CarpetPatch.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/CCPlate.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_boy.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_boy_dark.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_dark.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Black.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Brown.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Gray.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Green.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Indigo.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Purple.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Red.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Yellow.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Black.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Brown.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Gray.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Green.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Indigo.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Purple.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Red.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Yellow.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/FakeBaby.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/FakeBabydark.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Auburn.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Black.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Blonde.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Blue.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Brown.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Green.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Pink.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_White.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Auburn.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Black.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Blonde.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Blue.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Brown.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Green.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Pink.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_White.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Auburn.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Black.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Blonde.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Blue.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Brown.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Green.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Pink.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_White.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_dark.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_girl.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_girl_dark.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Crab1_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Crab2_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/EarringSparkle.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/FlyingCarpet.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/GiftBox.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Invisibaby.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Jello.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/LargeStar.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Lunaloo.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/MoonLunarEclipse_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Placeholder1_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Placeholder2_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/PlayerEarring.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/PlayerEarringAlt.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/RRRRMirror.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/SheerSilk.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Telescope_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Tent_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Umbrella_DN.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/WizardPotion.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/WizardTeleport.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard_Beach.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard_PortraitItem.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Dialogue/MarriageDialogueWizard.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Items/Items.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Winter_Star_Table4.tmx
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Beach-Luau.tbin
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Forest-FlowerFestival.tbin
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Forest-IceFestival.tbin
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Main_Town-EggFestival.tbin
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Setup_Town-EggFestival.tbin
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Town-Christmas.tbin
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Z_RomRas_Extra.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/MapPatches/SleepTile.tbin
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_fall.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_spring.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_summer.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_Winter.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_winter_Indoor.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_winter_Outdoor.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Jello.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_fall.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_spring.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_summer.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_Winter.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_winter_Indoor.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_winter_Outdoor.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Sounds/NightDream.ogg
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/content.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Blank.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/GiftsInfo.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/HairTriggers.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Items.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/MarriageDialogue.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Mild/dates.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/MovieReactions.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/PremarriageDialogue.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Spicy/dates.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/TownComments.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/manifest.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarrings/accessory.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarrings/accessory.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarringsAlt/accessory.json
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarringsAlt/accessory.png
-{Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/manifest.json
+﻿0x98F83DFEDA192D9E: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Book_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Book_DN.png
+0x3F6C099FB4306E31: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Campfire_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Campfire_DN.png
+0x0E01DDAE3712E3A3: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/CarpetPatch.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/CarpetPatch.png
+0x00217ACF96E9499A: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/CCPlate.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/CCPlate.png
+0xE94A9BC0255AA86D: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby.png
+0x037C6F028F129BAB: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_boy.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_boy.png
+0x231EBB26D7C9A03F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_boy_dark.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_boy_dark.png
+0xFE267DAF8F449E78: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_dark.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Baby_dark.png
+0x31358F5E1AE1A37F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Black.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Black.png
+0x5A0D1C384D500BFF: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Brown.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Brown.png
+0xDF91618269D9C319: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Gray.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Gray.png
+0xD57B2F814AF2C44B: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Green.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Green.png
+0xFA39052A30E01897: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Indigo.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Indigo.png
+0x5F0908041AD291BA: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Purple.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Purple.png
+0x919C381B73CFF1D0: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Red.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Red.png
+0xFA0D11AB335F986E: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Yellow.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Baby/BabyEyes_Yellow.png
+0x6B2C2487A81FA83D: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Black.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Black.png
+0xF282BF7A6AEB77DE: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Brown.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Brown.png
+0x293AED63B4BEE385: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Gray.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Gray.png
+0x102006815D1A36E5: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Green.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Green.png
+0x3A8730F6FB81297C: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Indigo.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Indigo.png
+0x48F2F7773ED74A0E: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Purple.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Purple.png
+0xEEF17AE800031C0D: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Red.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Red.png
+0xFD89F3DA3951FABE: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Yellow.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Eyes/Girl/GirlEyes_Yellow.png
+0x037C6F028F129BAB: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/FakeBaby.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/FakeBaby.png
+0x231EBB26D7C9A03F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/FakeBabydark.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/FakeBabydark.png
+0xB24DDFCE5CB22364: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Auburn.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Auburn.png
+0x743C97626017EBE0: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Black.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Black.png
+0xC22CA1827CE9D559: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Blonde.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Blonde.png
+0xE53A8B89B5C7BE11: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Blue.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Blue.png
+0xDA66AE96038F3F7B: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Brown.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Brown.png
+0xB82CE8ED048B79EB: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Green.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Green.png
+0x22B6DE472117F873: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Pink.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_Pink.png
+0x0C770FAAE97EEF51: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_White.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Baby/BabyHair_White.png
+0x00D683FFF6210CB4: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Auburn.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Auburn.png
+0x2CC0838EAE4148D5: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Black.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Black.png
+0xE3DE32E69736CE39: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Blonde.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Blonde.png
+0x7D839E60FF8F50D8: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Blue.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Blue.png
+0xFEF3F9011300E2F8: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Brown.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Brown.png
+0x3E528EE1C8DE9629: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Green.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Green.png
+0x590B7CA451FF3C5C: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Pink.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_Pink.png
+0x25166E2DFF0497C3: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_White.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Boy/BoyHair_White.png
+0x4AC16309E8DB3650: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Auburn.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Auburn.png
+0x4A75598B223F2478: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Black.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Black.png
+0x5EFD9BF6075153AC: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Blonde.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Blonde.png
+0xEE0F383CC3CD1EBF: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Blue.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Blue.png
+0x9538904FD0B21C96: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Brown.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Brown.png
+0x79B1F9ABA9FA616F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Green.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Green.png
+0x37AC217FB03D10A3: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Pink.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_Pink.png
+0x3557368FFB8F8A25: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_White.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Hair/Girl/GirlHair_White.png
+0xF4478CFF75967670: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler.png
+0x4850ACFB8365B7B3: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_dark.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_dark.png
+0x69B70CBF06EE822C: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_girl.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_girl.png
+0x7EC2A75C0C582151: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_girl_dark.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Children/Toddler_girl_dark.png
+0x31883F92DE7F2B89: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Crab1_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Crab1_DN.png
+0x50F3BDFA4A98966C: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Crab2_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Crab2_DN.png
+0x0B00523124456EEB: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/EarringSparkle.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/EarringSparkle.png
+0xE310FF797750E678: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/FlyingCarpet.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/FlyingCarpet.png
+0x62F2635028BCB84D: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/GiftBox.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/GiftBox.png
+0x65DFA98B87C74BD8: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Invisibaby.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Invisibaby.png
+0xEB360F57BB650F61: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Jello.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Jello.png
+0xDD439306B62BE33F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/LargeStar.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/LargeStar.png
+0x5FA23FC0157AA2CA: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Lunaloo.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Lunaloo.png
+0x82098F027F04ABAC: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/MoonLunarEclipse_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/MoonLunarEclipse_DN.png
+0x93DF3AF23D460B89: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Placeholder1_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Placeholder1_DN.png
+0x93DF3AF23D460B89: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Placeholder2_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Placeholder2_DN.png
+0x4C9E64F5CB3F4D39: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/PlayerEarring.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/PlayerEarring.png
+0xFFE734D90DF16FE8: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/PlayerEarringAlt.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/PlayerEarringAlt.png
+0x19FD6BE6B175BCBD: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/RRRRMirror.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/RRRRMirror.png
+0x2A55F27FC5BE9738: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/SheerSilk.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/SheerSilk.png
+0x460B7C3225E0FCF5: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Telescope_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Telescope_DN.png
+0x4ECEF5B291B10A93: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Tent_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Tent_DN.png
+0x9522069E754AE731: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Umbrella_DN.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Umbrella_DN.png
+0x438AA2F93B6CEDEA: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard.png
+0x1D490D2CB4C4B5E2: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/WizardPotion.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/WizardPotion.png
+0x24A9E5B5E8A8224A: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/WizardTeleport.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/WizardTeleport.png
+0x6F1B6484656AA770: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard_Beach.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard_Beach.png
+0x986C38043D1A0E2F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard_PortraitItem.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Characters/Wizard_PortraitItem.png
+0xECEC5CEB587DA1E6: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Dialogue/MarriageDialogueWizard.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Dialogue/MarriageDialogueWizard.json
+0x5106AFB588C4D8E3: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Items/Items.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Items/Items.png
+0x00A368764CC6F31F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Winter_Star_Table4.tmx -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Winter_Star_Table4.tmx
+0xAF4B5B69CB97BCA4: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Beach-Luau.tbin -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Beach-Luau.tbin
+0x7E81A143E1EEA41A: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Forest-FlowerFestival.tbin -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Forest-FlowerFestival.tbin
+0x635B35261939BBA7: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Forest-IceFestival.tbin -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Forest-IceFestival.tbin
+0xF46D3607161DE8B3: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Main_Town-EggFestival.tbin -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Main_Town-EggFestival.tbin
+0x5DE5D91F323EF17D: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Setup_Town-EggFestival.tbin -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Setup_Town-EggFestival.tbin
+0xB9C89D9E644E8E73: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Town-Christmas.tbin -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Wizard_Town-Christmas.tbin
+0x72B737DE9AD17089: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Z_RomRas_Extra.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/Festivals/Z_RomRas_Extra.png
+0x6BF2AE8608AD8F40: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/MapPatches/SleepTile.tbin -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Maps/MapPatches/SleepTile.tbin
+0x175EAE61FC66D681: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline.png
+0xEFD667844068B814: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_fall.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_fall.png
+0x45AD5962C9F1924A: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_spring.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_spring.png
+0x26C174802FFAFF97: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_summer.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_summer.png
+0x785D039995057E47: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_Winter.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_Winter.png
+0xCCD1CF6166C3D49F: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_winter_Indoor.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_winter_Indoor.png
+0x6FF34B056A05BA59: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_winter_Outdoor.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Caroline_winter_Outdoor.png
+0x0CA7677C00954F79: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Jello.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Jello.png
+0x1FDDA542AA82E75D: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre.png
+0x328B9DC9FC37090A: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_fall.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_fall.png
+0x10B0008EB32218A4: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_spring.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_spring.png
+0xFBAE45DB880C9D1B: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_summer.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_summer.png
+0xC93DFAC74FC530A6: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_Winter.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_Winter.png
+0x3F2C3618854FD4A8: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_winter_Indoor.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_winter_Indoor.png
+0x2E69DB1B4A882C14: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_winter_Outdoor.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Portraits/Pierre_winter_Outdoor.png
+0x97147DC603511CF4: Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Sounds/NightDream.ogg -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/assets/Sounds/NightDream.ogg
+0xFED8C29C920957B8: Romanceable Rasmodius Redux Revamp/[CP] RRRR/content.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/content.json
+0xDAA13E4F205DC5BA: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Blank.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Blank.json
+0x1FEC33A2256EA087: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/GiftsInfo.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/GiftsInfo.json
+0xBDCFFF7757BBB6A7: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/HairTriggers.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/HairTriggers.json
+0xEE6E8EF41B840552: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Items.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Items.json
+0xC11679B25C8660BF: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/MarriageDialogue.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/MarriageDialogue.json
+0xDF2F2D6863332F2E: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Mild/dates.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Mild/dates.json
+0x145E7063A140A368: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/MovieReactions.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/MovieReactions.json
+0xC28CDA5ACF133534: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/PremarriageDialogue.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/PremarriageDialogue.json
+0x025ED5FFB8DBB8CF: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Spicy/dates.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/Spicy/dates.json
+0x099EED399D11F956: Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/TownComments.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/data/TownComments.json
+0x854D296249D3A2EF: Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/i18n/default.json
+0x785FC88F3EFEDF9C: Romanceable Rasmodius Redux Revamp/[CP] RRRR/manifest.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[CP] RRRR/manifest.json
+0x3E39AD1CDFAA2862: Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarrings/accessory.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarrings/accessory.json
+0x38B147BE81D8E4B4: Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarrings/accessory.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarrings/accessory.png
+0xE6BC2F261DDC8F0C: Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarringsAlt/accessory.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarringsAlt/accessory.json
+0xBBD780111C2ED89E: Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarringsAlt/accessory.png -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/Accessories/MagnusEarringsAlt/accessory.png
+0x99077A619E766C8D: Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/manifest.json -> {Game}/Mods/Romanceable Rasmodius Redux Revamp/[FS] Magnus Earrings/manifest.json
