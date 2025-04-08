@@ -7,6 +7,11 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 /// <summary>
 /// Helper utility methods/services around mod files.
 /// </summary>
+/// <remarks>
+///     This is functionality lifted out of the old `View Mod Files` page, into
+///     a separate helper, to make it more ready for deletion. This will be
+///     reintegrated into the new `View Mod Files` page at a later date.
+/// </remarks>
 public static class ModFilesHelpers
 {
     /// <summary>

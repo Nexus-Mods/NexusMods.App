@@ -719,9 +719,6 @@
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\TreeDataGrid\UIntComponent.cs">
-          <DependentUpon>CompositeItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Sorting\LoadOrder\TreeDataGrid\LoadOrderDataProvider.cs">
           <DependentUpon>ILoadOrderDataProvider.cs</DependentUpon>
         </Compile>

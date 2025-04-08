@@ -41,24 +41,4 @@ public static class SharedColumns
         public static string GetColumnHeader() => "Installed";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
-    
-    /// <summary>
-    /// A common class for counters using a 32-bit unsigned integer.
-    /// </summary>
-    public sealed class UIntCount : ICompositeColumnDefinition<UIntCount>
-    {
-        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
-        {
-            var aValue = a.GetOptional<UIntComponent>(UIntComponentKey);
-            var bValue = b.GetOptional<UIntComponent>(UIntComponentKey);
-            return aValue.Compare(bValue);
-        }
-
-        public const string ColumnTemplateResourceKey = Prefix + "UIntCount";
-        public static readonly ComponentKey UIntComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(UIntComponent));
-
-        // Default implementation that can be overridden
-        public static string GetColumnHeader() => "Count";
-        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
-    }
 }
