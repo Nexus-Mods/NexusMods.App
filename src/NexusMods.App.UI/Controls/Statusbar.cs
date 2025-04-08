@@ -12,7 +12,7 @@ public class Statusbar : ItemsControl
 {
     private static readonly FuncTemplate<Panel?> DefaultPanel =
         new(() => new StackPanel() { Orientation = Orientation.Horizontal, Spacing = 8 });
-
+    
     static Statusbar()
     {
         ItemsPanelProperty.OverrideDefaultValue<Statusbar>(DefaultPanel);

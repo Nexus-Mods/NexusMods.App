@@ -1,6 +1,9 @@
+using System.Globalization;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using Humanizer;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
@@ -22,7 +25,9 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.Name, view => view.CollectionName.Text)
                 .AddTo(disposables);
-            this.OneWayBind(ViewModel, vm => vm.InstalledModsCount, view => view.TotalModsTextBlock.Text, count => $"{count} MODS")
+            this.OneWayBind(ViewModel, vm => vm.InstalledModsCount, view => view.NumDownloads.Text, v => $"{v:N0} Mods")
+                .AddTo(disposables);
+            this.OneWayBind(ViewModel, vm => vm.InstalledModsCount, view => view.RequiredDownloadsCount.Text, v => $"{v:N0}")
                 .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.TileImage, view => view.CollectionImage.Source)
                 .AddTo(disposables);
@@ -33,6 +38,22 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                     CollectionImageBorder.IsVisible = image != null;
                     CollectionImage.Source = image;
                 })
+                .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.EndorsementCount, view => view.Endorsements.Text,
+                    v => Convert.ToInt32(v).ToMetric(null, 1)
+                )
+                .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.TotalDownloads, view => view.TotalDownloads.Text,
+                    v => Convert.ToInt32(v).ToMetric(null, 1)
+                )
+                .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.TotalSize, view => view.TotalSize.Text)
+                .DisposeWith(disposables);
+
+            this.OneWayBind(ViewModel, vm => vm.OverallRating, view => view.OverallRating.Text, p => p.Value.ToString("P0"))
                 .DisposeWith(disposables);
             
             this.OneWayBind(ViewModel, vm => vm.AuthorAvatar, view => view.AuthorAvatar.Source)
@@ -48,6 +69,8 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
             this.BindCommand(ViewModel, vm => vm.CommandViewCollectionDownloadPage, view => view.ViewCollectionDownloadMenuItem)
                 .AddTo(disposables);
 
+
+            
             this.OneWayBind(ViewModel, vm => vm.IsLocalCollection, view => view.NexusModsLogo.IsVisible, static b => !b)
                 .AddTo(disposables);
             this.OneWayBind(ViewModel, vm => vm.IsReadOnly, view => view.ReadOnlyPillStack.IsVisible)
@@ -58,6 +81,25 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .SubscribeWithErrorLogging(value =>
                     {
                         CollectionToggle.IsChecked = value;
+                    }
+                )
+                .DisposeWith(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.OverallRating)
+                .Select(rating =>
+                {
+                    return rating.Value switch
+                    {
+                        >= 0.75 => "HighRating",
+                        >= 0.5 => "MidRating",
+                        >= 0.01 => "LowRating",
+                        _ => "NoRating",
+                    };
+                })
+                .Subscribe(className =>
+                    {
+                        OverallRatingPanel.Classes.Add(className);
+                        OverallRating.Text = className == "NoRating" ? "--" : ViewModel!.OverallRating.Value.ToString("P0");
                     }
                 )
                 .DisposeWith(disposables);

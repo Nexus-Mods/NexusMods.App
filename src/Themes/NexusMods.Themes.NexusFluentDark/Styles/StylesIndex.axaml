@@ -52,7 +52,6 @@
 
     <StyleInclude Source="/Styles/UserControls/Spinner/SpinnerStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/CollectionDownloadPage/CollectionDownloadPageStyles.axaml" />
-    <StyleInclude Source="/Styles/UserControls/CollectionLoadoutPage/CollectionLoadoutPageStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/CollectionCards/CollectionCardStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/EmptyState/EmptyStateStyles.axaml" />

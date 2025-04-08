@@ -4,10 +4,11 @@
         xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:reactiveUi="http://reactiveui.net"
-        xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer;assembly=NexusMods.App.UI">
+        xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer;assembly=NexusMods.App.UI"
+        xmlns:loadoutPage="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Width="800" Height="800">
+        <Border Width="1000" Height="800">
             <Border.Resources>
                 <collections:CollectionDownloadDesignViewModel x:Key="CollectionDownloadPageDesignViewModel" />
             </Border.Resources>
@@ -15,15 +16,16 @@
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector="collections|CollectionDownloadView">
+    <Style Selector="collections|CollectionDownloadView,
+    loadoutPage|CollectionLoadoutView">
 
-        <Style Selector="^ DockPanel#Body">
+        <Style Selector="^ Grid#Body">
 
             <Style Selector="^ Border#HeaderBorder">
                 <!-- darkens underlying background image -->
                 <Setter Property="Background" Value="{StaticResource CollectionHeaderImageLinearGradientBrush}" />
                 <Setter Property="HorizontalAlignment" Value="Stretch" />
-                <Setter Property="Padding" Value="24,24,24,12" />
+                <Setter Property="Padding" Value="24,24,24,20" />
 
                 <Style Selector="^ StackPanel#Header">
                     <Style Selector="^ Border#MainContentBorder">
@@ -33,32 +35,38 @@
 
                             <!-- left column -->
                             <Style Selector="^ DockPanel#CollectionTitles">
-
-                                <Style Selector="^ TextBlock#Title">
-                                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentStrongBrush}" />
-                                </Style>
-
-                                <Style Selector="^ TextBlock#Heading">
-                                    <Setter Property="Theme" Value="{StaticResource HeadingMDSemiTheme}" />
-                                    <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentStrongBrush}" />
-                                    <Setter Property="TextWrapping" Value="NoWrap" />
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-                                </Style>
-
                                 <Style Selector="^ Border#CollectionImageBorder">
                                     <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                                     <Setter Property="ClipToBounds" Value="True" />
-                                    <Setter Property="Width" Value="54" />
-                                    <Setter Property="Height" Value="67" />
+                                    <Setter Property="Width" Value="48" />
+                                    <Setter Property="Height" Value="60" />
 
                                     <Style Selector="^ Image#CollectionImage">
                                         <!-- NOTE(insomnious): not sure if we fixed sizes on both elements, but figma does -->
-                                        <Setter Property="Width" Value="54" />
-                                        <Setter Property="Height" Value="67" />
+                                        <Setter Property="Width" Value="48" />
+                                        <Setter Property="Height" Value="60" />
                                         <Setter Property="Stretch" Value="UniformToFill" />
+                                    </Style>
+                                </Style>
+
+                                <Style Selector="^ > StackPanel">
+                                    <Setter Property="Margin" Value="12,0,0,0" />
+                                    <Setter Property="Spacing" Value="0" />
+
+                                    <Style Selector="^ TextBlock#Title">
+                                        <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        <Setter Property="TextWrapping" Value="NoWrap" />
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                    </Style>
+
+                                    <Style Selector="^ TextBlock#CollectionName">
+                                        <Setter Property="Theme" Value="{StaticResource HeadingMDSemiTheme}" />
+                                        <Setter Property="Foreground"
+                                                Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                        <Setter Property="TextWrapping" Value="NoWrap" />
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                                     </Style>
                                 </Style>
                             </Style>
@@ -219,7 +227,7 @@
                     <!-- header -->
                     <Style Selector="^ ToggleButton#ExpanderHeader">
                         <Setter Property="Padding" Value="24 12" />
-                        
+
                         <Style Selector="^ TextBlock">
                             <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
                             <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->

@@ -4,8 +4,8 @@
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
     <Design.PreviewWith>
-        <Border Width="800" Background="Chocolate">
-            <StackPanel Spacing="2">
+        <Border Width="800">
+            <StackPanel>
                 <controls:Statusbar />
                 <controls:Statusbar>
                     <controls:StandardButton Text="Button 1" Fill="Weak"
@@ -37,7 +37,30 @@
                     </StackPanel>
                     <TextBlock Text="1 of 9 required mods" />
                 </controls:Statusbar>
-
+                <controls:Statusbar Classes="Info">
+                    <StackPanel>
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="Small"
+                                                 ShowLabel="False"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="Small" />
+                    </StackPanel>
+                    <TextBlock Text="1 of 9 required mods" />
+                </controls:Statusbar>
+                <controls:Statusbar Classes="Primary">
+                    <StackPanel>
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="Small"
+                                                 ShowLabel="False"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="Small" />
+                    </StackPanel>
+                    <TextBlock Text="1 of 9 required mods" />
+                </controls:Statusbar>
             </StackPanel>
 
         </Border>
@@ -45,10 +68,11 @@
 
     <ControlTheme x:Key="{x:Type controls:Statusbar}" TargetType="controls:Statusbar">
         <Setter Property="Focusable" Value="False" />
+        <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="VerticalAlignment" Value="Top" />
-        <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         <Setter Property="Margin" Value="0" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         <Setter Property="Padding" Value="24, 12,24,0" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
@@ -58,13 +82,13 @@
                         MinHeight="{TemplateBinding MinHeight}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                        Background="{TemplateBinding Background}"
+                        Background="{StaticResource SurfaceLowBrush}"
                         Padding="{TemplateBinding Padding}">
                     <Border Name="ButtonContainer"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
-                            Background="{StaticResource SurfaceMidBrush}"
+                            Background="{TemplateBinding Background}"
                             Padding="8"
                             HorizontalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal">
@@ -75,7 +99,16 @@
                 </Border>
             </ControlTemplate>
         </Setter>
+
+        <Style Selector="^.Info">
+            <Setter Property="Background" Value="#331D4ED8" />
+        </Style>
+        
+        <Style Selector="^.Primary">
+            <Setter Property="Background" Value="#33FB923C" />
+        </Style>
     </ControlTheme>
+
 
     <!-- Styles for expected child controls are in src/Themes/NexusMods.Themes.NexusFluentDark/Styles/UserControls/Toolbar/ToolbarStyles.axaml -->
 

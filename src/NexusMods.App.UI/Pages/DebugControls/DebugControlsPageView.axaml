@@ -18,7 +18,7 @@
         <local:DebugControlsPageDesignViewModel />
     </Design.DataContext>
 
-    <Border>
+    <Border Padding="0,16,0,0">
         <TabControl>
             <TabItem>
                 <TabItem.Header>

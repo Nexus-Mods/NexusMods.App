@@ -12,7 +12,7 @@
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="1500" d:DesignHeight="800"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
 
     <Design.DataContext>
@@ -50,14 +50,12 @@
 
         <!-- toolbar at top, tree data grid fill the remaining space -->
         <DockPanel x:Key="TabItemContent">
-
             <controls:Statusbar DockPanel.Dock="Top">
                 <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}"
                                          ShowLabel="False"
                                          LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                          ShowIcon="Left"
                                          Size="ExtraSmall" />
-                
                 <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
                                          Size="ExtraSmall"
@@ -65,9 +63,7 @@
                                          Fill="Weak"
                                          LeftIcon="{x:Static icons:IconValues.Update}"
                                          ShowIcon="Left" />
-
                 <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
-                
                 <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadRequired}"
                                          Size="ExtraSmall"
@@ -81,7 +77,6 @@
                 <navigation:NavigationControl x:Name="ButtonViewCollection"
                                               Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
                                               Size="ExtraSmall" />
-
                 <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
                                          Size="ExtraSmall"
@@ -90,7 +85,6 @@
                 <controls:StandardButton x:Name="ButtonInstallOptionalItems"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
                                          Size="ExtraSmall" />
-                
                 <TextBlock x:Name="TextCollectionStatus" />
             </controls:Statusbar>
             
@@ -129,10 +123,12 @@
     </reactiveUi:ReactiveUserControl.Resources>
 
     <Border x:Name="HeaderBorderBackground">
-        <DockPanel x:Name="Body">
+        
+        <!-- header, tabcontrol -->
+        <Grid x:Name="Body" RowDefinitions="Auto, *">
 
             <!-- first row (header) -->
-            <Border x:Name="HeaderBorder" DockPanel.Dock="Top">
+            <Border x:Name="HeaderBorder" Grid.Row="0" >
 
                 <StackPanel x:Name="Header">
 
@@ -145,9 +141,9 @@
                                 <Border DockPanel.Dock="Left" x:Name="CollectionImageBorder">
                                     <Image x:Name="CollectionImage" />
                                 </Border>
-                                <StackPanel Margin="12,0,0,0" Spacing="8">
+                                <StackPanel>
                                     <TextBlock x:Name="Title">Collection download</TextBlock>
-                                    <TextBlock x:Name="Heading" />
+                                    <TextBlock x:Name="CollectionName" />
                                 </StackPanel>
                             </DockPanel>
 
@@ -227,8 +223,8 @@
                 </StackPanel>
             </Border>
 
-            <!-- second row (tab control and datagrid) -->
-            <TabControl x:Name="TabControl">
+            <!-- second row (tab control) -->
+            <TabControl x:Name="TabControl" Grid.Row="1">
                 <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
                     <TabItem.Header>
                         <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
@@ -308,7 +304,7 @@
                     </ScrollViewer>
                 </TabItem>
             </TabControl>
-        </DockPanel>
+        </Grid>
     </Border>
 
 </reactiveUi:ReactiveUserControl>
