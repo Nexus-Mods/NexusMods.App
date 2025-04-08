@@ -7,6 +7,7 @@ using DynamicData.Aggregation;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using ZLinq;
 
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 
@@ -39,6 +40,7 @@ public class ModFilesProvider
     /// <summary>
     /// Listens to all available mod files within MnemonicDB.
     /// </summary>
+    /// <param name="filesFilter">A filter which specifies one or more mod groups of items to display.</param>
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveModFiles(ModFilesFilter filesFilter)
     {
         return FilterModFiles(filesFilter)
@@ -60,7 +62,7 @@ public class ModFilesProvider
         var allChildrenObservable = _connection
             .ObserveDatoms(LoadoutItem.Parent, modFile)
             .AsEntityIds()
-            .FilterInModFiles(_connection, filesFilter)
+            .FilterInModFiles(_connection, filesFilters)
             .Transform(childId => LoadoutItem.Load(_connection.Db, childId));
         */
 
@@ -96,7 +98,9 @@ internal static class ModFilesObservableExtensions
         {
             // TODO: Direct GET on LoadoutItem.ParentId to avoid unnecessary DB fetches.
             var item = LoadoutItem.Load(connection.Db, datom.E);
-            return item.ParentId.Equals(modFilesFilter.ModId);
+            return modFilesFilter.ModIds
+                .AsValueEnumerable()
+                .Any(filter => item.ParentId.Equals(filter.Value));
         });
     }
 }
@@ -104,8 +108,8 @@ internal static class ModFilesObservableExtensions
 /// <summary>
 /// A filter for filtering which mod files are shown by the <see cref="ModFilesProvider"/>
 /// </summary>
-/// <param name="ModId">
-/// ID of the <see cref="LoadoutItemGroup"/> for the mods to which the view
+/// <param name="ModIds">
+/// IDs of the <see cref="LoadoutItemGroup"/> for the mods to which the view
 /// should be filtered to.
 /// </param>
-public record struct ModFilesFilter(LoadoutItemGroupId ModId);
+public record struct ModFilesFilter(LoadoutItemGroupId[] ModIds);
