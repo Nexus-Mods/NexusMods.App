@@ -194,17 +194,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Add in the game state
         foreach (var gameFile in GetNormalGameState(referenceDb, loadout))
         {
-            syncTree.Add(gameFile.Path, new SyncNode
+            ref var syncTreeEntry = ref CollectionsMarshal.GetValueRefOrAddDefault(syncTree, gameFile.Path, out var exists);
+            
+            // NOTE(Al12rs): DLCs could have replacements for base game files, but we don't currently store the LocatorId order data so for now we just log cases to be aware of them.
+            // See https://partner.steamgames.com/doc/store/application/depots#depot_mounting_rules for steam example
+            if (exists)
+            {
+                _logger.LogWarning("Found duplicate game file `{Path}` in Loadout {LoadoutName} for game {Game}", gameFile.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
+            }
+            
+            // If the entry already exists, we replace it
+            syncTreeEntry = new SyncNode
+            {
+                Loadout = new SyncNodePart
                 {
-                    Loadout = new SyncNodePart
-                    {
-                        Hash = gameFile.Hash,
-                        Size = gameFile.Size,
-                        LastModifiedTicks = 0,
-                    },
-                    SourceItemType = LoadoutSourceItemType.Game,
-                }
-            );
+                    Hash = gameFile.Hash,
+                    Size = gameFile.Size,
+                    LastModifiedTicks = 0,
+                },
+                SourceItemType = LoadoutSourceItemType.Game,
+            };
         }
         
         foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
