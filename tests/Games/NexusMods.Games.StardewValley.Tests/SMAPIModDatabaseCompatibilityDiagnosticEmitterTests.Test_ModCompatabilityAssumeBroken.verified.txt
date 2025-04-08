@@ -5,7 +5,7 @@
 The Stardew Modding API (SMAPI) mod compatibility list reports **Persistent Mines** as broken. This information is sourced from a combination of automated and community-submitted reports. 
 
 ### How to Resolve
-1. Check for a version of **Persistent Mines** newer than 1.0.1 on [Nexus Mods](https://nexusmods.com/stardewvalley/mods/14985?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
+1. Check for a version of **Persistent Mines** newer than 1.0.1 on [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/14985?mtm_source=nexusmodsapp)
 
 OR
 
