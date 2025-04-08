@@ -2,32 +2,33 @@
 name: Feature
 about: Suggest an idea for this project
 title: ''
-labels: 'story :book:'
+labels: 'feature'
 assignees: ''
 
 ---
 
-# User story
+## Summary:
+_(Clear summary of the feature requested, what does this feature change or add?)_
 
-**As a** _______
-
-**I want to** _______
-
-**So that** _______
-
-
-## Requirements
-_(Any other information related to but not covered by the story)_
+## Expected behaviour
+_(What is the expected behaviour of the feature)_
 
 ## Design
 _(Any designs required for this story)_
 
-## DOD
+
+## Details
+
+### Definition of Done
 _(Describe the expected behaviour from the users point of view. Create multiple DoD's if required to fully describe what should happen. Number each DoD)_
 
-## Scenario 1
-**Given** _______
+### Test Data:
+_(Any test data required to test the feature, e.g. links to mods, required setups, collections etc.)_
 
-**When** _______
 
-**Then** _______
+### QA Checklist:
+- [ ] Add QA label if relevant
+- [ ] Add DODs
+- [ ] Add test data/scenarios
+- [ ] QA test Windows
+- [ ] QA test Linux

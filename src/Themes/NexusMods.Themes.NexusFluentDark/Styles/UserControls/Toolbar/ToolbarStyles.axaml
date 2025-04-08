@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Padding="0" Height="300" Width="800">
+            <controls:Toolbar>
+                <controls:StandardButton Text="Button 1" Size="ExtraSmall" Type="Tertiary" Fill="None" />
+                <controls:StandardButton Text="Button 2" Size="ExtraSmall" Fill="None" />
+                <Separator />
+                <controls:StandardButton Text="Button 3" Size="ExtraSmall" Fill="None" />
+                <SplitButton />
+                <ComboBox>
+                    <ComboBoxItem>Item 1</ComboBoxItem>
+                    <ComboBoxItem>Item 2</ComboBoxItem>
+                </ComboBox>
+                <Separator />
+                <controls:StandardButton Text="Button 4" Size="ExtraSmall" Type="Tertiary" Fill="None" />
+            </controls:Toolbar>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="controls|Toolbar">
+        <Style Selector="^ > Separator">
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="Margin" Value="2,-4" />
+            <Setter Property="Height" Value="{Binding $parent}" />
+            <Setter Property="Width" Value="2" />
+        </Style>
+    </Style>
+</Styles>

@@ -117,14 +117,6 @@ public interface ILoadoutSynchronizer
     /// up. This method is ignored when the global configuration is set to always back up all game files.
     /// </summary>
     bool IsIgnoredBackupPath(GamePath path);
-    
-    /// <summary>
-    /// Returns true if the path should be ignored by the synchronizer when scanning for files. This means this folder is completely ignored
-    /// by the synchronizer and will not be managed or moddable.
-    /// </summary>
-    bool IsIgnoredPath(GamePath path);
-    
-    
 
 #endregion
 

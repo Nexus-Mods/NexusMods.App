@@ -22,7 +22,7 @@ public class StardewValleyLoadoutSynchronizer : ALoadoutSynchronizer
     /// <summary>
     /// The content folder of the game, we ignore files in this folder
     /// </summary>
-    private static readonly GamePath ContentFolder = new(LocationId.Game, "Content".ToRelativePath());
+    private static readonly GamePath ContentFolder = new(LocationId.Game, "Content");
 
     private readonly StardewValleySettings _settings;
 

@@ -6,6 +6,15 @@
 
         <!-- <Setter Property="Background" Value="DarkGreen"/> -->
 
+        <!-- last column header -->
+        <Style Selector="^ TreeDataGridColumnHeader">
+            <Style Selector="^:nth-last-child(1)">
+                <Style Selector="^ /template/ DockPanel#DataGridDockPanel">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </Style>
+            </Style>
+        </Style>
+
         <!-- ROWS -->
 
         <Style Selector="^ TreeDataGridRow">

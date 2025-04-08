@@ -6,7 +6,7 @@ The mod **Farm Type Manager** requires **Content Patcher** to function, but **Co
 
 
 ### How to Resolve
-1. Download **Content Patcher** from [Nexus Mods](https://nexusmods.com/stardewvalley/mods/1915?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
+1. Download **Content Patcher** from [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/1915?mtm_source=nexusmodsapp)
 2. Add **Content Patcher** to the loadout. 
 
 ### Technical Details

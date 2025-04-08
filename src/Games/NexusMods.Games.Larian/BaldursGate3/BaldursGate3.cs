@@ -11,6 +11,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.Generic.Installers;
 using NexusMods.Games.Larian.BaldursGate3.Emitters;
@@ -30,6 +31,7 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     public IEnumerable<uint> SteamIds => [1086940u];
     public IEnumerable<long> GogIds => [1456460669];
     public override GameId GameId => GameId.From(3474);
+    public static readonly GameDomain StaticDomain = GameDomain.From("baldursgate3");
     public override SupportType SupportType => SupportType.Official;
 
     public override HashSet<FeatureStatus> Features { get; } =
@@ -82,8 +84,8 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         {
             { LocationId.Game, installation.Path },
             { Bg3Constants.ModsLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/Mods") },
-            { LocationId.From("PlayerProfiles"), fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/PlayerProfiles/Public") },
-            { LocationId.From("ScriptExtenderConfig"), fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/ScriptExtender") },
+            { Bg3Constants.PlayerProfilesLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/PlayerProfiles/Public") },
+            { Bg3Constants.ScriptExtenderConfigLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/ScriptExtender") },
         };
         return result;
     }

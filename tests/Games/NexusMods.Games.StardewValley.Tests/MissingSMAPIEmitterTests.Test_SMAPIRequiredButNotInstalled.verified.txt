@@ -5,7 +5,7 @@
 Stardew Modding API (SMAPI) is the mod loader required to run mods for Stardew Valley. The loadout contains 2 mod(s) that require SMAPI to work, but it is not installed.
 
 ### How to Resolve
-1. Download Stardew Modding API (SMAPI) from [Nexus Mods](https://nexusmods.com/stardewvalley/mods/2400?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
+1. Download Stardew Modding API (SMAPI) from [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/2400?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
 2. Add SMAPI to the loadout
 
 ### Technical Details

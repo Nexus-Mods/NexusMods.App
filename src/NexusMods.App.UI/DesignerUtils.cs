@@ -25,7 +25,13 @@ public static class DesignerUtils
     public static IServiceProvider GetServiceProvider()
     {
         Dispatcher.UIThread.VerifyAccess();
-        if (!_isDesigner) throw new InvalidOperationException("Not in designer!");
+        AssertInDesigner();
         return _serviceProvider ?? throw new UnreachableException();
+    }
+
+    public static void AssertInDesigner()
+    {
+        if (_isDesigner) return;
+        throw new InvalidOperationException("Not in designer!");
     }
 }

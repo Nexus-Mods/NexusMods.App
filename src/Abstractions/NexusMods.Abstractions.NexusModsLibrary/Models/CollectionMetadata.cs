@@ -79,9 +79,4 @@ public partial class CollectionMetadata : IModelDefinition
     /// The background image resource.
     /// </summary>
     public static readonly ReferenceAttribute<PersistedDbResource> BackgroundImageResource = new(Namespace, nameof(BackgroundImageResource)) { IsOptional = true };
-
-    public partial struct ReadOnly
-    {
-        public Uri GetUri(GameDomain gameDomain) => NexusModsUrlBuilder.CreateCollectionsUri(gameDomain, Slug);
-    }
 }

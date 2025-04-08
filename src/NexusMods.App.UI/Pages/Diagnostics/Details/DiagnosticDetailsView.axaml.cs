@@ -39,22 +39,22 @@ public partial class DiagnosticDetailsView : ReactiveUserControl<IDiagnosticDeta
             
             case DiagnosticSeverity.Suggestion:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_SUGGESTION;
-                SeverityTitleTextBlock.Classes.Add("ForegroundInfoStrong");
+                SeverityTitleTextBlock.Classes.Add("Suggestion");
                 DescriptionTextBlock.Text = "Suggestions may offer improvements to your experience.";
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0D93C5FD");
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#6693C5FD");
                 break;
             case DiagnosticSeverity.Warning:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_WARNING;
-                SeverityTitleTextBlock.Classes.Add("ForegroundWarningStrong");
+                SeverityTitleTextBlock.Classes.Add("Warning");
                 DescriptionTextBlock.Text = "Warnings may negatively impact your experience.";
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DFEF08A"); 
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66FEF08A");
                 break;
             case DiagnosticSeverity.Critical:
                 SeverityTitleTextBlock.Text = Language.DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR;
+                SeverityTitleTextBlock.Classes.Add("Critical");
                 DescriptionTextBlock.Text = "Critical errors make the game unplayable.";
-                SeverityTitleTextBlock.Classes.Add("ForegroundDangerStrong");
                 MarkdownWrapperBorder.Background = SolidColorBrush.Parse("#0DF87171");
                 MarkdownWrapperBorder.BorderBrush = SolidColorBrush.Parse("#66F87171");
                 break;

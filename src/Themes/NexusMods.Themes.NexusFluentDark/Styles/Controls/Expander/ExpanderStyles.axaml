@@ -9,17 +9,25 @@
                         <TextBlock>Expander Content</TextBlock>
                     </Border>
                 </Expander>
-
+                <Expander IsEnabled="False">
+                    <Border>
+                        <TextBlock>Expander Content</TextBlock>
+                    </Border>
+                </Expander>
                 <Expander Header="Expander">
                     <Border>
                         <TextBlock>Expander Content</TextBlock>
                     </Border>
                 </Expander>
-
-                <Expander IsExpanded="True" ExpandDirection="Down">
+                <Expander Header="Expander" IsEnabled="False">
+                    <Border>
+                        <TextBlock>Expander Content</TextBlock>
+                    </Border>
+                </Expander>
+                <Expander IsExpanded="True" ExpandDirection="Down" Classes="LibraryView">
                     <Expander.Header>
                         <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
-                                    Classes="ExpanderLibraryHeader">
+                                    Classes="LibraryHeader">
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}" />
                             <TextBlock Text="Collections" />
                             <TextBlock x:Name="TextNumCollections" Text="0" />
@@ -33,112 +41,82 @@
 
         </Border>
     </Design.PreviewWith>
-
-    <!--
-    Expander Structure:
     
-    Expander
-      - DockPanel
-        - ToggleButton#ExpanderHeader
-        - Border#ExpanderContent   
-    -->
     <Styles.Resources>
+
+        <CornerRadius x:Key="ExpanderHeaderCornerRadius">0</CornerRadius>
+
+        <!-- Copied from source src/Avalonia.Themes.Fluent/Controls/Expander.xaml -->
+
+        <!-- Shared header/content -->
+        <x:Double x:Key="ExpanderMinHeight">0</x:Double>
+
         <!-- Header -->
         <HorizontalAlignment x:Key="ExpanderHeaderHorizontalContentAlignment">Stretch</HorizontalAlignment>
         <VerticalAlignment x:Key="ExpanderHeaderVerticalContentAlignment">Center</VerticalAlignment>
-        <Thickness x:Key="ExpanderHeaderPadding">16,0,0,0</Thickness>
-        <Thickness x:Key="ExpanderHeaderBorderThickness">0,0,0,1</Thickness>
+        <Thickness x:Key="ExpanderHeaderPadding">8</Thickness>
+        <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
         <Thickness x:Key="ExpanderChevronBorderThickness">0</Thickness>
         <Thickness x:Key="ExpanderChevronMargin">20,0,8,0</Thickness>
-        <x:Double x:Key="ExpanderChevronButtonSize">32</x:Double>
+        <x:Double x:Key="ExpanderChevronButtonSize">20</x:Double>
+
+        <!-- Content -->
+        <Thickness x:Key="ExpanderContentPadding">0</Thickness>
+        <Thickness x:Key="ExpanderContentLeftBorderThickness">0</Thickness>
+        <Thickness x:Key="ExpanderContentUpBorderThickness">0</Thickness>
+        <Thickness x:Key="ExpanderContentRightBorderThickness">0</Thickness>
+        <Thickness x:Key="ExpanderContentDownBorderThickness">0</Thickness>
+
+        <!-- copied from source src/Avalonia.Themes.Fluent/Accents/FluentControlResources.xaml -->
+
+        <!-- Expander:Header -->
+        <StaticResource x:Key="ExpanderHeaderBackground" ResourceKey="SurfaceMidBrush" />
+        <StaticResource x:Key="ExpanderHeaderBackgroundPointerOver" ResourceKey="SurfaceHighBrush" />
+        <StaticResource x:Key="ExpanderHeaderBackgroundPressed" ResourceKey="SurfaceLowBrush" />
+        <SolidColorBrush x:Key="ExpanderHeaderBackgroundDisabled"
+                         Color="{StaticResource SurfaceMid}"
+                         Opacity="{StaticResource OpacityDisabledElement}" />
+
+        <StaticResource x:Key="ExpanderHeaderForeground" ResourceKey="NeutralModerateBrush" />
+        <StaticResource x:Key="ExpanderHeaderForegroundPointerOver" ResourceKey="NeutralModerateBrush" />
+        <StaticResource x:Key="ExpanderHeaderForegroundPressed" ResourceKey="NeutralModerateBrush" />
+        <SolidColorBrush x:Key="ExpanderHeaderForegroundDisabled"
+                         Color="{StaticResource NeutralModerate}"
+                         Opacity="{StaticResource OpacityDisabledElement}" />
+
+        <StaticResource x:Key="ExpanderHeaderBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+        <StaticResource x:Key="ExpanderHeaderBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+        <StaticResource x:Key="ExpanderHeaderBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+        <SolidColorBrush x:Key="ExpanderHeaderBorderBrushDisabled"
+                         Color="{StaticResource StrokeTranslucentModerate}"
+                         Opacity="{StaticResource OpacityDisabledElement}" />
+
+        <StaticResource x:Key="ExpanderChevronBackground" ResourceKey="SurfaceMidBrush" />
+        <StaticResource x:Key="ExpanderChevronBackgroundPointerOver" ResourceKey="SurfaceHighBrush" />
+        <StaticResource x:Key="ExpanderChevronBackgroundPressed" ResourceKey="SurfaceLowBrush" />
+        <SolidColorBrush x:Key="ExpanderChevronBackgrounddDisabled"
+                         Color="{StaticResource SurfaceMid}"
+                         Opacity="{StaticResource OpacityDisabledElement}" />
+
+        <StaticResource x:Key="ExpanderChevronForeground" ResourceKey="NeutralModerateBrush" />
+        <StaticResource x:Key="ExpanderChevronForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+        <StaticResource x:Key="ExpanderChevronForegroundPressed" ResourceKey="NeutralWeakBrush" />
+        <SolidColorBrush x:Key="ExpanderChevronForegroundDisabled"
+                         Color="{StaticResource NeutralModerate}"
+                         Opacity="{StaticResource OpacityDisabledElement}" />
+
+        <SolidColorBrush x:Key="ExpanderChevronBorderBrush" Color="Transparent" />
+        <SolidColorBrush x:Key="ExpanderChevronBorderBrushPointerOver" Color="Transparent" />
+        <SolidColorBrush x:Key="ExpanderChevronBorderBrushPressed" Color="Transparent" />
+        <SolidColorBrush x:Key="ExpanderChevronBorderBrushDisabled" Color="Transparent" />
+
+        <!-- Expander:Content -->
+        <StaticResource x:Key="ExpanderContentBackground" ResourceKey="SurfaceTransparentBrush" />
+        <StaticResource x:Key="ExpanderContentBorderBrush" ResourceKey="NeutralModerateBrush" />
     </Styles.Resources>
-    
-    
+
     <Style Selector="Expander">
-
-        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded-none}" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="BorderThickness" Value="0,0,0,1" />
         
-        <Style Selector="^:down /template/ Border#ExpanderContent">
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-
-        <Style Selector="^ StackPanel.ExpanderLibraryHeader">
-            <!-- <Setter Property="Background" Value="DarkSlateBlue" /> -->
-            <Style Selector="^ > icons|UnifiedIcon">
-                <Setter Property="Size" Value="20" />
-            </Style>
-
-            <Style Selector="^ > TextBlock">
-                <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
-            </Style>
-
-            <Style Selector="^ > TextBlock#TextNumCollections, ^ > TextBlock#TextNumMods">
-                <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            </Style>
-        </Style>
-
-        <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
-            <!-- Copied from source -->
-            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource BrandTranslucentDark300Brush}" />
-            <Setter Property="BorderThickness" Value="{DynamicResource ExpanderHeaderBorderThickness}" />
-            <Setter Property="Foreground" Value="{DynamicResource ExpanderHeaderForeground}" />
-            <Setter Property="Padding" Value="24,0" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment"
-                    Value="{DynamicResource ExpanderHeaderHorizontalContentAlignment}" />
-            <Setter Property="VerticalContentAlignment"
-                    Value="{DynamicResource ExpanderHeaderVerticalContentAlignment}" />
-            <Setter Property="Template">
-                <ControlTemplate>
-                    <Border x:Name="ToggleButtonBackground"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                        <Grid x:Name="ToggleButtonGrid"
-                              ColumnDefinitions="*,Auto">
-                            <ContentPresenter x:Name="PART_ContentPresenter"
-                                              Content="{TemplateBinding Content}"
-                                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                              Foreground="{TemplateBinding Foreground}"
-                                              Margin="{TemplateBinding Padding}" />
-                            <Border x:Name="ExpandCollapseChevronBorder"
-                                    Grid.Column="1"
-                                    Width="24"
-                                    Height="24"
-                                    Margin="0,0,24,0"
-                                    CornerRadius="{DynamicResource ControlCornerRadius}"
-                                    BorderBrush="{DynamicResource ExpanderChevronBorderBrush}"
-                                    BorderThickness="{DynamicResource ExpanderChevronBorderThickness}"
-                                    Background="{DynamicResource ExpanderChevronBackground}">
-                                <!-- Replaced Path with UnifiedIcon -->
-                                <icons:UnifiedIcon x:Name="ChevronIcon"
-                                                   Value="{x:Static icons:IconValues.ChevronRight}"
-                                                   Foreground="{TemplateBinding Foreground}" />
-                            </Border>
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter>
-
-            <Style Selector="^:checked /template/ icons|UnifiedIcon#ChevronIcon">
-                <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronDown}" />
-            </Style>
-
-            <Style Selector="^:pointerover /template/ Border#ToggleButtonBackground">
-                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-            </Style>
-
-
-        </Style>
-
     </Style>
-
+    
 </Styles>

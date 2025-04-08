@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.BuildInfo;
+using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using R3;
@@ -19,7 +20,7 @@ public class DebugControlsPageFactory : APageFactory<IDebugControlsPageViewModel
     
     public override IDebugControlsPageViewModel CreateViewModel(DebugControlsPageContext context)
     {
-        return new DebugControlsPageViewModel(WindowManager);
+        return new DebugControlsPageViewModel(WindowManager, ServiceProvider);
     }
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
@@ -30,7 +31,7 @@ public class DebugControlsPageFactory : APageFactory<IDebugControlsPageViewModel
         [
             new PageDiscoveryDetails
             {
-                Icon = IconValues.Warning,
+                Icon = IconValues.ColorLens,
                 ItemName = "Debug Controls",
                 SectionName = "Utilities",
                 PageData = new PageData
