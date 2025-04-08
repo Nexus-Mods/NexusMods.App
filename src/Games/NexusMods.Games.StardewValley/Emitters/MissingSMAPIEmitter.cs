@@ -15,18 +15,14 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var enabledSMAPIModCount = loadout
-            .GetEnabledGroups()
-            .OfTypeSMAPIModLoadoutItem()
-            .Count();
-
-        if (enabledSMAPIModCount == 0) yield break;
+        var numEnabledSMAPIManifests = SMAPIManifestLoadoutFile.GetAllInLoadout(loadout.Db, loadout, onlyEnabled: true).Count();
+        if (numEnabledSMAPIManifests == 0) yield break;
 
         var smapiLoadoutItems = loadout.Items.OfTypeLoadoutItemGroup().OfTypeSMAPILoadoutItem().ToArray();
         if (smapiLoadoutItems.Length == 0)
         {
             yield return Diagnostics.CreateSMAPIRequiredButNotInstalled(
-                ModCount: enabledSMAPIModCount,
+                ModCount: numEnabledSMAPIManifests,
                 NexusModsSMAPIUri: Helpers.SMAPILink
             );
 
@@ -37,7 +33,7 @@ public class MissingSMAPIEmitter : ILoadoutDiagnosticEmitter
         if (isSMAPIEnabled) yield break;
 
         yield return Diagnostics.CreateSMAPIRequiredButDisabled(
-            ModCount: enabledSMAPIModCount
+            ModCount: numEnabledSMAPIManifests
         );
     }
 }

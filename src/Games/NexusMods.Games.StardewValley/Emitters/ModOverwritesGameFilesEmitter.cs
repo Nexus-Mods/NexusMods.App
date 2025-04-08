@@ -14,7 +14,7 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
     private static readonly NamedLink SMAPIWikiLink = new("SMAPI Wiki", new Uri("https://stardewvalleywiki.com/Modding:Using_XNB_mods"));
     private static readonly NamedLink SMAPIWikiTableLink = new("SMAPI Wiki", new Uri("https://stardewvalleywiki.com/Modding:Using_XNB_mods#Alternatives_using_Content_Patcher"));
 
-    private static readonly GamePath ContentDirectoryPath = new(LocationId.Game, "Content");
+    private static readonly GamePath ContentDirectoryPath = new(LocationId.Game, Constants.ContentFolder);
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(
         Loadout.ReadOnly loadout,

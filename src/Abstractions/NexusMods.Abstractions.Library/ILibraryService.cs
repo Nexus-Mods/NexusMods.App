@@ -47,5 +47,5 @@ public interface ILibraryService
     /// </summary>
     /// <param name="libraryItems">The items to remove from the library.</param>
     /// <param name="gcRunMode">Defines how the garbage collector should be run</param>
-    Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsyncInBackground);
+    Task RemoveItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously);
 }

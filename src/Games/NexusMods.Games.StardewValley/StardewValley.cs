@@ -69,9 +69,9 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     {
         // NOTE(erri120): see https://github.com/Nexus-Mods/NexusMods.App/issues/2553
         var path = _osInformation.MatchPlatform(
-            onWindows: () => new GamePath(LocationId.Game, "Mods"),
-            onLinux: () => new GamePath(LocationId.Game, "Mods"),
-            onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS/Mods")
+            onWindows: () => new GamePath(LocationId.Game, Constants.ModsFolder),
+            onLinux: () => new GamePath(LocationId.Game, Constants.ModsFolder),
+            onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS" / Constants.ModsFolder)
         );
 
         return Optional<GamePath>.Create(path);
@@ -112,7 +112,7 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [
         _serviceProvider.GetRequiredService<SMAPIInstaller>(),
-        _serviceProvider.GetRequiredService<SMAPIModInstaller>(),
+        _serviceProvider.GetRequiredService<GenericInstaller>(),
     ];
 
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
