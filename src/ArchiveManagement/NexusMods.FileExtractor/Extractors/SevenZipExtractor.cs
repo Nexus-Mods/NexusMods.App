@@ -151,11 +151,13 @@ public class SevenZipExtractor : IExtractor
         for (var i = input.Length - 1; i > 0; i--)
         {
             var current = input[i];
-            if (current is not '.' and not ' ') break;
+            if (!IsInvalidChar(current)) break;
 
             input[i] = '_';
         }
     }
+
+    private static bool IsInvalidChar(char c) => c is '.' or ' ';
 
     /// <summary>
     /// Returns a list of all paths in the archive that need to be trimmed.
@@ -197,7 +199,8 @@ public class SevenZipExtractor : IExtractor
         isDirectory = attributesSlice[0] == 'D';
 
         var fileNameSlice = line.SliceFast(start: fixedLengthBeforeFileName);
-        if (!fileNameSlice.EndsWith(' ')) return false;
+        var lastChar = fileNameSlice[^1];
+        if (!IsInvalidChar(lastChar)) return false;
 
         fileName = fileNameSlice.ToString();
         return true;
