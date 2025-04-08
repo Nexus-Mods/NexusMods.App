@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using JetBrains.Annotations;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DynamicData;
 using DynamicData.Aggregation;
 using NexusMods.App.UI.Controls;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -50,12 +52,17 @@ public class ModFilesProvider
 
     private CompositeItemModel<EntityId> ToModFileItemModel(ModFilesFilter filesFilter, LoadoutItem.ReadOnly modFile)
     {
-        var directChildrenObservable = _connection
-            .ObserveDatoms(LoadoutItem.Parent, modFile)
-            .AsEntityIds()
-            .FilterInModFiles(_connection, filesFilter);
+        // Files don't have children.
+        // We inject the relevant folders at the listener level, i.e. whatever calls `ObserveModFiles`
+        var fileItemModel = new CompositeItemModel<EntityId>(modFile.Id)
+        {
+            HasChildrenObservable = Observable.Return(false),
+            ChildrenObservable = Observable.Empty<IChangeSet<CompositeItemModel<EntityId>, EntityId>>(),
+        };
 
-        throw new NotImplementedException();
+        fileItemModel.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(value: modFile.Name));
+        fileItemModel.Add(Columns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(value: IconValues.File));
+
         // Note(sewer): This seems horribly inefficient, because we visit the same children
         // over and over again, since we calculate. And filtering items also requires loading
         // all the parents.

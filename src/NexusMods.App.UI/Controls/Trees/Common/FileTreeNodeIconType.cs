@@ -94,6 +94,23 @@ public static class FileTreeNodeIconTypeHelpers
     /// Provides the XAML class to be used with <see cref="UnifiedIcon"/> for the given icon type.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("To be removed with migration to new ViewModFiles and Preview Changes")]
+    public static string GetIconClass(this FileTreeNodeIconType iconType) => iconType switch
+    {
+        FileTreeNodeIconType.File => "File",
+        FileTreeNodeIconType.ClosedFolder => "FolderOutline",
+        FileTreeNodeIconType.OpenFolder => "FolderOpenOutline",
+        FileTreeNodeIconType.Image => "Image",
+        FileTreeNodeIconType.Text => "FileDocumentOutline",
+        FileTreeNodeIconType.Audio => "MusicNote",
+        FileTreeNodeIconType.Video => "VideoOutline",
+        _ => ThrowArgumentOutOfRangeException(iconType),
+    };
+    
+    /// <summary>
+    /// Provides the XAML class to be used with <see cref="UnifiedIcon"/> for the given icon type.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetIconClass(this FileTreeNodeIconType iconType) => iconType switch
     {
         FileTreeNodeIconType.File => "File",
