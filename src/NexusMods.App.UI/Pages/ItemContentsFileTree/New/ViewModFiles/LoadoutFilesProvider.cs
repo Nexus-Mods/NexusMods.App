@@ -19,12 +19,12 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 /// Provides files for multiple <see cref="LoadoutItemGroup"/>(s) specified by a <see cref="ModFilesFilter"/>.
 /// </summary>
 [UsedImplicitly]
-public class ModFilesProvider
+public class LoadoutFilesProvider
 {
     private readonly IConnection _connection;
 
     /// <summary/>
-    public ModFilesProvider(IServiceProvider serviceProvider)
+    public LoadoutFilesProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
@@ -114,7 +114,7 @@ internal static class ModFilesObservableExtensions
 }
 
 /// <summary>
-/// A filter for filtering which mod files are shown by the <see cref="ModFilesProvider"/>
+/// A filter for filtering which mod files are shown by the <see cref="LoadoutFilesProvider"/>
 /// </summary>
 /// <param name="ModIds">
 /// IDs of the <see cref="LoadoutItemGroup"/> for the mods to which the view
