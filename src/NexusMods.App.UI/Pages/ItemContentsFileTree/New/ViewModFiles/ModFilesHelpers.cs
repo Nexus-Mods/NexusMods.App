@@ -20,22 +20,23 @@ public static class ModFilesHelpers
     /// files starting with the path are removed.
     /// </summary>
     /// <param name="connection">The connection used to MnemonicDB.</param>
-    /// <param name="groupId">The <see cref="LoadoutItemGroup"/> ID (usually mod) to remove files from</param>
+    /// <param name="groupIds">The <see cref="LoadoutItemGroup"/> IDs (usually mod) to remove files from</param>
     /// <param name="gamePath">The game path to match. Every file starting with this path is removed.</param>
-    /// <returns>A task that completes when the files are removed. Contains latest state of the group where the files were removed.</returns>
-    public static async Task<LoadoutItemGroup.ReadOnly> RemoveFileOrFolder(IConnection connection, EntityId groupId, GamePath gamePath)
+    /// <returns>A task that completes when the files are removed.</returns>
+    public static async Task RemoveFileOrFolder(IConnection connection, EntityId[] groupIds, GamePath gamePath)
     {
-        var group = LoadGroup(connection, groupId);
-        var loadoutItemsToDelete = group
-            .Children
-            .OfTypeLoadoutItemWithTargetPath()
-            .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path))
+        var loadoutItemsToDelete = groupIds
+            .Select(id => LoadGroup(connection, id))
+            .SelectMany(group => group
+                .Children
+                .OfTypeLoadoutItemWithTargetPath()
+                .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path)))
             .ToArray();
 
         if (loadoutItemsToDelete.Length == 0)
-            throw new InvalidOperationException($"Unable to find Loadout files with path `{gamePath}` in group `{group.AsLoadoutItem().Name}`");
+            throw new InvalidOperationException($"Unable to find Loadout files with path `{gamePath}` in groups `{string.Join(", ", groupIds)}`");
 
-        return await DeleteFilesAndReturnNewerGroup(connection, loadoutItemsToDelete, group);
+        await DeleteFiles(connection, loadoutItemsToDelete);
     }
 
     /// <summary>
@@ -44,43 +45,43 @@ public static class ModFilesHelpers
     /// files starting with the path are removed.
     /// </summary>
     /// <param name="connection">The connection used to MnemonicDB.</param>
-    /// <param name="groupId">The <see cref="LoadoutItemGroup"/> ID (usually mod) to remove files from</param>
+    /// <param name="groupIds">The <see cref="LoadoutItemGroup"/> IDs (usually mod) to remove files from</param>
     /// <param name="gamePaths">The game path to match. All files starting with any of these paths are removed.</param>
-    /// <returns>A task that completes when the files are removed. Contains latest state of the group where the files were removed.</returns>
-    public static async Task<LoadoutItemGroup.ReadOnly> RemoveFileOrFolders(IConnection connection, EntityId groupId, GamePath[] gamePaths)
+    /// <returns>A task that completes when the files are removed.</returns>
+    public static async Task RemoveFileOrFolders(IConnection connection, EntityId[] groupIds, GamePath[] gamePaths)
     {
-        var group = LoadGroup(connection, groupId);
-        var loadoutItemsToDelete = group
-            .Children
-            .OfTypeLoadoutItemWithTargetPath()
-            .Where(item =>
-            {
-                // Match first path.
-                // If this is a file, match direct, else match via parent folder.
-                foreach (var path in gamePaths)
+        var loadoutItemsToDelete = groupIds
+            .Select(id => LoadGroup(connection, id))
+            .SelectMany(group => group
+                .Children
+                .OfTypeLoadoutItemWithTargetPath()
+                .Where(item =>
                 {
-                    var matchLocationId = item.TargetPath.Item2.Equals(path.LocationId);
-                    var matchPath = item.TargetPath.Item3.StartsWith(path.Path);
-                    if (matchLocationId && matchPath)
-                        return true;
-                }
-                
-                return false;
-            }).ToArray();
+                    foreach (var path in gamePaths)
+                    {
+                        var matchLocationId = item.TargetPath.Item2.Equals(path.LocationId);
+                        var matchPath = item.TargetPath.Item3.StartsWith(path.Path);
+                        if (matchLocationId && matchPath)
+                            return true;
+                    }
+                    
+                    return false;
+                }))
+            .ToArray();
 
         if (loadoutItemsToDelete.Length == 0)
-            throw new InvalidOperationException($"Unable to find Loadout files with path(s) `{gamePaths}` in group `{group.AsLoadoutItem().Name}`");
+            throw new InvalidOperationException($"Unable to find Loadout files with path(s) `{gamePaths}` in groups `{string.Join(", ", groupIds)}`");
 
-        return await DeleteFilesAndReturnNewerGroup(connection, loadoutItemsToDelete, group);
+        await DeleteFiles(connection, loadoutItemsToDelete);
     }
-    private static async Task<LoadoutItemGroup.ReadOnly> DeleteFilesAndReturnNewerGroup(IConnection connection, LoadoutItemWithTargetPath.ReadOnly[] loadoutItemsToDelete, LoadoutItemGroup.ReadOnly group)
+
+    private static async Task DeleteFiles(IConnection connection, LoadoutItemWithTargetPath.ReadOnly[] loadoutItemsToDelete)
     {
         using var tx = connection.BeginTransaction();
         foreach (var loadoutItem in loadoutItemsToDelete)
             tx.Delete(loadoutItem, recursive: false);
 
         await tx.Commit();
-        return group.Rebase();
     }
 
     private static LoadoutItemGroup.ReadOnly LoadGroup(IConnection connection, EntityId groupId)
