@@ -57,4 +57,24 @@ public static class SharedColumns
         public static string GetColumnHeader() => "Size";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
+
+    [UsedImplicitly]
+    public sealed class Value<TValue> : ICompositeColumnDefinition<Value<TValue>>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<ValueComponent<TValue>>(ComponentKey);
+            var bValue = b.GetOptional<ValueComponent<TValue>>(ComponentKey);
+            // Assuming ValueComponent has a comparable Value property or implements IComparable
+            // Adjust the comparison logic if ValueComponent comparison needs specific handling
+            return aValue.Compare(bValue); 
+        }
+
+        public const string ColumnTemplateResourceKey = Prefix + nameof(Value<TValue>);
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ValueComponent<TValue>));
+
+        public static string GetColumnHeader() => "Value";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
+}
 }

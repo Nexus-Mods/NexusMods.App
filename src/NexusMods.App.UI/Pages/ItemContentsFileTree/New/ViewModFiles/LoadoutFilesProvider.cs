@@ -45,13 +45,14 @@ public class LoadoutFilesProvider
     /// Listens to all available mod files within MnemonicDB.
     /// </summary>
     /// <param name="filesFilter">A filter which specifies one or more mod groups of items to display.</param>
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveModFiles(ModFilesFilter filesFilter)
+    /// <param name="useFullFilePaths">Renders the file names as full file paths, for when the data is viewed outside a tree.</param>
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveModFiles(ModFilesFilter filesFilter, bool useFullFilePaths)
     {
         return FilteredModFiles(filesFilter)
-              .Transform(x => ToModFileItemModel(new LoadoutFile.ReadOnly(x.Db, x.EntitySegment, x.Id)));
+              .Transform(x => ToModFileItemModel(new LoadoutFile.ReadOnly(x.Db, x.EntitySegment, x.Id), useFullFilePaths));
     }
 
-    private CompositeItemModel<EntityId> ToModFileItemModel(LoadoutFile.ReadOnly modFile)
+    private CompositeItemModel<EntityId> ToModFileItemModel(LoadoutFile.ReadOnly modFile, bool useFullFilePaths)
     {
         // Files don't have children.
         // We inject the relevant folders at the listener level, i.e. whatever calls `ObserveModFiles`
@@ -68,7 +69,7 @@ public class LoadoutFilesProvider
         //              BindableReactiveProperty from the component, so actually, not filtering
         //              might be better. Food for thought.
         var itemUpdates = LoadoutFile.Observe(_connection, modFile.Id);
-        var nameUpdates = itemUpdates.Select(FileToFileName);
+        var nameUpdates = itemUpdates.Select(x => useFullFilePaths ? FileToFileName(x) : FileToFilePath(x));
         var iconUpdates = itemUpdates.Select(FileToIconValue);
         var sizeUpdates = itemUpdates.Select(x => x.Size);
         
@@ -81,6 +82,7 @@ public class LoadoutFilesProvider
         return fileItemModel;
     }
 
+    private string FileToFilePath(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3;
     private static IconValue FileToIconValue(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFileName(modFile)).Extension.GetIconType().GetIconValue();
     private static string FileToFileName(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
 }
