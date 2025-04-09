@@ -757,10 +757,10 @@
 		<value>Kliknij, aby zobaczyć pliki zawarte w tym modzie</value>
 	</data>
 	<data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
-		<value>Gotowa do zainstalowania - wszystkie wymagane mody zostały pobrane</value>
+		<value>Wszystkie wymagane mody zostały pobrane. Gotowe do zainstalowania.</value>
 	</data>
 	<data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
-		<value>Pobrano {0} z {1} wymaganych modów</value>
+		<value>Pobrano {0} z {1} wymaganych modów. Zakończ pobieranie, aby je zainstalować.</value>
 	</data>
 	<data name="FileOriginPage_UpdateAll" xml:space="preserve">
 		<value>Zaktualizuj wszystko</value>
@@ -805,10 +805,10 @@
 		<value>Zaktualizuj do wersji {0}</value>
 	</data>
 	<data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
-		<value>Pobierz wszystkie opcjonalne mody</value>
+		<value>Autopobranie wszystkich opcjonalnych</value>
 	</data>
 	<data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
-		<value>Zainstaluj pobrane opcjonalne mody</value>
+		<value>Zainstaluj wszystkie opcjonalne</value>
 	</data>
 	<data name="RemoveGameOverlayView_Title" xml:space="preserve">
 		<value>Usuwanie {0}</value>
