@@ -36,7 +36,7 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
 
     string Name { get; }
     
-    // <inheritdoc cref="CollectionMetadata.Endorsements"/>
+    /// <inheritdoc cref="CollectionMetadata.Endorsements"/>
     ulong EndorsementCount { get; }
 
     /// <inheritdoc cref="CollectionMetadata.TotalDownloads"/>
