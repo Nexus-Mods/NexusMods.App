@@ -14,20 +14,9 @@
 
     <TabControl x:Name="SortOrdersTabControl" Classes="Subtabs">
 
-        <TabControl.Styles>
-            <Style Selector="TabControl#SortOrdersTabControl.Subtabs">
-                <!-- header padding -->
-                <Style Selector="^ > Border > DockPanel > ItemsPresenter#PART_ItemsPresenter">
-                    <Setter Property="Margin" Value="24,12" />
-                </Style>
-            </Style>
-        </TabControl.Styles>
-
         <TabControl.ItemTemplate>
             <DataTemplate DataType="sorting:ILoadOrderViewModel">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{CompiledBinding SortOrderName}" />
-                </StackPanel>
+                <TextBlock Text="{CompiledBinding SortOrderName}" />
             </DataTemplate>
         </TabControl.ItemTemplate>
 
@@ -36,7 +25,6 @@
                 <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
             </DataTemplate>
         </TabControl.ContentTemplate>
-
     </TabControl>
 
 

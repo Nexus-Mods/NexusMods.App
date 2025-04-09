@@ -11,8 +11,8 @@
             <StackPanel Spacing="24" Orientation="Horizontal">
                 <StackPanel Spacing="8">
                     <alerts:Alert ShowBody="True"
-                                    Body="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                                    ShowDismiss="False" />
+                                  Body="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                                  ShowDismiss="False" />
                     <alerts:Alert ShowBody="False" ShowActions="False" Title="Title only" />
                     <alerts:Alert Title="Info Title asdasd asd asd asd asd asd " ShowActions="True"
                                   Body="Info Body Text" Severity="Info" />
@@ -44,46 +44,63 @@
     </Design.PreviewWith>
 
     <ControlTheme x:Key="{x:Type alerts:Alert}" TargetType="alerts:Alert">
+        <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Margin" Value="0 12 0 0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
+
         <Setter Property="Template">
             <ControlTemplate>
-
                 <Border
                     Background="{TemplateBinding Background}"
-                    Margin="{TemplateBinding Margin}"
-                    Padding="{TemplateBinding Padding}"
                     CornerRadius="{TemplateBinding CornerRadius}"
                     BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}">
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Padding="{TemplateBinding Padding}">
 
-                    <StackPanel>
-
+                    <StackPanel Spacing="4">
                         <!-- top row -->
-                        <Border x:Name="TopRowBorder">
-                            <panels:FlexPanel x:Name="TopRow">
-                                <Border x:Name="TitleBorder">
-                                    <panels:FlexPanel x:Name="TitleFlexPanel">
-                                        <icons:UnifiedIcon x:Name="Icon" />
-                                        <TextBlock x:Name="TitleText" />
-                                    </panels:FlexPanel>
-                                </Border>
-
-                                <controls:StandardButton x:Name="DismissButton"
-                                                         Command="{TemplateBinding DismissCommand}"
-                                                         RightIcon="{x:Static icons:IconValues.Close}"
-                                                         ShowIcon="Right"
-                                                         ShowLabel="False"
-                                                         Type="Tertiary"
-                                                         Fill="None"/>
-                            </panels:FlexPanel>
-                        </Border>
+                        <DockPanel>
+                            <controls:StandardButton x:Name="DismissButton"
+                                                     DockPanel.Dock="Right"
+                                                     Command="{TemplateBinding DismissCommand}"
+                                                     RightIcon="{x:Static icons:IconValues.Close}"
+                                                     ShowIcon="Right"
+                                                     ShowLabel="False"
+                                                     Type="Tertiary"
+                                                     Fill="None" />
+                            <DockPanel Margin="12,8">
+                                <icons:UnifiedIcon x:Name="Icon"
+                                                   DockPanel.Dock="Left"
+                                                   Value="{x:Static icons:IconValues.Info}"
+                                                   Size="20"
+                                                   Foreground="{TemplateBinding Foreground}" />
+                                <TextBlock x:Name="TitleText"
+                                           Theme="{StaticResource BodyMDSemiTheme}"
+                                           VerticalAlignment="Center"
+                                           Margin="8,0"
+                                           TextWrapping="NoWrap"
+                                           TextTrimming="CharacterEllipsis" />
+                            </DockPanel>
+                        </DockPanel>
 
                         <!-- middle row -->
-                        <Border x:Name="BodyTextBorder">
-                            <TextBlock x:Name="BodyText" />
-                        </Border>
+                        <TextBlock x:Name="BodyText"
+                                   Margin="12 0 12 12"
+                                   Theme="{StaticResource BodySMNormalTheme}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   MaxWidth="700"
+                                   TextWrapping="Wrap" />
 
                         <!-- bottom button row -->
-                        <Border x:Name="ActionsRowBorder">
+                        <Border x:Name="ActionsRowBorder"
+                                Padding="12 0 12 12">
                             <ContentPresenter Name="PART_ContentPresenter"
                                               MaxWidth="{TemplateBinding MaxWidth}"
                                               Content="{TemplateBinding Content}"
@@ -93,92 +110,6 @@
                 </Border>
             </ControlTemplate>
         </Setter>
-
-        <!-- default styles which will be applied to the control -->
-        <Style Selector="^">
-            <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-            <Setter Property="Padding" Value="4" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-            <!-- <Setter Property="MinWidth" Value="200" /> -->
-            
-            <Style Selector="^ Border#TopRowBorder">
-                <!-- <Setter Property="Background" Value="DarkRed" /> -->
-
-                <Style Selector="^ panels|FlexPanel#TopRow">
-                    <Setter Property="AlignItems" Value="Center" />
-                    <Setter Property="JustifyContent" Value="SpaceBetween" />
-
-                    <Style Selector="^ Border#TitleBorder">
-                        <!-- <Setter Property="Background" Value="DarkSalmon" /> -->
-                        <Setter Property="Padding" Value="12,8" />
-
-                        <Style Selector="^ panels|FlexPanel#TitleFlexPanel">
-                            <!-- <Setter Property="Background" Value="DarkKhaki" /> -->
-                            <Setter Property="AlignItems" Value="Center" />
-                            <Setter Property="ColumnSpacing" Value="8" />
-                            <Setter Property="Direction" Value="Row" />
-
-                            <Style Selector="^ icons|UnifiedIcon#Icon">
-                                <Setter Property="Value" Value="{x:Static icons:IconValues.Info}" />
-                                <Setter Property="Size" Value="20" />
-                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                            </Style>
-
-                            <Style Selector="^ > TextBlock#TitleText">
-                                <!-- <Setter Property="Background" Value="DarkSlateGray" /> -->
-                                <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
-                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
-                            </Style>
-                        </Style>
-                    </Style>
-                </Style>
-
-
-                <Style Selector="^ Button#CloseButton">
-
-                    <Style Selector="^ icons|UnifiedIcon#CloseIcon">
-                        <Setter Property="Value" Value="{x:Static icons:IconValues.Close}" />
-                        <Setter Property="Size" Value="20" />
-                        <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                    </Style>
-
-                    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                        <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentHighBrush}" />
-                    </Style>
-
-                    <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                        <Setter Property="Background" Value="{DynamicResource SurfaceTranslucentLowBrush}" />
-                    </Style>
-                </Style>
-            </Style>
-
-            <!-- middle row -->
-            <Style Selector="^ Border#BodyTextBorder">
-                <!-- <Setter Property="Background" Value="DarkBlue" /> -->
-                <Setter Property="Padding" Value="12,0, 12, 12" />
-
-                <Style Selector="^ TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="MaxWidth" Value="700" />
-                    <Setter Property="TextWrapping" Value="WrapWithOverflow" />
-                </Style>
-            </Style>
-
-
-            <!-- bottom button row -->
-            <Style Selector="^ Border#ActionsRowBorder">
-                <!-- <Setter Property="Background" Value="DarkGreen" /> -->
-                <Setter Property="Padding" Value="12,0, 12, 12" />
-            </Style>
-        </Style>
 
         <Style Selector="^[Severity=Info]">
             <Setter Property="Background" Value="{StaticResource BrandInfo950}" />

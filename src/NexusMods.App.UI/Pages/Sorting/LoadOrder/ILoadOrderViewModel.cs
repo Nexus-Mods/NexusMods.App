@@ -35,9 +35,19 @@ public interface ILoadOrderViewModel : IViewModelInterface
     string InfoAlertBody { get; }
     
     /// <summary>
-    /// Command to invoke when the info alert icon is pressed (either to show or hide the alert)
+    /// Command to invoke to show the alert
     /// </summary>
-    ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
+    ReactiveCommand<Unit, Unit> ShowAlertCommand { get; }
+    
+    /// <summary>
+    /// Command to invoke to dismiss the alert
+    /// </summary>
+    ReactiveCommand<Unit, Unit> DismissAlertCommand { get; }
+    
+    /// <summary>
+    /// Command to invoke to learn more
+    /// </summary>
+    ReactiveCommand<Unit, Unit> LearnMoreAlertCommand { get; }
     
     /// <summary>
     /// Tooltip message contents for the trophy icon

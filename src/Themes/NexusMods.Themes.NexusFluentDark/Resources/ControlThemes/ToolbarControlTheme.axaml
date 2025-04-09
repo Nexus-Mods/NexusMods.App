@@ -37,8 +37,8 @@
     <ControlTheme x:Key="{x:Type controls:Toolbar}" TargetType="controls:Toolbar">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="VerticalAlignment" Value="Top" />
-        <Setter Property="Margin" Value="0" />
-        <Setter Property="Padding" Value="24, 12,24,0" />
+        <Setter Property="Margin" Value="0 6 0 0" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="Template">
             <ControlTemplate>

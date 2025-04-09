@@ -1,4 +1,5 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="loadOrder:ILoadOrdersWIPPageViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="loadOrder:ILoadOrdersWIPPageViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,5 +8,9 @@
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrdersWIPPageView">
 
-    <loadOrder:SortingSelectionView x:Name="SortingSelectionView"/>
+    <Design.DataContext>
+        <loadOrder:SortingSelectionDesignViewModel />
+    </Design.DataContext>
+
+    <loadOrder:SortingSelectionView x:Name="SortingSelectionView" Margin="24 12 24 0" />
 </reactiveUi:ReactiveUserControl>

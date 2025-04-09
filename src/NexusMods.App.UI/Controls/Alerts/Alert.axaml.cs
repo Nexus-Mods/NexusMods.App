@@ -219,9 +219,9 @@ public class Alert : ContentControl
     /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        _bodyTextBorder = e.NameScope.Find<Border>("BodyTextBorder");
-        if (_bodyTextBorder != null)
-            _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(Body);
+        // _bodyTextBorder = e.NameScope.Find<Border>("BodyTextBorder");
+        // if (_bodyTextBorder != null)
+        //     _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(Body);
 
         _actionsRowBorder = e.NameScope.Find<Border>("ActionsRowBorder");
         if (_actionsRowBorder != null)
@@ -271,10 +271,10 @@ public class Alert : ContentControl
     /// <param name="newBody">The new body text</param>
     private void UpdateBody(string? newBody)
     {
-        if (_bodyText == null || _bodyTextBorder == null) return;
+        if (_bodyText == null) return;
 
         _bodyText.Text = newBody;
-        _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(newBody);
+        _bodyText.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(newBody);
     }
 
     /// <summary>

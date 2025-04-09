@@ -7,7 +7,7 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                                 xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
-                                mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+                                mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.LoadOrderView"
                                 x:DataType="sorting:ILoadOrderViewModel">
 
@@ -22,42 +22,45 @@
         </controls:EmptyState.Subtitle>
 
         <Grid RowDefinitions="Auto, *">
-
-            <StackPanel x:Name="LoadOrderAlertStackPanel" Grid.Row="0">
-                <alerts:Alert x:Name="LoadOrderAlert"
-                              Severity="Info"
-                              ShowDismiss="True" />
-
-                <StackPanel x:Name="TitleStackPanel">
-                    <TextBlock x:Name="TitleTextBlock" />
+            <StackPanel Grid.Row="0">
+                <controls:Toolbar>
                     <controls:StandardButton x:Name="InfoAlertButton"
-                                             ShowIcon="IconOnly"
+                                             ShowIcon="Left"
+                                             ShowLabel="False"
                                              LeftIcon="{x:Static icons:IconValues.Info}"
                                              Type="Tertiary"
                                              Fill="None"
-                                             Size="Medium"/>
-                </StackPanel>
+                                             Size="Small" />
+                </controls:Toolbar>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MaxWidth="750" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <alerts:Alert x:Name="LoadOrderAlert"
+                                  Severity="Info"
+                                  ShowDismiss="False">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <controls:StandardButton x:Name="AlertDismissButton"
+                                                     Type="Secondary"
+                                                     Fill="None"
+                                                     Text="Got it" />
+                            <controls:StandardButton x:Name="AlertLearnMoreButton"
+                                                     Type="Tertiary"
+                                                     Fill="None"
+                                                     Text="Learn more"
+                                                     LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                                     ShowIcon="Left" />
+                        </StackPanel>
+                    </alerts:Alert>
+                </Grid>
             </StackPanel>
 
-            <Grid x:Name="MainGrid" Grid.Row="1" ColumnDefinitions="32, *">
-
-                <!-- left column (trophy bar) -->
-                <!-- Transparent Background so the tooltip hit box covers the whole control -->
-                <DockPanel x:Name="TrophyBarPanel">
-                    <icons:UnifiedIcon x:Name="TrophyIcon"
-                                       DockPanel.Dock="Top"
-                                       Value="{x:Static icons:IconValues.Trophy}" />
-                    <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
-                        <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
-                                           Value="{x:Static icons:IconValues.ArrowUpThick}" />
-                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
-                        <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
-                                           Value="{x:Static icons:IconValues.ArrowDownThick}" />
-                    </Grid>
-                </DockPanel>
+            <Grid x:Name="MainGrid" Grid.Row="1" ColumnDefinitions="*, 12, 24">
 
                 <!-- right column (tree data grid) -->
-                <TreeDataGrid Grid.Column="1" x:Name="SortOrderTreeDataGrid"
+                <TreeDataGrid x:Name="SortOrderTreeDataGrid" Grid.Column="0"
                               AutoDragDropRows="False"
                               CanUserResizeColumns="False"
                               CanUserSortColumns="False"
@@ -73,6 +76,21 @@
                         </ResourceDictionary>
                     </TreeDataGrid.Resources>
                 </TreeDataGrid>
+
+                <!-- left column (trophy bar) -->
+                <!-- Transparent Background so the tooltip hit box covers the whole control -->
+                <DockPanel x:Name="TrophyBarPanel" Grid.Column="2">
+                    <icons:UnifiedIcon x:Name="TrophyIcon"
+                                       DockPanel.Dock="Top"
+                                       Value="{x:Static icons:IconValues.Trophy}" />
+                    <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
+                        <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
+                                           Value="{x:Static icons:IconValues.ArrowUpThick}" />
+                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
+                        <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
+                                           Value="{x:Static icons:IconValues.ArrowDownThick}" />
+                    </Grid>
+                </DockPanel>
             </Grid>
         </Grid>
     </controls:EmptyState>
