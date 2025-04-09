@@ -51,7 +51,7 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
         if (game == null) return [];
         var ueGame = game as IUnrealEngineGameAddon;
         if (ueGame == null) return [];
-        
+
         IgnoreExecutables = gameInstallation?.Store == GameStore.XboxGamePass;
 
         var ignoredGamePaths = IgnoreExecutables
@@ -59,7 +59,7 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
             : [];
         return ignoredGamePaths;
     }
-    
+
     public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
         loadout = await base.Synchronize(loadout);
@@ -72,7 +72,7 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
             return loadout;
 
         var modStates = new Dictionary<string, LuaJsonEntry>(StringComparer.OrdinalIgnoreCase);
-        
+
         // Add the user's lua mods first.
         foreach (var mod in luaMods)
         {
@@ -101,7 +101,7 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
             {
                 Constants.JsonExtValue => JsonConvert.DeserializeObject<LuaJsonEntry[]>(content) ?? [],
                 Constants.TxtExtValue => ParseTxtFormat(content),
-                _ => throw new NotSupportedException($"Unsupported file extension: {ext}")
+                _ => throw new NotSupportedException($"Unsupported file extension: {ext}"),
             };
 
             foreach (var entry in entries)
@@ -124,8 +124,9 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
             {
                 Constants.JsonExtValue => JsonConvert.SerializeObject(modStates.Values, Formatting.Indented),
                 Constants.TxtExtValue => string.Join(Environment.NewLine,
-                    modStates.Values.Select(e => $"{e.ModName} : {(e.ModEnabled ? "1" : "0")}")),
-                _ => throw new NotSupportedException($"Unsupported file extension: {ext}")
+                    modStates.Values.Select(e => $"{e.ModName} : {(e.ModEnabled ? "1" : "0")}")
+                ),
+                _ => throw new NotSupportedException($"Unsupported file extension: {ext}"),
             };
 
             await _fs.WriteAllTextAsync(targetPath.CombineChecked(loadout.InstallationInstance), output);
@@ -134,20 +135,21 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
         return await base.Synchronize(loadout);
     }
 
-private static IEnumerable<LuaJsonEntry> ParseTxtFormat(string content)
-{
-    return content
-        .Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)
-        .Select(line =>
-        {
-            var parts = line.Split(':');
-            if (parts.Length < 2) return null;
-            return new LuaJsonEntry
-            {
-                ModName = parts[0].Trim(),
-                ModEnabled = parts[1].Trim() == "1",
-            };
-        })
+    private static IEnumerable<LuaJsonEntry> ParseTxtFormat(string content)
+    {
+        return content
+            .Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)
+            .Select(line =>
+                {
+                    var parts = line.Split(':');
+                    if (parts.Length < 2) return null;
+                    return new LuaJsonEntry
+                    {
+                        ModName = parts[0].Trim(),
+                        ModEnabled = parts[1].Trim() == "1",
+                    };
+                }
+            )
             .Where(entry => entry != null)!;
     }
 
