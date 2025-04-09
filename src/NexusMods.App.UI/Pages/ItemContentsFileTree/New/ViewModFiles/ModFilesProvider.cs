@@ -94,16 +94,16 @@ internal static class ModFilesObservableExtensions
     {
         return source.Filter(datom =>
         {
-            // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
             var segment = connection.Db.Get(datom.E);
-            var hasParent = LoadoutItem.Parent.TryGetValue(segment, out var parentId);
-            if (!hasParent)
+            
+            // Assert that this is a LoadoutFile, in case the group contains non-Files.
+            var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, segment, datom.E);
+            if (!loadoutFile.IsValid())
                 return false;
             
-            // And a direct GET to assert that it's actually a LoadoutFile for sanity.
-            // In case the LoadoutItemGroup has things that are not files.
-            var casted = new LoadoutFile.ReadOnly(connection.Db, segment, datom.E);
-            if (!casted.IsValid())
+            // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
+            var hasParent = LoadoutItem.Parent.TryGetValue(segment, out var parentId);
+            if (!hasParent)
                 return false;
             
             return modFilesFilter.ModIds
