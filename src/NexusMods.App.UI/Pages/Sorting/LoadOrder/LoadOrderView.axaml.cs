@@ -16,15 +16,15 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
     public LoadOrderView()
     {
         InitializeComponent();
+        
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadOrderView, ILoadOrderViewModel, CompositeItemModel<Guid>, Guid>(
+            this,
+            SortOrderTreeDataGrid,
+            vm => vm.Adapter
+        );
 
         this.WhenActivated(disposables =>
             {
-                TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadOrderView, ILoadOrderViewModel, CompositeItemModel<Guid>, Guid>(
-                    this,
-                    SortOrderTreeDataGrid,
-                    vm => vm.Adapter
-                );
-
                 // TreeDataGrid Source
                 this.OneWayBind(ViewModel,
                         vm => vm.Adapter.Source.Value,
