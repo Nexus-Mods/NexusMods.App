@@ -85,7 +85,7 @@ public class LoadoutFilesProvider
     private static string FileToFileName(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
 }
 
-internal static class ModFilesObservableExtensions
+internal static class LoadoutFilesObservableExtensions
 {
     internal static IObservable<IChangeSet<Datom, EntityId>> FilterInModFiles(
         this IObservable<IChangeSet<Datom, EntityId>> source,
