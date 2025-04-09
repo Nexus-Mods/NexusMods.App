@@ -48,10 +48,10 @@ public class ModFilesProvider
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveModFiles(ModFilesFilter filesFilter)
     {
         return FilteredModFiles(filesFilter)
-              .Transform(ToModFileItemModel);
+              .Transform(x => ToModFileItemModel(new LoadoutFile.ReadOnly(x.Db, x.EntitySegment, x.Id)));
     }
 
-    private CompositeItemModel<EntityId> ToModFileItemModel(LoadoutItem.ReadOnly modFile)
+    private CompositeItemModel<EntityId> ToModFileItemModel(LoadoutFile.ReadOnly modFile)
     {
         // Files don't have children.
         // We inject the relevant folders at the listener level, i.e. whatever calls `ObserveModFiles`
@@ -61,36 +61,28 @@ public class ModFilesProvider
             ChildrenObservable = Observable.Empty<IChangeSet<CompositeItemModel<EntityId>, EntityId>>(),
         };
     
-        // Observe changes to the name
+        // Observe changes. 
         // Note(sewer): This could maybe? be more efficient, possibly, by filtering only on attribute
         //              which we're looking for. However, at the same time, that is overhead.
         //              And we check if a value is the same as before when we assign the inner
         //              BindableReactiveProperty from the component, so actually, not filtering
         //              might be better. Food for thought.
-        var itemUpdates = LoadoutItem.Observe(_connection, modFile.Id);
-        var nameUpdates = itemUpdates.Select(x => x.Name);
+        var itemUpdates = LoadoutFile.Observe(_connection, modFile.Id);
+        var nameUpdates = itemUpdates.Select(FileToFileName);
         var iconUpdates = itemUpdates.Select(FileToIconValue);
-        var sizeUpdates = itemUpdates.Select(FileToSize);
+        var sizeUpdates = itemUpdates.Select(x => x.Size);
         
-        fileItemModel.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: modFile.Name, valueObservable: nameUpdates));
+        fileItemModel.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: FileToFileName(modFile), valueObservable: nameUpdates));
         fileItemModel.Add(Columns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(initialValue: FileToIconValue(modFile), valueObservable: iconUpdates));
-        fileItemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(initialValue: FileToSize(modFile), valueObservable: sizeUpdates));
+        fileItemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(initialValue: modFile.Size, valueObservable: sizeUpdates));
         // Note(sewer): File Count omitted to avoid rendering a '1' for every file for cleanliness.
         //              Will see how this goes once the columns are actually there.
 
         return fileItemModel;
     }
 
-    private static IconValue FileToIconValue(LoadoutItem.ReadOnly modFile) => ((RelativePath)modFile.Name).Extension.GetIconType().GetIconValue();
-    private static Size FileToSize(LoadoutItem.ReadOnly modFile)
-    {
-        // Direct cast, to avoid casting twice unnecessarily and doing an IsValid DB call
-        var casted = new LoadoutFile.ReadOnly(modFile.Db, modFile.EntitySegment, modFile.Id);
-        return !casted.IsValid() 
-            ? Size.Zero 
-            : casted.Size;
-    }
-
+    private static IconValue FileToIconValue(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFileName(modFile)).Extension.GetIconType().GetIconValue();
+    private static string FileToFileName(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
 }
 
 internal static class ModFilesObservableExtensions
