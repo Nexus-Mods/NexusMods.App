@@ -9,16 +9,14 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
-using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using ZLinq;
 
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 
 /// <summary>
-/// Provides files for <see cref="LoadoutItemGroup"/>
+/// Provides files for multiple <see cref="LoadoutItemGroup"/>(s) specified by a <see cref="ModFilesFilter"/>.
 /// </summary>
 [UsedImplicitly]
 public class ModFilesProvider
