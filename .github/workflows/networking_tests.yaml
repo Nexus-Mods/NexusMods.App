@@ -1,12 +1,8 @@
 name: Networking Tests
 
 on:
-  schedule:
-    - cron: '0 12 * * *'
   workflow_dispatch:
   push:
-    branches:
-      - main
 
 jobs:
   build:
@@ -22,7 +18,7 @@ jobs:
     strategy:
       matrix:
         #os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [windows-latest]
+        os: [nexusmods-networking-runner-1]
 
     steps:
       - uses: actions/checkout@v3
