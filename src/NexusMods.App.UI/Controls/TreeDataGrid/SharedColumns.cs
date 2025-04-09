@@ -77,4 +77,3 @@ public static class SharedColumns
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 }
-}
