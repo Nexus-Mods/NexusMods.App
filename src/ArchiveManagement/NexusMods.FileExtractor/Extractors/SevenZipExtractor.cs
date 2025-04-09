@@ -161,26 +161,9 @@ public class SevenZipExtractor : IExtractor
     /// </summary>
     internal static string FixFileName(ReadOnlySpan<char> input)
     {
-        Span<char> output = stackalloc char[input.Length];
-        var outputIndex = 0;
-
-        var isFixing = true;
-        for (var inputIndex = input.Length - 1; inputIndex >= 0; inputIndex--)
-        {
-            var current = input[inputIndex];
-            if (isFixing)
-            {
-                if (IsInvalidChar(current)) continue;
-                isFixing = false;
-            }
-
-            output[outputIndex++] = current;
-        }
-
-        var slice = output.SliceFast(start: 0, length: outputIndex);
-        slice.Reverse();
-
-        return slice.ToString();
+        const string charsToTrim = " .";
+        var output = input.TrimEnd(charsToTrim);
+        return output.ToString();
     }
 
     internal static void To7ZipWindowsExtractionPath(Span<char> input)
