@@ -16,6 +16,11 @@ public class NativeFileStreamFactory : IStreamFactory
     /// <inheritdoc />
     public IPath Name => _file;
 
+    /// <summary>
+    /// Absolute path to the file.
+    /// </summary>
+    public AbsolutePath Path => _file;
+
     /// <summary/>
     /// <param name="file">Absolute path of the file.</param>
     public NativeFileStreamFactory(AbsolutePath file) => _file = file;

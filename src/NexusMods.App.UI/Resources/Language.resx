@@ -781,10 +781,10 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>View files contained within this mod</value>
     </data>
     <data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
-        <value>Ready to install - All required mods downloaded</value>
+        <value>All required mods downloaded. Ready to install.</value>
     </data>
     <data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
-        <value>{0} of {1} required mods downloaded</value>
+        <value>{0} of {1} required mods downloaded. Complete downloads to install.</value>
     </data>
     <data name="FileOriginPage_UpdateAll" xml:space="preserve">
         <value>Update All</value>
@@ -819,7 +819,7 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
 
     <data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
-        <value>Download all required mods</value>
+        <value>Auto-download all</value>
     </data>
     <data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
         <value>Install Collection</value>
@@ -831,10 +831,10 @@ To apply changes or launch the game again, please close the game first.</value>
         <value>Update to Revision {0}</value>
     </data>
     <data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
-        <value>Download all optional mods</value>
+        <value>Auto-download all optional</value>
     </data>
     <data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
-        <value>Install downloaded optional mods</value>
+        <value>Install all optional</value>
     </data>
 
 

@@ -134,7 +134,7 @@
 
         <!-- Resources for TabItem.xaml -->
         <x:Double x:Key="TabItemHeaderFontSize">24</x:Double>
-        <Thickness x:Key="TabItemHeaderMargin">24,16,0,0</Thickness>
+        <Thickness x:Key="TabItemHeaderMargin">24,0,0,0</Thickness>
         <Thickness x:Key="TabItemMargin">0</Thickness>
         <FontWeight x:Key="TabItemHeaderThemeFontWeight">SemiLight</FontWeight>
         <StaticResource x:Key="TabControlBackground" ResourceKey="SurfaceTransparentBrush" />

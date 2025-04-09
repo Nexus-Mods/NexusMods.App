@@ -79,7 +79,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         var tree = LibraryArchiveTree.Create(libraryArchive);
 
         var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(tree, _fileSystem, _fileStore,cancellationToken);
-        if (analyzerInfo is null) return new NotSupported();
+        if (analyzerInfo is null) return new NotSupported(Reason: "Found no FOMOD data in the archive");
 
         await using var tmpFolder = _temporaryFileManager.CreateFolder();
         await analyzerInfo.DumpToFileSystemAsync(tmpFolder.Path.Combine(analyzerInfo.PathPrefix));

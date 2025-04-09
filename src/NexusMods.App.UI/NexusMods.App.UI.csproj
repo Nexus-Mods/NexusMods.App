@@ -83,6 +83,7 @@
         <PackageReference Include="TextMateSharp.Grammars" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="ZLinq" />
     </ItemGroup>
 
     <ItemGroup>
@@ -728,6 +729,9 @@
         </Compile>
         <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
           <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\UnifiedIconComponent.cs">
+          <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
           <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>

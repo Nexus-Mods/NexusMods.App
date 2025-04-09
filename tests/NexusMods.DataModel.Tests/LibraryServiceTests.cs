@@ -24,6 +24,20 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
     }
 
     [Fact]
+    public async Task Test_Issue3003()
+    {
+        const string fileName = "zip-with-spaces.zip";
+        var archivePath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(fileName);
+        archivePath.FileExists.Should().BeTrue();
+
+        var localFile = await _libraryService.AddLocalFile(archivePath);
+        localFile.AsLibraryFile().TryGetAsLibraryArchive(out var libraryArchive).Should().BeTrue();
+        libraryArchive.IsValid().Should().BeTrue();
+
+        libraryArchive.Children.Should().Contain(x => x.Path.ToString() == "bar/foo/bar.txt");
+    }
+
+    [Fact]
     public async Task KnownNestedArchiveIsExtracted()
     {
         // Archives with known extensions should be extracted and have their contents analyzed
