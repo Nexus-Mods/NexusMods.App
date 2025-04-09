@@ -36,7 +36,7 @@ public static class ModFilesHelpers
             .SelectMany(group => group
                 .Children
                 .OfTypeLoadoutItemWithTargetPath()
-                .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path)))
+                .Where(item => PathMatches(item, gamePath)))
             .ToArray();
 
         if (loadoutItemsToDelete.Length == 0)
@@ -68,18 +68,7 @@ public static class ModFilesHelpers
             .SelectMany(group => group
                 .Children
                 .OfTypeLoadoutItemWithTargetPath()
-                .Where(item =>
-                {
-                    foreach (var path in gamePaths)
-                    {
-                        var matchLocationId = item.TargetPath.Item2.Equals(path.LocationId);
-                        var matchPath = item.TargetPath.Item3.StartsWith(path.Path);
-                        if (matchLocationId && matchPath)
-                            return true;
-                    }
-                    
-                    return false;
-                }))
+                .Where(item => PathMatchesAny(item, gamePaths)))
             .ToArray();
 
         if (loadoutItemsToDelete.Length == 0)
@@ -87,6 +76,21 @@ public static class ModFilesHelpers
 
         await DeleteFiles(connection, loadoutItemsToDelete);
         return missingGroups.Length > 0 ? GroupOperationStatus.MissingGroups : GroupOperationStatus.Success;
+    }
+
+    private static bool PathMatches(LoadoutItemWithTargetPath.ReadOnly item, GamePath path)
+    {
+        return item.TargetPath.Item2.Equals(path.LocationId) && item.TargetPath.Item3.StartsWith(path.Path);
+    }
+
+    private static bool PathMatchesAny(LoadoutItemWithTargetPath.ReadOnly item, GamePath[] paths)
+    {
+        foreach (var path in paths)
+        {
+            if (PathMatches(item, path))
+                return true;
+        }
+        return false;
     }
 
     private static (LoadoutItemGroup.ReadOnly[] validGroups, EntityId[] missingGroups) FilterValidGroups(IConnection connection, EntityId[] groupIds, bool requireAllGroups)
