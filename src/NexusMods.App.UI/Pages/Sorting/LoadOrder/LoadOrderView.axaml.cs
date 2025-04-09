@@ -7,6 +7,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using ReactiveUI;
+using Guid = System.Guid;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
@@ -129,14 +130,14 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
         var source = dragInfo.Source;
         var indices = dragInfo.Indexes;
 
-        var models = new List<LoadOrderItemModel>();
+        var models = new List<CompositeItemModel<Guid>>();
 
         foreach (var modelIndex in indices)
         {
             var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
             var row = source.Rows[rowIndex];
             var model = row.Model;
-            if (model is LoadOrderItemModel loadOrderItemModel)
+            if (model is CompositeItemModel<Guid> loadOrderItemModel)
                 models.Add(loadOrderItemModel);
         }
     }
