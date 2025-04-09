@@ -58,6 +58,7 @@ public static class Services
         if (startupMode.RunAsMain)
         {
             services
+                .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                 .AddDataModel()
                 .AddLibrary()
                 .AddLibraryModels()
