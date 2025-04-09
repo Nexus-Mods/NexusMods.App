@@ -110,7 +110,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Sum(static size => (long)size.Value)
             .Select(static size => Size.FromLong(size));
 
-        parentItemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(
+        parentItemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(
             initialValue: Size.Zero,
             valueObservable: sizeObservable
         ));
@@ -217,7 +217,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: fileMetadata.Version));
 
         if (libraryItem.FileMetadata.Size.TryGet(out var size))
-            itemModel.Add(LibraryColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
+            itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);

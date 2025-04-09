@@ -21,21 +21,6 @@ public interface IExtractor
     public Extension[] SupportedExtensions { get; }
 
     /// <summary>
-    /// Extracts and calls `func` over every entry in an archive.
-    /// </summary>
-    /// <param name="source">The source of the incoming stream</param>
-    /// <param name="func">Function to apply to each entry in the archive</param>
-    /// <param name="token">Cancellation token for the process</param>
-    /// <typeparam name="T">Return type</typeparam>
-    /// <returns>A Dictionary of RelativePath -> Return value from `func`</returns>
-    /// <remarks>
-    ///     Does not extract files to disk. If you need to save the data; copy it elsewhere.
-    ///     The source data passed to func can be in-memory.
-    /// </remarks>
-    public Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory source,
-        Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token = default);
-
-    /// <summary>
     /// Unconditionally extract all files from `sFn` to a specific folder.
     /// </summary>
     /// <param name="source">The source of the incoming stream</param>

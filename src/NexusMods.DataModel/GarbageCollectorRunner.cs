@@ -27,7 +27,7 @@ public class GarbageCollectorRunner(ISettingsManager settings, NxFileStore store
     }
     
     /// <inheritdoc />
-    public void RunWithMode(GarbageCollectorRunMode gcRunMode)
+    public async Task RunWithMode(GarbageCollectorRunMode gcRunMode)
     {
         switch (gcRunMode)
         {
@@ -36,6 +36,9 @@ public class GarbageCollectorRunner(ISettingsManager settings, NxFileStore store
                 break;
             case GarbageCollectorRunMode.RunAsyncInBackground:
                 RunAsync().FireAndForget(_logger);
+                break;
+            case GarbageCollectorRunMode.RunAsynchronously:
+                await RunAsync();
                 break;
             case GarbageCollectorRunMode.DoNotRun:
                 break;

@@ -10,6 +10,8 @@ public record GameLocatorSettings : ISettings
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
+        if (!CompileConstants.IsDebug) return settingsBuilder;
+
         return settingsBuilder
             .ConfigureStorageBackend<GameLocatorSettings>(builder => builder.UseJson())
             .AddToUI<GameLocatorSettings>(builder => builder

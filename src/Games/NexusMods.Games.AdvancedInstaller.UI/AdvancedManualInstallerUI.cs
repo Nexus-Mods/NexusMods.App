@@ -49,11 +49,11 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        if (Headless) return new NotSupported();
+        if (Headless) return new NotSupported(Reason: "The advanced manual installer can't be used in headless mode");
         var tree = LibraryArchiveTree.Create(libraryArchive);
         var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(loadoutGroup.GetLoadoutItem(transaction).Name, tree, loadout);
 
-        if (!shouldInstall) return new NotSupported();
+        if (!shouldInstall) return new NotSupported(Reason: "The user chose to abort the installation");
 
         deploymentData.CreateLoadoutItems(tree, loadout, loadoutGroup, transaction);
         return new Success();
