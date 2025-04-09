@@ -63,76 +63,94 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
     public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
         loadout = await base.Synchronize(loadout);
+
         var luaMods = ScriptingSystemLuaLoadoutItem.All(loadout.Db)
             .Where(l => l.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadout.LoadoutId)
             .ToArray();
-        
-        if (!luaMods.Any() || !Utils.TryGetLuaModsLoadOrderFile(loadout, out var loadOrderFiles)) 
-            return loadout;
-        
-        var serializeableLuaMods = luaMods
-            .Select(x => new LuaJsonEntry()
-            {
-                ModName = x.LoadOrderName,
-                ModEnabled = !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled,
-            })
-            .ToArray();
-        
-        var deserializedData = loadOrderFiles!
-            .SelectMany(loFile =>
-            {
-                var fileName = loFile.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
-                using var stream = _fileStore.GetFileStream(loFile.Hash, CancellationToken.None).Result;
-                using var sr = new StreamReader(stream);
-                var data = sr.ReadToEnd();
-                if (data == string.Empty) return Array.Empty<LuaJsonEntry>();
-                var deserializedEntries = fileName.Extension.ToString() switch
-                {
-                    Constants.JsonExtValue => JsonConvert.DeserializeObject<LuaJsonEntry[]>(data) ?? Array.Empty<LuaJsonEntry>(),
-                    Constants.TxtExtValue => data.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(x =>
-                        {
-                            var parts = x.Split(':');
-                            if (parts.Length < 2) return null;
-                            return new LuaJsonEntry
-                            {
-                                ModName = parts[0].Trim(),
-                                ModEnabled = parts[1].Trim() == "1",
-                            };
-                        })
-                        .Where(entry => entry != null),
-                    _ => throw new NotSupportedException($"Unsupported file extension: {fileName.Extension}"),
-                };
 
-                return serializeableLuaMods
-                    .Concat(deserializedEntries)
-                    .GroupBy(entry => entry!.ModName)
-                    .Select(group => group.First())
-                    .ToArray();
-            })
-            .GroupBy(entry => entry!.ModName)
-            .Select(group => group.First())
-            .ToList();
+        if (luaMods.Length == 0 || !Utils.TryGetLuaModsLoadOrderFile(loadout, out var loadOrderFiles))
+            return loadout;
+
+        var modStates = new Dictionary<string, LuaJsonEntry>(StringComparer.OrdinalIgnoreCase);
         
-        foreach (var file in loadOrderFiles!)
+        // Add the user's lua mods first.
+        foreach (var mod in luaMods)
         {
-            var fileName = file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
-            var targetPath = fileName.Extension.Equals(Constants.JsonExt)
-                ? Constants.LuaModsLoadOrderFileJson
-                : Constants.LuaModsLoadOrderFileTxt;
-            var serializedContent = fileName.Extension.ToString() switch
+            var item = mod.AsLoadoutItemGroup().AsLoadoutItem();
+            modStates[mod.LoadOrderName] = new LuaJsonEntry
             {
-                Constants.JsonExtValue => JsonConvert.SerializeObject(deserializedData, Formatting.Indented),
-                Constants.TxtExtValue => string.Join(Environment.NewLine, deserializedData
-                    .Select(entry => $"{entry!.ModName} : {(entry.ModEnabled ? "1" : "0")}")),
-                _ => throw new NotSupportedException($"Unsupported file extension: {fileName.Extension}"),
+                ModName = mod.LoadOrderName,
+                ModEnabled = !item.IsDisabled
+            };
+        }
+
+        // Merge with existing file data
+        foreach (var loFile in loadOrderFiles!)
+        {
+            var fileName = loFile.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
+            var ext = fileName.Extension.ToString();
+
+            await using var stream = await _fileStore.GetFileStream(loFile.Hash, CancellationToken.None);
+            using var reader = new StreamReader(stream);
+            var content = await reader.ReadToEndAsync();
+
+            if (string.IsNullOrWhiteSpace(content))
+                continue;
+
+            var entries = ext switch
+            {
+                Constants.JsonExtValue => JsonConvert.DeserializeObject<LuaJsonEntry[]>(content) ?? [],
+                Constants.TxtExtValue => ParseTxtFormat(content),
+                _ => throw new NotSupportedException($"Unsupported file extension: {ext}")
             };
 
-            await _fs.WriteAllTextAsync(targetPath.CombineChecked(loadout.InstallationInstance), serializedContent);
+            foreach (var entry in entries)
+            {
+                modStates.TryAdd(entry.ModName, entry);
+            }
         }
-        
+
+        // Write updated files
+        foreach (var file in loadOrderFiles)
+        {
+            var fileName = file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
+            var ext = fileName.Extension.ToString();
+
+            var targetPath = ext.Equals(Constants.JsonExtValue)
+                ? Constants.LuaModsLoadOrderFileJson
+                : Constants.LuaModsLoadOrderFileTxt;
+
+            var output = ext switch
+            {
+                Constants.JsonExtValue => JsonConvert.SerializeObject(modStates.Values, Formatting.Indented),
+                Constants.TxtExtValue => string.Join(Environment.NewLine,
+                    modStates.Values.Select(e => $"{e.ModName} : {(e.ModEnabled ? "1" : "0")}")),
+                _ => throw new NotSupportedException($"Unsupported file extension: {ext}")
+            };
+
+            await _fs.WriteAllTextAsync(targetPath.CombineChecked(loadout.InstallationInstance), output);
+        }
+
         return await base.Synchronize(loadout);
     }
+
+private static IEnumerable<LuaJsonEntry> ParseTxtFormat(string content)
+{
+    return content
+        .Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries)
+        .Select(line =>
+        {
+            var parts = line.Split(':');
+            if (parts.Length < 2) return null;
+            return new LuaJsonEntry
+            {
+                ModName = parts[0].Trim(),
+                ModEnabled = parts[1].Trim() == "1",
+            };
+        })
+            .Where(entry => entry != null)!;
+    }
+
 
     // public override bool IsIgnoredBackupPath(GamePath path)
     // {
