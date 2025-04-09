@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reactive.Disposables;
@@ -106,17 +107,26 @@ public class SevenZipExtractor : IExtractor
                 fileNameOnDisk = fileName;
             }
 
-            var trimmedFileName = fileName.Trim();
+            var fixedFileName = FixFileName(fileName);
+            Debug.Assert(fixedFileName.All(c => !IsInvalidChar(c)), message: $"`{fixedFileName}` should be fixed");
 
             var source = System.IO.Path.Combine(nativePath, fileNameOnDisk);
-            var destination = System.IO.Path.Combine(nativePath, trimmedFileName);
+            var destination = System.IO.Path.Combine(nativePath, fixedFileName);
 
             if (isDirectory)
             {
                 try
                 {
                     _logger.LogWarning("Fixing path by moving directory from `{From}` to `{To}`", source, destination);
-                    System.IO.Directory.Move(source, destination);
+                    if (System.IO.Directory.Exists(destination))
+                    {
+                        _logger.LogWarning("Destination directory `{Destination}` already exists, deleting source instead", destination);
+                        System.IO.Directory.Delete(source, recursive: true);
+                    }
+                    else
+                    {
+                        System.IO.Directory.Move(source, destination);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -128,7 +138,15 @@ public class SevenZipExtractor : IExtractor
                 try
                 {
                     _logger.LogWarning("Fixing path by moving file from `{From}` to `{To}`", source, destination);
-                    System.IO.File.Move(source, destination);
+                    if (System.IO.File.Exists(destination))
+                    {
+                        _logger.LogWarning("Destination file `{Destination}` already exists, deleting source instead", destination);
+                        System.IO.File.Delete(source);
+                    }
+                    else
+                    {
+                        System.IO.File.Move(source, destination);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -136,6 +154,33 @@ public class SevenZipExtractor : IExtractor
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Fixes a file name from the archive to work on all platforms properly and consistently.
+    /// </summary>
+    internal static string FixFileName(ReadOnlySpan<char> input)
+    {
+        Span<char> output = stackalloc char[input.Length];
+        var outputIndex = 0;
+
+        var isFixing = true;
+        for (var inputIndex = input.Length - 1; inputIndex >= 0; inputIndex--)
+        {
+            var current = input[inputIndex];
+            if (isFixing)
+            {
+                if (IsInvalidChar(current)) continue;
+                isFixing = false;
+            }
+
+            output[outputIndex++] = current;
+        }
+
+        var slice = output.SliceFast(start: 0, length: outputIndex);
+        slice.Reverse();
+
+        return slice.ToString();
     }
 
     internal static void To7ZipWindowsExtractionPath(Span<char> input)
@@ -148,7 +193,7 @@ public class SevenZipExtractor : IExtractor
         // Although the underlying file system may support such names, the Windows shell and user interface does not.
         // However, it is acceptable to specify a period as the first character of a name. For example, ".temp".
 
-        for (var i = input.Length - 1; i > 0; i--)
+        for (var i = input.Length - 1; i >= 0; i--)
         {
             var current = input[i];
             if (!IsInvalidChar(current)) break;

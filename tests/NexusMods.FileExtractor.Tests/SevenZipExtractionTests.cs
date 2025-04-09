@@ -26,6 +26,23 @@ public class SevenZipExtractionTests
         _fileSystem = fileSystem;
     }
 
+    [Fact]
+    public async Task Test_Issue3003()
+    {
+        const string fileName = "zip-with-spaces.zip";
+        var archivePath = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(fileName);
+        archivePath.FileExists.Should().BeTrue();
+
+        await using var destination = _temporaryFileManager.CreateFolder();
+        await _extractor.ExtractAllAsync(archivePath, destination);
+
+        var files = destination.Path.EnumerateFiles().ToArray();
+        files.Should().AllSatisfy(file =>
+        {
+            file.FileExists.Should().BeTrue(because: $"should exist {file}");
+        });
+    }
+
     [Theory]
     [InlineData("foo/bar", "foo/bar")]
     [InlineData("foo/bar ", "foo/bar_")]
@@ -33,6 +50,9 @@ public class SevenZipExtractionTests
     [InlineData("foo/bar.", "foo/bar_")]
     [InlineData("foo/bar..", "foo/bar__")]
     [InlineData("foo/bar. ", "foo/bar__")]
+    [InlineData(". ", "__")]
+    [InlineData(".", "_")]
+    [InlineData(" ", "_")]
     public void Test_To7ZipWindowsExtractionPath(string input, string expected)
     {
         Span<char> span = stackalloc char[input.Length];
@@ -42,6 +62,19 @@ public class SevenZipExtractionTests
         SevenZipExtractor.To7ZipWindowsExtractionPath(slice);
 
         var actual = slice.ToString();
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("foo/bar.baz", "foo/bar.baz")]
+    [InlineData("foo bar.baz", "foo bar.baz")]
+    [InlineData("foo.bar.", "foo.bar")]
+    [InlineData("foo/bar ", "foo/bar")]
+    [InlineData("foo/bar .", "foo/bar")]
+    [InlineData("foo/bar. ", "foo/bar")]
+    public void Test_FixFileName(string input, string expected)
+    {
+        var actual = SevenZipExtractor.FixFileName(input);
         actual.Should().Be(expected);
     }
 

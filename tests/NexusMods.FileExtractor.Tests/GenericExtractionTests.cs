@@ -19,20 +19,6 @@ public class GenericExtractionTests
         _temporaryFileManager = temporaryFileManager;
     }
 
-    [Fact]
-    public async Task Test_Issue3003()
-    {
-        const string fileName = "zip-with-spaces.zip";
-        var archivePath = FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(fileName);
-        archivePath.FileExists.Should().BeTrue();
-
-        await using var destination = _temporaryFileManager.CreateFolder();
-        await _extractor.ExtractAllAsync(archivePath, destination);
-
-        var files = destination.Path.EnumerateFiles().ToArray();
-        files.Should().AllSatisfy(file => file.FileExists.Should().BeTrue(because: $"should exist {file}"));
-    }
-
     [Theory]
     [MemberData(nameof(Archives))]
     public async Task CanExtractAll(AbsolutePath path)
