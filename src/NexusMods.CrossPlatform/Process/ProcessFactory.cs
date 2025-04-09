@@ -61,12 +61,10 @@ internal class ProcessFactory : IProcessFactory
         }
     }
 
-    private ulong _lastGeneratedId;
-    private string GetLogFileName(string fileName)
+    private static string GetLogFileName(string fileName)
     {
-        var now = _timeProvider.GetLocalNow();
-        var id = Interlocked.Increment(ref _lastGeneratedId);
-        return $"{fileName}-{now:yyyy-MM-dd_HH-mm-ss}-{id}";
+        var id = Guid.NewGuid();
+        return $"{fileName}-{id:D}";
     }
 
     /// <inheritdoc />
