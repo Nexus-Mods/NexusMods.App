@@ -34,7 +34,14 @@ public class Stalker2Game(IServiceProvider provider) : AUnrealEngineGame(provide
     public override string Name => "STALKER 2: Heart of Chornobyl";
     public override GameId GameId => GameIdStatic;
     public override SupportType SupportType => SupportType.Official;
-    
+
+    public override IEnumerable<FAesKey> AESKeys => new List<FAesKey>
+    {
+        new ("0x33A604DF49A07FFD4A4C919962161F5C35A134D37EFA98DB37A34F6450D7D386"),
+    };
+
+    public override VersionContainer? VersionContainer => new (EGame.GAME_Stalker2);
+
     public override GamePath GetPrimaryFile(GameStore store) => store == GameStore.XboxGamePass
         //? new GamePath(Constants.BinariesLocationId, "Stalker2-WinGDK-Shipping.exe")
         ? new GamePath(Constants.GameMainLocationId, "gamelaunchhelper.exe")

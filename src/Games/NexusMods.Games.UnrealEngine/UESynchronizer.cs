@@ -1,12 +1,9 @@
-using System.Text;
-using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
@@ -80,7 +77,7 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
             modStates[mod.LoadOrderName] = new LuaJsonEntry
             {
                 ModName = mod.LoadOrderName,
-                ModEnabled = !item.IsDisabled
+                ModEnabled = !item.IsDisabled,
             };
         }
 
