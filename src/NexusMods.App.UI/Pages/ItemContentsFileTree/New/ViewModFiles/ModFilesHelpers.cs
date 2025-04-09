@@ -22,11 +22,17 @@ public static class ModFilesHelpers
     /// <param name="connection">The connection used to MnemonicDB.</param>
     /// <param name="groupIds">The <see cref="LoadoutItemGroup"/> IDs (usually mod) to remove files from</param>
     /// <param name="gamePath">The game path to match. Every file starting with this path is removed.</param>
-    /// <returns>A task that completes when the files are removed.</returns>
-    public static async Task RemoveFileOrFolder(IConnection connection, EntityId[] groupIds, GamePath gamePath)
+    /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
+    /// <returns>A task that completes with the operation status when the files are removed.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing</exception>
+    public static async Task<GroupOperationStatus> RemoveFileOrFolder(IConnection connection, EntityId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
     {
-        var loadoutItemsToDelete = groupIds
-            .Select(id => LoadGroup(connection, id))
+        var (validGroups, missingGroups) = FilterValidGroups(connection, groupIds, requireAllGroups);
+        
+        if (validGroups.Length == 0)
+            return GroupOperationStatus.NoItemsDeleted;
+            
+        var loadoutItemsToDelete = validGroups
             .SelectMany(group => group
                 .Children
                 .OfTypeLoadoutItemWithTargetPath()
@@ -34,9 +40,10 @@ public static class ModFilesHelpers
             .ToArray();
 
         if (loadoutItemsToDelete.Length == 0)
-            throw new InvalidOperationException($"Unable to find Loadout files with path `{gamePath}` in groups `{string.Join(", ", groupIds)}`");
+            return GroupOperationStatus.NoItemsDeleted;
 
         await DeleteFiles(connection, loadoutItemsToDelete);
+        return missingGroups.Length > 0 ? GroupOperationStatus.MissingGroups : GroupOperationStatus.Success;
     }
 
     /// <summary>
@@ -47,11 +54,17 @@ public static class ModFilesHelpers
     /// <param name="connection">The connection used to MnemonicDB.</param>
     /// <param name="groupIds">The <see cref="LoadoutItemGroup"/> IDs (usually mod) to remove files from</param>
     /// <param name="gamePaths">The game path to match. All files starting with any of these paths are removed.</param>
-    /// <returns>A task that completes when the files are removed.</returns>
-    public static async Task RemoveFileOrFolders(IConnection connection, EntityId[] groupIds, GamePath[] gamePaths)
+    /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
+    /// <returns>A task that completes with the operation status when the files are removed.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing</exception>
+    public static async Task<GroupOperationStatus> RemoveFileOrFolders(IConnection connection, EntityId[] groupIds, GamePath[] gamePaths, bool requireAllGroups = true)
     {
-        var loadoutItemsToDelete = groupIds
-            .Select(id => LoadGroup(connection, id))
+        var (validGroups, missingGroups) = FilterValidGroups(connection, groupIds, requireAllGroups);
+        
+        if (validGroups.Length == 0)
+            return GroupOperationStatus.NoItemsDeleted;
+            
+        var loadoutItemsToDelete = validGroups
             .SelectMany(group => group
                 .Children
                 .OfTypeLoadoutItemWithTargetPath()
@@ -70,9 +83,30 @@ public static class ModFilesHelpers
             .ToArray();
 
         if (loadoutItemsToDelete.Length == 0)
-            throw new InvalidOperationException($"Unable to find Loadout files with path(s) `{gamePaths}` in groups `{string.Join(", ", groupIds)}`");
+            return GroupOperationStatus.NoItemsDeleted;
 
         await DeleteFiles(connection, loadoutItemsToDelete);
+        return missingGroups.Length > 0 ? GroupOperationStatus.MissingGroups : GroupOperationStatus.Success;
+    }
+
+    private static (LoadoutItemGroup.ReadOnly[] validGroups, EntityId[] missingGroups) FilterValidGroups(IConnection connection, EntityId[] groupIds, bool requireAllGroups)
+    {
+        var validGroups = new List<LoadoutItemGroup.ReadOnly>();
+        var missingGroups = new List<EntityId>();
+
+        foreach (var groupId in groupIds)
+        {
+            var group = LoadoutItemGroup.Load(connection.Db, groupId);
+            if (group.IsValid())
+                validGroups.Add(group);
+            else
+                missingGroups.Add(groupId);
+        }
+
+        if (requireAllGroups && missingGroups.Count > 0)
+            throw new InvalidOperationException($"Missing group IDs: {string.Join(", ", missingGroups)}");
+
+        return (validGroups.ToArray(), missingGroups.ToArray());
     }
 
     private static async Task DeleteFiles(IConnection connection, LoadoutItemWithTargetPath.ReadOnly[] loadoutItemsToDelete)
@@ -83,13 +117,25 @@ public static class ModFilesHelpers
 
         await tx.Commit();
     }
-
-    private static LoadoutItemGroup.ReadOnly LoadGroup(IConnection connection, EntityId groupId)
+    
+    /// <summary>
+    /// Result status for group operations
+    /// </summary>
+    public enum GroupOperationStatus
     {
-        var group = LoadoutItemGroup.Load(connection.Db, groupId);
-        if (!group.IsValid())
-            throw new InvalidOperationException($"Invalid group ID: {groupId}");
-
-        return group;
+        /// <summary>
+        /// No items were deleted from any of the groups.
+        /// </summary>
+        NoItemsDeleted,
+        
+        /// <summary>
+        /// Some groups were missing but delete operation completed for existing ones
+        /// </summary>
+        MissingGroups,
+        
+        /// <summary>
+        /// All items from all groups were deleted successfully
+        /// </summary>
+        Success,
     }
 }
