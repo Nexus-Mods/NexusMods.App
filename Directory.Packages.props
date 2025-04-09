@@ -53,6 +53,7 @@
     <PackageVersion Include="Polly" Version="8.5.0" />
     <PackageVersion Include="Verify" Version="28.2.1" />
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />
+    <PackageVersion Include="ZLinq" Version="0.9.6" />
     <PackageVersion Include="ZstdSharp.Port" Version="0.8.2" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>

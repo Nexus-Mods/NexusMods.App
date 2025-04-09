@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Pages.ItemContentsFileTree.New;
 
 namespace NexusMods.App.UI.Controls;
 
@@ -38,6 +39,22 @@ public static class SharedColumns
         public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(DateComponent));
 
         public static string GetColumnHeader() => "Installed";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
+    
+    [UsedImplicitly]
+    public sealed class ItemSize : ICompositeColumnDefinition<ItemSize>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<SizeComponent>(key: ComponentKey);
+            var bValue = b.GetOptional<SizeComponent>(key: ComponentKey);
+            return aValue.Compare(bValue);
+        }
+
+        public const string ColumnTemplateResourceKey = Prefix + "_" + nameof(ItemSize);
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(SizeComponent));
+        public static string GetColumnHeader() => "Size";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
 }
