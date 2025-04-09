@@ -35,8 +35,8 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .Subscribe(isWinnerTop =>
                         {
                             DockPanel.SetDock(TrophyIcon, isWinnerTop ? Dock.Top : Dock.Bottom);
-                            TrophyBarPanel.Classes.ToggleIf("IsWinnerTop", isWinnerTop);
-                            TrophyBarPanel.Classes.ToggleIf("IsWinnerBottom", !isWinnerTop);
+                            TrophyBarDockPanel.Classes.ToggleIf("IsWinnerTop", isWinnerTop);
+                            TrophyBarDockPanel.Classes.ToggleIf("IsWinnerBottom", !isWinnerTop);
                         }
                     )
                     .DisposeWith(disposables);
@@ -54,7 +54,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
 
                 // trophy tooltip
                 this.WhenAnyValue(view => view.ViewModel!.TrophyToolTip)
-                    .Subscribe(tooltip => { ToolTip.SetTip(TrophyBarPanel, tooltip); })
+                    .Subscribe(tooltip => { ToolTip.SetTip(TrophyBarDockPanel, tooltip); })
                     .DisposeWith(disposables);
 
                 // Empty state

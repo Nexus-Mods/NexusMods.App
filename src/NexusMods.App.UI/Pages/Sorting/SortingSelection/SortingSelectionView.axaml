@@ -5,7 +5,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="700"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.SortingSelectionView">
 
     <Design.DataContext>

@@ -286,7 +286,7 @@ public class Alert : ContentControl
         if (_icon != null)
             _icon.Value = newSeverity switch
             {
-                SeverityOptions.Info => IconValues.Info,
+                SeverityOptions.Info => IconValues.HelpOutline,
                 SeverityOptions.Success => IconValues.CheckCircleOutline,
                 SeverityOptions.Warning => IconValues.WarningAmber,
                 SeverityOptions.Error => IconValues.Warning,

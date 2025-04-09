@@ -31,60 +31,64 @@
         </Style>
 
         <Style Selector="^ Grid#MainGrid">
-            <Setter Property="Margin" Value="0" />
-
+            <Setter Property="Margin" Value="0,12, 0,0" />
+            
             <!-- right column (trophy bar) -->
-            <Style Selector="^ DockPanel#TrophyBarPanel">
+            <Style Selector="^ DockPanel#TrophyBarDockPanel">
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-                <Setter Property="HorizontalAlignment" Value="Left" />
-                <Setter Property="Margin" Value="0,48,0,0" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="0,16, 0,8" />
 
                 <Style Selector="^ icons|UnifiedIcon#TrophyIcon">
                     <Setter Property="Size" Value="20" />
-                    <Setter Property="Margin" Value="0,8" />
+                    <Setter Property="Margin" Value="0,0, 0, 8" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"/>
                 </Style>
 
                 <Style Selector="^ > Grid">
                     <Setter Property="HorizontalAlignment" Value="Center" />
 
                     <Style Selector="^ Border#TrophyGradientBorder">
+                        <Setter Property="Background" Value="{StaticResource SurfaceHigh}" />
                         <Setter Property="Width" Value="3" />
                         <Setter Property="Margin" Value="0,4" />
+                    </Style>
+                    
+                    <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
+                        <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" />
+                    </Style>
+                    <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon">
+                        <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" />
                     </Style>
                 </Style>
 
                 <Style Selector="^.IsWinnerTop">
-                    <Style Selector="^ Border#TrophyGradientBorder">
-                        <Setter Property="Background">
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Color="#FFFFFFFF" Offset="0" />
-                                <GradientStop Color="#32FFFFFF" Offset="1" />
-                            </LinearGradientBrush>
-                        </Setter>
-                    </Style>
-                    <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
-                        <Setter Property="Foreground" Value="#FFFFFFFF" />
-                    </Style>
-                    <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon">
-                        <Setter Property="Foreground" Value="#32FFFFFF" />
-                    </Style>
+                    <!-- <Style Selector="^ Border#TrophyGradientBorder"> -->
+                    <!--     <Setter Property="Background"> -->
+                    <!--         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%"> -->
+                    <!--             <GradientStop Color="{StaticResource SurfaceHigh}" Offset="0" /> -->
+                    <!--             <GradientStop Color="{StaticResource SurfaceLow}" Offset="1" /> -->
+                    <!--         </LinearGradientBrush> -->
+                    <!--     </Setter> -->
+                    <!-- </Style> -->
+                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon"> -->
+                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" /> -->
+                    <!-- </Style> -->
+                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon"> -->
+                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceLow}" /> -->
+                    <!-- </Style> -->
                 </Style>
 
                 <Style Selector="^.IsWinnerBottom">
-                    <Style Selector="^ Border#TrophyGradientBorder">
-                        <Setter Property="Background">
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Color="#32FFFFFF" Offset="0" />
-                                <GradientStop Color="#FFFFFFFF" Offset="1" />
-                            </LinearGradientBrush>
-                        </Setter>
-                    </Style>
-                    <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
-                        <Setter Property="Foreground" Value="#32FFFFFF" />
-                    </Style>
-                    <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon">
-                        <Setter Property="Foreground" Value="#FFFFFFFF" />
-                    </Style>
+                    <!-- <Style Selector="^ Border#TrophyGradientBorder"> -->
+                    <!--     <Setter Property="Background" Value="{StaticResource SurfaceHigh}" /> -->
+                    <!-- </Style> -->
+                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon"> -->
+                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceLow}" /> -->
+                    <!-- </Style> -->
+                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon"> -->
+                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" /> -->
+                    <!-- </Style> -->
                 </Style>
 
                 <Style Selector="^.SortAsc">
@@ -98,12 +102,6 @@
 
             <!-- left column (load order tree data grid) -->
             <Style Selector="^ TreeDataGrid#SortOrderTreeDataGrid">
-                
-                <Setter Property="Margin" Value="0 12 0 0" />
-
-                <Style Selector="^ TreeDataGridRow">
-                    <Setter Property="Background" Value="Red" />
-                </Style>
 
                 <Style Selector="^ TreeDataGridTemplateCell">
 

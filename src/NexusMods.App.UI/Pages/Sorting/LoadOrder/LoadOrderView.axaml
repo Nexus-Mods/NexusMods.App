@@ -20,24 +20,16 @@
         <controls:EmptyState.Subtitle>
             <TextBlock x:Name="EmptySpaceMessageTextBlock" />
         </controls:EmptyState.Subtitle>
-
+        
+        <!-- alert and content -->
         <Grid RowDefinitions="Auto, *">
+            
             <StackPanel Grid.Row="0">
-                <controls:Toolbar>
-                    <controls:StandardButton x:Name="InfoAlertButton"
-                                             ShowIcon="Left"
-                                             ShowLabel="False"
-                                             LeftIcon="{x:Static icons:IconValues.Info}"
-                                             Type="Tertiary"
-                                             Fill="None"
-                                             Size="Small" />
-                </controls:Toolbar>
-
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MaxWidth="750" />
                     </Grid.ColumnDefinitions>
-                    
+
                     <alerts:Alert x:Name="LoadOrderAlert"
                                   Severity="Info"
                                   ShowDismiss="False">
@@ -57,9 +49,10 @@
                 </Grid>
             </StackPanel>
 
-            <Grid x:Name="MainGrid" Grid.Row="1" ColumnDefinitions="*, 12, 24">
+            <!-- treedatagrid and trophy bar -->
+            <Grid x:Name="MainGrid" Grid.Row="1" ColumnDefinitions="*, Auto">
 
-                <!-- right column (tree data grid) -->
+                <!-- left column (tree data grid) -->
                 <TreeDataGrid x:Name="SortOrderTreeDataGrid" Grid.Column="0"
                               AutoDragDropRows="False"
                               CanUserResizeColumns="False"
@@ -77,20 +70,32 @@
                     </TreeDataGrid.Resources>
                 </TreeDataGrid>
 
-                <!-- left column (trophy bar) -->
-                <!-- Transparent Background so the tooltip hit box covers the whole control -->
-                <DockPanel x:Name="TrophyBarPanel" Grid.Column="2">
-                    <icons:UnifiedIcon x:Name="TrophyIcon"
-                                       DockPanel.Dock="Top"
-                                       Value="{x:Static icons:IconValues.Trophy}" />
-                    <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
-                        <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
-                                           Value="{x:Static icons:IconValues.ArrowUpThick}" />
-                        <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
-                        <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
-                                           Value="{x:Static icons:IconValues.ArrowDownThick}" />
-                    </Grid>
-                </DockPanel>
+                <!-- right column (trophy bar) -->
+                <Grid x:Name="TrophyBarColumnGrid" RowDefinitions="Auto, *" Grid.Column="1">
+                    <controls:StandardButton Grid.Row="0" x:Name="InfoAlertButton"
+                                             DockPanel.Dock="Top"
+                                             ShowIcon="Left"
+                                             ShowLabel="False"
+                                             LeftIcon="{x:Static icons:IconValues.HelpOutline}"
+                                             Type="Tertiary"
+                                             Fill="None"
+                                             Size="Medium"
+                                             ToolTip.Tip="Click to show help"/>
+                    
+                    <!-- SurfaceTransparent Background so the tooltip hit box covers the whole stack -->
+                    <DockPanel Grid.Row="1" x:Name="TrophyBarDockPanel" >
+                        <icons:UnifiedIcon x:Name="TrophyIcon"
+                                           DockPanel.Dock="Top"
+                                           Value="{x:Static icons:IconValues.TrophyOutline}" />
+                        <Grid x:Name="TrophyBarGrid" RowDefinitions="Auto, *, Auto">
+                            <icons:UnifiedIcon Grid.Row="0" x:Name="ArrowUpIcon"
+                                               Value="{x:Static icons:IconValues.ArrowUpThick}" />
+                            <Border Grid.Row="1" x:Name="TrophyGradientBorder" />
+                            <icons:UnifiedIcon Grid.Row="2" x:Name="ArrowDownIcon"
+                                               Value="{x:Static icons:IconValues.ArrowDownThick}" />
+                        </Grid>
+                    </DockPanel>
+                </Grid>
             </Grid>
         </Grid>
     </controls:EmptyState>
