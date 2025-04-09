@@ -43,7 +43,7 @@ public class GenericInstaller : ALibraryArchiveInstaller
         foreach (var fileEntry in libraryArchive.Children)
         {
             var path = fileEntry.Path;
-            if (path.InFolder(Constants.ContentFolder)) return new NotSupported();
+            if (path.InFolder(Constants.ContentFolder)) return new NotSupported(Reason: "The installer doesn't support putting files in the Content folder");
 
             var inModsFolder = path.InFolder(Constants.ModsFolder);
             if (previousInMods.HasValue)
@@ -52,7 +52,7 @@ public class GenericInstaller : ALibraryArchiveInstaller
                 // packages to be installed into the root of the game folder
                 // /foo
                 // /Mods/bar
-                if (previousInMods.Value != inModsFolder) return new NotSupported();
+                if (previousInMods.Value != inModsFolder) return new NotSupported(Reason: "The installer doesn't support a mix of files going into the root directory and the mods directory");
             }
             else
             {

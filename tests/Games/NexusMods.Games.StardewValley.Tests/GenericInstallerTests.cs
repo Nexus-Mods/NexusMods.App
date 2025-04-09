@@ -52,7 +52,8 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
         };
 
         var result = await _installer.ExecuteAsync(libraryArchive, group, tx, loadout, CancellationToken.None);
-        result.IsNotSupported.Should().BeTrue();
+        result.IsNotSupported(out var reason).Should().BeTrue();
+        reason.Should().Be("The installer doesn't support putting files in the Content folder");
     }
 
     [Theory]
