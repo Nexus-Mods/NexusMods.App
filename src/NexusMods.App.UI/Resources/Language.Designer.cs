@@ -259,7 +259,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download all optional mods.
+        ///   Looks up a localized string similar to Auto-download all optional.
         /// </summary>
         public static string CollectionDownloadViewModel_DownloadOptional {
             get {
@@ -268,7 +268,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download all required mods.
+        ///   Looks up a localized string similar to Auto-download all.
         /// </summary>
         public static string CollectionDownloadViewModel_DownloadRequired {
             get {
@@ -286,7 +286,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install downloaded optional mods.
+        ///   Looks up a localized string similar to Install all optional.
         /// </summary>
         public static string CollectionDownloadViewModel_InstallOptional {
             get {
@@ -295,7 +295,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} of {1} required mods downloaded.
+        ///   Looks up a localized string similar to {0} of {1} required mods downloaded. Complete downloads to install..
         /// </summary>
         public static string CollectionDownloadViewModel_Num_required_mods_downloaded {
             get {
@@ -304,7 +304,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ready to install - All required mods downloaded.
+        ///   Looks up a localized string similar to All required mods downloaded. Ready to install..
         /// </summary>
         public static string CollectionDownloadViewModel_Ready_to_install {
             get {

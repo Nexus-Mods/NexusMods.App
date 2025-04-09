@@ -54,6 +54,7 @@ public abstract class ALegacyDatabaseTest
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
         
         return services
+            .AddSingleton<TimeProvider>(_ => TimeProvider.System)
             .AddLogging(builder => builder.AddXUnit())
             .AddSerializationAbstractions()
             .AddHttpDownloader()

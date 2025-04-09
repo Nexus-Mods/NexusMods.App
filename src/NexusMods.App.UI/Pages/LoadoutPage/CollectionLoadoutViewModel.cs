@@ -12,10 +12,13 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Collections;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -56,6 +59,11 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             RevisionNumber = revisionMetadata.Value.RevisionNumber;
             AuthorName = revisionMetadata.Value.Collection.Author.Name;
             IsLocalCollection = false;
+            
+            EndorsementCount = revisionMetadata.Value.Collection.Endorsements;
+            TotalDownloads = revisionMetadata.Value.Collection.TotalDownloads;
+            TotalSize = revisionMetadata.Value.TotalSize;
+            OverallRating = Percent.CreateClamped(revisionMetadata.Value.OverallRating.ValueOr(0));
         }
         else
         {
@@ -212,6 +220,10 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
     public bool IsReadOnly { get; }
 
     public string Name { get; }
+    public ulong EndorsementCount { get; }
+    public ulong TotalDownloads { get; }
+    public Size TotalSize { get; }
+    public Percent OverallRating { get; }
 
     public RevisionNumber RevisionNumber { get; }
 

@@ -30,7 +30,7 @@
     </DataTemplate>
 
     <!-- Size -->
-    <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemSize.ColumnTemplateResourceKey}">
+    <DataTemplate x:Key="{x:Static controls:SharedColumns+ItemSize.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
@@ -38,7 +38,7 @@
         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="controls:SizeComponent"
-                                            ComponentKey="{x:Static local:LibraryColumns+ItemSize.ComponentKey}">
+                                            ComponentKey="{x:Static controls:SharedColumns+ItemSize.ComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type controls:SizeComponent}">
                             <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>

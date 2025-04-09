@@ -1,13 +1,16 @@
-using System.Text;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Reactive.Disposables;
 using CliWrap;
-using CliWrap.Exceptions;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
-using NexusMods.Extensions.BCL;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.FileExtractor.Extractors;
 
@@ -21,14 +24,8 @@ namespace NexusMods.FileExtractor.Extractors;
 /// </remarks>
 public class SevenZipExtractor : IExtractor
 {
-    private readonly TemporaryFileManager _manager;
-    private readonly ILogger<SevenZipExtractor> _logger;
-
-    private static readonly IOSInformation OSInformation = Paths.OSInformation.Shared;
-
-    private static readonly FileType[] SupportedTypesCached = { FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP };
-    private static readonly Extension[] SupportedExtensionsCached = { KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip };
-    private readonly string _exePath;
+    private static readonly FileType[] SupportedTypesCached = [FileType._7Z, FileType.RAR_NEW, FileType.RAR_OLD, FileType.ZIP];
+    private static readonly Extension[] SupportedExtensionsCached = [KnownExtensions._7z, KnownExtensions.Rar, KnownExtensions.Zip, KnownExtensions._7zip];
 
     /// <inheritdoc />
     public FileType[] SupportedSignatures => SupportedTypesCached;
@@ -36,47 +33,246 @@ public class SevenZipExtractor : IExtractor
     /// <inheritdoc />
     public Extension[] SupportedExtensions => SupportedExtensionsCached;
 
+    private readonly ILogger _logger;
+    private readonly IOSInformation _osInformation;
+    private readonly IProcessFactory _processFactory;
+    private readonly TemporaryFileManager _temporaryFileManager;
+    private readonly string _exePath;
+
     /// <summary>
     /// Constructor.
     /// </summary>
     public SevenZipExtractor(
         ILogger<SevenZipExtractor> logger,
-        TemporaryFileManager fileManager,
-        IFileSystem fileSystem)
+        TemporaryFileManager fileTemporaryFileManager,
+        IFileSystem fileSystem,
+        IProcessFactory processFactory,
+        IOSInformation osInformation)
     {
         _logger = logger;
-        _manager = fileManager;
+        _temporaryFileManager = fileTemporaryFileManager;
+        _processFactory = processFactory;
+        _osInformation = osInformation;
 
-        _exePath = GetExtractorExecutable(fileSystem);
+        _exePath = GetExtractorExecutable(fileSystem, osInformation);
         logger.LogDebug("Using extractor at {ExtractorExecutable}", _exePath);
     }
 
     /// <inheritdoc />
-    public async Task ExtractAllAsync(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
+    public async Task ExtractAllAsync(IStreamFactory streamFactory, AbsolutePath destination, CancellationToken cancellationToken)
     {
-        await ExtractAllAsync_Impl(sFn, destination, token);
+        var (source, sourceDisposable) = await GetSource(streamFactory, cancellationToken: cancellationToken);
+        using var _ = sourceDisposable;
+
+        var trimmablePathsInArchive = await GetTrimmablePathsInArchive(source, cancellationToken: cancellationToken);
+        await ExtractArchive(source, destination, cancellationToken: cancellationToken);
+
+        if (trimmablePathsInArchive.Count == 0) return;
+        FixPaths(trimmablePathsInArchive, destination);
     }
 
-    /// <inheritdoc />
-    public async Task<IDictionary<RelativePath, T>> ForEachEntryAsync<T>(IStreamFactory sFn, Func<RelativePath, IStreamFactory, ValueTask<T>> func, CancellationToken token)
+    [SuppressMessage("ReSharper", "RedundantNameQualifier")]
+    private void FixPaths(
+        IReadOnlyList<(string fileName, bool isDirectory)> trimmablePathsInArchive,
+        AbsolutePath destinationPath)
     {
-        await using var dest = _manager.CreateFolder();
-        await ExtractAllAsync_Impl(sFn, dest, token);
+        // NOTE(erri120): We need to fix paths that end in whitespace as they cause a lot of issues.
+        // On Linux, 7z extracts "foo/bar " to "foo/bar " properly, but our path sanitization will trim the path and the app won't find the file on disk
+        // On Windows, 7z changes "foo/bar " to "far/bar_" because paths ending with whitespace aren't supported on Windows
+        // See https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
 
-        var results = await dest.Path.EnumerateFiles()
-            .SelectAsync(async f =>
+        var isWindows = _osInformation.IsWindows;
+        var nativePath = destinationPath.ToNativeSeparators(_osInformation);
+
+        const int maxBufferSize = 512;
+        Span<char> span = stackalloc char[maxBufferSize];
+
+        foreach (var tuple in trimmablePathsInArchive)
+        {
+            var (fileName, isDirectory) = tuple;
+
+            string fileNameOnDisk;
+            if (isWindows)
             {
-                // ReSharper disable once AccessToDisposedClosure
-                var path = f.RelativeTo(dest.Path);
-                var file = new NativeFileStreamFactory(f);
-                var mapResult = await func(path, file);
-                f.Delete();
-                return KeyValuePair.Create(path, mapResult);
-            })
-            .Where(d => d.Key != default(RelativePath))
-            .ToDictionary();
+                if (fileName.Length > maxBufferSize) throw new NotSupportedException($"File name is too long: `{fileName}`");
+                fileName.AsSpan().CopyTo(span);
 
-        return results;
+                var slice = span.SliceFast(start: 0, length: fileName.Length);
+                To7ZipWindowsExtractionPath(slice);
+
+                fileNameOnDisk = slice.ToString();
+            }
+            else
+            {
+                fileNameOnDisk = fileName;
+            }
+
+            var fixedFileName = FixFileName(fileName);
+            Debug.Assert(fixedFileName.All(c => !IsInvalidChar(c)), message: $"`{fixedFileName}` should be fixed");
+
+            var source = System.IO.Path.Combine(nativePath, fileNameOnDisk);
+            var destination = System.IO.Path.Combine(nativePath, fixedFileName);
+
+            if (isDirectory)
+            {
+                try
+                {
+                    _logger.LogWarning("Fixing path by moving directory from `{From}` to `{To}`", source, destination);
+                    if (System.IO.Directory.Exists(destination))
+                    {
+                        _logger.LogWarning("Destination directory `{Destination}` already exists, deleting source instead", destination);
+                        System.IO.Directory.Delete(source, recursive: true);
+                    }
+                    else
+                    {
+                        System.IO.Directory.Move(source, destination);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Failed to fix path by moving directory from `{From}` to `{To}`", source, destination);
+                }
+            }
+            else
+            {
+                try
+                {
+                    _logger.LogWarning("Fixing path by moving file from `{From}` to `{To}`", source, destination);
+                    if (System.IO.File.Exists(destination))
+                    {
+                        _logger.LogWarning("Destination file `{Destination}` already exists, deleting source instead", destination);
+                        System.IO.File.Delete(source);
+                    }
+                    else
+                    {
+                        System.IO.File.Move(source, destination);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Failed to fix path by moving file from `{From}` to `{To}`", source, destination);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Fixes a file name from the archive to work on all platforms properly and consistently.
+    /// </summary>
+    internal static string FixFileName(ReadOnlySpan<char> input)
+    {
+        const string charsToTrim = " .";
+        var output = input.TrimEnd(charsToTrim);
+        return output.ToString();
+    }
+
+    internal static void To7ZipWindowsExtractionPath(Span<char> input)
+    {
+        // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+        // https://github.com/mcmilk/7-Zip/blob/c44df79f9a65142c460313f720dc22c8783c63b1/CPP/7zip/UI/Common/ExtractingFilePath.cpp#L53-L88
+        // 7zip creates "safe" Windows paths, so we'll mirror the Microsoft recommendations:
+
+        // Do not end a file or directory name with a space or a period.
+        // Although the underlying file system may support such names, the Windows shell and user interface does not.
+        // However, it is acceptable to specify a period as the first character of a name. For example, ".temp".
+
+        for (var i = input.Length - 1; i >= 0; i--)
+        {
+            var current = input[i];
+            if (!IsInvalidChar(current)) break;
+
+            input[i] = '_';
+        }
+    }
+
+    private static bool IsInvalidChar(char c) => c is '.' or ' ';
+
+    /// <summary>
+    /// Returns a list of all paths in the archive that need to be trimmed.
+    /// </summary>
+    private async ValueTask<IReadOnlyList<(string fileName, bool isDirectory)>> GetTrimmablePathsInArchive(AbsolutePath source, CancellationToken cancellationToken)
+    {
+        var pathsWithWhitespace = new List<(string fileName, bool isDirectory)>();
+
+        // NOTE(erri120): "l -ba" is an undocumented command that skips the table header and footer
+        var process = Cli
+            .Wrap(_exePath)
+            .WithArguments(["l", "-ba", $"{source.ToNativeSeparators(_osInformation)}"])
+            .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
+            {
+                if (!TryParseListCommandOutput(line, out var fileName, out var isDirectory)) return;
+                pathsWithWhitespace.Add((fileName, isDirectory));
+            }));
+
+        await _processFactory.ExecuteAsync(process, cancellationToken: cancellationToken);
+        return pathsWithWhitespace;
+    }
+
+    /// <summary>
+    /// Parses a table row returned by the 7z list command.
+    /// </summary>
+    private static bool TryParseListCommandOutput(ReadOnlySpan<char> line, [NotNullWhen(true)] out string? fileName, out bool isDirectory)
+    {
+        // The table that gets printed has a fixed minimum width:
+        // https://github.com/btolab/p7zip/blob/f30c859433af90937723dd4e808a24c3bb836711/CPP/7zip/UI/Console/List.cpp#L186-L193
+        const int fixedLengthBeforeAttributes = 20;
+        const int fixedLengthBeforeFileName = 53;
+
+        fileName = null;
+        isDirectory = false;
+
+        if (line.Length < fixedLengthBeforeFileName) return false;
+
+        var attributesSlice = line.SliceFast(start: fixedLengthBeforeAttributes);
+        isDirectory = attributesSlice[0] == 'D';
+
+        var fileNameSlice = line.SliceFast(start: fixedLengthBeforeFileName);
+        var lastChar = fileNameSlice[^1];
+        if (!IsInvalidChar(lastChar)) return false;
+
+        fileName = fileNameSlice.ToString();
+        return true;
+    }
+
+    private async ValueTask<(AbsolutePath, IDisposable)> GetSource(IStreamFactory streamFactory, CancellationToken cancellationToken)
+    {
+        if (streamFactory is NativeFileStreamFactory nativeFileStreamFactory) return (nativeFileStreamFactory.Path, Disposable.Empty);
+
+        var temporaryFile = _temporaryFileManager.CreateFile(ext: streamFactory.Name.FileName.Extension);
+        await using var stream = await streamFactory.GetStreamAsync();
+        await temporaryFile.Path.CopyFromAsync(stream, cancellationToken);
+
+        return (temporaryFile.Path, temporaryFile);
+    }
+
+    private async ValueTask ExtractArchive(AbsolutePath source, AbsolutePath destination, CancellationToken cancellationToken)
+    {
+        // NOTE(erri120): Using "-bsp1" to redirect the progress line to stdout
+        var process = Cli
+            .Wrap(_exePath)
+            .WithArguments(["x", "-bsp1", "-y", $"-o{destination.ToNativeSeparators(_osInformation)}", $"{source.ToNativeSeparators(_osInformation)}"])
+            .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
+            {
+                // TODO: progress reporting
+                _ = TryParseExtractCommandOutput(line, out var percentage);
+            }));
+
+        await _processFactory.ExecuteAsync(process, cancellationToken: cancellationToken);
+    }
+
+    private static bool TryParseExtractCommandOutput(ReadOnlySpan<char> line, out int percentage)
+    {
+        // "  0%"
+        // " 10%"
+        // "100%"
+        const int percentageIndex = 3;
+        percentage = 0;
+
+        if (line.Length < percentageIndex + 1) return false;
+        if (line[percentageIndex] != '%') return false;
+
+        var rawPercentage = line.SliceFast(start: 0, length: percentageIndex);
+        return int.TryParse(rawPercentage, style: NumberStyles.None, provider: NumberFormatInfo.InvariantInfo, out percentage);
     }
 
     /// <inheritdoc />
@@ -85,9 +281,9 @@ public class SevenZipExtractor : IExtractor
         // Yes this is O(n*m) but the search space (should) be very small.
         // 'signatures' should usually be only 1 element :)
         if ((from supported in SupportedSignatures
-             from sig in signatures
-             where supported == sig
-             select supported).Any())
+                from sig in signatures
+                where supported == sig
+                select supported).Any())
         {
             return Priority.Low;
         }
@@ -95,111 +291,36 @@ public class SevenZipExtractor : IExtractor
         return Priority.None;
     }
 
-    private async Task ExtractAllAsync_Impl(IStreamFactory sFn, AbsolutePath destination, CancellationToken token)
+    private static string GetExtractorExecutableFileName(IOSInformation osInformation)
     {
-        TemporaryPath? spoolFile = null;
-        var processStdOutput = new StringBuilder();
-        var processStdError = new StringBuilder();
-        try
-        {
-            AbsolutePath source;
-            if (sFn.Name is AbsolutePath abs)
-            {
-                source = abs;
-            }
-            else
-            {
-                // File doesn't currently exist on-disk so we need to spool it to disk so we can use 7z against it
-                spoolFile = _manager.CreateFile(sFn.Name.FileName.Extension);
-                await using var s = await sFn.GetStreamAsync();
-                await spoolFile.Value.Path.CopyFromAsync(s, token);
-                source = spoolFile.Value.Path;
-            }
-
-            _logger.LogDebug("Extracting {Source}", source.FileName);
-            var process = Cli.Wrap(_exePath);
-
-            var totalSize = source.FileInfo.Size;
-            var lastPercent = 0;
-
-            // NOTE: 7z.exe has a bug with long destination path with forwards `/` separators on windows,
-            // as a workaround we need to change the separators to backwards '\' on windows.
-            // See: https://sourceforge.net/p/sevenzip/discussion/45797/thread/a9a0f02618/
-            var fixedDestination = destination.ToNativeSeparators(OSInformation);
-
-            var result = await process.WithArguments(new[]
-                    {
-                        "x", "-bsp1", "-y", $"-o{fixedDestination}", source.ToString()
-                    }, true)
-                .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
-                {
-                    if (string.IsNullOrWhiteSpace(line)) return;
-                    processStdOutput.AppendLine($"[7z stdout] {line}");
-
-                    if (line.Length <= 4 || line[3] != '%') return;
-                    if (!int.TryParse(line.AsSpan()[..3], out var percentInt)) return;
-
-                    var oldPosition = lastPercent == 0 ? Size.Zero : totalSize / 100 * lastPercent;
-                    var newPosition = percentInt == 0 ? Size.Zero : totalSize / 100 * percentInt;
-                    var throughput = newPosition - oldPosition;
-
-                    lastPercent = percentInt;
-                }))
-                .WithStandardErrorPipe(PipeTarget.ToDelegate(line =>
-                {
-                    if (string.IsNullOrWhiteSpace(line)) return;
-                    processStdError.AppendLine($"[7z stderr] {line}");
-                }))
-                .ExecuteAsync();
-
-            if (result.ExitCode != 0)
-                throw new Exception("While executing 7zip");
-        }
-        catch (CommandExecutionException ex)
-        {
-            _logger.LogError(ex, "While executing 7zip");
-            _logger.LogInformation("Output from the extractor, trying to extract file {File}:\n{StdOutput}\n{StdError}",
-                sFn.Name, processStdOutput.ToString(), processStdError.ToString());
-            throw;
-        }
-        finally
-        {
-            if (spoolFile.HasValue)
-            {
-                _logger.LogDebug("Cleaning up after extraction");
-                await spoolFile.Value.DisposeAsync();
-            }
-        }
-    }
-
-    private static string GetExtractorExecutableFileName()
-    {
-        return OSInformation.MatchPlatform(
+        return osInformation.MatchPlatform(
             onWindows: static () => "7z.exe",
             onLinux: static () => "7zz",
             onOSX: static () => "7zz"
         );
     }
 
-    private static string GetExtractorExecutable(IFileSystem fileSystem)
+    private static string GetExtractorExecutable(IFileSystem fileSystem, IOSInformation osInformation)
     {
+#pragma warning disable CS0162 // Unreachable code detected
         if (UseSystemExtractor)
         {
             // Depending on the user's distro and package of choice, 7z
             // may have different names, so we'll check for the common ones.
-            return !OSInformation.IsLinux
-                ? GetExtractorExecutableFileName() :
+            return !osInformation.IsLinux
+                ? GetExtractorExecutableFileName(osInformation) :
                 FindSystem7zOnLinux();
         }
 
-        var fileName = GetExtractorExecutableFileName();
-        var directory = OSInformation.MatchPlatform(
+        var fileName = GetExtractorExecutableFileName(osInformation);
+        var directory = osInformation.MatchPlatform(
             onWindows: static () => "runtimes/win-x64/native/",
             onLinux: static () => "runtimes/linux-x64/native/",
             onOSX: static () => "runtimes/osx-x64/native/"
         );
 
         return fileSystem.GetKnownPath(KnownPath.EntryDirectory).Combine(directory + fileName).ToString();
+#pragma warning restore CS0162 // Unreachable code detected
     }
 
     /// <summary>
@@ -214,7 +335,7 @@ public class SevenZipExtractor : IExtractor
 #else
         false;
 #endif
-    
+
     private static string FindSystem7zOnLinux()
     {
         string[] potentialBinaryNames = ["7z", "7zz", "7zzs"];

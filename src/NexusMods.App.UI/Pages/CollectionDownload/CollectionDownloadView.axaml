@@ -12,7 +12,7 @@
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="800"
+    mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Pages.CollectionDownload.CollectionDownloadView">
 
     <Design.DataContext>
@@ -50,49 +50,49 @@
 
         <!-- toolbar at top, tree data grid fill the remaining space -->
         <DockPanel x:Key="TabItemContent">
-            <Border DockPanel.Dock="Top" Classes="Toolbar">
-                <StackPanel HorizontalAlignment="Right">
-                    <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
-                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
-                                             Size="Small"
-                                             Type="Primary"
-                                             Fill="Weak"
-                                             LeftIcon="{x:Static icons:IconValues.Update}"
-                                             ShowIcon="Left" />
-                    <Separator />
-                    <TextBlock x:Name="TextCollectionStatus" />
-                    <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
-                    <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
-                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadRequired}"
-                                             Size="Small"
-                                             Type="Secondary"
-                                             Fill="Strong" />
-                    <controls:StandardButton x:Name="ButtonInstallRequiredItems"
-                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallCollection}"
-                                             Size="Small"
-                                             Type="Primary"
-                                             Fill="Strong" />
-                    <navigation:NavigationControl x:Name="ButtonViewCollection"
-                                                  Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
-                                                  Size="Small" />
+            <controls:Statusbar DockPanel.Dock="Top">
+                <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}"
+                                         ShowLabel="False"
+                                         LeftIcon="{x:Static icons:IconValues.MoreVertical}"
+                                         ShowIcon="Left"
+                                         Size="ExtraSmall" />
+                <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
+                                         Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
+                                         Size="ExtraSmall"
+                                         Type="Primary"
+                                         Fill="Weak"
+                                         LeftIcon="{x:Static icons:IconValues.Update}"
+                                         ShowIcon="Left" />
+                <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
+                <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
+                                         Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadRequired}"
+                                         Size="ExtraSmall"
+                                         Type="Secondary"
+                                         Fill="Strong" />
+                <controls:StandardButton x:Name="ButtonInstallRequiredItems"
+                                         Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallCollection}"
+                                         Size="ExtraSmall"
+                                         Type="Primary"
+                                         Fill="Strong" />
+                <navigation:NavigationControl x:Name="ButtonViewCollection"
+                                              Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
+                                              Size="ExtraSmall" />
+                <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
+                                         Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
+                                         Size="ExtraSmall"
+                                         Type="Secondary"
+                                         Fill="Strong" />
+                <controls:StandardButton x:Name="ButtonInstallOptionalItems"
+                                         Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
+                                         Size="ExtraSmall" />
+                <TextBlock x:Name="TextCollectionStatus" />
+            </controls:Statusbar>
 
-                    <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
-                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
-                                             Size="Small"
-                                             Type="Secondary"
-                                             Fill="Strong" />
-                    <controls:StandardButton x:Name="ButtonInstallOptionalItems"
-                                             Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
-                                             Size="Small" />
-                    <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}"
-                                             ShowLabel="False"
-                                             LeftIcon="{x:Static icons:IconValues.MoreVertical}"
-                                             ShowIcon="Left"
-                                             Size="Small" />
-                </StackPanel>
+            <Border x:Name="DownloadsTreeContainer" 
+                    Padding="0 8 0 0" 
+                    Background="{StaticResource SurfaceLowBrush}" >
+                <TreeDataGrid x:Name="DownloadsTree" />
             </Border>
-
-            <TreeDataGrid x:Name="DownloadsTree" DockPanel.Dock="Bottom" />
         </DockPanel>
 
         <DataTemplate x:Key="InstructionsTemplate" DataType="collectionDownload:ModInstructions">
@@ -105,11 +105,13 @@
         </DataTemplate>
     </reactiveUi:ReactiveUserControl.Resources>
 
-    <DockPanel x:Name="Body">
+    <Border x:Name="HeaderBorderBackground">
+        
+        <!-- header, tabcontrol -->
+        <Grid x:Name="Body" RowDefinitions="Auto, *">
 
-        <!-- first row (header) -->
-        <Border x:Name="HeaderBorderBackground" DockPanel.Dock="Top">
-            <Border x:Name="HeaderBorder">
+            <!-- first row (header) -->
+            <Border x:Name="HeaderBorder" Grid.Row="0" >
 
                 <StackPanel x:Name="Header">
 
@@ -122,9 +124,9 @@
                                 <Border DockPanel.Dock="Left" x:Name="CollectionImageBorder">
                                     <Image x:Name="CollectionImage" />
                                 </Border>
-                                <StackPanel Margin="12,0,0,0" Spacing="8">
+                                <StackPanel>
                                     <TextBlock x:Name="Title">Collection download</TextBlock>
-                                    <TextBlock x:Name="Heading" />
+                                    <TextBlock x:Name="CollectionName" />
                                 </StackPanel>
                             </DockPanel>
 
@@ -169,11 +171,13 @@
                                 </StackPanel>
 
                                 <StackPanel x:Name="StatsPanel">
-                                    <StackPanel x:Name="ModsPanel"
-                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsMods_ToolTip}">
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
-                                        <TextBlock x:Name="NumDownloads" />
+                                    <StackPanel x:Name="OverallRatingPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsRating_ToolTip}">
+                                        <icons:UnifiedIcon x:Name="OverallRatingIcon"
+                                                           Value="{x:Static icons:IconValues.CheckCircle}" />
+                                        <TextBlock x:Name="OverallRating" />
                                     </StackPanel>
+
                                     <StackPanel x:Name="EndorsementsPanel"
                                                 ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsEndorsements_ToolTip}">
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUpOutline}" />
@@ -189,103 +193,101 @@
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
                                         <TextBlock x:Name="TotalSize" />
                                     </StackPanel>
-                                    <StackPanel x:Name="OverallRatingPanel"
-                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsRating_ToolTip}">
-                                        <icons:UnifiedIcon x:Name="OverallRatingIcon"
-                                                           Value="{x:Static icons:IconValues.CheckCircle}" />
-                                        <TextBlock x:Name="OverallRating" />
+                                    <StackPanel x:Name="ModsPanel"
+                                                ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsMods_ToolTip}">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
+                                        <TextBlock x:Name="NumDownloads" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
 
                         </Grid>
                     </Border>
-
-
                 </StackPanel>
             </Border>
-        </Border>
 
-        <!-- second row (tab control and datagrid) -->
-        <TabControl x:Name="TabControl">
-            <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
-                <TabItem.Header>
-                    <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
-                        <TextBlock Text="Required" />
-                        <Border>
-                            <TextBlock x:Name="RequiredDownloadsCount" />
-                        </Border>
-                    </StackPanel>
-                </TabItem.Header>
-            </TabItem>
-            <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
-                <TabItem.Header>
-                    <StackPanel x:Name="OptionalModsPanel" Classes="TabItemHeaderStack">
-                        <TextBlock>Optional</TextBlock>
-                        <Border>
-                            <TextBlock x:Name="OptionalDownloadsCount" />
-                        </Border>
-                    </StackPanel>
-                </TabItem.Header>
-            </TabItem>
-            <TabItem x:Name="InstructionsTab" IsVisible="False">
-                <TabItem.Header>
-                    <StackPanel Classes="TabItemHeaderStack">
-                        <TextBlock Text="Additional Instructions" />
-                    </StackPanel>
-                </TabItem.Header>
+            <!-- second row (tab control) -->
+            <TabControl x:Name="TabControl" Grid.Row="1">
+                <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
+                    <TabItem.Header>
+                        <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
+                            <TextBlock Text="Required" />
+                            <Border>
+                                <TextBlock x:Name="RequiredDownloadsCount" />
+                            </Border>
+                        </StackPanel>
+                    </TabItem.Header>
+                </TabItem>
+                <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
+                    <TabItem.Header>
+                        <StackPanel x:Name="OptionalModsPanel" Classes="TabItemHeaderStack">
+                            <TextBlock>Optional</TextBlock>
+                            <Border>
+                                <TextBlock x:Name="OptionalDownloadsCount" />
+                            </Border>
+                        </StackPanel>
+                    </TabItem.Header>
+                </TabItem>
+                <TabItem x:Name="InstructionsTab">
+                    <TabItem.Header>
+                        <StackPanel Classes="TabItemHeaderStack">
+                            <TextBlock Text="Additional Instructions" />
+                        </StackPanel>
+                    </TabItem.Header>
 
-                <ScrollViewer>
-                    <StackPanel Orientation="Vertical">
+                    <ScrollViewer>
+                        <StackPanel Orientation="Vertical">
 
-                        <Expander Header="Collection Instructions" x:Name="CollectionInstructionsExpander"
-                                  IsVisible="False" IsExpanded="True">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="1024" />
-                                </Grid.ColumnDefinitions>
-                                <reactiveUi:ViewModelViewHost x:Name="CollectionInstructionsRendererHost" />
-                            </Grid>
-                        </Expander>
+                            <Expander Header="Collection Instructions" x:Name="CollectionInstructionsExpander"
+                                      IsVisible="False" IsExpanded="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="1024" />
+                                    </Grid.ColumnDefinitions>
+                                    <reactiveUi:ViewModelViewHost x:Name="CollectionInstructionsRendererHost" />
+                                </Grid>
+                            </Expander>
 
-                        <Expander Header="Mod Instructions" x:Name="RequiredModsInstructionsExpander" IsVisible="False"
-                                  IsExpanded="True">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="1024" />
-                                </Grid.ColumnDefinitions>
-                                <ItemsControl x:Name="RequiredModsInstructions"
-                                              ItemTemplate="{StaticResource InstructionsTemplate}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                            </Grid>
-                        </Expander>
+                            <Expander Header="Mod Instructions" x:Name="RequiredModsInstructionsExpander"
+                                      IsVisible="False"
+                                      IsExpanded="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="1024" />
+                                    </Grid.ColumnDefinitions>
+                                    <ItemsControl x:Name="RequiredModsInstructions"
+                                                  ItemTemplate="{StaticResource InstructionsTemplate}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </Grid>
+                            </Expander>
 
-                        <Expander Header="Optional Mod Instructions" x:Name="OptionalModsInstructionsExpander"
-                                  IsVisible="False"
-                                  IsExpanded="True">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" MaxWidth="1024" />
-                                </Grid.ColumnDefinitions>
-                                <ItemsControl x:Name="OptionalModsInstructions"
-                                              ItemTemplate="{StaticResource InstructionsTemplate}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-                            </Grid>
-                        </Expander>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-        </TabControl>
-    </DockPanel>
+                            <Expander Header="Optional Mod Instructions" x:Name="OptionalModsInstructionsExpander"
+                                      IsVisible="False"
+                                      IsExpanded="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" MaxWidth="1024" />
+                                    </Grid.ColumnDefinitions>
+                                    <ItemsControl x:Name="OptionalModsInstructions"
+                                                  ItemTemplate="{StaticResource InstructionsTemplate}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+                                </Grid>
+                            </Expander>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Border>
 
 </reactiveUi:ReactiveUserControl>
