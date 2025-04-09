@@ -74,10 +74,10 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         if (settingsManager.Get<WelcomeSettings>().HasShownWelcomeMessage) return null;
 
-        // settingsManager.Update<WelcomeSettings>(settings => settings with
-        // {
-        //     HasShownWelcomeMessage = true,
-        // });
+        settingsManager.Update<WelcomeSettings>(settings => settings with
+        {
+            HasShownWelcomeMessage = true,
+        });
 
         return new WelcomeOverlayViewModel(
             osInterop: serviceProvider.GetRequiredService<IOSInterop>(),
