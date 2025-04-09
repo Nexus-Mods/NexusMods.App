@@ -114,10 +114,22 @@ public class UESynchronizer<TSettings> : ALoadoutSynchronizer where TSettings : 
             .Select(group => group.First())
             .ToList();
         
-        var serializedData = JsonConvert.SerializeObject(deserializedData, Formatting.Indented);
-        await _fs.WriteAllTextAsync(
-            Constants.LuaModsLoadOrderFileJson.CombineChecked(loadout.InstallationInstance),
-            serializedData);
+        foreach (var file in loadOrderFiles!)
+        {
+            var fileName = file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
+            var targetPath = fileName.Extension.Equals(Constants.JsonExt)
+                ? Constants.LuaModsLoadOrderFileJson
+                : Constants.LuaModsLoadOrderFileTxt;
+            var serializedContent = fileName.Extension.ToString() switch
+            {
+                Constants.JsonExtValue => JsonConvert.SerializeObject(deserializedData, Formatting.Indented),
+                Constants.TxtExtValue => string.Join(Environment.NewLine, deserializedData
+                    .Select(entry => $"{entry!.ModName} : {(entry.ModEnabled ? "1" : "0")}")),
+                _ => throw new NotSupportedException($"Unsupported file extension: {fileName.Extension}"),
+            };
+
+            await _fs.WriteAllTextAsync(targetPath.CombineChecked(loadout.InstallationInstance), serializedContent);
+        }
         
         return await base.Synchronize(loadout);
     }
