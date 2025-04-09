@@ -736,6 +736,9 @@
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
           <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\ItemContentsFileTree\New\ItemContentsFileTreeViewModel.cs">
+          <DependentUpon>IItemContentsFileTreeViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

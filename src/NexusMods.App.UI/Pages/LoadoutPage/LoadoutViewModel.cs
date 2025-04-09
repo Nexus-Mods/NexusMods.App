@@ -115,7 +115,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         FactoryId = ItemContentsFileTreePageFactory.StaticId,
                         Context = new ItemContentsFileTreePageContext
                         {
-                            GroupId = group.Value.Id,
+                            GroupIds = [ group.Value.Id ],
                             IsReadOnly = isReadonly,
                         },
                     };

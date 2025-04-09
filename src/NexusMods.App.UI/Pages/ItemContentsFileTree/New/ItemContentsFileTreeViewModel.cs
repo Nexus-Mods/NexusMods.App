@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
+using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -17,7 +18,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using R3;
 
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New;
 
 [UsedImplicitly]
 public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTreeViewModel>, IItemContentsFileTreeViewModel
@@ -76,42 +77,21 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             })
             .AddTo(ref _disposables);
 
+        var writeableContextObservable = this.ObservePropertyChanged(vm => vm.Context).Select(context => context is { IsReadOnly: false });
+        var hasSelectionObservable = this.ObservePropertyChanged(vm => vm.SelectedItem).Select(item => item is not null);
         
         // ReSharper disable once InvokeAsExtensionMethod
         RemoveCommand = Observable.CombineLatest(
-                this.ObservePropertyChanged(vm => vm.Context)
-                    .Select(context => context is { IsReadOnly: false }),
-                this.ObservePropertyChanged(vm => vm.SelectedItem)
-                    .Select(item => item is not null),
+                writeableContextObservable, hasSelectionObservable,
                 resultSelector: (isWritable, hasSelection) => isWritable && hasSelection
             )
             .ToReactiveCommand<Unit>(async (_, _) =>
                 {
                     var gamePath = SelectedItem!.Key;
-                    var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupIds.First());
-                    var loadoutItemsToDelete = group
-                        .Children
-                        .OfTypeLoadoutItemWithTargetPath()
-                        .Where(item => item.TargetPath.Item2.Equals(gamePath.LocationId) && item.TargetPath.Item3.StartsWith(gamePath.Path))
-                        .ToArray();
-
-                    if (loadoutItemsToDelete.Length == 0)
-                    {
-                        logger.LogError("Unable to find Loadout files with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
-                        return;
-                    }
-
-                    using var tx = connection.BeginTransaction();
-
-                    foreach (var loadoutItem in loadoutItemsToDelete)
-                    {
-                        tx.Delete(loadoutItem, recursive: false);
-                    }
-
-                    await tx.Commit();
-
-                    // Refresh the file tree, currently by re-creating it which isn't super great
-                    FileTreeViewModel = new LoadoutItemGroupFileTreeViewModel(group.Rebase());
+                    var result = await ModFilesHelpers.RemoveFileOrFolder(connection, Context!.GroupIds.Select(x => x.Value).ToArray(), gamePath, requireAllGroups: false);
+                    if (result == ModFilesHelpers.GroupOperationStatus.NoItemsDeleted)
+                        logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 
+                            gamePath, string.Join(", ", Context!.GroupIds));
                 }
             )
             .AddTo(ref _disposables);

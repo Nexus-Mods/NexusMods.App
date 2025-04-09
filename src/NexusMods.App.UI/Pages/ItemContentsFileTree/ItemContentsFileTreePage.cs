@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree;
 [JsonName("NexusMods.App.UI.Pages.ItemContentsFileTreePageContext")]
 public record ItemContentsFileTreePageContext : IPageFactoryContext
 {
-    public required LoadoutItemGroupId GroupId { get; init; }
+    public required List<LoadoutItemGroupId> GroupIds { get; init; }
     
     public required bool IsReadOnly { get; init; }
 }
