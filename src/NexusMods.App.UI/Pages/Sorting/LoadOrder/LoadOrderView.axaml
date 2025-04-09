@@ -58,11 +58,9 @@
 
                 <!-- right column (tree data grid) -->
                 <TreeDataGrid Grid.Column="1" x:Name="SortOrderTreeDataGrid"
-                              AutoDragDropRows="False"
                               CanUserResizeColumns="False"
                               CanUserSortColumns="False"
-                              ShowColumnHeaders="True"
-                              RowDrop="OnRowDrop">
+                              ShowColumnHeaders="True">
 
                     <TreeDataGrid.Resources>
                         <ResourceDictionary>

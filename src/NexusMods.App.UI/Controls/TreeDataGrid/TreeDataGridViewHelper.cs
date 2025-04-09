@@ -16,16 +16,20 @@ public static class TreeDataGridViewHelper
     public static void SetupTreeDataGridAdapter<TView, TViewModel, TItemModel, TKey>(
         TView view,
         TreeDataGrid treeDataGrid,
-        Func<TViewModel, TreeDataGridAdapter<TItemModel, TKey>> getAdapter)
+        Func<TViewModel, TreeDataGridAdapter<TItemModel, TKey>> getAdapter,
+        bool enableDragAndDrop = false)
         where TView : ReactiveUserControl<TViewModel>
         where TViewModel : class, IViewModelInterface
         where TItemModel : class, ITreeDataGridItemModel<TItemModel, TKey>
         where TKey : notnull
     {
         treeDataGrid.ElementFactory = new CustomElementFactory();
+        
+        if (enableDragAndDrop) treeDataGrid.AutoDragDropRows = true;
 
         view.WhenActivated(disposables =>
         {
+            // Activation and deactivation of models
             var activate = Observable.FromEventHandler<TreeDataGridRowEventArgs>(
                 addHandler: handler => treeDataGrid.RowPrepared += handler,
                 removeHandler: handler => treeDataGrid.RowPrepared -= handler
@@ -41,6 +45,24 @@ public static class TreeDataGridViewHelper
                 .Select(static tuple => ((tuple.Model as TItemModel)!, tuple.Item2))
                 .Subscribe((view, getAdapter), static (tuple, state) => state.getAdapter(state.view.ViewModel!).ModelActivationSubject.OnNext(tuple))
                 .AddTo(disposables);
+            
+            // Drag & Drop support
+            if (enableDragAndDrop)
+            {
+                Observable.FromEventHandler<TreeDataGridRowDragStartedEventArgs>(
+                        addHandler: handler => treeDataGrid.RowDragStarted += handler,
+                        removeHandler: handler => treeDataGrid.RowDragStarted -= handler)
+                    .Subscribe((view, getAdapter), static (eventArgs, state) =>
+                            state.getAdapter(state.view.ViewModel!).OnRowDragStarted(eventArgs.sender, eventArgs.e))
+                    .AddTo(disposables);
+
+                Observable.FromEventHandler<TreeDataGridRowDragEventArgs>(
+                        addHandler: handler => treeDataGrid.RowDrop += handler,
+                        removeHandler: handler => treeDataGrid.RowDrop -= handler)
+                    .Subscribe((view, getAdapter), static (eventArgs, state) =>
+                            state.getAdapter(state.view.ViewModel!).OnRowDrop(eventArgs.sender, eventArgs.e))
+                    .AddTo(disposables);
+            }
         });
     }
 }

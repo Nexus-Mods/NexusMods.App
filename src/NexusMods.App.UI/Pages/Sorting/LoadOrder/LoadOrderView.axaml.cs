@@ -114,31 +114,5 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
             }
         );
     }
-
-    private void OnRowDrop(object? sender, TreeDataGridRowDragEventArgs e)
-    {
-        
-        // NOTE(Al12rs): This is important in case the source is read-only, otherwise TreeDataGrid will attempt to
-        // move the items, updating the source collection, throwing an exception in the process.
-        e.Handled = true;
-
-        var dataObject = e.Inner.Data as DataObject;
-        var a = dataObject?.Get("TreeDataGridDragInfo");
-        var dragInfo = a as DragInfo;
-        if (dragInfo is null) return;
-
-        var source = dragInfo.Source;
-        var indices = dragInfo.Indexes;
-
-        var models = new List<CompositeItemModel<Guid>>();
-
-        foreach (var modelIndex in indices)
-        {
-            var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
-            var row = source.Rows[rowIndex];
-            var model = row.Model;
-            if (model is CompositeItemModel<Guid> loadOrderItemModel)
-                models.Add(loadOrderItemModel);
-        }
-    }
+    
 }

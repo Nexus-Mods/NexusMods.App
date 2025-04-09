@@ -8,6 +8,7 @@ using NexusMods.App.UI.Extensions;
 using ObservableCollections;
 using R3;
 using System.Reactive.Linq;
+using Avalonia.Input;
 using DynamicData.Kernel;
 
 namespace NexusMods.App.UI.Controls;
@@ -20,6 +21,10 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     where TKey : notnull
 {
     public Subject<(TModel model, bool isActivating)> ModelActivationSubject { get; } = new();
+    
+    public Subject<(TModel[] sourceModels, TreeDataGridRowDragStartedEventArgs e)> RowDragStartedSubject { get; } = new();
+    
+    public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDropSubject { get; } = new();
 
     public BindableReactiveProperty<ITreeDataGridSource<TModel>> Source { get; } = new();
     public BindableReactiveProperty<bool> ViewHierarchical { get; } = new(value: true);
@@ -137,6 +142,53 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 self.Roots.Clear();
             }).AddTo(disposables);
         });
+    }
+
+    /// <summary>
+    /// Called when a row drag operation is started.
+    /// This is only called if <see cref="TreeDataGridViewHelper.SetupTreeDataGridAdapter"/> enableDragAndDrop parameter is set to true.
+    /// </summary>
+    public virtual void OnRowDragStarted(object? sender, TreeDataGridRowDragStartedEventArgs e)
+    {
+        var sourceModels = e.Models.OfType<TModel>().ToArray();
+        if (sourceModels.Length == 0)
+        {
+            return;
+        }
+        RowDragStartedSubject.OnNext((sourceModels, e));
+    }
+    
+    /// <summary>
+    /// Called when one or more dragged rows are dropped.
+    /// This is only called if <see cref="TreeDataGridViewHelper.SetupTreeDataGridAdapter"/> enableDragAndDrop parameter is set to true.
+    /// </summary>
+    public virtual void OnRowDrop(object? sender, TreeDataGridRowDragEventArgs e)
+    {
+        // NOTE(Al12rs): This is important in case the source is read-only, otherwise TreeDataGrid will attempt to
+        // move the items, updating the source collection, throwing an exception in the process.
+        e.Handled = true;
+        
+        // extract the target model from the event args
+        if (e.TargetRow.Model is not TModel targetModel) return;
+        
+        // extract the source models from the event args
+        var dataObject = e.Inner.Data as DataObject;
+        if (dataObject?.Get("TreeDataGridDragInfo") is not DragInfo dragInfo) return;
+
+        var source = dragInfo.Source;
+        var indices = dragInfo.Indexes;
+        
+        var sourceModels = new List<TModel>();
+        
+        foreach (var modelIndex in indices)
+        {
+            var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
+            var row = source.Rows[rowIndex];
+            if (row.Model is not TModel model) continue;
+            sourceModels.Add(model);
+        }
+        
+        RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
 
     private static (ITreeDataGridSelection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>>) CreateSelection(ITreeDataGridSource<TModel> source)
