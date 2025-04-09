@@ -3,7 +3,7 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Width="400">
+        <Border Width="800">
             <StackPanel>
                 <controls:Toolbar/>
                 <controls:Toolbar>
@@ -37,6 +37,7 @@
     <ControlTheme x:Key="{x:Type controls:Toolbar}" TargetType="controls:Toolbar">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="24, 12,24,0" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
@@ -46,13 +47,13 @@
                         MinHeight="{TemplateBinding MinHeight}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                        Background="{TemplateBinding Background}"
+                        Background="{StaticResource SurfaceLowBrush}"
                         Padding="{TemplateBinding Padding}">
                     <Border Name="ButtonContainer"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
-                            Background="{StaticResource SurfaceMidBrush}"
+                            Background="{TemplateBinding Background}"
                             Padding="4"
                             HorizontalAlignment="Left">
                         <StackPanel Orientation="Horizontal">
