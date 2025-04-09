@@ -10,7 +10,9 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection container)
     {
-        container.AddFileSystem()
+        container
+            .AddSingleton<TimeProvider>(_ => TimeProvider.System)
+            .AddFileSystem()
             .AddSettingsManager()
             .AddFileExtractors()
             .AddCrossPlatform()
