@@ -214,6 +214,9 @@ public static class Services
             .AddView<RemoveGameOverlayView, IRemoveGameOverlayViewModel>()
             .AddViewModel<RemoveGameOverlayViewModel, IRemoveGameOverlayViewModel>()
 
+            .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
+            .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()

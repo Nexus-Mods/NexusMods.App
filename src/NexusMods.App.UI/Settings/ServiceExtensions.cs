@@ -14,6 +14,7 @@ public static class ServiceExtensions
             .AddSettings<LoginSettings>()
             .AddSettings<AlertSettings>()
             .AddSettings<BehaviorSettings>()
-            .AddSettings<UpdaterSettings>();
+            .AddSettings<UpdaterSettings>()
+            .AddSettings<WelcomeSettings>();
     }
 }

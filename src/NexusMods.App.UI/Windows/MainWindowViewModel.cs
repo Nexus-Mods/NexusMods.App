@@ -73,14 +73,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         {
             ConnectErrors(serviceProvider).DisposeWith(d);
 
-            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-            alphaWarningViewModel.WorkspaceController = WorkspaceController;
-            alphaWarningViewModel.Controller = overlayController;
-            alphaWarningViewModel.MaybeShow();
-
-            var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
-            metricsOptInViewModel.Controller = overlayController;
-            metricsOptInViewModel.MaybeShow();
+            var welcomeOverlayViewModel = WelcomeOverlayViewModel.CreateIfNeeded(serviceProvider);
+            if (welcomeOverlayViewModel is not null) overlayController.Enqueue(welcomeOverlayViewModel);
 
             R3.Observable
                 .Return(UpdateChecker.ShouldCheckForUpdate())
@@ -105,10 +99,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Select(_ => System.Reactive.Unit.Default)
                 .InvokeReactiveCommand(BringWindowToFront)
                 .DisposeWith(d);
-            
-            var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
-            loginMessageVM.Controller = overlayController;
-            loginMessageVM.MaybeShow();
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)

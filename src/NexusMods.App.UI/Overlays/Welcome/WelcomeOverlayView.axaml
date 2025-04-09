@@ -1,0 +1,38 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="overlays:IWelcomeOverlayViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="http://reactiveui.net"
+    xmlns:overlays="clr-namespace:NexusMods.App.UI.Overlays"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Overlays.WelcomeOverlayView">
+
+    <StackPanel Orientation="Vertical">
+        <Button x:Name="ButtonOpenDiscord">
+            <TextBlock Text="Discord"/>
+        </Button>
+        <Button x:Name="ButtonOpenForum">
+            <TextBlock Text="Nexus Mods Forum"/>
+        </Button>
+        <Button x:Name="ButtonOpenGitHub">
+            <TextBlock Text="GitHub"/>
+        </Button>
+        <Button x:Name="ButtonClose">
+            <TextBlock x:Name="ButtonTextClose" Text="Close"/>
+        </Button>
+        <Button x:Name="ButtonLogIn">
+            <TextBlock Text="Log in"/>
+        </Button>
+        <Button x:Name="ButtonLogOut">
+            <TextBlock Text="Log Out"/>
+        </Button>
+        <CheckBox x:Name="CheckBoxAllowTelemetry">Foo bar baz allow data</CheckBox>
+        <Button x:Name="ButtonOpenPrivacyPolicy">
+            <TextBlock Text="Privacy Policy"/>
+        </Button>
+    </StackPanel>
+
+</reactive:ReactiveUserControl>
+
