@@ -1,6 +1,9 @@
 # v0.10.0 - 2025-04-XX
 
 * Stardew Valley - Better support for mods that don't include a manifest.json (e.g. translations). 
+* Collection download page - Now grouped by mod page like other views
+* UI - New toolbars (action bars?)
+* UI - Reduced the size of all buttons to make the UI more compact
 
 ## Technical Changes
 * The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
