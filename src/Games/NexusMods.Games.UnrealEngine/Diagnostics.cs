@@ -58,7 +58,7 @@ overwrite game files.
         .WithTitle("UE4SS is not installed")
         .WithSeverity(DiagnosticSeverity.Warning)
         .WithSummary("UE4SS is required for {ModCount} Mod(s) but it's not installed")
-        .WithDetails("You can install the latest UE4SS version at {NexusModsUE4SSUri}.")
+        .WithDetails("You can download the latest UE4SS version from {NexusModsUE4SSUri}.")
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<int>("ModCount")
             .AddValue<NamedLink>("NexusModsUE4SSUri")

@@ -135,7 +135,7 @@ public class UnrealEnginePakModInstaller(
     {
         try
         {
-            return await PakFileParser.ExtractAndDeserialize(
+            return await PakFileParser.ExtractAndParse(
                 ueGameAddon,
                 _temporaryFileManager,
                 _fileStore,

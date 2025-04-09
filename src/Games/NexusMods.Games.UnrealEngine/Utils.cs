@@ -58,13 +58,27 @@ internal static partial class Utils
         return ue4ss.Length > 0;
     }
     
-    public static bool TryGetGameAddon(IGameRegistry gameRegistry, GameId gameId, out IGame? gameAddon)
+    public static bool TryGetLuaModsLoadOrderFile(
+        Loadout.ReadOnly loadout,
+        out LoadoutFile.ReadOnly[]? luaModsLoadOrderFile)
     {
-        gameAddon = gameRegistry.InstalledGames
-            .Where(game => game.Game.GameId == gameId)
-            .Select(game => game.GetGame())
-            .FirstOrDefault();
-        return gameAddon != null;
+        var loadOrderFiles = new[]
+        {
+            // The text file appears to be deprecated in the pre-release versions.
+            // Constants.LuaModsLoadOrderFileTxt.FileName,
+            Constants.LuaModsLoadOrderFileJson.FileName,
+        };
+        luaModsLoadOrderFile = loadout.Items
+            .OfTypeLoadoutItemGroup()
+            .SelectMany(group => group.Children.OfTypeLoadoutItemWithTargetPath()
+                .OfTypeLoadoutFile()
+                .Where(file => loadOrderFiles.Contains(file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName))
+            )
+            .GroupBy(file => file.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName)
+            .Select(group => group.First())
+            .ToArray();
+        
+        return luaModsLoadOrderFile.Length > 0;
     }
     
     public static bool TryGetUnrealEngineGameAddon(IGameRegistry gameRegistry, GameId gameId, out IUnrealEngineGameAddon? ueGameAddon)

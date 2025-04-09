@@ -72,7 +72,7 @@ public static class Pipelines
                     if (!LibraryArchive.TryGet(connection.Db, pakFile.LibraryArchiveId, out var archive)) 
                         throw new InvalidDataException("Could not find library archive.");
                     
-                    var pakMetadata = await PakFileParser.ExtractAndDeserialize(
+                    var pakMetadata = await PakFileParser.ExtractAndParse(
                         ueGameAddon!,
                         temporaryFileManager,
                         fileStore,

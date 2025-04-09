@@ -42,7 +42,7 @@ public class MissingScriptingSystemEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var isUE4SSEnabled = ue4ssLoadoutItems.Any(x => x.IsMarker && !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled);
+        var isUE4SSEnabled = ue4ssLoadoutItems.Any(x => !x.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled);
         if (isUE4SSEnabled) yield break;
         
         yield return Diagnostics.CreateScriptingSystemRequiredButDisabled(

@@ -19,7 +19,7 @@ public struct PakMetaData
 
 public static class PakFileParser
 {
-    public static async Task<Dictionary<string, PakMetaData>> ExtractAndDeserialize(
+    public static async Task<Dictionary<string, PakMetaData>> ExtractAndParse(
         IUnrealEngineGameAddon ueGameAddon,
         TemporaryFileManager temporaryFileManager,
         IFileStore fileStore,

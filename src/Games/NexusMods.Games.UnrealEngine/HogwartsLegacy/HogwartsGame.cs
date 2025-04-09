@@ -24,7 +24,6 @@ public class HogwartsLegacyGame(IServiceProvider provider) : AUnrealEngineGame(p
 
     public override RelativePath RelPathGameName => "Phoenix";
     public override RelativePath? RelPathPakMods => new RelativePath("Content/Paks/WindowsNoEditor");
-    public override NamedLink UE4SSLink => new("Nexus Mods", NexusModsUrlBuilder.GetModUri(DomainStatic, ModId.From(942)));
 
     public override VersionContainer? VersionContainer => new (EGame.GAME_HogwartsLegacy);
     

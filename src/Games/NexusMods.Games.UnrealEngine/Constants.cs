@@ -6,6 +6,9 @@ namespace NexusMods.Games.UnrealEngine;
 
 public static partial class Constants
 {
+    public const string TxtExtValue = ".txt";
+    public const string JsonExtValue = ".json";
+    
     public static readonly LocationId GameMainLocationId = LocationId.From("UE_GameMain");
     public static readonly LocationId PakModsLocationId = LocationId.From("UE_PakMods");
     public static readonly LocationId LogicModsLocationId = LocationId.From("UE_LogicMods");
@@ -13,6 +16,9 @@ public static partial class Constants
     public static readonly LocationId BinariesLocationId = LocationId.From("UE_Binaries");
     public static readonly LocationId ConfigLocationId = LocationId.From("UE_ConfigPath");
 
+    public static readonly GamePath LuaModsLoadOrderFileTxt = new(LuaModsLocationId, "Mods.txt");
+    public static readonly GamePath LuaModsLoadOrderFileJson = new(LuaModsLocationId, "Mods.json");
+    
     public static readonly GamePath EnginePath = new(GameMainLocationId, "Engine");
     public static readonly GamePath ResourcesPath = new(GameMainLocationId, "Resources");
 
@@ -21,7 +27,8 @@ public static partial class Constants
     public static readonly Extension SaveExt = new(".sav");
     public static readonly Extension ConfigExt = new(".ini");
     public static readonly Extension LuaExt = new(".lua");
-    public static readonly Extension TxtExt = new(".txt");
+    public static readonly Extension TxtExt = new(TxtExtValue);
+    public static readonly Extension JsonExt = new(JsonExtValue);
     public static readonly Extension PakExt = new(".pak");
     public static readonly Extension SigExt = new(".sig");
     public static readonly Extension UassetExt = new(".uasset");
