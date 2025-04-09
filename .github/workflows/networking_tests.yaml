@@ -25,12 +25,6 @@ jobs:
         with:
           submodules: "recursive"
           lfs: true
-          
-      - name: Setup .NET 9.x
-        uses: actions/setup-dotnet@v4
-        id: stepid
-        with:
-          dotnet-version: '9.x'
 
       - name: Print debug info
         run: dotnet --info
