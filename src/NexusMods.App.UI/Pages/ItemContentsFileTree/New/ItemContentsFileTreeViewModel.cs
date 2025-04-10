@@ -44,16 +44,11 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             .ToReactiveCommand<NavigationInformation>(info =>
             {
                 var gamePath = SelectedItem!.Key;
-                var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupIds.First());
-                var found = group
-                    .Children
-                    .OfTypeLoadoutItemWithTargetPath()
-                    .OfTypeLoadoutFile()
-                    .TryGetFirst(x => x.AsLoadoutItemWithTargetPath().TargetPath == gamePath, out var loadoutFile);
+                var loadoutFile = LoadoutItemGroupHelpers.FindMatchingFile(connection, Context!.GroupIds.Select(x => x.Value).ToArray(), gamePath, requireAllGroups: false);
 
-                if (!found)
+                if (loadoutFile == null)
                 {
-                    logger.LogError("Unable to find Loadout File with path `{Path}` in group `{Group}`", gamePath, group.AsLoadoutItem().Name);
+                    logger.LogError("Unable to find Loadout File with path `{Path}` in groups: {Groups}", gamePath, string.Join(", ", Context!.GroupIds));
                     return;
                 }
 
@@ -62,8 +57,8 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                     FactoryId = TextEditorPageFactory.StaticId,
                     Context = new TextEditorPageContext
                     {
-                        FileId = loadoutFile.LoadoutFileId,
-                        FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3,
+                        FileId = loadoutFile.Value.LoadoutFileId,
+                        FilePath = loadoutFile.Value.AsLoadoutItemWithTargetPath().TargetPath.Item3,
                         IsReadOnly = Context!.IsReadOnly,
                     },
                 };

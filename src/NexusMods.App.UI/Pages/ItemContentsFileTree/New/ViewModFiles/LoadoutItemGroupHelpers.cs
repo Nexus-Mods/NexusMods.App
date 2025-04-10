@@ -78,6 +78,34 @@ public static class LoadoutItemGroupHelpers
         return missingGroups.Length > 0 ? GroupOperationStatus.MissingGroups : GroupOperationStatus.Success;
     }
 
+    /// <summary>
+    /// Finds a loadout file matching the specified game path within the given loadout item groups.
+    /// </summary>
+    /// <param name="connection">The connection used to MnemonicDB.</param>
+    /// <param name="groupIds">The <see cref="LoadoutItemGroup"/> IDs (usually mod) to search within.</param>
+    /// <param name="gamePath">The game path to match. Searches for an exact match.</param>
+    /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
+    /// <returns>The matching <see cref="LoadoutItemWithTargetPath.ReadOnly"/> if found; otherwise, null.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing.</exception>
+    public static LoadoutFile.ReadOnly? FindMatchingFile(IConnection connection, EntityId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
+    {
+        var (validGroups, _) = FilterValidGroups(connection, groupIds, requireAllGroups);
+        
+        if (validGroups.Length == 0)
+            return null;
+            
+        foreach (var group in validGroups)
+        {
+            foreach (var item in group.Children.OfTypeLoadoutItemWithTargetPath())
+            {
+                if (item.TargetPath == gamePath)
+                    return item.ToLoadoutFile();
+            }
+        }
+        
+        return null;
+    }
+
     private static bool PathMatches(LoadoutItemWithTargetPath.ReadOnly item, GamePath path)
     {
         return item.TargetPath.Item2.Equals(path.LocationId) && item.TargetPath.Item3.StartsWith(path.Path);
