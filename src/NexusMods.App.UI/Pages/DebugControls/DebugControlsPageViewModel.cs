@@ -1,7 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
-using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
@@ -26,8 +23,6 @@ public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewM
     {
         TabTitle = "Debug Controls";
         TabIcon = IconValues.ColorLens;
-
-        var overlayController = serviceProvider.GetRequiredService<IOverlayController>();
 
         GenerateUnhandledException = ReactiveCommand.Create(() => throw new Exception("Help me! This is an unhandled exception"));
         
