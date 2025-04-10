@@ -128,22 +128,29 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                         {
                             var (sourceModels, targetModel, eventArgs) = dragDropPayload;
                             
-                            var targetModelIndex = targetModel.Get<LoadOrderComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value;
+                            // Determine source items
+                            var sourceItems = sourceModels
+                                .Select(model => provider.GetSortableItem(model.Key))
+                                .Where(optionalItem => optionalItem.HasValue)
+                                .Select(optionalItem => optionalItem.Value)
+                                .ToArray();
+                            if (sourceItems.Length == 0) return;
                             
-                            var targetIndex = -1;
+                            // Determine target item
+                            var targetItem = provider.GetSortableItem(targetModel.Key);
+                            if (!targetItem.HasValue) return;
+                            
+                            // Determine relative position
+                            TargetRelativePosition relativePosition;
                             switch (eventArgs.Position)
                             {
                                 case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Ascending:
-                                    targetIndex = targetModelIndex;
-                                    break;
-                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Descending:
-                                    targetIndex = targetModelIndex + 1;
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = TargetRelativePosition.BeforeTarget;
                                     break;
                                 case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Ascending:
-                                    targetIndex = targetModelIndex + 1;
-                                    break;
-                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Descending:
-                                    targetIndex = targetModelIndex;
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = TargetRelativePosition.AfterTarget;
                                     break;
                                 case TreeDataGridRowDropPosition.Inside:
                                     // Do nothing for now
@@ -151,15 +158,11 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                                 case TreeDataGridRowDropPosition.None:
                                     // Invalid target, no move
                                     return;
+                                default:
+                                    return;
                             }
                             
-                            var sourceItems = sourceModels
-                                .Select(model => provider.GetSortableItem(model.Key))
-                                .Where(optionalItem => optionalItem.HasValue)
-                                .Select(optionalItem => optionalItem.Value)
-                                .ToArray();
-                            
-                            await provider.MoveItemsTo(sourceItems, targetIndex, cancellationToken);
+                            await provider.MoveItemsTo(sourceItems, targetItem.Value, relativePosition, cancellationToken);
                         })
                     .DisposeWith(d);
             }
