@@ -13,7 +13,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.BCL;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using R3;
@@ -88,8 +87,8 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             .ToReactiveCommand<Unit>(async (_, _) =>
                 {
                     var gamePath = SelectedItem!.Key;
-                    var result = await ModFilesHelpers.RemoveFileOrFolder(connection, Context!.GroupIds.Select(x => x.Value).ToArray(), gamePath, requireAllGroups: false);
-                    if (result == ModFilesHelpers.GroupOperationStatus.NoItemsDeleted)
+                    var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds.Select(x => x.Value).ToArray(), gamePath, requireAllGroups: false);
+                    if (result == LoadoutItemGroupHelpers.GroupOperationStatus.NoItemsDeleted)
                         logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 
                             gamePath, string.Join(", ", Context!.GroupIds));
                 }

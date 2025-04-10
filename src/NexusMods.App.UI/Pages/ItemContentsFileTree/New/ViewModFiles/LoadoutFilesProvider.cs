@@ -16,7 +16,7 @@ using ZLinq;
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 
 /// <summary>
-/// Provides files for multiple <see cref="LoadoutItemGroup"/>(s) specified by a <see cref="ModFilesFilter"/>.
+/// Provides files for multiple <see cref="Abstractions.Loadouts.LoadoutItemGroup"/>(s) specified by a <see cref="ModFilesFilter"/>.
 /// </summary>
 [UsedImplicitly]
 public class LoadoutFilesProvider
@@ -119,7 +119,7 @@ internal static class LoadoutFilesObservableExtensions
 /// A filter for filtering which mod files are shown by the <see cref="LoadoutFilesProvider"/>
 /// </summary>
 /// <param name="ModIds">
-/// IDs of the <see cref="LoadoutItemGroup"/> for the mods to which the view
+/// IDs of the <see cref="Abstractions.Loadouts.LoadoutItemGroup"/> for the mods to which the view
 /// should be filtered to.
 /// </param>
 public record struct ModFilesFilter(LoadoutItemGroupId[] ModIds);

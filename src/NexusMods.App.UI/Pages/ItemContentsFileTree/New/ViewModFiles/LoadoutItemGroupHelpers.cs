@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 ///     a separate helper, to make it more ready for deletion. This will be
 ///     reintegrated into the new `View Mod Files` page at a later date.
 /// </remarks>
-public static class ModFilesHelpers
+public static class LoadoutItemGroupHelpers
 {
     /// <summary>
     /// Removes files from a loadout item group matching the specified game path.
