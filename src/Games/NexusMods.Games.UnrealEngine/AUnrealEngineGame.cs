@@ -17,16 +17,29 @@ namespace NexusMods.Games.UnrealEngine;
 
 public abstract class AUnrealEngineGame(IServiceProvider provider) : AGame(provider), IUnrealEngineGameAddon
 {
-    protected readonly IServiceProvider _serviceProvider = provider;
-    protected readonly IFileSystem _fs = provider.GetRequiredService<IFileSystem>();
-    
+    private readonly IServiceProvider _serviceProvider = provider;
+
+    // The relative path to the folder containing the content and binaries directories.
+    //  this is usually some sort of codename (e.g. Avowed => Alabama)
     public virtual RelativePath RelPathGameName => new("");
+
+    // The default location for pak mods (not to be confused with blueprint mods) - usually the ~mods folder.
     public virtual RelativePath? RelPathPakMods => RelPathGameName.Join(new RelativePath("Content/Paks/~mods"));
+
+    // The link which the user should follow in order to install UE4SS.
     public virtual NamedLink UE4SSLink => Helpers.UE4SSLink;
+
+    // The game engine version - CUE4Parse will try to detect this automatically when the
+    //  default version container is provided.
     public virtual VersionContainer? VersionContainer => VersionContainer.DEFAULT_VERSION_CONTAINER;
+
+    // AES keys used to decrypt the game's pak files.
     public virtual IEnumerable<FAesKey>? AESKeys => null;
+
+    // Certain games (e.g. Palworld) require different offsets for its variables.
     public virtual IStreamFactory? MemberVariableTemplate => null;
-    
+
+    // The architecture segment in the path to the game's binaries. Usually Win64 or WinGDK.
     public virtual Func<GameLocatorResult, RelativePath>? ArchitectureSegmentRetriever
     {
         get
@@ -37,10 +50,19 @@ public abstract class AUnrealEngineGame(IServiceProvider provider) : AGame(provi
         }
     }
 
+    // Retrieve the standard locations for the game.
+    //  We currently offer support for:
+    //  - Pak mods
+    //  - Blueprint/Logic mods
+    //  - Lua mods
+    //  - Config files
+    //  - Save files
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
         => Utils.StandardUnrealEngineLocations(fileSystem, installation, this);
 
-    public override ILibraryItemInstaller[] LibraryItemInstallers => [
+    // By default, all UE games support UE4SS, its LUA scripting system and pak mods.
+    public override ILibraryItemInstaller[] LibraryItemInstallers =>
+    [
         _serviceProvider.GetRequiredService<ScriptingSystemInstaller>(),
         _serviceProvider.GetRequiredService<ScriptingSystemLuaInstaller>(),
         _serviceProvider.GetRequiredService<UnrealEnginePakModInstaller>(),
