@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
@@ -92,12 +93,11 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
                 // Update IsWinnerTop
                 sortDirectionObservable.Subscribe(sortDirection =>
-                        {
-                            IsAscending = sortDirection == ListSortDirection.Ascending;
-                            IsWinnerTop = IsAscending &&
-                                          itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
-                        }
-                    )
+                    {
+                        IsAscending = sortDirection == ListSortDirection.Ascending;
+                        IsWinnerTop = IsAscending &&
+                                      itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
+                    })
                     .DisposeWith(d);
 
                 // Move up/down commands
@@ -117,13 +117,50 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                                 }
                             );
                             
-                            if (!item.HasValue)
-                            {
-                                return;
-                            }
+                            if (!item.HasValue) return;
                             await provider.SetRelativePosition(item.Value, delta, cancellationToken);
-                        }
-                    )
+                        })
+                    .DisposeWith(d);
+                
+                // Drag and drop
+                adapter.RowDropSubject
+                    .SubscribeAwait(async (dragDropPayload, cancellationToken) =>
+                        {
+                            var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+                            
+                            var targetModelIndex = targetModel.Get<LoadOrderComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value;
+                            
+                            var targetIndex = -1;
+                            switch (eventArgs.Position)
+                            {
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Ascending:
+                                    targetIndex = targetModelIndex;
+                                    break;
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Descending:
+                                    targetIndex = targetModelIndex + 1;
+                                    break;
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Ascending:
+                                    targetIndex = targetModelIndex + 1;
+                                    break;
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Descending:
+                                    targetIndex = targetModelIndex;
+                                    break;
+                                case TreeDataGridRowDropPosition.Inside:
+                                    // Do nothing for now
+                                    return;
+                                case TreeDataGridRowDropPosition.None:
+                                    // Invalid target, no move
+                                    return;
+                            }
+                            
+                            var sourceItems = sourceModels
+                                .Select(model => provider.GetSortableItem(model.Key))
+                                .Where(optionalItem => optionalItem.HasValue)
+                                .Select(optionalItem => optionalItem.Value)
+                                .ToArray();
+                            
+                            await provider.MoveItemsTo(sourceItems, targetIndex, cancellationToken);
+                        })
                     .DisposeWith(d);
             }
         );
