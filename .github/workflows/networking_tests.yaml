@@ -7,18 +7,13 @@ on:
 jobs:
   build:
     
-    name: Test ${{ matrix.project }} (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Test Networking
+    runs-on: [self-hosted]
     
     environment: test
     
     env:
       NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
-    
-    strategy:
-      matrix:
-        #os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [self-hosted]
 
     steps:
       - uses: actions/checkout@v3
