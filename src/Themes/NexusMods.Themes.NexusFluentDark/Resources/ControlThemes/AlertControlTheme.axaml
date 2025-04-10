@@ -58,7 +58,8 @@
                     CornerRadius="{TemplateBinding CornerRadius}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
-                    Padding="{TemplateBinding Padding}">
+                    Padding="{TemplateBinding Padding}"
+                    BackgroundSizing="OuterBorderEdge">
 
                     <StackPanel Spacing="4">
                         <!-- top row -->
