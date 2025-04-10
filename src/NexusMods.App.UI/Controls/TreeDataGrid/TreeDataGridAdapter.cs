@@ -23,7 +23,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public Subject<(TModel model, bool isActivating)> ModelActivationSubject { get; } = new();
     
     public Subject<(TModel[] sourceModels, TreeDataGridRowDragStartedEventArgs e)> RowDragStartedSubject { get; } = new();
-    
+    public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDragOverSubject { get; } = new();
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDropSubject { get; } = new();
 
     public BindableReactiveProperty<ITreeDataGridSource<TModel>> Source { get; } = new();
@@ -156,6 +156,31 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
             return;
         }
         RowDragStartedSubject.OnNext((sourceModels, e));
+    }
+    
+    public virtual void OnRowDragOver(object? sender, TreeDataGridRowDragEventArgs e)
+    {
+        // extract the target model from the event args
+        if (e.TargetRow.Model is not TModel targetModel) return;
+        
+        // extract the source models from the event args
+        var dataObject = e.Inner.Data as DataObject;
+        if (dataObject?.Get("TreeDataGridDragInfo") is not DragInfo dragInfo) return;
+
+        var source = dragInfo.Source;
+        var indices = dragInfo.Indexes;
+        
+        var sourceModels = new List<TModel>();
+        
+        foreach (var modelIndex in indices)
+        {
+            var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
+            var row = source.Rows[rowIndex];
+            if (row.Model is not TModel model) continue;
+            sourceModels.Add(model);
+        }
+
+        RowDragOverSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
     
     /// <summary>

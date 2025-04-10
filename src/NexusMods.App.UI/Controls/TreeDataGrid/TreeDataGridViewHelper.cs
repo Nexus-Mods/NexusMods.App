@@ -55,6 +55,13 @@ public static class TreeDataGridViewHelper
                     .Subscribe((view, getAdapter), static (eventArgs, state) =>
                             state.getAdapter(state.view.ViewModel!).OnRowDragStarted(eventArgs.sender, eventArgs.e))
                     .AddTo(disposables);
+                
+                Observable.FromEventHandler<TreeDataGridRowDragEventArgs>(
+                        addHandler: handler => treeDataGrid.RowDragOver += handler,
+                        removeHandler: handler => treeDataGrid.RowDragOver -= handler)
+                    .Subscribe((view, getAdapter), static (eventArgs, state) =>
+                        state.getAdapter(state.view.ViewModel!).OnRowDragOver(eventArgs.sender, eventArgs.e))
+                    .AddTo(disposables);
 
                 Observable.FromEventHandler<TreeDataGridRowDragEventArgs>(
                         addHandler: handler => treeDataGrid.RowDrop += handler,
