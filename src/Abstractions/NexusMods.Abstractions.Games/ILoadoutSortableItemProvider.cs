@@ -41,4 +41,11 @@ public interface ILoadoutSortableItemProvider : IDisposable
     /// <param name="sortableItem">item to move</param>
     /// <param name="delta">positive or negative index delta</param>
     Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token);
+    
+    /// <summary>
+    /// Moves the given items to the target index in the sort order.
+    /// The relative index order of the moved items is preserved.
+    /// Validity and outcome of the move may depend on game specific logic, so only some or none of the items may be moved.
+    /// </summary>
+    Task MoveItemsTo(ISortableItem[] sourceItems, int targetIndex, CancellationToken token);
 }
