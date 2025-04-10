@@ -415,6 +415,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/trophy/
     public static readonly IconValue Trophy = new ProjektankerIcon("mdi-trophy");
     
+    // https://pictogrammers.com/library/mdi/icon/trophy-outline/
+    public static readonly IconValue TrophyOutline = new ProjektankerIcon("mdi-trophy-outline");
+    
 #endregion
 
 #region Social

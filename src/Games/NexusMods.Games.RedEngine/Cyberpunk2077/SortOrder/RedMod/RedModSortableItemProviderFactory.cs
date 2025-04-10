@@ -29,9 +29,9 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
                                          """;
     public string WinnerIndexToolTip => "First Loaded RedMOD Wins: Items that load first will overwrite changes from items loaded after them."; 
 
-    public string IndexColumnHeader => "LOAD ORDER";
+    public string IndexColumnHeader => "Load Order";
 
-    public string NameColumnHeader => "REDMOD NAME";
+    public string NameColumnHeader => "REDmod Name";
     
     public string EmptyStateMessageTitle => "No REDmods detected";
     public string EmptyStateMessageContents => "Some mods contain REDmod items that alter core gameplay elements. When detected, they will appear here for load order configuration.";

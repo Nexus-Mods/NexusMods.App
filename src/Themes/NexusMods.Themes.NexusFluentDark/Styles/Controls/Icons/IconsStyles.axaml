@@ -133,6 +133,7 @@
                     <icons:UnifiedIcon Classes="Update" />
                     <icons:UnifiedIcon Classes="TrayArrowDown" />
                     <icons:UnifiedIcon Classes="FolderUploadOutline" />
+                    <icons:UnifiedIcon Classes="TrophyOutline" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -693,5 +694,8 @@
     
     <Style Selector="icons|UnifiedIcon.ToggleSwitchIndeterminate">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ToggleIndeterminate}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.TrophyOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.TrophyOutline}" />
     </Style>
 </Styles>

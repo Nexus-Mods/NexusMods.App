@@ -35,8 +35,9 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .Subscribe(isWinnerTop =>
                         {
                             DockPanel.SetDock(TrophyIcon, isWinnerTop ? Dock.Top : Dock.Bottom);
-                            TrophyBarPanel.Classes.ToggleIf("IsWinnerTop", isWinnerTop);
-                            TrophyBarPanel.Classes.ToggleIf("IsWinnerBottom", !isWinnerTop);
+                            // not used anymore for styling but leaving these in just in case
+                            TrophyBarDockPanel.Classes.ToggleIf("IsWinnerTop", isWinnerTop);
+                            TrophyBarDockPanel.Classes.ToggleIf("IsWinnerBottom", !isWinnerTop);
                         }
                     )
                     .DisposeWith(disposables);
@@ -54,7 +55,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
 
                 // trophy tooltip
                 this.WhenAnyValue(view => view.ViewModel!.TrophyToolTip)
-                    .Subscribe(tooltip => { ToolTip.SetTip(TrophyBarPanel, tooltip); })
+                    .Subscribe(tooltip => { ToolTip.SetTip(TrophyBarDockPanel, tooltip); })
                     .DisposeWith(disposables);
 
                 // Empty state
@@ -79,10 +80,10 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .DisposeWith(disposables);
 
                 // Title
-                this.OneWayBind(ViewModel, vm => vm.SortOrderHeading,
-                        view => view.TitleTextBlock.Text
-                    )
-                    .DisposeWith(disposables);
+                // this.OneWayBind(ViewModel, vm => vm.SortOrderHeading,
+                //         view => view.TitleTextBlock.Text
+                //     )
+                //     .DisposeWith(disposables);
 
                 // alert title
                 this.OneWayBind(ViewModel,
@@ -105,8 +106,18 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .DisposeWith(disposables);
 
                 // Alert Command
-                this.OneWayBind(ViewModel, vm => vm.InfoAlertCommand,
+                this.OneWayBind(ViewModel, vm => vm.ShowAlertCommand,
                         view => view.InfoAlertButton.Command
+                    )
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.DismissAlertCommand,
+                        view => view.AlertDismissButton.Command
+                    )
+                    .DisposeWith(disposables);
+                
+                this.OneWayBind(ViewModel, vm => vm.LearnMoreAlertCommand,
+                        view => view.AlertLearnMoreButton.Command
                     )
                     .DisposeWith(disposables);
             }

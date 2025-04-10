@@ -19,8 +19,6 @@ public partial class SortingSelectionView : ReactiveUserControl<ISortingSelectio
                     .DisposeWith(disposables);
             }
         );
-        
-        
     }
 }
 

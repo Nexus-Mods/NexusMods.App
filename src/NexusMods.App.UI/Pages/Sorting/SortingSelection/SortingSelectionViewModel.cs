@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.Sorting;
@@ -13,9 +14,9 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
     private readonly IConnection _connection;
     public ReadOnlyObservableCollection<ILoadOrderViewModel> LoadOrderViewModels { get; }
 
-    public SortingSelectionViewModel(IServiceProvider serviceProvider, LoadoutId loadutId)
+    public SortingSelectionViewModel(IServiceProvider serviceProvider, LoadoutId loadoutId, IOSInterop osInterop)
     {
-        _loadoutId = loadutId;
+        _loadoutId = loadoutId;
         _connection = serviceProvider.GetRequiredService<IConnection>();
 
         var loadout = Loadout.Load(_connection.Db, _loadoutId);
@@ -26,7 +27,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
 
         LoadOrderViewModels = new ReadOnlyObservableCollection<ILoadOrderViewModel>(
             new ObservableCollection<ILoadOrderViewModel>(
-                sortableItemProviders.Select(provider => new LoadOrderViewModel(_loadoutId, provider, serviceProvider))
+                sortableItemProviders.Select(provider => new LoadOrderViewModel(_loadoutId, provider, serviceProvider, osInterop))
             )
         );
     }
