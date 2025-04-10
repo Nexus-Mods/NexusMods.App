@@ -79,6 +79,9 @@
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
             
+            <!-- Current designs no longer have vertically stacked mod and display name. The design has evolved into using extra columns which
+            we can tackle soon or find a middle ground and stack horizontally. Will decide before release. -->
+            
             <!-- <StackPanel VerticalAlignment="Center"> -->
             <!--      -->
             <!--     ~1~ ModName @1@ -->

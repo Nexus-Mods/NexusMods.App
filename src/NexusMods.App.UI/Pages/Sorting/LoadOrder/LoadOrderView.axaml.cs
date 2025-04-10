@@ -35,6 +35,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
                     .Subscribe(isWinnerTop =>
                         {
                             DockPanel.SetDock(TrophyIcon, isWinnerTop ? Dock.Top : Dock.Bottom);
+                            // not used anymore for styling but leaving these in just in case
                             TrophyBarDockPanel.Classes.ToggleIf("IsWinnerTop", isWinnerTop);
                             TrophyBarDockPanel.Classes.ToggleIf("IsWinnerBottom", !isWinnerTop);
                         }

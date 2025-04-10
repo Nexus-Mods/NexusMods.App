@@ -62,35 +62,6 @@
                     </Style>
                 </Style>
 
-                <Style Selector="^.IsWinnerTop">
-                    <!-- <Style Selector="^ Border#TrophyGradientBorder"> -->
-                    <!--     <Setter Property="Background"> -->
-                    <!--         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%"> -->
-                    <!--             <GradientStop Color="{StaticResource SurfaceHigh}" Offset="0" /> -->
-                    <!--             <GradientStop Color="{StaticResource SurfaceLow}" Offset="1" /> -->
-                    <!--         </LinearGradientBrush> -->
-                    <!--     </Setter> -->
-                    <!-- </Style> -->
-                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon"> -->
-                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" /> -->
-                    <!-- </Style> -->
-                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon"> -->
-                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceLow}" /> -->
-                    <!-- </Style> -->
-                </Style>
-
-                <Style Selector="^.IsWinnerBottom">
-                    <!-- <Style Selector="^ Border#TrophyGradientBorder"> -->
-                    <!--     <Setter Property="Background" Value="{StaticResource SurfaceHigh}" /> -->
-                    <!-- </Style> -->
-                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon"> -->
-                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceLow}" /> -->
-                    <!-- </Style> -->
-                    <!-- <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon"> -->
-                    <!--     <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" /> -->
-                    <!-- </Style> -->
-                </Style>
-
                 <Style Selector="^.SortAsc">
                     <Setter Property="Background" Value="Transparent" />
                 </Style>
