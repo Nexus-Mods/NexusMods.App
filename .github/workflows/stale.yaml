@@ -1,0 +1,25 @@
+name: "Close stale issues"
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "8 10 * * *" # every day at 10:08 UTC
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          any-of-issue-labels: "needs-response"
+          days-before-issue-stale: 7
+          days-before-pr-stale: 7
+          days-before-issue-close: 14
+          days-before-pr-close: -1 # don't auto-close stale PRs
+          stale-issue-message: "This issue has been marked as stale and will be closed after 14 days of inactivity. If this problem still applies to you or you have more information to share, feel free to comment any additional details. If this problem has been resolved, please let us know by closing the issue."
+          close-issue-message: "This issue hasn't been updated for 3 weeks, so we're closing it to keep our backlog optimized. If this problem still applies to you or you have more information to share, feel free to re-open the issue or create a new one. Thanks for helping us improve the Nexus Mods app!"
+          stale-pr-message: "This PR has been marked as stale due to inactivity."
+
