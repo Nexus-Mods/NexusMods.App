@@ -121,8 +121,21 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                             await provider.SetRelativePosition(item.Value, delta, cancellationToken);
                         })
                     .DisposeWith(d);
-                
+
                 // Drag and drop
+                adapter.RowDragOverSubject
+                    .Subscribe(dragDropPayload =>
+                        {
+                            var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+
+                            if (eventArgs.Position != TreeDataGridRowDropPosition.Inside) return;
+                            
+                            // Update the drop position for the inside case to be before or after
+                            var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
+                            eventArgs.Position = positionY < 0.5 ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
+                        }
+                    );
+                
                 adapter.RowDropSubject
                     .SubscribeAwait(async (dragDropPayload, cancellationToken) =>
                         {
@@ -152,9 +165,14 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                                 case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Descending:
                                     relativePosition = TargetRelativePosition.AfterTarget;
                                     break;
-                                case TreeDataGridRowDropPosition.Inside:
-                                    // Do nothing for now
-                                    return;
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Ascending:
+                                    var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
+                                    relativePosition = positionY < 0.5 ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Descending:
+                                    var positionY2 = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
+                                    relativePosition = positionY2 < 0.5 ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
+                                    break;
                                 case TreeDataGridRowDropPosition.None:
                                     // Invalid target, no move
                                     return;
