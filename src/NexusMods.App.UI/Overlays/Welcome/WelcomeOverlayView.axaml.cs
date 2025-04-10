@@ -41,7 +41,7 @@ public partial class WelcomeOverlayView : ReactiveUserControl<IWelcomeOverlayVie
                 {
                     ButtonLogIn.IsVisible = !isLoggedIn;
                     ButtonLogOut.IsVisible = isLoggedIn;
-                    ButtonTextClose.Text = isLoggedIn ? "Close" : "Guest";
+                    ButtonClose.Text = isLoggedIn ? "Close" : "Guest";
                 })
                 .AddTo(disposables);
         });

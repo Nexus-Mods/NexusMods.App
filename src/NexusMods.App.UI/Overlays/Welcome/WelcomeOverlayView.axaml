@@ -6,33 +6,147 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:overlays="clr-namespace:NexusMods.App.UI.Overlays"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
     x:Class="NexusMods.App.UI.Overlays.WelcomeOverlayView">
+    
+    <reactive:ReactiveUserControl.Styles>
+        
+        <Style Selector="Expander#PrivacyPolicyExpander">
+            <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            </Style>
+            <!-- <Setter Property="Background" Value="DeepPink" /> -->
+        </Style>
+        
+    </reactive:ReactiveUserControl.Styles>
 
-    <StackPanel Orientation="Vertical">
-        <Button x:Name="ButtonOpenDiscord">
-            <TextBlock Text="Discord"/>
-        </Button>
-        <Button x:Name="ButtonOpenForum">
-            <TextBlock Text="Nexus Mods Forum"/>
-        </Button>
-        <Button x:Name="ButtonOpenGitHub">
-            <TextBlock Text="GitHub"/>
-        </Button>
-        <Button x:Name="ButtonClose">
-            <TextBlock x:Name="ButtonTextClose" Text="Close"/>
-        </Button>
-        <Button x:Name="ButtonLogIn">
-            <TextBlock Text="Log in"/>
-        </Button>
-        <Button x:Name="ButtonLogOut">
-            <TextBlock Text="Log Out"/>
-        </Button>
-        <CheckBox x:Name="CheckBoxAllowTelemetry">Foo bar baz allow data</CheckBox>
-        <Button x:Name="ButtonOpenPrivacyPolicy">
-            <TextBlock Text="Privacy Policy"/>
-        </Button>
-    </StackPanel>
+    <Border MinWidth="576" MaxWidth="576"
+            Background="{StaticResource SurfaceLowBrush}"
+            CornerRadius="8"
+            Padding="24"
+            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+            BorderThickness="2"
+            BoxShadow="{StaticResource DropShadowMD}">
+
+        <StackPanel HorizontalAlignment="Center" Spacing="32">
+            <StackPanel Spacing="8">
+                <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}"
+                                   Size="56" />
+
+                <TextBlock Theme="{StaticResource BodyXLBoldTheme}"
+                           TextAlignment="Center"
+                           Foreground="{StaticResource NeutralStrongBrush}">
+                    Welcome to the
+                    <Span Foreground="{StaticResource StardewLinearGradientBrush}">Stardew Valley Preview</Span>
+                </TextBlock>
+
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource NeutralSubduedBrush}"
+                           Text="Currently, the app supports Stardew Valley, with more games coming soon. Share your feedback anytime using the 'Give Feedback' button in the footer." />
+            </StackPanel>
+
+            <StackPanel Spacing="8">
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource NeutralSubduedBrush}"
+                           Text="Join the discussion on:" />
+
+                <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                    <controls:StandardButton x:Name="ButtonOpenDiscord"
+                                             Text="Discord"
+                                             Type="Secondary"
+                                             Fill="None"
+                                             Size="Small"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Discord}"
+                                             ToolTip.Tip="Open Discord" />
+
+                    <controls:StandardButton x:Name="ButtonOpenForum"
+                                             Text="Nexus Mods Forums"
+                                             Type="Secondary"
+                                             Fill="None"
+                                             Size="Small"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Forum}"
+                                             ToolTip.Tip="Open Forums at Nexus Mods" />
+
+                    <controls:StandardButton x:Name="ButtonOpenGitHub"
+                                             Text="GitHub"
+                                             Type="Secondary"
+                                             Fill="None"
+                                             Size="Small"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.GitHub}"
+                                             ToolTip.Tip="Open GitHub" />
+                </StackPanel>
+            </StackPanel>
+
+
+            <StackPanel Spacing="16">
+                <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource NeutralSubduedBrush}"
+                           Text="Enjoy the preview, and happy modding!" />
+                <Border Height="1" Background="{StaticResource SurfaceMidBrush}" />
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                            Spacing="{StaticResource Spacing-2.5}">
+
+                    <controls:StandardButton x:Name="ButtonClose"
+                                             Text="Close"
+                                             Type="Tertiary"
+                                             Fill="Weak"
+                                             Size="Small" />
+
+                    <controls:StandardButton x:Name="ButtonLogIn"
+                                             Text="Log in"
+                                             Type="Primary"
+                                             Fill="Strong"
+                                             Size="Small" />
+
+                    <controls:StandardButton x:Name="ButtonLogOut"
+                                             Text="Log Out"
+                                             Type="Secondary"
+                                             Fill="Strong"
+                                             Size="Small" />
+                </StackPanel>
+                <Expander x:Name="PrivacyPolicyExpander" HorizontalAlignment="Stretch">
+
+                    <Expander.Header>
+                        <CheckBox x:Name="CheckBoxAllowTelemetry"
+                                  HorizontalAlignment="Stretch"
+                                  IsChecked="True">Allow this app to collect usage data to improve your experience</CheckBox>
+                    </Expander.Header>
+
+                    <Border Padding="0,12">
+                        <StackPanel Spacing="12">
+                            <TextBlock Theme="{StaticResource BodySMNormalTheme}"
+                                       TextAlignment="Left"
+                                       TextWrapping="Wrap"
+                                       Foreground="{StaticResource NeutralSubduedBrush}"
+                                       Text="Help us provide you with the best modding experience. With your permission, we will collect analytics information and send it to our team to help us improve quality and performance. This information is sent anonymously and will never be shared with a 3rd party." />
+
+                            <controls:StandardButton x:Name="ButtonOpenPrivacyPolicy"
+                                                     Text="Privacy Policy"
+                                                     Type="Tertiary"
+                                                     Fill="Weak"
+                                                     Size="Small"
+                                                     LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                                     ShowIcon="Left" />
+                        </StackPanel>
+                    </Border>
+                </Expander>
+            </StackPanel>
+            
+            
+        </StackPanel>
+
+    </Border>
 
 </reactive:ReactiveUserControl>
-
