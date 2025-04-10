@@ -8,8 +8,6 @@ public record TelemetrySettings : ISettings
 {
     public bool IsEnabled { get; set; }
 
-    public bool HasShownPrompt { get; set; }
-
     public static readonly Uri Link = new("https://help.nexusmods.com/article/20-privacy-policy");
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)

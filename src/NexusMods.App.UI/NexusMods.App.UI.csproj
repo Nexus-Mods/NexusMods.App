@@ -83,6 +83,7 @@
         <PackageReference Include="TextMateSharp.Grammars" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="ZLinq" />
     </ItemGroup>
 
     <ItemGroup>
@@ -241,9 +242,6 @@
         </Compile>
         <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
           <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Overlays\MetricsOptIn\MetricsOptInViewModel.cs">
-          <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerViewModel.cs">
           <DependentUpon>IDevelopmentBuildBannerViewModel.cs</DependentUpon>
@@ -729,6 +727,9 @@
         <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
           <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\UnifiedIconComponent.cs">
+          <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
           <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
         </Compile>
@@ -754,6 +755,7 @@
       <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
       <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
       <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
+      <UpToDateCheckInput Remove="Overlays\Login\StartupMessageBox\LoginMessageBoxView.axaml" />
     </ItemGroup>
 
     <ItemGroup>

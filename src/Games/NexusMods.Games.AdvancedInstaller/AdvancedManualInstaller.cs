@@ -39,7 +39,7 @@ public class AdvancedManualInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        if (!IsActive) return ValueTask.FromResult<InstallerResult>(new NotSupported());
+        if (!IsActive) return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "No UI is available for the installer"));
         return _handler.Value!.ExecuteAsync(libraryArchive, loadoutGroup, transaction, loadout, cancellationToken);
     }
 

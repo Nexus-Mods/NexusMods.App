@@ -31,7 +31,6 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.ManageGameWarning;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.Collections;
@@ -84,16 +83,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         var provider = serviceProvider;
         _windowManager = windowManager;
 
-        var workspaceController = windowManager.ActiveWorkspaceController;
-
         GiveFeedbackCommand = ReactiveCommand.Create(() =>
-            {
-                var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-                alphaWarningViewModel.WorkspaceController = workspaceController;
-
-                overlayController.Enqueue(alphaWarningViewModel);
-            }
-        );
+        {
+            var welcomeOverlayViewModel = serviceProvider.GetRequiredService<IWelcomeOverlayViewModel>();
+            overlayController.Enqueue(welcomeOverlayViewModel);
+        });
 
         OpenRoadmapCommand = ReactiveCommand.CreateFromTask(async () =>
             {

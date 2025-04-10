@@ -14,7 +14,7 @@
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
     
-    <TabControl>
+    <TabControl Margin="0,16,0,0">
         <TabItem x:Name="ModsTabItem">
             <TabItem.Header>
                 <StackPanel>

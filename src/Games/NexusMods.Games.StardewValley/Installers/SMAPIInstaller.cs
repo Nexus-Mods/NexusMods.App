@@ -63,11 +63,11 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
             return parentName.Equals(targetParentName);
         }, out var installDataFile);
 
-        if (!foundInstallDataFile) return new NotSupported();
+        if (!foundInstallDataFile) return new NotSupported(Reason: "Found no SMAPI installation data file in the archive");
         if (!installDataFile.AsLibraryFile().TryGetAsLibraryArchive(out var installDataArchive))
         {
             Logger.LogError("Expected Library Item `{LibraryItem}` (`{Id}`) to be an archive", installDataFile.AsLibraryFile().AsLibraryItem().Name, installDataFile.Id);
-            return new NotSupported();
+            return new NotSupported(Reason: "Expected the installation data file to be an archive");
         }
 
         var isUnix = _osInformation.IsUnix();

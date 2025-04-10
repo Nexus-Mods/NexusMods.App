@@ -7,17 +7,13 @@ using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
-using NexusMods.App.UI.Overlays.Login;
-using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Settings;
@@ -73,14 +69,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         {
             ConnectErrors(serviceProvider).DisposeWith(d);
 
-            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-            alphaWarningViewModel.WorkspaceController = WorkspaceController;
-            alphaWarningViewModel.Controller = overlayController;
-            alphaWarningViewModel.MaybeShow();
-
-            var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
-            metricsOptInViewModel.Controller = overlayController;
-            metricsOptInViewModel.MaybeShow();
+            var welcomeOverlayViewModel = WelcomeOverlayViewModel.CreateIfNeeded(serviceProvider);
+            if (welcomeOverlayViewModel is not null) overlayController.Enqueue(welcomeOverlayViewModel);
 
             R3.Observable
                 .Return(UpdateChecker.ShouldCheckForUpdate())
@@ -105,10 +95,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Select(_ => System.Reactive.Unit.Default)
                 .InvokeReactiveCommand(BringWindowToFront)
                 .DisposeWith(d);
-            
-            var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
-            loginMessageVM.Controller = overlayController;
-            loginMessageVM.MaybeShow();
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)
