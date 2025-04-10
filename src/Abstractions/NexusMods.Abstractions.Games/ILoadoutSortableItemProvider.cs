@@ -47,7 +47,7 @@ public interface ILoadoutSortableItemProvider : IDisposable
     /// The relative index order of the moved items is preserved.
     /// Validity and outcome of the move may depend on game specific logic, so only some or none of the items may be moved.
     /// </summary>
-    Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition position, CancellationToken token);
+    Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token);
 }
 
 /// <summary>
