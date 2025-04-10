@@ -151,7 +151,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     }
 
     /// <inheritdoc/>
-    public Task MoveItemsTo(ISortableItem[] sourceItems, int targetIndex, CancellationToken token)
+    public Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition position, CancellationToken token)
     {
         // TODO: implement this method
         return Task.CompletedTask;

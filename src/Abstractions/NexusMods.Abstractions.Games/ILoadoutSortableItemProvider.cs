@@ -43,9 +43,25 @@ public interface ILoadoutSortableItemProvider : IDisposable
     Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token);
     
     /// <summary>
-    /// Moves the given items to the target index in the sort order.
+    /// Moves the given items to be before or after the target item in ascending index sort order.
     /// The relative index order of the moved items is preserved.
     /// Validity and outcome of the move may depend on game specific logic, so only some or none of the items may be moved.
     /// </summary>
-    Task MoveItemsTo(ISortableItem[] sourceItems, int targetIndex, CancellationToken token);
+    Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition position, CancellationToken token);
+}
+
+/// <summary>
+/// The position items should be moved to, relative to the target item in ascending index order.
+/// </summary>
+public enum TargetRelativePosition
+{
+    /// <summary>
+    /// Items should be moved to be before the target item in ascending index order
+    /// </summary>
+    BeforeTarget,
+    
+    /// <summary>
+    /// Items should be moved to be after the target item in ascending index order
+    /// </summary>
+    AfterTarget,
 }
