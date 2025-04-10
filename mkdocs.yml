@@ -111,7 +111,11 @@ nav:
         - UI Styling Guidelines: developers/development-guidelines/UIStylingGuidelines.md
         - Using Workspaces: developers/development-guidelines/UsingWorkspaces.md
         - Diagnostics: developers/development-guidelines/Diagnostics.md
-        - Release Process: developers/ReleaseProcess.md
+        - Processes:
+          - Release Process: developers/development-guidelines/Processes/ReleaseProcess.md
+          - Ceremonies: developers/development-guidelines/Processes/Ceremonies.md
+          - Design Process: developers/development-guidelines/Processes/DesignProcess.md
+          - QA Process: developers/development-guidelines/Processes/QAProcess.md
 
     - Decisions:
         - Backend:
