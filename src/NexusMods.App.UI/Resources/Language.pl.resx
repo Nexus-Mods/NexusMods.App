@@ -36,23 +36,23 @@
 	<data name="MetricsOptIn_MainMessage" xml:space="preserve">
 		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
 	</data>
-	<data name="Updater_LATER" xml:space="preserve">
-		<value>Później</value>
-	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
 		<value>Zobacz aktualizację</value>
 	</data>
 	<data name="Updater_UpdateAvailable" xml:space="preserve">
-		<value>Dostępna aktualizacja</value>
+		<value>Dostępna aktualizacja {0}</value>
 	</data>
 	<data name="Updater_MainMessage" xml:space="preserve">
-		<value>Ważne: Odinstaluj aktualną wersję aplikacji przed dokonaniem aktualizacji. Aktualizacja usuwa wszystkie mody.</value>
+		<value>Aktualna wersja {0} może zostać zaktualizowana do najnowszej wersji {1}. Przed przystąpieniem do aktualizacji należy całkowicie zamknąć aplikację.</value>
 	</data>
 	<data name="Updater_UseSystemUpdater" xml:space="preserve">
-		<value>Wygląda na to, że twoja aplikacja została zainstalowana za pośrednictwem systemu zarządzania pakietami. Proszę zaktualizować aplikację za pośrednictwem systemowej aplikacji do aktualizacji.</value>
+		<value>Aplikację można zaktualizować za pomocą menedżera pakietów, który został użyty do jej zainstalowania.</value>
 	</data>
-	<data name="Updater_ViewChangelog" xml:space="preserve">
-		<value>Pokaż dziennik zmian na GitHub</value>
+	<data name="Updater_UseInnoSetup" xml:space="preserve">
+		<value>Aplikację można zaktualizować, pobierając instalator i uruchamiając go po zamknięciu aplikacji.</value>
+	</data>
+	<data name="Updater_UseFlatpak" xml:space="preserve">
+		<value>Aplikację można zaktualizować za pomocą Flatpaka.</value>
 	</data>
 	<data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
 		<value>Proszę wybrać plik moda do zainstalowania</value>
@@ -220,7 +220,7 @@
 		<value>Dodaj</value>
 	</data>
 	<data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
-		<value>Dodaj (zaawansowane)</value>
+		<value>Zaawansowana instalacja</value>
 	</data>
 	<data name="MyGamesView__Ready_to_mod" xml:space="preserve">
 		<value>Dodane gry</value>
@@ -477,22 +477,22 @@
 		<value>Zarządzaj pobranymi modami i kolekcjami</value>
 	</data>
 	<data name="FileOriginsPageView_NameHeader" xml:space="preserve">
-		<value>NAZWA MODA</value>
+		<value>Nazwa moda</value>
 	</data>
 	<data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
-		<value>WERSJA</value>
+		<value>Wersja</value>
 	</data>
 	<data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
-		<value>ROZMIAR</value>
+		<value>Rozmiar</value>
 	</data>
 	<data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
-		<value>POBRANE</value>
+		<value>Pobrane</value>
 	</data>
 	<data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
-		<value>ZAINSTALOWANE</value>
+		<value>Zainstalowane</value>
 	</data>
 	<data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
-		<value>DZIAŁANIA</value>
+		<value>Działania</value>
 	</data>
 	<data name="DownloadStatusDesignViewModel_FormatStatus_Cancelled" xml:space="preserve">
 		<value>Anulowane</value>
@@ -735,6 +735,9 @@
 	<data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby otworzyć stronę Nexus Mods</value>
 	</data>
+	<data name="FileOriginsPage_CheckForUpdates_ToolTip" xml:space="preserve">
+		<value>Kliknij, aby sprawdzić Nexus Mods pod kątem dostępnych aktualizacji plików modów</value>
+	</data>
 	<data name="TopBar_Forward_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby przejść dalej</value>
 	</data>
@@ -751,22 +754,22 @@
 		<value>Kliknij, aby odinstalować wybrany mod z tego zestawu</value>
 	</data>
 	<data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
-		<value/>
+		<value>Kliknij, aby zobaczyć pliki zawarte w tym modzie</value>
 	</data>
 	<data name="CollectionDownloadViewModel_Ready_to_install" xml:space="preserve">
-		<value>Gotowa do zainstalowania - wszystkie wymagane mody zostały pobrane</value>
+		<value>Wszystkie wymagane mody zostały pobrane. Gotowe do zainstalowania.</value>
 	</data>
 	<data name="CollectionDownloadViewModel_Num_required_mods_downloaded" xml:space="preserve">
-		<value>Pobrano {0} z {1} wymaganych modów</value>
+		<value>Pobrano {0} z {1} wymaganych modów. Zakończ pobieranie, aby je zainstalować.</value>
 	</data>
 	<data name="FileOriginPage_UpdateAll" xml:space="preserve">
 		<value>Zaktualizuj wszystko</value>
 	</data>
 	<data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
-		<value>ZAINSTALOWANE MODY</value>
+		<value>Zainstalowane mody</value>
 	</data>
 	<data name="LeftMenu_Label_Utilities" xml:space="preserve">
-		<value>NARZĘDZIA</value>
+		<value>Narzędzia</value>
 	</data>
 	<data name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed" xml:space="preserve">
 		<value>Gotów do gry - zainstalowano wszystkie wymagane mody</value>
@@ -802,10 +805,28 @@
 		<value>Zaktualizuj do wersji {0}</value>
 	</data>
 	<data name="CollectionDownloadViewModel_DownloadOptional" xml:space="preserve">
-		<value>Pobierz wszystkie opcjonalne mody</value>
+		<value>Autopobranie wszystkich opcjonalnych</value>
 	</data>
 	<data name="CollectionDownloadViewModel_InstallOptional" xml:space="preserve">
-		<value>Zainstaluj pobrane opcjonalne mody</value>
+		<value>Zainstaluj wszystkie opcjonalne</value>
+	</data>
+	<data name="RemoveGameOverlayView_Title" xml:space="preserve">
+		<value>Usuwanie {0}</value>
+	</data>
+	<data name="RemoveGameOverlayView_Description" xml:space="preserve">
+		<value>Usunięcie spowoduje odinstalowanie wszystkich modów i kolekcji dla {0}, jednak pobrane mody pozostaną na dysku. Po ponownym dodaniu gry, mody te będą nadal dostępne w bibliotece.</value>
+	</data>
+	<data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+		<value>Proces usunie również pobrane mody ({0}) oraz kolekcje ({1}) związane z grą {2}.</value>
+	</data>
+	<data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+		<value>Usuń grę</value>
+	</data>
+	<data name="RemoveGameOverlayView_RemoveButton_AlsoDelete" xml:space="preserve">
+		<value>Usuń grę i mody</value>
 	</data>
 	<data name="ManualDownloadRequiredOverlayView_InfoTitle" xml:space="preserve">
 		<value>Wymagane ręczne pobranie</value>
@@ -866,5 +887,47 @@
 	</data>
 	<data name="CollectionDownloadViewModel_StatsRating_ToolTip" xml:space="preserve">
 		<value>Ocena sukcesu</value>
+	</data>
+	<data name="ManageGameWarning_Title" xml:space="preserve">
+		<value>Zarządzanie tą grą wpłynie na istniejące mody</value>
+	</data>
+	<data name="ManageGameWarning_Desc1" xml:space="preserve">
+		<value>Wszystkie istniejące mody zostaną wykryte i będą mogły być używane razem z aplikacją w sekcji „Zewnętrzne zmiany”. Jeśli jednak później przestaniesz zarządzać tą grą lub odinstalujesz aplikację, te mody zostaną trwale usunięte z folderu gry.</value>
+	</data>
+	<data name="ManageGameWarning_Desc2" xml:space="preserve">
+		<value>Przed kontynuowaniem wykonaj kopię zapasową modów, które chcesz zachować.</value>
+	</data>
+	<data name="ManageGameWarning_Cancel" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="ManageGameWarning_Continue" xml:space="preserve">
+		<value>Kontynuuj</value>
+	</data>
+	<data name="UpgradeToPremiumView_Title" xml:space="preserve">
+		<value>Przejdź na Premium, aby pobierać kolekcje jednym kliknięciem</value>
+	</data>
+	<data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
+		<value>Pobierz całą kolekcję modów z pełną prędkością jednym kliknięciem, nie opuszczając aplikacji. Użytkownicy darmowych kont mogą instalować mody pojedynczo z listy.</value>
+	</data>
+	<data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+		<value>Użytkownicy Premium otrzymują także:</value>
+	</data>
+	<data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
+		<value>Nieograniczona prędkość pobierania,</value>
+	</data>
+	<data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
+		<value>Dożywotni brak reklam, nawet po anulowaniu!</value>
+	</data>
+	<data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
+		<value>Wspieraj twórców – premium pomaga nagradzać autorów modów.</value>
+	</data>
+	<data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="UpgradeToPremiumView_LearnMoreButton" xml:space="preserve">
+		<value>Dowiedz się więcej</value>
+	</data>
+	<data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
+		<value>Przejdź na premium</value>
 	</data>
 </root>
