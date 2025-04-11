@@ -2,7 +2,6 @@ using System.Reactive.Disposables;
 using Avalonia.Controls.Selection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
@@ -43,7 +42,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             .ToReactiveCommand<NavigationInformation>(info =>
             {
                 var gamePath = SelectedItem!.Key;
-                var loadoutFile = LoadoutItemGroupHelpers.FindMatchingFile(connection, Context!.GroupIds.Select(x => x.Value).ToArray(), gamePath, requireAllGroups: false);
+                var loadoutFile = LoadoutItemGroupHelpers.FindMatchingFile(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
 
                 if (loadoutFile == null)
                 {
@@ -81,7 +80,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             .ToReactiveCommand<Unit>(async (_, _) =>
                 {
                     var gamePath = SelectedItem!.Key;
-                    var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds.Select(x => x.Value).ToArray(), gamePath, requireAllGroups: false);
+                    var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
                     if (result == LoadoutItemGroupHelpers.GroupOperationStatus.NoItemsDeleted)
                         logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 
                             gamePath, string.Join(", ", Context!.GroupIds));
@@ -91,14 +90,21 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
 
         this.WhenActivated(disposables =>
         {
-            // Populate the file tree
+            // Set the title based on the first valid group
             this.ObservePropertyChanged(vm => vm.Context)
                 .WhereNotNull()
-                .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupIds.First()))
-                .Where(group => group.IsValid())
-                .Do(group => TabTitle = group.AsLoadoutItem().Name)
-                .Select(group => new LoadoutItemGroupFileTreeViewModel(group))
-                .Do(viewModel => FileTreeViewModel = viewModel)
+                // ReSharper disable once HeapView.CanAvoidClosure
+                .Select(context => LoadoutItemGroupHelpers.GetFirstValidGroup(connection, context.GroupIds))
+                .Where(group => group != null)
+                .Do(group => TabTitle = group!.Value.AsLoadoutItem().Name)
+                .Subscribe()
+                .DisposeWith(disposables);
+            
+            // Populate the file tree
+            /*
+            this.ObservePropertyChanged(vm => vm.Context)
+                .WhereNotNull()
+                .Do(context => FileTreeViewModel = new LoadoutItemGroupFileTreeViewModel(context.GroupIds))
                 .Subscribe()
                 .DisposeWith(disposables);
             
@@ -113,6 +119,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                 .OfType<object, FileTreeNodeViewModel>()
                 .Subscribe(item => SelectedItem = item)
                 .DisposeWith(disposables);
+            */
         });
     }
     

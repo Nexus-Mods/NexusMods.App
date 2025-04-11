@@ -25,7 +25,7 @@ public static class LoadoutItemGroupHelpers
     /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
     /// <returns>A task that completes with the operation status when the files are removed.</returns>
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing</exception>
-    public static async Task<GroupOperationStatus> RemoveFileOrFolder(IConnection connection, EntityId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
+    public static async Task<GroupOperationStatus> RemoveFileOrFolder(IConnection connection, LoadoutItemGroupId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
     {
         var (validGroups, missingGroups) = LoadAllGroups(connection, groupIds, requireAllGroups);
         
@@ -57,7 +57,7 @@ public static class LoadoutItemGroupHelpers
     /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
     /// <returns>A task that completes with the operation status when the files are removed.</returns>
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing</exception>
-    public static async Task<GroupOperationStatus> RemoveFileOrFolders(IConnection connection, EntityId[] groupIds, GamePath[] gamePaths, bool requireAllGroups = true)
+    public static async Task<GroupOperationStatus> RemoveFileOrFolders(IConnection connection, LoadoutItemGroupId[] groupIds, GamePath[] gamePaths, bool requireAllGroups = true)
     {
         var (validGroups, missingGroups) = LoadAllGroups(connection, groupIds, requireAllGroups);
         
@@ -87,7 +87,7 @@ public static class LoadoutItemGroupHelpers
     /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
     /// <returns>The matching <see cref="LoadoutItemWithTargetPath.ReadOnly"/> if found; otherwise, null.</returns>
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing.</exception>
-    public static LoadoutFile.ReadOnly? FindMatchingFile(IConnection connection, EntityId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
+    public static LoadoutFile.ReadOnly? FindMatchingFile(IConnection connection, LoadoutItemGroupId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
     {
         var (validGroups, _) = LoadAllGroups(connection, groupIds, requireAllGroups);
         
@@ -128,10 +128,10 @@ public static class LoadoutItemGroupHelpers
     /// <param name="groupIds">Array of group IDs to load</param>
     /// <param name="requireAllGroups">If true, throws an exception if any groups are missing</param>
     /// <returns>Tuple containing (valid groups array, missing group IDs array)</returns>
-    public static (LoadoutItemGroup.ReadOnly[] validGroups, EntityId[] missingGroups) LoadAllGroups(IConnection connection, EntityId[] groupIds, bool requireAllGroups)
+    public static (LoadoutItemGroup.ReadOnly[] validGroups, LoadoutItemGroupId[] missingGroups) LoadAllGroups(IConnection connection, Span<LoadoutItemGroupId> groupIds, bool requireAllGroups)
     {
         var validGroups = new List<LoadoutItemGroup.ReadOnly>();
-        var missingGroups = new List<EntityId>();
+        var missingGroups = new List<LoadoutItemGroupId>();
 
         foreach (var groupId in groupIds)
         {
@@ -157,6 +157,42 @@ public static class LoadoutItemGroupHelpers
         await tx.Commit();
     }
     
+    /// <summary>
+    /// Gets the first valid <see cref="LoadoutItemGroup"/> from the specified group IDs.
+    /// </summary>
+    /// <param name="connection">Database connection to use for loading</param>
+    /// <param name="groupIds">Array of group IDs to check</param>
+    /// <returns>The first valid group found, or null if none are valid</returns>
+    public static LoadoutItemGroup.ReadOnly? GetFirstValidGroup(IConnection connection, Span<LoadoutItemGroupId> groupIds)
+    {
+        foreach (var groupId in groupIds)
+        {
+            var group = LoadoutItemGroup.Load(connection.Db, groupId);
+            if (group.IsValid())
+                return group;
+        }
+
+        return null;
+    }
+    
+    /// <summary>
+    /// Gets the first valid <see cref="LoadoutItemGroup"/> from the specified group IDs.
+    /// </summary>
+    /// <param name="connection">Database connection to use for loading</param>
+    /// <param name="groupIds">Array of group IDs to check</param>
+    /// <returns>The first valid group found, or null if none are valid</returns>
+    public static LoadoutItemGroup.ReadOnly? GetFirstValidGroup(IConnection connection, Span<EntityId> groupIds)
+    {
+        foreach (var groupId in groupIds)
+        {
+            var group = LoadoutItemGroup.Load(connection.Db, groupId);
+            if (group.IsValid())
+                return group;
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Result status for group operations
     /// </summary>
