@@ -9,7 +9,7 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
 /// <summary>
 /// Implementation of <see cref="TreeDataGridAdapter{TModel,TKey}"/> 
 /// </summary>
-public class ViewModFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>
+public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>
 {
     private readonly LoadoutGroupFilesProvider _loadoutGroupFilesProvider = serviceProvider.GetRequiredService<LoadoutGroupFilesProvider>();
 

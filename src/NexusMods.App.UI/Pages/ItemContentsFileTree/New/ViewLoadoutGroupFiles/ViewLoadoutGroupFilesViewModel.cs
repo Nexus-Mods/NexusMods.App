@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
@@ -9,33 +10,39 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using ObservableCollections;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
+
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
 
 [UsedImplicitly]
 public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel
 {
+    // IViewLoadoutGroupFilesViewModel
     [Reactive] public ItemContentsFileTreePageContext? Context { get; set; }
-    [Reactive] public IFileTreeViewModel? FileTreeViewModel { get; [UsedImplicitly] private set; }
-    [Reactive] public FileTreeNodeViewModel? SelectedItem { get; [UsedImplicitly] private set; }
-
-    public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; }
-    public ReactiveCommand<Unit> RemoveCommand { get; }
+    [Reactive] public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; [UsedImplicitly] set; }
+    [Reactive] public ReactiveCommand<Unit> RemoveCommand { get; [UsedImplicitly] set; }
     
-    private DisposableBag _disposables;
-
+    // Private state.
+    private CompositeItemModel<EntityId>? SelectedItem { get; set; }
+    private ViewLoadoutGroupFilesTreeDataGridAdapter? FileTreeAdapter { get; set; }
+    
+    private DisposableBag _disposables = new();
+    private readonly SerialDisposable _selectedItemsSubscription = new();
+    
     public ViewLoadoutGroupFilesViewModel(
         ILogger<ViewLoadoutGroupFilesViewModel> logger,
         IWindowManager windowManager,
+        IServiceProvider provider,
         IConnection connection) : base(windowManager)
     {
         TabIcon = IconValues.FolderOpen;
         TabTitle = "File Tree";
 
         OpenEditorCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
-            .Select(item => item is { IsFile: true, IsDeletion: false })
             .ToReactiveCommand<NavigationInformation>(info =>
             {
                 var gamePath = SelectedItem!.Key;
@@ -85,6 +92,8 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
             )
             .AddTo(ref _disposables);
 
+        _selectedItemsSubscription.AddTo(ref _disposables);
+        
         this.WhenActivated(disposables =>
         {
             // Set the title based on the first valid group
@@ -98,25 +107,28 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                 .DisposeWith(disposables);
             
             // Populate the file tree
-            /*
             this.ObservePropertyChanged(vm => vm.Context)
                 .WhereNotNull()
-                .Do(context => FileTreeViewModel = new LoadoutItemGroupFileTreeViewModel(context.GroupIds))
+                .Do(context =>
+                    {
+                        // Dispose any existing adapter first, in case context is changed.
+                        FileTreeAdapter?.Dispose();
+                        FileTreeAdapter = new ViewLoadoutGroupFilesTreeDataGridAdapter(provider, new ModFilesFilter(context.GroupIds.ToArray()));
+                        
+                        // Update the selection subscription
+                        // Note: This auto disposes last.
+                        _selectedItemsSubscription.Disposable = FileTreeAdapter.SelectedModels
+                            .ObserveCountChanged(notifyCurrentCount: true)
+                            .Subscribe(_ => {
+                                SelectedItem = FileTreeAdapter.SelectedModels.FirstOrDefault();
+                            });
+            
+                        // Initial update
+                        SelectedItem = FileTreeAdapter.SelectedModels.FirstOrDefault();
+                    }
+                )
                 .Subscribe()
                 .DisposeWith(disposables);
-            
-            // Observe selected items
-            this.WhenAnyValue(vm => vm.FileTreeViewModel!.TreeSource.Selection)
-                .ToObservable()
-                .WhereNotNull()
-                .OfType<ITreeDataGridSelection, ITreeDataGridRowSelectionModel>()
-                .Select(selectionModel => selectionModel.ObservePropertyChanged(model => model.SelectedItem))
-                .Switch()
-                .WhereNotNull()
-                .OfType<object, FileTreeNodeViewModel>()
-                .Subscribe(item => SelectedItem = item)
-                .DisposeWith(disposables);
-            */
         });
     }
     
