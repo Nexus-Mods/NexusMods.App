@@ -27,7 +27,7 @@ public static class LoadoutItemGroupHelpers
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing</exception>
     public static async Task<GroupOperationStatus> RemoveFileOrFolder(IConnection connection, EntityId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
     {
-        var (validGroups, missingGroups) = FilterValidGroups(connection, groupIds, requireAllGroups);
+        var (validGroups, missingGroups) = LoadAllGroups(connection, groupIds, requireAllGroups);
         
         if (validGroups.Length == 0)
             return GroupOperationStatus.NoItemsDeleted;
@@ -59,7 +59,7 @@ public static class LoadoutItemGroupHelpers
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing</exception>
     public static async Task<GroupOperationStatus> RemoveFileOrFolders(IConnection connection, EntityId[] groupIds, GamePath[] gamePaths, bool requireAllGroups = true)
     {
-        var (validGroups, missingGroups) = FilterValidGroups(connection, groupIds, requireAllGroups);
+        var (validGroups, missingGroups) = LoadAllGroups(connection, groupIds, requireAllGroups);
         
         if (validGroups.Length == 0)
             return GroupOperationStatus.NoItemsDeleted;
@@ -89,7 +89,7 @@ public static class LoadoutItemGroupHelpers
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing.</exception>
     public static LoadoutFile.ReadOnly? FindMatchingFile(IConnection connection, EntityId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
     {
-        var (validGroups, _) = FilterValidGroups(connection, groupIds, requireAllGroups);
+        var (validGroups, _) = LoadAllGroups(connection, groupIds, requireAllGroups);
         
         if (validGroups.Length == 0)
             return null;
@@ -121,7 +121,14 @@ public static class LoadoutItemGroupHelpers
         return false;
     }
 
-    private static (LoadoutItemGroup.ReadOnly[] validGroups, EntityId[] missingGroups) FilterValidGroups(IConnection connection, EntityId[] groupIds, bool requireAllGroups)
+    /// <summary>
+    /// Loads all specified <see cref="LoadoutItemGroup"/>(s) from the database.
+    /// </summary>
+    /// <param name="connection">Database connection to use for loading</param>
+    /// <param name="groupIds">Array of group IDs to load</param>
+    /// <param name="requireAllGroups">If true, throws an exception if any groups are missing</param>
+    /// <returns>Tuple containing (valid groups array, missing group IDs array)</returns>
+    public static (LoadoutItemGroup.ReadOnly[] validGroups, EntityId[] missingGroups) LoadAllGroups(IConnection connection, EntityId[] groupIds, bool requireAllGroups)
     {
         var validGroups = new List<LoadoutItemGroup.ReadOnly>();
         var missingGroups = new List<EntityId>();

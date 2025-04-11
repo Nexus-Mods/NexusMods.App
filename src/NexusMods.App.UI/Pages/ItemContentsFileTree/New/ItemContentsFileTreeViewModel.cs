@@ -10,7 +10,6 @@ using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Extensions.BCL;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
