@@ -2,7 +2,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
 
 /// <summary>
 /// Helper utility methods/services around mod files.

@@ -1,6 +1,6 @@
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
 
 /// <summary>
 /// Columns unique to the 'View Files' view. 

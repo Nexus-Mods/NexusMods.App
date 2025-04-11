@@ -1,30 +1,29 @@
 using System.Reactive.Linq;
-using NexusMods.Abstractions.Loadouts;
-using NexusMods.MnemonicDB.Abstractions;
-using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using DynamicData;
 using DynamicData.Aggregation;
+using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.Icons;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 using ZLinq;
-
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
 
 /// <summary>
 /// Provides files for multiple <see cref="Abstractions.Loadouts.LoadoutItemGroup"/>(s) specified by a <see cref="ModFilesFilter"/>.
 /// </summary>
 [UsedImplicitly]
-public class LoadoutFilesProvider
+public class LoadoutGroupFilesProvider
 {
     private readonly IConnection _connection;
 
     /// <summary/>
-    public LoadoutFilesProvider(IServiceProvider serviceProvider)
+    public LoadoutGroupFilesProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
@@ -116,7 +115,7 @@ internal static class LoadoutFilesObservableExtensions
 }
 
 /// <summary>
-/// A filter for filtering which mod files are shown by the <see cref="LoadoutFilesProvider"/>
+/// A filter for filtering which mod files are shown by the <see cref="LoadoutGroupFilesProvider"/>
 /// </summary>
 /// <param name="ModIds">
 /// IDs of the <see cref="Abstractions.Loadouts.LoadoutItemGroup"/> for the mods to which the view

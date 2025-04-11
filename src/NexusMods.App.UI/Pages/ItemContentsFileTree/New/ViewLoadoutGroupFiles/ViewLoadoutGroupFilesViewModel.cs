@@ -1,24 +1,21 @@
 using System.Reactive.Disposables;
-using Avalonia.Controls.Selection;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewModFiles;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using R3;
-
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
 
 [UsedImplicitly]
-public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTreeViewModel>, IItemContentsFileTreeViewModel
+public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel
 {
     [Reactive] public ItemContentsFileTreePageContext? Context { get; set; }
     [Reactive] public IFileTreeViewModel? FileTreeViewModel { get; [UsedImplicitly] private set; }
@@ -29,8 +26,8 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
     
     private DisposableBag _disposables;
 
-    public ItemContentsFileTreeViewModel(
-        ILogger<ItemContentsFileTreeViewModel> logger,
+    public ViewLoadoutGroupFilesViewModel(
+        ILogger<ViewLoadoutGroupFilesViewModel> logger,
         IWindowManager windowManager,
         IConnection connection) : base(windowManager)
     {

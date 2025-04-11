@@ -1,9 +1,9 @@
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.WorkspaceSystem;
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
 
-public interface IItemContentsFileTreeViewModel : IPageViewModelInterface
+public interface IViewLoadoutGroupFilesViewModel : IPageViewModelInterface
 {
     ItemContentsFileTreePageContext? Context { get; set; }
 
