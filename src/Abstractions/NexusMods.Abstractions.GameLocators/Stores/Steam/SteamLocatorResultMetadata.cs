@@ -26,4 +26,6 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     
     /// <inheritdoc />
     public IEnumerable<LocatorId> ToLocatorIds() => ManifestIds.Select(m => LocatorId.From(m.ToString()));
+
+    public Func<string?>? GetLaunchOptions { get; init; }
 }

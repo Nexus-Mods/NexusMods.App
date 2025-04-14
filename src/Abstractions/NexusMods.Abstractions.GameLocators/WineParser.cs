@@ -14,6 +14,8 @@ public static class WineParser
     /// </summary>
     public static IReadOnlyList<WineDllOverride> ParseEnvironmentVariable(ReadOnlySpan<char> environmentVariableValue)
     {
+        if (environmentVariableValue.Length == 0) return [];
+
         var results = new List<WineDllOverride>();
 
         // https://gitlab.winehq.org/wine/wine/-/wikis/Wine-User's-Guide#winedlloverrides-dll-overrides
@@ -97,6 +99,20 @@ public record WineDllOverride(string DllName, WineDllOverrideType[] OverrideType
     public bool IsDisabled => OverrideTypes is [WineDllOverrideType.Disabled];
 
     internal static readonly WineDllOverrideType[] Disabled = [WineDllOverrideType.Disabled];
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        var typesString = OverrideTypes.Select(ToString).Aggregate((a, b) => $"{a},{b}");
+        return $"{DllName}={typesString}";
+    }
+
+    private static string ToString(WineDllOverrideType overrideType) => overrideType switch
+    {
+        WineDllOverrideType.BuiltIn => "b",
+        WineDllOverrideType.Native => "n",
+        _ => "",
+    };
 }
 
 /// <summary>

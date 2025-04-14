@@ -23,6 +23,37 @@ public class WineParserTests
         }
     }
 
+    [Theory]
+    [MemberData(nameof(TestData_ToString))]
+    public void Test_ToString(WineDllOverride input, string expected)
+    {
+        var actual = input.ToString();
+        actual.Should().Be(expected);
+    }
+
+    public static TheoryData<WineDllOverride, string> TestData_ToString()
+    {
+        return new TheoryData<WineDllOverride, string>
+        {
+            {
+                new WineDllOverride("comdlg32", [WineDllOverrideType.Native, WineDllOverrideType.BuiltIn]),
+                "comdlg32=n,b"
+            },
+            {
+                new WineDllOverride("shell32", [WineDllOverrideType.BuiltIn]),
+                "shell32=b"
+            },
+            {
+                new WineDllOverride("comctl32", [WineDllOverrideType.Native]),
+                "comctl32=n"
+            },
+            {
+                new WineDllOverride("oleaut32", [WineDllOverrideType.Disabled]),
+                "oleaut32="
+            },
+        };
+    }
+
     public static TheoryData<string, List<WineDllOverride>> TestData()
     {
         return new TheoryData<string, List<WineDllOverride>>
