@@ -23,9 +23,8 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
     public string SortOrderHeading { get; set; } = "Sort Order Heading";
     public string InfoAlertTitle { get; set; } = "Info Alert Heading";
     public string InfoAlertBody { get; set; } = "Info Alert Message";
-    public ReactiveCommand<Unit, Unit> ShowAlertCommand { get; } = ReactiveCommand.Create(() => { });
-    public ReactiveCommand<Unit, Unit> DismissAlertCommand { get; } = ReactiveCommand.Create(() => { });
-    
+    public ReactiveCommand<Unit, Unit> ToggleAlertCommand { get; } = ReactiveCommand.Create(() => { });
+
     public ReactiveCommand<Unit, Unit> LearnMoreAlertCommand { get; } = ReactiveCommand.Create(() => { });
     public string TrophyToolTip { get; } = "Winner Tooltip";
     public ListSortDirection SortDirectionCurrent { get; set; }

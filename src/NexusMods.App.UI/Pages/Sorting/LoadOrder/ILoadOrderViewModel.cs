@@ -35,17 +35,12 @@ public interface ILoadOrderViewModel : IViewModelInterface
     string InfoAlertBody { get; }
     
     /// <summary>
-    /// Command to invoke to show the alert
+    /// Command to toggle the Alert visibility
     /// </summary>
-    ReactiveCommand<Unit, Unit> ShowAlertCommand { get; }
+    ReactiveCommand<Unit, Unit> ToggleAlertCommand { get; }
     
     /// <summary>
-    /// Command to invoke to dismiss the alert
-    /// </summary>
-    ReactiveCommand<Unit, Unit> DismissAlertCommand { get; }
-    
-    /// <summary>
-    /// Command to invoke to learn more
+    /// Command to invoke Learn More
     /// </summary>
     ReactiveCommand<Unit, Unit> LearnMoreAlertCommand { get; }
     

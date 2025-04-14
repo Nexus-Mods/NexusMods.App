@@ -31,9 +31,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     public string SortOrderHeading { get; }
     public string InfoAlertTitle { get; }
     public string InfoAlertBody { get; }
-    public ReactiveUI.ReactiveCommand<Unit, Unit> ShowAlertCommand { get; }
-    
-    public ReactiveUI.ReactiveCommand<Unit, Unit> DismissAlertCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> ToggleAlertCommand { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> LearnMoreAlertCommand { get; }
     public string TrophyToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
@@ -81,9 +79,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
         // We have different alerts based on the type of load order, so we key in the SortOrderTypeId
         AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, $"LoadOrder Alert Type:{itemProviderFactory.SortOrderTypeId}");
-
-        ShowAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ShowAlert(); });
-        DismissAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.DismissAlert(); });
+        
+        ToggleAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ToggleAlert(); });
         
         LearnMoreAlertCommand = ReactiveCommand.CreateFromTask(async () =>
         {

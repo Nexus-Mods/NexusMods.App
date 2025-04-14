@@ -219,10 +219,6 @@ public class Alert : ContentControl
     /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        // _bodyTextBorder = e.NameScope.Find<Border>("BodyTextBorder");
-        // if (_bodyTextBorder != null)
-        //     _bodyTextBorder.IsVisible = ShowBody && !string.IsNullOrWhiteSpace(Body);
-
         _actionsRowBorder = e.NameScope.Find<Border>("ActionsRowBorder");
         if (_actionsRowBorder != null)
             _actionsRowBorder.IsVisible = Content != null && ShowActions;
