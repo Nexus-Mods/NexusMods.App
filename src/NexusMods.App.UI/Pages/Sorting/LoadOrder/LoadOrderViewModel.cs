@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
@@ -100,12 +101,11 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
                 // Update IsWinnerTop
                 sortDirectionObservable.Subscribe(sortDirection =>
-                        {
-                            IsAscending = sortDirection == ListSortDirection.Ascending;
-                            IsWinnerTop = IsAscending &&
-                                          itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
-                        }
-                    )
+                    {
+                        IsAscending = sortDirection == ListSortDirection.Ascending;
+                        IsWinnerTop = IsAscending &&
+                                      itemProviderFactory.IndexOverrideBehavior == IndexOverrideBehavior.SmallerIndexWins;
+                    })
                     .DisposeWith(d);
 
                 // Move up/down commands
@@ -125,16 +125,78 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                                 }
                             );
                             
-                            if (!item.HasValue)
-                            {
-                                return;
-                            }
+                            if (!item.HasValue) return;
                             await provider.SetRelativePosition(item.Value, delta, cancellationToken);
+                        })
+                    .DisposeWith(d);
+
+                // Drag and drop
+                adapter.RowDragOverSubject
+                    .Subscribe(dragDropPayload =>
+                        {
+                            var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+
+                            if (eventArgs.Position != TreeDataGridRowDropPosition.Inside) return;
+                            
+                            // Update the drop position for the inside case to be before or after
+                            eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
                         }
-                    )
+                    );
+                
+                adapter.RowDropSubject
+                    .SubscribeAwait(async (dragDropPayload, cancellationToken) =>
+                        {
+                            var (sourceModels, targetModel, eventArgs) = dragDropPayload;
+                            
+                            // Determine source items
+                            var sourceItems = sourceModels
+                                .Select(model => provider.GetSortableItem(model.Key))
+                                .Where(optionalItem => optionalItem.HasValue)
+                                .Select(optionalItem => optionalItem.Value)
+                                .ToArray();
+                            if (sourceItems.Length == 0) return;
+                            
+                            // Determine target item
+                            var targetItem = provider.GetSortableItem(targetModel.Key);
+                            if (!targetItem.HasValue) return;
+                            
+                            // Determine relative position
+                            TargetRelativePosition relativePosition;
+                            switch (eventArgs.Position)
+                            {
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Ascending:
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = TargetRelativePosition.BeforeTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.After when SortDirectionCurrent == ListSortDirection.Ascending:
+                                case TreeDataGridRowDropPosition.Before when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = TargetRelativePosition.AfterTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Ascending:
+                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Descending:
+                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
+                                    break;
+                                case TreeDataGridRowDropPosition.None:
+                                    // Invalid target, no move
+                                    return;
+                                default:
+                                    return;
+                            }
+                            
+                            await provider.MoveItemsTo(sourceItems, targetItem.Value, relativePosition, cancellationToken);
+                        },
+                        awaitOperation: AwaitOperation.Drop)
                     .DisposeWith(d);
             }
         );
+    }
+    
+    private static bool PointerIsInVerticalTopHalf(TreeDataGridRowDragEventArgs eventArgs)
+    {
+        var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
+        return positionY < 0.5;
     }
 }
 

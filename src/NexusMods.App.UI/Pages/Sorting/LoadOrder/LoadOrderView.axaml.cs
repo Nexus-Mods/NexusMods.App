@@ -20,7 +20,8 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
         TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadOrderView, ILoadOrderViewModel, CompositeItemModel<Guid>, Guid>(
             this,
             SortOrderTreeDataGrid,
-            vm => vm.Adapter
+            vm => vm.Adapter,
+            enableDragAndDrop: true
         );
 
         this.WhenActivated(disposables =>
