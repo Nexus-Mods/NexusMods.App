@@ -150,6 +150,13 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
         }
     }
 
+    /// <inheritdoc/>
+    public Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token)
+    {
+        // TODO: implement this method
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// Returns the list of RedMod folder names, sorted by the load order, that are enabled in the loadout
     /// </summary>

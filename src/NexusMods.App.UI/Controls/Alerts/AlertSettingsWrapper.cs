@@ -27,6 +27,16 @@ public sealed class AlertSettingsWrapper : ReactiveObject
         IsDismissed = settingsManager.Get<AlertSettings>().IsDismissed(key);
     }
 
+    public void ToggleAlert()
+    {
+        IsDismissed = !IsDismissed;
+
+        _settingsManager?.Update<AlertSettings>(alertSettings => alertSettings with
+        {
+            AlertStatus = alertSettings.AlertStatus.SetItem(Key, IsDismissed),
+        });
+    }
+
     public void DismissAlert()
     {
         IsDismissed = true;
