@@ -52,11 +52,6 @@ public interface ISortableItemProviderFactory : IDisposable
     /// Header text for the display name column
     /// </summary>
     string DisplayNameColumnHeader { get; }
-    
-    /// <summary>
-    /// Header text for the parent mod column
-    /// </summary>
-    string ParentModNameColumnHeader { get; }
 
     /// <summary>
     /// Title text to display in case there are no sortable items to sort

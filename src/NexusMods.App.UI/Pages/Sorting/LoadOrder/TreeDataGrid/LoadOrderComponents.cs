@@ -108,7 +108,7 @@ public static class LoadOrderColumns
         }
 
         // The header name should be set on column creation as it is game dependent
-        public static string GetColumnHeader() => throw new NotSupportedException();
+        public static string GetColumnHeader() => "Parent mod";
 
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }

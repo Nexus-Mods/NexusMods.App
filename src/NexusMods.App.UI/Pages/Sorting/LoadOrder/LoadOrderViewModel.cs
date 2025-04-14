@@ -279,7 +279,6 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
                 canUserResizeColumn: false
             ),
             ColumnCreator.Create<Guid, LoadOrderColumns.ModNameColumn>(
-                columnHeader: _sortableItemsProvider.ParentFactory.ParentModNameColumnHeader,
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             )
