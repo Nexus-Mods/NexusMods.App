@@ -70,14 +70,14 @@
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-        <Setter Property="Margin" Value="0" />
+        <Setter Property="Margin" Value="0 12 0 0" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         <Setter Property="Padding" Value="24, 12,24,0" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Margin="{TemplateBinding Margin}"
+                <Border
                         MinHeight="{TemplateBinding MinHeight}"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="{TemplateBinding VerticalAlignment}"
