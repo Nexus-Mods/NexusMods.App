@@ -49,10 +49,10 @@ public interface ISortableItemProviderFactory : IDisposable
     string IndexColumnHeader { get; }
     
     /// <summary>
-    /// Header text for the name column
+    /// Header text for the display name column
     /// </summary>
-    string NameColumnHeader { get; }
-    
+    string DisplayNameColumnHeader { get; }
+
     /// <summary>
     /// Title text to display in case there are no sortable items to sort
     /// </summary>

@@ -109,8 +109,8 @@
                         </Style>
                     </Style>
 
-                    <!-- second column (name) -->
-                    <Style Selector="^.LoadOrderColumns_NameColumn">
+                    <!-- second column (display name) -->
+                    <Style Selector="^.LoadOrderColumns_DisplayNameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
 
                             <Style Selector="^ Border#ItemModImageBorder">
@@ -126,18 +126,22 @@
                                     <Setter Property="Size" Value="16" />
                                 </Style>
                             </Style>
-
-                            <Style Selector="^ TextBlock#ModName">
-                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                            </Style>
                             <Style Selector="^ TextBlock#DisplayName">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
                             </Style>
                         </Style>
                     </Style>
-
+                    
+                    <!-- third column (mod name) -->
+                    <Style Selector="^.LoadOrderColumns_ModNameColumn">
+                        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                            <Style Selector="^ TextBlock#ModName">
+                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
+                            </Style>
+                        </Style>
+                    </Style>
                 </Style>
             </Style>
         </Style>
