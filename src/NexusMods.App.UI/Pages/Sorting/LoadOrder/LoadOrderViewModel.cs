@@ -131,8 +131,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                             if (eventArgs.Position != TreeDataGridRowDropPosition.Inside) return;
                             
                             // Update the drop position for the inside case to be before or after
-                            var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
-                            eventArgs.Position = positionY < 0.5 ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
+                            eventArgs.Position = PointerIsInVerticalTopHalf(eventArgs) ? TreeDataGridRowDropPosition.Before : TreeDataGridRowDropPosition.After;
                         }
                     );
                 
@@ -166,12 +165,10 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                                     relativePosition = TargetRelativePosition.AfterTarget;
                                     break;
                                 case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Ascending:
-                                    var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
-                                    relativePosition = positionY < 0.5 ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
+                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.BeforeTarget : TargetRelativePosition.AfterTarget;
                                     break;
                                 case TreeDataGridRowDropPosition.Inside when SortDirectionCurrent == ListSortDirection.Descending:
-                                    var positionY2 = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
-                                    relativePosition = positionY2 < 0.5 ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
+                                    relativePosition = PointerIsInVerticalTopHalf(eventArgs) ? TargetRelativePosition.AfterTarget : TargetRelativePosition.BeforeTarget;
                                     break;
                                 case TreeDataGridRowDropPosition.None:
                                     // Invalid target, no move
@@ -186,6 +183,12 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                     .DisposeWith(d);
             }
         );
+    }
+    
+    private static bool PointerIsInVerticalTopHalf(TreeDataGridRowDragEventArgs eventArgs)
+    {
+        var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
+        return positionY < 0.5;
     }
 }
 
