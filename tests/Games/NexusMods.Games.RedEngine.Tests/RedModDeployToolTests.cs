@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -76,8 +77,18 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         
             // wait for the order to be updated
             await tsc1.Task;
+            loadout = loadout.Rebase();
+            
+            var sb = new StringBuilder();
+            sb.AppendLine("Starting Order:");
+            sb.AppendLineN();
+            sb.Append(await WriteLoadoutFile(loadout));
+            sb.AppendLineN();
+            sb.AppendLine($"Moved Item:");
+            sb.AppendLine(name);
+            sb.AppendLine($"Delta: {delta}");
 
-            var order = provider.SortableItems;
+            var order = provider.SortableItems.ToArray();
             var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
 
             var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
@@ -85,8 +96,11 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             await provider.SetRelativePosition(specificRedMod, delta, token);
 
             loadout = loadout.Rebase();
-
-            await Verify(await WriteLoadoutFile(loadout)).UseParameters(name, delta);
+            sb.AppendLine("After Move:");
+            sb.AppendLineN();
+            sb.Append(await WriteLoadoutFile(loadout));
+            
+            await Verify(sb.ToString()).UseParameters(name, delta);
         } catch (Exception e)
         {
             _testOutputHelper.WriteLine(e.ToString());
