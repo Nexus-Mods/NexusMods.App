@@ -181,7 +181,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                             }
                             
                             await provider.MoveItemsTo(sourceItems, targetItem.Value, relativePosition, cancellationToken);
-                        })
+                        },
+                        awaitOperation: AwaitOperation.Drop)
                     .DisposeWith(d);
             }
         );
