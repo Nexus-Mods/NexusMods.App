@@ -190,4 +190,22 @@ Modding Cyberpunk 2077 on Linux requires you to configure WINE.
             .AddValue<string>("Instructions")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate RequiredWinetricksPackages = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 6))
+        .WithTitle("Install required winetricks packages")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("These packages are required or Linux")
+        .WithDetails("""
+Modding Cyberpunk 2077 on Linux requires packages to be installed in your WINE prefix.
+
+{Instructions}  
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<string>("Instructions")
+        )
+        .Finish();
 }

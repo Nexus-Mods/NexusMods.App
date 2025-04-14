@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
@@ -16,13 +17,20 @@ public class WinePrefixRequirementsEmitter : ILoadoutDiagnosticEmitter
         new("version", [WineDllOverrideType.Native, WineDllOverrideType.BuiltIn]),
     ];
 
+    private static readonly ImmutableHashSet<string> RequiredWinetricksPackages =
+    [
+        "d3dcompiler_47",
+        "vcrun2022",
+    ];
+
     public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await Task.Yield();
 
-        var instructions = WineDiagnosticHelper.GetWineDllOverridesUpdateInstructions(loadout.InstallationInstance, RequiredOverrides);
-        if (instructions is null) yield break;
+        var dllOverridesInstructions = WineDiagnosticHelper.GetWineDllOverridesUpdateInstructions(loadout.InstallationInstance, RequiredOverrides);
+        if (dllOverridesInstructions is not null) yield return Diagnostics.CreateRequiredWineDllOverrides(dllOverridesInstructions);
 
-        yield return Diagnostics.CreateRequiredWineDllOverrides(instructions);
+        var winetricksInstructions = WineDiagnosticHelper.GetWinetricksInstructions(loadout.InstallationInstance, RequiredWinetricksPackages);
+        if (winetricksInstructions is not null) yield return Diagnostics.CreateRequiredWinetricksPackages(winetricksInstructions);
     }
 }

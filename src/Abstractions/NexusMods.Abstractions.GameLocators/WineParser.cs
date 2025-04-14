@@ -1,4 +1,6 @@
+using System.Text;
 using JetBrains.Annotations;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.GameLocators;
 
@@ -8,6 +10,37 @@ namespace NexusMods.Abstractions.GameLocators;
 public static class WineParser
 {
     public const string EnvironmentVariableName = "WINEDLLOVERRIDES";
+
+    /// <summary>
+    /// Parses the given `winetricks.log` file and returns all installed packages.
+    /// </summary>
+    public static IReadOnlySet<string> ParseWinetricksLogFile(AbsolutePath filePath)
+    {
+        if (!filePath.FileExists) return new HashSet<string>();
+
+        using var stream = filePath.Read();
+        return ParseWinetricksLogFile(stream);
+    }
+
+    /// <summary>
+    /// Parses the given `winetricks.log` file and returns all installed packages.
+    /// </summary>
+    public static IReadOnlySet<string> ParseWinetricksLogFile(Stream stream)
+    {
+        using var sr = new StreamReader(stream, Encoding.UTF8);
+
+        var result = new HashSet<string>();
+
+        while (sr.ReadLine() is { } line)
+        {
+            var trimmed = line.Trim();
+            if (trimmed.Length == 0) continue;
+
+            result.Add(line);
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Parses the <see cref="EnvironmentVariableName"/>.
@@ -28,6 +61,8 @@ public static class WineParser
             var section = span[splitRange];
 
             var index = section.LastIndexOf('=');
+            if (index == -1) continue;
+
             var namesSpan = section[..index];
 
             var dllNamesEnumerator = namesSpan.Split(',');

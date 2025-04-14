@@ -48,6 +48,7 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
             AppId = game.AppId.Value,
             ManifestIds = game.AppManifest.InstalledDepots.Select(x => x.Value.ManifestId.Value).ToArray(),
             CloudSavesDirectory = game.GetCloudSavesDirectoryPath(),
+            ProtonPrefixDirectory = game.GetProtonPrefix()?.ProtonDirectory,
             GetLaunchOptions = () =>
             {
                 var localConfigPath = SteamLocationFinder.GetUserDataDirectoryPath(game.SteamPath, game.AppManifest.LastOwner).Combine("config").Combine("localconfig.vdf");

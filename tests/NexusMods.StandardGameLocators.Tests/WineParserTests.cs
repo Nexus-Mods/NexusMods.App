@@ -1,3 +1,4 @@
+using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 
@@ -6,8 +7,8 @@ namespace NexusMods.StandardGameLocators.Tests;
 public class WineParserTests
 {
     [Theory]
-    [MemberData(nameof(TestData))]
-    public void Test_Parse(string input, List<WineDllOverride> expected)
+    [MemberData(nameof(TestData_ParseEnvironmentVariable))]
+    public void Test_ParseEnvironmentVariable(string input, List<WineDllOverride> expected)
     {
         var actual = WineParser.ParseEnvironmentVariable(input);
         actual.Should().HaveSameCount(expected);
@@ -24,6 +25,17 @@ public class WineParserTests
     }
 
     [Theory]
+    [MemberData(nameof(TestData_ParseWinetricksLogFile))]
+    public void Test_ParseWinetricksLogFile(string fileContents, HashSet<string> expected)
+    {
+        var bytes = Encoding.UTF8.GetBytes(fileContents);
+        using var ms = new MemoryStream(bytes, writable: false);
+
+        var result = WineParser.ParseWinetricksLogFile(ms);
+        result.Should().Equal(expected);
+    }
+
+    [Theory]
     [MemberData(nameof(TestData_ToString))]
     public void Test_ToString(WineDllOverride input, string expected)
     {
@@ -31,6 +43,17 @@ public class WineParserTests
         actual.Should().Be(expected);
     }
 
+    public static TheoryData<string, HashSet<string>> TestData_ParseWinetricksLogFile()
+    {
+        return new TheoryData<string, HashSet<string>>
+        {
+            {
+                "d3dcompiler_47\nvcrun2022",
+                ["d3dcompiler_47", "vcrun2022"]
+            },
+        };
+    }
+    
     public static TheoryData<WineDllOverride, string> TestData_ToString()
     {
         return new TheoryData<WineDllOverride, string>
@@ -54,7 +77,7 @@ public class WineParserTests
         };
     }
 
-    public static TheoryData<string, List<WineDllOverride>> TestData()
+    public static TheoryData<string, List<WineDllOverride>> TestData_ParseEnvironmentVariable()
     {
         return new TheoryData<string, List<WineDllOverride>>
         {
