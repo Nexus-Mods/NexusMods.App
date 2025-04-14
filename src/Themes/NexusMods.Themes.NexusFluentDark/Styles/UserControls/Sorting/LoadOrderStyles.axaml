@@ -5,89 +5,60 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Classes="Low" Width="800" Height="600">
-            <Border.Resources>
-                <sorting:LoadOrderDesignViewModel x:Key="LoadOrderDesignViewModel" />
-            </Border.Resources>
-            <sorting:LoadOrderView DataContext="{StaticResource LoadOrderDesignViewModel}" />
+        <Border Width="800" Height="600">
+            <sorting:LoadOrderView>
+                <sorting:LoadOrderView.DataContext>
+                    <sorting:LoadOrderDesignViewModel />
+                </sorting:LoadOrderView.DataContext>
+            </sorting:LoadOrderView>
         </Border>
     </Design.PreviewWith>
-
 
     <Style Selector="sorting|LoadOrderView">
 
         <Style Selector="^ StackPanel#LoadOrderAlertStackPanel">
             <Setter Property="Spacing" Value="{StaticResource Spacing-3}" />
-            <Setter Property="Margin" Value="24,0,24,12" />
 
             <Style Selector="^ StackPanel#TitleStackPanel">
                 <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
                 <Setter Property="Orientation" Value="Horizontal" />
 
                 <Style Selector="^ TextBlock#TitleTextBlock">
-                    <Setter Property="Theme" Value="{StaticResource HeadingXSSemiTheme}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                    <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
                 </Style>
             </Style>
         </Style>
 
         <Style Selector="^ Grid#MainGrid">
-            <Setter Property="Margin" Value="24,0,24,24" />
-
-            <!-- left column (trophy bar) -->
-            <Style Selector="^ DockPanel#TrophyBarPanel">
+            <Setter Property="Margin" Value="0,12, 0,0" />
+            
+            <!-- right column (trophy bar) -->
+            <Style Selector="^ DockPanel#TrophyBarDockPanel">
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-                <Setter Property="HorizontalAlignment" Value="Left" />
-                <Setter Property="Margin" Value="0,56,0,0" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="0,16, 0,8" />
 
                 <Style Selector="^ icons|UnifiedIcon#TrophyIcon">
                     <Setter Property="Size" Value="20" />
-                </Style>
-
-                <Style Selector="^ icons|UnifiedIcon#TrophyIcon">
-                    <Setter Property="Margin" Value="0,8" />
+                    <Setter Property="Margin" Value="0,0, 0, 8" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"/>
                 </Style>
 
                 <Style Selector="^ > Grid">
                     <Setter Property="HorizontalAlignment" Value="Center" />
 
                     <Style Selector="^ Border#TrophyGradientBorder">
+                        <Setter Property="Background" Value="{StaticResource SurfaceHigh}" />
                         <Setter Property="Width" Value="3" />
                         <Setter Property="Margin" Value="0,4" />
                     </Style>
-                </Style>
-
-                <Style Selector="^.IsWinnerTop">
-                    <Style Selector="^ Border#TrophyGradientBorder">
-                        <Setter Property="Background">
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Color="#FFFFFFFF" Offset="0" />
-                                <GradientStop Color="#32FFFFFF" Offset="1" />
-                            </LinearGradientBrush>
-                        </Setter>
-                    </Style>
+                    
                     <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
-                        <Setter Property="Foreground" Value="#FFFFFFFF" />
+                        <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" />
                     </Style>
                     <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon">
-                        <Setter Property="Foreground" Value="#32FFFFFF" />
-                    </Style>
-                </Style>
-
-                <Style Selector="^.IsWinnerBottom">
-                    <Style Selector="^ Border#TrophyGradientBorder">
-                        <Setter Property="Background">
-                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                                <GradientStop Color="#32FFFFFF" Offset="0" />
-                                <GradientStop Color="#FFFFFFFF" Offset="1" />
-                            </LinearGradientBrush>
-                        </Setter>
-                    </Style>
-                    <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
-                        <Setter Property="Foreground" Value="#32FFFFFF" />
-                    </Style>
-                    <Style Selector="^ icons|UnifiedIcon#ArrowDownIcon">
-                        <Setter Property="Foreground" Value="#FFFFFFFF" />
+                        <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" />
                     </Style>
                 </Style>
 
@@ -100,13 +71,9 @@
                 </Style>
             </Style>
 
-            <!-- right column (load order tree data grid) -->
+            <!-- left column (load order tree data grid) -->
             <Style Selector="^ TreeDataGrid#SortOrderTreeDataGrid">
 
-                <Style Selector="^ TreeDataGridRow">
-                    <Setter Property="Background" Value="Red" />
-                </Style>
-                
                 <Style Selector="^ TreeDataGridTemplateCell">
 
                     <!-- first column (index) -->
@@ -114,30 +81,34 @@
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
+                            <Style Selector="^ StackPanel#LoadOrderItemIndexColumnStack">
+                                <Setter Property="Orientation" Value="Horizontal" />
+                                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+                            </Style>
+
                             <Style Selector="^ Border#ItemIndexBorder">
                                 <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-                                <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
+                                <Setter Property="BorderThickness" Value="0" />
                                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-                                <Setter Property="Width" Value="52" />
-                                <Setter Property="Height" Value="42" />
+                                <Setter Property="Width" Value="46" />
+                                <Setter Property="Height" Value="28" />
 
                                 <Style Selector="^ > TextBlock#ItemIndex">
-                                    <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
+                                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                     <Setter Property="HorizontalAlignment" Value="Center" />
                                     <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                                            Value="{StaticResource NeutralStrongBrush}" />
                                 </Style>
                             </Style>
-                            
+
                             <Style Selector="^ Border#ItemIndexSeparator">
-                                <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
+                                <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300}" />
                                 <Setter Property="Width" Value="1" />
-                                <Setter Property="Height" Value="42" />
+                                <Setter Property="Height" Value="48" />
                             </Style>
                         </Style>
                     </Style>
-                    
+
                     <!-- second column (name) -->
                     <Style Selector="^.LoadOrderColumns_NameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -145,13 +116,14 @@
                             <Style Selector="^ Border#ItemModImageBorder">
                                 <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
                                 <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentSubduedBrush}" />
+                                <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-                                <Setter Property="Width" Value="68" />
-                                <Setter Property="Height" Value="42" />
+                                <Setter Property="Width" Value="45" />
+                                <Setter Property="Height" Value="28" />
 
                                 <Style Selector="^ > icons|UnifiedIcon">
-                                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
+                                    <Setter Property="Size" Value="16" />
                                 </Style>
                             </Style>
 
@@ -160,7 +132,7 @@
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
                             </Style>
                             <Style Selector="^ TextBlock#DisplayName">
-                                <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
                             </Style>
                         </Style>

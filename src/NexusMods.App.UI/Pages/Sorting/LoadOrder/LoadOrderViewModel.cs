@@ -13,6 +13,7 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using R3;
 using NexusMods.App.UI.Controls.Alerts;
+using NexusMods.CrossPlatform.Process;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
@@ -25,10 +26,10 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
     public string SortOrderName { get; }
-    public string SortOrderHeading { get; }
     public string InfoAlertTitle { get; }
     public string InfoAlertBody { get; }
-    public ReactiveUI.ReactiveCommand<Unit, Unit> InfoAlertCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> ToggleAlertCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> LearnMoreAlertCommand { get; }
     public string TrophyToolTip { get; }
     [Reactive] public ListSortDirection SortDirectionCurrent { get; set; }
     
@@ -43,13 +44,15 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
     public TreeDataGridAdapter<CompositeItemModel<Guid>, Guid> Adapter { get; }
 
-    public LoadOrderViewModel(LoadoutId loadoutId, ISortableItemProviderFactory itemProviderFactory, IServiceProvider serviceProvider)
+    public LoadOrderViewModel(LoadoutId loadoutId, 
+        ISortableItemProviderFactory itemProviderFactory, 
+        IServiceProvider serviceProvider,
+        IOSInterop osInterop)
     {
         var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
         SortOrderName = itemProviderFactory.SortOrderName;
-        SortOrderHeading = itemProviderFactory.SortOrderHeading;
         InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
         InfoAlertBody = itemProviderFactory.OverrideInfoMessage;
         TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
@@ -72,8 +75,13 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
         // We have different alerts based on the type of load order, so we key in the SortOrderTypeId
         AlertSettingsWrapper = new AlertSettingsWrapper(settingsManager, $"LoadOrder Alert Type:{itemProviderFactory.SortOrderTypeId}");
-
-        InfoAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ShowAlert(); });
+        
+        ToggleAlertCommand = ReactiveCommand.Create(() => { AlertSettingsWrapper.ToggleAlert(); });
+        
+        LearnMoreAlertCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            await osInterop.OpenUrl(new Uri(itemProviderFactory.LearnMoreUrl));
+        });
 
         SwitchSortDirectionCommand = ReactiveCommand.Create(() =>
             {
