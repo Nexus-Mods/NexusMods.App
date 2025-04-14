@@ -4,13 +4,14 @@
 * Collection download page - Now grouped by mod page like other views
 * UI - New toolbars (action bars?)
 * UI - Reduced the size of all buttons to make the UI more compact
+* Memory usage - Optimised memory usage for file tree views.(?)
+* Load order - Drag and drop prototype(?)
 
 ## Technical Changes
 * Removed the Xbox Game Pass (Microsoft Store) experimental toggle because it currently isn't functional for any game. 
 * When first starting the app, instead of having to click through 3 separate pop-up, we've now merged them into one.
 * The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
 * When the app encounters a "Not supported" error, it will also include a reason. 
-
 
 ## Bug Fixes
 * Fixed an issue with the text alignment in the "Delete mods" pop-up.
