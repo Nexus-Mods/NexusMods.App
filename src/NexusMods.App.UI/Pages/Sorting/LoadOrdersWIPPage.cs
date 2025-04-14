@@ -32,7 +32,9 @@ public class LoadOrdersWIPPageFactory : APageFactory<ILoadOrdersWIPPageViewModel
 
     public override ILoadOrdersWIPPageViewModel CreateViewModel(LoadOrdersWIPPageContext context)
     {
-        var vm = new LoadOrdersWipPageViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId, ServiceProvider.GetRequiredService<IOSInterop>());
+        var windowManager = ServiceProvider.GetRequiredService<IWindowManager>();
+        var osInterop = ServiceProvider.GetRequiredService<IOSInterop>();
+        var vm = new LoadOrdersWipPageViewModel(windowManager, ServiceProvider, context.LoadoutId, osInterop);
         return vm;
     }
 

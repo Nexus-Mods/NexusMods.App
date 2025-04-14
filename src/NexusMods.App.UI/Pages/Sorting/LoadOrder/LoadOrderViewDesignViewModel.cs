@@ -20,7 +20,6 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
 {
     public TreeDataGridAdapter<CompositeItemModel<Guid>, Guid> Adapter { get; set; }
     public string SortOrderName { get; set; } = "Sort Order Name";
-    public string SortOrderHeading { get; set; } = "Sort Order Heading";
     public string InfoAlertTitle { get; set; } = "Info Alert Heading";
     public string InfoAlertBody { get; set; } = "Info Alert Message";
     public ReactiveCommand<Unit, Unit> ToggleAlertCommand { get; } = ReactiveCommand.Create(() => { });

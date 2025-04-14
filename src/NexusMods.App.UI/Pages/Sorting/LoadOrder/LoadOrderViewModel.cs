@@ -25,10 +25,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
-    private const string LearnMoreUrl = "https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/#redmod-load-ordering";
-    
     public string SortOrderName { get; }
-    public string SortOrderHeading { get; }
     public string InfoAlertTitle { get; }
     public string InfoAlertBody { get; }
     public ReactiveUI.ReactiveCommand<Unit, Unit> ToggleAlertCommand { get; }
@@ -56,7 +53,6 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
         SortOrderName = itemProviderFactory.SortOrderName;
-        SortOrderHeading = itemProviderFactory.SortOrderHeading;
         InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
         InfoAlertBody = itemProviderFactory.OverrideInfoMessage;
         TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
@@ -84,7 +80,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         
         LearnMoreAlertCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            await osInterop.OpenUrl(new Uri(LearnMoreUrl));
+            await osInterop.OpenUrl(new Uri(itemProviderFactory.LearnMoreUrl));
         });
 
         SwitchSortDirectionCommand = ReactiveCommand.Create(() =>
