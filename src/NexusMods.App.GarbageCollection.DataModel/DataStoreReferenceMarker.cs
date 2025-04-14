@@ -31,6 +31,13 @@ public static class DataStoreReferenceMarker
 
         // Library will have all of our mods and other things installed from the outside.
         MarkItemsUsedInLibrary(archiveGc, db);
+        
+        // Mark non Loadout/Library items that are backups (e.g. Backups of original game files)
+        MarkItemsMarkedAsBackups(archiveGc, db);
+    }
+    private static void MarkItemsMarkedAsBackups<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, IDb db) where TParsedHeaderState : ICanProvideFileHashes<TFileEntryWrapper> where TFileEntryWrapper : IHaveFileHash
+    {
+        // TODO: Implement
     }
 
     private static void MarkItemsUsedInLibrary<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, IDb db) where TParsedHeaderState : ICanProvideFileHashes<TFileEntryWrapper> where TFileEntryWrapper : IHaveFileHash

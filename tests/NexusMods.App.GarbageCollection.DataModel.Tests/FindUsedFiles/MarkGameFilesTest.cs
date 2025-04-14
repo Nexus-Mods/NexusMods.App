@@ -1,6 +1,12 @@
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.App.GarbageCollection.Nx;
+using NexusMods.Extensions.Hashing;
 using NexusMods.Games.TestFramework;
+using NexusMods.Hashing.xxHash3;
+using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles;
@@ -10,20 +16,48 @@ namespace NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles;
 /// That is, the backup of game data which we made.
 /// </summary>
 /// <param name="serviceProvider"></param>
-/// <param name="libraryService"></param>
-public class MarkGameFilesTest(IServiceProvider serviceProvider, ILibraryService libraryService) : AGameTest<StubbedGame>(serviceProvider)
+public class MarkGameFilesTest(IServiceProvider serviceProvider) : GCStubbedGame(serviceProvider)
 {
     [Fact]
-    public async Task ShouldVerifyGameFilesAreRooted()
+    public async Task GameFilesAreRooted()
     {
         // Setup: Manage a game and make a 'vanilla' loadout.
-        // The synchronizer marks the game files as roots.
-        var loadout = await CreateLoadout();
+        // This will run the synchronizer, and thus in turn ingest the tested file from GCStubbedGame
+        await CreateLoadout();
 
+        // As a sanity test, confirm that we have backed up the test file.
+        // This proves our initial assertion that synchronizer runs as expected
+        (await FileStore.HaveFile(ExpectedHash)).Should().Be(true);
+        
         // Act: Run a GC.
-        
+        var gc = CreateGC();
+        var newArchivePath = RunGarbageCollector(gc, out var toDelete);
+
         // Assert: No game files should be deleted from FileStore, they are roots.
-        
+        (await FileStore.HaveFile(ExpectedHash)).Should().Be(true);
+    }
+    
+    private AbsolutePath RunGarbageCollector(ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> collector, out List<Hash> toDelete)
+    {
+        AbsolutePath newArchivePath = default;
+        List<Hash> toDel = null!;
+        collector.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archive) =>
+            {
+                toDel = toRemove;
+                NxRepacker.RepackArchive(progress, toArchive, toRemove, archive, true, out newArchivePath);
+            }
+        );
+
+        toDelete = toDel;
+        return newArchivePath;
+    }
+    
+    private ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> CreateGC()
+    {
+        // Note: This ignores stubbed game files, we're not testing for those.
+        var gc = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();
+        DataStoreReferenceMarker.MarkUsedFiles(Connection, gc); // <= picks up our marker on GcRootFileName
+        return gc;
     }
     
     public class Startup
@@ -31,5 +65,59 @@ public class MarkGameFilesTest(IServiceProvider serviceProvider, ILibraryService
         // https://github.com/pengweiqhca/Xunit.DependencyInjection?tab=readme-ov-file#3-closest-startup
         // A trick for parallelizing tests with Xunit.DependencyInjection
         public void ConfigureServices(IServiceCollection services) => DIHelpers.ConfigureServices(services);
+    }
+}
+
+/// <summary>
+/// A stubbed game for GC testing.
+/// </summary>
+public class GCStubbedGame : AGameTest<StubbedGame>
+{
+    /// <summary/>
+    public const string GcRootFileName = "FunIsInfinite.exe";
+    
+    /// <summary>
+    /// The expected hash of the GC root file.
+    /// </summary>
+    public Hash ExpectedHash { get; set; } = default!;
+    
+    /// <inheritdoc />
+    public GCStubbedGame(IServiceProvider serviceProvider) : base(serviceProvider) { }
+
+    /// <summary/>
+    /// <remarks>
+    /// Our 'stubbed game' infrastructure is set up in such a way where
+    /// we index and backup the game files on disk in this thing called the <see cref="StubbedFileHasherService"/>.
+    ///
+    /// So we begin in a state where we have the base files archived and not on disk.
+    /// A Synchronize puts them on disk. Running the GC would wipe these archived files
+    /// as they have no root markers on them. (Not gyuuud~, o nyoooo! 😿)
+    /// [Unless we patch test bootstrap]
+    ///
+    /// However, in real life, the App doesn't work like that ‼️.
+    /// The backed up files have to come from somewhere 💡.
+    /// So actually, in practice, when managing a real game, we usually make the
+    /// file backups of game files on first Synchronize. 🔥
+    ///
+    /// This is also true for when we have a mod, like SMAPI which currently (on Windows)
+    /// replaces an existing game file (the EXE 🔥) with SMAPI itself.
+    ///
+    /// So at that point we need to mark files as roots (mhm mhm!!).
+    /// In order to test this, we dump a file on disk, so it's seen as part of the
+    /// game itself; thus we can test it! 😉💜
+    /// </remarks>
+    protected override async Task GenerateGameFiles()
+    {
+        var register = GameInstallation.LocationsRegister;
+        var gameFolder = register.GetTopLevelLocations().First(x => x.Key == LocationId.Game);
+        var destination = gameFolder.Value.Combine(GcRootFileName);
+
+        FileSystem.CreateDirectory(gameFolder.Value);
+        await using var file = FileSystem.CreateFile(destination);
+        file.Write("hello"u8);
+        file.Seek(0, SeekOrigin.Begin);
+
+        // Get the hash of the item we expect after first synchronize.
+        ExpectedHash = await file.XxHash3Async(CancellationToken.None);
     }
 }
