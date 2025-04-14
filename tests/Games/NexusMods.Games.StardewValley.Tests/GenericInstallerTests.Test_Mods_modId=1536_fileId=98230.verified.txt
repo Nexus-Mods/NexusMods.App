@@ -1,0 +1,4 @@
+﻿0x3A82B5C8574DB210 - 13.551 KB: MailFrameworkMod/ContentPackTemplate/mail.json -> {Game}/Mods/MailFrameworkMod/ContentPackTemplate/mail.json
+0x42B8F5A1AFA93F4C - 443 B: MailFrameworkMod/ContentPackTemplate/manifest.json -> {Game}/Mods/MailFrameworkMod/ContentPackTemplate/manifest.json
+0x594003A8C5AD27C1 - 69 KB: MailFrameworkMod/MailFrameworkMod.dll -> {Game}/Mods/MailFrameworkMod/MailFrameworkMod.dll
+0x3417EBE7D585FDF8 - 433 B: MailFrameworkMod/manifest.json -> {Game}/Mods/MailFrameworkMod/manifest.json
