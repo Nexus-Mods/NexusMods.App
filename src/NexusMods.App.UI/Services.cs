@@ -26,13 +26,11 @@ using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
 using NexusMods.App.UI.Overlays.ManageGameWarning;
-using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
@@ -105,9 +103,7 @@ public static class Services
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<SpineDownloadButtonViewModel, ISpineDownloadButtonViewModel>()
             .AddViewModel<MessageBoxOkViewModel, IMessageBoxOkViewModel>()
-            .AddViewModel<LoginMessageBoxViewModel, ILoginMessageBoxViewModel>()
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
-            .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
@@ -124,7 +120,6 @@ public static class Services
             .AddView<LeftMenuItemView, ILeftMenuItemViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
-            .AddView<MetricsOptInView, IMetricsOptInViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
             .AddView<Spine, ISpineViewModel>()
@@ -132,7 +127,6 @@ public static class Services
             .AddView<SpineDownloadButtonView, ISpineDownloadButtonViewModel>()
             .AddView<MessageBoxOkView, IMessageBoxOkViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
-            .AddView<LoginMessageBoxView, ILoginMessageBoxViewModel>()
             .AddView<ManageGameWarningView, IManageGameWarningViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
@@ -177,9 +171,6 @@ public static class Services
 
             .AddView<LibraryItemDeleteConfirmationView, ILibraryItemDeleteConfirmationViewModel>()
             .AddViewModel<LibraryItemDeleteConfirmationViewModel, ILibraryItemDeleteConfirmationViewModel>()
-            
-            .AddView<AlphaWarningView, IAlphaWarningViewModel>()
-            .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
 
             .AddView<ItemContentsFileTreeView, IItemContentsFileTreeViewModel>()
             .AddViewModel<ItemContentsFileTreeViewModel, IItemContentsFileTreeViewModel>()
@@ -213,6 +204,9 @@ public static class Services
 
             .AddView<RemoveGameOverlayView, IRemoveGameOverlayViewModel>()
             .AddViewModel<RemoveGameOverlayViewModel, IRemoveGameOverlayViewModel>()
+
+            .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
+            .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()

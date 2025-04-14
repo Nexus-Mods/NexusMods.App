@@ -12,7 +12,6 @@ using NexusMods.Abstractions.Telemetry;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Windows;
@@ -120,10 +119,9 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 
         ShowWelcomeMessageCommand = ReactiveCommand.Create(() =>
         {
-            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-            alphaWarningViewModel.WorkspaceController = workspaceController;
+            var welcomeOverlayViewModel = serviceProvider.GetRequiredService<IWelcomeOverlayViewModel>();
+            overlayController.Enqueue(welcomeOverlayViewModel);
 
-            overlayController.Enqueue(alphaWarningViewModel);
             Tracking.AddEvent(Events.Help.GiveFeedback, metadata: new EventMetadata(name: null));
         });
 
