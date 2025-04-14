@@ -82,7 +82,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             var sb = new StringBuilder();
             sb.AppendLine("Starting Order:");
             sb.AppendLineN();
-            sb.Append(await WriteLoadoutFile(loadout));
+            sb.Append(AddLineNumbers(await WriteLoadoutFile(loadout)));
             sb.AppendLineN();
             sb.AppendLine($"Moved Item:");
             sb.AppendLine(name);
@@ -98,7 +98,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             loadout = loadout.Rebase();
             sb.AppendLine("After Move:");
             sb.AppendLineN();
-            sb.Append(await WriteLoadoutFile(loadout));
+            sb.Append(AddLineNumbers(await WriteLoadoutFile(loadout)));
             
             await Verify(sb.ToString()).UseParameters(name, delta);
         } catch (Exception e)
@@ -107,14 +107,32 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             throw;
         }
     }
-
-
+    
+    
+    
+    
     private async Task<string> WriteLoadoutFile(Loadout.ReadOnly loadout)
     {
         await using var tempFile = TemporaryFileManager.CreateFile();
         loadout = loadout.Rebase();
         await _tool.WriteLoadOrderFile(tempFile.Path, loadout);
         return await tempFile.Path.ReadAllTextAsync();
+    }
+    
+    private string AddLineNumbers(string text)
+    {
+        var textSpan = text.AsSpan();
+        var sb = new StringBuilder();
+        var index = 0;
+        foreach (var line  in textSpan.EnumerateLines())
+        {
+            if (line.IsWhiteSpace())
+                continue;
+            sb.AppendLine($"{index}: {line}");
+            index++;
+        }
+
+        return sb.ToString();
     }
 
     private async Task<Loadout.ReadOnly> AddRedMods(Loadout.ReadOnly loadout)
