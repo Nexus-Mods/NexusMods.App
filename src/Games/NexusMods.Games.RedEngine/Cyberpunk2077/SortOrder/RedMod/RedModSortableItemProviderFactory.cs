@@ -30,7 +30,8 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
 
     public string IndexColumnHeader => "Load Order";
 
-    public string NameColumnHeader => "REDmod Name";
+    public string DisplayNameColumnHeader => "REDmod Name";
+    public string ParentModNameColumnHeader => "Parent mod";
 
     public string EmptyStateMessageTitle => "No REDmods detected";
     public string EmptyStateMessageContents => "Some mods contain REDmod items that alter core gameplay elements. When detected, they will appear here for load order configuration.";

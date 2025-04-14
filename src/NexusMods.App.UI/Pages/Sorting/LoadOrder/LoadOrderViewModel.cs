@@ -273,11 +273,16 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         return
         [
             expanderColumn,
-            ColumnCreator.Create<Guid, LoadOrderColumns.NameColumn>(
-                columnHeader: _sortableItemsProvider.ParentFactory.NameColumnHeader,
+            ColumnCreator.Create<Guid, LoadOrderColumns.DisplayNameColumn>(
+                columnHeader: _sortableItemsProvider.ParentFactory.DisplayNameColumnHeader,
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             ),
+            ColumnCreator.Create<Guid, LoadOrderColumns.ModNameColumn>(
+                columnHeader: _sortableItemsProvider.ParentFactory.ParentModNameColumnHeader,
+                canUserSortColumn: false,
+                canUserResizeColumn: false
+            )
         ];
     }
 
