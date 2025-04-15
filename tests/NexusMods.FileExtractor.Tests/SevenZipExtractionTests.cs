@@ -78,6 +78,22 @@ public class SevenZipExtractionTests
         actual.Should().Be(expected);
     }
 
+    [Theory]
+    [InlineData("2024-04-16 06:10:44 D....            0            0  .", false, null, true)]
+    [InlineData("2024-04-16 06:10:44 D....            0            0  ..", false, null, true)]
+    [InlineData("2024-04-16 06:10:44 D....            0            0  foo ", true, "foo ", true)]
+    [InlineData("2024-04-16 06:10:44 .....            0            0  foo ", true, "foo ", false)]
+    [InlineData("2024-04-16 06:10:44 .....            0            0  foo", false, null, false)]
+    [InlineData("2024-04-16 06:10:44 D....            0            0  foo", false, null, true)]
+    public void Test_TryParseListCommandOutput(string input, bool expected, string? expectedFileName, bool expectedIsDirectory)
+    {
+        var actual = SevenZipExtractor.TryParseListCommandOutput(input, out var fileName, out var isDirectory);
+        actual.Should().Be(expected);
+
+        fileName.Should().Be(expectedFileName);
+        isDirectory.Should().Be(expectedIsDirectory);
+    }
+
     [Fact]
     public async Task CanExtractToLongPath()
     {
