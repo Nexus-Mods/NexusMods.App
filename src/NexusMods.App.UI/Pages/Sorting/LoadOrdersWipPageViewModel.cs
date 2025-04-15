@@ -18,7 +18,7 @@ public class LoadOrdersWipPageViewModel : APageViewModel<ILoadOrdersWIPPageViewM
 
         SortingSelectionViewModel = new SortingSelectionViewModel(serviceProvider, _loadoutId, iosInterop);
         
-        TabTitle = "Load Orders (WIP)";
+        TabTitle = "Load Orders";
     }
 
 }
