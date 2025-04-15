@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.GC.DataModel;
 /// Represents a file which is stored as part of a backup.
 /// This is a file that forms a GC root.
 ///
-/// Specific types of backed-up files will derive from this class.
+/// Specific types of backed-up files will be derived from this class.
 /// </summary>
 [PublicAPI]
 public partial class BackedUpFile : IModelDefinition

@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GC.DataModel;
+using NexusMods.Abstractions.MnemonicDB.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -12,7 +14,14 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// </summary>
 [PublicAPI]
 [Include<BackedUpFile>]
-public class SynchronizerBackedUpFile
+public partial class SynchronizerBackedUpFile : IModelDefinition
 {
-    
+    private const string Namespace = "NexusMods.GC.SynchronizerBackedUpFile";
+
+    /// <summary>
+    /// The installation to which this file belongs.
+    /// This is stored in the case of a future migration towards a system where
+    /// we properly clean up files aft
+    /// </summary>
+    public static readonly ReferenceAttribute<GameInstallMetadata> GameInstall = new(Namespace, nameof(GameInstall));
 }

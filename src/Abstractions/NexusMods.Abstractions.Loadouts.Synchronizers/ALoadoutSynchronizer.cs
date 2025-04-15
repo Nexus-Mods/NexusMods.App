@@ -10,6 +10,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
+using NexusMods.Abstractions.GC.DataModel;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
@@ -1168,6 +1169,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // PERFORMANCE: We deduplicate above with the HaveFile call.
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
+
+        // Pin the files to avoid garbage collection.
+        using var tx = Connection.BeginTransaction();
+        foreach (var item in archivedFiles)
+        {
+            _ = new SynchronizerBackedUpFile.New(tx, out var id)
+            {
+                GameInstallId = installation.GameMetadataId,
+                BackedUpFile = new BackedUpFile.New(tx, id)
+                {
+                    Hash = item.Hash,
+                }
+            };
+        }
+        await tx.Commit();
     }
     
     /// <summary>
