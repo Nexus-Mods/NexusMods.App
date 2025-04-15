@@ -74,7 +74,7 @@ public class SevenZipExtractionTests
     [InlineData("foo/bar. ", "foo/bar")]
     public void Test_FixFileName(string input, string expected)
     {
-        var actual = SevenZipExtractor.FixFileName(input);
+        var actual = PathsHelper.FixFileName(input);
         actual.Should().Be(expected);
     }
 
