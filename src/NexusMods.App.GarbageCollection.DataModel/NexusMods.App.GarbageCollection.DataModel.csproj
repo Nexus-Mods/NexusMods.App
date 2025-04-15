@@ -8,6 +8,7 @@
         <InternalsVisibleTo Include="NexusMods.App.GarbageCollection.DataModel.Tests"/>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\NexusMods.Abstractions.GC.DataModel\NexusMods.Abstractions.GC.DataModel.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.FileStore.Nx\NexusMods.Abstractions.FileStore.Nx.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GC\NexusMods.Abstractions.GC.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
