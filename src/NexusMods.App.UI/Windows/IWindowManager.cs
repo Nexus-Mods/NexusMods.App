@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using NexusMods.App.UI.MessageBox.Enums;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Windows;
@@ -56,4 +57,10 @@ public interface IWindowManager
     /// <param name="window"></param>
     /// <returns>Whether the restore was successful.</returns>
     public bool RestoreWindowState(IWorkspaceWindow window);
+
+    public Task<ButtonResult> ShowModalAsync(string title, string text, ButtonEnum buttonEnum);
+    
+    public Task<ButtonResult> ShowModelessAsync(string title, string text, ButtonEnum buttonEnum);
+    
+    public Task<ButtonResult> ShowEmbeddedAsync(string title, string text);
 }

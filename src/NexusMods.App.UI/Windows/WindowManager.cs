@@ -1,9 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.MessageBox;
+using NexusMods.App.UI.MessageBox.Enums;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
@@ -28,7 +32,9 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     }
 
     private WindowId _activeWindowId = WindowId.DefaultValue;
-    public IWorkspaceWindow ActiveWindow {
+
+    public IWorkspaceWindow ActiveWindow
+    {
         get => GetActiveWindow();
         set => SetActiveWindow(value);
     }
@@ -115,6 +121,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
             {
                 tx.Add(found.Id, WindowDataAttributes.Data, WindowDataAttributes.Encode(_connection.Db, data));
             }
+
             tx.Commit();
         }
         catch (Exception e)
@@ -157,6 +164,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
     }
 
+
     private void ResetSavedData()
     {
         _logger.LogInformation("Removing possible broken window state from the DB");
@@ -168,5 +176,41 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
 
         tx.Commit();
+    }
+
+    private IMessageBox<ButtonResult> GetMessageBox(string title, string text, ButtonEnum buttonEnum)
+    {
+        var viewModel = new MessageBoxStandardViewModel(title, text, buttonEnum);
+        var view = new MessageBoxStandardView()
+        {
+            DataContext = viewModel,
+        };
+
+        return new MessageBox<MessageBoxStandardView, MessageBoxStandardViewModel, ButtonResult>(view, viewModel);
+    }
+
+    public async Task<ButtonResult> ShowModalAsync(string title, string text, ButtonEnum buttonEnum)
+    {
+        var messageBox = GetMessageBox(title, text, buttonEnum);
+        
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
+        {
+            // Create the modal dialog, parent window is required for modal.
+            return await messageBox.ShowWindowDialogAsync(desktop.MainWindow);
+        }
+        
+        return ButtonResult.None;
+    }
+    
+    public async Task<ButtonResult> ShowModelessAsync(string title, string text, ButtonEnum buttonEnum = ButtonEnum.Ok)
+    {
+        var messageBox = GetMessageBox(title, text, buttonEnum);
+        
+        return await messageBox.ShowWindowAsync();
+    }
+    
+    public async Task<ButtonResult> ShowEmbeddedAsync(string title, string text)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -289,6 +289,12 @@
                     <StackPanel Spacing="8">
                         <controls:StandardButton x:Name="GenerateUnhandledException"
                                                  Text="GenerateUnhandledException" />
+                        <controls:StandardButton x:Name="ShowModalOK"
+                                                 Text="ShowModal OK" />
+                        <controls:StandardButton x:Name="ShowModalOKCancel"
+                                                 Text="ShowModal OKCancel" />
+                        <controls:StandardButton x:Name="ShowModeless"
+                                                 Text="ShowModeless"/>
                     </StackPanel>
                 </Border>
             </TabItem>
