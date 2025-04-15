@@ -35,6 +35,12 @@ public class MarkGameFilesTest(IServiceProvider serviceProvider) : GCStubbedGame
 
         // Assert: No game files should be deleted from FileStore, they are roots.
         (await FileStore.HaveFile(ExpectedHash)).Should().Be(true);
+        
+        // Unmanage the game (with GC)
+        await Synchronizer.UnManage(GameInstallation, runGc: true);
+        
+        // The file should be gone, because we deleted/retracted all the roots.
+        (await FileStore.HaveFile(ExpectedHash)).Should().Be(false);
     }
     
     private AbsolutePath RunGarbageCollector(ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> collector, out List<Hash> toDelete)

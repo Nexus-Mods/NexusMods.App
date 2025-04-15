@@ -1491,6 +1491,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     await ctx.YieldAsync();
                     await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
                 }
+                
+                // Retract all roots / synchronizer backed up files for this installation.
+                using var tx = Connection.BeginTransaction();
+                foreach (var file in SynchronizerBackedUpFile.All(Connection.Db))
+                {
+                    if (file.GameInstallId.Value == installation.GameMetadataId)
+                        tx.Delete(file, false);
+                }
+
+                await tx.Commit();
 
                 if (runGc)
                     _garbageCollectorRunner.Run();
