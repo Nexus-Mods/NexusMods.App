@@ -1,0 +1,2 @@
+﻿0x3FAF2629AC0F109F - 683.5 KB: ContentPatcher/ContentPatcher.dll -> {Game}/Mods/ContentPatcher/ContentPatcher.dll
+0x26FDDDE779823EC3 - 369 B: ContentPatcher/manifest.json -> {Game}/Mods/ContentPatcher/manifest.json

@@ -9,6 +9,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
@@ -166,7 +167,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 var gameDomain = await mappingCache.TryGetDomainAsync(_collection.GameId, cancellationToken);
                 if (!gameDomain.HasValue) throw new NotSupportedException($"Expected a valid game domain for `{_collection.GameId}`");
 
-                var uri = _collection.GetUri(gameDomain.Value);
+                var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, _collection.Slug, revisionMetadata.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
                 await osInterop.OpenUrl(uri, logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Sequential,
@@ -558,7 +559,7 @@ public class CollectionDownloadTreeDataGridAdapter :
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, LibraryColumns.ItemVersion>(),
-            ColumnCreator.Create<EntityId, LibraryColumns.ItemSize>(),
+            ColumnCreator.Create<EntityId, SharedColumns.ItemSize>(),
             ColumnCreator.Create<EntityId, CollectionColumns.Actions>(),
         ];
     }

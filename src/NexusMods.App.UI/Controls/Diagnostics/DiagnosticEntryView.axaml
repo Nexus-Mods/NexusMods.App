@@ -16,18 +16,17 @@
     </Design.DataContext>
 
     <navigation:NavigationControl x:Name="EntryButton"
-                                  Padding="16,12"
                                   HorizontalAlignment="Stretch"
                                   Height="62">
         
-        <DockPanel>
+        <DockPanel Margin="8,0">
             <icons:UnifiedIcon x:Name="SeverityIcon" 
                                DockPanel.Dock="Left" />
             <icons:UnifiedIcon x:Name="NavigationIcon" 
                 DockPanel.Dock="Right" 
                 Value="{x:Static icons:IconValues.ChevronRight}"/>
             
-            <StackPanel Margin="16,0" Spacing="0">
+            <StackPanel Margin="16,0" Spacing="0" VerticalAlignment="Center">
                 <TextBlock x:Name="TitleText" 
                            Text="Name"
                            Theme="{StaticResource BodyMDNormalTheme}"

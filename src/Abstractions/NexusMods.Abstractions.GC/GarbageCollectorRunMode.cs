@@ -21,4 +21,9 @@ public enum GarbageCollectorRunMode
     /// complete. The task is scheduled on the thread pool.
     /// </summary>
     RunAsyncInBackground,
+
+    /// <summary>
+    /// Runs the garbage collection in the background, waiting asynchronously for it to complete.
+    /// </summary>
+    RunAsynchronously,
 }

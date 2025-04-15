@@ -29,11 +29,12 @@ public class AdvancedInstallerWindowViewModel : AViewModel<IAdvancedInstallerWin
     public AdvancedInstallerWindowViewModel(
         string title,
         KeyedBox<RelativePath, LibraryArchiveTree> archiveFiles,
-        Loadout.ReadOnly loadout)
+        Loadout.ReadOnly loadout,
+        bool showUnsupportedStep)
     {
         AdvancedInstallerVM = new AdvancedInstallerPageViewModel(title, archiveFiles, loadout);
         UnsupportedModVM = new UnsupportedModPageViewModel(title);
-        CurrentPageVM = UnsupportedModVM;
+        CurrentPageVM = showUnsupportedStep ? UnsupportedModVM : AdvancedInstallerVM;
 
         this.WhenActivated(disposables =>
         {

@@ -119,7 +119,7 @@
 
                         <Style Selector="^ TextBlock#CurrentlyAppliedTextBlock">
                             <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                            <Setter Property="Theme" Value="{StaticResource BodySMBoldTheme}" />
+                            <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
                         </Style>
                         <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">
                             <Setter Property="Size" Value="16" />

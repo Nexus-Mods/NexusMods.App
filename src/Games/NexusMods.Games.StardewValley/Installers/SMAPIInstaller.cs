@@ -16,10 +16,10 @@ namespace NexusMods.Games.StardewValley.Installers;
 
 public class SMAPIInstaller : ALibraryArchiveInstaller
 {
-    private static readonly RelativePath InstallDatFile = "install.dat".ToRelativePath();
-    private static readonly RelativePath LinuxFolder = "linux".ToRelativePath();
-    private static readonly RelativePath WindowsFolder = "windows".ToRelativePath();
-    private static readonly RelativePath MacOSFolder = "macOS".ToRelativePath();
+    private static readonly RelativePath InstallDatFile = "install.dat";
+    private static readonly RelativePath LinuxFolder = "linux";
+    private static readonly RelativePath WindowsFolder = "windows";
+    private static readonly RelativePath MacOSFolder = "macOS";
 
     private readonly IOSInformation _osInformation;
     private readonly TemporaryFileManager _temporaryFileManager;
@@ -63,11 +63,11 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
             return parentName.Equals(targetParentName);
         }, out var installDataFile);
 
-        if (!foundInstallDataFile) return new NotSupported();
+        if (!foundInstallDataFile) return new NotSupported(Reason: "Found no SMAPI installation data file in the archive");
         if (!installDataFile.AsLibraryFile().TryGetAsLibraryArchive(out var installDataArchive))
         {
             Logger.LogError("Expected Library Item `{LibraryItem}` (`{Id}`) to be an archive", installDataFile.AsLibraryFile().AsLibraryItem().Name, installDataFile.Id);
-            return new NotSupported();
+            return new NotSupported(Reason: "Expected the installation data file to be an archive");
         }
 
         var isUnix = _osInformation.IsUnix();
@@ -160,7 +160,7 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
         var srcPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
         await _fileHashesService.GetFileHashesDb();
-        var foundRecord = _fileHashesService.GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.ToArray()))
+        var foundRecord = _fileHashesService.GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.Distinct().ToArray()))
             .Where(f => f.Path == srcPath)
             .TryGetFirst(out var gameFileRecord);
 

@@ -6,10 +6,12 @@ using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
 using StardewModdingAPI.Toolkit.Serialization.Models;
@@ -18,8 +20,8 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 internal static class Helpers
 {
-    public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.CreateGenericUri("https://nexusmods.com/stardewvalley"));
-    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.CreateDiagnosticUri(StardewValley.DomainStatic.Value, "2400"));
+    public static readonly NamedLink NexusModsLink = new("Nexus Mods", NexusModsUrlBuilder.GetGameUri(StardewValley.DomainStatic, campaign: NexusModsUrlBuilder.CampaignDiagnostics));
+    public static readonly NamedLink SMAPILink = new("Nexus Mods", NexusModsUrlBuilder.GetModUri(StardewValley.DomainStatic, ModId.From(2400), campaign: NexusModsUrlBuilder.CampaignDiagnostics));
 
     public static ISemanticVersion GetGameVersion(Loadout.ReadOnly loadout)
     {
@@ -65,40 +67,32 @@ internal static class Helpers
         return foundSMAPI;
     }
 
-    public static async IAsyncEnumerable<ValueTuple<SMAPIModLoadoutItem.ReadOnly, Manifest>> GetAllManifestsAsync(
+    public static async ValueTask<IReadOnlyList<ValueTuple<SMAPIManifestLoadoutFile.ReadOnly, Manifest>>> GetAllManifestsAsync(
         ILogger logger,
-        Loadout.ReadOnly loadout,
-        IResourceLoader<SMAPIModLoadoutItem.ReadOnly, Manifest> pipeline,
-        bool onlyEnabledMods,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
+        IDb db,
+        LoadoutId loadoutId,
+        bool onlyEnabled,
+        IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, Manifest> pipeline,
+        CancellationToken cancellationToken = default)
     {
-        var asyncEnumerable = loadout.Items
-            .OfTypeLoadoutItemGroup()
-            .OfTypeSMAPIModLoadoutItem()
-            .Where(x => !onlyEnabledMods || x.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled())
-            .ToAsyncEnumerable()
-            .ConfigureAwait(continueOnCapturedContext: false)
-            .WithCancellation(cancellationToken);
-
-        await using var enumerator = asyncEnumerable.GetAsyncEnumerator();
-        while (await enumerator.MoveNextAsync())
+        var result = new List<ValueTuple<SMAPIManifestLoadoutFile.ReadOnly, Manifest>>();
+        var manifestLoadoutItems = SMAPIManifestLoadoutFile.GetAllInLoadout(db, loadoutId, onlyEnabled: onlyEnabled);
+        foreach (var manifestLoadoutItem in manifestLoadoutItems)
         {
-            var smapiMod = enumerator.Current;
-
-            Resource<Manifest> resource;
+            cancellationToken.ThrowIfCancellationRequested();
 
             try
             {
-                resource = await pipeline.LoadResourceAsync(smapiMod, cancellationToken);
+                var manifest = await pipeline.LoadResourceAsync(manifestLoadoutItem, cancellationToken);
+                result.Add((manifestLoadoutItem, manifest.Data));
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Exception while getting manifest for `{Name}`", smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name);
-                continue;
+                logger.LogError(e, "Exception while loading manifest for `{GroupName}`", manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name);
             }
-
-            yield return (smapiMod, resource.Data);
         }
+
+        return result;
     }
 
     public static List<LogFilePathWithEditTime>? GetLatestSMAPILogFile(ILogger _logger)

@@ -3,7 +3,7 @@
         xmlns:loadout="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout;assembly=NexusMods.App.UI"
         xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
-        <Border Padding="8" Width="500" Height="500" Classes="Low">
+        <Border Padding="8" Width="500" Height="500">
             
             <Grid ColumnDefinitions="200, 200">
                 <home:HomeLeftMenuView Grid.Column="0" >
@@ -22,7 +22,9 @@
     </Design.PreviewWith>
     
     <!-- HOME & LOADOUT LEFT MENU -->
-    <Style Selector="home|HomeLeftMenuView,loadout|LoadoutLeftMenuView">
+    <Style Selector="
+        home|HomeLeftMenuView,
+        loadout|LoadoutLeftMenuView">
         
         <!-- MAIN STACK -->
         <Style Selector="^ StackPanel#LeftMenuStack">
@@ -36,7 +38,7 @@
                 </Style>
                 <Style Selector="^ > TextBlock">
                     <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                 </Style>
             </Style>
         </Style>

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Resources;
@@ -23,7 +22,7 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
     private readonly ILogger _logger;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
-    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
+    private readonly IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     public DependencyDiagnosticEmitter(
         IServiceProvider serviceProvider,
@@ -49,9 +48,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             yield break;
         }
 
-        var loadoutItemIdToManifest = await Helpers
-            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: false, cancellationToken)
-            .ToDictionaryAsync(tuple => tuple.Item1.SMAPIModLoadoutItemId, tuple => tuple.Item2, cancellationToken);
+        var loadoutItemIdToManifest = (await Helpers
+            .GetAllManifestsAsync(_logger, loadout.Db, loadout, onlyEnabled: false, _manifestPipeline, cancellationToken))
+            .ToDictionary(static tuple => tuple.Item1.SMAPIManifestLoadoutFileId, static tuple => tuple.Item2);
 
         var uniqueIdToLoadoutItemId = loadoutItemIdToManifest
             .GroupBy(kv => kv.Value.UniqueID, StringComparer.OrdinalIgnoreCase)
@@ -72,9 +71,9 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         }
     }
 
-    private static KeyValuePair<SMAPIModLoadoutItemId, SMAPIManifest> SelectUniqueIdWinner(
+    private static KeyValuePair<SMAPIManifestLoadoutFileId, SMAPIManifest> SelectUniqueIdWinner(
         Loadout.ReadOnly loadout, 
-        IGrouping<string, KeyValuePair<SMAPIModLoadoutItemId, SMAPIManifest>> g)
+        IGrouping<string, KeyValuePair<SMAPIManifestLoadoutFileId, SMAPIManifest>> g)
     {
         // TODO: select winner based on synchronizer winner
         // For now prefer enabled mods over disabled ones, newer versions over older ones
@@ -85,25 +84,29 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
 
     private static IEnumerable<Diagnostic> DiagnoseDisabledDependencies(
         Loadout.ReadOnly loadout,
-        Dictionary<SMAPIModLoadoutItemId, SMAPIManifest> loadoutItemIdToManifest,
-        ImmutableDictionary<string, SMAPIModLoadoutItemId> uniqueIdToLoadoutItemId)
+        Dictionary<SMAPIManifestLoadoutFileId, SMAPIManifest> loadoutItemIdToManifest,
+        ImmutableDictionary<string, SMAPIManifestLoadoutFileId> uniqueIdToLoadoutItemId)
     {
         var collect = loadoutItemIdToManifest
             .Where(kv =>
             {
                 var (loadoutItemId, _) = kv;
-                var smapiLoadoutItem = SMAPILoadoutItem.Load(loadout.Db, loadoutItemId);
-                return smapiLoadoutItem.AsLoadoutItemGroup().AsLoadoutItem().IsEnabled();
+                var loadoutItem = LoadoutItem.Load(loadout.Db, loadoutItemId);
+                return loadoutItem.IsEnabled();
             })
             .Select(kv =>
             {
                 var (loadoutItemId, manifest) = kv;
 
                 var requiredDependencies = GetRequiredDependencies(manifest);
-                var disabledDependencies = requiredDependencies
+
+                // ReSharper disable once SuggestVarOrType_Elsewhere
+                LoadoutItemGroup.ReadOnly[] disabledDependencies = requiredDependencies
                     .Select(uniqueIdToLoadoutItemId.GetValueOrDefault)
-                    .Where(id => id != default(SMAPIModLoadoutItemId))
-                    .Where(id => !LoadoutItem.Load(loadout.Db, id).IsEnabled())
+                    .Where(id => id != default(SMAPIManifestLoadoutFileId))
+                    .Select(id => SMAPIManifestLoadoutFile.Load(loadout.Db, id))
+                    .Where(loadoutItem => loadoutItem.IsValid() && !loadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().IsEnabled())
+                    .Select(loadoutItem => loadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
                     .ToArray();
 
                 return (Id: loadoutItemId, DisabledDependencies: disabledDependencies);
@@ -113,11 +116,11 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         return collect.SelectMany(tuple =>
         {
             var (loadoutItemId, disabledDependencies) = tuple;
-            var smapiMod = SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId);
+            var loadoutItem = LoadoutItem.Load(loadout.Db, loadoutItemId);
 
-            return disabledDependencies.Select(dependencyId => Diagnostics.CreateDisabledRequiredDependency(
-                SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
-                Dependency: LoadoutItemGroup.Load(loadout.Db, dependencyId).ToReference(loadout)
+            return disabledDependencies.Select(dependency => Diagnostics.CreateDisabledRequiredDependency(
+                SMAPIMod: loadoutItem.Parent.ToReference(loadout),
+                Dependency: dependency.ToReference(loadout)
             ));
         });
     }
@@ -126,8 +129,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
-        Dictionary<SMAPIModLoadoutItemId, SMAPIManifest> loadoutItemIdToManifest,
-        ImmutableDictionary<string, SMAPIModLoadoutItemId> uniqueIdToLoadoutItemId,
+        Dictionary<SMAPIManifestLoadoutFileId, SMAPIManifest> loadoutItemIdToManifest,
+        ImmutableDictionary<string, SMAPIManifestLoadoutFileId> uniqueIdToLoadoutItemId,
         CancellationToken cancellationToken)
     {
         var collect = loadoutItemIdToManifest
@@ -169,18 +172,19 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
             var (loadoutItemId, missingDependencies) = kv;
             return missingDependencies.Select(missingDependency =>
             {
-                var smapiMod = SMAPIModLoadoutItem.Load(loadout.Db, loadoutItemId);
+                var loadoutItem = LoadoutItem.Load(loadout.Db, loadoutItemId);
                 var modDetails = apiMods.GetValueOrDefault(missingDependency);
-                // TODO: diagnostic even if the API doesn't return anything
-                if (modDetails?.Name is null) return null;
+
+                var name = modDetails?.Name ?? missingDependency;
+                var link = modDetails is null ? Helpers.NexusModsLink : modDetails.NexusModsLink.ValueOr(() => Helpers.NexusModsLink);
 
                 return Diagnostics.CreateMissingRequiredDependency(
-                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
-                    MissingDependencyModId: modDetails.UniqueId,
-                    MissingDependencyModName: modDetails.Name,
-                    NexusModsDependencyUri: modDetails.NexusModsLink.ValueOr(() => Helpers.NexusModsLink)
+                    SMAPIMod: loadoutItem.Parent.ToReference(loadout),
+                    MissingDependencyModId: missingDependency,
+                    MissingDependencyModName: name,
+                    NexusModsDependencyUri: link
                 );
-            }).Where(x => x is not null).Select(x => x!);
+            });
         });
     }
 
@@ -188,8 +192,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         Loadout.ReadOnly loadout,
         ISemanticVersion gameVersion,
         ISemanticVersion smapiVersion,
-        Dictionary<SMAPIModLoadoutItemId, SMAPIManifest> loadoutItemIdToManifest,
-        ImmutableDictionary<string, SMAPIModLoadoutItemId> uniqueIdToLoadoutItemId,
+        Dictionary<SMAPIManifestLoadoutFileId, SMAPIManifest> loadoutItemIdToManifest,
+        ImmutableDictionary<string, SMAPIManifestLoadoutFileId> uniqueIdToLoadoutItemId,
         CancellationToken cancellationToken)
     {
         var uniqueIdToVersion = loadoutItemIdToManifest
@@ -258,8 +262,8 @@ public class DependencyDiagnosticEmitter : ILoadoutDiagnosticEmitter
         );
 
         return collect.Select(tuple => Diagnostics.CreateRequiredDependencyIsOutdated(
-            Dependent: SMAPIModLoadoutItem.Load(loadout.Db, tuple.LoadoutItemId).AsLoadoutItemGroup().ToReference(loadout),
-            Dependency: SMAPIModLoadoutItem.Load(loadout.Db, tuple.DependencyModId).AsLoadoutItemGroup().ToReference(loadout),
+            Dependent: LoadoutItem.Load(loadout.Db, tuple.LoadoutItemId).Parent.ToReference(loadout),
+            Dependency: LoadoutItem.Load(loadout.Db, tuple.DependencyModId).Parent.ToReference(loadout),
             MinimumVersion: tuple.MinimumVersion.ToString(),
             CurrentVersion: tuple.CurrentVersion.ToString(),
             NexusModsDependencyUri: apiMods.GetLink(tuple.DependencyId, defaultValue: Helpers.NexusModsLink)

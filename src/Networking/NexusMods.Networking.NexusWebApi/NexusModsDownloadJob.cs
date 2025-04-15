@@ -44,7 +44,7 @@ public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusM
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception while downloading `{Url}`", FileMetadata.GetUri());
+            Logger.LogError(e, "Exception while downloading file `{GameId}/{ModId}/{FileId}`", FileMetadata.Uid.GameId, FileMetadata.ModPage.Uid.ModId, FileMetadata.Uid.FileId);
             throw;
         }
     }

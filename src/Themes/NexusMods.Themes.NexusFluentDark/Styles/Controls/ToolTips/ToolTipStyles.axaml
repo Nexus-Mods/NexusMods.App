@@ -1,47 +1,56 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions">
+        xmlns:extensions="clr-namespace:NexusMods.Themes.NexusFluentDark.Extensions"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Design.PreviewWith>
-        <Border Padding="200" Classes="Mid">
-            <!-- Add Controls for Previewer Here -->
-            <Button ClipToBounds="False">
-                <ToolTip.Tip>
-                    <TextBlock Text="This is a tooltip" />
-                </ToolTip.Tip>
-                <TextBlock Text="Hover over me" />
-            </Button>
+        <Border Width="500" Height="300" Padding="16">
+            <StackPanel Spacing="16">
+                
+                <!-- Add Controls for Previewer Here -->
+                <Button>
+                    <ToolTip.Tip>
+                        <StackPanel>
+                            <TextBlock Text="Tooltip heading" Theme="{StaticResource BodySMSemiTheme}" />
+                            <TextBlock Text="This is a tooltip description" />
+                        </StackPanel>
+                    </ToolTip.Tip>
+                    <TextBlock Text="Hover over me" />
+                </Button>
+                
+                <Button ToolTip.Tip="This is a tooltip">
+                    <TextBlock Text="Hover over me" />
+                </Button>
+                
+                <ToolTip Opacity="1">Text Content</ToolTip>
+            </StackPanel>
         </Border>
     </Design.PreviewWith>
+    
+    <Styles.Resources>
+        <!-- Resources for ToolTip.xaml -->
+        <x:Double x:Key="ToolTipContentThemeFontSize">12</x:Double>
+        <Thickness x:Key="ToolTipBorderThemeThickness">0</Thickness>
+        <StaticResource x:Key="ToolTipForeground" ResourceKey="NeutralModerateBrush" />
+        <StaticResource x:Key="ToolTipBackground" ResourceKey="SurfaceMidBrush" />
+        <StaticResource x:Key="ToolTipBorderBrush" ResourceKey="StrokeTranslucentWeakBrush" />
+        <Thickness x:Key="ToolTipBorderThemePadding">6,4,6,12</Thickness>
+        <system:Double x:Key="ToolTipContentMaxWidth">320</system:Double>
+    </Styles.Resources>
 
-    <!-- Add Styles Here -->
     <Style Selector="ToolTip">
-        <Setter Property="ClipToBounds" Value="False" />
-        <Setter Property="BorderThickness" Value="0" />
+        
         <!-- NOTE(Al12rs) ClipToBounds doesn't work on ToolTips, make outer container bigger and transparent instead -->
-        <Setter Property="Padding" Value="10,1,10,10" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" /> 
+        <Setter Property="HorizontalAlignment" Value="Left"/>
 
         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="ClipToBounds" Value="False" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Background" Value="{StaticResource ToolTipBackground}" />
             <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="Margin" Value="0" />
-
-            <Setter Property="BoxShadow">
-                <extensions:BoxShadows
-                    VerticalLength="3" BlurRadius="5" ShadowColor="{StaticResource BrandTranslucentDark500}"
-                    VerticalLength1="1" BlurRadius1="10" ShadowColor1="{StaticResource BrandTranslucentDark100}"
-                    VerticalLength2="6" BlurRadius2="10" ShadowColor2="{StaticResource BrandTranslucentDark100}" />
-            </Setter>
-
+            <Setter Property="BoxShadow" Value="{StaticResource DropShadowSM}" />
         </Style>
-
-        <Style Selector="^ TextBlock">
-            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}"/>
-        </Style>
+        
     </Style>
 
 

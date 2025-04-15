@@ -11,24 +11,14 @@ public interface IGarbageCollectorRunner
     void Run();
     
     /// <summary>
+    /// Runs the Garbage Collector asynchronously.
+    /// </summary>
+    Task RunAsync();
+
+    /// <summary>
     /// Runs the Garbage Collector in the specified mode.
     /// </summary>
     /// <param name="gcRunMode">The mode to run the GC in.</param>
     // ReSharper disable once InconsistentNaming
-    void RunWithMode(GarbageCollectorRunMode gcRunMode)
-    {
-        switch (gcRunMode)
-        {
-            case GarbageCollectorRunMode.RunSynchronously:
-                Run();
-                break;
-            case GarbageCollectorRunMode.RunAsyncInBackground:
-                _ = Task.Run(Run);
-                break;
-            case GarbageCollectorRunMode.DoNotRun:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(gcRunMode), gcRunMode, null);
-        }
-    }
+    Task RunWithMode(GarbageCollectorRunMode gcRunMode);
 }

@@ -38,7 +38,7 @@ public partial class LibraryItem
         public bool TryGetAsDownloadedFile(out DownloadedFile.ReadOnly result) {
             // This is same as source generator would make, just that we don't
             // currently don't autogenerate conversions for multiple levels of include.
-            var casted = new DownloadedFile.ReadOnly(Db, IndexSegment, Id);
+            var casted = new DownloadedFile.ReadOnly(Db, EntitySegment, Id);
             if (casted.IsValid()) {
                 result = casted;
                 return true;
@@ -54,7 +54,7 @@ public partial class LibraryItem
         public bool TryGetAsLocalFile(out LocalFile.ReadOnly result) {
             // This is same as source generator would make, just that we don't
             // currently don't autogenerate conversions for multiple levels of include.
-            var casted = new LocalFile.ReadOnly(Db, IndexSegment, Id);
+            var casted = new LocalFile.ReadOnly(Db, EntitySegment, Id);
             if (casted.IsValid()) {
                 result = casted;
                 return true;

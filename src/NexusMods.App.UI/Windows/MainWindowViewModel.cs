@@ -13,15 +13,13 @@ using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
-using NexusMods.App.UI.Overlays.Login;
-using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
+using NexusMods.CrossPlatform;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -69,23 +67,27 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         this.WhenActivated(d =>
         {
-            ConnectErrors(serviceProvider)
-                .DisposeWith(d);
-            
-            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-            alphaWarningViewModel.WorkspaceController = WorkspaceController;
-            alphaWarningViewModel.Controller = overlayController;
-            alphaWarningViewModel.MaybeShow();
+            ConnectErrors(serviceProvider).DisposeWith(d);
 
-            var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
-            metricsOptInViewModel.Controller = overlayController;
+            var welcomeOverlayViewModel = WelcomeOverlayViewModel.CreateIfNeeded(serviceProvider);
+            if (welcomeOverlayViewModel is not null) overlayController.Enqueue(welcomeOverlayViewModel);
 
-            // Only show the updater if the metrics opt-in has been shown before, so we don't spam the user.
-            if (!metricsOptInViewModel.MaybeShow())
-            {
-                var updaterViewModel = serviceProvider.GetRequiredService<IUpdaterViewModel>();
-                updaterViewModel.MaybeShow();
-            }
+            R3.Observable
+                .Return(UpdateChecker.ShouldCheckForUpdate())
+                .Where(shouldCheck => shouldCheck)
+                .ObserveOnThreadPool()
+                .SelectAwait(
+                    selector: (_, cancellationToken) => UpdaterViewModel.CreateIfNeeded(serviceProvider, cancellationToken),
+                    configureAwait: false
+                )
+                .ObserveOnUIThreadDispatcher()
+                .WhereNotNull()
+                .Subscribe(overlayController, static (overlay, overlayController) =>
+                {
+                    overlay.Controller = overlayController;
+                    overlayController.Enqueue(overlay);
+                })
+                .AddTo(d);
 
             loginManager.IsLoggedInObservable
                 .DistinctUntilChanged()
@@ -93,10 +95,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Select(_ => System.Reactive.Unit.Default)
                 .InvokeReactiveCommand(BringWindowToFront)
                 .DisposeWith(d);
-            
-            var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
-            loginMessageVM.Controller = overlayController;
-            loginMessageVM.MaybeShow();
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)
@@ -161,9 +159,11 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     private IDisposable ConnectErrors(IServiceProvider provider)
     {
+        var settings = provider.GetRequiredService<ISettingsManager>().Get<LoggingSettings>();
+        if (!settings.ShowExceptions) return Disposable.Empty;
+
         var source = provider.GetService<IObservableExceptionSource>();
-        if (source is null)
-            return Disposable.Empty;
+        if (source is null) return Disposable.Empty;
 
         return source.Exceptions
             .Subscribe(msg =>

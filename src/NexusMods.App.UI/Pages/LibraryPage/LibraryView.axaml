@@ -13,116 +13,81 @@
     xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
-
-
-    <Grid RowDefinitions="Auto, *" VerticalAlignment="Top">
-        <Expander x:Name="ExpanderCollections" Grid.Row="0" IsExpanded="True" ExpandDirection="Down"
-                  HorizontalAlignment="Stretch">
-            <Expander.Header>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
-                            Classes="ExpanderLibraryHeader">
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}" />
-                    <TextBlock Text="Collections" />
-                    <TextBlock x:Name="TextNumCollections" Text="0" />
-                </StackPanel>
-            </Expander.Header>
-
-            <ScrollViewer
-                MaxHeight="350">
-                <ItemsControl x:Name="Collections">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <panels:FlexPanel
-                                AlignContent="FlexStart"
-                                RowSpacing="{StaticResource Spacing-3}"
-                                ColumnSpacing="{StaticResource Spacing-3}"
-                                Wrap="Wrap"
-                                Margin="24" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
-                            <reactive:ViewModelViewHost
-                                ViewModel="{CompiledBinding .}"
-                                ClipToBounds="False" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </Expander>
-
-
-        <Expander x:Name="ExpanderMods" Grid.Row="1" IsExpanded="True" ExpandDirection="Down"
-                  HorizontalAlignment="Stretch">
-            <Expander.Header>
-                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-2}"
-                            Classes="ExpanderLibraryHeader">
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
+    
+    <TabControl Margin="0,16,0,0">
+        <TabItem x:Name="ModsTabItem">
+            <TabItem.Header>
+                <StackPanel>
                     <TextBlock Text="Mods" />
-                    <TextBlock x:Name="TextNumMods" Text="0" />
+                    <Border>
+                        <TextBlock x:Name="TextNumMods" Text="123" />
+                    </Border>
                 </StackPanel>
-            </Expander.Header>
-            <!-- Empty State -->
+            </TabItem.Header>
+
+            <!-- mods go here -->
+
+            <!-- toolbar, rest of space for tree data grid -->
             <Grid RowDefinitions="Auto, *">
-                <!-- Toolbar -->
-                <Border Grid.Row="0" Classes="Toolbar">
-                    <StackPanel>
 
-                        <SplitButton x:Name="InstallModSplitButton" 
-                                     Classes="Compact" 
-                                     Content="{x:Static resources:Language.FileOriginPage_AddMod}"
-                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
-                            <SplitButton.Flyout>
-                                <MenuFlyout>
-                                    <MenuItem x:Name="InstallModMenuItem" Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
-                                    <MenuItem x:Name="AdvancedInstallModMenuItem" Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
-                                </MenuFlyout>
-                            </SplitButton.Flyout>
-                        </SplitButton>
+                <!-- toolbar component -->
+                <controls:Toolbar Margin="24,12, 24, 0">
+                    <!-- fixed height until we have our StandardSplitComponent -->
+                    <SplitButton x:Name="InstallModSplitButton"
+                                 Height="24"
+                                 Classes="StandardSplitButton"
+                                 Content="{x:Static resources:Language.FileOriginPage_AddMod}"
+                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
+                        <SplitButton.Flyout>
+                            <MenuFlyout>
+                                <MenuItem x:Name="InstallModMenuItem"
+                                          Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
+                                <MenuItem x:Name="AdvancedInstallModMenuItem"
+                                          Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
 
-                        <controls:StandardButton x:Name="RemoveModButton"
-                                                 Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
-                                                 Type="Tertiary"
-                                                 Size="Small"
-                                                 Fill="WeakAlt"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
+                    <controls:StandardButton x:Name="RemoveModButton"
+                                             Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
+                                             Type="Tertiary"
+                                             Size="ExtraSmall"
+                                             Fill="WeakAlt"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
+                                             ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
 
-                        <Separator />
+                    <Separator />
 
-                        <!-- Get Mods Section -->
-                        <TextBlock Text="{x:Static resources:Language.FileOriginsPage_GetMods}" />
+                    <controls:StandardButton x:Name="GetModsFromDriveButton"
+                                             Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"
+                                             Type="Tertiary"
+                                             Size="ExtraSmall"
+                                             Fill="WeakAlt"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                             ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromDrive_ToolTip}" />
 
-                        <controls:StandardButton x:Name="GetModsFromDriveButton"
-                                                 Text="{x:Static resources:Language.FileOriginsPage_FromDrive}"
-                                                 Type="Tertiary"
-                                                 Size="Small"
-                                                 Fill="WeakAlt"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.HardDrive}"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromDrive_ToolTip}" />
+                    <controls:StandardButton x:Name="GetModsFromNexusButton"
+                                             Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"
+                                             Type="Tertiary"
+                                             Size="ExtraSmall"
+                                             Fill="WeakAlt"
+                                             ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                             ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromNexus_ToolTip}" />
 
-                        <controls:StandardButton x:Name="GetModsFromNexusButton"
-                                                 Text="{x:Static resources:Language.FileOriginsPage_FromNexusMods}"
-                                                 Type="Tertiary"
-                                                 Size="Small"
-                                                 Fill="WeakAlt"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.Nexus}"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_FromNexus_ToolTip}" />
+                    <!-- Updates Section -->
+                    <Separator />
 
-                        <!-- Updates Section -->
-                        <Separator />
+                    <!-- 'Updates' button. -->
+                    <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="ExtraSmall"
+                                             Type="Tertiary" Fill="WeakAlt"
+                                             LeftIcon="{x:Static icons:IconValues.Refresh}"
+                                             ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
+                </controls:Toolbar>
 
-                        <!-- 'Updates' button. -->
-                        <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="Small"
-                                                 Type="Tertiary" Fill="WeakAlt"
-                                                 LeftIcon="{x:Static icons:IconValues.Refresh}" 
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
-                    </StackPanel>
-                </Border>
-
+                
                 <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
                                      Header="{x:Static resources:Language.EmptyLibraryTitleText}">
                     <controls:EmptyState.Subtitle>
@@ -136,14 +101,64 @@
                         </StackPanel>
                     </controls:EmptyState.Subtitle>
 
-                    <TreeDataGrid Grid.Row="1" x:Name="TreeDataGridLibrary"
+                    <TreeDataGrid x:Name="TreeDataGridLibrary"
                                   ShowColumnHeaders="True"
                                   CanUserResizeColumns="True"
                                   CanUserSortColumns="True"
-                                  HorizontalAlignment="Stretch" />
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,12,0,0"/>
                 </controls:EmptyState>
             </Grid>
-        </Expander>
-    </Grid>
+        </TabItem>
+        <TabItem x:Name="CollectionsTabItem">
+            <TabItem.Header>
+                <StackPanel>
+                    <TextBlock Text="Collections" />
+                    <Border>
+                        <TextBlock x:Name="TextNumCollections" Text="123" />
+                    </Border>
+                </StackPanel>
+            </TabItem.Header>
 
+            <!-- collections go here -->
+            
+            <!-- toolbar (coming soon), rest of space for collection car wrap panel -->
+            <Grid RowDefinitions="Auto, *">
+                
+                <!-- <controls:Toolbar Grid.Row="0"> -->
+                <!--     <controls:StandardButton -->
+                <!--         Text="Browse Collections" -->
+                <!--         LeftIcon="{x:Static icons:IconValues.NexusColor}" -->
+                <!--         ShowIcon="Left" -->
+                <!--         Type="Tertiary" -->
+                <!--         Fill="None" -->
+                <!--         Size="ExtraSmall"/> -->
+                <!-- </controls:Toolbar> -->
+                
+                <ScrollViewer Grid.Row="1">
+                    <ItemsControl x:Name="Collections" Padding="24,12,24,12">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <panels:FlexPanel
+                                    AlignContent="FlexStart"
+                                    RowSpacing="{StaticResource Spacing-3}"
+                                    ColumnSpacing="{StaticResource Spacing-3}"
+                                    Wrap="Wrap" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
+                                <reactive:ViewModelViewHost
+                                    ViewModel="{CompiledBinding .}"
+                                    ClipToBounds="False" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                
+            </Grid>
+            
+            
+        </TabItem>
+    </TabControl>
 </reactive:ReactiveUserControl>

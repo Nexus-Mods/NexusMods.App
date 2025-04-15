@@ -38,7 +38,7 @@ public abstract class ALibraryFileInstaller : ALibraryItemInstaller, ILibraryFil
         if (!libraryItem.TryGetAsLibraryFile(out var libraryFile))
         {
             Logger.LogError("The provided library item `{Name}` (`{Id}`) is not a library file!", libraryItem.Name, libraryItem.Id);
-            return ValueTask.FromResult<InstallerResult>(new NotSupported());
+            return ValueTask.FromResult<InstallerResult>(new NotSupported("The provided library item is not a library file"));
         }
 
         return ExecuteAsync(libraryFile, loadoutGroup, transaction, loadout, cancellationToken);

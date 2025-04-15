@@ -4,14 +4,8 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
-using NexusMods.App.UI.Controls.DataGrid;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Diagnostics;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus;
-using NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
@@ -32,17 +26,16 @@ using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
-using NexusMods.App.UI.Overlays.Download.Cancel;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
 using NexusMods.App.UI.Overlays.LibraryDeleteConfirmation;
 using NexusMods.App.UI.Overlays.Login;
-using NexusMods.App.UI.Overlays.MetricsOptIn;
+using NexusMods.App.UI.Overlays.ManageGameWarning;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
@@ -61,12 +54,8 @@ using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
 using ReactiveUI;
-using DownloadGameNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadGameName.DownloadGameNameView;
-using DownloadNameView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadName.DownloadNameView;
-using DownloadSizeView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadSize.DownloadSizeView;
-using DownloadStatusView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadStatus.DownloadStatusView;
-using DownloadVersionView = NexusMods.App.UI.Controls.DownloadGrid.Columns.DownloadVersion.DownloadVersionView;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
+using ManageGameWarningView = NexusMods.App.UI.Overlays.ManageGameWarning.ManageGameWarningView;
 using NexusLoginOverlayView = NexusMods.App.UI.Overlays.Login.NexusLoginOverlayView;
 using SettingToggleControl = NexusMods.App.UI.Controls.Settings.SettingEntries.SettingToggleControl;
 
@@ -94,8 +83,6 @@ public static class Services
 
             // View Models
             .AddTransient<MainWindowViewModel>()
-            .AddTransient(typeof(DataGridViewModelColumn<,>))
-            .AddTransient(typeof(DataGridColumnFactory<,,>))
             .AddSingleton<IViewLocator, InjectedViewLocator>()
             
             .AddViewModel<CollectionCardDesignViewModel, ICollectionCardViewModel>()
@@ -115,20 +102,13 @@ public static class Services
             .AddViewModel<SpineViewModel, ISpineViewModel>()
             .AddViewModel<TopBarViewModel, ITopBarViewModel>()
             .AddViewModel<SpineDownloadButtonViewModel, ISpineDownloadButtonViewModel>()
-            .AddViewModel<DownloadGameNameViewModel, IDownloadGameNameViewModel>()
-            .AddViewModel<DownloadNameViewModel, IDownloadNameViewModel>()
-            .AddViewModel<DownloadVersionViewModel, IDownloadVersionViewModel>()
-            .AddViewModel<DownloadSizeViewModel, IDownloadSizeViewModel>()
-            .AddViewModel<DownloadStatusViewModel, IDownloadStatusViewModel>()
             .AddViewModel<MessageBoxOkViewModel, IMessageBoxOkViewModel>()
-            .AddViewModel<CancelDownloadOverlayViewModel, ICancelDownloadOverlayViewModel>()
-            .AddViewModel<LoginMessageBoxViewModel, ILoginMessageBoxViewModel>()
             .AddViewModel<MessageBoxOkCancelViewModel, IMessageBoxOkCancelViewModel>()
-            .AddViewModel<MetricsOptInViewModel, IMetricsOptInViewModel>()
             .AddViewModel<UpdaterViewModel, IUpdaterViewModel>()
             .AddViewModel<LoadoutLeftMenuViewModel, ILoadoutLeftMenuViewModel>()
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
+            .AddViewModel<ManageGameWarningViewModel, IManageGameWarningViewModel>()
 
             // Views
             .AddView<CollectionCardView, ICollectionCardViewModel>()
@@ -140,21 +120,14 @@ public static class Services
             .AddView<LeftMenuItemView, ILeftMenuItemViewModel>()
             .AddView<ImageButton, IImageButtonViewModel>()
             .AddView<LaunchButtonView, ILaunchButtonViewModel>()
-            .AddView<MetricsOptInView, IMetricsOptInViewModel>()
             .AddView<MyGamesView, IMyGamesViewModel>()
             .AddView<NexusLoginOverlayView, INexusLoginOverlayViewModel>()
             .AddView<Spine, ISpineViewModel>()
             .AddView<TopBarView, ITopBarViewModel>()
             .AddView<SpineDownloadButtonView, ISpineDownloadButtonViewModel>()
-            .AddView<DownloadGameNameView, IDownloadGameNameViewModel>()
-            .AddView<DownloadNameView, IDownloadNameViewModel>()
-            .AddView<DownloadVersionView, IDownloadVersionViewModel>()
-            .AddView<DownloadSizeView, IDownloadSizeViewModel>()
-            .AddView<DownloadStatusView, IDownloadStatusViewModel>()
-            .AddView<CancelDownloadOverlayView, ICancelDownloadOverlayViewModel>()
             .AddView<MessageBoxOkView, IMessageBoxOkViewModel>()
             .AddView<MessageBoxOkCancelView, IMessageBoxOkCancelViewModel>()
-            .AddView<LoginMessageBoxView, ILoginMessageBoxViewModel>()
+            .AddView<ManageGameWarningView, IManageGameWarningViewModel>()
             .AddView<UpdaterView, IUpdaterViewModel>()
             .AddView<LoadoutLeftMenuView, ILoadoutLeftMenuViewModel>()
             .AddView<ApplyControlView, IApplyControlViewModel>()
@@ -198,9 +171,6 @@ public static class Services
 
             .AddView<LibraryItemDeleteConfirmationView, ILibraryItemDeleteConfirmationViewModel>()
             .AddViewModel<LibraryItemDeleteConfirmationViewModel, ILibraryItemDeleteConfirmationViewModel>()
-            
-            .AddView<AlphaWarningView, IAlphaWarningViewModel>()
-            .AddViewModel<AlphaWarningViewModel, IAlphaWarningViewModel>()
 
             .AddView<ItemContentsFileTreeView, IItemContentsFileTreeViewModel>()
             .AddViewModel<ItemContentsFileTreeViewModel, IItemContentsFileTreeViewModel>()
@@ -225,9 +195,18 @@ public static class Services
 
             .AddView<ObservableInfoPageView, IObservableInfoPageViewModel>()
             .AddViewModel<ObservableInfoPageViewModel, IObservableInfoPageViewModel>()
+            
+            .AddView<DebugControlsPageView, IDebugControlsPageViewModel>()
+            .AddViewModel<DebugControlsPageViewModel, IDebugControlsPageViewModel>()
 
             .AddView<ManualDownloadRequiredOverlayView, IManualDownloadRequiredOverlayViewModel>()
             .AddViewModel<ManualDownloadRequiredOverlayViewModel, IManualDownloadRequiredOverlayViewModel>()
+
+            .AddView<RemoveGameOverlayView, IRemoveGameOverlayViewModel>()
+            .AddViewModel<RemoveGameOverlayViewModel, IRemoveGameOverlayViewModel>()
+
+            .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
+            .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -264,6 +243,7 @@ public static class Services
             .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
+            .AddSingleton<IPageFactory, DebugControlsPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()
@@ -292,8 +272,10 @@ public static class Services
             .AddSingleton<ILibraryDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, NexusModsDataProvider>()
             .AddSingleton<ILoadoutDataProvider, BundledDataProvider>()
+            .AddSingleton<ILoadOrderDataProvider, LoadOrderDataProvider>()
             .AddSingleton<IEventBus, EventBus>()
             .AddSingleton<IAvaloniaInterop, AvaloniaInterop>()
+            .AddSingleton<UpdateChecker>()
             .AddFileSystem()
             .AddImagePipelines();
     }

@@ -1,7 +1,8 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.GameWidget;assembly=NexusMods.App.UI"
-        xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing;assembly=NexusMods.App.UI">
+        xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
     <Design.PreviewWith>
         <Border Classes="Mid" Padding="30">
             <ui:GameWidget>
@@ -47,6 +48,9 @@
             <Style Selector="^ Border#StoreBackground">
                 <Setter Property="CornerRadius" Value="{StaticResource Rounded-br}" />
                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark700}" />
+                <Style Selector="^ icons|UnifiedIcon">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                </Style>
             </Style>
         </Style>
         

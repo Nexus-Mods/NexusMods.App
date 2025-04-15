@@ -1,22 +1,37 @@
 using System.IO.Compression;
 using System.Text;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators.TestHelpers;
+using NexusMods.StandardGameLocators.Unknown;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Synchronizer.Tests;
 
-public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<GeneralModManagementTests>(helper)
+public class ExternalChangesTests : ACyberpunkIsolatedGameTest<ExternalChangesTests>
 {
+    private readonly UniversalStubbedGameLocator<Cyberpunk2077Game> _locator;
+
+    public ExternalChangesTests(ITestOutputHelper helper) : base(helper)
+    {
+        var locators = ServiceProvider.GetServices<IGameLocator>();
+        _locator = locators.Should().ContainSingle().Which.Should().BeOfType<UniversalStubbedGameLocator<Cyberpunk2077Game>>().Which;
+    }
+
     [Fact]
     public async Task CanDeployGameAfterUpdating()
     {
         var sb = new StringBuilder();
         await Synchronizer.RescanFiles(GameInstallation);
         var loadoutA = await CreateLoadout();
+
+        _locator.LocatorIds.Should().ContainSingle().Which.Value.Should().Be("StubbedGameState.zip");
         loadoutA.GameVersion.Should().Be("1.0.Stubbed");
         
         LogDiskState(sb, "## 1 - Loadout Created (A) - Synced",
@@ -26,7 +41,8 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
 
         var gameFolder = loadoutA.InstallationInstance.LocationsRegister[LocationId.Game];
         await ExtractV2ToGameFolder(gameFolder);
-        
+
+        _locator.LocatorIds.Should().ContainSingle().Which.Value.Should().Be("StubbedGameState_game_v2.zip");
         loadoutA = await Synchronizer.Synchronize(loadoutA);
 
         LogDiskState(sb, "## 2 - Updated Game Files",
@@ -87,8 +103,45 @@ public class ExternalChangesTests (ITestOutputHelper helper) : ACyberpunkIsolate
         
     }
 
+    /// <summary>
+    /// (issue-2908) Changes to external files should be reflected in the external files after synchronizing
+    /// </summary>
+    [Fact]
+    public async Task ChangingExternalFileUpdatesExternalFiles()
+    {
+        await Synchronizer.RescanFiles(GameInstallation);
+        var loadoutA = await CreateLoadout();
+        var externalFile = loadoutA.InstallationInstance.LocationsRegister[LocationId.Game] / "config.json";
+        var gameFile = new GamePath(LocationId.Game, "config.json");
+
+        await externalFile.WriteAllTextAsync("version1");
+        
+        var loadout = await Synchronizer.Synchronize(loadoutA);
+        
+        var externalFileRecord = loadout.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+        if (!externalFileRecord.TryGetAsLoadoutFile(out var loadoutFile))
+            Assert.Fail("The file should be in the loadout");
+
+        loadoutFile.Hash.Should().Be("version1".xxHash3AsUtf8());
+        
+        await externalFile.WriteAllTextAsync("version2");
+        
+        loadout = await Synchronizer.Synchronize(loadout);
+        
+        var refreshedRecord = loadout.Items.OfTypeLoadoutItemWithTargetPath().Single(f => f.TargetPath == gameFile);
+        refreshedRecord.Id.Should().Be(externalFileRecord.Id, "the file should be the same id");
+        
+        if (!refreshedRecord.TryGetAsLoadoutFile(out var refreshedFile))
+            Assert.Fail("The file should be in the loadout");
+        
+        refreshedFile.Hash.Should().Be("version2".xxHash3AsUtf8());
+        
+    }
+
     private async Task ExtractV2ToGameFolder(AbsolutePath gameFolder)
     {
+        _locator.LocatorIds = [LocatorId.From("StubbedGameState_game_v2.zip")];
+
         // Extract the game files into the folder so that we trigger a game version update
         using var zipFile = ZipFile.OpenRead((FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources/StubbedGameState_game_v2.zip").ToString());
         foreach (var file in zipFile.Entries)

@@ -83,6 +83,7 @@
         <PackageReference Include="TextMateSharp.Grammars" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="ZLinq" />
     </ItemGroup>
 
     <ItemGroup>
@@ -98,13 +99,13 @@
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
         <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
         <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
-        <ProjectReference Include="..\Networking\NexusMods.Networking.Downloaders\NexusMods.Networking.Downloaders.csproj" />
         <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
         <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.GitHub\NexusMods.Networking.GitHub.csproj" />
         <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
     </ItemGroup>
 
@@ -242,22 +243,11 @@
         <Compile Update="Overlays\Generic\MessageBox\OkCancel\MessageBoxOkCancelViewModel.cs">
           <DependentUpon>IMessageBoxOkCancelViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Overlays\MetricsOptIn\MetricsOptInViewModel.cs">
-          <DependentUpon>IMetricsOptInViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Language.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Language.resx</DependentUpon>
-        </Compile>
         <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerViewModel.cs">
           <DependentUpon>IDevelopmentBuildBannerViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\DevelopmentBuildBanner\DevelopmentBuildBannerView.axaml.cs">
           <DependentUpon>DevelopmentBuildBannerView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Overlays\Updater\UpdaterDesignViewModel.cs">
-          <DependentUpon>IUpdaterViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\TopBar\TopBarDesignViewModel.cs">
           <DependentUpon>ITopBarViewModel.cs</DependentUpon>
@@ -482,9 +472,6 @@
         <Compile Update="Controls\MarkdownRenderer\MarkdownRendererViewModel.cs">
           <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\MarkdownRenderer\MarkdownRendererDesignViewModel.cs">
-          <DependentUpon>IMarkdownRendererViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Settings\SettingsPageDesignViewModel.cs">
           <DependentUpon>ISettingsPageViewModel.cs</DependentUpon>
         </Compile>
@@ -598,9 +585,6 @@
         <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
           <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
-        <Compile Update="Controls\DataGrid\Columns\ModName\ModNameView.axaml.cs">
-          <DependentUpon>ModNameView.axaml</DependentUpon>
-        </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
           <SubType>Code</SubType>
@@ -667,9 +651,6 @@
           <DependentUpon>SortingSelectionView.axaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemModel.cs">
-          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Sorting\LoadOrder\LoadOrderViewModel.cs">
           <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
         </Compile>
@@ -681,9 +662,6 @@
         </Compile>
         <Compile Update="Pages\Sorting\SortingSelection\SortingSelectionDesignViewModel.cs">
           <DependentUpon>ISortingSelectionViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\Sorting\LoadOrder\LoadOrderItemDesignModel.cs">
-          <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Diagnostics\List\DiagnosticListDesignViewModel.cs.old">
           <DependentUpon>IDiagnosticListViewModel.cs</DependentUpon>
@@ -739,6 +717,22 @@
         <Compile Update="LeftMenu\Items\ApplyControl\ApplyControlDesignViewModel.cs">
           <DependentUpon>IApplyControlViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\Sorting\LoadOrder\TreeDataGrid\LoadOrderDataProvider.cs">
+          <DependentUpon>ILoadOrderDataProvider.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningView.axaml.cs">
+          <DependentUpon>MetricsOptInView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Overlays\ManageGame\ManageGameWarningViewModel.cs">
+          <DependentUpon>IManageGameWarningViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\UnifiedIconComponent.cs">
+          <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
+          <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
@@ -756,6 +750,12 @@
       <UpToDateCheckInput Remove="RightContent\Home\HomeView.axaml" />
       <UpToDateCheckInput Remove="Controls\Badge\Badge.axaml" />
       <UpToDateCheckInput Remove="Controls\DataGrid\Columns\ModInstalled\ModInstalledView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadGameName\DownloadGameNameView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadName\DownloadNameView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadSize\DownloadSizeView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadStatus\DownloadStatusView.axaml" />
+      <UpToDateCheckInput Remove="Controls\DownloadGrid\Columns\DownloadVersion\DownloadVersionView.axaml" />
+      <UpToDateCheckInput Remove="Overlays\Login\StartupMessageBox\LoginMessageBoxView.axaml" />
     </ItemGroup>
 
     <ItemGroup>

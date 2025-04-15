@@ -10,9 +10,9 @@ public static class ServiceExtensions
         return serviceCollection
             .AddSettings<LanguageSettings>()
             .AddSettings<TextEditorSettings>()
-            .AddSettings<AlphaSettings>()
-            .AddSettings<LoginSettings>()
             .AddSettings<AlertSettings>()
-            .AddSettings<BehaviorSettings>();
+            .AddSettings<BehaviorSettings>()
+            .AddSettings<UpdaterSettings>()
+            .AddSettings<WelcomeSettings>();
     }
 }

@@ -5,6 +5,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -31,7 +32,9 @@ public class LoadOrdersWIPPageFactory : APageFactory<ILoadOrdersWIPPageViewModel
 
     public override ILoadOrdersWIPPageViewModel CreateViewModel(LoadOrdersWIPPageContext context)
     {
-        var vm = new LoadOrdersWipPageViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId);
+        var windowManager = ServiceProvider.GetRequiredService<IWindowManager>();
+        var osInterop = ServiceProvider.GetRequiredService<IOSInterop>();
+        var vm = new LoadOrdersWipPageViewModel(windowManager, ServiceProvider, context.LoadoutId, osInterop);
         return vm;
     }
 

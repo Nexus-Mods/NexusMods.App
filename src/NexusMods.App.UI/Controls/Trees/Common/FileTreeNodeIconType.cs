@@ -94,6 +94,7 @@ public static class FileTreeNodeIconTypeHelpers
     /// Provides the XAML class to be used with <see cref="UnifiedIcon"/> for the given icon type.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("To be removed with migration to new ViewModFiles and Preview Changes")]
     public static string GetIconClass(this FileTreeNodeIconType iconType) => iconType switch
     {
         FileTreeNodeIconType.File => "File",
@@ -104,6 +105,22 @@ public static class FileTreeNodeIconTypeHelpers
         FileTreeNodeIconType.Audio => "MusicNote",
         FileTreeNodeIconType.Video => "VideoOutline",
         _ => ThrowArgumentOutOfRangeException(iconType),
+    };
+    
+    /// <summary>
+    /// Provides the direct <see cref="IconValues"/> for the given icon type.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IconValue GetIconValue(this FileTreeNodeIconType iconType) => iconType switch
+    {
+        FileTreeNodeIconType.File => IconValues.File,
+        FileTreeNodeIconType.ClosedFolder => IconValues.Folder,
+        FileTreeNodeIconType.OpenFolder => IconValues.FolderOpen,
+        FileTreeNodeIconType.Image => IconValues.Image,
+        FileTreeNodeIconType.Text => IconValues.FileDocumentOutline,
+        FileTreeNodeIconType.Audio => IconValues.MusicNote,
+        FileTreeNodeIconType.Video => IconValues.Video,
+        _ => ThrowArgumentOutOfRangeExceptionIcon(iconType),
     };
 
     /// <summary>
@@ -122,8 +139,9 @@ public static class FileTreeNodeIconTypeHelpers
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetIconClassFromFileName(this string fileName)
     {
-        return fileName.ToRelativePath().Extension.GetIconClass();
+        return RelativePath.FromUnsanitizedInput(fileName).Extension.GetIconClass();
     }
-    
+
     private static string ThrowArgumentOutOfRangeException(FileTreeNodeIconType iconType) => throw new ArgumentOutOfRangeException(nameof(iconType), iconType, null);
+    private static IconValue ThrowArgumentOutOfRangeExceptionIcon(FileTreeNodeIconType iconType) => throw new ArgumentOutOfRangeException(nameof(iconType), iconType, null);
 }

@@ -20,6 +20,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ObservableCollections;
+using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -75,6 +76,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
             .Select(count => count > 0);
+            
+        
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
         
@@ -105,7 +108,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var isReadonly = group.Value.AsLoadoutItem()
                         .GetThisAndParents()
-                        .Any(item => NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired);
+                        .Any(item => IsRequired(item.LoadoutItemId, connection));
 
                     var pageData = new PageData
                     {
@@ -122,15 +125,30 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 },
                 false
             );
-
-        RemoveItemCommand = hasSelection
+        
+        var hasValidRemoveSelection = Adapter.SelectedModels
+            .ObserveChanged()
+            .SelectMany(_ =>
+            {
+                var observables = Adapter.SelectedModels.Select(model => 
+                    model.GetObservable<LoadoutComponents.LockedEnabledState>(LoadoutColumns.EnabledState.LockedEnabledStateComponentKey));
+                
+                return R3.Observable.CombineLatest(observables)
+                    // if all items are readonly, or list is empty, no valid selection
+                    .Select(list => !list.All(x => x.HasValue));
+            });
+            
+        
+        RemoveItemCommand = hasValidRemoveSelection
             .ToReactiveCommand<Unit>(async (_, _) =>
             {
                 var ids = Adapter.SelectedModels
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
-                    .ToHashSet();
+                    .ToHashSet()
+                    .Where(id => !IsRequired(id, connection))
+                    .ToArray();
 
-                if (ids.Count == 0) return;
+                if (ids.Length == 0) return;
                 using var tx = connection.BeginTransaction();
 
                 foreach (var id in ids)
@@ -150,38 +168,21 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             Adapter.Activate().AddTo(disposables);
 
             Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
-            {
-                var toggleableItems = message.Ids
-                    .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
-                    // Exclude collection required items
-                    .Where(item => !(NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired))
-                    // Exclude items that are part of a collection that is disabled
-                    .Where(item => !(item.Parent.TryGetAsCollectionGroup(out var collectionGroup)
-                                     && collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
-                    )
-                    .ToArray();
-
-                if (toggleableItems.Length == 0) return;
-
-                // We only enable if all items are disabled, otherwise we disable
-                var shouldEnable = toggleableItems.All(loadoutItem => loadoutItem.IsDisabled);
-
-                using var tx = connection.BeginTransaction();
-
-                foreach (var id in toggleableItems)
-                {
-                    if (shouldEnable)
-                    {
-                        tx.Retract(id, LoadoutItem.Disabled, Null.Instance);
-                    }
-                    else
-                    {
-                        tx.Add(id, LoadoutItem.Disabled, Null.Instance);
-                    }
+            {   
+                // Toggle item state
+                if (message.IsT0){
+                    await ToggleItemEnabledState(message.AsT0.Ids, connection);
+                    return;
                 }
 
-                await tx.Commit();
-                
+                // Open collection
+                if (message.IsT1)
+                {
+                    var data = message.AsT1;
+                    OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId, GetWorkspaceController(), connection);
+                    return;
+                }
+
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
 
             // Compute the target group for the ViewFilesCommand
@@ -208,6 +209,87 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         });
     }
 
+    internal static async Task ToggleItemEnabledState(LoadoutItemId[] ids, IConnection connection)
+    {
+        var toggleableItems = ids
+            .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
+            // Exclude collection required items
+            .Where(item => !IsRequired(item.Id, connection))
+            // Exclude items that are part of a collection that is disabled
+            .Where(item => !(item.Parent.TryGetAsCollectionGroup(out var collectionGroup)
+                             && collectionGroup.AsLoadoutItemGroup().AsLoadoutItem().IsDisabled)
+            )
+            .ToArray();
+
+        if (toggleableItems.Length == 0) return;
+
+        // We only enable if all items are disabled, otherwise we disable
+        var shouldEnable = toggleableItems.All(loadoutItem => loadoutItem.IsDisabled);
+
+        using var tx = connection.BeginTransaction();
+
+        foreach (var id in toggleableItems)
+        {
+            if (shouldEnable)
+            {
+                tx.Retract(id, LoadoutItem.Disabled, Null.Instance);
+            }
+            else
+            {
+                tx.Add(id, LoadoutItem.Disabled, Null.Instance);
+            }
+        }
+
+        await tx.Commit();
+    }
+
+    internal static void OpenItemCollectionPage(
+        LoadoutItemId[] ids,
+        NavigationInformation navInfo,
+        LoadoutId loadoutId,
+        IWorkspaceController workspaceController,
+        IConnection connection)
+    {
+        if (ids.Length == 0) return;
+
+        // Open the collection page for the first item
+        var firstItemId = ids.First();
+
+        var parentGroup = LoadoutItem.Load(connection.Db, firstItemId).Parent;
+        if (!parentGroup.TryGetAsCollectionGroup(out var collectionGroup)) return;
+
+        if (collectionGroup.TryGetAsNexusCollectionLoadoutGroup(out var nexusCollectionGroup))
+        {
+            var nexusCollPageData = new PageData
+            {
+                FactoryId = CollectionLoadoutPageFactory.StaticId,
+                Context = new CollectionLoadoutPageContext
+                {
+                    LoadoutId = loadoutId,
+                    GroupId = nexusCollectionGroup.Id,
+                },
+            };
+            var nexusPageBehavior = workspaceController.GetOpenPageBehavior(nexusCollPageData, navInfo);
+            workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, nexusCollPageData, nexusPageBehavior);
+
+            return;
+        }
+
+        var pageData = new PageData
+        {
+            FactoryId = LoadoutPageFactory.StaticId,
+            Context = new LoadoutPageContext
+            {
+                LoadoutId = loadoutId,
+                GroupScope = collectionGroup.AsLoadoutItemGroup().LoadoutItemGroupId,
+            },
+        };
+        var behavior = workspaceController.GetOpenPageBehavior(pageData, navInfo);
+        workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+
+        return;
+    }
+
     private static async Task ToggleCollectionGroup(Optional<LoadoutItemGroupId> collectionGroupId, bool shouldEnable, IConnection connection)
     {
         if (!collectionGroupId.HasValue) return;
@@ -227,15 +309,23 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     {
         return itemModel.Get<LoadoutComponents.LoadoutItemIds>(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey).ItemIds;
     }
+
+    private static bool IsRequired(LoadoutItemId id, IConnection connection)
+    {
+        return NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(LoadoutItem.Load(connection.Db, id), out var isRequired) && isRequired;
+    }
 }
 
-public readonly record struct ToggleEnableState(LoadoutItemId[] Ids, bool ShouldEnable);
+public readonly record struct ToggleEnableStateMessage(LoadoutItemId[] Ids);
+
+public readonly record struct OpenCollectionMessage(LoadoutItemId[] Ids, NavigationInformation NavigationInformation);
+
 
 public class LoadoutTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<ToggleEnableState>
+    ITreeDataGirdMessageAdapter<OneOf<ToggleEnableStateMessage, OpenCollectionMessage>>
 {
-    public Subject<ToggleEnableState> MessageSubject { get; } = new();
+    public Subject<OneOf<ToggleEnableStateMessage, OpenCollectionMessage>> MessageSubject { get; } = new();
 
     private readonly ILoadoutDataProvider[] _loadoutDataProviders;
     private readonly LoadoutFilter _loadoutFilter;
@@ -261,11 +351,45 @@ public class LoadoutTreeDataGridAdapter :
             factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
             {
                 var (self, itemModel, component) = tuple;
-                var isEnabled = component.Value.Value;
                 var ids = GetLoadoutItemIds(itemModel).ToArray();
-                var shouldEnable = !isEnabled ?? false;
 
-                self.MessageSubject.OnNext(new ToggleEnableState(ids, shouldEnable));
+                self.MessageSubject.OnNext(new ToggleEnableStateMessage(ids));
+            })
+        );
+
+        model.SubscribeToComponentAndTrack<LoadoutComponents.ParentCollectionDisabled, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.ParentCollectionDisabledComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.ButtonCommand.Subscribe((self, itemModel, component), static (navInfo, tuple) =>
+            {
+                var (self, itemModel, component) = tuple;
+                var ids = GetLoadoutItemIds(itemModel).ToArray();
+
+                self.MessageSubject.OnNext(new OpenCollectionMessage(ids, navInfo));
+            })
+        );
+
+        model.SubscribeToComponentAndTrack<LoadoutComponents.LockedEnabledState, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.LockedEnabledStateComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.ButtonCommand.Subscribe((self, itemModel, component), static (navInfo, tuple) =>
+            {
+                var (self, itemModel, component) = tuple;
+                var ids = GetLoadoutItemIds(itemModel).ToArray();
+
+                self.MessageSubject.OnNext(new OpenCollectionMessage(ids, navInfo));
+            })
+        );
+
+        model.SubscribeToComponentAndTrack<LoadoutComponents.MixLockedAndParentDisabled, LoadoutTreeDataGridAdapter>(
+            key: LoadoutColumns.EnabledState.MixLockedAndParentDisabledComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.ButtonCommand.Subscribe((self, itemModel, component), static (navInfo, tuple) =>
+            {
+                var (self, itemModel, component) = tuple;
+                var ids = GetLoadoutItemIds(itemModel).ToArray();
+
+                self.MessageSubject.OnNext(new OpenCollectionMessage(ids, navInfo));
             })
         );
     }

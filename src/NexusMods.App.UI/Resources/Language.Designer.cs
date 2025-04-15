@@ -259,7 +259,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download all optional mods.
+        ///   Looks up a localized string similar to Auto-download all optional.
         /// </summary>
         public static string CollectionDownloadViewModel_DownloadOptional {
             get {
@@ -268,7 +268,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download all required mods.
+        ///   Looks up a localized string similar to Auto-download all.
         /// </summary>
         public static string CollectionDownloadViewModel_DownloadRequired {
             get {
@@ -286,7 +286,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install downloaded optional mods.
+        ///   Looks up a localized string similar to Install all optional.
         /// </summary>
         public static string CollectionDownloadViewModel_InstallOptional {
             get {
@@ -295,7 +295,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} of {1} required mods downloaded.
+        ///   Looks up a localized string similar to {0} of {1} required mods downloaded. Complete downloads to install..
         /// </summary>
         public static string CollectionDownloadViewModel_Num_required_mods_downloaded {
             get {
@@ -304,7 +304,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ready to install - All required mods downloaded.
+        ///   Looks up a localized string similar to All required mods downloaded. Ready to install..
         /// </summary>
         public static string CollectionDownloadViewModel_Ready_to_install {
             get {
@@ -1052,7 +1052,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ACTIONS.
+        ///   Looks up a localized string similar to Action.
         /// </summary>
         public static string FileOriginsPageView_ActionHeader {
             get {
@@ -1061,7 +1061,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DOWNLOADED.
+        ///   Looks up a localized string similar to Downloaded.
         /// </summary>
         public static string FileOriginsPageView_DownloadedHeader {
             get {
@@ -1070,7 +1070,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSTALLED.
+        ///   Looks up a localized string similar to Installed.
         /// </summary>
         public static string FileOriginsPageView_InstalledHeader {
             get {
@@ -1079,7 +1079,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOD NAME.
+        ///   Looks up a localized string similar to Mod name.
         /// </summary>
         public static string FileOriginsPageView_NameHeader {
             get {
@@ -1088,7 +1088,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SIZE.
+        ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string FileOriginsPageView_SizeHeader {
             get {
@@ -1097,7 +1097,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VERSION.
+        ///   Looks up a localized string similar to Version.
         /// </summary>
         public static string FileOriginsPageView_VersionHeader {
             get {
@@ -1466,7 +1466,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSTALLED MODS.
+        ///   Looks up a localized string similar to Installed Mods.
         /// </summary>
         public static string LeftMenu_Label_Installed_Mods {
             get {
@@ -1475,7 +1475,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UTILITIES.
+        ///   Looks up a localized string similar to Utilities.
         /// </summary>
         public static string LeftMenu_Label_Utilities {
             get {
@@ -1808,6 +1808,51 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string ManageGameWarning_Cancel {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        public static string ManageGameWarning_Continue {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Continue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page. /// ///However, if you later stop managing this game or uninstall the app, those mods will be permanently removed from your game folder..
+        /// </summary>
+        public static string ManageGameWarning_Desc1 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To keep any mods you want to save, please back them up before continuing..
+        /// </summary>
+        public static string ManageGameWarning_Desc2 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Managing this game will affect existing mods.
+        /// </summary>
+        public static string ManageGameWarning_Title {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please wait while we verify the added file..
         /// </summary>
         public static string ManualDownloadRequiredOverlayView_CheckingText {
@@ -1979,24 +2024,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Help us provide you with the best modding experience.
+        ///   Looks up a localized string similar to We’d like to collect diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.
         ///
-        ///With your permission, we will collect analytics information and send it to our team to help us improve quality and performance.
+        ///Your data will be processed in accordance with our Privacy Policy. You can change your preference anytime in settings.
         ///
-        ///This information is sent anonymously and will never be shared with a 3rd party..
+        ///Would you like to enable data collection?.
         /// </summary>
         public static string MetricsOptIn_MainMessage {
             get {
                 return ResourceManager.GetString("MetricsOptIn_MainMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to More info about the data we track.
-        /// </summary>
-        public static string MetricsOptIn_MoreInfoAboutTheDataWeTrack {
-            get {
-                return ResourceManager.GetString("MetricsOptIn_MoreInfoAboutTheDataWeTrack", resourceCulture);
             }
         }
         
@@ -2208,7 +2244,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please click &quot;Authorize&quot; on the website.
+        ///   Looks up a localized string similar to Please click &quot;Authorise&quot; on the website.
         /// </summary>
         public static string NexusLoginOverlayView__Please_Click_Authorize {
             get {
@@ -2285,6 +2321,60 @@ namespace NexusMods.App.UI.Resources {
         public static string ProgressBar_ProgressTextFormat__Total_1_0 {
             get {
                 return ResourceManager.GetString("ProgressBar_ProgressTextFormat__Total_1_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string RemoveGameOverlayView_CancelButton {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing will uninstall all mods and collections for {0}, but your downloaded mods will remain. If you re-add the game, those mods will still be available in your Library..
+        /// </summary>
+        public static string RemoveGameOverlayView_Description {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove game and mods.
+        /// </summary>
+        public static string RemoveGameOverlayView_RemoveButton {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_RemoveButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove game and delete mods.
+        /// </summary>
+        public static string RemoveGameOverlayView_RemoveButton_AlsoDelete {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_RemoveButton_AlsoDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing {0}.
+        /// </summary>
+        public static string RemoveGameOverlayView_Title {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Also delete {0} downloaded mods and {1} collections for {2}..
+        /// </summary>
+        public static string RemoveGameOverlayView_ToggleDescription {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_ToggleDescription", resourceCulture);
             }
         }
         
@@ -2487,20 +2577,11 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Later.
+        ///   Looks up a localized string similar to Your current version {0} can be updated to the latest version {1}. Be sure to close the app completely before updating..
         /// </summary>
-        public static string Updater_LATER {
+        public static string Updater_GenericMessage {
             get {
-                return ResourceManager.GetString("Updater_LATER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Important: In order to install this version you will need to uninstall first. This will delete all your mods..
-        /// </summary>
-        public static string Updater_MainMessage {
-            get {
-                return ResourceManager.GetString("Updater_MainMessage", resourceCulture);
+                return ResourceManager.GetString("Updater_GenericMessage", resourceCulture);
             }
         }
         
@@ -2514,7 +2595,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update available.
+        ///   Looks up a localized string similar to Update available {0}.
         /// </summary>
         public static string Updater_UpdateAvailable {
             get {
@@ -2523,20 +2604,110 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to It appears that your copy of the app was installed via a system managed package manager, please update via your operating system&apos;s update application..
+        ///   Looks up a localized string similar to You can update the app using Flatpak..
         /// </summary>
-        public static string Updater_UseSystemUpdater {
+        public static string Updater_UseFlatpak {
             get {
-                return ResourceManager.GetString("Updater_UseSystemUpdater", resourceCulture);
+                return ResourceManager.GetString("Updater_UseFlatpak", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to View changelog on GitHub.
+        ///   Looks up a localized string similar to You can update the app by downloading the installer and running it after closing the app..
         /// </summary>
-        public static string Updater_ViewChangelog {
+        public static string Updater_UseInnoSetup {
             get {
-                return ResourceManager.GetString("Updater_ViewChangelog", resourceCulture);
+                return ResourceManager.GetString("Updater_UseInnoSetup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can update the app using the package manager you used to install the app with..
+        /// </summary>
+        public static string Updater_UsePackageManager {
+            get {
+                return ResourceManager.GetString("Updater_UsePackageManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uncapped downloads speeds.
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet1 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Ads for life, even if you cancel!.
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet2 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Support the creators - Premium helps reward mod authors.
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet3 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string UpgradeToPremiumView_CancelButton {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download an entire mod collection at full speed with one click without leaving the app. Free users can install mods individually from the list..
+        /// </summary>
+        public static string UpgradeToPremiumView_Desc1 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Desc1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Premium users also get:.
+        /// </summary>
+        public static string UpgradeToPremiumView_Desc2 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Desc2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Learn more.
+        /// </summary>
+        public static string UpgradeToPremiumView_LearnMoreButton {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_LearnMoreButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go Premium for one-click collection downloads.
+        /// </summary>
+        public static string UpgradeToPremiumView_Title {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade to Premium.
+        /// </summary>
+        public static string UpgradeToPremiumView_UpgradeButton {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_UpgradeButton", resourceCulture);
             }
         }
         

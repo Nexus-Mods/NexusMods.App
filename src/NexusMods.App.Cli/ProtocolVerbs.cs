@@ -1,12 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.FileStore;
-using NexusMods.Abstractions.HttpDownloader;
-using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.CLI.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;
-using NexusMods.Paths;
 using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 

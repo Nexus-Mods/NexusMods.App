@@ -64,10 +64,11 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
         foreach (var (locationId, fullPath) in register.GetTopLevelLocations())
         {
             suggestedEntries.Add(new SuggestedEntryViewModel(
-                Guid.NewGuid(),
-                fullPath,
-                locationId,
-                new GamePath(locationId, RelativePath.Empty)));
+                id: Guid.NewGuid(),
+                absolutePath: fullPath,
+                associatedLocation: locationId,
+                relativeToTopLevelLocation: new GamePath(locationId, RelativePath.Empty)
+            ));
 
             // Add nested locations to suggested entries.
             foreach (var nestedLocation in register.GetNestedLocations(locationId))
@@ -75,10 +76,11 @@ public class SelectLocationViewModel : AViewModel<ISelectLocationViewModel>,
                 var nestedFullPath = register.GetResolvedPath(nestedLocation);
                 var relativePath = nestedFullPath.RelativeTo(fullPath);
                 suggestedEntries.Add(new SuggestedEntryViewModel(
-                    Guid.NewGuid(),
-                    nestedFullPath,
-                    nestedLocation,
-                    new GamePath(locationId, relativePath)));
+                    id: Guid.NewGuid(),
+                    absolutePath: nestedFullPath,
+                    associatedLocation: nestedLocation,
+                    relativeToTopLevelLocation: new GamePath(locationId, relativePath)
+                ));
             }
         }
 

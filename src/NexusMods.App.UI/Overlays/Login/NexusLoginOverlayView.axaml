@@ -11,12 +11,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:login="clr-namespace:NexusMods.App.UI.Overlays.Login"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing">
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls" 
+    xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
+    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    ClipToBounds="False">
+    
     <Design.DataContext>
         <login:NexusLoginOverlayDesignerViewModel />
     </Design.DataContext>
-    <Border Classes="Rounded-lg Low">
+    
+    <Border Classes="Rounded-lg Low"
+            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+            BorderThickness="2"
+            BoxShadow="{StaticResource DropShadowMD}">
         <StackPanel
             Margin="24"
             Orientation="Vertical"
@@ -29,12 +36,15 @@
                     Path="avares://NexusMods.App.UI/Assets/nexus-logo-with-text.svg"
                     VerticalAlignment="Center"
                     Width="157" />
-                <Button
-                    Classes="BareIcon WindowClose"
-                    Grid.Column="1"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    x:Name="CancelButton" />
+                <controls:StandardButton x:Name="CancelButton" 
+                                         Grid.Column="1"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Center"
+                                         ShowLabel="False"
+                                         ShowIcon="Left"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         LeftIcon="{x:Static icons:IconValues.Close}"/>
             </Grid>
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
@@ -68,11 +78,14 @@
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="NoWrap"
                                 x:Name="UrlTextBlock" />
-                            <Button
-                                Classes="BareIcon Copy"
-                                Grid.Column="1"
-                                Margin="8,0,8,0"
-                                x:Name="CopyButton" />
+                            <controls:StandardButton x:Name="CopyButton" 
+                                                     Grid.Column="1"
+                                                     Margin="0,0,6,0"
+                                                     ShowLabel="False"
+                                                     ShowIcon="Left"
+                                                     Type="Tertiary"
+                                                     Fill="None"
+                                                     LeftIcon="{x:Static icons:IconValues.Copy}"/>
                         </Grid>
                     </Border>
                 </StackPanel>

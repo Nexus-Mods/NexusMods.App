@@ -1,0 +1,692 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+                    x:ClassModifier="internal">
+    
+    <!--
+    Control Theme for our StandardButton (src/NexusMods.App.UI/Controls/StandardButton.cs) which is based on the default 
+    Avalonia Button. This allows us to set properties like Type, Fill, Size and ShowIcon to get the desired button style 
+    to exactly match Figma.
+    -->    
+    
+    <Design.PreviewWith>
+        <Border Padding="16">
+            <StackPanel Spacing="8" Orientation="Horizontal">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                    <controls:StandardButton Text="Extra Small 24px" Size="ExtraSmall" ShowIcon="None" />
+                    <controls:StandardButton Text="Left" Size="ExtraSmall" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Text="Right" Size="ExtraSmall" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Text="Both" Size="ExtraSmall" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    <controls:StandardButton Size="ExtraSmall" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <controls:StandardButton Text="Small 28px (Default)" Size="Small" ShowIcon="None" />
+                        <controls:StandardButton Text="Left" Size="Small" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Right" Size="Small" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Both" Size="Small" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <controls:StandardButton Text="Medium 36px" Size="Medium" ShowIcon="None" />
+                        <controls:StandardButton Text="Left" Size="Medium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Right" Size="Medium" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Both" Size="Medium" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
+                    </StackPanel>
+                    <controls:StandardButton Text="Open Menu" Size="ExtraSmall" ShowIcon="Right" Type="Primary"
+                                             Fill="Weak">
+                        <controls:StandardButton.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Item 1"/>
+                                <MenuItem Header="Item 2"/>
+                            </MenuFlyout>
+                        </controls:StandardButton.Flyout>
+                    </controls:StandardButton>
+                    <controls:StandardButton ShowIcon="Both" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="Left" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="Left" ShowLabel="False" Size="Medium" />
+                    <StackPanel Orientation="Horizontal">
+                        <controls:StandardButton ShowIcon="Left" Size="Medium" Text="View" />
+                        <controls:StandardButton ShowIcon="Left" ShowLabel="False" Size="Medium" />
+                    </StackPanel>
+                    <controls:StandardButton ShowIcon="IconOnly" ShowLabel="False" />
+                    <controls:StandardButton ShowIcon="IconOnly" ShowLabel="False" Size="Medium" />
+                </StackPanel>
+                <StackPanel Spacing="8">
+                    <Button Content="Avalonia Button" />
+                    <controls:StandardButton Text="StandardButton Text" />
+                    <controls:StandardButton Content="StandardButton Content" />
+                    <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
+                    <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <controls:StandardButton Text="Primary-Strong" ShowIcon="Right" Type="Primary" Fill="Strong" />
+                    <controls:StandardButton Text="Primary-Strong" ShowIcon="Right" Type="Primary" Fill="Strong"
+                                             IsEnabled="False" />
+                    <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary" Fill="Weak" />
+                    <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary" Fill="Weak"
+                                             IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <controls:StandardButton Text="Secondary-Strong" ShowIcon="Right" Type="Secondary" Fill="Strong" />
+                    <controls:StandardButton Text="Secondary-Strong" ShowIcon="Right" Type="Secondary" Fill="Strong"
+                                             IsEnabled="False" />
+                    <controls:StandardButton Text="Secondary-Weak" ShowIcon="Right" Type="Secondary" Fill="Weak" />
+                    <controls:StandardButton Text="Secondary-Weak" ShowIcon="Right" Type="Secondary" Fill="Weak"
+                                             IsEnabled="False" />
+                    <controls:StandardButton Text="Secondary-None" ShowIcon="Right" Type="Secondary" Fill="None" />
+                    <controls:StandardButton Text="Secondary-None" ShowIcon="Right" Type="Secondary" Fill="None"
+                                             IsEnabled="False" />
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                    <controls:StandardButton Text="Tertiary-Weak" ShowIcon="Right" Type="Tertiary" Fill="Weak" />
+                    <controls:StandardButton Text="Tertiary-Weak" ShowIcon="Right" Type="Tertiary" Fill="Weak"
+                                             IsEnabled="False" />
+                    <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Tertiary" Fill="WeakAlt" />
+                    <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Tertiary" Fill="WeakAlt"
+                                             IsEnabled="False" />
+                    <controls:StandardButton Text="Tertiary-None" ShowIcon="Right" Type="Tertiary" Fill="None" />
+                    <controls:StandardButton Text="Tertiary-None" ShowIcon="Right" Type="Tertiary" Fill="None"
+                                             IsEnabled="False" />
+                </StackPanel>
+                
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- RESOURCES -->
+    
+    <!-- Unusual values to account for rendering differences with Figma and rounding errors. This makes sure that we 
+    don't have to set fixed heights but the heights are ending up the same as Figma i.e. Medium button is 36 pixels high,
+     Small is 28 and ExtraSmall is 24. --> 
+    <Thickness x:Key="StandardButtonPaddingMedium">6,6,6,5</Thickness>
+    <Thickness x:Key="StandardButtonPaddingSmall">6,4,6,3</Thickness>
+    <Thickness x:Key="StandardButtonPaddingExtraSmall">6,2,6,1</Thickness>
+    
+    <sys:Double x:Key="StandardButtonIconSizeMedium">20</sys:Double>
+    <sys:Double x:Key="StandardButtonIconSizeSmall">16</sys:Double>
+    <sys:Double x:Key="StandardButtonIconSizeExtraSmall">16</sys:Double>
+    
+    <!-- The below will also be used when ComboBox and SplitButtons are extended by us so that the styling matches -->
+    
+    <!-- Primary/Strong -->
+    <Thickness x:Key="ButtonPrimaryStrongBorderThickness">0</Thickness>
+    <StaticResource x:Key="ButtonPrimaryStrongBackground" ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongForeground" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongBackgroundPointerOver" ResourceKey="PrimaryStrongBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongForegroundPointerOver" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongBackgroundPressed" ResourceKey="PrimarySubduedBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongForegroundPressed" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="ButtonPrimaryStrongBackgroundDisabled"
+                     Color="{StaticResource PrimaryModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="ButtonPrimaryStrongForegroundDisabled" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongBorderBrushDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
+
+    <!-- Primary/Weak -->
+    <Thickness x:Key="ButtonPrimaryWeakBorderThickness">0</Thickness>
+    <StaticResource x:Key="ButtonPrimaryWeakBackground" ResourceKey="InfoModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakForeground" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakBackgroundPointerOver" ResourceKey="InfoStrongBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakForegroundPointerOver" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakBackgroundPressed" ResourceKey="InfoSubduedBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakForegroundPressed" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="ButtonPrimaryWeakBackgroundDisabled"
+                     Color="{StaticResource InfoModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="ButtonPrimaryWeakForegroundDisabled" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakBorderBrushDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
+
+    <!-- Secondary/Strong -->
+    <Thickness x:Key="ButtonSecondaryStrongBorderThickness">0</Thickness>
+    <StaticResource x:Key="ButtonSecondaryStrongBackground" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongForeground" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongBackgroundPointerOver" ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongForegroundPointerOver" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongBorderBrushPointerOver" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongBackgroundPressed" ResourceKey="NeutralWeakBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongForegroundPressed" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="ButtonSecondaryStrongBackgroundDisabled"
+                     Color="{StaticResource NeutralStrong}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="ButtonSecondaryStrongForegroundDisabled" ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="ButtonSecondaryStrongBorderBrushDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
+
+    <!-- Secondary/Weak -->
+    <Thickness x:Key="ButtonSecondaryWeakBorderThickness">1</Thickness>
+    <StaticResource x:Key="ButtonSecondaryWeakBackground" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakBorderBrushPointerOver" ResourceKey="StrokeTranslucentStrongBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakBackgroundPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryWeakBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="ButtonSecondaryWeakBackgroundDisabled"
+                     Color="{StaticResource SurfaceTranslucentMid}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonSecondaryWeakForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonSecondaryWeakBorderBrushDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <!-- Secondary/None -->
+    <Thickness x:Key="ButtonSecondaryNoneBorderThickness">1</Thickness>
+    <StaticResource x:Key="ButtonSecondaryNoneBackground" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneBorderBrushPointerOver" ResourceKey="StrokeTranslucentStrongBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneBackgroundPressed" ResourceKey="SurfaceTranslucentLowBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonSecondaryNoneBackgroundDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <SolidColorBrush x:Key="ButtonSecondaryNoneForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonSecondaryNoneBorderBrushDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <!-- Tertiary/Weak -->
+    <Thickness x:Key="ButtonTertiaryWeakBorderThickness">0</Thickness>
+    <StaticResource x:Key="ButtonTertiaryWeakBackground" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakBorderBrushPointerOver" ResourceKey="StrokeTranslucentStrongBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakBackgroundPressed" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <SolidColorBrush x:Key="ButtonTertiaryWeakBackgroundDisabled"
+                     Color="{StaticResource SurfaceTranslucentMid}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonTertiaryWeakForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonTertiaryWeakBorderBrushDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <!-- Tertiary/WeakAlt -->
+    <Thickness x:Key="ButtonTertiaryWeakAltBorderThickness">0</Thickness>
+    <StaticResource x:Key="ButtonTertiaryWeakAltBackground" ResourceKey="SurfaceMidBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltBorderBrush" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltBackgroundPointerOver" ResourceKey="SurfaceHighBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltBorderBrushPointerOver" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltBackgroundPressed" ResourceKey="SurfaceLowBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryWeakAltBorderBrushPressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="ButtonTertiaryWeakAltBackgroundDisabled"
+                     Color="{StaticResource SurfaceMid}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonTertiaryWeakAltForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonTertiaryWeakAltBorderBrushDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <!-- Tertiary/None -->
+    <Thickness x:Key="ButtonTertiaryNoneBorderThickness">0</Thickness>
+    <StaticResource x:Key="ButtonTertiaryNoneBackground" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneForeground" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneBorderBrush" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneBackgroundPointerOver" ResourceKey="SurfaceTranslucentHighBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneForegroundPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneBorderBrushPointerOver" ResourceKey="StrokeTranslucentStrongBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneBackgroundPressed" ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneForegroundPressed" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneBorderBrushPressed" ResourceKey="StrokeTranslucentModerateBrush" />
+    <StaticResource x:Key="ButtonTertiaryNoneBackgroundDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <SolidColorBrush x:Key="ButtonTertiaryNoneForegroundDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <SolidColorBrush x:Key="ButtonTertiaryNoneBorderBrushDisabled"
+                     Color="{StaticResource StrokeTranslucentModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <!-- CONTROL THEME -->
+    
+    <!-- need original button theme as well as all the new stuff -->
+    <!-- default colours are based on Small-Tertiary-Weak -->
+    <ControlTheme x:Key="{x:Type controls:StandardButton}" TargetType="controls:StandardButton">
+        <Setter Property="Background" Value="{StaticResource ButtonBackground}" />
+        <Setter Property="Foreground" Value="{StaticResource ButtonForeground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource ButtonBorderThemeThickness}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+        <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingSmall}" /> 
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="RenderTransform" Value="none" />
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <!-- this is only shown if Content is set. This can be used interchangeably with the regular 
+                    Avalonia button to show whatever content we need -->
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Padding="{StaticResource ButtonPadding}"
+                                      RecognizesAccessKey="True"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                    <!-- this is used when Content isn't set (used for normal buttons) -->
+                    <Border Name="PART_Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Spacing="{StaticResource Spacing-0.5}">
+                            <icons:UnifiedIcon Name="PART_LeftIcon"
+                                               Size="{StaticResource StandardButtonIconSizeSmall}"
+                                               Margin="0,2,0,3" />
+                            <TextBlock Name="PART_Label"
+                                       Text="{TemplateBinding Text}"
+                                       Margin="2,2"
+                                       VerticalAlignment="Center"/>
+                            <icons:UnifiedIcon Name="PART_RightIcon"
+                                               Size="{StaticResource StandardButtonIconSizeSmall}"
+                                               Margin="0,2,0,3"/>
+                        </StackPanel>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Set the default button styles when ContentPresenter is used -->
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPressed}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressed}" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundDisabled}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushDisabled}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundDisabled}" />
+        </Style>
+        <Style Selector="^:flyout-open /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
+        </Style>
+
+        <!-- Set the default button styles when our Properties (Fill, Size etc.) are being used -->
+        <!-- Default colours are based on Small-Tertiary-Weak -->
+        <Style Selector="^:pointerover">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPointerOver}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPointerOver}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPressed}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressed}" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundDisabled}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushDisabled}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundDisabled}" />
+        </Style>
+        <Style Selector="^:flyout-open">
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrushPressed}" />
+            <Setter Property="Foreground" Value="{StaticResource ButtonForegroundPressed}" />
+        </Style>
+
+        <!-- sizes -->
+
+        <!-- extra small -->
+        <Style Selector="^[Size=ExtraSmall]">
+            <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingExtraSmall}" />
+            
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeExtraSmall}" />
+            </Style>
+        </Style>
+
+        <!-- medium -->
+        <Style Selector="^[Size=Medium]">
+            <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingMedium}" />
+
+            <Style Selector="^ StackPanel">
+                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+            </Style>
+
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeMedium}" />
+            </Style>
+
+            <Style Selector="^ TextBlock#PART_Label">
+                <Setter Property="Margin" Value="2,0,2,1" />
+                <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
+            </Style>
+            
+        </Style>
+
+        <!-- icon only variants -->
+        <Style Selector="^[ShowIcon=IconOnly]">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Style Selector="^ icons|UnifiedIcon">
+                <Setter Property="Margin" Value="0" />
+            </Style>
+        </Style>
+        
+        <!-- fills and types -->
+
+        <!-- PRIMARY -->
+        <Style Selector="^[Type=Primary]">
+
+            <!-- PRIMARY/STRONG -->
+            <Style Selector="^[Fill=Strong]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonPrimaryStrongBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
+                </Style>
+            </Style>
+
+            <!-- PRIMARY/WEAK -->
+            <Style Selector="^[Fill=Weak]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonPrimaryWeakBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushPressed}" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!-- SECONDARY -->
+        <Style Selector="^[Type=Secondary]">
+
+            <!-- SECONDARY/STRONG -->
+            <Style Selector="^[Fill=Strong]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonSecondaryStrongBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonSecondaryStrongBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryStrongBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryStrongBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryStrongBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryStrongBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrushPressed}" />
+                </Style>
+            </Style>
+
+            <!-- SECONDARY/WEAK -->
+            <Style Selector="^[Fill=Weak]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonSecondaryWeakBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonSecondaryWeakBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryWeakBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryWeakBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrushPressed}" />
+                </Style>
+            </Style>
+
+            <!-- SECONDARY/NONE -->
+            <Style Selector="^[Fill=None]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonSecondaryNoneBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrushPressed}" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!-- TERTIARY -->
+
+        <Style Selector="^[Type=Tertiary]">
+
+            <!-- TERTIARY/WEAK -->
+            <Style Selector="^[Fill=Weak]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonTertiaryWeakBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushPressed}" />
+                </Style>
+            </Style>
+
+            <!-- TERTIARY/WEAKALT -->
+            <Style Selector="^[Fill=WeakAlt]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonTertiaryWeakAltBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPressed}" />
+                </Style>
+            </Style>
+
+            <!-- TERTIARY/NONE -->
+            <Style Selector="^[Fill=None]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonTertiaryNoneBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrushDisabled}" />
+                </Style> 
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrushPressed}" />
+                </Style>
+            </Style>
+
+        </Style>
+
+    </ControlTheme>
+</ResourceDictionary>

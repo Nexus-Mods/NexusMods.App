@@ -1,0 +1,441 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="20">
+                <CheckBox>Unchecked</CheckBox>
+                <CheckBox IsChecked="True">Checked</CheckBox>
+                <CheckBox IsThreeState="True" IsChecked="{x:Null}">Indeterminate</CheckBox>
+                <CheckBox Width="120">Checkbox should wrap its text</CheckBox>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <StreamGeometry x:Key="CheckMarkPathData">M5.5 10.586 1.707 6.793A1 1 0 0 0 .293 8.207l4.5 4.5a1 1 0 0 0 1.414 0l11-11A1 1 0 0 0 15.793.293L5.5 10.586Z</StreamGeometry>
+    <!-- Resources for Checkbox.xaml -->
+
+    <Thickness x:Key="CheckBoxBorderThemeThickness">2</Thickness>
+
+    <!-- whole control (not just the box), mainly used for the text -->
+    <StaticResource x:Key="CheckBoxForegroundUnchecked" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="CheckBoxForegroundUncheckedPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="CheckBoxForegroundUncheckedPressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="CheckBoxForegroundUncheckedDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="CheckBoxForegroundChecked" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="CheckBoxForegroundCheckedPointerOver" ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="CheckBoxForegroundCheckedPressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="CheckBoxForegroundCheckedDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    <StaticResource x:Key="CheckBoxForegroundIndeterminate" ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="CheckBoxForegroundIndeterminatePointerOver"
+                    ResourceKey="NeutralStrongBrush" />
+    <StaticResource x:Key="CheckBoxForegroundIndeterminatePressed" ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="CheckBoxForegroundIndeterminateDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxBackgroundUnchecked" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundUncheckedPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundUncheckedPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundUncheckedDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundChecked" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundCheckedPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundCheckedPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundCheckedDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundIndeterminate" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundIndeterminatePointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundIndeterminatePressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBackgroundIndeterminateDisabled" ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="CheckBoxBorderBrushUnchecked" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushUncheckedPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushUncheckedPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushUncheckedDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushChecked" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushCheckedPointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushCheckedPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushCheckedDisabled" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushIndeterminate" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushIndeterminatePointerOver" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushIndeterminatePressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxBorderBrushIndeterminateDisabled" ResourceKey="SurfaceTransparentBrush" />
+
+    <!-- the box -->
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUnchecked"
+                    ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver"
+                    ResourceKey="NeutralModerateBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPressed"
+                    ResourceKey="NeutralModerateBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeUncheckedDisabled"
+                     Color="{StaticResource NeutralModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeCheckedDisabled" ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminate"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePointerOver"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminatePressed"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundStrokeIndeterminateDisabled"
+                    ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillUnchecked" ResourceKey="SurfaceLowBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillUncheckedPointerOver"
+                    ResourceKey="SurfaceTranslucentMidBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillUncheckedPressed"
+                    ResourceKey="SurfaceLowBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillUncheckedDisabled"
+                     Color="{StaticResource SurfaceLow}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillChecked" ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver"
+                    ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPressed"
+                    ResourceKey="NeutralTranslucentStrongBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedDisabled"
+                     Color="{StaticResource NeutralTranslucentStrong}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminate"
+                    ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOver"
+                    ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePressed"
+                    ResourceKey="NeutralTranslucentStrongBrush" />
+    <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillIndeterminateDisabled"
+                     Color="{StaticResource NeutralTranslucentStrong}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundUnchecked"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundUncheckedPointerOver"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundUncheckedPressed"
+                    ResourceKey="SurfaceTransparentBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundUncheckedDisabled"
+                    ResourceKey="SurfaceTransparentBrush" />
+
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundChecked"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedPressed"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundCheckedDisabled"
+                    ResourceKey="NeutralInvertedBrush" />
+
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminate"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminatePointerOver"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminatePressed"
+                    ResourceKey="NeutralInvertedBrush" />
+    <StaticResource x:Key="CheckBoxCheckGlyphForegroundIndeterminateDisabled"
+                    ResourceKey="NeutralInvertedBrush" />
+
+    <ControlTheme x:Key="{x:Type CheckBox}" TargetType="CheckBox">
+        <Setter Property="Padding" Value="8,0,0,0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+        <!-- <Setter Property="MinHeight" Value="32" /> -->
+        <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundUnchecked}" />
+        <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundUnchecked}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushUnchecked}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid x:Name="RootGrid" ColumnDefinitions="20,*">
+                    <Border x:Name="PART_Border"
+                            Grid.ColumnSpan="2"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}" />
+
+                    <Grid VerticalAlignment="Top" Height="20">
+                        <Border x:Name="NormalRectangle"
+                                BorderBrush="{StaticResource CheckBoxCheckBackgroundStrokeUnchecked}"
+                                Background="{StaticResource CheckBoxCheckBackgroundFillUnchecked}"
+                                BorderThickness="{StaticResource CheckBoxBorderThemeThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                UseLayoutRounding="False"
+                                Height="20"
+                                Width="20" />
+
+                        <Viewbox UseLayoutRounding="False">
+                            <Panel>
+                                <Panel Height="16" Width="16" />
+                                <Path x:Name="CheckGlyph"
+                                      Opacity="0"
+                                      Fill="{StaticResource CheckBoxCheckGlyphForegroundUnchecked}"
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center"
+                                      FlowDirection="LeftToRight" />
+                            </Panel>
+                        </Viewbox>
+                    </Grid>
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Content="{TemplateBinding Content}"
+                                      Margin="{TemplateBinding Padding}"
+                                      RecognizesAccessKey="True"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      TextWrapping="Wrap"
+                                      Grid.Column="1" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Unchecked PointerOver State -->
+        <Style Selector="^:pointerover">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundUncheckedPointerOver}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundUncheckedPointerOver}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushUncheckedPointerOver}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedPointerOver}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillUncheckedPointerOver}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundUncheckedPointerOver}" />
+            </Style>
+        </Style>
+
+        <!-- Unchecked Pressed State -->
+        <Style Selector="^:pressed">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundUncheckedPressed}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundUncheckedPressed}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushUncheckedPressed}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedPressed}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillUncheckedPressed}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundUncheckedPressed}" />
+            </Style>
+        </Style>
+
+        <!-- Unchecked Disabled state -->
+        <Style Selector="^:disabled">
+            <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundUncheckedDisabled}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#PART_Border">
+                <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundUncheckedDisabled}" />
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushUncheckedDisabled}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeUncheckedDisabled}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillUncheckedDisabled}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundUncheckedDisabled}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:checked">
+            <!-- Checked Normal State -->
+            <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundChecked}" />
+            <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundChecked}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushChecked}" />
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundFillChecked}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillChecked}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundChecked}" />
+                <Setter Property="Data" Value="{StaticResource CheckMarkPathData}" />
+                <Setter Property="Width" Value="9" />
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <!-- Checked PointerOver State -->
+            <Style Selector="^:pointerover">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundCheckedPointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundCheckedPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushCheckedPointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeCheckedPointerOver}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedPointerOver}" />
+                </Style>
+            </Style>
+
+            <!-- Checked Pressed State -->
+            <Style Selector="^:pressed">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundCheckedPressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundCheckedPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushCheckedPressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeCheckedPressed}" />
+                    <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedPressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedPressed}" />
+                </Style>
+            </Style>
+
+            <!-- Checked Disabled State -->
+            <Style Selector="^:disabled">
+                <Style Selector="^ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundCheckedDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundCheckedDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushCheckedDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeCheckedDisabled}" />
+                    <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillCheckedDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundCheckedDisabled}" />
+                </Style>
+            </Style>
+        </Style>
+
+        <Style Selector="^:indeterminate">
+            <!-- Indeterminate Normal State -->
+            <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminate}" />
+            <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminate}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushIndeterminate}" />
+
+            <Style Selector="^ /template/ Border#NormalRectangle">
+                <Setter Property="BorderBrush" Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminate}" />
+                <Setter Property="Background" Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminate}" />
+            </Style>
+
+            <Style Selector="^ /template/ Path#CheckGlyph">
+                <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminate}" />
+                <Setter Property="Data" Value="M1536 1536v-1024h-1024v1024h1024z" />
+                <Setter Property="Width" Value="7" />
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <!-- Indeterminate PointerOver State -->
+            <Style Selector="^:pointerover">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminatePointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminatePointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushIndeterminatePointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminatePointerOver}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePointerOver}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill"
+                            Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminatePointerOver}" />
+                </Style>
+            </Style>
+
+            <!-- Indeterminate Pressed State -->
+            <Style Selector="^:pressed">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminatePressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminatePressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushIndeterminatePressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminatePressed}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminatePressed}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminatePressed}" />
+                </Style>
+            </Style>
+
+            <!-- Indeterminate Disabled State -->
+            <Style Selector="^:disabled">
+                <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                    <Setter Property="Foreground" Value="{StaticResource CheckBoxForegroundIndeterminateDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#PART_Border">
+                    <Setter Property="Background" Value="{StaticResource CheckBoxBackgroundIndeterminateDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource CheckBoxBorderBrushIndeterminateDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Border#NormalRectangle">
+                    <Setter Property="BorderBrush"
+                            Value="{StaticResource CheckBoxCheckBackgroundStrokeIndeterminateDisabled}" />
+                    <Setter Property="Background"
+                            Value="{StaticResource CheckBoxCheckBackgroundFillIndeterminateDisabled}" />
+                </Style>
+
+                <Style Selector="^ /template/ Path#CheckGlyph">
+                    <Setter Property="Fill" Value="{StaticResource CheckBoxCheckGlyphForegroundIndeterminateDisabled}" />
+                </Style>
+            </Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

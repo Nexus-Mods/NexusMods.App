@@ -12,10 +12,13 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Collections;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Paths;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -56,6 +59,11 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             RevisionNumber = revisionMetadata.Value.RevisionNumber;
             AuthorName = revisionMetadata.Value.Collection.Author.Name;
             IsLocalCollection = false;
+            
+            EndorsementCount = revisionMetadata.Value.Collection.Endorsements;
+            TotalDownloads = revisionMetadata.Value.Collection.TotalDownloads;
+            TotalSize = revisionMetadata.Value.TotalSize;
+            OverallRating = Percent.CreateClamped(revisionMetadata.Value.OverallRating.ValueOr(0));
         }
         else
         {
@@ -184,31 +192,25 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
 
             Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
             {
-                var toggleableItems = message.Ids
-                    .Select(loadoutItemId => LoadoutItem.Load(connection.Db, loadoutItemId))
-                    .Where(item => !(NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(item, out var isRequired) && isRequired))
-                    .ToArray();
-
-                if (toggleableItems.Length == 0) return;
-
-                // We only enable if all items are disabled, otherwise we disable
-                var shouldEnable = toggleableItems.All(loadoutItem => loadoutItem.IsDisabled);
-
-                using var tx = connection.BeginTransaction();
-
-                foreach (var id in toggleableItems)
-                {
-                    if (shouldEnable)
-                    {
-                        tx.Retract(id, LoadoutItem.Disabled, Null.Instance);
-                    }
-                    else
-                    {
-                        tx.Add(id, LoadoutItem.Disabled, Null.Instance);
-                    }
+                // Toggle item state
+                if (message.IsT0){
+                    await LoadoutViewModel.ToggleItemEnabledState(message.AsT0.Ids, connection);
+                    return;
                 }
 
-                await tx.Commit();
+                // Open collection
+                if (message.IsT1)
+                {
+                    var data = message.AsT1;
+                    LoadoutViewModel.OpenItemCollectionPage(
+                        data.Ids,
+                        data.NavigationInformation,
+                        pageContext.LoadoutId,
+                        GetWorkspaceController(),
+                        connection
+                    );
+                    return;
+                }
                 
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
         });
@@ -218,6 +220,10 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
     public bool IsReadOnly { get; }
 
     public string Name { get; }
+    public ulong EndorsementCount { get; }
+    public ulong TotalDownloads { get; }
+    public Size TotalSize { get; }
+    public Percent OverallRating { get; }
 
     public RevisionNumber RevisionNumber { get; }
 

@@ -13,6 +13,7 @@ internal class ProcessFactory : IProcessFactory
 {
     private readonly ILogger _logger;
     private readonly IFileSystem _fileSystem;
+    private readonly TimeProvider _timeProvider;
     private readonly AbsolutePath _processLogsFolder;
 
     /// <summary>
@@ -21,27 +22,30 @@ internal class ProcessFactory : IProcessFactory
     public ProcessFactory(
         ILogger<ProcessFactory> logger,
         IFileSystem fileSystem,
-        ISettingsManager settingsManager)
+        ISettingsManager settingsManager,
+        TimeProvider timeProvider)
     {
         _logger = logger;
         _fileSystem = fileSystem;
+        _timeProvider = timeProvider;
 
         _processLogsFolder = LoggingSettings.GetLogBaseFolder(fileSystem.OS, fileSystem).Combine("ProcessLogs");
         _logger.LogInformation("Using process log folder at {Path}", _processLogsFolder);
 
         _processLogsFolder.CreateDirectory();
 
-        CleanupOldLogFiles(logger, _processLogsFolder, settingsManager);
+        CleanupOldLogFiles(settingsManager);
     }
 
-    private static void CleanupOldLogFiles(ILogger logger, AbsolutePath processLogsFolder, ISettingsManager settingsManager)
+    private void CleanupOldLogFiles(ISettingsManager settingsManager)
     {
         var loggingSettings = settingsManager.Get<LoggingSettings>();
         var retentionSpan = loggingSettings.ProcessLogRetentionSpan;
 
-        var filesToDelete = processLogsFolder
+        var now = _timeProvider.GetLocalNow();
+        var filesToDelete = _processLogsFolder
             .EnumerateFiles()
-            .Where(x => DateTime.Now - x.FileInfo.CreationTime >= retentionSpan)
+            .Where(x => now - x.FileInfo.CreationTime >= retentionSpan)
             .ToArray();
 
         foreach (var file in filesToDelete)
@@ -52,9 +56,15 @@ internal class ProcessFactory : IProcessFactory
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failed to delete expired log file {Path}", file);
+                _logger.LogError(e, "Failed to delete expired log file {Path}", file);
             }
         }
+    }
+
+    private static string GetLogFileName(string fileName)
+    {
+        var id = Guid.NewGuid();
+        return $"{fileName}-{id:D}";
     }
 
     /// <inheritdoc />
@@ -75,8 +85,7 @@ internal class ProcessFactory : IProcessFactory
         }
 
         var fileName = GetFileName(command);
-
-        var logFileName = $"{fileName}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}";
+        var logFileName = GetLogFileName(fileName);
         var stdOutFilePath = _processLogsFolder.Combine(logFileName + ".stdout.log");
         var stdErrFilePath = _processLogsFolder.Combine(logFileName + ".stderr.log");
         _logger.LogInformation("Using process logs {StdOutLogPath} and {StdErrLogPath}", stdOutFilePath, stdErrFilePath);
@@ -104,12 +113,9 @@ internal class ProcessFactory : IProcessFactory
 
     private string GetFileName(Command command)
     {
-        if (PathHelpers.IsRooted(command.TargetFilePath, _fileSystem.OS))
-        {
-            return _fileSystem.FromUnsanitizedFullPath(command.TargetFilePath).FileName;
-        }
-
-        return new RelativePath(command.TargetFilePath).FileName.ToString();
+        return PathHelpers.IsRooted(command.TargetFilePath)
+            ? _fileSystem.FromUnsanitizedFullPath(command.TargetFilePath).FileName
+            : RelativePath.FromUnsanitizedInput(command.TargetFilePath).FileName.ToString();
     }
 
     private async Task<CommandResult> ExecuteAsync(Command command, CancellationToken cancellationToken)
@@ -122,7 +128,7 @@ internal class ProcessFactory : IProcessFactory
     public Task ExecuteProcessAsync(System.Diagnostics.Process process, CancellationToken cancellationToken = default)
     {
         var tcs = new TaskCompletionSource();
-        
+
         process.EnableRaisingEvents = true;
         var hasExited = false;
 

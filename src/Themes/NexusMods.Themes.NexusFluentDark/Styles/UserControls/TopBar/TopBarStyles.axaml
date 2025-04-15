@@ -5,14 +5,14 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
     
     <Design.PreviewWith>
-        <Border Width="1280" Height="200">
+        <Border Width="1280" Height="52">
             <ui:TopBarView />
         </Border>
     </Design.PreviewWith>
 
     <!-- Style Definitions -->
     <Style Selector="ui|TopBarView">
-
+        
         <!-- one off avatar button for the top bar -->
         <Style Selector="^ Button#AvatarMenuItemButton">
             <Setter Property="CornerRadius" Value="999" />
@@ -45,6 +45,10 @@
             <Style Selector="^:flyout-open icons|UnifiedIcon#AvatarUnifiedIcon">
                 <Setter Property="Opacity" Value="0.7" />
             </Style>
+        </Style>
+        
+        <Style Selector="^ TextBlock#PremiumTextBlock">
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
         
         <!-- this specific icon fills the horizontal space a bit too much -->

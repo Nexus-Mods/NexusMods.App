@@ -4,6 +4,7 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Games.StardewValley.Models;
 
+[Obsolete("Will be removed with a future migration")]
 [Include<LoadoutItemGroup>]
 public partial class SMAPIModLoadoutItem : IModelDefinition
 {

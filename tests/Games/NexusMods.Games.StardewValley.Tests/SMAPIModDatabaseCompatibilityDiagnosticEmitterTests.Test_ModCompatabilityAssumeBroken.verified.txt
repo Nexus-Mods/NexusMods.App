@@ -1,18 +1,18 @@
 ﻿[Id] NexusMods.Games.StardewValley: 7
 [Title] Broken Mod
-[Summary] 'Persistent Mines' is reported as broken by SMAPI
+[Summary] 'PersistentMines 1.0.1.zip' is reported as broken by SMAPI
 [Details]
-The Stardew Modding API (SMAPI) mod compatibility list reports **Persistent Mines** as broken. This information is sourced from a combination of automated and community-submitted reports. 
+The Stardew Modding API (SMAPI) mod compatibility list reports **PersistentMines 1.0.1.zip** as broken. This information is sourced from a combination of automated and community-submitted reports. 
 
 ### How to Resolve
-1. Check for a version of **Persistent Mines** newer than 1.0.1 on [Nexus Mods](https://nexusmods.com/stardewvalley/mods/14985?mtm_source=nexusmodsapp&mtm_campaign=diagnostics)
+1. Check for a version of **PersistentMines 1.0.1.zip** newer than 1.0.1 on [Nexus Mods](https://www.nexusmods.com/stardewvalley/mods/14985?mtm_source=nexusmodsapp)
 
 OR
 
-1. Remove **Persistent Mines** from the loadout
+1. Remove **PersistentMines 1.0.1.zip** from the loadout
 
 ### Technical Details
-The Stardew Modding API (SMAPI) mod compatibility list has given the following information about the broken state of **Persistent Mines**:
+The Stardew Modding API (SMAPI) mod compatibility list has given the following information about the broken state of **PersistentMines 1.0.1.zip**:
 
 > affected by breaking changes in the SpaceCore mod API
 

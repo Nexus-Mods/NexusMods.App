@@ -167,7 +167,7 @@ public class RunGameTool<T> : IRunGameTool
 
     private async Task RunThroughSteam(uint appId, CancellationToken cancellationToken, string[] commandLineArgs)
     {
-        if (!OSInformation.Shared.IsLinux) throw OSInformation.Shared.CreatePlatformNotSupportedException();
+        if (!OSInformation.Shared.IsLinux) OSInformation.Shared.ThrowUnsupported();
 
         var timeout = TimeSpan.FromMinutes(5);
 

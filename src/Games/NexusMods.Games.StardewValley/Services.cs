@@ -22,7 +22,7 @@ public static class Services
 
             // Installers
             .AddSingleton<SMAPIInstaller>()
-            .AddSingleton<SMAPIModInstaller>()
+            .AddSingleton<GenericInstaller>()
 
             // Diagnostics
             .AddSingleton<DependencyDiagnosticEmitter>()

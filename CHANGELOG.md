@@ -1,4 +1,122 @@
-# v0.7.3 - 2024-02-03
+# v0.9.2 - 2025-04-07
+This is a bug-fix release that corrects an issue causing the "Update Available" pop-up to appear even when on the latest version.
+
+## Bug Fixes
+* Fixed an error in the version checking logic, which resulted in the "Update Available" message appearing even when the latest version is installed.
+
+# v0.9.1 - 2025-04-07
+This release includes improvements to the discovery of collection installs that are still in progress, separates mods and collections into tabs in the Library, and includes multiple UI enhancements. 
+
+**Note: The "Update Available" pop-up may display incorrect instructions. On Windows, run the latest installer to update the current build. On Linux, replace the AppImage file you were using with the latest one. You do not need to uninstall the app.**
+
+## In-progress collection installs in the left menu
+To improve visibility and ease of access, collections that are not yet fully installed will now be displayed in the left-hand menu. This allows users to quickly jump back into the installation flow without having to find the item in their Library. 
+
+![The app showing an in-progress collection in the left menu.](./docs/changelog-assets/b9eba6bd73a0421b9a9c0e017db10d50.webp)
+
+## Re-organised Library
+In testing, we found that the Library was starting to get a little cluttered with the collections and mods on the same page. Even with the collapsible sections, it was difficult to browse on smaller displays (such as the Steam Deck). To improve this, we've now separated mods and collections into tabs, as we feel most users don't need to see both at the same time. 
+
+## More Features
+* Files in mods from a Nexus Mods collection are now read-only to prevent users from accidentally breaking the collection by editing them.
+* Mods that are required as part of a Nexus Mods collection can now only be enabled or disabled using the collection toggle.
+* The toggle indicator for mods has been updated to explain better why a mod cannot be toggled when part of a collection. Clicking this indicator will now open the Installed Collection page. 
+* Continued to refine the UI to make it more compact. 
+* The "Optional" tab is now only shown for collections with optional mods.
+
+## Technical Changes
+* Improved the "Update available" pop-up to give more relevant advice depending on how the app was installed (Windows EXE, Linux AppImage, Linux Package Manager).
+* Updated the Load Order page to use the newer display technologies.
+* The "Advanced Install" option no longer shows a screen saying the mod is unsupported before showing the options to install files. 
+* The view button on the games page will now open the last applied loadout rather than the first one that was created. 
+* The "Login" button will no longer be disabled for a short time after clicking on it.
+* If a download fails during a collection installation, subsequent downloads will no longer be aborted.
+* Updated Nexus Mods links to the new format. 
+* Updated Privacy Policy links.
+
+## Bug Fixes
+* Fixed a few instances where the app would not clean up empty directories on swapping loadouts or uninstalling. 
+* In the Advanced Installer, the "Suggested" folder will now correctly show a name instead of a number.
+* The spine menu will now correctly show which loadout is active after the app starts up. 
+* Fixed an issue where some Cyberpunk 2077 mod installers (FOMODs) would not trigger correctly.
+* Fixed an issue preventing mods installed by FOMOD from being deleted/disabled.
+* Fixed a critical bug that would cause data to be written to the wrong file when installing or removing mods that shared some identical files.
+* Fixed an error relating to "Duplicate Keys" when applying mods.
+* Fixed an issue re-indexing the game files after a game update, which could result in DLCs (e.g. REDmod, Phantom Liberty) being unintentionally deleted when applying a loadout. 
+* Fixed an issue where large files skipped during the indexing of the game were not properly tracked by the app, causing errors when applying a loadout. 
+
+## Known Issues
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+
+# v0.8.3 - 2025-03-24
+This release fixes a few high-priority issues discovered during user testing of 0.8.2. Thank you for your feedback and please keep it coming.
+
+## New notice before managing a game
+We've included an important update for users with mods installed when first using the app. A warning will show when managing a game for the first time to make it clear that if the app is uninstalled it will clean the game folder back to an unmodded state, deleting all files that are no part of the base game. We are exploring options for a better solution, but for now, we recommend either starting with a clean game installation or backing up your mod files before using the app. 
+
+![The new warning that shows when managing a game for the first time.](./docs/changelog-assets/2264297d178012ec96f139ffd5ea79aa.webp)
+
+
+## External Changes now behave as expected
+During testing, a bug was discovered where if a change was made outside the app it got added to "External Changes", however, if that file was then updated the app wouldn't save the new changes and would instead overwrite it with the original state it had imported. Now this issue is fixed, your config.json files for SMAPI mods should not get overwritten incorrectly while using the app. Big thanks to [Abagaianye](https://next.nexusmods.com/profile/Abagaianye), [madeleineostoja](https://github.com/madeleineostoja), and [StandingPadAnimations](https://github.com/StandingPadAnimations) for discovering this issue and providing detailed feedback to help us fix it.
+
+**Important: If you experience or have experienced issues with file changes being reverted, you should delete the contents of your "External Changes" page after backing up anything important in it from the game folder.**
+
+# v0.8.2 - 2025-03-17
+This release features an improved game version detection system, a way to manage extra files in loadouts and additional UI refinements.
+
+## Better game versioning
+We've made some major changes to how we identify the games installed on your PC in order to deliver a better modding experience. Games installed from GOG.com and Steam have been indexed and the app will match the files on your PC to those included with these releases. The app will now be able to tell if your game folder is unmodded on first managing the game and identify any mod files already in your game folder. 
+
+In future, we hope to use this system to integrate with GOG.com to allow users to quickly swap between game versions on demand. 
+
+## External Changes
+Within your loadout, there can often be changes made to your game or mod files that aren't part of your mods. These are now collated into the new ["External Changes" page](https://nexus-mods.github.io/NexusMods.App/users/features/ExternalChanges/) shown in your loadout. Files that have been created, modified or deleted in the game folder will be listed here and allow users to manage them. 
+
+![The External Changes page with several files displayed.](https://nexus-mods.github.io/NexusMods.App/users/images/0.7.4/ExternalChanges.webp)
+
+When managing your game for the very first time, any files that aren't part of the base game will be displayed here and can be quickly removed if you want to clean your game folder for a fresh start. Future development of this feature will allow you to add these files to your loadout as mods. 
+
+## More Features
+* Collections from Nexus Mods are now installed in a read-only state to ensure the collection is as the curator intended it. Cloning and editing collections will be added in future.  
+* The Collection Download page now includes an Instructions tab with both collection and mod instructions. 
+* Collections can now be removed from loadout without deleting them from the Library using the menu option in the header. 
+* The header has been redesigned to be more compact. 
+* The Settings UI has been updated to match the latest brand guidelines.
+* Stardew Valley mods that are packaged without a top-level folder will now install correctly. 
+* Added more information to the Health Check diagnostics for Stardew Valley. 
+
+## Technical Changes
+* All games except Stardew Valley have been moved behind the "Unsupported Games" flag in Settings. If you were modding Cyberpunk, Baldur's Gate 3 or Mount & Blade II:Bannerlord in a previous release, you will need to enable this option to continue managing your mods. 
+* The app can now differentiate between a mod installed as part of a collection and the same mod installed directly from the Library. 
+* When installing collections for Stardew Valley, any unrecognised mods are now installed relative to the "Mods" folder instead of the game folder.
+* Conflicting mods within a collection are now installed in an order that respects the rules set by the curator. 
+* Large numbers are now displayed with comma separation or abbreviations.
+* File sizes now only show decimal places above 1GB. 
+* Edits to mod files are now saved to External Changes instead of merging into the source mod. 
+* Added a new "Give Feedback" button to the bottom of the main window.
+* When two different versions of the same SMAPI mod are installed into the loadout, diagnostics will use the most up to date version to display messages. 
+* Errors communicating with the SMAPI server will now silently be recorded in the logs rather than showing a pop up.
+
+## Bug Fixes
+* Mod updates now correctly show the number of mod files with updates rather than the number of new versions between the current and latest releases. 
+* The left menu now displays the correct name of a collection if the internal manifest and website don't match.
+* A Command Prompt window will no longer be open behind the app on Windows. 
+* The Success Rating for a collection now shows the correct value.
+* If a collection has less than 3 votes on the Success Rating, it shows as grey instead of red. 
+* Collections with no required mods can now be installed.
+* Fixed multiple places where the app UI would freeze when making large numbers of changes in quick succession.
+* Fixed an issue where the workspace could be broken by a saved page no longer being available.
+* Fixed an issue where the SMAPI version and game version comparison diagnostic was not running correctly. 
+
+## Known Issues
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection meaning you can install outdated mods without being warned. 
+* The table header sorting and collapsible section states are not saved and reset each time the view is loaded.
+
+# v0.7.3 - 2025-02-03
 The release adds collections to the Library, introduces thumbnails for mods, and includes significant usability improvements for the left menu. 
 
 ## Collections in the Library
@@ -46,7 +164,7 @@ We've added the mod page image as a thumbnail in the Library, My Mods, and Colle
 * The "Load Order" heading toggle does not persist in the Load Order view. 
 
 
-# v0.7.2 - 2024-01-21
+# v0.7.2 - 2025-01-21
 This release includes style updates for the Games, Loadouts and Health Check pages along with several important bug fixes. 
 
 ## UI Improvements 

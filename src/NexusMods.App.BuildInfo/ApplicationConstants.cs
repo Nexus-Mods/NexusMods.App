@@ -44,6 +44,23 @@ public static class ApplicationConstants
             }
         }
 
+        try
+        {
+            var environmentVariable = Environment.GetEnvironmentVariable(InstallationMethodEnvironmentVariableName);
+            if (environmentVariable is not null && Enum.TryParse(environmentVariable, ignoreCase: true, out InstallationMethod installationMethod))
+            {
+                InstallationMethod = installationMethod;
+            }
+            else
+            {
+                InstallationMethod = CompileConstants.InstallationMethod;
+            }
+        }
+        catch (Exception)
+        {
+            InstallationMethod = CompileConstants.InstallationMethod;
+        }
+
         UserAgent = $"NexusModsApp/{Version.ToString(fieldCount: 3)}";
     }
 
@@ -68,5 +85,19 @@ public static class ApplicationConstants
     /// Gets the default user-agent.
     /// </summary>
     public static string UserAgent { get; }
+
+    /// <summary>
+    /// Gets the installation method.
+    /// </summary>
+    /// <remarks>
+    /// This differs from <see cref="CompileConstants.InstallationMethod"/> in that the
+    /// value can be overwritten using the environment variable <see cref="InstallationMethodEnvironmentVariableName"/>.
+    /// </remarks>
+    public static InstallationMethod InstallationMethod { get; }
+
+    /// <summary>
+    /// Environment variable name to overwrite <see cref="InstallationMethod"/>.
+    /// </summary>
+    public const string InstallationMethodEnvironmentVariableName = "NEXUS_MODS_APP_INSTALLATION_METHOD";
 }
 

@@ -11,4 +11,7 @@ public static class Constants
     public static readonly string SMAPILogFileName = "SMAPI-latest.txt";
     public static readonly string SMAPIErrorFileName = "SMAPI-crash.txt";
     public static readonly Uri LogUploadURL = new("https://smapi.io/log");
+    public static readonly RelativePath ModsFolder = "Mods";
+    public static readonly RelativePath ContentFolder = "Content";
+    public static readonly RelativePath ManifestFile = "manifest.json";
 }

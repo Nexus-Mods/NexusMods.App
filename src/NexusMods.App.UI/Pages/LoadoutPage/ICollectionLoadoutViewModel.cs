@@ -1,8 +1,11 @@
 using System.Reactive;
 using Avalonia.Media.Imaging;
+using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Paths;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
@@ -32,6 +35,20 @@ public interface ICollectionLoadoutViewModel : IPageViewModelInterface
     int InstalledModsCount { get; }
 
     string Name { get; }
+    
+    /// <inheritdoc cref="CollectionMetadata.Endorsements"/>
+    ulong EndorsementCount { get; }
+
+    /// <inheritdoc cref="CollectionMetadata.TotalDownloads"/>
+    ulong TotalDownloads { get; }
+
+    /// <inheritdoc cref="CollectionRevisionMetadata.TotalSize"/>
+    Size TotalSize { get; }
+
+    /// <inheritdoc cref="CollectionRevisionMetadata.OverallRating"/>
+    Percent OverallRating { get; }
+    
+    
 
     RevisionNumber RevisionNumber { get; }
 
