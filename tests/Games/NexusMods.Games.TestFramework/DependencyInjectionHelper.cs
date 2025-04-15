@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.GC.DataModel;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Serialization;
@@ -71,6 +72,7 @@ public static class DependencyInjectionHelper
             .AddLibraryModels()
             .AddJobMonitor()
             .AddLoadoutsSynchronizers()
+            .AddGcDataModel()
             .OverrideSettingsForTests<DataModelSettings>(settings => settings with
             {
                 UseInMemoryDataModel = true,

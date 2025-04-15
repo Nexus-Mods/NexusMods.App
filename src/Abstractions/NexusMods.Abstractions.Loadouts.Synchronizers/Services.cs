@@ -13,6 +13,7 @@ public static class Services
     /// </summary>
     public static IServiceCollection AddLoadoutsSynchronizers(this IServiceCollection services)
     {
-        return services;
+        return services
+            .AddAttributeCollection(typeof(SynchronizerBackedUpFile));
     }
 }
