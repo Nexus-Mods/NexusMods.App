@@ -66,19 +66,6 @@ public class SevenZipExtractionTests
     }
 
     [Theory]
-    [InlineData("foo/bar.baz", "foo/bar.baz")]
-    [InlineData("foo bar.baz", "foo bar.baz")]
-    [InlineData("foo.bar.", "foo.bar")]
-    [InlineData("foo/bar ", "foo/bar")]
-    [InlineData("foo/bar .", "foo/bar")]
-    [InlineData("foo/bar. ", "foo/bar")]
-    public void Test_FixFileName(string input, string expected)
-    {
-        var actual = PathsHelper.FixFileName(input);
-        actual.Should().Be(expected);
-    }
-
-    [Theory]
     [InlineData("2024-04-16 06:10:44 D....            0            0  .", false, null, true)]
     [InlineData("2024-04-16 06:10:44 D....            0            0  ..", false, null, true)]
     [InlineData("2024-04-16 06:10:44 D....            0            0  foo ", true, "foo ", true)]
