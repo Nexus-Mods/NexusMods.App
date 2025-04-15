@@ -176,7 +176,7 @@
             <Setter Property="Margin" Value="0" />
 
             <!-- templated bindings (passed down to Border#RowBorder) -->
-            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
