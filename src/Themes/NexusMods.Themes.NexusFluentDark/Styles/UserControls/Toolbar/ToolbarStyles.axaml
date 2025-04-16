@@ -40,7 +40,7 @@
         <Style Selector="^ > Separator">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             <Setter Property="Margin" Value="2,-4" />
-            <Setter Property="Height" Value="{Binding $parent}" />
+            <Setter Property="Height" Value="{CompiledBinding $parent[controls:Toolbar].Height}" />
             <Setter Property="Width" Value="1" />
         </Style>
         
