@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.GC.DataModel;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -66,7 +65,6 @@ public static class Services
                 .AddLibraryModels()
                 .AddJobMonitor()
                 .AddLoadoutsSynchronizers()
-                .AddGcDataModel()
                 .AddNexusModsCollections()
 
                 .AddSettings<TelemetrySettings>()

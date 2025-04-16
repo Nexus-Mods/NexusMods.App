@@ -10,7 +10,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.GC.DataModel;
 using NexusMods.Abstractions.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
@@ -527,11 +526,25 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         
         using var tx = Connection.BeginTransaction();
+        var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         
         // Delete all the matching override files
         foreach (var file in toDelete)
         {
             tx.Delete(file, false);
+
+            // The backed up file is being 'promoted' to a game file, which needs
+            // to be rooted explicitly in case the user uses a feature like 'undo'
+            // to roll back a game version on a store (like Xbox/Epic) which does
+            // not support downloading non-current version(s).
+            if (!file.TryGetAsLoadoutFile(out var loadoutFile)) 
+                continue;
+
+            _ = new GameBackedUpFile.New(tx)
+            {
+                Hash = loadoutFile.Hash,
+                GameInstallId = gameMetadataId,
+            };
         }
 
         if (_fileHashService.TryGetVanityVersion((gameLocatorResult.Store, newLocatorIds), out var vanityVersion))
@@ -1144,6 +1157,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
+        var pinnedFiles = new ConcurrentBag<ArchivedFileEntry>();
         await Parallel.ForEachAsync(files, async (item, _) =>
             {
                 var (gamePath, node) = item;
@@ -1155,7 +1169,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 
                 if (await _fileStore.HaveFile(node.Disk.Hash))
                     return;
-
+                
                 var archivedFile = new ArchivedFileEntry
                 {
                     Size = node.Disk.Size,
@@ -1164,6 +1178,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 };
 
                 archivedFiles.Add(archivedFile);
+                if (node.SourceItemType == LoadoutSourceItemType.Game)
+                    pinnedFiles.Add(archivedFile);
             }
         );
 
@@ -1172,15 +1188,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Pin the files to avoid garbage collection.
         using var tx = Connection.BeginTransaction();
-        foreach (var item in archivedFiles)
+        foreach (var item in pinnedFiles)
         {
-            _ = new SynchronizerBackedUpFile.New(tx, out var id)
+            _ = new GameBackedUpFile.New(tx)
             {
                 GameInstallId = installation.GameMetadataId,
-                BackedUpFile = new BackedUpFile.New(tx, id)
-                {
-                    Hash = item.Hash,
-                }
+                Hash = item.Hash,
             };
         }
         await tx.Commit();
@@ -1494,7 +1507,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 
                 // Retract all roots / synchronizer backed up files for this installation.
                 using var tx = Connection.BeginTransaction();
-                foreach (var file in SynchronizerBackedUpFile.All(Connection.Db))
+                foreach (var file in GameBackedUpFile.All(Connection.Db))
                 {
                     if (file.GameInstallId.Value == installation.GameMetadataId)
                         tx.Delete(file, false);

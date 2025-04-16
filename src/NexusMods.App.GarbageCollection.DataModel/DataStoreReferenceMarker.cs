@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.GC.DataModel;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Interfaces;
@@ -40,8 +39,8 @@ public static class DataStoreReferenceMarker
     private static void MarkItemsMarkedAsBackups<TParsedHeaderState, TFileEntryWrapper>(ArchiveGarbageCollector<TParsedHeaderState, TFileEntryWrapper> archiveGc, IDb db) where TParsedHeaderState : ICanProvideFileHashes<TFileEntryWrapper> where TFileEntryWrapper : IHaveFileHash
     {
         // All files explicitly marked as roots should be preserved.
-        var libraryFiles = BackedUpFile.All(db);
-        foreach (var file in libraryFiles)
+        var gameBackedUpFile = GameBackedUpFile.All(db);
+        foreach (var file in gameBackedUpFile)
             archiveGc.AddReferencedFile(file.Hash);
     }
 
