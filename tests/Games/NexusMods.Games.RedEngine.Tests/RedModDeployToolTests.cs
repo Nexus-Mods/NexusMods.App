@@ -101,7 +101,12 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
 
             var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var token = cts2.Token;
-            await provider.SetRelativePosition(specificRedMod, delta, token);
+            var setPositionTask = provider.SetRelativePosition(specificRedMod, delta, token);
+            var timeoutTask2 = Task.Delay(TimeSpan.FromSeconds(30));
+            if (await Task.WhenAny(setPositionTask, timeoutTask2) == timeoutTask2)
+            {
+                throw new TimeoutException($"Timed out waiting for SetRelativePosition to complete");
+            }
 
             loadout = loadout.Rebase();
             sb.AppendLine("After Move:");
