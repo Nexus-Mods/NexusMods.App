@@ -274,19 +274,13 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
         await _semaphore.WaitAsync(token);
         try
         {
-            var added = changes.Where(x => x.Reason == ChangeReason.Add);
-            var updated = changes.Where(x => x.Reason == ChangeReason.Update);
-            var removed = changes.Where(x => x.Reason == ChangeReason.Remove);
-            var allChanges = added.Concat(updated).Concat(removed)
-                .Select(x => x.Current)
-                .ToList();
-            var availableMods = GetSortableEntries(_connection.Db);
+            var availableMods = GetPersistentEntries(_connection.Db);
             var currentOrder = _orderCache.Items.OrderBy(item => item.SortIndex);
             
             if (token.IsCancellationRequested) return;
             
             // Update the order
-            var stagingList = SynchronizeSortingToItems(currentOrder.ToList(), allChanges, this);
+            var stagingList = SynchronizeSortingToItems(currentOrder.ToList(), availableMods, this);
             
             if (token.IsCancellationRequested) return;
 
@@ -319,7 +313,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     /// <returns>The new sorting</returns>
     protected List<ISortableItem> SynchronizeSortingToItems(
         List<ISortableItem> currentOrder,
-        List<TObject> availableMods,
+        List<SortableEntry.ReadOnly> availableMods,
         ASortableItemProvider<TObject> provider)
     {
         var modsToAdd = new List<Guid>();
