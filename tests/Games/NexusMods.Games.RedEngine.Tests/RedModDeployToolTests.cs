@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using System.Text;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -53,10 +54,6 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             var provider = factory.GetLoadoutSortableItemProvider(loadout);
 
             var tsc1 = new TaskCompletionSource<Unit>();
-            // avoid stalling the test on failure
-            using var cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromSeconds(30));
-            cts.Token.Register(() => tsc1.TrySetCanceled(), useSynchronizationContext: false);
 
             // listen for the order to be updated
             using var _ = provider.SortableItems
@@ -76,8 +73,18 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
             loadout = await AddRedMods(loadout);
         
-            // wait for the order to be updated
-            await tsc1.Task;
+            // wait for the order to be updated, but avoid stalling
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
+            if (await Task.WhenAny(tsc1.Task, timeoutTask) == timeoutTask)
+            {
+                provider.SortableItems.Count.Should().Be(12, because: "SortableItems should have been updated after the mods were installed");
+                // print the contents of SortableItems:
+                foreach (var item in provider.SortableItems)
+                {
+                    _testOutputHelper.WriteLine($"{item.DisplayName} ({item.SortIndex})");
+                }
+                throw new TimeoutException($"Timed out waiting for SortableItems to be updated to contain 12 items, current count: {provider.SortableItems.Count}");
+            }
             loadout = loadout.Rebase();
             
             var sb = new StringBuilder();
