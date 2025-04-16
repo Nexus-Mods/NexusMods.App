@@ -19,7 +19,8 @@ public record ExperimentalSettings : ISettings
     [JsonIgnore]
     public readonly GameId[] SupportedGames =
     [
-        GameId.From(1303), // Stardew Valley
+        GameId.From(1303), // Stardew Valley 
+        GameId.From(3333) //  Cyberpunk
     ];
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
