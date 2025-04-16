@@ -1,5 +1,6 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -30,4 +31,10 @@ public partial class SortableEntry : IModelDefinition
     /// </summary>
     public static readonly Int32Attribute SortIndex = new(Namespace, nameof(SortIndex));
     
+    /// <summary>
+    /// Reference to the Load Order id for this entry. We may expect the game addon to define
+    ///  the identifier used by the game for the load order, but we still need to be able to
+    ///  identify this sortable entry in the loadout.
+    /// </summary>
+    public static readonly GuidAttribute ItemId = new(Namespace, nameof(ItemId));
 }
