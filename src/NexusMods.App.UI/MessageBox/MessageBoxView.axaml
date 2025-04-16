@@ -1,0 +1,103 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:NexusMods.App.UI.MessageBox"
+             xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+             xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+             xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+             mc:Ignorable="d" d:DesignWidth="320"
+             x:Class="NexusMods.App.UI.MessageBox.MessageBoxView"
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxViewModel}"
+             x:DataType="vm:MessageBoxViewModel">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- titlebar -->
+        <Grid Name="Titlebar" Grid.Row="0" 
+              ColumnDefinitions="*,Auto" 
+              Margin="16,16,16,0"
+              IsVisible="{Binding ShowTitlebar}">
+
+            <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
+                custom titlebar dragging -->
+            <TextBlock Grid.Column="0" Name="TitleTextBlock"
+                       Text="{Binding ContentTitle}"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodySMSemiTheme}"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Close"
+                       IsHitTestVisible="False" />
+
+            <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
+                                     DockPanel.Dock="Right"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                     ShowIcon="IconOnly"
+                                     ShowLabel="False"
+                                     Fill="None"
+                                     Type="Tertiary"
+                                     VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- content -->
+        <Border Name="ContentBorder" Grid.Row="1">
+
+                <!-- simple text and buttons -->
+                <Grid RowDefinitions="*,Auto" IsVisible="True" Margin="16,0,16,16">
+
+                    <StackPanel Grid.Row="0" Spacing="8" Margin="0,16">
+                        <TextBlock Name="ContentTextBlock"
+                                   Text="{Binding ContentMessage}"
+                                   Foreground="{StaticResource NeutralSubduedBrush}" />
+                    </StackPanel>
+
+                    <!-- buttons -->
+                    <panels:FlexPanel Grid.Row="1"
+                                      ColumnSpacing="8">
+                        <controls:StandardButton Name="CancelButton" Text="Cancel"
+                                                 Command="{Binding ButtonClickCommand}"
+                                                 CommandParameter="{Binding $self.Text}"
+                                                 IsCancel="True"
+                                                 IsVisible="{Binding IsCancelShowed}"
+                                                 panels:Flex.Grow="1"
+                                                 panels:Flex.Shrink="0"
+                                                 panels:Flex.Basis="0%" />
+                        <controls:StandardButton Name="OkButton" Text="OK"
+                                                 Command="{Binding ButtonClickCommand}"
+                                                 CommandParameter="{Binding $self.Text}"
+                                                 IsDefault="True"
+                                                 IsVisible="{Binding IsOkShowed}"
+                                                 panels:Flex.Grow="1"
+                                                 panels:Flex.Shrink="0"
+                                                 panels:Flex.Basis="0%" />
+                        <controls:StandardButton Name="YesButton" Text="Yes"
+                                                 Command="{Binding ButtonClickCommand}"
+                                                 CommandParameter="{Binding $self.Text}"
+                                                 IsDefault="True"
+                                                 IsVisible="{Binding IsYesShowed}"
+                                                 panels:Flex.Grow="1"
+                                                 panels:Flex.Shrink="0"
+                                                 panels:Flex.Basis="0%" />
+                        <controls:StandardButton Name="AbortButton" Text="Abort"
+                                                 Command="{Binding ButtonClickCommand}"
+                                                 CommandParameter="{Binding $self.Text}"
+                                                 IsCancel="True"
+                                                 IsVisible="{Binding IsAbortShowed}"
+                                                 panels:Flex.Grow="1"
+                                                 panels:Flex.Shrink="0"
+                                                 panels:Flex.Basis="0%" />
+                        <controls:StandardButton Name="NoButton" Text="No"
+                                                 Command="{Binding ButtonClickCommand}"
+                                                 CommandParameter="{Binding $self.Text}"
+                                                 IsCancel="True"
+                                                 IsVisible="{Binding IsNoShowed}"
+                                                 panels:Flex.Grow="1"
+                                                 panels:Flex.Shrink="0"
+                                                 panels:Flex.Basis="0%" />
+                    </panels:FlexPanel>
+
+                </Grid>
+
+        </Border>
+    </Grid>
+</UserControl>

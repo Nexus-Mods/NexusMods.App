@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.MessageBox;
 
-public class MessageBoxStandardViewModel : IMessageBoxViewModel<ButtonResult>
+public class MessageBoxViewModel : IMessageBoxViewModel<ButtonResult>
 {
     public readonly ClickEnum _defaultEnterButton;
     public readonly ClickEnum _defaultEscapeButton;
@@ -25,7 +25,7 @@ public class MessageBoxStandardViewModel : IMessageBoxViewModel<ButtonResult>
     public ReactiveCommand<Unit, Unit> EnterClickCommand { get; }
     public ReactiveCommand<Unit, Unit> EscClickCommand { get; }
 
-    public MessageBoxStandardViewModel(string title, string text, ButtonEnum buttonEnum)
+    public MessageBoxViewModel(string title, string text, ButtonEnum buttonEnum)
     {
         ContentTitle = title;
         ContentMessage = text;

@@ -5,14 +5,14 @@ using NexusMods.App.UI.MessageBox.Enums;
 
 namespace NexusMods.App.UI.MessageBox;
 
-public partial class MessageBoxStandardView : UserControl, IMessageBoxView<ButtonResult>
+public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonResult>
 {
     private ButtonResult _buttonResult = ButtonResult.None;
     private Action? _closeAction;
     
     private Button? closeButton;
     
-    public MessageBoxStandardView()
+    public MessageBoxView()
     {
         InitializeComponent();
         

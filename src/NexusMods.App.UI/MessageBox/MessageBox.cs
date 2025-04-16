@@ -2,15 +2,15 @@ using Avalonia.Controls;
 
 namespace NexusMods.App.UI.MessageBox;
 
-public class MessageBox<TV, TVM, T> : IMessageBox<T>
-    where TV : UserControl, IMessageBoxView<T>
-    where TVM : IMessageBoxViewModel<T>
+public class MessageBox<TView, TViewModel, T> : IMessageBox<T>
+    where TView : UserControl, IMessageBoxView<T>
+    where TViewModel : IMessageBoxViewModel<T>
     where T : struct
 {
-    private TV _view;
-    private TVM _viewModel;
+    private TView _view;
+    private TViewModel _viewModel;
 
-    public MessageBox(TV view, TVM viewModel)
+    public MessageBox(TView view, TViewModel viewModel)
     {
         _view = view;
         _viewModel = viewModel;

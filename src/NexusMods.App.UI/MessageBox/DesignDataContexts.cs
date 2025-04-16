@@ -7,12 +7,7 @@ namespace NexusMods.App.UI.MessageBox;
 /// </summary>
 internal static class DesignDataContexts
 {
-    public static MessageBoxStandardViewModel MessageBoxStandardViewModel { get; }
-
-    static DesignDataContexts()
-    {
-        MessageBoxStandardViewModel = new MessageBoxStandardViewModel("This is a title", "This is my message text", 
+    public static MessageBoxViewModel MessageBoxViewModel { get; } = new ("This is a title", "This is my message text", 
             ButtonEnum.OkCancel);
-    }
     
 }

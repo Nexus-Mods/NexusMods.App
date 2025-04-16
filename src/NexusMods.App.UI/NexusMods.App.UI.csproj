@@ -733,8 +733,11 @@
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
           <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="MessageBox\MessageBoxStandardViewModel.cs">
+        <Compile Update="MessageBox\MessageBoxViewModel.cs">
           <DependentUpon>IMessageBoxViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="MessageBox\MessageBox.cs">
+          <DependentUpon>IMessageBox.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

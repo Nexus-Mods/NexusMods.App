@@ -180,13 +180,13 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
     private IMessageBox<ButtonResult> GetMessageBox(string title, string text, ButtonEnum buttonEnum)
     {
-        var viewModel = new MessageBoxStandardViewModel(title, text, buttonEnum);
-        var view = new MessageBoxStandardView()
+        var viewModel = new MessageBoxViewModel(title, text, buttonEnum);
+        var view = new MessageBoxView()
         {
             DataContext = viewModel,
         };
 
-        return new MessageBox<MessageBoxStandardView, MessageBoxStandardViewModel, ButtonResult>(view, viewModel);
+        return new MessageBox<MessageBoxView, MessageBoxViewModel, ButtonResult>(view, viewModel);
     }
 
     public async Task<ButtonResult> ShowModalAsync(string title, string text, ButtonEnum buttonEnum)
