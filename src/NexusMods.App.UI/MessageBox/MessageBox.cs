@@ -2,15 +2,15 @@ using Avalonia.Controls;
 
 namespace NexusMods.App.UI.MessageBox;
 
-public class MessageBox<V, VM, T> : IMessageBox<T>
-    where V : UserControl
-    where VM : IMessageBoxViewModel<T>
+public class MessageBox<TV, TVM, T> : IMessageBox<T>
+    where TV : UserControl, IMessageBoxView<T>
+    where TVM : IMessageBoxViewModel<T>
     where T : struct
 {
-    private readonly V _view;
-    private readonly VM _viewModel;
+    private TV _view;
+    private TVM _viewModel;
 
-    public MessageBox(V view, VM viewModel)
+    public MessageBox(TV view, TVM viewModel)
     {
         _view = view;
         _viewModel = viewModel;
@@ -22,13 +22,22 @@ public class MessageBox<V, VM, T> : IMessageBox<T>
     /// <returns></returns>
     public Task<T> ShowWindowAsync()
     {
+        _viewModel.SetView(_view);
+        
         var window = new MessageBoxWindow()
         {
             Content = _view,
             DataContext = _viewModel,
         };
         
+        window.Closed += _view.CloseWindow;
         var tcs = new TaskCompletionSource<T>();
+
+        _view.SetCloseAction(() =>
+        {
+            tcs.TrySetResult(_view.GetButtonResult());
+            window.Close();
+        });
 
         window.ShowInTaskbar = true;
         
@@ -43,15 +52,26 @@ public class MessageBox<V, VM, T> : IMessageBox<T>
     /// <returns></returns>
     public Task<T> ShowWindowDialogAsync(Window owner)
     {
+        _viewModel.SetView(_view);
+        
         var window = new MessageBoxWindow()
         {
             Content = _view,
             DataContext = _viewModel,
         };
         
+        window.Closed += _view.CloseWindow;
         var tcs = new TaskCompletionSource<T>();
+
+        _view.SetCloseAction(() =>
+        {
+            tcs.TrySetResult(_view.GetButtonResult());
+            window.Close();
+        });
         
         window.ShowDialog(owner);
         return tcs.Task;
     }
+
+    
 }

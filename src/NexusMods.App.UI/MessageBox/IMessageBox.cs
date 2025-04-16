@@ -16,4 +16,6 @@ public interface IMessageBox<T>
     /// <param name="owner">Window owner </param>
     /// <returns></returns>
     Task<T> ShowWindowDialogAsync(Window owner);
+
+    
 }

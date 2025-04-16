@@ -4,27 +4,76 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:NexusMods.App.UI.MessageBox"
              xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+             xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+             mc:Ignorable="d" d:DesignWidth="320"
              x:Class="NexusMods.App.UI.MessageBox.MessageBoxStandardView"
              d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxStandardViewModel}"
              x:DataType="vm:MessageBoxStandardViewModel">
-    <Border Padding="24">
-        <StackPanel>
-            <TextBlock Name="ContentTextBox"
-                       Text="{Binding ContentMessage}" />
-            <StackPanel Orientation="Horizontal">
-                <controls:StandardButton Name="OkButton" Text="OK"
-                                         Command="{Binding ButtonClickCommand}"
-                                         CommandParameter="{Binding $self.Text}"
-                                         IsDefault="True"
-                                         IsVisible="{Binding IsOkShowed}" />
-                
-                <controls:StandardButton Name="CancelButton" Text="Cancel" 
-                                         Command="{Binding ButtonClickCommand}"
-                                         CommandParameter="{Binding $self.Text}"
-                                         IsDefault="True"
-                                         IsVisible="{Binding IsCancelShowed}" />
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- titlebar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="16,8,8,0">
+            <TextBlock Grid.Column="0" Name="TitleTextBlock"
+                       Text="{Binding ContentTitle}"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodySMSemiTheme}"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Close"
+                       IsHitTestVisible="False" />
+            <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
+                                                     DockPanel.Dock="Right"
+                                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                                     ShowIcon="Left"
+                                                     ShowLabel="False"
+                                                     Fill="None"
+                                                     Type="Tertiary"
+                                                     VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- content -->
+        <Border Grid.Row="1" Margin="16,16">
+            <StackPanel Spacing="8">
+                <TextBlock Name="ContentTextBlock"
+                           Text="{Binding ContentMessage}"
+                           Foreground="{StaticResource NeutralSubduedBrush}" />
             </StackPanel>
-        </StackPanel>
-    </Border>
+        </Border>
+        
+        <!-- buttons -->
+        <UniformGrid Grid.Row="2" Rows="1" Margin="16,0,16,16">
+            <controls:StandardButton Name="CancelButton" Text="Cancel"
+                                     Command="{Binding ButtonClickCommand}"
+                                     CommandParameter="{Binding $self.Text}"
+                                     IsCancel="True"
+                                     IsVisible="{Binding IsCancelShowed}"
+                                     HorizontalAlignment="Stretch" />
+            <controls:StandardButton Name="OkButton" Text="OK"
+                                     Command="{Binding ButtonClickCommand}"
+                                     CommandParameter="{Binding $self.Text}"
+                                     IsDefault="True"
+                                     IsVisible="{Binding IsOkShowed}"
+                                     HorizontalAlignment="Stretch" />
+            <controls:StandardButton Name="YesButton" Text="Yes"
+                                     Command="{Binding ButtonClickCommand}"
+                                     CommandParameter="{Binding $self.Text}"
+                                     IsDefault="True"
+                                     IsVisible="{Binding IsYesShowed}"
+                                     HorizontalAlignment="Stretch" />
+            <controls:StandardButton Name="AbortButton" Text="Abort"
+                                     Command="{Binding ButtonClickCommand}"
+                                     CommandParameter="{Binding $self.Text}"
+                                     IsCancel="True"
+                                     IsVisible="{Binding IsAbortShowed}"
+                                     HorizontalAlignment="Stretch" />
+            <controls:StandardButton Name="NoButton" Text="No"
+                                     Command="{Binding ButtonClickCommand}"
+                                     CommandParameter="{Binding $self.Text}"
+                                     IsCancel="True"
+                                     IsVisible="{Binding IsNoShowed}"
+                                     HorizontalAlignment="Stretch" />
+        </UniformGrid>
+
+    </Grid>
 </UserControl>

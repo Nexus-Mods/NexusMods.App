@@ -5,18 +5,37 @@ using NexusMods.App.UI.MessageBox.Enums;
 
 namespace NexusMods.App.UI.MessageBox;
 
-public partial class MessageBoxStandardView : UserControl
+public partial class MessageBoxStandardView : UserControl, IMessageBoxView<ButtonResult>
 {
     private ButtonResult _buttonResult = ButtonResult.None;
+    private Action? _closeAction;
+    
+    private Button? closeButton;
     
     public MessageBoxStandardView()
     {
         InitializeComponent();
+        
+        closeButton = this.FindControl<Button>("CloseButton");
+        
+        if(closeButton != null)
+            closeButton.Click += CloseWindow;
     }
     
-    public void SetButtonResult(ButtonResult bdName)
+
+    public void CloseWindow(object? sender, EventArgs eventArgs)
     {
-        _buttonResult = bdName;
+        this.Close();
+    }
+
+    public void SetCloseAction(Action closeAction)
+    {
+        _closeAction = closeAction;
+    }
+
+    public void SetButtonResult(ButtonResult buttonResult)
+    {
+        _buttonResult = buttonResult;
     }
 
     public ButtonResult GetButtonResult()
@@ -26,12 +45,7 @@ public partial class MessageBoxStandardView : UserControl
 
     public void Close()
     {
-        //_closeAction?.Invoke();
-    }
-
-    public void CloseWindow(object sender, EventArgs eventArgs)
-    {
-        Close();
+        _closeAction?.Invoke();
     }
 }
 
