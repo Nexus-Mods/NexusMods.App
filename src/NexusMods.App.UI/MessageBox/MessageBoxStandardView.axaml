@@ -11,69 +11,87 @@
              d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxStandardViewModel}"
              x:DataType="vm:MessageBoxStandardViewModel">
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Border Padding="16">
 
-        <!-- titlebar -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="16,8,8,0">
-            <TextBlock Grid.Column="0" Name="TitleTextBlock"
-                       Text="{Binding ContentTitle}"
-                       Foreground="{StaticResource NeutralStrongBrush}"
-                       Theme="{StaticResource BodySMSemiTheme}"
-                       VerticalAlignment="Center"
-                       ToolTip.Tip="Close"
-                       IsHitTestVisible="False" />
-            <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
-                                                     DockPanel.Dock="Right"
-                                                     LeftIcon="{x:Static icons:IconValues.Close}"
-                                                     ShowIcon="Left"
-                                                     ShowLabel="False"
-                                                     Fill="None"
-                                                     Type="Tertiary"
-                                                     VerticalAlignment="Center" />
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- titlebar -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                
+                <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
+                custom titlebar dragging -->
+                <TextBlock Grid.Column="0" Name="TitleTextBlock"
+                           Text="{Binding ContentTitle}"
+                           Foreground="{StaticResource NeutralStrongBrush}"
+                           Theme="{StaticResource BodySMSemiTheme}"
+                           VerticalAlignment="Center"
+                           ToolTip.Tip="Close"
+                           IsHitTestVisible="False" />
+                
+                <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
+                                         DockPanel.Dock="Right"
+                                         LeftIcon="{x:Static icons:IconValues.Close}"
+                                         ShowIcon="IconOnly"
+                                         ShowLabel="False"
+                                         Fill="None"
+                                         Type="Tertiary"
+                                         VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- content -->
+            <Border Grid.Row="1">
+                <StackPanel Spacing="8" Margin="0,16">
+                    <TextBlock Name="ContentTextBlock"
+                               Text="{Binding ContentMessage}"
+                               Foreground="{StaticResource NeutralSubduedBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- buttons -->
+            <panels:FlexPanel Grid.Row="2"
+                              ColumnSpacing="8">
+                <controls:StandardButton Name="CancelButton" Text="Cancel"
+                                         Command="{Binding ButtonClickCommand}"
+                                         CommandParameter="{Binding $self.Text}"
+                                         IsCancel="True"
+                                         IsVisible="{Binding IsCancelShowed}"
+                                         panels:Flex.Grow="1"
+                                         panels:Flex.Shrink="0"
+                                         panels:Flex.Basis="0%" />
+                <controls:StandardButton Name="OkButton" Text="OK"
+                                         Command="{Binding ButtonClickCommand}"
+                                         CommandParameter="{Binding $self.Text}"
+                                         IsDefault="True"
+                                         IsVisible="{Binding IsOkShowed}"
+                                         panels:Flex.Grow="1"
+                                         panels:Flex.Shrink="0"
+                                         panels:Flex.Basis="0%" />
+                <controls:StandardButton Name="YesButton" Text="Yes"
+                                         Command="{Binding ButtonClickCommand}"
+                                         CommandParameter="{Binding $self.Text}"
+                                         IsDefault="True"
+                                         IsVisible="{Binding IsYesShowed}"
+                                         panels:Flex.Grow="1"
+                                         panels:Flex.Shrink="0"
+                                         panels:Flex.Basis="0%" />
+                <controls:StandardButton Name="AbortButton" Text="Abort"
+                                         Command="{Binding ButtonClickCommand}"
+                                         CommandParameter="{Binding $self.Text}"
+                                         IsCancel="True"
+                                         IsVisible="{Binding IsAbortShowed}"
+                                         panels:Flex.Grow="1"
+                                         panels:Flex.Shrink="0"
+                                         panels:Flex.Basis="0%" />
+                <controls:StandardButton Name="NoButton" Text="No"
+                                         Command="{Binding ButtonClickCommand}"
+                                         CommandParameter="{Binding $self.Text}"
+                                         IsCancel="True"
+                                         IsVisible="{Binding IsNoShowed}"
+                                         panels:Flex.Grow="1"
+                                         panels:Flex.Shrink="0"
+                                         panels:Flex.Basis="0%" />
+            </panels:FlexPanel>
+
         </Grid>
-
-        <!-- content -->
-        <Border Grid.Row="1" Margin="16,16">
-            <StackPanel Spacing="8">
-                <TextBlock Name="ContentTextBlock"
-                           Text="{Binding ContentMessage}"
-                           Foreground="{StaticResource NeutralSubduedBrush}" />
-            </StackPanel>
-        </Border>
-        
-        <!-- buttons -->
-        <UniformGrid Grid.Row="2" Rows="1" Margin="16,0,16,16">
-            <controls:StandardButton Name="CancelButton" Text="Cancel"
-                                     Command="{Binding ButtonClickCommand}"
-                                     CommandParameter="{Binding $self.Text}"
-                                     IsCancel="True"
-                                     IsVisible="{Binding IsCancelShowed}"
-                                     HorizontalAlignment="Stretch" />
-            <controls:StandardButton Name="OkButton" Text="OK"
-                                     Command="{Binding ButtonClickCommand}"
-                                     CommandParameter="{Binding $self.Text}"
-                                     IsDefault="True"
-                                     IsVisible="{Binding IsOkShowed}"
-                                     HorizontalAlignment="Stretch" />
-            <controls:StandardButton Name="YesButton" Text="Yes"
-                                     Command="{Binding ButtonClickCommand}"
-                                     CommandParameter="{Binding $self.Text}"
-                                     IsDefault="True"
-                                     IsVisible="{Binding IsYesShowed}"
-                                     HorizontalAlignment="Stretch" />
-            <controls:StandardButton Name="AbortButton" Text="Abort"
-                                     Command="{Binding ButtonClickCommand}"
-                                     CommandParameter="{Binding $self.Text}"
-                                     IsCancel="True"
-                                     IsVisible="{Binding IsAbortShowed}"
-                                     HorizontalAlignment="Stretch" />
-            <controls:StandardButton Name="NoButton" Text="No"
-                                     Command="{Binding ButtonClickCommand}"
-                                     CommandParameter="{Binding $self.Text}"
-                                     IsCancel="True"
-                                     IsVisible="{Binding IsNoShowed}"
-                                     HorizontalAlignment="Stretch" />
-        </UniformGrid>
-
-    </Grid>
+    </Border>
 </UserControl>

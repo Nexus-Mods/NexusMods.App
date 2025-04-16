@@ -12,9 +12,7 @@ public partial class MessageBoxWindow : Window
         CanResize = false;
         ShowInTaskbar = false;
         MinWidth = 280;
-        MinHeight = 123;
         MaxWidth = 500;
-        MaxHeight = 800;
         SizeToContent = SizeToContent.WidthAndHeight;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         //SystemDecorations = SystemDecorations.Full;
