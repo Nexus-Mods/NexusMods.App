@@ -13,13 +13,6 @@
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
 
-    <!-- <reactiveUi:ReactiveUserControl.Styles> -->
-    <!--     ~1~ Match Icon Size with Design @1@ -->
-    <!--     <Style Selector="Border#SelectionHighlightBorder icons|UnifiedIcon"> -->
-    <!--         <Setter Property="Size" Value="24" /> -->
-    <!--     </Style> -->
-    <!-- </reactiveUi:ReactiveUserControl.Styles> -->
-
     <Border x:Name="OptionContainerBorder" Padding="8,0">
         <Grid ColumnDefinitions="Auto, *">
             <Panel Grid.Column="0">
