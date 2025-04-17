@@ -152,6 +152,24 @@
                     </Style>
                 </Style>
 
+                <!-- selected -->
+                <Style Selector="^ TreeDataGridRow:selected">
+
+                    <!-- first column (index) -->
+                    <Style Selector="^ TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+
+                        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+
+                            <Style Selector="^ Border#ItemModDragBorder">
+                                <Style Selector="^ icons|UnifiedIcon">
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                </Style>
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+                
                 <!-- pointerover -->
                 <Style Selector="^ TreeDataGridRow:pointerover">
 
@@ -169,6 +187,8 @@
                         </Style>
                     </Style>
                 </Style>
+                
+                
             </Style>
         </Style>
     </Style>
