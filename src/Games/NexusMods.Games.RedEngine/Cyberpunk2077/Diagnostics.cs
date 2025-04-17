@@ -172,4 +172,40 @@ Please install the {RedmodLink} and start the game at least once.
             .AddValue<NamedLink>("RedmodLink")
         )
         .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate RequiredWineDllOverrides = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 5))
+        .WithTitle("Update WINE DLL overrides to mod on Linux")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("These changes are required for Linux")
+        .WithDetails("""
+Modding Cyberpunk 2077 on Linux requires you to configure WINE.
+
+{Instructions}
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<string>("Instructions")
+        )
+        .Finish();
+
+    [DiagnosticTemplate]
+    [UsedImplicitly]
+    internal static IDiagnosticTemplate RequiredWinetricksPackages = DiagnosticTemplateBuilder
+        .Start()
+        .WithId(new DiagnosticId(Source, number: 6))
+        .WithTitle("Install required winetricks packages")
+        .WithSeverity(DiagnosticSeverity.Critical)
+        .WithSummary("These packages are required or Linux")
+        .WithDetails("""
+Modding Cyberpunk 2077 on Linux requires packages to be installed in your WINE prefix.
+
+{Instructions}  
+""")
+        .WithMessageData(messageBuilder => messageBuilder
+            .AddValue<string>("Instructions")
+        )
+        .Finish();
 }

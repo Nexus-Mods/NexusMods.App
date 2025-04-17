@@ -13,6 +13,7 @@ using ReactiveUI;
 using Humanizer;
 using Microsoft.CodeAnalysis;
 using NexusMods.App.UI.Converters;
+using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.CollectionDownload;
 
@@ -242,7 +243,22 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                         OptionalModsInstructionsExpander.IsVisible = optionalModsInstructions.Length > 0;
                         OptionalModsInstructions.ItemsSource = optionalModsInstructions;
                     }).DisposeWith(d);
+
+                this.WhenAnyValue(
+                    view => view.ViewModel!.RequiredDownloadsCount,
+                    view => view.ViewModel!.OptionalDownloadsCount)
+                    .Subscribe(tuple =>
+                    {
+                        var (requiredDownloadsCount, optionalDownloadsCount) = tuple;
+
+                        RequiredModsEmptyState.IsActive = requiredDownloadsCount == 0;
+                        ButtonViewOptionalMods.Text = $"View optional mods ({optionalDownloadsCount})";
+
+                        if (requiredDownloadsCount != 0) RequiredTab.Content = TabItemContent;
+                    }).AddTo(d);
             }
         );
+
+        ButtonViewOptionalMods.Command = new ReactiveCommand(_ => TabControl.SelectedItem = OptionalTab);
     }
 }
