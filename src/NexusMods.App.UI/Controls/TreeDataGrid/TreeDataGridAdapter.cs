@@ -30,6 +30,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> ViewHierarchical { get; } = new(value: true);
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
     public BindableReactiveProperty<int> SourceCount { get; } = new(value: 0);
+    public BindableReactiveProperty<IComparer<TModel>?> CustomSortComparer { get; } = new(value: null);
 
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
     protected ObservableList<TModel> Roots { get; private set; } = [];
@@ -121,12 +122,30 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                             }
 
                             self.Roots.ApplyChanges(changeSet);
+                            if (self.CustomSortComparer.Value is not null)
+                            {
+                                self.Roots.Sort(self.CustomSortComparer.Value);
+                            }
                         })
                         .DisposeMany()
                         .ToObservable()
                         .Select(viewHierarchical, static (_, viewHierarchical) => viewHierarchical);
                 })
                 .Switch()
+                .Subscribe()
+                .AddTo(disposables);
+            
+            self.CustomSortComparer
+                .AsObservable()
+                .ObserveOnUIThreadDispatcher()
+                .Do(self, static (comparer, self) =>
+                {
+                    if (comparer is not null)
+                    {
+                        self.Roots.Sort(comparer);
+                    }
+
+                })
                 .Subscribe()
                 .AddTo(disposables);
 

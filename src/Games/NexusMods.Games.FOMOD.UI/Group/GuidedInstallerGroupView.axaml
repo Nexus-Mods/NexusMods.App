@@ -18,9 +18,10 @@
 
         <Border x:Name="GroupNameBorder">
             <StackPanel Orientation="Vertical">
-
-                <TextBlock Classes="TitleSMSemi" x:Name="GroupName" />
-                <TextBlock Classes="TitleXSSemi" x:Name="GroupType" IsVisible="False"
+                <TextBlock x:Name="GroupName" 
+                           Theme="{StaticResource TitleSMSemiTheme}" />
+                <TextBlock x:Name="GroupType" 
+                           Theme="{StaticResource TitleXSSemiTheme}" IsVisible="False"
                            Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}" />
             </StackPanel>
         </Border>

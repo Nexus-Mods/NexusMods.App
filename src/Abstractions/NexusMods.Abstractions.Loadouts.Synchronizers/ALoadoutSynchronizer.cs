@@ -526,11 +526,25 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         
         using var tx = Connection.BeginTransaction();
+        var gameMetadataId = loadout.InstallationInstance.GameMetadataId;
         
         // Delete all the matching override files
         foreach (var file in toDelete)
         {
             tx.Delete(file, false);
+
+            // The backed up file is being 'promoted' to a game file, which needs
+            // to be rooted explicitly in case the user uses a feature like 'undo'
+            // to roll back a game version on a store (like Xbox/Epic) which does
+            // not support downloading non-current version(s).
+            if (!file.TryGetAsLoadoutFile(out var loadoutFile)) 
+                continue;
+
+            _ = new GameBackedUpFile.New(tx)
+            {
+                Hash = loadoutFile.Hash,
+                GameInstallId = gameMetadataId,
+            };
         }
 
         if (_fileHashService.TryGetVanityVersion((gameLocatorResult.Store, newLocatorIds), out var vanityVersion))
@@ -1143,6 +1157,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
+        var pinnedFileHashes = new ConcurrentBag<Hash>();
         await Parallel.ForEachAsync(files, async (item, _) =>
             {
                 var (gamePath, node) = item;
@@ -1154,7 +1169,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 
                 if (await _fileStore.HaveFile(node.Disk.Hash))
                     return;
-
+                
                 var archivedFile = new ArchivedFileEntry
                 {
                     Size = node.Disk.Size,
@@ -1163,11 +1178,25 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 };
 
                 archivedFiles.Add(archivedFile);
+                if (node.SourceItemType == LoadoutSourceItemType.Game)
+                    pinnedFileHashes.Add(archivedFile.Hash);
             }
         );
 
         // PERFORMANCE: We deduplicate above with the HaveFile call.
         await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
+
+        // Pin the files to avoid garbage collection.
+        using var tx = Connection.BeginTransaction();
+        foreach (var hash in pinnedFileHashes)
+        {
+            _ = new GameBackedUpFile.New(tx)
+            {
+                GameInstallId = installation.GameMetadataId,
+                Hash = hash,
+            };
+        }
+        await tx.Commit();
     }
     
     /// <summary>
@@ -1475,6 +1504,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     await ctx.YieldAsync();
                     await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
                 }
+                
+                // Retract all `GameBakedUpFile` entries to allow for game file backups to be cleaned up from the FileStore
+                using var tx = Connection.BeginTransaction();
+                foreach (var file in GameBackedUpFile.All(Connection.Db))
+                {
+                    if (file.GameInstallId.Value == installation.GameMetadataId)
+                        tx.Delete(file, false);
+                }
+
+                await tx.Commit();
 
                 if (runGc)
                     _garbageCollectorRunner.Run();
