@@ -26,6 +26,6 @@ public static class Services
             .AddDeletedFileModel()
             .AddCollectionGroupModel()
             .AddSortOrderModel()
-            .AddAttributeCollection(typeof(GameBackedUpFile));
+            .AddGameBackedUpFileModel();
     }
 }
