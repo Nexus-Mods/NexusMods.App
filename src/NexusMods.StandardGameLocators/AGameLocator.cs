@@ -28,7 +28,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     where TGameType : class, GameFinder.Common.IGame
     where TId : notnull
 {
-    private readonly ILogger _logger;
+    protected readonly ILogger Logger;
 
     private readonly AHandler<TGameType, TId>? _handler;
     private IReadOnlyDictionary<TId, TGameType>? _cachedGames;
@@ -39,7 +39,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     /// <param name="provider"></param>
     protected AGameLocator(IServiceProvider provider)
     {
-        _logger = provider.GetRequiredService<ILogger<TParent>>();
+        Logger = provider.GetRequiredService<ILogger<TParent>>();
         _handler = provider.GetService<AHandler<TGameType, TId>>();
     }
 
@@ -65,7 +65,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
             if (errors.Any())
             {
                 foreach (var error in errors)
-                    _logger.LogError("While looking for games: {Error}", error);
+                    Logger.LogError("While looking for games: {Error}", error);
             }
 
 #if DEBUG
@@ -75,22 +75,22 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
                 switch (cachedGame.Value)
                 {
                     case XboxGame xb:
-                        _logger.LogDebug($"Found Xbox Game: {xb.Id}, {xb.DisplayName}");
+                        Logger.LogDebug($"Found Xbox Game: {xb.Id}, {xb.DisplayName}");
                         break;
                     case SteamGame st:
-                        _logger.LogDebug($"Found Steam Game: {st.AppId}, {st.Name}");
+                        Logger.LogDebug($"Found Steam Game: {st.AppId}, {st.Name}");
                         break;
                     case EGSGame eg:
-                        _logger.LogDebug($"Found Epic Game: {eg.CatalogItemId}, {eg.DisplayName}");
+                        Logger.LogDebug($"Found Epic Game: {eg.CatalogItemId}, {eg.DisplayName}");
                         break;
                     case GOGGame gog:
-                        _logger.LogDebug($"Found GOG Galaxy Game: {gog.Id}, {gog.Name}");
+                        Logger.LogDebug($"Found GOG Galaxy Game: {gog.Id}, {gog.Name}");
                         break;
                     case OriginGame og:
-                        _logger.LogDebug($"Found Origin Game: {og.Id}, {og.InstallPath}");
+                        Logger.LogDebug($"Found Origin Game: {og.Id}, {og.InstallPath}");
                         break;
                     case EADesktopGame ea:
-                        _logger.LogDebug($"Found EA Desktop Game: {ea.EADesktopGameId}, {ea.BaseInstallPath}");
+                        Logger.LogDebug($"Found EA Desktop Game: {ea.EADesktopGameId}, {ea.BaseInstallPath}");
                         break;
                 }
             }
