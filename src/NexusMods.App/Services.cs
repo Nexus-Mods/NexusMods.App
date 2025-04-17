@@ -64,7 +64,6 @@ public static class Services
                 .AddLibrary()
                 .AddLibraryModels()
                 .AddJobMonitor()
-                .AddLoadoutsSynchronizers()
                 .AddNexusModsCollections()
 
                 .AddSettings<TelemetrySettings>()
