@@ -133,8 +133,6 @@ public class MessageBoxViewModel : IMessageBoxViewModel<ButtonResult>
 
     private async void ButtonClick(string s)
     {
-        Console.WriteLine($@"Pressed {s}");
-
         await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (_view is null) return;
@@ -146,8 +144,6 @@ public class MessageBoxViewModel : IMessageBoxViewModel<ButtonResult>
 
     private async void ButtonClick(ButtonResult buttonResult)
     {
-        Console.WriteLine($@"Pressed {buttonResult}");
-
         await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (_view is null) return;
