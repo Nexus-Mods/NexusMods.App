@@ -43,7 +43,7 @@
     <data name="FooterStepperView_FooterStepperView_One_or_more_groups_failed_validation_" xml:space="preserve">
         <value>Jedna lub więcej grup nie przeszła walidacji.</value>
     </data>
-    <data name="MultiOptionHeader_Multi_Otion_Mod" xml:space="preserve">
+    <data name="MultiOptionHeader_Multi_Option_Mod" xml:space="preserve">
         <value>Mod z wieloma opcjami</value>
     </data>
     <data name="InstallationCompleteScreenText" xml:space="preserve">
