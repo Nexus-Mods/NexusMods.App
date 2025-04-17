@@ -47,7 +47,7 @@
     <data name="InstallationCompleteScreenText" xml:space="preserve">
         <value>Sie können diese Optionen jederzeit ändern, indem Sie diese Mod neu installieren.</value>
     </data>
-    <data name="MultiOptionHeader_Multi_Otion_Mod" xml:space="preserve">
+    <data name="MultiOptionHeader_Multi_Option_Mod" xml:space="preserve">
         <value>Multi-Option Mod</value>
     </data>
 </root>

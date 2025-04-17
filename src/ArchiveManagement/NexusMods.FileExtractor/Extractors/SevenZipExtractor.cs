@@ -107,8 +107,8 @@ public class SevenZipExtractor : IExtractor
                 fileNameOnDisk = fileName;
             }
 
-            var fixedFileName = FixFileName(fileName);
-            Debug.Assert(fixedFileName.All(c => !IsInvalidChar(c)), message: $"`{fixedFileName}` should be fixed");
+            var fixedFileName = PathsHelper.FixFileName(fileName);
+            Debug.Assert(fixedFileName.All(c => !PathsHelper.IsInvalidChar(c)), message: $"`{fixedFileName}` should be fixed");
 
             var source = System.IO.Path.Combine(nativePath, fileNameOnDisk);
             var destination = System.IO.Path.Combine(nativePath, fixedFileName);
@@ -156,16 +156,6 @@ public class SevenZipExtractor : IExtractor
         }
     }
 
-    /// <summary>
-    /// Fixes a file name from the archive to work on all platforms properly and consistently.
-    /// </summary>
-    internal static string FixFileName(ReadOnlySpan<char> input)
-    {
-        const string charsToTrim = " .";
-        var output = input.TrimEnd(charsToTrim);
-        return output.ToString();
-    }
-
     internal static void To7ZipWindowsExtractionPath(Span<char> input)
     {
         // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file
@@ -179,20 +169,18 @@ public class SevenZipExtractor : IExtractor
         for (var i = input.Length - 1; i >= 0; i--)
         {
             var current = input[i];
-            if (!IsInvalidChar(current)) break;
+            if (!PathsHelper.IsInvalidChar(current)) break;
 
             input[i] = '_';
         }
     }
-
-    private static bool IsInvalidChar(char c) => c is '.' or ' ';
 
     /// <summary>
     /// Returns a list of all paths in the archive that need to be trimmed.
     /// </summary>
     private async ValueTask<IReadOnlyList<(string fileName, bool isDirectory)>> GetTrimmablePathsInArchive(AbsolutePath source, CancellationToken cancellationToken)
     {
-        var pathsWithWhitespace = new List<(string fileName, bool isDirectory)>();
+        var pathsWithInvalidCharacters = new List<(string fileName, bool isDirectory)>();
 
         // NOTE(erri120): "l -ba" is an undocumented command that skips the table header and footer
         var process = Cli
@@ -201,17 +189,17 @@ public class SevenZipExtractor : IExtractor
             .WithStandardOutputPipe(PipeTarget.ToDelegate(line =>
             {
                 if (!TryParseListCommandOutput(line, out var fileName, out var isDirectory)) return;
-                pathsWithWhitespace.Add((fileName, isDirectory));
+                pathsWithInvalidCharacters.Add((fileName, isDirectory));
             }));
 
         await _processFactory.ExecuteAsync(process, cancellationToken: cancellationToken);
-        return pathsWithWhitespace;
+        return pathsWithInvalidCharacters;
     }
 
     /// <summary>
     /// Parses a table row returned by the 7z list command.
     /// </summary>
-    private static bool TryParseListCommandOutput(ReadOnlySpan<char> line, [NotNullWhen(true)] out string? fileName, out bool isDirectory)
+    internal static bool TryParseListCommandOutput(ReadOnlySpan<char> line, [NotNullWhen(true)] out string? fileName, out bool isDirectory)
     {
         // The table that gets printed has a fixed minimum width:
         // https://github.com/btolab/p7zip/blob/f30c859433af90937723dd4e808a24c3bb836711/CPP/7zip/UI/Console/List.cpp#L186-L193
@@ -227,8 +215,14 @@ public class SevenZipExtractor : IExtractor
         isDirectory = attributesSlice[0] == 'D';
 
         var fileNameSlice = line.SliceFast(start: fixedLengthBeforeFileName);
+
+        // NOTE(erri120): "." and ".." can for some reason end up in the archive
+        // 7z doesn't extract them so we should just ignore them
+        if (fileNameSlice.Length == 1 && fileNameSlice[0] == '.') return false;
+        if (fileNameSlice.Length == 2 && fileNameSlice[0] == '.' && fileNameSlice[1] == '.') return false;
+
         var lastChar = fileNameSlice[^1];
-        if (!IsInvalidChar(lastChar)) return false;
+        if (!PathsHelper.IsInvalidChar(lastChar)) return false;
 
         fileName = fileNameSlice.ToString();
         return true;

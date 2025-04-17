@@ -49,7 +49,7 @@
         </MenuFlyout>
 
         <!-- toolbar at top, tree data grid fill the remaining space -->
-        <DockPanel x:Key="TabItemContent">
+        <DockPanel x:Name="TabItemContent" x:Key="TabItemContent">
             <controls:Statusbar DockPanel.Dock="Top">
                 <controls:StandardButton Flyout="{StaticResource CollectionMenuFlyout}"
                                          ShowLabel="False"
@@ -208,7 +208,7 @@
 
             <!-- second row (tab control) -->
             <TabControl x:Name="TabControl" Grid.Row="1">
-                <TabItem x:Name="RequiredTab" Content="{StaticResource TabItemContent}">
+                <TabItem x:Name="RequiredTab">
                     <TabItem.Header>
                         <StackPanel x:Name="RequiredModsPanel" Classes="TabItemHeaderStack">
                             <TextBlock Text="Required" />
@@ -217,6 +217,19 @@
                             </Border>
                         </StackPanel>
                     </TabItem.Header>
+
+                    <controls:EmptyState x:Name="RequiredModsEmptyState"
+                                         Header="There are no required mods">
+                        <controls:EmptyState.Subtitle>
+                            <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-3.5}">
+                                <TextBlock Text="All mods in this collection are optional."/>
+                                <controls:StandardButton x:Name="ButtonViewOptionalMods"
+                                                         Type="Tertiary"
+                                                         ShowIcon="None"
+                                                         HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </controls:EmptyState.Subtitle>
+                    </controls:EmptyState>
                 </TabItem>
                 <TabItem x:Name="OptionalTab" Content="{StaticResource TabItemContent}">
                     <TabItem.Header>

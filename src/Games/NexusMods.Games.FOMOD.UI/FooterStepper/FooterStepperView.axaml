@@ -7,35 +7,34 @@
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:resources="clr-namespace:NexusMods.Games.FOMOD.UI.Resources"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
     mc:Ignorable="d"
-    d:DesignWidth="1232"
-    d:DesignHeight="84"
+    d:DesignWidth="650"
     x:Class="NexusMods.Games.FOMOD.UI.FooterStepperView">
 
     <Design.DataContext>
         <ui:FooterStepperDesignViewModel />
     </Design.DataContext>
-    <Border Classes="Mid RoundedBottom">
-        <Grid Height="84" ColumnDefinitions="Auto, *, Auto">
+    <Border Background="{StaticResource SurfaceMidBrush}" Padding="12">
+        <Grid ColumnDefinitions="Auto, *, Auto">
 
-            <Button Classes="Standard PrimaryOutlined" HorizontalAlignment="Left" Margin="24, 0" Grid.Column="0"
-                    x:Name="GoToPrevButton">
-                <StackPanel>
-                    <icons:UnifiedIcon Classes="ArrowLeft" />
-                    <TextBlock Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}" />
-                </StackPanel>
-            </Button>
+            <controls:StandardButton x:Name="GoToPrevButton"
+                                     Grid.Column="0" 
+                                     HorizontalAlignment="Left"
+                                     Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}"
+                                     LeftIcon="{x:Static icons:IconValues.ArrowBack}"
+                                     ShowIcon="Left"/>
 
-            <ProgressBar Classes="Stepper" Minimum="0" Maximum="1" Grid.Column="1" x:Name="ProgressBar"/>
-
-            <Button Classes="Standard Primary" HorizontalAlignment="Right" Margin="24, 0" Grid.Column="2"
-                    x:Name="GoToNextButton">
-                <StackPanel>
-                    <TextBlock x:Name="GoToNextButtonTextBlock"
-                               Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}" />
-                    <icons:UnifiedIcon Classes="ArrowRight" x:Name="IconArrowRight" />
-                </StackPanel>
-            </Button>
+            <ProgressBar x:Name="ProgressBar"
+                         Grid.Column="1" Classes="Stepper" Minimum="0" Maximum="1"
+                         Margin="12,0"/>
+            
+            <controls:StandardButton x:Name="GoToNextButton"
+                                     Grid.Column="2" 
+                                     HorizontalAlignment="Left"
+                                     Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}"
+                                     RightIcon="{x:Static icons:IconValues.ArrowForward}"
+                                     ShowIcon="Right"/>
         </Grid>
     </Border>
 

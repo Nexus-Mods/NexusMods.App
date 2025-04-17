@@ -171,9 +171,9 @@
             <Setter Property="Template" Value="{DynamicResource LoadOrderItemTreeRowTemplate}" />
 
             <Setter Property="Opacity" Value="1" />
-            <Setter Property="Height" Value="48" />
-            <Setter Property="MinHeight" Value="48" />
-            <Setter Property="Margin" Value="0,4,0,0" />
+            <Setter Property="Height" Value="52" />
+            <Setter Property="MinHeight" Value="52" />
+            <Setter Property="Margin" Value="0" />
 
             <!-- templated bindings (passed down to Border#RowBorder) -->
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
@@ -181,6 +181,10 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
 
+            <Style Selector="^ Border#RowOuterBorder">
+                <Setter Property="Padding" Value="0,2,0,2" />
+            </Style>
+            
             <!-- this can't be bound the same as the above template bindings as TreeDataGridRow doesn't have the property -->
             <Style Selector="^ Border#RowBorder">
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />

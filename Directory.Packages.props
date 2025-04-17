@@ -10,7 +10,7 @@
     <PackageVersion Include="BsDiff" Version="1.1.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
     <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.0" />
-    <PackageVersion Include="LinuxDesktopUtils.XDGDesktopPortal" Version="1.0.0" />
+    <PackageVersion Include="LinuxDesktopUtils.XDGDesktopPortal" Version="1.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.0.0" />

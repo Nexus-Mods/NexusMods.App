@@ -62,6 +62,7 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
     [InlineData(18144, 114038,1)] // Romanceable Rasmodia - RRRR Patch 1.1 (https://www.nexusmods.com/stardewvalley/mods/18144?tab=files)
     [InlineData(31167, 123427,0)] // Item Bags for Stardew Valley Expanded 1.0.0 (https://www.nexusmods.com/stardewvalley/mods/31167?tab=files)
     [InlineData(20414, 126173, 2)] // Portraits for Vendors 1.9.3 - Nyapu's Portraits (https://www.nexusmods.com/stardewvalley/mods/20414?tab=files)
+    [InlineData(1536, 98230, 1)] // Mail Framework Mod 1.18.0 (https://www.nexusmods.com/stardewvalley/mods/1536?tab=files)
     public async Task Test_Mods(uint modId, uint fileId, int expectedManifestCount)
     {
         var loadout = await CreateLoadout();

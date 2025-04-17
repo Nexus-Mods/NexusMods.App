@@ -13,7 +13,7 @@ public class GuidedInstallerGroupDesignViewModel : GuidedInstallerGroupViewModel
         {
             Id = GroupId.From(Guid.NewGuid()),
             Name = "Test Group",
-            Type = OptionGroupType.Any,
+            Type = OptionGroupType.ExactlyOne,
             Options = GenerateAllOptionTypes()
         };
     }

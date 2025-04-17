@@ -66,16 +66,19 @@ public class SevenZipExtractionTests
     }
 
     [Theory]
-    [InlineData("foo/bar.baz", "foo/bar.baz")]
-    [InlineData("foo bar.baz", "foo bar.baz")]
-    [InlineData("foo.bar.", "foo.bar")]
-    [InlineData("foo/bar ", "foo/bar")]
-    [InlineData("foo/bar .", "foo/bar")]
-    [InlineData("foo/bar. ", "foo/bar")]
-    public void Test_FixFileName(string input, string expected)
+    [InlineData("2024-04-16 06:10:44 D....            0            0  .", false, null, true)]
+    [InlineData("2024-04-16 06:10:44 D....            0            0  ..", false, null, true)]
+    [InlineData("2024-04-16 06:10:44 D....            0            0  foo ", true, "foo ", true)]
+    [InlineData("2024-04-16 06:10:44 .....            0            0  foo ", true, "foo ", false)]
+    [InlineData("2024-04-16 06:10:44 .....            0            0  foo", false, null, false)]
+    [InlineData("2024-04-16 06:10:44 D....            0            0  foo", false, null, true)]
+    public void Test_TryParseListCommandOutput(string input, bool expected, string? expectedFileName, bool expectedIsDirectory)
     {
-        var actual = SevenZipExtractor.FixFileName(input);
+        var actual = SevenZipExtractor.TryParseListCommandOutput(input, out var fileName, out var isDirectory);
         actual.Should().Be(expected);
+
+        fileName.Should().Be(expectedFileName);
+        isDirectory.Should().Be(expectedIsDirectory);
     }
 
     [Fact]

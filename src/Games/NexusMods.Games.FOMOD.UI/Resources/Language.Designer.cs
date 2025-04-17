@@ -60,7 +60,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FINISH.
+        ///   Looks up a localized string similar to Finish.
         /// </summary>
         public static string FooterStepperView_FooterStepperView_Finish {
             get {
@@ -69,7 +69,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NEXT.
+        ///   Looks up a localized string similar to Next.
         /// </summary>
         public static string FooterStepperView_FooterStepperView_Next {
             get {
@@ -87,7 +87,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PREVIOUS.
+        ///   Looks up a localized string similar to Previous.
         /// </summary>
         public static string FooterStepperView_FooterStepperView_Previous {
             get {
@@ -96,7 +96,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (SELECT AT LEAST ONE).
+        ///   Looks up a localized string similar to (Select at least one).
         /// </summary>
         public static string GuidedInstallerGroupView_SelectAtLeastOne {
             get {
@@ -171,9 +171,9 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Multi-Option Mod.
         /// </summary>
-        public static string MultiOptionHeader_Multi_Otion_Mod {
+        public static string MultiOptionHeader_Multi_Option_Mod {
             get {
-                return ResourceManager.GetString("MultiOptionHeader_Multi_Otion_Mod", resourceCulture);
+                return ResourceManager.GetString("MultiOptionHeader_Multi_Option_Mod", resourceCulture);
             }
         }
     }

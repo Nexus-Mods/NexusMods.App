@@ -53,7 +53,7 @@ public class LoadOrdersWIPPageFactory : APageFactory<ILoadOrdersWIPPageViewModel
         yield return new PageDiscoveryDetails
         {
             SectionName = "Mods",
-            ItemName = "Load Orders (WIP)",
+            ItemName = "Load Orders",
             Icon = IconValues.Swap,
             PageData = new PageData
             {
