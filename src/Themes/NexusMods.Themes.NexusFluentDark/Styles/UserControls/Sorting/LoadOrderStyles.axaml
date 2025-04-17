@@ -93,7 +93,7 @@
                                 <Style Selector="^ icons|UnifiedIcon">
                                     <Setter Property="Size" Value="10" />
                                     <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                            Value="{StaticResource SurfaceTransparentBrush}" />
                                 </Style>
                             </Style>
 
@@ -116,6 +116,7 @@
                                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300}" />
                                 <Setter Property="Width" Value="1" />
                                 <Setter Property="Height" Value="48" />
+                                <Setter Property="Margin" Value="12 0 0 0" />
                             </Style>
                         </Style>
                     </Style>
@@ -143,7 +144,7 @@
                             </Style>
                         </Style>
                     </Style>
-                    
+
                     <!-- third column (mod name) -->
                     <Style Selector="^.LoadOrderColumns_ModNameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -153,27 +154,28 @@
                             </Style>
                         </Style>
                     </Style>
-                    
                 </Style>
                 
                 <!-- pointerover -->
                 <Style Selector="^ TreeDataGridRow:pointerover">
 
                     <!-- first column (index) -->
-                    <Style Selector="^TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+                    <Style Selector="^ TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
                             <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
                             <Style Selector="^ Border#ItemModDragBorder">
                                 <!-- <Setter Property="Background" Value="DarkRed" /> -->
                                 <Style Selector="^ icons|UnifiedIcon">
-                                    <Setter Property="Size" Value="10" />
-                                    <Setter Property="Foreground" Value="DarkRed" />
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
                                 </Style>
                             </Style>
                         </Style>
                     </Style>
                 </Style>
+                
                 
             </Style>
         </Style>
