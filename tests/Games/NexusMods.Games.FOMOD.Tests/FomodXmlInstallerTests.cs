@@ -1,3 +1,4 @@
+using System.Xml;
 using FluentAssertions;
 using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -163,35 +164,35 @@ public class FomodXmlInstallerTests(ITestOutputHelper outputHelper) : ALibraryAr
     public async Task Broken_WithEmptyGroup()
     {
         var act = async () => await GetResultsFromDirectory("Broken-EmptyGroup");
-        await act.Should().ThrowAsync<XunitException>();
+        await act.Should().ThrowAsync<XmlException>();
     }
 
     [Fact]
     public async Task Broken_WithEmptyOption()
     {
         var act = async () => await GetResultsFromDirectory("Broken-EmptyOption");
-        await act.Should().ThrowAsync<XunitException>();
+        await act.Should().ThrowAsync<XmlException>();
     }
 
     [Fact]
     public async Task Broken_WithEmptyStep()
     {
         var act = async () => await GetResultsFromDirectory("Broken-EmptyStep");
-        await act.Should().ThrowAsync<XunitException>();
+        await act.Should().ThrowAsync<XmlException>();
     }
 
     [Fact]
     public async Task Broken_WithoutSteps()
     {
         var act = async () => await GetResultsFromDirectory("Broken-NoSteps");
-        await act.Should().ThrowAsync<XunitException>();
+        await act.Should().ThrowAsync<XmlException>();
     }
 
     [Fact]
     public async Task Broken_WithoutModuleName()
     {
         var act = async () => await GetResultsFromDirectory("Broken-NoModuleName");
-        await act.Should().ThrowAsync<XunitException>();
+        await act.Should().ThrowAsync<XmlException>();
     }
 
     #endregion

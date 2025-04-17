@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using FomodInstaller.Interface;
+using FomodInstaller.Scripting;
 using FomodInstaller.Scripting.XmlScript;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,12 +9,11 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Extensions.BCL;
 using NexusMods.Games.FOMOD.CoreDelegates;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees;
-using NexusMods.Paths.Trees.Traits;
-using NexusMods.Paths.Utilities;
 using IFileSystem = NexusMods.Paths.IFileSystem;
 using FomodMod = FomodInstaller.Interface.Mod;
 
@@ -71,23 +72,29 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         FomodOption[]? options,
         CancellationToken cancellationToken)
     {
-        // the component dealing with FOMODs is built to support all kinds of mods, including those without a script.
-        // for those cases, stop patterns can be way more complex to deduce the intended installation structure. In our case, where
-        // we only intend to support xml scripted FOMODs, this should be good enough
-        var stopPattern = new List<string> { "fomod" };
+        if (!libraryArchive.Children.TryGetFirst(x => x.Path.EndsWith(FomodConstants.XmlConfigRelativePath), out var xmlFile))
+            return new NotSupported(Reason: "Found no FOMOD data in the archive");
 
-        var tree = LibraryArchiveTree.Create(libraryArchive);
+        // `foo/bar/baz/fomod/ModuleConfig.xml` -> `foo/bar/baz`
+        // `fomod/ModuleConfig.xml` -> empty string
+        var fomodPathPrefix = xmlFile.Path.Parent.Parent;
+        var pathPrefixDropCount = fomodPathPrefix.Length == 0 ? 0 : fomodPathPrefix.Depth + 1;
 
-        var analyzerInfo = await FomodAnalyzer.AnalyzeAsync(tree, _fileSystem, _fileStore,cancellationToken);
-        if (analyzerInfo is null) return new NotSupported(Reason: "Found no FOMOD data in the archive");
+        var fomodArchiveFiles = libraryArchive.Children
+            .Where(x => x.Path.InFolder(fomodPathPrefix))
+            .Select(x => new KeyValuePair<RelativePath, LibraryArchiveFileEntry.ReadOnly>(x.Path.DropFirst(pathPrefixDropCount), x))
+            .DistinctBy(kv => kv.Key)
+            .ToDictionary(kv => kv.Key, kv => kv.Value);
 
-        await using var tmpFolder = _temporaryFileManager.CreateFolder();
-        await analyzerInfo.DumpToFileSystemAsync(tmpFolder.Path.Combine(analyzerInfo.PathPrefix));
+        var mod = new FomodMod(
+            listModFiles: fomodArchiveFiles.Keys.Select(static x => x.ToString()).ToList(),
+            stopPatterns: FomodConstants.StopPattern,
+            installScriptPath: xmlFile.Path.DropFirst(pathPrefixDropCount), 
+            tempFolderPath: string.Empty,
+            scriptType: _scriptType
+        );
 
-        var xmlPath = analyzerInfo.PathPrefix.Join(FomodConstants.XmlConfigRelativePath);
-
-        var files = tree.GetFiles().Select(x => x.Item.Path.ToNativeSeparators(OSInformation.Shared)).ToList();
-        var mod = new FomodMod(files, stopPattern, xmlPath.ToString(), string.Empty, _scriptType);
+        // NOTE(erri120): We're loading the script manually, otherwise the FOMOD library will load the script from the file system
         await mod.InitializeWithoutLoadingScript();
 
         // NOTE(erri120): The FOMOD library calls us, so this is the only way we can pass data along.
@@ -102,36 +109,72 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
                 var installer = new PresetGuidedInstaller(options);
                 installerDelegates.UiDelegates = new UiDelegates(ServiceProvider.GetRequiredService<ILogger<UiDelegates>>(), installer);
             }
-            installerDelegates.UiDelegates.CurrentArchiveFiles = tree;
+
+            installerDelegates.UiDelegates.CurrentFomodArchiveFiles = fomodArchiveFiles;
         }
 
+        var rawScript = await LoadScript(xmlFile.AsLibraryFile().Hash, cancellationToken);
+
         var executor = _scriptType.CreateExecutor(mod, _delegates);
-        var installScript = _scriptType.LoadScript(FixXmlScript(analyzerInfo.XmlScript), true);
+        var installScript = _scriptType.LoadScript(rawScript, true);
+        FixScript(installScript, fomodArchiveFiles);
+
         var instructions = await executor.Execute(installScript, "", null);
 
         // NOTE(err120): Reset the previously provided data
-        if (installerDelegates is not null)
-            installerDelegates.UiDelegates.CurrentArchiveFiles = tree;
+        if (installerDelegates is not null) installerDelegates.UiDelegates.CurrentFomodArchiveFiles = fomodArchiveFiles;
 
         var errors = instructions.Where(instruction => instruction.type == "error").ToArray();
         if (errors.Length != 0) throw new Exception(string.Join("; ", errors.Select(err => err.source)));
 
-        // I don't think this can happen on xml installers, afaik this would only happen on c# scripts that
-        // try to directly change the plugin load order
         foreach (var warning in instructions.Where(instruction => instruction.type == "unsupported"))
             _logger.LogWarning("Installer uses unsupported function: {}", warning.source);
 
-        InstructionsToLoadoutItems(transaction, loadout, loadoutGroup,instructions, tree, _fomodInstallationPath);
+        InstructionsToLoadoutItems(transaction, loadout, loadoutGroup,instructions, fomodArchiveFiles, _fomodInstallationPath);
         return new Success();
     }
 
-    private static string FixXmlScript(string input)
+    private async ValueTask<string> LoadScript(Hash hash, CancellationToken cancellationToken = default)
     {
-        // NOTE(erri120): The FOMOD library we're using does some really funky path normalization.
-        // These don't really work well with our internal path representation and on systems
-        // where the main directory separator character is the forward slash.
-        // See https://github.com/Nexus-Mods/NexusMods.App/issues/625 for details.
-        return Path.DirectorySeparatorChar == PathHelpers.DirectorySeparatorChar ? input.Replace('\\', PathHelpers.DirectorySeparatorChar) : input;
+        await using var stream = await _fileStore.GetFileStream(hash, cancellationToken);
+        using var streamReader = new StreamReader(stream);
+        return await streamReader.ReadToEndAsync(cancellationToken);
+    }
+
+    private void FixScript(IScript script, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles)
+    {
+        Debug.Assert(script is XmlScript);
+        if (script is not XmlScript xmlScript) return;
+
+        FixPaths(fomodArchiveFiles, xmlScript.RequiredInstallFiles);
+        FixPaths(fomodArchiveFiles, xmlScript.ConditionallyInstalledFileSets.SelectMany(x => x.Files));
+
+        foreach (var option in xmlScript.InstallSteps.SelectMany(x => x.OptionGroups).SelectMany(x => x.Options))
+        {
+            option.ImagePath = FixPath(option.ImagePath, fomodArchiveFiles);
+            FixPaths(fomodArchiveFiles, option.Files);
+        }
+    }
+
+    private void FixPaths(Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, IEnumerable<InstallableFile> installableFiles)
+    {
+        foreach (var installableFile in installableFiles)
+        {
+            installableFile.Source = FixPath(installableFile.Source, fomodArchiveFiles, isDirectory: installableFile.IsFolder);
+            installableFile.Destination = RelativePath.FromUnsanitizedInput(installableFile.Destination);
+        }
+    }
+
+    private string FixPath(string? input, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, bool isDirectory = false)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+
+        var path = RelativePath.FromUnsanitizedInput(input);
+        if (isDirectory || fomodArchiveFiles.ContainsKey(path)) return path.ToString();
+
+        _logger.LogWarning("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
+        return input;
+
     }
 
     private void InstructionsToLoadoutItems(
@@ -139,14 +182,14 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         LoadoutId loadoutId,
         LoadoutItemGroup.New loadoutGroup,
         IList<Instruction> instructions,
-        KeyedBox<RelativePath, LibraryArchiveTree> tree,
+        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         foreach (var instruction in instructions)
         {
             if (instruction.type == "copy")
             {
-                ConvertInstructionCopy(transaction, instruction, loadoutGroup, loadoutId, tree, gamePath);
+                ConvertInstructionCopy(transaction, instruction, loadoutGroup, loadoutId, fomodArchiveFiles, gamePath);
             }
             // TODO: "mkdir" - not sure if we need/want this
             // TODO: "enableallplugins"
@@ -160,20 +203,37 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         }
     }
 
-    private static void ConvertInstructionCopy(
+    private void ConvertInstructionCopy(
         ITransaction transaction,
         Instruction instruction,
         LoadoutItemGroup.New loadoutGroup,
         LoadoutId loadoutId,
-        KeyedBox<RelativePath, LibraryArchiveTree> tree,
+        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
         var dest = RelativePath.FromUnsanitizedInput(instruction.destination);
 
-        var file = tree.FindByPathFromChild(src);
-        if (file is null) throw new KeyNotFoundException($"Unable to find file `{src}` in tree!");
+        if (!fomodArchiveFiles.TryGetValue(src, out var libraryArchiveFile))
+        {
+            _logger.LogError("Didn't find source file `{Path}` in FOMOD archive", src);
+            return;
+        }
 
-        _ = file.ToLoadoutFile(loadoutId, loadoutGroup, transaction, new GamePath(gamePath.LocationId, gamePath.Path.Join(dest)));
+        _ = new LoadoutFile.New(transaction, out var id)
+        {
+            LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
+            {
+                LoadoutItem = new LoadoutItem.New(transaction, id)
+                {
+                    LoadoutId = loadoutId,
+                    Name = libraryArchiveFile.Path.FileName,
+                    ParentId = loadoutGroup,
+                },
+                TargetPath = new GamePath(gamePath.LocationId, gamePath.Path.Join(dest)).ToGamePathParentTuple(loadoutId),
+            },
+            Hash = libraryArchiveFile.AsLibraryFile().Hash,
+            Size = libraryArchiveFile.AsLibraryFile().Size,
+        };
     }
 }
