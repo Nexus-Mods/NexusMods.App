@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts.Files;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -24,6 +25,7 @@ public static class Services
             .AddLoadoutFileModel()
             .AddDeletedFileModel()
             .AddCollectionGroupModel()
-            .AddSortOrderModel();
+            .AddSortOrderModel()
+            .AddGameBackedUpFileModel();
     }
 }
