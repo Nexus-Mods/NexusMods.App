@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using NexusMods.App.UI.MessageBox.Enums;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI.Fody.Helpers;
 
@@ -22,4 +23,19 @@ public class DesignWindowManager : IWindowManager
 
     public void SaveWindowState(IWorkspaceWindow window) { }
     public bool RestoreWindowState(IWorkspaceWindow window) => false;
+    public Task<ButtonResult> ShowModalAsync(string title, string text, ButtonEnum buttonEnum)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ButtonResult> ShowModelessAsync(string title, string text, ButtonEnum buttonEnum)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ButtonResult> ShowEmbeddedAsync(string title, string text)
+    {
+        throw new NotImplementedException();
+    }
+
 }
