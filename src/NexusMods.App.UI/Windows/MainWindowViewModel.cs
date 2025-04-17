@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Platform.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.EventBus;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
@@ -20,6 +21,7 @@ using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -31,6 +33,7 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IWindowManager _windowManager;
+    private readonly IConnection _connection;
 
     public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
     public ReactiveUI.ReactiveCommand<IStorageProvider, System.Reactive.Unit> RegisterStorageProvider { get; }
@@ -44,6 +47,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         ISettingsManager settingsManager)
     {
         var avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
 
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -117,6 +121,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 {
                     var workspaceController = self.WorkspaceController;
                     if (workspaceController.ActiveWorkspace.Context is not LoadoutContext loadoutContext) return;
+
+                    var loadout = Loadout.Load(self._connection.Db, loadoutContext.LoadoutId);
+                    if (!loadout.IsValid() || loadout.Installation.GameId != message.Revision.Collection.GameId) return;
 
                     var pageData = new PageData
                     {
