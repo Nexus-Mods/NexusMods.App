@@ -22,16 +22,16 @@
         <value>Installation complete</value>
     </data>
     <data name="FooterStepperView_FooterStepperView_Finish" xml:space="preserve">
-        <value>FINISH</value>
+        <value>Finish</value>
     </data>
     <data name="FooterStepperView_FooterStepperView_Next" xml:space="preserve">
-        <value>NEXT</value>
+        <value>Next</value>
     </data>
     <data name="FooterStepperView_FooterStepperView_Previous" xml:space="preserve">
-        <value>PREVIOUS</value>
+        <value>Previous</value>
     </data>
     <data name="GuidedInstallerGroupView_SelectAtLeastOne" xml:space="preserve">
-        <value>(SELECT AT LEAST ONE)</value>
+        <value>(Select at least one)</value>
     </data>
     <data name="GuidedInstallerGroupViewModel_GuidedInstallerGroupViewModel_None" xml:space="preserve">
         <value>None</value>
@@ -48,7 +48,7 @@
     <data name="FooterStepperView_FooterStepperView_One_or_more_groups_failed_validation_" xml:space="preserve">
         <value>One or more groups failed validation.</value>
     </data>
-    <data name="MultiOptionHeader_Multi_Otion_Mod" xml:space="preserve">
+    <data name="MultiOptionHeader_Multi_Option_Mod" xml:space="preserve">
         <value>Multi-Option Mod</value>
     </data>
     <data name="InstallationCompleteScreenText" xml:space="preserve">
