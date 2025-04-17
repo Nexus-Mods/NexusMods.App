@@ -5,7 +5,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
 {
-    public RedModSortableItem(RedModSortableItemProvider provider, int sortIndex, RelativePath redModFolderName, string modName, bool isActive)
+    public RedModSortableItem(RedModSortableItemProvider provider, int sortIndex, RelativePath redModFolderName, string modName, bool isActive, Guid itemId)
     {
         SortableItemProvider = provider;
         SortIndex = sortIndex;
@@ -13,7 +13,7 @@ public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
         DisplayName = redModFolderName.ToString();
         ModName = modName;
         IsActive = isActive;
-        ItemId = Guid.NewGuid();
+        ItemId = itemId;
     }
     
     public RelativePath RedModFolderName { get; set; }

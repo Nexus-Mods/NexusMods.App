@@ -29,17 +29,11 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     public static GameId GameIdStatic => GameId.From(3333);
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
-    private ISortableItemProviderFactory[] _sortableItemProviderFactories;
 
     public Cyberpunk2077Game(IServiceProvider provider, IConnection connection) : base(provider)
     {
         _serviceProvider = provider;
         _connection = connection;
-        
-        _sortableItemProviderFactories =
-        [
-            _serviceProvider.GetRequiredService<RedModSortableItemProviderFactory>(),
-        ];
     }
 
     protected override ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
@@ -97,7 +91,9 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new MissingRedModEmitter(),
     ];
 
-    public override ISortableItemProviderFactory[] SortableItemProviderFactories => _sortableItemProviderFactories;
+    public override ISortableItemProviderFactory[] SortableItemProviderFactories => [
+        _serviceProvider.GetRequiredService<RedModSortableItemProviderFactory>(),
+    ];
     
     /// <inheritdoc />
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
