@@ -178,7 +178,7 @@ Please install the {RedmodLink} and start the game at least once.
     internal static IDiagnosticTemplate RequiredWineDllOverrides = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 5))
-        .WithTitle("Update WINE dll overrides to mod on Linux")
+        .WithTitle("Update WINE DLL overrides to mod on Linux")
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("These changes are required for Linux")
         .WithDetails("""

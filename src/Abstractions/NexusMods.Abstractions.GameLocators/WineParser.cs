@@ -9,8 +9,6 @@ namespace NexusMods.Abstractions.GameLocators;
 /// </summary>
 public static class WineParser
 {
-    public const string EnvironmentVariableName = "WINEDLLOVERRIDES";
-
     /// <summary>
     /// Parses the given `winetricks.log` file and returns all installed packages.
     /// </summary>
@@ -80,7 +78,8 @@ public static class WineParser
 
     private static ReadOnlySpan<char> FixDllName(ReadOnlySpan<char> input)
     {
-        return input.TrimEnd(".dll");
+        var index = input.LastIndexOf(".dll", StringComparison.OrdinalIgnoreCase);
+        return index == -1 ? input : input[..index];
     }
 
     private static WineDllOverrideType[] GetOverrideTypes(ReadOnlySpan<char> section)
@@ -126,7 +125,7 @@ public static class WineParser
     }
 }
 
-public record WineDllOverride(string DllName, WineDllOverrideType[] OverrideTypes)
+public record struct WineDllOverride(string DllName, WineDllOverrideType[] OverrideTypes)
 {
     /// <summary>
     /// Gets whether the DLL is disabled.
