@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
@@ -59,6 +60,7 @@ public class Startup
         }
         catch (Exception e)
         {
+            Debugger.Break();
             logger.LogCritical(e, "Exception crashed the application!");
         }
     }

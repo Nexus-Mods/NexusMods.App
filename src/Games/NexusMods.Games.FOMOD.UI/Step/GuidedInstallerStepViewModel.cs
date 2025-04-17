@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media;
+using Avalonia.Threading;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,9 +32,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
     [Reactive] public IGuidedInstallerOptionViewModel? HighlightedOptionViewModel { get; set; }
 
-    private IDisposable? _imageDisposable;
-    private readonly ObservableAsPropertyHelper<IImage?> _highlightedOptionImage;
-    public IImage? HighlightedOptionImage => _highlightedOptionImage.Value;
+    [Reactive] public IImage? HighlightedOptionImage { get; private set; }
 
     [Reactive] public Percent Progress { get; set; }
     public IFooterStepperViewModel FooterStepperViewModel { get; } = new FooterStepperViewModel();
@@ -56,43 +55,9 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
             .Bind(out _groups)
             .Subscribe();
 
-        // image loading
-        _highlightedOptionImage = this
-            .WhenAnyValue(vm => vm.HighlightedOptionViewModel)
-            .WhereNotNull()
-            .Select(optionVM => optionVM.Option.Image)
-            .WhereNotNull()
-            .OffUi()
-            .SelectMany(async optionImage =>
-            {
-                try
-                {
-                    return await optionImage.Match(
-                        f0: uri => remoteImagePipeline.LoadResourceAsync(uri, CancellationToken.None),
-                        f1: imageHash => fileImagePipeline.LoadResourceAsync(imageHash.FileHash, CancellationToken.None)
-                    );
-                }
-                catch (Exception e)
-                {
-                    logger.LogWarning(e, "Failed to load image");
-                    return null;
-                }
-            })
-            .Select(static resource => resource?.Data)
-            .Do(lifetime =>
-            {
-                _imageDisposable?.Dispose();
-                _imageDisposable = lifetime;
-            })
-            .Select(static lifetime => lifetime?.Value)
-            .WhereNotNull()
-            .OnUI()
-            .ToProperty(this, vm => vm.HighlightedOptionImage);
-
         var goToNextCommand = ReactiveCommand.Create(() =>
         {
-            _imageDisposable?.Dispose();
-            _imageDisposable = null;
+            CleanupImage();
 
             // NOTE(erri120): On the last step, we don't set the result but instead show a "installation complete"-screen.
             if (InstallationStep!.HasNextStep || ShowInstallationCompleteScreen)
@@ -110,8 +75,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
         var goToPrevCommand = ReactiveCommand.Create(() =>
         {
-            _imageDisposable?.Dispose();
-            _imageDisposable = null;
+            CleanupImage();
 
             if (ShowInstallationCompleteScreen)
             {
@@ -126,6 +90,34 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
 
         this.WhenActivated(disposables =>
         {
+            this.WhenAnyValue(vm => vm.HighlightedOptionViewModel)
+                .Select(static x => x?.Option.Image)
+                .Do(_ => CleanupImage())
+                .WhereNotNull()
+                .OffUi()
+                .SelectMany(async optionImage =>
+                {
+                    try
+                    {
+                        return await optionImage.Match(
+                            f0: uri => remoteImagePipeline.LoadResourceAsync(uri, CancellationToken.None),
+                            f1: imageHash => fileImagePipeline.LoadResourceAsync(imageHash.FileHash, CancellationToken.None)
+                        );
+                    }
+                    catch (Exception e)
+                    {
+                        logger.LogWarning(e, "Failed to load image");
+                        return null;
+                    }
+                })
+                .WhereNotNull()
+                .Select(static resource => resource.Data)
+                .OnUI()
+                .Subscribe(image =>
+                {
+                    HighlightedOptionImage = image;
+                }).DisposeWith(disposables);
+
             // create new groups when the step changes
             this.WhenAnyValue(vm => vm.InstallationStep)
                 .Subscribe(step =>
@@ -208,11 +200,24 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 .BindToVM(this, vm => vm.FooterStepperViewModel.Progress)
                 .DisposeWith(disposables);
 
-            Disposable.Create(() =>
-            {
-                _imageDisposable?.Dispose();
-                _highlightedOptionImage.Dispose();
-            }).DisposeWith(disposables);
+            Disposable.Create(CleanupImage).DisposeWith(disposables);
+        });
+    }
+
+    private void CleanupImage()
+    {
+        // NOTE(erri120): has to run on the UI thread to make sure that
+        // Avalonia sees the change to the property before we dispose the
+        // underlying image.
+        // If Avalonia doesn't see the change and tries to render the disposed
+        // bitmap you'll crash the application :)
+        // https://github.com/Nexus-Mods/NexusMods.App/issues/3056
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            var tmp = HighlightedOptionImage;
+            HighlightedOptionImage = null;
+
+            if (tmp is IDisposable disposable) disposable.Dispose();
         });
     }
 
