@@ -1505,7 +1505,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
                 }
                 
-                // Retract all roots / synchronizer backed up files for this installation.
+                // Retract all `GameBakedUpFile` entries to allow for game file backups to be cleaned up from the FileStore
                 using var tx = Connection.BeginTransaction();
                 foreach (var file in GameBackedUpFile.All(Connection.Db))
                 {
