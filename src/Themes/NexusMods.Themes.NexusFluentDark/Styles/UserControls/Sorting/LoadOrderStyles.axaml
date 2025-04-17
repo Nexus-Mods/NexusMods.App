@@ -74,14 +74,11 @@
             <!-- left column (load order tree data grid) -->
             <Style Selector="^ TreeDataGrid#SortOrderTreeDataGrid">
 
-                
-
                 <Style Selector="^ TreeDataGridTemplateCell">
 
                     <!-- first column (index) -->
                     <Style Selector="^.LoadOrderColumns_IndexColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                            <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
                             <Style Selector="^ StackPanel#LoadOrderItemIndexColumnStack">
                                 <Setter Property="Orientation" Value="Horizontal" />
@@ -89,11 +86,10 @@
                             </Style>
 
                             <Style Selector="^ Border#ItemModDragBorder">
-                                <!-- <Setter Property="Background" Value="DarkRed" /> -->
                                 <Style Selector="^ icons|UnifiedIcon">
                                     <Setter Property="Size" Value="10" />
                                     <Setter Property="Foreground"
-                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                            Value="{StaticResource SurfaceTransparentBrush}" />
                                 </Style>
                             </Style>
 
@@ -116,6 +112,7 @@
                                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300}" />
                                 <Setter Property="Width" Value="1" />
                                 <Setter Property="Height" Value="48" />
+                                <Setter Property="Margin" Value="12 0 0 0" />
                             </Style>
                         </Style>
                     </Style>
@@ -154,27 +151,24 @@
                         </Style>
                     </Style>
                 </Style>
-                
+
                 <!-- pointerover -->
                 <Style Selector="^ TreeDataGridRow:pointerover">
 
                     <!-- first column (index) -->
-                    <Style Selector="^TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+                    <Style Selector="^ TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                            <!-- <Setter Property="Background" Value="DarkBlue" /> -->
 
                             <Style Selector="^ Border#ItemModDragBorder">
-                                <!-- <Setter Property="Background" Value="DarkRed" /> -->
                                 <Style Selector="^ icons|UnifiedIcon">
-                                    <Setter Property="Size" Value="10" />
-                                    <Setter Property="Foreground" Value="DarkRed" />
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
                                 </Style>
                             </Style>
                         </Style>
                     </Style>
                 </Style>
-                
-                
             </Style>
         </Style>
     </Style>
