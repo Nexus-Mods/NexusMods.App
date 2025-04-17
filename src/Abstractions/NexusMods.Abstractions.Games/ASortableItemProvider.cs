@@ -436,24 +436,27 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
 
     /// <summary>
     /// Obtains the SortOrder model for this provider - default is cute, but the implementation
-    ///  should override this to get the correct SortOrder model.
+    ///  could generate its own SortOrder model if needed and pass it to the abstraction.
     /// </summary>
     /// <returns></returns>
-    protected virtual async ValueTask<SortOrder.ReadOnly> GetOrAddSortOrderModel()
+    protected static async ValueTask<SortOrder.ReadOnly> GetOrAddDefaultSortOrderModel(
+        IConnection connection,
+        LoadoutId loadoutId,
+        ISortableItemProviderFactory factory)
     {
-        var sortOrder = SortOrder.All(_connection.Db)
-            .FirstOrOptional(lo => lo.LoadoutId == LoadoutId
-                                   && lo.SortOrderTypeId == ParentFactory.SortOrderTypeId
+        var sortOrder = SortOrder.All(connection.Db)
+            .FirstOrOptional(lo => lo.LoadoutId == loadoutId
+                                   && lo.SortOrderTypeId == factory.SortOrderTypeId
             );
 
         if (sortOrder.HasValue)
             return sortOrder.Value;
 
-        using var ts = _connection.BeginTransaction();
+        using var ts = connection.BeginTransaction();
         _ = new SortOrder.New(ts)
         {
-            LoadoutId = LoadoutId,
-            SortOrderTypeId = ParentFactory.SortOrderTypeId,
+            LoadoutId = loadoutId,
+            SortOrderTypeId = factory.SortOrderTypeId,
         };
 
         await ts.Commit();

@@ -56,8 +56,12 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
     {
-        // Get the sort order model - this should ideally be overriden by the implementation.
-        var sortOrderModel = await GetOrAddSortOrderModel(connection, loadoutId, parentFactory);
+        // Get the sort order model
+        var sortOrderModel = await GetOrAddDefaultSortOrderModel(connection, loadoutId, parentFactory);
+        
+        // Might need the RedModSortOrder model to be created instead of the default eventually. But
+        //  for now, the default one will do.
+        // var sortOrderModel = await GetOrAddSortOrderModel(connection, loadoutId, parentFactory);
         return new RedModSortableItemProvider(connection,
             sortOrderModel,
             loadoutId,
@@ -67,9 +71,9 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
 
     private RedModSortableItemProvider(
         IConnection connection,
-        RedModSortOrder.ReadOnly sortOrderModel,
+        Abstractions.Loadouts.SortOrder.ReadOnly sortOrderModel,
         LoadoutId loadoutId,
-        ISortableItemProviderFactory parentFactory) : base(connection, sortOrderModel.AsSortOrder(), loadoutId, parentFactory)
+        ISortableItemProviderFactory parentFactory) : base(connection, sortOrderModel, loadoutId, parentFactory)
     {
         _connection = connection;
         Initialize();
