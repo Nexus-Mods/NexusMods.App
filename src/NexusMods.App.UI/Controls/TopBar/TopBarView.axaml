@@ -21,14 +21,21 @@
 
     <Grid x:Name="MainGrid"
           Height="52"
-          VerticalAlignment="Top">
+          VerticalAlignment="Top"
+          ShowGridLines="True">
 
         <Grid.ColumnDefinitions>
             <!-- min width is 232 to never go left of the left menu section -->
             <ColumnDefinition Width="Auto" MinWidth="230" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        
+        <!-- <Border -->
+        <!--         Grid.ColumnSpan="5" -->
+        <!--         IsHitTestVisible="False"/> -->
 
         <!-- left column (Game and Loadout) -->
         <StackPanel Grid.Column="0"
@@ -82,7 +89,7 @@
 
 
         <!-- right column (buttons, settings, login) -->
-        <StackPanel Grid.Column="2" Margin="12 0" Orientation="Horizontal" Spacing="12">
+        <StackPanel Grid.Column="3" Margin="12 0" Orientation="Horizontal" Spacing="12">
 
             <!-- help button -->
             <controls:StandardButton Type="Tertiary"
@@ -139,7 +146,7 @@
                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Info}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        
+
                     </MenuFlyout>
                 </controls:StandardButton.Flyout>
             </controls:StandardButton>
@@ -227,9 +234,34 @@
                                          ShowIcon="None">
                     <TextBlock
                         Text="{x:Static resources:Language.Nexus_Premium_Status__Free}"
-                        Theme="{StaticResource TitleSMSemiTheme}"/>
+                        Theme="{StaticResource TitleSMSemiTheme}" />
                 </controls:StandardButton>
             </StackPanel>
+        </StackPanel>
+
+        <!-- system buttons -->
+        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="4" Margin="0, 0,16,0">
+            <controls:StandardButton x:Name="MinimizeButton"
+                                     Type="Tertiary"
+                                     Fill="None"
+                                     LeftIcon="{x:Static icons:IconValues.WindowMinimize}"
+                                     ShowIcon="Left"
+                                     ShowLabel="False" 
+                                     Click="MinimizeWindow"/>
+            <controls:StandardButton x:Name="MaximizeButton"
+                                     Type="Tertiary"
+                                     Fill="None"
+                                     LeftIcon="{x:Static icons:IconValues.WindowMaximize}"
+                                     ShowIcon="Left"
+                                     ShowLabel="False"
+                                     Click="MaximizeWindow" />
+            <controls:StandardButton x:Name="CloseButton"
+                                     Type="Tertiary"
+                                     Fill="None"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                     ShowIcon="Left"
+                                     ShowLabel="False" 
+                                     Click="CloseWindow"/>
         </StackPanel>
     </Grid>
 </reactiveUi:ReactiveUserControl>

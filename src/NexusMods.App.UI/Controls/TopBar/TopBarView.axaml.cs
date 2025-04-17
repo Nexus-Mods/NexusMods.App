@@ -122,4 +122,30 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             }
         );
     }
+    
+    private void CloseWindow(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var hostWindow = (Window)this.VisualRoot!;
+        hostWindow.Close();
+    }
+
+    private void MaximizeWindow(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var hostWindow = (Window)this.VisualRoot!;
+
+        if (hostWindow.WindowState == WindowState.Normal)
+        {
+            hostWindow.WindowState = WindowState.Maximized;
+        }
+        else
+        {
+            hostWindow.WindowState = WindowState.Normal;
+        }
+    }
+
+    private void MinimizeWindow(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Window hostWindow = (Window)this.VisualRoot!;
+        hostWindow.WindowState = WindowState.Minimized;
+    }
 }
