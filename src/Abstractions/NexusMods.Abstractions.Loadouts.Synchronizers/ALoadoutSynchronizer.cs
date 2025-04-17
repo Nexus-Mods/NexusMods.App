@@ -1157,7 +1157,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // TODO: This may be slow for very large games when other games/mods already exist.
         // Backup the files that are new or changed
         var archivedFiles = new ConcurrentBag<ArchivedFileEntry>();
-        var pinnedFiles = new ConcurrentBag<ArchivedFileEntry>();
+        var pinnedFileHashes = new ConcurrentBag<Hash>();
         await Parallel.ForEachAsync(files, async (item, _) =>
             {
                 var (gamePath, node) = item;
@@ -1179,7 +1179,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 archivedFiles.Add(archivedFile);
                 if (node.SourceItemType == LoadoutSourceItemType.Game)
-                    pinnedFiles.Add(archivedFile);
+                    pinnedFileHashes.Add(archivedFile.Hash);
             }
         );
 
@@ -1188,12 +1188,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         // Pin the files to avoid garbage collection.
         using var tx = Connection.BeginTransaction();
-        foreach (var item in pinnedFiles)
+        foreach (var hash in pinnedFileHashes)
         {
             _ = new GameBackedUpFile.New(tx)
             {
                 GameInstallId = installation.GameMetadataId,
-                Hash = item.Hash,
+                Hash = hash,
             };
         }
         await tx.Commit();
