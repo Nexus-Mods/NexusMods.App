@@ -15,32 +15,25 @@ internal class ManagedZipExtractor : IExtractor
         await using var stream = await source.GetStreamAsync().ConfigureAwait(false);
         using var archive = new ZipArchive(stream, mode: ZipArchiveMode.Read, leaveOpen: false, entryNameEncoding: null);
 
-        var directoryMapping = new Dictionary<string, RelativePath>(StringComparer.Ordinal);
-        foreach (var directoryEntry in archive.Entries.Where(IsDirectoryEntry))
+        foreach (var entry in archive.Entries)
         {
-            var relativeDirectoryPath = RelativePath.FromUnsanitizedInput(PathsHelper.FixDirectoryName(directoryEntry.FullName));
-            directoryMapping.Add(directoryEntry.FullName, relativeDirectoryPath);
+            var fixedPath = PathsHelper.FixPath(entry.FullName);
+            var relativePath = RelativePath.FromUnsanitizedInput(fixedPath);
+            var absolutePath = destination.Combine(relativePath);
 
-            var directoryPath = destination.Combine(relativeDirectoryPath);
-            if (!directoryPath.DirectoryExists()) directoryPath.CreateDirectory();
-        }
+            if (IsDirectoryEntry(entry))
+            {
+                if (!absolutePath.DirectoryExists()) absolutePath.CreateDirectory();
+                continue;
+            }
 
-        foreach (var fileEntry in archive.Entries.Where(IsFileEntry))
-        {
-            var fileName = RelativePath.FromUnsanitizedInput(PathsHelper.FixFileName(fileEntry.Name));
-            var directory = directoryMapping
-                .Where(kv => fileEntry.FullName.StartsWith(kv.Key, StringComparison.Ordinal))
-                .OrderByDescending(kv => kv.Key, StringComparer.Ordinal)
-                .First();
+            var parent = absolutePath.Parent;
+            if (!parent.DirectoryExists()) parent.CreateDirectory();
 
-            var relativePath = directory.Value.Join(fileName);
-            var outputPath = destination.Combine(relativePath);
+            await using var outputStream = absolutePath.Open(mode: FileMode.Create, access: FileAccess.ReadWrite, share: FileShare.Read);
+            outputStream.SetLength(entry.Length);
 
-            await using var outputStream = outputPath.Open(mode: FileMode.Create, access: FileAccess.ReadWrite, share: FileShare.Read);
-            outputStream.SetLength(fileEntry.Length);
-
-            await using var inputStream = fileEntry.Open();
-
+            await using var inputStream = entry.Open();
             await inputStream.CopyToAsync(outputStream, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
