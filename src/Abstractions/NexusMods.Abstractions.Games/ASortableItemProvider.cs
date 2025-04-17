@@ -26,7 +26,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
 
     private SortOrderId _sortOrderId;
     public SortOrderId SortOrderId { get; }
-    
+
     /// <inheritdoc />
     public LoadoutId LoadoutId { get; }
 
@@ -53,7 +53,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
 
     /// <summary>
     /// The persistent entries we have in the database. This can be any type
-    ///  of data we want as long as we can identify the sortable item the goes
+    ///  of data we want as long as we can identify the sortable item that goes
     ///  along with it + the EntityId as stored in the db.
     /// </summary>
     /// <param name="db"></param>
@@ -79,12 +79,15 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     /// <param name="parentFactory"></param>
     protected ASortableItemProvider(
         IConnection connection,
+        SortOrder.ReadOnly sortOrderModel,
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
     {
         _connection = connection;
         LoadoutId = loadoutId;
         ParentFactory = parentFactory;
+        _sortOrderTypeId = sortOrderModel.SortOrderTypeId;
+        _sortOrderId = sortOrderModel.SortOrderId;
 
         // populate read only list
         _orderCache.Connect()
@@ -130,11 +133,6 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     /// </summary>
     protected void Initialize()
     {
-        // Get the sort order model - this should ideally be overriden by the implementation.
-        var sortOrder = GetOrAddSortOrderModel().GetAwaiter().GetResult();
-        _sortOrderTypeId = sortOrder.SortOrderTypeId;
-        _sortOrderId = sortOrder.SortOrderId;
-
         // load the previously saved order
         var order = GenerateSortableItems();
         _orderCache.AddOrUpdate(order);

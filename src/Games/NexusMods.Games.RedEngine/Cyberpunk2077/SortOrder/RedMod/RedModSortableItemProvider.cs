@@ -56,7 +56,10 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
     {
+        // Get the sort order model - this should ideally be overriden by the implementation.
+        var sortOrderModel = await GetOrAddSortOrderModel(connection, loadoutId, parentFactory);
         return new RedModSortableItemProvider(connection,
+            sortOrderModel,
             loadoutId,
             parentFactory
         );
@@ -64,8 +67,9 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
 
     private RedModSortableItemProvider(
         IConnection connection,
+        RedModSortOrder.ReadOnly sortOrderModel,
         LoadoutId loadoutId,
-        ISortableItemProviderFactory parentFactory) : base(connection, loadoutId, parentFactory)
+        ISortableItemProviderFactory parentFactory) : base(connection, sortOrderModel.AsSortOrder(), loadoutId, parentFactory)
     {
         _connection = connection;
         Initialize();
@@ -148,7 +152,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
             }
         }
 
-        // Add new items
+        // Add new items.
         for (var i = 0; i < orderList.Count; i++)
         {
             var liveItem = orderList[i];
@@ -172,12 +176,6 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
         if (token.IsCancellationRequested) return;
 
         await tx.Commit();
-    }
-
-    protected override async ValueTask<Abstractions.Loadouts.SortOrder.ReadOnly> GetOrAddSortOrderModel()
-    {
-        var sortOrderModel = await GetOrAddSortOrderModel(_connection, LoadoutId, ParentFactory);
-        return sortOrderModel.AsSortOrder();
     }
 
     private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddSortOrderModel(
