@@ -1,13 +1,20 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
+using NexusMods.CrossPlatform;
 using NexusMods.Extensions.Hashing;
+using NexusMods.Games.Generic;
+using NexusMods.Games.RedEngine;
+using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
+using Xunit.Abstractions;
 
 namespace NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles;
 
@@ -15,8 +22,7 @@ namespace NexusMods.App.GarbageCollection.DataModel.Tests.FindUsedFiles;
 /// This ensures that 'game files' are marked as roots when performing the GC action.
 /// That is, the backup of game data which we made.
 /// </summary>
-/// <param name="serviceProvider"></param>
-public class MarkGameFilesTest(IServiceProvider serviceProvider) : GCStubbedGame(serviceProvider)
+public class MarkGameTestFilesTest(ITestOutputHelper testOutputHelper) : AGCStubbedGameTest<MarkGameTestFilesTest>(testOutputHelper)
 {
     [Fact]
     public async Task GameFilesAreRooted()
@@ -65,19 +71,12 @@ public class MarkGameFilesTest(IServiceProvider serviceProvider) : GCStubbedGame
         DataStoreReferenceMarker.MarkUsedFiles(Connection, gc); // <= picks up our marker on GcRootFileName
         return gc;
     }
-    
-    public class Startup
-    {
-        // https://github.com/pengweiqhca/Xunit.DependencyInjection?tab=readme-ov-file#3-closest-startup
-        // A trick for parallelizing tests with Xunit.DependencyInjection
-        public void ConfigureServices(IServiceCollection services) => DIHelpers.ConfigureServices(services);
-    }
 }
 
 /// <summary>
 /// A stubbed game for GC testing.
 /// </summary>
-public class GCStubbedGame : AGameTest<StubbedGame>
+public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
 {
     /// <summary/>
     public const string GcRootFileName = "FunIsInfinite.exe";
@@ -88,7 +87,7 @@ public class GCStubbedGame : AGameTest<StubbedGame>
     public Hash ExpectedHash { get; set; } = default!;
     
     /// <inheritdoc />
-    public GCStubbedGame(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    public AGCStubbedGameTest(ITestOutputHelper outputHelper) : base(outputHelper) { }
 
     /// <summary/>
     /// <remarks>
@@ -125,5 +124,12 @@ public class GCStubbedGame : AGameTest<StubbedGame>
 
         // Get the hash of the item we expect after first synchronize.
         ExpectedHash = await file.XxHash3Async(CancellationToken.None);
+    }
+    
+    protected override IServiceCollection AddServices(IServiceCollection services)
+    {
+        return base.AddServices(services)
+            .AddStandardGameLocators(false)
+            .AddStubbedGameLocators();
     }
 }
