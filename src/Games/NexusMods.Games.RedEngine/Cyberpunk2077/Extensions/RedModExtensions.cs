@@ -24,7 +24,7 @@ public static class RedModCollectionExtensions
                     return
                     [
                         // Eww
-                        new RedModWithState(g, g.RedModFolder(), g.IsEnabled(), Guid.NewGuid(), g.Id),
+                        new RedModWithState(g, g.RedModFolder(), g.IsEnabled(), Guid.NewGuid(), Optional<EntityId>.None),
                     ];
                 }
                 return modEntries

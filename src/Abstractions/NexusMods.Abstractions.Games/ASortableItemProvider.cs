@@ -325,13 +325,19 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
         // Remove outdated persistent items
         foreach (var dbItem in persistentSortableItems)
         {
+            if (!dbItem.EntityId.HasValue)
+            {
+                // We can't deal with this item - it probably hasn't been added
+                //  to the db yet.
+                continue;
+            }
             var liveItem = cachedSortableItems.FirstOrOptional(
                 i => i.ItemId.Equals(dbItem.ItemId)
             );
-
+            
             if (!liveItem.HasValue)
             {
-                tx.Delete(dbItem.EntityId, recursive: false);
+                tx.Delete(dbItem.EntityId.Value, recursive: false);
                 continue;
             }
 
@@ -339,7 +345,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
 
             if (dbItem.SortIndex != liveIdx)
             {
-                tx.Add(dbItem.EntityId, SortableEntry.SortIndex, liveIdx);
+                tx.Add(dbItem.EntityId.Value, SortableEntry.SortIndex, liveIdx);
             }
         }
 

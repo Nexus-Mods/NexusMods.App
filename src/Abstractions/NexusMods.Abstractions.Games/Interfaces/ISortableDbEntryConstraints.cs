@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Games.Interfaces;
@@ -12,8 +13,9 @@ public interface ISortableDbEntryConstraints
     //  we display to the user. (ISortableItem.ItemId)
     public Guid ItemId { get; }
     
-    // db id.
-    public EntityId EntityId { get; }
+    // db id. This can initially be null, but should be set once we start
+    //  generating the SortableItems
+    public Optional<EntityId> EntityId { get; }
     
     // The sort index for the TObject
     public int SortIndex { get; set; }
