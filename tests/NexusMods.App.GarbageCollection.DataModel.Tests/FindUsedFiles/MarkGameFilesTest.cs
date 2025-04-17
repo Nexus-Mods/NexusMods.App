@@ -31,7 +31,7 @@ public class MarkGameFilesTest(IServiceProvider serviceProvider) : GCStubbedGame
         
         // Act: Run a GC.
         var gc = CreateGC();
-        var newArchivePath = RunGarbageCollector(gc, out var toDelete);
+        RunGarbageCollector(gc, out _);
 
         // Assert: No game files should be deleted from FileStore, they are roots.
         (await FileStore.HaveFile(ExpectedHash)).Should().Be(true);
