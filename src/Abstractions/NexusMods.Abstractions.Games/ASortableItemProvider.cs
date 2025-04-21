@@ -37,11 +37,14 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     public IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
 
     /// <summary>
-    /// We don't actually care about the changesets as they're unreliable.
-    ///  we just want to kick off the update when something changes.
+    /// Returns an observable that will trigger when there are relevant changes to items being sorted,
+    /// such as additions or removals.
     /// </summary>
-    /// <returns></returns>
-    protected abstract IObservable<bool> GetObservableChanges();
+    /// <remarks>
+    /// This only indicates that the items have changed, but not the nature of the change,
+    /// which could lead to inefficient computation of changes and updates, but can be more reliable.
+    /// </remarks>
+    protected abstract IObservable<bool> GetItemsChangedObservable();
 
     /// <inheritdoc />
     public ISortableItemProviderFactory ParentFactory { get; }
@@ -139,7 +142,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
 
         Observable.Create<bool>(observer =>
                 {
-                    var subscription = GetObservableChanges()
+                    var subscription = GetItemsChangedObservable()
                         .Subscribe(_ => observer.OnNext(true))
                         .AddTo(_disposables);
                     return subscription;

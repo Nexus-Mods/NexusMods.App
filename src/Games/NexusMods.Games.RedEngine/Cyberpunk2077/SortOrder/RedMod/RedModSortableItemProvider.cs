@@ -112,7 +112,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
             .ToList();
     }
 
-    protected override IObservable<bool> GetObservableChanges()
+    protected override IObservable<bool> GetItemsChangedObservable()
     {
         return RedModLoadoutGroup.ObserveAll(_connection)
             .Transform((_, redModId) => LoadoutItem.Load(_connection.Db, redModId))
