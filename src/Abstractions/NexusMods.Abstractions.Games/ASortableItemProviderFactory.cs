@@ -56,20 +56,14 @@ public abstract class ASortableItemProviderFactory : ISortableItemProviderFactor
     public abstract Task<ILoadoutSortableItemProvider> CreateProviderAsync(IConnection connection, LoadoutId currentLoadoutId);
 
     /// <summary>
-    /// 
+    /// Constructor
     /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="gameId"></param>
-    /// <exception cref="InvalidOperationException"></exception>
     protected ASortableItemProviderFactory(
         IConnection connection,
         GameId gameId)
     {
         _connection = connection;
-        var gameRegistry = connection.ServiceProvider.GetRequiredService<IGameRegistry>();
-        var game = gameRegistry.Installations.Values
-                .FirstOrDefault(x => x.Game.GameId.Equals(gameId))?.GetGame();
-        if (game == null) return;
+        
         Loadout.ObserveAll(connection)
             .StartWithEmpty()
             .Filter(l => l.Installation.GameId == gameId) 

@@ -31,14 +31,14 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
     private readonly IConnection _connection;
     private ISortableItemProviderFactory[] _sortableItemProviderFactories;
 
-    public Cyberpunk2077Game(IServiceProvider provider, IConnection connection) : base(provider)
+    public Cyberpunk2077Game(IServiceProvider provider, IConnection connection, RedModSortableItemProviderFactory redModSortableProviderFactory) : base(provider)
     {
         _serviceProvider = provider;
         _connection = connection;
         
         _sortableItemProviderFactories =
         [
-            _serviceProvider.GetRequiredService<RedModSortableItemProviderFactory>(),
+            redModSortableProviderFactory,
         ];
     }
 
