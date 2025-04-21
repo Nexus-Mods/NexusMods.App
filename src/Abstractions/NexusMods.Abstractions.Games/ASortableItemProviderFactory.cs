@@ -1,8 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using DynamicData;
-using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
