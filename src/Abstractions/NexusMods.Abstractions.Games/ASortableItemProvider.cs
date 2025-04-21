@@ -60,7 +60,7 @@ public abstract class ASortableItemProvider<TItem> : ILoadoutSortableItemProvide
     /// <summary>
     /// The persistent entries we have in the database. This can be any type
     ///  of data we want as long as we can identify the sortable item that goes
-    ///  along with it + the EntityId as stored in the db.
+    ///  along with it + the SortableEntityId as stored in the db.
     /// </summary>
     /// <param name="db"></param>
     /// <returns></returns>
@@ -326,7 +326,7 @@ public abstract class ASortableItemProvider<TItem> : ILoadoutSortableItemProvide
         // Remove outdated persistent items
         foreach (var dbItem in persistentSortableItems)
         {
-            if (!dbItem.EntityId.HasValue)
+            if (!dbItem.SortableEntityId.HasValue)
             {
                 // We can't deal with this item - it probably hasn't been added
                 //  to the db yet.
@@ -338,7 +338,7 @@ public abstract class ASortableItemProvider<TItem> : ILoadoutSortableItemProvide
             
             if (!liveItem.HasValue)
             {
-                tx.Delete(dbItem.EntityId.Value, recursive: false);
+                tx.Delete(dbItem.SortableEntityId.Value, recursive: false);
                 continue;
             }
 
@@ -346,7 +346,7 @@ public abstract class ASortableItemProvider<TItem> : ILoadoutSortableItemProvide
 
             if (dbItem.SortIndex != liveIdx)
             {
-                tx.Add(dbItem.EntityId.Value, SortableEntry.SortIndex, liveIdx);
+                tx.Add(dbItem.SortableEntityId.Value, SortableEntry.SortIndex, liveIdx);
             }
         }
 

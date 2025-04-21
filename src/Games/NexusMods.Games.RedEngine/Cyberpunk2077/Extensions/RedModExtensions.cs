@@ -1,4 +1,5 @@
 using DynamicData.Kernel;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Extensions.BCL;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
@@ -24,7 +25,7 @@ public static class RedModCollectionExtensions
                     return
                     [
                         // Eww
-                        new RedModWithState(g, g.RedModFolder(), g.IsEnabled(), Guid.NewGuid(), Optional<EntityId>.None),
+                        new RedModWithState(g, g.RedModFolder(), g.IsEnabled(), Guid.NewGuid(), Optional<SortableEntryId>.None),
                     ];
                 }
                 return modEntries
@@ -32,7 +33,7 @@ public static class RedModCollectionExtensions
                     .Select(x => 
                     {
                         var itemId = x.AsSortableEntry().ItemId;
-                        return new RedModWithState(g, g.RedModFolder(), g.IsEnabled(), itemId, x.Id);
+                        return new RedModWithState(g, g.RedModFolder(), g.IsEnabled(), itemId, x.AsSortableEntry().SortableEntryId);
                     })
                     .OrderBy(x => x.SortIndex);
             })

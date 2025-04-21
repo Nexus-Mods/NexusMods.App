@@ -18,13 +18,13 @@ public class RedModWithState(
     RelativePath redModFolder,
     bool isEnabled,
     Guid itemId,
-    Optional<EntityId> entityId) : ISortableDbEntryConstraints
+    Optional<SortableEntryId> sortableEntityId) : ISortableDbEntryConstraints
 {
     public RedModLoadoutGroup.ReadOnly RedMod { get; } = redMod;
     public RelativePath RedModFolder { get; } = redModFolder;
     public bool IsEnabled { get; } = isEnabled;
     public Guid ItemId { get; } = itemId;
-    public Optional<EntityId> EntityId { get; } = entityId;
+    public Optional<SortableEntryId> SortableEntityId { get; } = sortableEntityId;
     public int SortIndex { get; set; }
 }
 
@@ -135,7 +135,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
         // Remove outdated persistent items
         foreach (var dbItem in persistentEntries)
         {
-            if (!dbItem.EntityId.HasValue)
+            if (!dbItem.SortableEntityId.HasValue)
                 continue;
             
             var liveItem = orderList.FirstOrOptional(
@@ -144,7 +144,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
 
             if (!liveItem.HasValue)
             {
-                tx.Delete(dbItem.EntityId.Value, recursive: false);
+                tx.Delete(dbItem.SortableEntityId.Value, recursive: false);
                 continue;
             }
 
@@ -152,7 +152,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
 
             if (dbItem.SortIndex != liveIdx)
             {
-                tx.Add(dbItem.EntityId.Value, SortableEntry.SortIndex, liveIdx);
+                tx.Add(dbItem.SortableEntityId.Value, SortableEntry.SortIndex, liveIdx);
             }
         }
 

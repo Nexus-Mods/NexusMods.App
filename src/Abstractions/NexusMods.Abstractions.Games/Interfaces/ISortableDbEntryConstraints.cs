@@ -15,7 +15,7 @@ public interface ISortableDbEntryConstraints
     
     // db id. This can initially be null, but should be set once we start
     //  generating the SortableItems
-    public Optional<EntityId> EntityId { get; }
+    public Optional<SortableEntryId> SortableEntityId { get; }
     
     // The sort index for the TObject
     public int SortIndex { get; set; }
