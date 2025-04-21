@@ -10,6 +10,9 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
 {
     private bool _isDisposed;
     
+    /// <summary>
+    /// Async semaphore for serializing changes to the sort order
+    /// </summary>
     protected readonly SemaphoreSlim Semaphore = new(1, 1);
     
     /// <summary>
@@ -49,6 +52,9 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
         Dispose(true);
     }
     
+    /// <summary>
+    /// Disposes base class
+    /// </summary>
     protected virtual void Dispose(bool disposing)
     {
         if (_isDisposed) return;
