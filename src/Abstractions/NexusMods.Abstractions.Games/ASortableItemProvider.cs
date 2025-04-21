@@ -11,9 +11,12 @@ using Observable = R3.Observable;
 
 namespace NexusMods.Abstractions.Games;
 
-/// <inheritdoc />
-public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvider
-    where TObject : ISortableDbEntryConstraints
+/// <summary>
+/// A loadout specific provider and manager of sortable items.
+/// </summary>
+/// <typeparam name="TItem">Type representing an item being sorted</typeparam>
+public abstract class ASortableItemProvider<TItem> : ILoadoutSortableItemProvider
+    where TItem : ISortableDbEntryConstraints
 {
     private readonly IConnection _connection;
     private readonly SourceCache<ISortableItem, Guid> _orderCache = new(item => item.ItemId);
@@ -52,7 +55,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     /// <summary>
     ///  Create a sortableItem from the given persistent item. 
     /// </summary>
-    protected abstract ISortableItem CreateSortableItem(IConnection connection, LoadoutId loadoutId, TObject item, int idx);
+    protected abstract ISortableItem CreateSortableItem(IConnection connection, LoadoutId loadoutId, TItem item, int idx);
 
     /// <summary>
     /// The persistent entries we have in the database. This can be any type
@@ -61,7 +64,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     /// </summary>
     /// <param name="db"></param>
     /// <returns></returns>
-    protected abstract List<TObject> GetPersistentEntries(IDb? db = null);
+    protected abstract List<TItem> GetPersistentEntries(IDb? db = null);
 
     /// <summary>
     /// Allows the implementation to pull the current entries from the cache
@@ -118,9 +121,7 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
         for (var i = 0; i < persistentEntries.Length; i++)
         {
             var entry = persistentEntries[i];
-            var sortableItem = CreateSortableItem(_connection, LoadoutId, entry,
-                i
-            );
+            var sortableItem = CreateSortableItem(_connection, LoadoutId, entry, i);
             sortableItems.Add(sortableItem);
         }
 
@@ -379,9 +380,9 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     /// <returns>The new sorting</returns>
     protected List<ISortableItem> SynchronizeSortingToItems(
         List<ISortableItem> currentOrder,
-        List<TObject> availableMods)
+        List<TItem> availableMods)
     {
-        var modsToAdd = new List<TObject>();
+        var modsToAdd = new List<TItem>();
         var sortableItemsToRemove = new List<ISortableItem>();
 
         // Find items to remove
