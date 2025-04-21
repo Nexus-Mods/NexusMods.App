@@ -4,7 +4,7 @@ using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.Abstractions.Games.Interfaces;
 
 /// <summary>
-/// We will never know what TObject is, but we can make sure it has a couple of
+/// We will never know what TItem is, but we can make sure it has a couple of
 ///  constraints. 
 /// </summary>
 public interface ISortableDbEntryConstraints
