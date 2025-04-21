@@ -134,6 +134,7 @@
                     <icons:UnifiedIcon Classes="TrayArrowDown" />
                     <icons:UnifiedIcon Classes="FolderUploadOutline" />
                     <icons:UnifiedIcon Classes="TrophyOutline" />
+                    <icons:UnifiedIcon Classes="DragVerticalDots" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -697,5 +698,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.TrophyOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.TrophyOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.DragVerticalDots">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.DragVerticalDots}" />
     </Style>
 </Styles>

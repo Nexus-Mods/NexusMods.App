@@ -22,6 +22,12 @@
                         <DataTemplate x:DataType="local:LoadOrderComponents+IndexComponent">
                             
                             <StackPanel x:Name="LoadOrderItemIndexColumnStack">
+                                
+                                <!-- Drag indicator -->
+                                <Border x:Name="ItemModDragBorder">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragVerticalDots}"/>
+                                </Border>
+
                                 <controls:StandardButton x:Name="UpButton"
                                                          Command="{CompiledBinding MoveUp}"
                                                          LeftIcon="{x:Static icons:IconValues.ArrowUp}"
