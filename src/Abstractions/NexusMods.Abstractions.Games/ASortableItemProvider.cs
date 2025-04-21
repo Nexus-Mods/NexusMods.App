@@ -72,14 +72,11 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
     {
         return _orderCache.Items.OrderBy(x => x.SortIndex).ToList();
     }
-
+    
     /// <summary>
-    /// 
+    /// Protected constructor.
+    /// It is recommended to use static CreateAsync methods to create instances of this class with the correct initial state.
     /// </summary>
-    /// <param name="connection"></param>
-    /// <param name="loadoutId"></param>
-    /// <param name="id"></param>
-    /// <param name="parentFactory"></param>
     protected ASortableItemProvider(
         IConnection connection,
         SortOrder.ReadOnly sortOrderModel,
