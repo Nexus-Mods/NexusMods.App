@@ -32,13 +32,28 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
 {
     private readonly IConnection _connection;
     
+    public static async Task<RedModSortableItemProvider> CreateAsync(
+        IConnection connection,
+        LoadoutId loadoutId,
+        ISortableItemProviderFactory parentFactory)
+    {
+        // Get the sort order model
+        var sortOrderModel = await GetOrAddDefaultSortOrderModel(connection, loadoutId, parentFactory);
+        
+        return new RedModSortableItemProvider(connection,
+            sortOrderModel,
+            loadoutId,
+            parentFactory
+        );
+    }
+    
     protected override ISortableItem CreateSortableItem(IConnection connection, LoadoutId loadoutId, RedModWithState item, int idx)
     {
         var folderName = item.RedModFolder;
         return new RedModSortableItem(this,
             sortIndex: idx,
             redModFolderName: folderName,
-            // Temp values, will get updated when we load the RedMods
+            // Temp values will get updated when we load the RedMods
             modName: folderName,
             isActive: false,
             itemId: item.ItemId
@@ -50,25 +65,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
         var dbToUse = db ?? _connection.Db;
         return dbToUse.GetRedModsWithState(LoadoutId, SortOrderId);
     }
-
-    public static async Task<RedModSortableItemProvider> CreateAsync(
-        IConnection connection,
-        LoadoutId loadoutId,
-        ISortableItemProviderFactory parentFactory)
-    {
-        // Get the sort order model
-        var sortOrderModel = await GetOrAddDefaultSortOrderModel(connection, loadoutId, parentFactory);
-        
-        // Might need the RedModSortOrder model to be created instead of the default eventually. But
-        //  for now, the default one will do.
-        // var sortOrderModel = await GetOrAddSortOrderModel(connection, loadoutId, parentFactory);
-        return new RedModSortableItemProvider(connection,
-            sortOrderModel,
-            loadoutId,
-            parentFactory
-        );
-    }
-
+    
     private RedModSortableItemProvider(
         IConnection connection,
         Abstractions.Loadouts.SortOrder.ReadOnly sortOrderModel,
