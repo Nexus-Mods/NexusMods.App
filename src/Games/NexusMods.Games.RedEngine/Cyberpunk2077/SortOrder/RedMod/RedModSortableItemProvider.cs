@@ -79,7 +79,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
 
         // Retrieves the order from the database using the passed db
         // NOTE: depending on the db passed, the order might not be the latest
-        var sortOrder = GetSortableEntries(dbToUse);
+        var sortOrder = GetSortableEntries();
 
         // Sanitize the order, applying it to the redMods in questions
         var validatedOrder = SynchronizeSortingToItems(sortOrder, enabledRedMods);

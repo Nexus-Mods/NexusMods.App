@@ -67,11 +67,9 @@ public abstract class ASortableItemProvider<TItem> : ILoadoutSortableItemProvide
     protected abstract List<TItem> GetPersistentEntries(IDb? db = null);
 
     /// <summary>
-    /// Allows the implementation to pull the current entries from the cache
+    /// Returns the current list of sortable items from the cache, sorted by sort index.
     /// </summary>
-    /// <param name="db"></param>
-    /// <returns></returns>
-    protected List<ISortableItem> GetSortableEntries(IDb? db = null)
+    public List<ISortableItem> GetSortableEntries()
     {
         return _orderCache.Items.OrderBy(x => x.SortIndex).ToList();
     }
