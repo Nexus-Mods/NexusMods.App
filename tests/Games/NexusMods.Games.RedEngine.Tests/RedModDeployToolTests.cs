@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using System.Text;
+using DynamicData;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
@@ -54,20 +55,24 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             var provider = factory.GetLoadoutSortableItemProvider(loadout);
 
             var tsc1 = new TaskCompletionSource<Unit>();
-
+            ISortableItem[] sortableItemsSnapshot = [];
+            
             // listen for the order to be updated
-            using var _ = provider.SortableItems
-                .WhenAnyValue(coll => coll.Count)
-                .Where(count => count == 12)
-                .Distinct()
-                .Subscribe(_ =>
+            using var _ = provider.SortableItemsChangeSet
+                .QueryWhenChanged(items =>
                     {
-                        if (!tsc1.Task.IsCompleted)
+                        if (items.Count == 12 && !tsc1.Task.IsCompleted)
                         {
                             tsc1.SetResult(Unit.Default);
+                            sortableItemsSnapshot = items.Items.ToArray();
+                            return true;
                         }
+
+                        return false;
                     }
-                );
+                )
+                .Subscribe();
+            
         
             // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
             // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
@@ -78,11 +83,6 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             if (await Task.WhenAny(tsc1.Task, timeoutTask) == timeoutTask)
             {
                 provider.SortableItems.Count.Should().Be(12, because: "SortableItems should have been updated after the mods were installed");
-                // print the contents of SortableItems:
-                foreach (var item in provider.SortableItems)
-                {
-                    _testOutputHelper.WriteLine($"{item.DisplayName} ({item.SortIndex})");
-                }
                 throw new TimeoutException($"Timed out waiting for SortableItems to be updated to contain 12 items, current count: {provider.SortableItems.Count}");
             }
             loadout = loadout.Rebase();
@@ -96,8 +96,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             sb.AppendLine(name);
             sb.AppendLine($"Delta: {delta}");
 
-            var order = provider.SortableItems.ToArray();
-            var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
+            var specificRedMod = sortableItemsSnapshot.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
 
             var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var token = cts2.Token;
@@ -141,20 +140,23 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         var provider = factory.GetLoadoutSortableItemProvider(loadout);
         
         var tsc1 = new TaskCompletionSource<Unit>();
+        ISortableItem[] sortableItemsSnapshot = [];
 
         // listen for the order to be updated
-        using var _ = provider.SortableItems
-            .WhenAnyValue(coll => coll.Count)
-            .Where(count => count == 12)
-            .Distinct()
-            .Subscribe(_ =>
+        using var _ = provider.SortableItemsChangeSet
+            .QueryWhenChanged(items =>
                 {
-                    if (!tsc1.Task.IsCompleted)
+                    if (items.Count == 12 && !tsc1.Task.IsCompleted)
                     {
                         tsc1.SetResult(Unit.Default);
+                        sortableItemsSnapshot = items.Items.ToArray();
+                        return true;
                     }
+
+                    return false;
                 }
-            );
+            )
+            .Subscribe();
         
         // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
         // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
@@ -165,18 +167,13 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         if (await Task.WhenAny(tsc1.Task, timeoutTask) == timeoutTask)
         {
             provider.SortableItems.Count.Should().Be(12, because: "SortableItems should have been updated after the mods were installed");
-            // print the contents of SortableItems:
-            foreach (var item in provider.SortableItems)
-            {
-                _testOutputHelper.WriteLine($"{item.DisplayName} ({item.SortIndex})");
-            }
+            
             throw new TimeoutException($"Timed out waiting for SortableItems to be updated to contain 12 items, current count: {provider.SortableItems.Count}");
         }
         loadout = loadout.Rebase();
         
-        var order = provider.SortableItems.ToArray();
-        var sourceItems = order.Where(item => sourceIndices.Contains(item.SortIndex)).ToArray();
-        var targetItem = order.Single(g => g.SortIndex == targetIndex);
+        var sourceItems = sortableItemsSnapshot.Where(item => sourceIndices.Contains(item.SortIndex)).ToArray();
+        var targetItem = sortableItemsSnapshot.Single(g => g.SortIndex == targetIndex);
         
         var sb = new StringBuilder();
         sb.AppendLine("Starting Order:");
