@@ -6,6 +6,7 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
 using Humanizer;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
@@ -18,7 +19,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderViewModel
 {
-    public TreeDataGridAdapter<CompositeItemModel<Guid>, Guid> Adapter { get; set; }
+    public TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; set; }
     public string SortOrderName { get; set; } = "Sort Order Name";
     public string InfoAlertTitle { get; set; } = "Info Alert Heading";
     public string InfoAlertBody { get; set; } = "Info Alert Message";
@@ -46,11 +47,11 @@ public class LoadOrderDesignViewModel : AViewModel<ILoadOrderViewModel>, ILoadOr
 }
 
 // adapter used for design view, based on the actual adapter LoadOrderViewModel.LoadOrderTreeDataGridAdapter 
-public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<CompositeItemModel<Guid>, Guid>
+public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey>
 {
-    protected override IObservable<IChangeSet<CompositeItemModel<Guid>, Guid>> GetRootsObservable(bool viewHierarchical)
+    protected override IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> GetRootsObservable(bool viewHierarchical)
     {
-        var items = new ObservableCollection<CompositeItemModel<Guid>>([
+        var items = new ObservableCollection<CompositeItemModel<ISortItemKey>>([
                 CreateDesignModel("Item 0", Guid.NewGuid(), 0, true),
                 CreateDesignModel("Item 1", Guid.NewGuid(), 1, false),
                 CreateDesignModel("Item 2", Guid.NewGuid(), 2, true),
@@ -64,25 +65,25 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<CompositeI
         return items.ToObservableChangeSet(item => ((item).Key));
     }
 
-    protected override IColumn<CompositeItemModel<Guid>>[] CreateColumns(bool viewHierarchical)
+    protected override IColumn<CompositeItemModel<ISortItemKey>>[] CreateColumns(bool viewHierarchical)
     {
-        var indexColumn = ColumnCreator.Create<Guid, LoadOrderColumns.IndexColumn>(
+        var indexColumn = ColumnCreator.Create<ISortItemKey, LoadOrderColumns.IndexColumn>(
             columnHeader: "Load Order",
             canUserSortColumn: false,
             canUserResizeColumn: false
         );
         
-        var expanderColumn = ITreeDataGridItemModel<CompositeItemModel<Guid>, Guid>.CreateExpanderColumn(indexColumn);
+        var expanderColumn = ITreeDataGridItemModel<CompositeItemModel<ISortItemKey>, ISortItemKey>.CreateExpanderColumn(indexColumn);
 
         return
         [
             expanderColumn,
-            ColumnCreator.Create<Guid, LoadOrderColumns.DisplayNameColumn>(
+            ColumnCreator.Create<ISortItemKey, LoadOrderColumns.DisplayNameColumn>(
                 columnHeader: "DisplayName",
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             ),
-            ColumnCreator.Create<Guid, LoadOrderColumns.ModNameColumn>(
+            ColumnCreator.Create<ISortItemKey, LoadOrderColumns.ModNameColumn>(
                 columnHeader: "ModName",
                 canUserSortColumn: false,
                 canUserResizeColumn: false
@@ -90,9 +91,9 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<CompositeI
         ];
     }
 
-    private CompositeItemModel<Guid> CreateDesignModel(string name, Guid guid, int sortIndex, bool isActive)
+    private CompositeItemModel<ISortItemKey> CreateDesignModel(string name, Guid guid, int sortIndex, bool isActive)
     {
-        var model = new CompositeItemModel<Guid>(guid);
+        var model = new CompositeItemModel<ISortItemKey>(new SortItemKey<Guid>(guid));
         model.Add(LoadOrderColumns.DisplayNameColumn.DisplayNameComponentKey, new StringComponent(name));
         model.Add(LoadOrderColumns.ModNameColumn.ModNameComponentKey, new StringComponent(name));
         model.Add(LoadOrderColumns.IsActiveComponentKey, new ValueComponent<bool>(isActive));

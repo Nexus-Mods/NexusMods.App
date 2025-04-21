@@ -5,7 +5,7 @@
         xmlns:files="clr-namespace:NexusMods.App.UI.Controls.Trees.Files;assembly=NexusMods.App.UI"
         xmlns:converters="clr-namespace:NexusMods.App.UI.Converters;assembly=NexusMods.App.UI"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime">
+        xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games">
     <!-- NOTE(Al12rs): Keep: `xmlns:system="clr-namespace:System;assembly=System.Runtime"` even if marked as unused -->
     <!-- See false positive error and note for CompositeItemModel later down the file -->
 
@@ -32,7 +32,7 @@
         <!-- NOTE(Al12rs): CompositeItemModel with new x:TypeArguments syntax works fine, but Rider doesn't like it. -->
         <ControlTemplate x:Key="LoadOrderItemTreeRowTemplate"
                          TargetType="TreeDataGridRow"
-                         x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=system:Guid}">
+                         x:DataType="{x:Type controls:CompositeItemModel, x:TypeArguments=games:ISortItemKey}">
             <Border x:Name="RowOuterBorder"
                     Background="{StaticResource SurfaceTransparentBrush}">
                 <Border x:Name="RowBorder"

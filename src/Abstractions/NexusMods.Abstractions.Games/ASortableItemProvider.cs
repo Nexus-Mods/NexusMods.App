@@ -34,10 +34,10 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     public abstract ReadOnlyObservableCollection<ISortableItem> SortableItems { get; }
 
     /// <inheritdoc />
-    public abstract IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
+    public abstract IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
 
     /// <Inheritdoc />
-    public abstract Optional<ISortableItem> GetSortableItem(Guid itemId);
+    public abstract Optional<ISortableItem> GetSortableItem(ISortItemKey itemId);
     
     /// <Inheritdoc />
     public abstract Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token);

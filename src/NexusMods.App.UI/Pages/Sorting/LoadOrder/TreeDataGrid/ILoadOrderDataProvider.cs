@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public interface ILoadOrderDataProvider
 {
-    IObservable<IChangeSet<CompositeItemModel<Guid>, Guid>> ObserveLoadOrder(
+    IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> ObserveLoadOrder(
         ILoadoutSortableItemProvider sortableItemProvider,
         Observable<ListSortDirection> sortDirectionObservable);
 }

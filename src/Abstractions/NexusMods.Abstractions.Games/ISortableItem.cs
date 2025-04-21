@@ -37,10 +37,9 @@ public interface ISortableItem : IComparable<ISortableItem>
     public bool IsActive { get; set; }
     
     /// <summary>
-    /// Identifier for the item, meant to be used as Key for changesets and other UI related collection tracking
+    /// Represents a game-specific id for the item, ideally what the game uses to identify the items, often a path
     /// </summary>
-    public Guid ItemId { get; }
-    
+    public ISortItemKey Key { get; }
     
     int IComparable<ISortableItem>.CompareTo(ISortableItem? other)
     {

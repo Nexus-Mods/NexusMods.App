@@ -28,12 +28,12 @@ public interface ILoadoutSortableItemProvider : IDisposable
     /// <summary>
     /// Change set of sortable items in the sort order
     /// </summary>
-    public IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
+    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
     
     /// <summary>
     /// Returns the sortable item with the given id
     /// </summary>
-    public Optional<ISortableItem> GetSortableItem(Guid itemId);
+    public Optional<ISortableItem> GetSortableItem(ISortItemKey itemId);
 
     /// <summary>
     /// Sets the relative position of a sortable item in the sort order

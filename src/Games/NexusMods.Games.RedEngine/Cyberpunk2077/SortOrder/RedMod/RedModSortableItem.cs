@@ -13,18 +13,18 @@ public class RedModSortableItem : ISortableItem, IComparable<RedModSortableItem>
         DisplayName = redModFolderName.ToString();
         ModName = modName;
         IsActive = isActive;
-        ItemId = Guid.NewGuid();
+        Key = new SortItemKey<string>(redModFolderName);
     }
     
     public RelativePath RedModFolderName { get; set; }
+    
+    public ISortItemKey Key { get; }
 
     public ILoadoutSortableItemProvider SortableItemProvider { get; }
     public int SortIndex { get; set; }
     public string DisplayName { get; }
     public string ModName { get; set; }
     public bool IsActive { get; set; }
-    
-    public Guid ItemId { get; }
 
     public int CompareTo(RedModSortableItem? other)
     {

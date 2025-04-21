@@ -14,7 +14,7 @@ namespace NexusMods.App.UI.Pages.Sorting;
 public class LoadOrderDataProvider : ILoadOrderDataProvider
 {
     
-    public IObservable<IChangeSet<CompositeItemModel<Guid>, Guid>> ObserveLoadOrder(
+    public IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> ObserveLoadOrder(
         ILoadoutSortableItemProvider sortableItemProvider,
         Observable<ListSortDirection> sortDirectionObservable)
     {
@@ -44,12 +44,12 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
     }
 
 
-    private static CompositeItemModel<Guid> ToLoadOrderItemModel(
+    private static CompositeItemModel<ISortItemKey> ToLoadOrderItemModel(
         ISortableItem sortableItem,
         R3.Observable<int> topMostIndexObservable,
         R3.Observable<int> bottomMostIndexObservable)
     {
-        var compositeModel = new CompositeItemModel<Guid>(sortableItem.ItemId);
+        var compositeModel = new CompositeItemModel<ISortItemKey>(sortableItem.Key);
 
         // DisplayName
         compositeModel.Add(LoadOrderColumns.DisplayNameColumn.DisplayNameComponentKey,

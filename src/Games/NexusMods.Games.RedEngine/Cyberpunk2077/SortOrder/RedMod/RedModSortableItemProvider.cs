@@ -23,14 +23,14 @@ public class RedModSortableItemProvider : ASortableItemProvider
     private readonly IConnection _connection;
     private bool _isDisposed;
 
-    private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.RedModFolderName);
+    private readonly SourceCache<RedModSortableItem, ISortItemKey> _orderCache = new(item => item.Key);
 
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
     private readonly SortOrderId _sortOrderId;
     private readonly CompositeDisposable _disposables = new();
     public override ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
-    public override IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
+    public override IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
 
     public static async Task<RedModSortableItemProvider> CreateAsync(
         IConnection connection,
@@ -67,7 +67,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             .Subscribe()
             .AddTo(_disposables);
         
-        SortableItemsChangeSet = _readOnlyOrderList.ToObservableChangeSet(item => item.ItemId).RefCount();
+        SortableItemsChangeSet = _readOnlyOrderList.ToObservableChangeSet(item => item.Key).RefCount();
 
         // Observe RedMod groups changes
         RedModLoadoutGroup.ObserveAll(_connection)
@@ -92,9 +92,9 @@ public class RedModSortableItemProvider : ASortableItemProvider
     }
 
 
-    public override Optional<ISortableItem> GetSortableItem(Guid itemId)
+    public override Optional<ISortableItem> GetSortableItem(ISortItemKey itemId)
     {
-        return _readOnlyOrderList.FirstOrOptional(item => item.ItemId.Equals(itemId));
+        return _readOnlyOrderList.FirstOrOptional(item => item.Key.Equals(itemId));
     }
 
     public override async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)

@@ -3,17 +3,17 @@
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                    xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games">
 
     <!-- Composite columns -->
     <!-- Index Column -->
     <DataTemplate x:Key="{x:Static local:LoadOrderColumns+IndexColumn.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
-            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="system:Guid" />
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="games:ISortItemKey" />
         </DataTemplate.DataType>
         
         <!-- IndexComponent -->
-        <controls:ComponentControl x:TypeArguments="system:Guid" 
+        <controls:ComponentControl x:TypeArguments="games:ISortItemKey" 
                                    Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LoadOrderComponents+IndexComponent"
@@ -61,7 +61,7 @@
     <!-- DisplayName Column -->
     <DataTemplate x:Key="{x:Static local:LoadOrderColumns+DisplayNameColumn.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
-            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="system:Guid" />
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="games:ISortItemKey" />
         </DataTemplate.DataType>
 
         <StackPanel x:Name="LoadOrderItemNameColumnStack" Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
@@ -72,7 +72,7 @@
             </Border>
             
             <!-- DisplayName -->
-            <controls:ComponentControl x:TypeArguments="system:Guid"
+            <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
                                        Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
@@ -91,9 +91,9 @@
     <!-- ModName Column -->
     <DataTemplate x:Key="{x:Static local:LoadOrderColumns+ModNameColumn.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
-            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="system:Guid" />
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="games:ISortItemKey" />
         </DataTemplate.DataType>
-            <controls:ComponentControl x:TypeArguments="system:Guid"
+            <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
                                        Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"

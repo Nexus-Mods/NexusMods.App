@@ -43,7 +43,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
     public AlertSettingsWrapper AlertSettingsWrapper { get; }
 
-    public TreeDataGridAdapter<CompositeItemModel<Guid>, Guid> Adapter { get; }
+    public TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; }
 
     public LoadOrderViewModel(LoadoutId loadoutId, 
         ISortableItemProviderFactory itemProviderFactory, 
@@ -200,17 +200,17 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
     }
 }
 
-public readonly record struct MoveUpCommandPayload(CompositeItemModel<Guid> Item);
-public readonly record struct MoveDownCommandPayload(CompositeItemModel<Guid> Item);
+public readonly record struct MoveUpCommandPayload(CompositeItemModel<ISortItemKey> Item);
+public readonly record struct MoveDownCommandPayload(CompositeItemModel<ISortItemKey> Item);
 
 
-public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<Guid>, Guid>,
+public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey>,
     ITreeDataGirdMessageAdapter<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>>
 {
     private readonly ILoadoutSortableItemProvider _sortableItemsProvider;
     private readonly ILoadOrderDataProvider[] _loadOrderDataProviders;
     private readonly R3.Observable<ListSortDirection> _sortDirectionObservable;
-    private readonly System.Reactive.Subjects.Subject<IComparer<CompositeItemModel<Guid>>> _resortSubject = new(); 
+    private readonly System.Reactive.Subjects.Subject<IComparer<CompositeItemModel<ISortItemKey>>> _resortSubject = new(); 
     private readonly CompositeDisposable _disposables = new();
 
     public Subject<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
@@ -225,10 +225,10 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
 
         _loadOrderDataProviders = serviceProvider.GetServices<ILoadOrderDataProvider>().ToArray();
         
-        var ascendingComparer = SortExpressionComparer<CompositeItemModel<Guid>>.Ascending(
+        var ascendingComparer = SortExpressionComparer<CompositeItemModel<ISortItemKey>>.Ascending(
             item => item.Get<LoadOrderComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value
         );
-        var descendingComparer = SortExpressionComparer<CompositeItemModel<Guid>>.Descending(
+        var descendingComparer = SortExpressionComparer<CompositeItemModel<ISortItemKey>>.Descending(
             item => item.Get<LoadOrderComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value
         );
         
@@ -251,7 +251,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         activationDisposable.DisposeWith(_disposables);
     }
 
-    protected override void BeforeModelActivationHook(CompositeItemModel<Guid> model)
+    protected override void BeforeModelActivationHook(CompositeItemModel<ISortItemKey> model)
     {
         base.BeforeModelActivationHook(model);
         
@@ -299,32 +299,32 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     }
     
 
-    protected override IObservable<IChangeSet<CompositeItemModel<Guid>, Guid>> GetRootsObservable(bool viewHierarchical)
+    protected override IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> GetRootsObservable(bool viewHierarchical)
     {
         return _loadOrderDataProviders
             .Select(x => x.ObserveLoadOrder(_sortableItemsProvider, _sortDirectionObservable))
             .MergeChangeSets();
     }
 
-    protected override IColumn<CompositeItemModel<Guid>>[] CreateColumns(bool viewHierarchical)
+    protected override IColumn<CompositeItemModel<ISortItemKey>>[] CreateColumns(bool viewHierarchical)
     {
-        var indexColumn = ColumnCreator.Create<Guid, LoadOrderColumns.IndexColumn>(
+        var indexColumn = ColumnCreator.Create<ISortItemKey, LoadOrderColumns.IndexColumn>(
             columnHeader: _sortableItemsProvider.ParentFactory.IndexColumnHeader,
             canUserSortColumn: false,
             canUserResizeColumn: false
         );
         
-        var expanderColumn = ITreeDataGridItemModel<CompositeItemModel<Guid>, Guid>.CreateExpanderColumn(indexColumn);
+        var expanderColumn = ITreeDataGridItemModel<CompositeItemModel<ISortItemKey>, ISortItemKey>.CreateExpanderColumn(indexColumn);
 
         return
         [
             expanderColumn,
-            ColumnCreator.Create<Guid, LoadOrderColumns.DisplayNameColumn>(
+            ColumnCreator.Create<ISortItemKey, LoadOrderColumns.DisplayNameColumn>(
                 columnHeader: _sortableItemsProvider.ParentFactory.DisplayNameColumnHeader,
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             ),
-            ColumnCreator.Create<Guid, LoadOrderColumns.ModNameColumn>(
+            ColumnCreator.Create<ISortItemKey, LoadOrderColumns.ModNameColumn>(
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             )
