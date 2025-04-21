@@ -94,7 +94,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
     public override Optional<ISortableItem> GetSortableItem(Guid itemId)
     {
-        return SortableItems.FirstOrOptional(item => item.ItemId.Equals(itemId));
+        return _readOnlyOrderList.FirstOrOptional(item => item.ItemId.Equals(itemId));
     }
 
     public override async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)
