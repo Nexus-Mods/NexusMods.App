@@ -47,25 +47,6 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
         );
     }
     
-    protected override ISortableItem CreateSortableItem(IConnection connection, LoadoutId loadoutId, RedModWithState item, int idx)
-    {
-        var folderName = item.RedModFolder;
-        return new RedModSortableItem(this,
-            sortIndex: idx,
-            redModFolderName: folderName,
-            // Temp values will get updated when we load the RedMods
-            modName: folderName,
-            isActive: false,
-            itemId: item.ItemId
-        );
-    }
-
-    protected override List<RedModWithState> GetPersistentEntries(IDb? db = null)
-    {
-        var dbToUse = db ?? _connection.Db;
-        return dbToUse.GetRedModsWithState(LoadoutId, SortOrderId);
-    }
-    
     private RedModSortableItemProvider(
         IConnection connection,
         Abstractions.Loadouts.SortOrder.ReadOnly sortOrderModel,
@@ -107,6 +88,25 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModWithState>
             .Where(si => enabledRedMods.Any(m => m.ItemId.Equals(si.ItemId)))
             .Select(si => si.ModName)
             .ToList();
+    }
+    
+    protected override ISortableItem CreateSortableItem(IConnection connection, LoadoutId loadoutId, RedModWithState item, int idx)
+    {
+        var folderName = item.RedModFolder;
+        return new RedModSortableItem(this,
+            sortIndex: idx,
+            redModFolderName: folderName,
+            // Temp values will get updated when we load the RedMods
+            modName: folderName,
+            isActive: false,
+            itemId: item.ItemId
+        );
+    }
+
+    protected override List<RedModWithState> GetPersistentEntries(IDb? db = null)
+    {
+        var dbToUse = db ?? _connection.Db;
+        return dbToUse.GetRedModsWithState(LoadoutId, SortOrderId);
     }
 
     protected override IObservable<bool> GetItemsChangedObservable()
