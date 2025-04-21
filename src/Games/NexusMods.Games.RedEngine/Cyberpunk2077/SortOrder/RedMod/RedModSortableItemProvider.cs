@@ -18,7 +18,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 using RedModWithState = (RedModLoadoutGroup.ReadOnly RedMod, RelativePath RedModFolder, bool IsEnabled);
 
-public class RedModSortableItemProvider : ILoadoutSortableItemProvider
+public class RedModSortableItemProvider : ASortableItemProvider
 {
     private readonly IConnection _connection;
 
@@ -29,12 +29,8 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     private readonly SortOrderId _sortOrderId;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly CompositeDisposable _disposables = new();
-    public ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
-    public IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
-
-
-    public LoadoutId LoadoutId { get; }
-    public ISortableItemProviderFactory ParentFactory { get; }
+    public override ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
+    public override IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
 
     public static async Task<RedModSortableItemProvider> CreateAsync(
         IConnection connection,
@@ -53,11 +49,10 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
         IConnection connection,
         LoadoutId loadoutId,
         RedModSortOrder.ReadOnly sortOrderModel,
-        ISortableItemProviderFactory parentFactory)
+        ISortableItemProviderFactory parentFactory) :
+        base(parentFactory, loadoutId)
     {
         _connection = connection;
-        LoadoutId = loadoutId;
-        ParentFactory = parentFactory;
         _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
         // load the previously saved order
@@ -72,7 +67,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
             .Subscribe()
             .AddTo(_disposables);
         
-        SortableItemsChangeSet = SortableItems.ToObservableChangeSet(item => item.ItemId).RefCount();
+        SortableItemsChangeSet = _readOnlyOrderList.ToObservableChangeSet(item => item.ItemId).RefCount();
 
         // Observe RedMod groups changes
         RedModLoadoutGroup.ObserveAll(_connection)
@@ -97,12 +92,12 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     }
 
 
-    public Optional<ISortableItem> GetSortableItem(Guid itemId)
+    public override Optional<ISortableItem> GetSortableItem(Guid itemId)
     {
         return SortableItems.FirstOrOptional(item => item.ItemId.Equals(itemId));
     }
 
-    public async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)
+    public override async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)
     {
         await _semaphore.WaitAsync(token);
         try
@@ -151,7 +146,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     }
 
     /// <inheritdoc/>
-    public async Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token)
+    public override async Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token)
     {
         await _semaphore.WaitAsync(token);
         try
@@ -313,6 +308,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     /// </summary>
     /// <param name="availableRedMods">Collection of RedMods to synchronize against</param>
     /// <param name="currentOrder">The starting order</param>
+    /// <param name="provider"></param>
     /// <returns>The new sorting</returns>
     private static List<RedModSortableItem> SynchronizeSortingToItems(
         IReadOnlyList<RedModWithState> availableRedMods,
@@ -479,7 +475,7 @@ public class RedModSortableItemProvider : ILoadoutSortableItemProvider
     }
     
 
-    public void Dispose()
+    public override void Dispose()
     {
         _disposables.Dispose();
         _semaphore.Dispose();
