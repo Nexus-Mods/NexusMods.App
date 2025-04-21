@@ -436,9 +436,8 @@ public abstract class ASortableItemProvider<TObject> : ILoadoutSortableItemProvi
 
     /// <summary>
     /// Obtains the SortOrder model for this provider - default is cute, but the implementation
-    ///  could generate its own SortOrder model if needed and pass it to the abstraction.
+    ///  could generate its own derived SortOrder model if needed and pass it to the abstraction.
     /// </summary>
-    /// <returns></returns>
     protected static async ValueTask<SortOrder.ReadOnly> GetOrAddDefaultSortOrderModel(
         IConnection connection,
         LoadoutId loadoutId,
