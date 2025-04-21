@@ -21,13 +21,13 @@ using RedModWithState = (RedModLoadoutGroup.ReadOnly RedMod, RelativePath RedMod
 public class RedModSortableItemProvider : ASortableItemProvider
 {
     private readonly IConnection _connection;
+    private bool _isDisposed;
 
     private readonly SourceCache<RedModSortableItem, string> _orderCache = new(item => item.RedModFolderName);
 
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
     private readonly SortOrderId _sortOrderId;
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly CompositeDisposable _disposables = new();
     public override ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
     public override IObservable<IChangeSet<ISortableItem, Guid>> SortableItemsChangeSet { get; }
@@ -99,7 +99,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
     public override async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)
     {
-        await _semaphore.WaitAsync(token);
+        await Semaphore.WaitAsync(token);
         try
         {
             var redModSortableItem = (RedModSortableItem)sortableItem;
@@ -141,14 +141,14 @@ public class RedModSortableItemProvider : ASortableItemProvider
         }
         finally
         {
-            _semaphore.Release();
+            Semaphore.Release();
         }
     }
 
     /// <inheritdoc/>
     public override async Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token)
     {
-        await _semaphore.WaitAsync(token);
+        await Semaphore.WaitAsync(token);
         try
         {
             // Sort the source items to move by their sort index
@@ -201,7 +201,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         }
         finally
         {
-            _semaphore.Release();
+            Semaphore.Release();
         }
     }
 
@@ -243,7 +243,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
     private async Task UpdateOrderCache(CancellationToken token)
     {
-        await _semaphore.WaitAsync(token);
+        await Semaphore.WaitAsync(token);
         try
         {
             var redModsGroups = RedModLoadoutGroup.All(_connection.Db)
@@ -275,7 +275,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         }
         finally
         {
-            _semaphore.Release();
+            Semaphore.Release();
         }
     }
 
@@ -475,10 +475,19 @@ public class RedModSortableItemProvider : ASortableItemProvider
     }
     
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        _disposables.Dispose();
-        _semaphore.Dispose();
-        _orderCache.Dispose();
+        if (_isDisposed) return;
+
+        if (disposing)
+        {
+            _disposables.Dispose();
+            _orderCache.Dispose();
+        }
+
+        _isDisposed = true;
+        
+        base.Dispose(disposing);
     }
+
 }

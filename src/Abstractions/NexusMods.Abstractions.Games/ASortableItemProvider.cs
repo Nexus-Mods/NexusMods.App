@@ -8,6 +8,9 @@ namespace NexusMods.Abstractions.Games;
 /// <inheritdoc />
 public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
 {
+    private bool _isDisposed;
+    
+    protected readonly SemaphoreSlim Semaphore = new(1, 1);
     
     /// <summary>
     /// Protected constructor, use CreateAsync method to create an instance
@@ -39,7 +42,23 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     /// <Inheritdoc />
     public abstract Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token);
 
-    /// <inheritdoc />
-    public abstract void Dispose();
 
+    /// <inheritdoc />
+    public virtual void Dispose()
+    {
+        Dispose(true);
+    }
+    
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+
+        if (disposing)
+        {
+            Semaphore.Dispose();
+        }
+
+        _isDisposed = true;
+    }
+    
 }
