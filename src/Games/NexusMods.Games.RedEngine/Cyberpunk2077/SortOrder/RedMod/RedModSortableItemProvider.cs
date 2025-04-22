@@ -83,66 +83,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             )
             .AddTo(_disposables);
     }
-
-    /// <inheritdoc/>
-    public override async Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token)
-    {
-        await Semaphore.WaitAsync(token);
-        try
-        {
-            // Sort the source items to move by their sort index
-            var sortedSourceItems = sourceItems
-                .OfType<RedModSortableItem>()
-                .OrderBy(item => item.SortIndex)
-                .ToArray();
-            
-            // Get current ordering from cache
-            var stagingList = OrderCache.Items
-                .OrderBy(item => item.SortIndex)
-                .ToList();
-            
-            // Determine target insertion position
-            var targetItemIndex = stagingList.IndexOf(targetItem);
-            var targetIndex = relativePosition == TargetRelativePosition.BeforeTarget ? targetItemIndex : targetItemIndex + 1;
-
-            var insertPositionIndex = targetIndex;
-            
-            // Adjust the insert position index to account for any items before the target index that are also being moved
-            foreach (var item in sortedSourceItems)
-            {
-                if (!(item.SortIndex < targetIndex))
-                    break;
-                insertPositionIndex--;
-            }
-            
-            // Remove items from the staging list and insert them at the new adjusted position
-            stagingList.Remove(sortedSourceItems);
-            stagingList.InsertRange(insertPositionIndex, sortedSourceItems);
-            
-            // Update the sort index of all items
-            for (var i = 0; i < stagingList.Count; i++)
-            {
-                stagingList[i].SortIndex = i;
-            }
-            
-            if (token.IsCancellationRequested) return;
-            
-            // Update the database
-            await PersistSortOrder(stagingList, SortOrderEntityId, token);
-            
-            // Update the public cache
-            OrderCache.Edit(innerCache =>
-                {
-                    innerCache.Clear();
-                    innerCache.AddOrUpdate(stagingList);
-                }
-            );
-        }
-        finally
-        {
-            Semaphore.Release();
-        }
-    }
+    
 
     /// <summary>
     /// Returns the list of RedMod folder names, sorted by the load order, that are enabled in the loadout
@@ -426,7 +367,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
         if (disposing)
         {
             _disposables.Dispose();
-            OrderCache.Dispose();
         }
 
         _isDisposed = true;
