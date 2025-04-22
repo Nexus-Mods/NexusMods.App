@@ -1,21 +1,24 @@
-# v0.10.0 - 2025-04-XX
+# v0.10.1 - 2025-04-XX
 
+* Cyberpunk 2077 added to supported games
+* Cyberpunk 2077 - added diagnostics to help Linux users get their environment set up to start modding
 * Stardew Valley - Better support for mods that don't include a manifest.json (e.g. translations). 
-* Collection download page - Now grouped by mod page like other views
 * UI - New toolbars (action bars?)
 * UI - Reduced the size of all buttons to make the UI more compact
 * Memory usage - Optimised memory usage for file tree views.(?)
-* Load order - Drag and drop prototype(?)
+* Load order - Drag and drop prototype (REDmod)
 
 ## Technical Changes
 * Removed the Xbox Game Pass (Microsoft Store) experimental toggle because it currently isn't functional for any game. 
 * When first starting the app, instead of having to click through 3 separate pop-up, we've now merged them into one.
 * The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
-* When the app encounters a "Not supported" error, it will also include a reason. 
+* Installers that don't support an archive now provide a reason in the logs.
 
 ## Bug Fixes
 * Fixed an issue with the text alignment in the "Delete mods" pop-up.
 * Fixed an issue caused by folder names with trailing whitespace characters.
+* Fixed an issue where FOMODs with paths could cause the app to crash.
+* Fixed an issue where the app would crash when view FOMOD images in a certain way. 
 
 
 # v0.9.2 - 2025-04-07
