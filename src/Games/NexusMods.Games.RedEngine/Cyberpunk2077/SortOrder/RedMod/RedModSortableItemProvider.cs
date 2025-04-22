@@ -23,7 +23,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
     private readonly IConnection _connection;
     private bool _isDisposed;
 
-    private readonly SourceCache<RedModSortableItem, ISortItemKey> _orderCache = new(item => item.Key);
+    private readonly SourceCache<ISortableItem, ISortItemKey> _orderCache = new(item => item.Key);
 
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
@@ -61,7 +61,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         
         // populate read only list
         _orderCache.Connect()
-            .Transform(item => item as ISortableItem)
+            .Transform(item => item)
             .SortBy(item => item.SortIndex)
             .Bind(out _readOnlyOrderList)
             .Subscribe()
@@ -251,7 +251,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
                 .Select(g => new RedModWithState( g, g.RedModFolder(), g.IsEnabled()))
                 .ToList();
                 
-            var oldOrder = _orderCache.Items.OrderBy(item => item.SortIndex);
+            var oldOrder = _orderCache.Items.OfType<RedModSortableItem>().OrderBy(item => item.SortIndex);
             
             if (token.IsCancellationRequested) return;
             
@@ -386,6 +386,15 @@ public class RedModSortableItemProvider : ASortableItemProvider
     }
 
 
+    private Task PersistSortableEntries(List<ISortableItem> orderList, CancellationToken token)
+    {
+        var redModOrderList = orderList
+            .OfType<RedModSortableItem>()
+            .ToList();
+        
+        return PersistSortableEntries(redModOrderList, token);
+    }
+    
     private async Task PersistSortableEntries(List<RedModSortableItem> orderList, CancellationToken token)
     {
         var persistentSortableItems = RedModSortableEntry.All(_connection.Db)
