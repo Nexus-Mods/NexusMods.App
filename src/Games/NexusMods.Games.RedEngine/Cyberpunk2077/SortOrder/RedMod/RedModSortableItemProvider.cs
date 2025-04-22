@@ -191,9 +191,9 @@ public class RedModSortableItemProvider : ASortableItemProvider
     /// <param name="currentOrder">The starting order</param>
     /// <param name="provider"></param>
     /// <returns>The new sorting</returns>
-    private static List<RedModSortableItem> SynchronizeSortingToItems(
+    private static IReadOnlyList<RedModSortableItem> SynchronizeSortingToItems(
         IReadOnlyList<RedModWithState> availableRedMods,
-        List<RedModSortableItem> currentOrder,
+        IReadOnlyList<RedModSortableItem> currentOrder,
         RedModSortableItemProvider provider)
     {
         var redModsToAdd = new List<RedModWithState>();
@@ -261,7 +261,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
             item.IsActive = redModMatch.IsEnabled;
             item.ModName = redModMatch.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Parent.AsLoadoutItem().Name;
         }
-
 
         return stagingList;
     }
