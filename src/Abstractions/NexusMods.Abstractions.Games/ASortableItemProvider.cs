@@ -172,7 +172,12 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
     protected abstract Task PersistSortOrder(IReadOnlyList<ISortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
-    
+
+    /// <summary>
+    /// Retrieves sortable items of a particular sort order from the database
+    /// </summary>
+    protected abstract IReadOnlyList<ISortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null);
+
     /// <summary>
     /// Obtains the SortOrder model for this provider if it exists, or creates a new one if it doesn't.
     /// If class implementations are using derived SortModels, they should implement and use a custom alternative

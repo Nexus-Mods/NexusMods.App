@@ -52,7 +52,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         _connection = connection;
 
         // load the previously saved order
-        var order = RetrieveSortOrderEntries(SortOrderEntityId);
+        var order = RetrieveSortOrder(SortOrderEntityId);
         OrderCache.AddOrUpdate(order);
         
         // populate read only list
@@ -113,7 +113,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
         // Retrieves the order from the database using the passed db
         // NOTE: depending on the db passed, the order might not be the latest
-        var sortOrder = RetrieveSortOrderEntries(sortOrderId, dbToUse);
+        var sortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
 
         // Sanitize the order, applying it to the redMods in questions
         var validatedOrder = SynchronizeSortingToItems(redMods, sortOrder, this);
@@ -162,26 +162,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
         }
     }
 
-    private List<RedModSortableItem> RetrieveSortOrderEntries(SortOrderId sortOrderEntityId, IDb? db = null)
-    {
-        var dbToUse = db ?? _connection.Db;
-
-        return dbToUse.RetrieveRedModSortOrder(sortOrderEntityId)
-            .Select(redModSortableItem =>
-                {
-                    var sortableItem = redModSortableItem.AsSortableEntry();
-                    return new RedModSortableItem(this,
-                        sortableItem.SortIndex,
-                        redModSortableItem.RedModFolderName,
-                        // Temp values, will get updated when we load the RedMods
-                        modName: redModSortableItem.RedModFolderName,
-                        isActive: false
-                    );
-                }
-            )
-            .ToList();
-    }
-
     /// <summary>
     /// This method generates a new order list from currentOrder, after removing items that are no longer available and
     /// adding new items that have become available.
@@ -193,14 +173,15 @@ public class RedModSortableItemProvider : ASortableItemProvider
     /// <returns>The new sorting</returns>
     private static IReadOnlyList<RedModSortableItem> SynchronizeSortingToItems(
         IReadOnlyList<RedModWithState> availableRedMods,
-        IReadOnlyList<RedModSortableItem> currentOrder,
+        IReadOnlyList<ISortableItem> currentOrder,
         RedModSortableItemProvider provider)
     {
+        var redModCurrentOrder = (IReadOnlyList<RedModSortableItem>)currentOrder;
         var redModsToAdd = new List<RedModWithState>();
         var sortableItemsToRemove = new List<RedModSortableItem>();
 
         // Find items to remove
-        foreach (var si in currentOrder)
+        foreach (var si in redModCurrentOrder)
         {
             // TODO: determine the winning mod in case of multiple mods with the same name
             var redModMatch = availableRedMods.FirstOrOptional(
@@ -218,7 +199,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         {
             var redModFolder = redMod.RedModFolder;
 
-            var sortableItem = currentOrder.FirstOrOptional(item => item.RedModFolderName == redModFolder);
+            var sortableItem = redModCurrentOrder.FirstOrOptional(item => item.RedModFolderName == redModFolder);
 
             if (!sortableItem.HasValue)
             {
@@ -227,7 +208,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         }
 
         // Get a staging list of the items to make changes to
-        var stagingList = currentOrder
+        var stagingList = redModCurrentOrder
             .OrderBy(item => item.SortIndex)
             .ToList();
 
@@ -319,6 +300,26 @@ public class RedModSortableItemProvider : ASortableItemProvider
         if (token.IsCancellationRequested) return;
 
         await tx.Commit();
+    }
+    
+    protected override IReadOnlyList<ISortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
+    {
+        var dbToUse = db ?? _connection.Db;
+
+        return dbToUse.RetrieveRedModSortOrder(sortOrderEntityId)
+            .Select(redModSortableItem =>
+                {
+                    var sortableItem = redModSortableItem.AsSortableEntry();
+                    return new RedModSortableItem(this,
+                        sortableItem.SortIndex,
+                        redModSortableItem.RedModFolderName,
+                        // Temp values, will get updated when we load the RedMods
+                        modName: redModSortableItem.RedModFolderName,
+                        isActive: false
+                    );
+                }
+            )
+            .ToList();
     }
 
     private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddRedModSortOrderModel(
