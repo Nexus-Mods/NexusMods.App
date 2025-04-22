@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -171,6 +172,35 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
     protected abstract Task PersistSortOrder(IReadOnlyList<ISortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
+    
+    /// <summary>
+    /// Obtains the SortOrder model for this provider if it exists, or creates a new one if it doesn't.
+    /// If class implementations are using derived SortModels, they should implement and use a custom alternative
+    /// </summary>
+    protected static async ValueTask<SortOrder.ReadOnly> GetOrAddSortOrderModel(
+        IConnection connection,
+        LoadoutId loadoutId,
+        ISortableItemProviderFactory factory)
+    {
+        var sortOrder = SortOrder.All(connection.Db)
+            .FirstOrOptional(lo => lo.LoadoutId == loadoutId
+                                   && lo.SortOrderTypeId == factory.SortOrderTypeId
+            );
+
+        if (sortOrder.HasValue)
+            return sortOrder.Value;
+
+        using var ts = connection.BeginTransaction();
+        _ = new SortOrder.New(ts)
+        {
+            LoadoutId = loadoutId,
+            SortOrderTypeId = factory.SortOrderTypeId,
+        };
+
+        await ts.Commit();
+
+        return sortOrder.Value;
+    }
 
     /// <inheritdoc />
     public virtual void Dispose()

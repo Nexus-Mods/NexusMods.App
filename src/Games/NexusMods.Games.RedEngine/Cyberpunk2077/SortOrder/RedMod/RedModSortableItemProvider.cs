@@ -34,7 +34,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
     {
-        var sortOrderModel = await GetOrAddSortOrderModel(connection, loadoutId, parentFactory);
+        var sortOrderModel = await GetOrAddRedModSortOrderModel(connection, loadoutId, parentFactory);
         return new RedModSortableItemProvider(connection,
             loadoutId,
             sortOrderModel,
@@ -322,7 +322,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         await tx.Commit();
     }
 
-    private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddSortOrderModel(
+    private static async ValueTask<RedModSortOrder.ReadOnly> GetOrAddRedModSortOrderModel(
         IConnection connection,
         LoadoutId loadoutId,
         ISortableItemProviderFactory parentFactory)
