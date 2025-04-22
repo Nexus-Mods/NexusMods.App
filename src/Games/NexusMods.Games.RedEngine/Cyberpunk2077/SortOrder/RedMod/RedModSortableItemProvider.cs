@@ -55,7 +55,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         var order = RetrieveSortOrder(SortOrderEntityId);
         OrderCache.AddOrUpdate(order);
         
-        // populate read only list
+        // Bind the order for the ui
         OrderCache.Connect()
             .Transform(item => item)
             .SortBy(item => item.SortIndex)
@@ -63,7 +63,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             .Bind(out _readOnlyOrderList)
             .Subscribe()
             .AddTo(_disposables);
-
+        
         // Observe RedMod groups changes
         RedModLoadoutGroup.ObserveAll(_connection)
             .Transform((_, redModId) => LoadoutItem.Load(_connection.Db, redModId))
@@ -246,6 +246,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         return stagingList;
     }
     
+    /// <inheritdoc />
     protected override async Task PersistSortOrder(IReadOnlyList<ISortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
         var redModOrderList = (IReadOnlyList<RedModSortableItem>)orderList;
