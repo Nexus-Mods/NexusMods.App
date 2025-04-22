@@ -295,22 +295,25 @@
                         <StackPanel Spacing="8">
                             <TextBlock Text="Modals" />
                             <controls:StandardButton x:Name="ShowModalOk" Text="OK" Click="ShowModalOk_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalYesNo" Text="YesNo" Click="ShowModalYesNo_OnClick" />
                             <controls:StandardButton x:Name="ShowModalOkCancel" Text="OkCancel" Click="ShowModalOkCancel_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalOkAbort" Text="OkAbort" Click="ShowModalOkAbort_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalYesNoCancel" Text="YesNoCancel" Click="ShowModalYesNoCancel_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalYesNoAbort" Text="YesNoAbort" Click="ShowModalYesNoAbort_OnClick" />
+                            <controls:StandardButton x:Name="ShowModalDeleteMod" Text="Destructive" Click="ShowModalShowModalDeleteMod_OnClick" />
+                            <controls:StandardButton x:Name="ShowModalInfo" Text="Info" Click="ShowModalInfo_OnClick" />
+                            <controls:StandardButton x:Name="ShowModalPremium" Text="Premium" Click="ShowModalPremium_OnClick" />
+                            <!-- <controls:StandardButton x:Name="ShowModalYesNo" Text="YesNo" Click="ShowModalYesNo_OnClick" /> -->
+                            <!-- <controls:StandardButton x:Name="ShowModalOkAbort" Text="OkAbort" Click="ShowModalOkAbort_OnClick" /> -->
+                            <!-- <controls:StandardButton x:Name="ShowModalYesNoCancel" Text="YesNoCancel" Click="ShowModalYesNoCancel_OnClick" /> -->
+                            <!-- <controls:StandardButton x:Name="ShowModalYesNoAbort" Text="YesNoAbort" Click="ShowModalYesNoAbort_OnClick" /> -->
                         </StackPanel>
 
                         <!-- modeless -->
                         <StackPanel Spacing="8">
                             <TextBlock Text="Modeless" />
                             <controls:StandardButton x:Name="ShowModelessOk" Text="OK" Click="ShowModelessOk_OnClick" />
-                            <controls:StandardButton x:Name="ShowModelessYesNo" Text="YesNo" Click="ShowModelessYesNo_OnClick" />
                             <controls:StandardButton x:Name="ShowModelessOkCancel" Text="OkCancel" Click="ShowModelessOkCancel_OnClick" />
-                            <controls:StandardButton x:Name="ShowModelessOkAbort" Text="OkAbort" Click="ShowModelessOkAbort_OnClick" />
-                            <controls:StandardButton x:Name="ShowModelessYesNoCancel" Text="YesNoCancel" Click="ShowModelessYesNoCancel_OnClick" />
-                            <controls:StandardButton x:Name="ShowModelessYesNoAbort" Text="YesNoAbort" Click="ShowModelessYesNoAbort_OnClick" />
+                            <!-- <controls:StandardButton x:Name="ShowModelessYesNo" Text="YesNo" Click="ShowModelessYesNo_OnClick" /> -->
+                            <!-- <controls:StandardButton x:Name="ShowModelessOkAbort" Text="OkAbort" Click="ShowModelessOkAbort_OnClick" /> -->
+                            <!-- <controls:StandardButton x:Name="ShowModelessYesNoCancel" Text="YesNoCancel" Click="ShowModelessYesNoCancel_OnClick" /> -->
+                            <!-- <controls:StandardButton x:Name="ShowModelessYesNoAbort" Text="YesNoAbort" Click="ShowModelessYesNoAbort_OnClick" /> -->
                         </StackPanel>
                     </StackPanel>
                 </Border>

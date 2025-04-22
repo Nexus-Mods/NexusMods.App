@@ -7,7 +7,9 @@ namespace NexusMods.App.UI.MessageBox;
 /// </summary>
 internal static class DesignDataContexts
 {
-    public static MessageBoxViewModel MessageBoxViewModel { get; } = new ("This is a title", "This is my message text", 
-            ButtonEnum.OkCancel);
-    
+    public static MessageBoxViewModel MessageBoxViewModel { get; } = new (
+        "Delete this mod?", 
+        "Deleting this mod will remove it from all collections. This action cannot be undone.",
+        [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel]
+        );
 }

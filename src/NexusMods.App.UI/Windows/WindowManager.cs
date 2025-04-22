@@ -177,40 +177,18 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
 
         tx.Commit();
     }
-
-    private IMessageBox<ButtonResult> GetMessageBox(string title, string text, ButtonEnum buttonEnum)
+    
+    public async Task<ButtonDefinitionId> ShowMessageBox(IMessageBox<ButtonDefinitionId> messageBox, MessageBoxWindowType windowType)
     {
-        var viewModel = new MessageBoxViewModel(title, text, buttonEnum);
-        var view = new MessageBoxView()
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
+            throw new InvalidOperationException("Application lifetime is not configured properly.");
+
+        return windowType switch
         {
-            DataContext = viewModel,
+            MessageBoxWindowType.Modal => await messageBox.ShowWindow(desktop.MainWindow, isDialog: true),
+            MessageBoxWindowType.Modeless => await messageBox.ShowWindow(),
+            MessageBoxWindowType.Embedded => throw new NotImplementedException("Embedded window type is not implemented."),
+            _ => throw new InvalidOperationException("Unknown WindowType.")
         };
-
-        return new MessageBox<MessageBoxView, MessageBoxViewModel, ButtonResult>(view, viewModel);
-    }
-
-    public async Task<ButtonResult> ShowModalAsync(string title, string text, ButtonEnum buttonEnum)
-    {
-        var messageBox = GetMessageBox(title, text, buttonEnum);
-        
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
-        {
-            // Create the modal dialog, parent window is required for modal.
-            return await messageBox.ShowWindowDialogAsync(desktop.MainWindow);
-        }
-        
-        return ButtonResult.None;
-    }
-    
-    public async Task<ButtonResult> ShowModelessAsync(string title, string text, ButtonEnum buttonEnum = ButtonEnum.Ok)
-    {
-        var messageBox = GetMessageBox(title, text, buttonEnum);
-        
-        return await messageBox.ShowWindowAsync();
-    }
-    
-    public async Task<ButtonResult> ShowEmbeddedAsync(string title, string text)
-    {
-        throw new NotImplementedException();
     }
 }

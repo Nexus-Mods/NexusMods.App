@@ -1,8 +1,11 @@
 using System.Reactive.Disposables;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.MessageBox;
 using NexusMods.App.UI.MessageBox.Enums;
 using NexusMods.App.UI.Windows;
+using NexusMods.Icons;
 using ReactiveUI;
 using R3;
 
@@ -26,55 +29,142 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     }
 
 
-    private async void ShowModal(object? sender, RoutedEventArgs e, string title, string message, ButtonEnum buttonType)
+    private async void ShowModal(string title, string message, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize)
     {
-        if (ViewModel is null) return;
-
-        var result = await ViewModel.WindowManager.ShowModalAsync(title, message, buttonType);
-        Console.WriteLine($@"{buttonType} result: {result}");
-    }
-        
-        private async void ShowModalOk_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModal(sender, e, "Test Modal", "This is an Ok modal", ButtonEnum.Ok);
-        
-        private async void ShowModalOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModal(sender, e, "Test Modal", "This is an OkCancel modal", ButtonEnum.OkCancel);
-        
-        private async void ShowModalYesNo_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModal(sender, e, "Test Modal", "This is a YesNo modal", ButtonEnum.YesNo);
-        
-        private async void ShowModalYesNoCancel_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModal(sender, e, "Test Modal", "This is a YesNoCancel modal", ButtonEnum.YesNoCancel);
-        
-        private async void ShowModalOkAbort_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModal(sender, e, "Test Modal", "This is an OkAbort modal", ButtonEnum.OkAbort);
-        
-        private async void ShowModalYesNoAbort_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModal(sender, e, "Test Modal", "This is a YesNoAbort modal", ButtonEnum.YesNoAbort);
-
-        private async void ShowModeless(object? sender, RoutedEventArgs e, string title, string message, ButtonEnum buttonType)
+        try
         {
             if (ViewModel is null) return;
 
-            var result = await ViewModel.WindowManager.ShowModelessAsync(title, message, buttonType);
-            Console.WriteLine($@"{buttonType} result: {result}");
+            // create new messagebox
+            var messageBox = MessageBoxFactory.Create(title, message, buttonDefinitions,
+                messageBoxSize
+            );
+
+            // tell windowmanager to show it
+            var result = await ViewModel.WindowManager.ShowMessageBox(messageBox, MessageBoxWindowType.Modal);
+
+            Console.WriteLine($@"{buttonDefinitions} result: {result}");
         }
-        
-        private void ShowModelessOk_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModeless(sender, e, "Test Modeless", "This is an Ok modeless", ButtonEnum.Ok);
+        catch (Exception e)
+        {
+            throw; // TODO handle exception
+        }
+    }
 
-        private void ShowModelessYesNo_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModeless(sender, e, "Test Modeless", "This is a YesNo modeless", ButtonEnum.YesNo);
 
-        private void ShowModelessOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModeless(sender, e, "Test Modeless", "This is an OkCancel modeless", ButtonEnum.OkCancel);
+    private async void ShowModeless(string title, string message, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize)
+    {
+        try
+        {
+            if (ViewModel is null) return;
 
-        private void ShowModelessOkAbort_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModeless(sender, e, "Test Modeless", "This is an OkAbort modeless", ButtonEnum.OkAbort);
+            // create new messagebox
+            var messageBox = MessageBoxFactory.Create(title, message, buttonDefinitions,
+                messageBoxSize
+            );
 
-        private void ShowModelessYesNoCancel_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModeless(sender, e, "Test Modeless", "This is a YesNoCancel modeless", ButtonEnum.YesNoCancel);
+            var result = await ViewModel.WindowManager.ShowMessageBox(messageBox, MessageBoxWindowType.Modeless);
+            Console.WriteLine($@"{buttonDefinitions} result: {result}");
+        }
+        catch (Exception e)
+        {
+            throw; // TODO handle exception
+        }
+    }
 
-        private void ShowModelessYesNoAbort_OnClick(object? sender, RoutedEventArgs e) =>
-            ShowModeless(sender, e, "Test Modeless", "This is a YesNoAbort modeless", ButtonEnum.YesNoAbort);
+
+    private void ShowModalOk_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModal("Test Modal",
+            "This is an Ok modal",
+            [MessageBoxStandardButtons.Ok],
+            MessageBoxSize.Small
+        );
+
+    private void ShowModalOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModal("Test Modal",
+            "This is an OkCancel modal",
+            [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+            MessageBoxSize.Medium
+        );
+
+    private void ShowModalShowModalDeleteMod_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModal("Delete this mod?",
+            "Deleting this mod will remove it from all collections. This action cannot be undone.", [
+                MessageBoxStandardButtons.Cancel,
+                new MessageBoxButtonDefinition(
+                    "Yes, delete",
+                    ButtonDefinitionId.From("yes-delete"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.DestructiveRole
+                )
+            ],
+            MessageBoxSize.Small
+        );
+    }
+
+    private void ShowModelessOk_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModeless("Test Modeless",
+            "This is an Ok modeless",
+            [MessageBoxStandardButtons.Ok],
+            MessageBoxSize.Small
+        );
+
+    private void ShowModelessOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModeless("Test Modeless",
+            "This is an OkCancel modeless",
+            [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+            MessageBoxSize.Small
+        );
+
+    private void ShowModalInfo_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModal("Updating mods",
+            "Updating mods installed in multiple collections. Updating will apply to all local collections where the mod is installed.", [
+                new MessageBoxButtonDefinition(
+                    "Cancel with icon",
+                    ButtonDefinitionId.From("cancel"),
+                    IconValues.Warning,
+                    null,
+                    ButtonRole.RejectRole
+                ),
+                new MessageBoxButtonDefinition(
+                    "Update in 2 collections",
+                    ButtonDefinitionId.From("update"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.InfoRole
+                )
+            ],
+            MessageBoxSize.Large
+        );
+    }
+
+    private void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModal("Go Premium",
+            "Download entire collections at full speed with one click, no browser, no manual downloads.", [
+                new MessageBoxButtonDefinition(
+                    "Cancel",
+                    ButtonDefinitionId.From("cancel"),
+                    null,
+                    null,
+                    ButtonRole.RejectRole
+                ),
+                new MessageBoxButtonDefinition(
+                    "Find out more",
+                    ButtonDefinitionId.From("find-out-more")
+                ),
+                new MessageBoxButtonDefinition(
+                    "Get Premium",
+                    ButtonDefinitionId.From("get-premium"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.PremiumRole
+                )
+            ],
+            MessageBoxSize.Medium
+        );
+    }
 }
