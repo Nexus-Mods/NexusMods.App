@@ -129,7 +129,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             
             if (token.IsCancellationRequested) return;
             
-            await PersistSortableEntries(stagingList, token);
+            await PersistSortOrder(stagingList, _sortOrderId, token);
 
             OrderCache.Edit(innerCache =>
                 {
@@ -188,7 +188,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             if (token.IsCancellationRequested) return;
             
             // Update the database
-            await PersistSortableEntries(stagingList, token);
+            await PersistSortOrder(stagingList, _sortOrderId, token);
             
             // Update the public cache
             OrderCache.Edit(innerCache =>
@@ -260,7 +260,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             if (token.IsCancellationRequested) return;
 
             // Update the database
-            await PersistSortableEntries(stagingList, token);
+            await PersistSortOrder(stagingList, _sortOrderId, token);
             
             if (token.IsCancellationRequested) return;
 
@@ -385,19 +385,19 @@ public class RedModSortableItemProvider : ASortableItemProvider
     }
 
 
-    private Task PersistSortableEntries(List<ISortableItem> orderList, CancellationToken token)
+    protected override Task PersistSortOrder(List<ISortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
         var redModOrderList = orderList
             .OfType<RedModSortableItem>()
             .ToList();
         
-        return PersistSortableEntries(redModOrderList, token);
+        return PersistSortOrder(redModOrderList, sortOrderEntityId, token);
     }
     
-    private async Task PersistSortableEntries(List<RedModSortableItem> orderList, CancellationToken token)
+    private async Task PersistSortOrder(List<RedModSortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
         var persistentSortableItems = RedModSortableEntry.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
+            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == sortOrderEntityId)
             .OrderBy(si => si.AsSortableEntry().SortIndex)
             .ToArray();
 
@@ -435,7 +435,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
             var newDbItem = new SortableEntry.New(tx)
             {
-                ParentSortOrderId = _sortOrderId,
+                ParentSortOrderId = sortOrderEntityId,
                 SortIndex = i,
             };
 

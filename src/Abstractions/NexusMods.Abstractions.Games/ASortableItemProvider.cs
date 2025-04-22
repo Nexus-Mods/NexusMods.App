@@ -49,7 +49,11 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
 
     /// <Inheritdoc />
     public abstract Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token);
-    
+
+    /// <summary>
+    /// Persists the sort order for the provided list of sortable items
+    /// </summary>
+    protected abstract Task PersistSortOrder(List<ISortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
 
     /// <inheritdoc />
     public virtual void Dispose()
