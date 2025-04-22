@@ -56,4 +56,11 @@ public record struct Success;
 /// The input is not supported by the installer.
 /// </summary>
 [PublicAPI]
-public record struct NotSupported(string? Reason = null);
+public record struct NotSupported(string Reason)
+{
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    [Obsolete("All installers should return a reason with the not supported result")]
+    public NotSupported() : this(Reason: string.Empty) { }
+}

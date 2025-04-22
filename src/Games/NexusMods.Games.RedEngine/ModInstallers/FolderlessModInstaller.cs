@@ -45,7 +45,7 @@ public class FolderlessModInstaller : ALibraryArchiveInstaller
             .ToArray();
 
         return modFiles.Length == 0
-            ? ValueTask.FromResult<InstallerResult>(new NotSupported())
+            ? ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Archive contains no matching files"))
             : ValueTask.FromResult<InstallerResult>(new Success());
     }
 }
