@@ -1,10 +1,8 @@
 using GameFinder.StoreHandlers.Steam;
 using GameFinder.StoreHandlers.Steam.Models.ValueTypes;
 using GameFinder.StoreHandlers.Steam.Services;
-using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.Games;
 using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
@@ -43,26 +41,36 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
     /// <inheritdoc />
     protected override IGameLocatorResultMetadata CreateMetadata(SteamGame game)
     {
+        var winePrefixDirectoryPath = game.GetProtonPrefix()?.ProtonDirectory.Combine("pfx");
+        var linuxCompatibilityDataProvider = winePrefixDirectoryPath is not null ? new LinuxCompatibilityDataProvider(game, winePrefixDirectoryPath.Value) : null;
+
         return new SteamLocatorResultMetadata
         {
             AppId = game.AppId.Value,
             ManifestIds = game.AppManifest.InstalledDepots.Select(x => x.Value.ManifestId.Value).ToArray(),
             CloudSavesDirectory = game.GetCloudSavesDirectoryPath(),
-            ProtonPrefixDirectory = game.GetProtonPrefix()?.ProtonDirectory,
-            GetLaunchOptions = () =>
-            {
-                var localConfigPath = SteamLocationFinder.GetUserDataDirectoryPath(game.SteamPath, game.AppManifest.LastOwner).Combine("config").Combine("localconfig.vdf");
-                var parserResult = LocalUserConfigParser.ParseConfigFile(game.AppManifest.LastOwner, localConfigPath);
-                if (parserResult.IsFailed)
-                {
-                    Logger.LogWarning("Error while parsing local user config at `{Path}`: `{Error}`", localConfigPath, parserResult.Errors);
-                    return null;
-                }
-
-                if (!parserResult.Value.LocalAppData.TryGetValue(game.AppId, out var localAppData)) return null;
-                var launchOptions = localAppData.LaunchOptions;
-                return launchOptions;
-            },
+            LinuxCompatibilityDataProvider = linuxCompatibilityDataProvider,
         };
+    }
+
+    private class LinuxCompatibilityDataProvider : BaseLinuxCompatibilityDataProvider
+    {
+        private readonly SteamGame _steamGame;
+
+        public LinuxCompatibilityDataProvider(SteamGame steamGame, AbsolutePath winePrefixDirectoryPath) : base(winePrefixDirectoryPath)
+        {
+            _steamGame = steamGame;
+        }
+
+        public override ValueTask<WineDllOverride[]> GetWineDllOverrides(CancellationToken cancellationToken)
+        {
+            var localConfigPath = SteamLocationFinder.GetUserDataDirectoryPath(_steamGame.SteamPath, _steamGame.AppManifest.LastOwner).Combine("config").Combine("localconfig.vdf");
+            var parserResult = LocalUserConfigParser.ParseConfigFile(_steamGame.AppManifest.LastOwner, localConfigPath);
+            if (parserResult.IsFailed || !parserResult.Value.LocalAppData.TryGetValue(_steamGame.AppId, out var localAppData)) return ValueTask.FromResult<WineDllOverride[]>([]);
+
+            var launchOptions = localAppData.LaunchOptions;
+            var result = WineParser.ParseEnvironmentVariable(launchOptions);
+            return ValueTask.FromResult(result.ToArray());
+        }
     }
 }

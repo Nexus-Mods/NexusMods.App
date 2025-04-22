@@ -33,5 +33,8 @@ public partial class ManuallyAddedGame : IModelDefinition
     {
         /// <inheritdoc />
         public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From("NONE")];
+
+        /// <inheritdoc/>
+        public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider => null;
     }
 }
