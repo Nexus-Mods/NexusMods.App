@@ -27,6 +27,8 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     {
         ParentFactory = parentFactory;
         LoadoutId = loadoutId;
+        
+        SortableItemsChangeSet = OrderCache.Connect().RefCount();
     }
 
     /// <inheritdoc />
@@ -39,7 +41,7 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     public abstract ReadOnlyObservableCollection<ISortableItem> SortableItems { get; }
 
     /// <inheritdoc />
-    public abstract IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
+    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
 
     /// <Inheritdoc />
     public abstract Optional<ISortableItem> GetSortableItem(ISortItemKey itemId);

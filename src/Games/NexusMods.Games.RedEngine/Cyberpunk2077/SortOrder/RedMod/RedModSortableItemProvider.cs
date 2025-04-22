@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DynamicData;
-using DynamicData.Binding;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -24,13 +23,11 @@ public class RedModSortableItemProvider : ASortableItemProvider
     private readonly IConnection _connection;
     private bool _isDisposed;
 
-
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
     private readonly SortOrderId _sortOrderId;
     private readonly CompositeDisposable _disposables = new();
     public override ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
-    public override IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
 
     public static async Task<RedModSortableItemProvider> CreateAsync(
         IConnection connection,
@@ -67,7 +64,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             .Subscribe()
             .AddTo(_disposables);
         
-        SortableItemsChangeSet = _readOnlyOrderList.ToObservableChangeSet(item => item.Key).RefCount();
+        
 
         // Observe RedMod groups changes
         RedModLoadoutGroup.ObserveAll(_connection)
