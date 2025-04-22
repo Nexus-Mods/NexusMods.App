@@ -10,4 +10,7 @@ namespace NexusMods.StandardGameLocators.Unknown;
 public record UnknownLocatorResultMetadata(LocatorId[] LocatorIds) : IGameLocatorResultMetadata
 {
     public IEnumerable<LocatorId> ToLocatorIds() => LocatorIds;
+
+    /// <inheritdoc/>
+    public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
 }
