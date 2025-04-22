@@ -18,6 +18,9 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     /// </summary>
     public required string BuildId { get; init; }
     
+    /// <inheritdoc/>
+    public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
+
     /// <inheritdoc />
     public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(BuildId)];
 }
