@@ -170,7 +170,7 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     /// <summary>
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
-    protected abstract Task PersistSortOrder(List<ISortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
+    protected abstract Task PersistSortOrder(IReadOnlyList<ISortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
 
     /// <inheritdoc />
     public virtual void Dispose()

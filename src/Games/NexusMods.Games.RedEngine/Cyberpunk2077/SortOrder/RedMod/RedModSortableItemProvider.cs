@@ -12,6 +12,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using R3;
+using ReactiveUI;
 
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
@@ -58,6 +59,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         OrderCache.Connect()
             .Transform(item => item)
             .SortBy(item => item.SortIndex)
+            .ObserveOn(RxApp.MainThreadScheduler)
             .Bind(out _readOnlyOrderList)
             .Subscribe()
             .AddTo(_disposables);
@@ -263,19 +265,11 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
         return stagingList;
     }
-
-
-    protected override Task PersistSortOrder(List<ISortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
-    {
-        var redModOrderList = orderList
-            .OfType<RedModSortableItem>()
-            .ToList();
-        
-        return PersistSortOrder(redModOrderList, sortOrderEntityId, token);
-    }
     
-    private async Task PersistSortOrder(List<RedModSortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
+    protected override async Task PersistSortOrder(IReadOnlyList<ISortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
+        var redModOrderList = (IReadOnlyList<RedModSortableItem>)orderList;
+        
         var persistentSortableItems = _connection.Db.RetrieveRedModSortOrder(sortOrderEntityId);
 
         if (token.IsCancellationRequested) return;
@@ -285,7 +279,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         // Remove outdated persistent items
         foreach (var dbItem in persistentSortableItems)
         {
-            var liveItem = orderList.FirstOrOptional(
+            var liveItem = redModOrderList.FirstOrOptional(
                 i => i.RedModFolderName == dbItem.RedModFolderName
             );
 
@@ -295,7 +289,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
                 continue;
             }
 
-            var liveIdx = orderList.IndexOf(liveItem.Value);
+            var liveIdx = redModOrderList.IndexOf(liveItem.Value);
 
             if (dbItem.AsSortableEntry().SortIndex != liveIdx)
             {
@@ -304,9 +298,9 @@ public class RedModSortableItemProvider : ASortableItemProvider
         }
 
         // Add new items
-        for (var i = 0; i < orderList.Count; i++)
+        for (var i = 0; i < redModOrderList.Count; i++)
         {
-            var liveItem = orderList[i];
+            var liveItem = redModOrderList[i];
             if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.RedModFolderName))
                 continue;
 
