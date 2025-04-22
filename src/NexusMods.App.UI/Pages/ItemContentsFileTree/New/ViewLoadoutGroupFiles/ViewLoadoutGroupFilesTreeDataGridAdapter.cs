@@ -15,7 +15,7 @@ public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider servicePr
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
-        // This view is always flat, so we ignore viewHierarchical and directly observe files.
+        // This view is always flat (until we add folders), so we ignore viewHierarchical and directly observe files.
         return _loadoutGroupFilesProvider.ObserveModFiles(filesFilter, viewHierarchical);
     }
 
