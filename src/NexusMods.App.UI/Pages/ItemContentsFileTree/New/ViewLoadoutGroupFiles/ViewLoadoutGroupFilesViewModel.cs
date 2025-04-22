@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
@@ -25,9 +26,9 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
     [Reactive] public ItemContentsFileTreePageContext? Context { get; set; }
     [Reactive] public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; [UsedImplicitly] set; }
     [Reactive] public ReactiveCommand<Unit> RemoveCommand { get; [UsedImplicitly] set; }
+    [Reactive] public CompositeItemModel<EntityId>? SelectedItem { get; set; }
     
     // Private state.
-    private CompositeItemModel<EntityId>? SelectedItem { get; set; }
     private ViewLoadoutGroupFilesTreeDataGridAdapter? FileTreeAdapter { get; set; }
     
     private DisposableBag _disposables = new();
@@ -42,15 +43,15 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
         TabIcon = IconValues.FolderOpen;
         TabTitle = "File Tree";
 
+        // TODO: Filter directories here, once integrated.
         OpenEditorCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
             .ToReactiveCommand<NavigationInformation>(info =>
             {
-                var gamePath = SelectedItem!.Key;
-                var loadoutFile = LoadoutItemGroupHelpers.FindMatchingFile(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
-
-                if (loadoutFile == null)
+                var fileId = SelectedItem!.Key;
+                var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, fileId);
+                if (!loadoutFile.IsValid())
                 {
-                    logger.LogError("Unable to find Loadout File with path `{Path}` in groups: {Groups}", gamePath, string.Join(", ", Context!.GroupIds));
+                    logger.LogError("Unable to find Loadout File with ID `{FileId}`. This is indicative of a bug.", fileId);
                     return;
                 }
 
@@ -59,8 +60,8 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                     FactoryId = TextEditorPageFactory.StaticId,
                     Context = new TextEditorPageContext
                     {
-                        FileId = loadoutFile.Value.LoadoutFileId,
-                        FilePath = loadoutFile.Value.AsLoadoutItemWithTargetPath().TargetPath.Item3,
+                        FileId = loadoutFile.LoadoutFileId,
+                        FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3,
                         IsReadOnly = Context!.IsReadOnly,
                     },
                 };
@@ -83,7 +84,17 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
             )
             .ToReactiveCommand<Unit>(async (_, _) =>
                 {
-                    var gamePath = SelectedItem!.Key;
+                    var fileId = SelectedItem!.Key;
+                    var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, fileId);
+                    if (!loadoutFile.IsValid())
+                    {
+                        logger.LogError("Unable to find Loadout File with ID `{FileId}`. This is indicative of a bug.", fileId);
+                        return;
+                    }
+                    // TODO: Support directories here, once that's integrated.
+                    // The RemoveFileOrFolder API already handles this, when we integrate folders,
+                    // which is why we use 'GamePath' as entry point.
+                    var gamePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath;
                     var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
                     if (result == LoadoutItemGroupHelpers.GroupOperationStatus.NoItemsDeleted)
                         logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 
