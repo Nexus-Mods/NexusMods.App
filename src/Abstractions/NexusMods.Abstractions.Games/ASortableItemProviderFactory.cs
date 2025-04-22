@@ -116,14 +116,28 @@ public abstract class ASortableItemProviderFactory : ISortableItemProviderFactor
         throw new InvalidOperationException($"No provider exists to handle {loadoutId}");
     }
     
+    private bool _isDisposed;
+    
     /// <inheritdoc />
     public virtual void Dispose()
     {
-        foreach (var provider in _providers.Values)
-        {
-            provider.Dispose();
-        }
-
-        _providers.Clear();
+        Dispose(true);
     }
+    
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_isDisposed) return;
+        
+        if (disposing)
+        {
+            foreach (var provider in _providers.Values)
+            {
+                provider.Dispose();
+                _providers.Clear();
+            }
+        }
+        
+        _isDisposed = true;
+    }
+
 }
