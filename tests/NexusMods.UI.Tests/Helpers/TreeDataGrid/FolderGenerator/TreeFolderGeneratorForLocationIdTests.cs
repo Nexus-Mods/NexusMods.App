@@ -16,7 +16,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange  
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("file.txt");
+        var filePath = (RelativePath)"file.txt";
         var fileModel = CreateFileModel(fileId);
 
         var generator = CreateGenerator();
@@ -37,7 +37,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("folder1/folder2/file.txt");
+        var filePath = (RelativePath)"folder1/folder2/file.txt";
         var fileModel = CreateFileModel(fileId);
         
         // Act
@@ -66,7 +66,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("folder/file.txt");
+        var filePath = (RelativePath)"folder/file.txt";
         var fileModel = CreateFileModel(fileId);
         
         // Act
@@ -97,7 +97,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("folder/file.txt");
+        var filePath = (RelativePath)"folder/file.txt";
         var fileModel = CreateFileModel(fileId);
         
         // Setup
@@ -119,8 +119,8 @@ public class TreeFolderGeneratorForLocationIdTests
         // Arrange
         var fileId1 = EntityId.From(0UL);
         var fileId2 = EntityId.From(1UL);
-        var filePath1 = new RelativePath("folder/file1.txt");
-        var filePath2 = new RelativePath("folder/file2.txt");
+        var filePath1 = (RelativePath)"folder/file1.txt";
+        var filePath2 = (RelativePath)"folder/file2.txt";
         var fileModel1 = CreateFileModel(fileId1);
         var fileModel2 = CreateFileModel(fileId2);
         
@@ -144,7 +144,7 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetOrCreateFolder_CreatesNestedFolders_WhenTheyDontExist()
     {
         // Arrange
-        var path = new RelativePath("folder1/folder2/folder3");
+        var path = (RelativePath)"folder1/folder2/folder3";
         
         // Act
         var generator = CreateGenerator();
@@ -173,7 +173,7 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetOrCreateFolder_ReturnsExistingFolder_WhenItExists()
     {
         // Arrange
-        var path = new RelativePath("folder1/folder2");
+        var path = (RelativePath)"folder1/folder2";
         
         // Act - create folder first time
         var generator = CreateGenerator();
@@ -225,7 +225,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("file.txt");
+        var filePath = (RelativePath)"file.txt";
         var fileModel = CreateFileModel(fileId);
         var generator = CreateGenerator();
         var hasChildren = false;
@@ -257,7 +257,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("folder/file.txt");
+        var filePath = (RelativePath)"folder/file.txt";
         var fileModel = CreateFileModel(fileId);
         var generator = CreateGenerator();
         var rootHasChildren = false;
@@ -299,8 +299,8 @@ public class TreeFolderGeneratorForLocationIdTests
         // Arrange
         var fileId1 = EntityId.From(0UL);
         var fileId2 = EntityId.From(1UL);
-        var filePath1 = new RelativePath("folder/file1.txt");
-        var filePath2 = new RelativePath("folder/file2.txt");
+        var filePath1 = (RelativePath)"folder/file1.txt";
+        var filePath2 = (RelativePath)"folder/file2.txt";
         var fileModel1 = CreateFileModel(fileId1);
         var fileModel2 = CreateFileModel(fileId2);
         var generator = CreateGenerator();
@@ -355,7 +355,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("folder1/folder2/folder3/file.txt");
+        var filePath = (RelativePath)"folder1/folder2/folder3/file.txt";
         var fileModel = CreateFileModel(fileId);
         var generator = CreateGenerator();
         var rootHasChildren = false;
@@ -420,7 +420,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange - Create a deeply nested folder structure with a single file
         var fileId = EntityId.From(0UL);
-        var filePath = new RelativePath("parent1/parent2/parent3/file.txt");
+        var filePath = (RelativePath)"parent1/parent2/parent3/file.txt";
         var fileModel = CreateFileModel(fileId);
         
         var generator = CreateGenerator();
@@ -481,8 +481,8 @@ public class TreeFolderGeneratorForLocationIdTests
         // Arrange
         var fileId1 = EntityId.From(0UL);
         var fileId2 = EntityId.From(1UL);
-        var filePath1 = new RelativePath("file1.txt");
-        var filePath2 = new RelativePath("file2.txt");
+        var filePath1 = (RelativePath)"file1.txt";
+        var filePath2 = (RelativePath)"file2.txt";
         var fileModel1 = CreateFileModel(fileId1);
         var fileModel2 = CreateFileModel(fileId2);
         
@@ -511,9 +511,9 @@ public class TreeFolderGeneratorForLocationIdTests
         var fileId2 = EntityId.From(1UL);
         var fileId3 = EntityId.From(2UL);
         
-        var filePath1 = new RelativePath("file1.txt");                // Root file
-        var filePath2 = new RelativePath("folder1/file2.txt");        // In subfolder
-        var filePath3 = new RelativePath("folder1/folder2/file3.txt"); // In nested subfolder
+        var filePath1 = (RelativePath)"file1.txt";                // Root file
+        var filePath2 = (RelativePath)"folder1/file2.txt";        // In subfolder
+        var filePath3 = (RelativePath)"folder1/folder2/file3.txt"; // In nested subfolder
         
         var fileModel1 = CreateFileModel(fileId1);
         var fileModel2 = CreateFileModel(fileId2);
@@ -567,9 +567,9 @@ public class TreeFolderGeneratorForLocationIdTests
         var fileId2 = EntityId.From(1UL);
         var fileId3 = EntityId.From(2UL);
         
-        var filePath1 = new RelativePath("file1.txt");
-        var filePath2 = new RelativePath("folder1/file2.txt");
-        var filePath3 = new RelativePath("folder1/folder2/file3.txt");
+        var filePath1 = (RelativePath)"file1.txt";
+        var filePath2 = (RelativePath)"folder1/file2.txt";
+        var filePath3 = (RelativePath)"folder1/folder2/file3.txt";
         
         var fileModel1 = CreateFileModel(fileId1);
         var fileModel2 = CreateFileModel(fileId2);
@@ -642,9 +642,9 @@ public class TreeFolderGeneratorForLocationIdTests
         var fileId2 = EntityId.From(1UL);
         var fileId3 = EntityId.From(2UL);
         
-        var filePath1 = new RelativePath("file1.txt");
-        var filePath2 = new RelativePath("folder1/file2.txt");
-        var filePath3 = new RelativePath("folder1/folder2/file3.txt");
+        var filePath1 = (RelativePath)"file1.txt";
+        var filePath2 = (RelativePath)"folder1/file2.txt";
+        var filePath3 = (RelativePath)"folder1/folder2/file3.txt";
         
         var fileModel1 = CreateFileModel(fileId1);
         var fileModel2 = CreateFileModel(fileId2);
@@ -691,7 +691,7 @@ public class TreeFolderGeneratorForLocationIdTests
         var generator = CreateGenerator();
         
         // Create a nested folder structure
-        var filePath = new RelativePath("parent1/parent2/file.txt");
+        var filePath = (RelativePath)"parent1/parent2/file.txt";
         var fileId = EntityId.From(0UL);
         var fileModel = CreateFileModel(fileId);
         
@@ -724,7 +724,7 @@ public class TreeFolderGeneratorForLocationIdTests
         var generator = CreateGenerator();
         
         // Create a nested folder structure
-        var filePath = new RelativePath("parent1/parent2/parent3/file.txt");
+        var filePath = (RelativePath)"parent1/parent2/parent3/file.txt";
         var fileId = EntityId.From(0UL);
         var fileModel = CreateFileModel(fileId);
         

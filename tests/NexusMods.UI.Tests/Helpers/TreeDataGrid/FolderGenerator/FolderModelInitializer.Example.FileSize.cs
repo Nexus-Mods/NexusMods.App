@@ -36,10 +36,10 @@ public class FileSizeAggregationTests
         var fileId3 = EntityId.From(3UL);
         var fileId4 = EntityId.From(4UL);
         
-        var file1Path = new RelativePath("folder1/file1.txt");
-        var file2Path = new RelativePath("folder1/file2.txt");
-        var file3Path = new RelativePath("folder1/subfolder/file3.txt");
-        var file4Path = new RelativePath("folder2/file4.txt");
+        var file1Path = (RelativePath)"folder1/file1.txt";
+        var file2Path = (RelativePath)"folder1/file2.txt";
+        var file3Path = (RelativePath)"folder1/subfolder/file3.txt";
+        var file4Path = (RelativePath)"folder2/file4.txt";
         
         var file1Model = CreateFileModel(fileId1, 100);
         var file2Model = CreateFileModel(fileId2, 200);
@@ -76,7 +76,7 @@ public class FileSizeAggregationTests
         
         // Create initial structure with one file
         var fileId1 = EntityId.From(1UL);
-        var file1Path = new RelativePath("folder1/file1.txt");
+        var file1Path = (RelativePath)"folder1/file1.txt";
         var file1Model = CreateFileModel(fileId1, 100);
         
         generator.OnReceiveFile(file1Path, file1Model);
@@ -90,7 +90,7 @@ public class FileSizeAggregationTests
         
         // Act - Add another file
         var fileId2 = EntityId.From(2UL);
-        var file2Path = new RelativePath("folder1/subfolder/file2.txt");
+        var file2Path = (RelativePath)"folder1/subfolder/file2.txt";
         var file2Model = CreateFileModel(fileId2, 200);
         
         generator.OnReceiveFile(file2Path, file2Model);
@@ -114,8 +114,8 @@ public class FileSizeAggregationTests
         var fileId1 = EntityId.From(1UL);
         var fileId2 = EntityId.From(2UL);
         
-        var file1Path = new RelativePath("folder1/file1.txt");
-        var file2Path = new RelativePath("folder1/subfolder/file2.txt");
+        var file1Path = (RelativePath)"folder1/file1.txt";
+        var file2Path = (RelativePath)"folder1/subfolder/file2.txt";
         
         var file1Model = CreateFileModel(fileId1, 100);
         var file2Model = CreateFileModel(fileId2, 200);
@@ -153,8 +153,8 @@ public class FileSizeAggregationTests
         var fileId1 = EntityId.From(1UL);
         var fileId2 = EntityId.From(2UL);
         
-        var file1Path = new RelativePath("folder1/empty.txt");
-        var file2Path = new RelativePath("folder1/nonempty.txt");
+        var file1Path = (RelativePath)"folder1/empty.txt";
+        var file2Path = (RelativePath)"folder1/nonempty.txt";
         
         var file1Model = CreateFileModel(fileId1, 0);         // Empty file
         var file2Model = CreateFileModel(fileId2, 100);       // Non-empty file

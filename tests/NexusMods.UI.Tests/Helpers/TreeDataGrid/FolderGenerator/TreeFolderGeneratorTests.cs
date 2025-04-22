@@ -15,7 +15,7 @@ public class TreeFolderGeneratorTests
         // Arrange
         var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
-        var filePath = new GamePath(locationId, new RelativePath("file.txt"));
+        var filePath = new GamePath(locationId, (RelativePath)"file.txt");
         var fileModel = CreateFileModel(fileId);
         var testItem = CreateTestTreeItem(fileId, filePath);
 
@@ -34,7 +34,7 @@ public class TreeFolderGeneratorTests
         // Arrange
         var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
-        var filePath = new GamePath(locationId, new RelativePath("file.txt"));
+        var filePath = new GamePath(locationId, (RelativePath)"file.txt");
         var fileModel = CreateFileModel(fileId);
         var testItem = CreateTestTreeItem(fileId, filePath);
 
@@ -53,13 +53,13 @@ public class TreeFolderGeneratorTests
         // Arrange
         var fileId1 = EntityId.From(0UL);
         var locationId1 = LocationId.Game;
-        var filePath1 = new GamePath(locationId1, new RelativePath("file1.txt"));
+        var filePath1 = new GamePath(locationId1, (RelativePath)"file1.txt");
         var fileModel1 = CreateFileModel(fileId1);
         var testItem1 = CreateTestTreeItem(fileId1, filePath1);
 
         var fileId2 = EntityId.From(1UL);
         var locationId2 = LocationId.Saves;
-        var filePath2 = new GamePath(locationId2, new RelativePath("file2.txt"));
+        var filePath2 = new GamePath(locationId2, (RelativePath)"file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
         var testItem2 = CreateTestTreeItem(fileId2, filePath2);
 
@@ -82,12 +82,12 @@ public class TreeFolderGeneratorTests
         var locationId = LocationId.Game;
         
         var fileId1 = EntityId.From(0UL);
-        var filePath1 = new GamePath(locationId, new RelativePath("file1.txt"));
+        var filePath1 = new GamePath(locationId, (RelativePath)"file1.txt");
         var fileModel1 = CreateFileModel(fileId1);
         var testItem1 = CreateTestTreeItem(fileId1, filePath1);
         
         var fileId2 = EntityId.From(1UL);
-        var filePath2 = new GamePath(locationId, new RelativePath("file2.txt"));
+        var filePath2 = new GamePath(locationId, (RelativePath)"file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
         var testItem2 = CreateTestTreeItem(fileId2, filePath2);
 
@@ -110,7 +110,7 @@ public class TreeFolderGeneratorTests
         // Arrange
         var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
-        var filePath = new GamePath(locationId, new RelativePath("file.txt"));
+        var filePath = new GamePath(locationId, (RelativePath)"file.txt");
         var fileModel = CreateFileModel(fileId);
         var testItem = CreateTestTreeItem(fileId, filePath);
 
@@ -138,7 +138,7 @@ public class TreeFolderGeneratorTests
         var generator = CreateGenerator();
         var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
-        var filePath = new GamePath(locationId, new RelativePath("file.txt"));
+        var filePath = new GamePath(locationId, (RelativePath)"file.txt");
         var fileModel = CreateFileModel(fileId);
         var testItem = CreateTestTreeItem(fileId, filePath);
         
@@ -173,14 +173,14 @@ public class TreeFolderGeneratorTests
         
         // Add first file to create the root
         var fileId1 = EntityId.From(0UL);
-        var filePath1 = new GamePath(locationId, new RelativePath("file1.txt"));
+        var filePath1 = new GamePath(locationId, (RelativePath)"file1.txt");
         var fileModel1 = CreateFileModel(fileId1);
         var testItem1 = CreateTestTreeItem(fileId1, filePath1);
         generator.OnReceiveFile(testItem1, fileModel1);
         
         // Prepare second file
         var fileId2 = EntityId.From(1UL);
-        var filePath2 = new GamePath(locationId, new RelativePath("file2.txt"));
+        var filePath2 = new GamePath(locationId, (RelativePath)"file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
         var testItem2 = CreateTestTreeItem(fileId2, filePath2);
         
@@ -210,7 +210,7 @@ public class TreeFolderGeneratorTests
         // Add first file to create the first root
         var fileId1 = EntityId.From(0UL);
         var locationId1 = LocationId.Game;
-        var filePath1 = new GamePath(locationId1, new RelativePath("file1.txt"));
+        var filePath1 = new GamePath(locationId1, (RelativePath)"file1.txt");
         var fileModel1 = CreateFileModel(fileId1);
         var testItem1 = CreateTestTreeItem(fileId1, filePath1);
         generator.OnReceiveFile(testItem1, fileModel1);
@@ -218,7 +218,7 @@ public class TreeFolderGeneratorTests
         // Prepare file for second root
         var fileId2 = EntityId.From(1UL);
         var locationId2 = LocationId.Saves;
-        var filePath2 = new GamePath(locationId2, new RelativePath("file2.txt"));
+        var filePath2 = new GamePath(locationId2, (RelativePath)"file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
         var testItem2 = CreateTestTreeItem(fileId2, filePath2);
         
@@ -251,7 +251,7 @@ public class TreeFolderGeneratorTests
         var generator = CreateGenerator();
         var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
-        var filePath = new GamePath(locationId, new RelativePath("file.txt"));
+        var filePath = new GamePath(locationId, (RelativePath)"file.txt");
         var fileModel = CreateFileModel(fileId);
         var testItem = CreateTestTreeItem(fileId, filePath);
         
@@ -288,12 +288,12 @@ public class TreeFolderGeneratorTests
         
         // Add two files to the same root
         var fileId1 = EntityId.From(0UL);
-        var filePath1 = new GamePath(locationId, new RelativePath("file1.txt"));
+        var filePath1 = new GamePath(locationId, (RelativePath)"file1.txt");
         var fileModel1 = CreateFileModel(fileId1);
         var testItem1 = CreateTestTreeItem(fileId1, filePath1);
         
         var fileId2 = EntityId.From(1UL);
-        var filePath2 = new GamePath(locationId, new RelativePath("file2.txt"));
+        var filePath2 = new GamePath(locationId, (RelativePath)"file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
         var testItem2 = CreateTestTreeItem(fileId2, filePath2);
         
@@ -323,7 +323,7 @@ public class TreeFolderGeneratorTests
         // Arrange
         var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
-        var filePath = new GamePath(locationId, new RelativePath("file.txt"));
+        var filePath = new GamePath(locationId, (RelativePath)"file.txt");
         var fileModel = CreateFileModel(fileId);
         var testItem = CreateTestTreeItem(fileId, filePath);
 
@@ -345,12 +345,12 @@ public class TreeFolderGeneratorTests
         var locationId = LocationId.Game;
         
         var fileId1 = EntityId.From(0UL);
-        var filePath1 = new GamePath(locationId, new RelativePath("folder1/file1.txt"));
+        var filePath1 = new GamePath(locationId, (RelativePath)"folder1/file1.txt");
         var fileModel1 = CreateFileModel(fileId1);
         var testItem1 = CreateTestTreeItem(fileId1, filePath1);
         
         var fileId2 = EntityId.From(1UL);
-        var filePath2 = new GamePath(locationId, new RelativePath("folder1/folder2/file2.txt"));
+        var filePath2 = new GamePath(locationId, (RelativePath)"folder1/folder2/file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
         var testItem2 = CreateTestTreeItem(fileId2, filePath2);
 
@@ -372,17 +372,17 @@ public class TreeFolderGeneratorTests
         var locationId2 = LocationId.Saves;
         
         var fileId1 = EntityId.From(0UL);
-        var filePath1 = new GamePath(locationId1, new RelativePath("folder1/file1.txt"));
+        var filePath1 = new GamePath(locationId1, (RelativePath)"folder1/file1.txt");
         var fileModel1 = CreateFileModel(fileId1);
         var testItem1 = CreateTestTreeItem(fileId1, filePath1);
         
         var fileId2 = EntityId.From(1UL);
-        var filePath2 = new GamePath(locationId1, new RelativePath("folder1/folder2/file2.txt"));
+        var filePath2 = new GamePath(locationId1, (RelativePath)"folder1/folder2/file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
         var testItem2 = CreateTestTreeItem(fileId2, filePath2);
 
         var fileId3 = EntityId.From(2UL);
-        var filePath3 = new GamePath(locationId2, new RelativePath("file3.txt"));
+        var filePath3 = new GamePath(locationId2, (RelativePath)"file3.txt");
         var fileModel3 = CreateFileModel(fileId3);
         var testItem3 = CreateTestTreeItem(fileId3, filePath3);
 
