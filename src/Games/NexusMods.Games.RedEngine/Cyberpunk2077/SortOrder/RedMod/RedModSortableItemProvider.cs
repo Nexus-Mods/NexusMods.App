@@ -301,8 +301,16 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
         await tx.Commit();
     }
-    
-    protected override IReadOnlyList<ISortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
+
+
+    /// <summary>
+    /// Retrieves the sortable entries for the sortOrderId, and returns them as a list of sortable items.
+    /// </summary>
+    /// <remarks>
+    /// The items in the returned list can have temporary values for properties such as `ModName` and `IsActive`.
+    /// Those will need to be updated after the sortableItems are matched to items in the loadout. 
+    /// </remarks>
+    private IReadOnlyList<ISortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
 
