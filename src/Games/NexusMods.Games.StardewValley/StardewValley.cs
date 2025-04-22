@@ -92,7 +92,9 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         var result = new Dictionary<LocationId, AbsolutePath>()
         {
             { LocationId.Game, installation.Path },
+            { LocationId.From("Mods"), installation.Path.Combine(Constants.ModsFolder) },
         };
+
         return result;
     }
 
