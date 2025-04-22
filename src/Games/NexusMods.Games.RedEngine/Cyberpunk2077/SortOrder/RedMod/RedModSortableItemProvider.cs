@@ -23,7 +23,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
     private readonly IConnection _connection;
     private bool _isDisposed;
 
-    private readonly SourceCache<ISortableItem, ISortItemKey> _orderCache = new(item => item.Key);
 
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
@@ -57,10 +56,10 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
         // load the previously saved order
         var order = RetrieveSortableEntries();
-        _orderCache.AddOrUpdate(order);
+        OrderCache.AddOrUpdate(order);
         
         // populate read only list
-        _orderCache.Connect()
+        OrderCache.Connect()
             .Transform(item => item)
             .SortBy(item => item.SortIndex)
             .Bind(out _readOnlyOrderList)
@@ -104,7 +103,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         {
             var redModSortableItem = (RedModSortableItem)sortableItem;
             // Get a stagingList of the items in the order
-            var stagingList = _orderCache.Items
+            var stagingList = OrderCache.Items
                 .OrderBy(item => item.SortIndex)
                 .ToList();
 
@@ -132,7 +131,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             
             await PersistSortableEntries(stagingList, token);
 
-            _orderCache.Edit(innerCache =>
+            OrderCache.Edit(innerCache =>
                 {
                     innerCache.Clear();
                     innerCache.AddOrUpdate(stagingList);
@@ -158,7 +157,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
                 .ToArray();
             
             // Get current ordering from cache
-            var stagingList = _orderCache.Items
+            var stagingList = OrderCache.Items
                 .OrderBy(item => item.SortIndex)
                 .ToList();
             
@@ -192,7 +191,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             await PersistSortableEntries(stagingList, token);
             
             // Update the public cache
-            _orderCache.Edit(innerCache =>
+            OrderCache.Edit(innerCache =>
                 {
                     innerCache.Clear();
                     innerCache.AddOrUpdate(stagingList);
@@ -251,7 +250,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
                 .Select(g => new RedModWithState( g, g.RedModFolder(), g.IsEnabled()))
                 .ToList();
                 
-            var oldOrder = _orderCache.Items.OfType<RedModSortableItem>().OrderBy(item => item.SortIndex);
+            var oldOrder = OrderCache.Items.OfType<RedModSortableItem>().OrderBy(item => item.SortIndex);
             
             if (token.IsCancellationRequested) return;
             
@@ -266,7 +265,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             if (token.IsCancellationRequested) return;
 
             // Update the cache
-            _orderCache.Edit(innerCache =>
+            OrderCache.Edit(innerCache =>
                 {
                     innerCache.Clear();
                     innerCache.AddOrUpdate(stagingList);
@@ -491,7 +490,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         if (disposing)
         {
             _disposables.Dispose();
-            _orderCache.Dispose();
+            OrderCache.Dispose();
         }
 
         _isDisposed = true;

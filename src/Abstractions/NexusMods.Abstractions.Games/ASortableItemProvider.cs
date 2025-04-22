@@ -16,6 +16,11 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     protected readonly SemaphoreSlim Semaphore = new(1, 1);
     
     /// <summary>
+    /// Source cache of the sortable items used to expose the latest sort order
+    /// </summary>
+    protected readonly SourceCache<ISortableItem, ISortItemKey> OrderCache = new(item => item.Key);
+    
+    /// <summary>
     /// Protected constructor, use CreateAsync method to create an instance
     /// </summary>
     protected ASortableItemProvider(ISortableItemProviderFactory parentFactory, LoadoutId loadoutId)
@@ -44,7 +49,7 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
 
     /// <Inheritdoc />
     public abstract Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token);
-
+    
 
     /// <inheritdoc />
     public virtual void Dispose()
