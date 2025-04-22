@@ -26,4 +26,17 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     
     /// <inheritdoc />
     public IEnumerable<LocatorId> ToLocatorIds() => ManifestIds.Select(m => LocatorId.From(m.ToString()));
+
+    /// <summary>
+    /// Path to the proton prefix directory.
+    /// </summary>
+    /// <remarks>
+    /// To get the WINE prefix directory, combine this path with `pfx`.
+    /// </remarks>
+    public AbsolutePath? ProtonPrefixDirectory { get; init; }
+
+    /// <summary>
+    /// Anonymous function that returns the current launch options of the game or null.
+    /// </summary>
+    public Func<string?>? GetLaunchOptions { get; init; }
 }

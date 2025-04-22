@@ -210,7 +210,6 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     private readonly ILoadoutSortableItemProvider _sortableItemsProvider;
     private readonly ILoadOrderDataProvider[] _loadOrderDataProviders;
     private readonly R3.Observable<ListSortDirection> _sortDirectionObservable;
-    private readonly IObservable<ISortedChangeSet<CompositeItemModel<Guid>, Guid>> _sortedItems;
     private readonly System.Reactive.Subjects.Subject<IComparer<CompositeItemModel<Guid>>> _resortSubject = new(); 
     private readonly CompositeDisposable _disposables = new();
 
@@ -226,9 +225,6 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
 
         _loadOrderDataProviders = serviceProvider.GetServices<ILoadOrderDataProvider>().ToArray();
         
-        var itemsChangeSet = _loadOrderDataProviders
-            .Select(x => x.ObserveLoadOrder(_sortableItemsProvider, _sortDirectionObservable)).MergeChangeSets();
-        
         var ascendingComparer = SortExpressionComparer<CompositeItemModel<Guid>>.Ascending(
             item => item.Get<LoadOrderComponents.IndexComponent>(LoadOrderColumns.IndexColumn.IndexComponentKey).SortIndex.Value
         );
@@ -243,26 +239,12 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
                     : descendingComparer;
             }
         );
-        
-        // NOTE(Al12rs): Sorting is a bit of a nightmare with the Adapter at the moment.
-        // Cysharp ObservableCollections no longer have a SortedView to apply synchronized sorting to a collection.
-        // The ApplyChanges method used to populate the ObservableList from the changeSet puts new items in based on the
-        // order of the changes received, rather than using accurate indices (it doesn't take a ISortedChangeSet).
-        //
-        // By sorting as the last possible step, the passed changeset retains some sorting indices, which makes the sorting mostly accurate.
-        // This doesn't update correctly though when the sorting direction is changed.
-        // To handle that, we manually trigger a sorting of the Roots list when the sorting direction changes.
-        // Yeah, it's pretty ugly.
-        _sortedItems = itemsChangeSet.Sort(comparerObservable);
 
         var activationDisposable = this.WhenActivated( (self, disposables)  =>
             {
                 // Sort the Roots list when the sorting direction changes, as it doesn't update correctly otherwise
                 comparerObservable
-                    .Subscribe(comparer => _resortSubject.OnNext(comparer))
-                    .AddTo(disposables);
-                
-                _resortSubject.Subscribe(comparer => Roots.Sort(comparer))
+                    .Subscribe(comparer => CustomSortComparer.Value = comparer)
                     .AddTo(disposables);
             }
         );
@@ -319,7 +301,9 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
 
     protected override IObservable<IChangeSet<CompositeItemModel<Guid>, Guid>> GetRootsObservable(bool viewHierarchical)
     {
-        return _sortedItems;
+        return _loadOrderDataProviders
+            .Select(x => x.ObserveLoadOrder(_sortableItemsProvider, _sortDirectionObservable))
+            .MergeChangeSets();
     }
 
     protected override IColumn<CompositeItemModel<Guid>>[] CreateColumns(bool viewHierarchical)
@@ -335,11 +319,15 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         return
         [
             expanderColumn,
-            ColumnCreator.Create<Guid, LoadOrderColumns.NameColumn>(
-                columnHeader: _sortableItemsProvider.ParentFactory.NameColumnHeader,
+            ColumnCreator.Create<Guid, LoadOrderColumns.DisplayNameColumn>(
+                columnHeader: _sortableItemsProvider.ParentFactory.DisplayNameColumnHeader,
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             ),
+            ColumnCreator.Create<Guid, LoadOrderColumns.ModNameColumn>(
+                canUserSortColumn: false,
+                canUserResizeColumn: false
+            )
         ];
     }
 

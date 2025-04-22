@@ -32,7 +32,7 @@
 
         <Style Selector="^ Grid#MainGrid">
             <Setter Property="Margin" Value="0,12, 0,0" />
-            
+
             <!-- right column (trophy bar) -->
             <Style Selector="^ DockPanel#TrophyBarDockPanel">
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
@@ -42,7 +42,7 @@
                 <Style Selector="^ icons|UnifiedIcon#TrophyIcon">
                     <Setter Property="Size" Value="20" />
                     <Setter Property="Margin" Value="0,0, 0, 8" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}"/>
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                 </Style>
 
                 <Style Selector="^ > Grid">
@@ -53,7 +53,7 @@
                         <Setter Property="Width" Value="3" />
                         <Setter Property="Margin" Value="0,4" />
                     </Style>
-                    
+
                     <Style Selector="^ icons|UnifiedIcon#ArrowUpIcon">
                         <Setter Property="Foreground" Value="{StaticResource SurfaceHigh}" />
                     </Style>
@@ -83,7 +83,16 @@
 
                             <Style Selector="^ StackPanel#LoadOrderItemIndexColumnStack">
                                 <Setter Property="Orientation" Value="Horizontal" />
-                                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
+                                <Setter Property="Spacing" Value="0" />
+                            </Style>
+
+                            <Style Selector="^ Border#ItemModDragBorder">
+                                <!-- <Setter Property="Background" Value="DarkRed" /> -->
+                                <Style Selector="^ icons|UnifiedIcon">
+                                    <Setter Property="Size" Value="10" />
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource SurfaceTransparentBrush}" />
+                                </Style>
                             </Style>
 
                             <Style Selector="^ Border#ItemIndexBorder">
@@ -105,12 +114,13 @@
                                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300}" />
                                 <Setter Property="Width" Value="1" />
                                 <Setter Property="Height" Value="48" />
+                                <Setter Property="Margin" Value="12 0 0 0" />
                             </Style>
                         </Style>
                     </Style>
 
-                    <!-- second column (name) -->
-                    <Style Selector="^.LoadOrderColumns_NameColumn">
+                    <!-- second column (display name) -->
+                    <Style Selector="^.LoadOrderColumns_DisplayNameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
 
                             <Style Selector="^ Border#ItemModImageBorder">
@@ -126,11 +136,6 @@
                                     <Setter Property="Size" Value="16" />
                                 </Style>
                             </Style>
-
-                            <Style Selector="^ TextBlock#ModName">
-                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
-                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentModerateBrush}" />
-                            </Style>
                             <Style Selector="^ TextBlock#DisplayName">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
@@ -138,12 +143,55 @@
                         </Style>
                     </Style>
 
+                    <!-- third column (mod name) -->
+                    <Style Selector="^.LoadOrderColumns_ModNameColumn">
+                        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                            <Style Selector="^ TextBlock#ModName">
+                                <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                                <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentSubduedBrush}" />
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+
+                <!-- selected -->
+                <Style Selector="^ TreeDataGridRow:selected">
+
+                    <!-- first column (index) -->
+                    <Style Selector="^ TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+
+                        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+
+                            <Style Selector="^ Border#ItemModDragBorder">
+                                <Style Selector="^ icons|UnifiedIcon">
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                </Style>
+                            </Style>
+                        </Style>
+                    </Style>
+                </Style>
+                
+                <!-- pointerover -->
+                <Style Selector="^ TreeDataGridRow:pointerover">
+
+                    <!-- first column (index) -->
+                    <Style Selector="^ TreeDataGridTemplateCell.LoadOrderColumns_IndexColumn">
+
+                        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+                            <!-- <Setter Property="Background" Value="DarkBlue" /> -->
+
+                            <Style Selector="^ Border#ItemModDragBorder">
+                                <!-- <Setter Property="Background" Value="DarkRed" /> -->
+                                <Style Selector="^ icons|UnifiedIcon">
+                                    <Setter Property="Foreground"
+                                            Value="{StaticResource NeutralTranslucentModerateBrush}" />
+                                </Style>
+                            </Style>
+                        </Style>
+                    </Style>
                 </Style>
             </Style>
         </Style>
-
-
     </Style>
-
-
 </Styles>

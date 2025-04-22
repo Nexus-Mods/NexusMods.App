@@ -1,5 +1,7 @@
 using GameFinder.StoreHandlers.Steam;
 using GameFinder.StoreHandlers.Steam.Models.ValueTypes;
+using GameFinder.StoreHandlers.Steam.Services;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
@@ -46,6 +48,21 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
             AppId = game.AppId.Value,
             ManifestIds = game.AppManifest.InstalledDepots.Select(x => x.Value.ManifestId.Value).ToArray(),
             CloudSavesDirectory = game.GetCloudSavesDirectoryPath(),
+            ProtonPrefixDirectory = game.GetProtonPrefix()?.ProtonDirectory,
+            GetLaunchOptions = () =>
+            {
+                var localConfigPath = SteamLocationFinder.GetUserDataDirectoryPath(game.SteamPath, game.AppManifest.LastOwner).Combine("config").Combine("localconfig.vdf");
+                var parserResult = LocalUserConfigParser.ParseConfigFile(game.AppManifest.LastOwner, localConfigPath);
+                if (parserResult.IsFailed)
+                {
+                    Logger.LogWarning("Error while parsing local user config at `{Path}`: `{Error}`", localConfigPath, parserResult.Errors);
+                    return null;
+                }
+
+                if (!parserResult.Value.LocalAppData.TryGetValue(game.AppId, out var localAppData)) return null;
+                var launchOptions = localAppData.LaunchOptions;
+                return launchOptions;
+            },
         };
     }
 }

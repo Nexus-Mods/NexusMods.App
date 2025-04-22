@@ -90,10 +90,16 @@ public class GenericInstaller : ALibraryArchiveInstaller
 
     private async IAsyncEnumerable<ManifestFiles> GetManifestsAsync(LibraryArchive.ReadOnly libraryArchive, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        foreach (var fileEntry in libraryArchive.Children)
+        var seenModDirectories = new HashSet<RelativePath>();
+
+        // NOTE(erri120): ordered by file path depth so that top level items come before deeper nested items:
+        // 1) foo/manifest
+        // 2) foo/bar/manifest
+        foreach (var fileEntry in libraryArchive.Children.OrderBy(x => x.Path.Depth))
         {
             if (cancellationToken.IsCancellationRequested) yield break;
             if (!fileEntry.Path.FileName.Equals(Constants.ManifestFile)) continue;
+            if (seenModDirectories.Any(x => fileEntry.Path.InFolder(x))) continue;
 
             SMAPIManifest? manifest = null;
             try
@@ -107,6 +113,8 @@ public class GenericInstaller : ALibraryArchiveInstaller
             }
 
             if (manifest is null) continue;
+
+            seenModDirectories.Add(fileEntry.Path.Parent);
             yield return new ManifestFiles(manifest, fileEntry);
         }
     }

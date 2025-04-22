@@ -22,6 +22,12 @@
                         <DataTemplate x:DataType="local:LoadOrderComponents+IndexComponent">
                             
                             <StackPanel x:Name="LoadOrderItemIndexColumnStack">
+                                
+                                <!-- Drag indicator -->
+                                <Border x:Name="ItemModDragBorder">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragVerticalDots}"/>
+                                </Border>
+
                                 <controls:StandardButton x:Name="UpButton"
                                                          Command="{CompiledBinding MoveUp}"
                                                          LeftIcon="{x:Static icons:IconValues.ArrowUp}"
@@ -52,14 +58,15 @@
         
     </DataTemplate>
     
-    <!-- Name Column -->
-    <DataTemplate x:Key="{x:Static local:LoadOrderColumns+NameColumn.ColumnTemplateResourceKey}">
+    <!-- DisplayName Column -->
+    <DataTemplate x:Key="{x:Static local:LoadOrderColumns+DisplayNameColumn.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="system:Guid" />
         </DataTemplate.DataType>
 
-        <StackPanel x:Name="LoadOrderItemNameColumnStack" Orientation="Horizontal" Spacing="12">
-
+        <StackPanel x:Name="LoadOrderItemNameColumnStack" Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
+            
+            <!-- Thumbnail -->
             <Border x:Name="ItemModImageBorder">
                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
             </Border>
@@ -69,7 +76,7 @@
                                        Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                                ComponentKey="{x:Static local:LoadOrderColumns+NameColumn.NameComponentKey}">
+                                                ComponentKey="{x:Static local:LoadOrderColumns+DisplayNameColumn.DisplayNameComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
                             <DataTemplate x:DataType="controls:StringComponent" DataType="controls:StringComponent">
                                 <TextBlock x:Name="DisplayName" Text="{CompiledBinding Value.Value}" />
@@ -78,32 +85,27 @@
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
-            
-            <!-- Current designs no longer have vertically stacked mod and display name. The design has evolved into using extra columns which
-            we can tackle soon or find a middle ground and stack horizontally. Will decide before release. -->
-            
-            <!-- <StackPanel VerticalAlignment="Center"> -->
-            <!--      -->
-            <!--     ~1~ ModName @1@ -->
-            <!--     <controls:ComponentControl x:TypeArguments="system:Guid" -->
-            <!--                                Content="{CompiledBinding}"> -->
-            <!--         <controls:ComponentControl.ComponentTemplate> -->
-            <!--             <controls:ComponentTemplate x:TypeArguments="controls:StringComponent" -->
-            <!--                                         ComponentKey="{x:Static local:LoadOrderColumns+NameColumn.ModNameComponentKey}"> -->
-            <!--                 <controls:ComponentTemplate.DataTemplate> -->
-            <!--                     <DataTemplate x:DataType="controls:StringComponent" DataType="controls:StringComponent"> -->
-            <!--                         <TextBlock x:Name="ModName" Text="{CompiledBinding Value.Value}" /> -->
-            <!--                     </DataTemplate> -->
-            <!--                 </controls:ComponentTemplate.DataTemplate> -->
-            <!--             </controls:ComponentTemplate> -->
-            <!--         </controls:ComponentControl.ComponentTemplate> -->
-            <!--     </controls:ComponentControl> -->
-            <!--      -->
-            <!-- </StackPanel> -->
-            
         </StackPanel>
-        
     </DataTemplate>
 
+    <!-- ModName Column -->
+    <DataTemplate x:Key="{x:Static local:LoadOrderColumns+ModNameColumn.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="system:Guid" />
+        </DataTemplate.DataType>
+            <controls:ComponentControl x:TypeArguments="system:Guid"
+                                       Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                                ComponentKey="{x:Static local:LoadOrderColumns+ModNameColumn.ModNameComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate x:DataType="controls:StringComponent" DataType="controls:StringComponent">
+                                <TextBlock x:Name="ModName" Text="{CompiledBinding Value.Value}" />
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+            </controls:ComponentControl>
+    </DataTemplate>
 
 </ResourceDictionary>

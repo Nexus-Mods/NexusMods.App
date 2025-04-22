@@ -77,8 +77,13 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<CompositeI
         return
         [
             expanderColumn,
-            ColumnCreator.Create<Guid, LoadOrderColumns.NameColumn>(
-                columnHeader: "Name",
+            ColumnCreator.Create<Guid, LoadOrderColumns.DisplayNameColumn>(
+                columnHeader: "DisplayName",
+                canUserSortColumn: false,
+                canUserResizeColumn: false
+            ),
+            ColumnCreator.Create<Guid, LoadOrderColumns.ModNameColumn>(
+                columnHeader: "ModName",
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             ),
@@ -88,9 +93,9 @@ public class LoadOrderTreeDataGridDesignAdapter : TreeDataGridAdapter<CompositeI
     private CompositeItemModel<Guid> CreateDesignModel(string name, Guid guid, int sortIndex, bool isActive)
     {
         var model = new CompositeItemModel<Guid>(guid);
-        model.Add(LoadOrderColumns.NameColumn.NameComponentKey, new StringComponent(name));
+        model.Add(LoadOrderColumns.DisplayNameColumn.DisplayNameComponentKey, new StringComponent(name));
+        model.Add(LoadOrderColumns.ModNameColumn.ModNameComponentKey, new StringComponent(name));
         model.Add(LoadOrderColumns.IsActiveComponentKey, new ValueComponent<bool>(isActive));
-
 
         model.Add(LoadOrderColumns.IndexColumn.IndexComponentKey,
             new LoadOrderComponents.IndexComponent(

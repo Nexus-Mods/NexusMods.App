@@ -69,10 +69,8 @@ public class RedModInstaller : ALibraryArchiveInstaller
                 infosList.Add((f, infoJson));
         }
         
-        if (infosList.Count == 0)
-            return new NotSupported();
-        
-        
+        if (infosList.Count == 0) return new NotSupported(Reason: $"Archive contains no valid redmod files named `{InfoJson}`");
+
         foreach (var (file, infoJson) in infosList.OrderBy(x => x.InfoJson.Name))
         {
             var modFolder = file.Parent();
