@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Extensions.BCL;
+using NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -282,9 +283,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
     {
         var dbToUse = db ?? _connection.Db;
 
-        return RedModSortableEntry.All(dbToUse)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == _sortOrderId)
-            .OrderBy(si => si.AsSortableEntry().SortIndex)
+        return dbToUse.RetrieveRedModSortOrder(_sortOrderId)
             .Select(redModSortableItem =>
                 {
                     var sortableItem = redModSortableItem.AsSortableEntry();
@@ -396,10 +395,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
     
     private async Task PersistSortOrder(List<RedModSortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
-        var persistentSortableItems = RedModSortableEntry.All(_connection.Db)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == sortOrderEntityId)
-            .OrderBy(si => si.AsSortableEntry().SortIndex)
-            .ToArray();
+        var persistentSortableItems = _connection.Db.RetrieveRedModSortOrder(sortOrderEntityId);
 
         if (token.IsCancellationRequested) return;
         
