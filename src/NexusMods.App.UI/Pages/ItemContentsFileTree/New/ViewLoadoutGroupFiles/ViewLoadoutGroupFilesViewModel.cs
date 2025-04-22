@@ -43,10 +43,21 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
         TabIcon = IconValues.FolderOpen;
         TabTitle = "File Tree";
 
-        // TODO: Filter directories here, once integrated.
         OpenEditorCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
+            .Select(connection, static (item, connection) =>
+                {
+                    // Directories in future code will not constitute valid entities,
+                    // so we filter out here. 
+                    if (item == null)
+                        return false;
+
+                    var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, item.Key);
+                    return loadoutFile.IsValid();
+                }
+            )
             .ToReactiveCommand<NavigationInformation>(info =>
             {
+                // Note(sewer): Is it possible to avoid a double entity load here?
                 var fileId = SelectedItem!.Key;
                 var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, fileId);
                 if (!loadoutFile.IsValid())
@@ -91,6 +102,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                         logger.LogError("Unable to find Loadout File with ID `{FileId}`. This is indicative of a bug.", fileId);
                         return;
                     }
+
                     // TODO: Support directories here, once that's integrated.
                     // The RemoveFileOrFolder API already handles this, when we integrate folders,
                     // which is why we use 'GamePath' as entry point.
@@ -130,8 +142,8 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                         // Note: This auto disposes last.
                         _selectedItemsSubscription.Disposable = FileTreeAdapter.SelectedModels
                             .ObserveCountChanged(notifyCurrentCount: true)
-                            .Subscribe(_ => {
-                                SelectedItem = FileTreeAdapter.SelectedModels.FirstOrDefault();
+                            .Subscribe(FileTreeAdapter, (_, adapter) => {
+                                SelectedItem = adapter.SelectedModels.FirstOrDefault();
                             });
             
                         // Initial update
