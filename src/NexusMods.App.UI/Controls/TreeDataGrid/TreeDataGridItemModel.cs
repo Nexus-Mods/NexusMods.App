@@ -191,4 +191,18 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     {
         return model.WhenActivated(block);
     }
+
+    /// <summary>
+    /// Provides the internal HasChildrenObservable. FOR TESTING ONLY.
+    /// </summary>
+    [Obsolete("Internal use for testing ONLY. Do not use in production code.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    internal IObservable<bool> GetHasChildrenObservable_ForTestingOnly() => HasChildrenObservable;
+
+    /// <summary>
+    /// Provides the internal ChildrenObservable. FOR TESTING ONLY.
+    /// </summary>
+    [Obsolete("Internal use for testing ONLY. Do not use in production code.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    internal IObservable<IChangeSet<TModel, TKey>> GetChildrenObservable_ForTestingOnly() => ChildrenObservable;
 }
