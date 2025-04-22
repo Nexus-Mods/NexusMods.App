@@ -50,12 +50,6 @@ public abstract class AGame : IGame
     public abstract string Name { get; }
 
     /// <inheritdoc />
-    public abstract SupportType SupportType { get; }
-
-    /// <inheritdoc />
-    public virtual HashSet<FeatureStatus> Features { get; } = [];
-
-    /// <inheritdoc />
     public abstract GameId GameId { get; }
 
     /// <summary>
@@ -89,7 +83,6 @@ public abstract class AGame : IGame
         {
             Game = this,
             LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
-            InstallDestinations = GetInstallDestinations(locations),
             Store = metadata.Store,
             LocatorResultMetadata = metadata.Metadata,
             Locator = locator,
@@ -134,7 +127,6 @@ public abstract class AGame : IGame
                 {
                     Game = this,
                     LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
-                    InstallDestinations = GetInstallDestinations(locations),
                     Store = installation.Store,
                     LocatorResultMetadata = installation.Metadata,
                     Locator = locator,
@@ -148,12 +140,6 @@ public abstract class AGame : IGame
     /// Returns the locations of known game elements, such as save folder, etc.
     /// </summary>
     protected abstract IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation);
-
-    /// <summary>
-    /// Returns the locations of installation destinations used by the Advanced Installer.
-    /// </summary>
-    /// <param name="locations">Result of <see cref="GetLocations"/>.</param>
-    public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
 
     /// <inheritdoc/>
     public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory() => Optional<GamePath>.None;

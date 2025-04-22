@@ -32,15 +32,6 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     public IEnumerable<long> GogIds => [1456460669];
     public override GameId GameId => GameId.From(3474);
     public static readonly GameDomain StaticDomain = GameDomain.From("baldursgate3");
-    public override SupportType SupportType => SupportType.Official;
-
-    public override HashSet<FeatureStatus> Features { get; } =
-    [
-        new(BaseFeatures.GameLocatable, IsImplemented: true),
-        new(BaseFeatures.HasInstallers, IsImplemented: true),
-        new(BaseFeatures.HasDiagnostics, IsImplemented: true),
-        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
-    ];
 
     public BaldursGate3(IServiceProvider provider) : base(provider)
     {
@@ -88,14 +79,6 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
             { Bg3Constants.ScriptExtenderConfigLocationId, fileSystem.GetKnownPath(KnownPath.LocalApplicationDataDirectory).Combine("Larian Studios/Baldur's Gate 3/ScriptExtender") },
         };
         return result;
-    }
-
-    /// <inheritdoc />
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-    {
-        return
-        [
-        ];
     }
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>

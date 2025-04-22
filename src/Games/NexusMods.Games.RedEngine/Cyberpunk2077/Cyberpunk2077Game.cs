@@ -47,15 +47,6 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 
     public override string Name => "Cyberpunk 2077";
     public override GameId GameId => GameIdStatic;
-    public override SupportType SupportType => SupportType.Official;
-
-    public override HashSet<FeatureStatus> Features { get; } =
-    [
-        new(BaseFeatures.GameLocatable, IsImplemented: true),
-        new(BaseFeatures.HasInstallers, IsImplemented: true),
-        new(BaseFeatures.HasDiagnostics, IsImplemented: true),
-        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
-    ];
 
     public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
@@ -109,7 +100,4 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
         new AppearancePresetInstaller(_serviceProvider),
         new FolderlessModInstaller(_serviceProvider),
     ];
-
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }

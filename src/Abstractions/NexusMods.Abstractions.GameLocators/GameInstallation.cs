@@ -14,11 +14,6 @@ public class GameInstallation : IEquatable<GameInstallation>
     /// Empty game installation, used for testing and some cases where a property must be set.
     /// </summary>
     public static GameInstallation Empty => new();
-    
-    /// <summary>
-    /// Contains the manual install destinations for AdvancedInstaller and friends.
-    /// </summary>
-    public List<IModInstallDestination> InstallDestinations { get; init; } = new();
 
     /// <summary>
     /// The location on-disk of this game and it's associated paths [e.g. Saves].

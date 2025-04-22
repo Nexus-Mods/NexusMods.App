@@ -42,15 +42,6 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
 
     public override string Name => DisplayName;
     public override GameId GameId => GameIdStatic;
-    public override SupportType SupportType => SupportType.Official;
-
-    public override HashSet<FeatureStatus> Features { get; } =
-    [
-        new(BaseFeatures.GameLocatable, IsImplemented: true),
-        new(BaseFeatures.HasInstallers, IsImplemented: true),
-        new(BaseFeatures.HasDiagnostics, IsImplemented: false),
-        new(BaseFeatures.HasLoadOrder, IsImplemented: false),
-    ];
 
     public IEnumerable<uint> SteamIds => [261550u];
     public IEnumerable<long> GogIds => [1802539526, 1564781494];
@@ -107,7 +98,4 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
     {
         return new BannerlordLoadoutSynchronizer(provider);
     }
-
-    public override List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations)
-        => ModInstallDestinationHelpers.GetCommonLocations(locations);
 }
