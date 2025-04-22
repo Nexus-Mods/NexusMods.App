@@ -63,8 +63,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
             .Bind(out _readOnlyOrderList)
             .Subscribe()
             .AddTo(_disposables);
-        
-        
 
         // Observe RedMod groups changes
         RedModLoadoutGroup.ObserveAll(_connection)
@@ -86,12 +84,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
                 awaitOperation: AwaitOperation.Sequential
             )
             .AddTo(_disposables);
-    }
-
-
-    public override Optional<ISortableItem> GetSortableItem(ISortItemKey itemId)
-    {
-        return _readOnlyOrderList.FirstOrOptional(item => item.Key.Equals(itemId));
     }
 
     public override async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)

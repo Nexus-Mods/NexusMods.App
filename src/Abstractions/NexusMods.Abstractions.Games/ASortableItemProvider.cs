@@ -44,7 +44,10 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
 
     /// <Inheritdoc />
-    public abstract Optional<ISortableItem> GetSortableItem(ISortItemKey itemId);
+    public Optional<ISortableItem> GetSortableItem(ISortItemKey itemId)
+    {
+        return OrderCache.Lookup(itemId);
+    }
     
     /// <Inheritdoc />
     public abstract Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token);
