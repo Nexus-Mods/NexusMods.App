@@ -25,7 +25,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
     private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
 
-    private readonly SortOrderId _sortOrderId;
     private readonly CompositeDisposable _disposables = new();
     public override ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
 
@@ -47,13 +46,12 @@ public class RedModSortableItemProvider : ASortableItemProvider
         LoadoutId loadoutId,
         RedModSortOrder.ReadOnly sortOrderModel,
         ISortableItemProviderFactory parentFactory) :
-        base(parentFactory, loadoutId)
+        base(parentFactory, loadoutId, sortOrderModel.AsSortOrder().SortOrderId)
     {
         _connection = connection;
-        _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
         // load the previously saved order
-        var order = RetrieveSortOrderEntries(_sortOrderId);
+        var order = RetrieveSortOrderEntries(SortOrderEntityId);
         OrderCache.AddOrUpdate(order);
         
         // populate read only list
@@ -84,54 +82,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
                 awaitOperation: AwaitOperation.Sequential
             )
             .AddTo(_disposables);
-    }
-
-    public override async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)
-    {
-        await Semaphore.WaitAsync(token);
-        try
-        {
-            var redModSortableItem = (RedModSortableItem)sortableItem;
-            // Get a stagingList of the items in the order
-            var stagingList = OrderCache.Items
-                .OrderBy(item => item.SortIndex)
-                .ToList();
-
-            // Get the current index of the item relative to the full list
-            var currentIndex = stagingList.IndexOf(sortableItem);
-
-            // Get the new index of the group relative to the full list
-            var newIndex = currentIndex + delta;
-
-            // Ensure the new index is within the bounds of the list
-            newIndex = Math.Clamp(newIndex, 0, stagingList.Count - 1);
-            if (newIndex == currentIndex) return;
-
-            // Move the item in the list
-            stagingList.RemoveAt(currentIndex);
-            stagingList.Insert(newIndex, redModSortableItem);
-            
-            // Update the sort index of all items
-            for (var i = 0; i < stagingList.Count; i++)
-            {
-                stagingList[i].SortIndex = i;
-            }
-            
-            if (token.IsCancellationRequested) return;
-            
-            await PersistSortOrder(stagingList, _sortOrderId, token);
-
-            OrderCache.Edit(innerCache =>
-                {
-                    innerCache.Clear();
-                    innerCache.AddOrUpdate(stagingList);
-                }
-            );
-        }
-        finally
-        {
-            Semaphore.Release();
-        }
     }
 
     /// <inheritdoc/>
@@ -178,7 +128,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             if (token.IsCancellationRequested) return;
             
             // Update the database
-            await PersistSortOrder(stagingList, _sortOrderId, token);
+            await PersistSortOrder(stagingList, SortOrderEntityId, token);
             
             // Update the public cache
             OrderCache.Edit(innerCache =>
@@ -206,7 +156,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
     public List<string> GetRedModOrder(SortOrderId? sortOrderEntityId = null,  IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
-        var sortOrderId = sortOrderEntityId ?? _sortOrderId;
+        var sortOrderId = sortOrderEntityId ?? SortOrderEntityId;
 
         var redMods = RedModLoadoutGroup.All(dbToUse)
             .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
@@ -251,7 +201,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             if (token.IsCancellationRequested) return;
 
             // Update the database
-            await PersistSortOrder(stagingList, _sortOrderId, token);
+            await PersistSortOrder(stagingList, SortOrderEntityId, token);
             
             if (token.IsCancellationRequested) return;
 

@@ -19,14 +19,21 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     /// Source cache of the sortable items used to expose the latest sort order
     /// </summary>
     protected readonly SourceCache<ISortableItem, ISortItemKey> OrderCache = new(item => item.Key);
+
+    /// <summary>
+    /// EntityId for the main SortOrder database entity that this provider is associated with.
+    /// Used to persist and retrieve the order of items.
+    /// </summary>
+    protected readonly SortOrderId SortOrderEntityId;
     
     /// <summary>
     /// Protected constructor, use CreateAsync method to create an instance
     /// </summary>
-    protected ASortableItemProvider(ISortableItemProviderFactory parentFactory, LoadoutId loadoutId)
+    protected ASortableItemProvider(ISortableItemProviderFactory parentFactory, LoadoutId loadoutId, SortOrderId sortOrderId)
     {
         ParentFactory = parentFactory;
         LoadoutId = loadoutId;
+        SortOrderEntityId = sortOrderId;
         
         SortableItemsChangeSet = OrderCache.Connect().RefCount();
     }
@@ -48,9 +55,54 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     {
         return OrderCache.Lookup(itemId);
     }
-    
+
     /// <Inheritdoc />
-    public abstract Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token);
+    public virtual async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)
+    {
+        await Semaphore.WaitAsync(token);
+        try
+        {
+            // Get a stagingList of the items in the order
+            var stagingList = OrderCache.Items
+                .OrderBy(item => item.SortIndex)
+                .ToList();
+
+            // Get the current index of the item relative to the full list
+            var currentIndex = stagingList.IndexOf(sortableItem);
+
+            // Get the new index of the group relative to the full list
+            var newIndex = currentIndex + delta;
+
+            // Ensure the new index is within the bounds of the list
+            newIndex = Math.Clamp(newIndex, 0, stagingList.Count - 1);
+            if (newIndex == currentIndex) return;
+
+            // Move the item in the list
+            stagingList.RemoveAt(currentIndex);
+            stagingList.Insert(newIndex, sortableItem);
+            
+            // Update the sort index of all items
+            for (var i = 0; i < stagingList.Count; i++)
+            {
+                stagingList[i].SortIndex = i;
+            }
+            
+            if (token.IsCancellationRequested) return;
+            
+            await PersistSortOrder(stagingList, SortOrderEntityId, token);
+
+            OrderCache.Edit(innerCache =>
+                {
+                    innerCache.Clear();
+                    innerCache.AddOrUpdate(stagingList);
+                }
+            );
+        }
+        finally
+        {
+            Semaphore.Release();
+        }
+    }
 
     /// <Inheritdoc />
     public abstract Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token);
