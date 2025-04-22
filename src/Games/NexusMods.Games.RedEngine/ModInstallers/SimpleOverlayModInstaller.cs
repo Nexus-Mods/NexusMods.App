@@ -44,7 +44,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller
             .OrderBy(node => node.Depth())
             .ToArray();
 
-        if (roots.Length == 0) return ValueTask.FromResult<InstallerResult>(new NotSupported());
+        if (roots.Length == 0) return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Archive contains no valid roots"));
 
         var highestRoot = roots.First();
 
@@ -57,7 +57,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller
             var fullPath = file.Item.Path; // all the way up to root
             var relativePath = fullPath.DropFirst(node.Depth() - 1); // get relative path
 
-            var _ = new LoadoutFile.New(tx, out var id)
+            _ = new LoadoutFile.New(tx, out var id)
             {
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(tx, id)
                 {
@@ -76,7 +76,7 @@ public class SimpleOverlayModInstaller : ALibraryArchiveInstaller
         }
 
         return newFiles == 0
-            ? ValueTask.FromResult<InstallerResult>(new NotSupported())
+            ? ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Found no matching files in the archive"))
             : ValueTask.FromResult<InstallerResult>(new Success());
     }
 }
