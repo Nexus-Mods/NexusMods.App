@@ -13,6 +13,9 @@ public record EADesktopLocatorResultMetadata : IGameLocatorResultMetadata
     /// </summary>
     public required string SoftwareId { get; init; }
 
+    /// <inheritdoc/>
+    public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
+
     /// <inheritdoc />
     public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(SoftwareId)];
 }
