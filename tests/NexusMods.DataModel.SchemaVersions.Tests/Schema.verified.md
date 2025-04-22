@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x1B52EB13AA31E1EE
-   - Total attributes: 195
-   - Total namespaces: 68
+   - Fingerprint: 0x348E304EE99E2702
+   - Total attributes: 197
+   - Total namespaces: 69
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -58,6 +58,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.DataModel.SchemaVersions.MigrationLogItem/WasRun                         | UInt8                   | False   | False | False     | 
 | NexusMods.DataModel.Settings/Name                                                  | Utf8                    | True    | False | False     | 
 | NexusMods.DataModel.Settings/Value                                                 | Utf8                    | False   | False | False     | 
+| NexusMods.GC.BackedUpFile/GameInstall                                              | Reference               | False   | False | False     | 
+| NexusMods.GC.BackedUpFile/Hash                                                     | UInt64                  | False   | False | False     | 
 | NexusMods.Games.FOMOD.EmptyDirectory/EmptyDirectory                                | UInt8                   | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModInfoFile/Name                        | Utf8                    | False   | False | False     | 
 | NexusMods.Games.RedEngine.Cyberpunk2077.RedModInfoFile/Version                     | Utf8                    | False   | False | False     | 
@@ -202,6 +204,6 @@ models in the app, then validate the tests to update this file.
 | NexusMods.StandardGameLocators.ManuallyAddedGame/Version                           | Utf8                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPILoadoutItem/ModDatabase                               | Reference               | False   | False | False     | 
 | NexusMods.StardewValley.SMAPILoadoutItem/Version                                   | Utf8                    | False   | False | False     | 
-| NexusMods.StardewValley.SMAPIManifestLoadoutFile/ManifestFile                      | Null                    | False   | False | False     | 
+| NexusMods.StardewValley.SMAPIManifestLoadoutFile/ManifestFile                      | Null                    | True    | False | False     | 
 | NexusMods.StardewValley.SMAPIModDatabaseLoadoutFile/ModDatabaseFile                | Null                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPIModLoadoutItem/Manifest                               | Reference               | False   | False | False     | 

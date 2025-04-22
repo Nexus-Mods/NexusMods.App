@@ -1,12 +1,32 @@
-﻿maestros_of_synth_body_heat_radio
-maestros_of_synth_morro_rock_radio
-maestros_of_synth_night_fn
-maestros_of_synth_pacific_dreams
-maestros_of_synth_principales
-maestros_of_synth_radio_pebkac
-maestros_of_synth_radio_vexelstorm
-maestros_of_synth_ritual_fm
-maestros_of_synth_royal_blue_radio
-maestros_of_synth_samizdat_radio
-maestros_of_synth_the_dirge
+﻿Starting Order:
+
+0: maestros_of_synth_body_heat_radio
+1: maestros_of_synth_morro_rock_radio
+2: maestros_of_synth_night_fn
+3: maestros_of_synth_pacific_dreams
+4: maestros_of_synth_principales
+5: maestros_of_synth_radio_pebkac
+6: maestros_of_synth_radio_vexelstorm
+7: maestros_of_synth_ritual_fm
+8: maestros_of_synth_royal_blue_radio
+9: maestros_of_synth_samizdat_radio
+10: maestros_of_synth_the_dirge
+11: Driver_Shotguns
+
+Moved Item:
 Driver_Shotguns
+Delta: 3
+After Move:
+
+0: maestros_of_synth_body_heat_radio
+1: maestros_of_synth_morro_rock_radio
+2: maestros_of_synth_night_fn
+3: maestros_of_synth_pacific_dreams
+4: maestros_of_synth_principales
+5: maestros_of_synth_radio_pebkac
+6: maestros_of_synth_radio_vexelstorm
+7: maestros_of_synth_ritual_fm
+8: maestros_of_synth_royal_blue_radio
+9: maestros_of_synth_samizdat_radio
+10: maestros_of_synth_the_dirge
+11: Driver_Shotguns

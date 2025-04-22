@@ -1,11 +1,9 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
-using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 
@@ -32,11 +30,15 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await InstallModFromNexusMods(loadout, ModId.From(2400), FileId.From(119630));
 
         // Farm Type Manager 1.24.0 (https://www.nexusmods.com/stardewvalley/mods/3231?tab=files)
-        await InstallModFromNexusMods(loadout, ModId.From(3231), FileId.From(117244));
+        var farmTypeManager = await InstallModFromNexusMods(loadout, ModId.From(3231), FileId.From(117244));
 
         var diagnostic = await GetSingleDiagnostic(loadout);
         var missingRequiredDependencyMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.MissingRequiredDependencyMessageData>>(because: "Content Patcher is required for Farm Type Manager").Which.MessageData;
+
         missingRequiredDependencyMessageData.MissingDependencyModId.Should().Be("Pathoschild.ContentPatcher", because: "Farm Type Manager requires Content Patcher");
+
+        var dependent = missingRequiredDependencyMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
+        dependent.LoadoutItemGroupId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
 
         // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
         await InstallModFromNexusMods(loadout, ModId.From(1915), FileId.From(124659));
@@ -68,10 +70,10 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         var disabledRequiredDependencyMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher is disabled and required by Farm Type Manager").Which.MessageData;
 
         var dependency = disabledRequiredDependencyMessageData.Dependency.ResolveData(ServiceProvider, Connection);
-        dependency.AsLoadoutItem().ParentId.Should().Be(contentPatcher.LoadoutItemGroupId, because: "Content Patcher is the dependency");
-
         var dependent = disabledRequiredDependencyMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
-        dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
+
+        dependency.LoadoutItemGroupId.Should().Be(contentPatcher.LoadoutItemGroupId, because: "Content Patcher is the dependency");
+        dependent.LoadoutItemGroupId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
         
         await VerifyDiagnostic(diagnostic);
     }
@@ -101,10 +103,10 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         var disabledRequiredDependencyMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.DisabledRequiredDependencyMessageData>>(because: "Content Patcher is inside disabled collection and required by Farm Type Manager").Which.MessageData;
         
         var dependency = disabledRequiredDependencyMessageData.Dependency.ResolveData(ServiceProvider, Connection);
-        dependency.AsLoadoutItem().ParentId.Should().Be(contentPatcherCollectionB.LoadoutItemGroupId, because: "Content Patcher is the dependency");
-        
         var dependent = disabledRequiredDependencyMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
-        dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
+
+        dependency.LoadoutItemGroupId.Should().Be(contentPatcherCollectionB.LoadoutItemGroupId, because: "Content Patcher is the dependency");
+        dependent.LoadoutItemGroupId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
         
         // Add a copy in another collection
         // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
@@ -141,10 +143,10 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         requiredDependencyIsOutdatedMessageData.MinimumVersion.Should().Be("2.0.0", because: "Farm Type Manager 1.24.0 requires at least version 2.0.0 of Content Patcher");
 
         var dependency = requiredDependencyIsOutdatedMessageData.Dependency.ResolveData(ServiceProvider, Connection);
-        dependency.AsLoadoutItem().ParentId.Should().Be(contentPatcher.LoadoutItemGroupId, because: "Content Patcher is the dependency");
-
         var dependent = requiredDependencyIsOutdatedMessageData.Dependent.ResolveData(ServiceProvider, Connection);
-        dependent.AsLoadoutItem().ParentId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
+
+        dependency.LoadoutItemGroupId.Should().Be(contentPatcher.LoadoutItemGroupId, because: "Content Patcher is the dependency");
+        dependent.LoadoutItemGroupId.Should().Be(farmTypeManager.LoadoutItemGroupId, because: "Farm Type Manager is the dependent");
 
         // Test disabled cases
         await DisableItem(farmTypeManager);

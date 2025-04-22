@@ -114,6 +114,15 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         return await LibraryService.AddDownload(downloadJob);
     }
 
+    public async Task<LibraryArchive.ReadOnly> DownloadArchiveFromNexusMods(ModId modId, FileId fileId)
+    {
+        var libraryFile = await DownloadModFromNexusMods(modId, fileId);
+        libraryFile.TryGetAsLibraryArchive(out var libraryArchive).Should().BeTrue();
+        libraryArchive.IsValid().Should().BeTrue();
+
+        return libraryArchive;
+    }
+
     public async Task<LoadoutItemGroup.ReadOnly> InstallModFromNexusMods(LoadoutId loadoutId, ModId modId, FileId fileId,  
         Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null)
     {
@@ -327,6 +336,11 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// </summary>
     protected async Task<Loadout.ReadOnly> CreateLoadout()
     {
+        if (!_gameFilesWritten)
+        {
+            await GenerateGameFiles();
+            _gameFilesWritten = true;
+        }
         return await GameInstallation
             .GetGame()
             .Synchronizer

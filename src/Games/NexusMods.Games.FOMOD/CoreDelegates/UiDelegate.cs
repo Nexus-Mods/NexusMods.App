@@ -64,7 +64,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     private const long Ready = 0;
     private const long WaitingForCallback = 1;
 
-    public KeyedBox<RelativePath, LibraryArchiveTree>? CurrentArchiveFiles;
+    public Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>? CurrentFomodArchiveFiles;
 
     public UiDelegates(
         ILogger<UiDelegates> logger,
@@ -93,7 +93,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         _selectOptions = DummySelectOptions;
         _continueToNextStep = DummyContinueToNextStep;
         _cancelInstaller = DummyCancelInstaller;
-        CurrentArchiveFiles = null;
+        CurrentFomodArchiveFiles = null;
 
         _guidedInstaller.CleanupInstaller();
     }
@@ -291,16 +291,16 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
         if (image is null) return null;
         if (Uri.TryCreate(image, UriKind.Absolute, out var uri)) return new OptionImage(uri);
 
-        Debug.Assert(CurrentArchiveFiles is not null);
-        if (CurrentArchiveFiles is null) return null;
+        var path = RelativePath.FromUnsanitizedInput(image);
 
-        var asPath = RelativePath.FromUnsanitizedInput(image);
-        var node = CurrentArchiveFiles.FindByPathFromChild(asPath);
-        if (node is not null)
-            return new OptionImage(new OptionImage.ImageStoredFile(node.Item.LibraryFile.Value.Hash));
+        if (CurrentFomodArchiveFiles is null) return null;
+        if (!CurrentFomodArchiveFiles.TryGetValue(path, out var libraryArchiveEntry))
+        {
+            _logger.LogWarning("Image at `{Path}` doesn't exist in the archive", path);
+            return null;
+        }
 
-        _logger.LogDebug("Image path {Path} doesn't exist in archive!", asPath);
-        return null;
+        return new OptionImage(new OptionImage.ImageStoredFile(libraryArchiveEntry.AsLibraryFile().Hash));
     }
 
     private static OptionType MakeOptionType(FomodInstaller.Interface.ui.Option option)

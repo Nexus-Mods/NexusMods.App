@@ -12,6 +12,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection container)
     {
         container
+            .AddSingleton<TimeProvider>(_ => TimeProvider.System)
             .AddSettingsManager()
             .AddSettings<LoggingSettings>()
             .AddFileSystem()

@@ -52,7 +52,7 @@
         <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackground}" />
         <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" />
         <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrush}" />
-
+        
         
         <!-- templated buttons -->
         <Style Selector="^ /template/ Button">

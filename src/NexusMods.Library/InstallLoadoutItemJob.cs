@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
@@ -13,6 +14,7 @@ namespace NexusMods.Library;
 
 internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly>, IInstallLoadoutItemJob
 {
+    public required ILogger Logger { get; init; }
     public ILibraryItemInstaller? Installer { get; init; }
     public ILibraryItemInstaller? FallbackInstaller { get; init; }
     public LibraryItem.ReadOnly LibraryItem { get; init; }
@@ -31,6 +33,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         var group = LoadoutItemGroup.Load(libraryItem.Db, groupId);
         var job = new InstallLoadoutItemJob
         {
+            Logger = serviceProvider.GetRequiredService<ILogger<InstallLoadoutItemJob>>(),
             Installer = installer,
             FallbackInstaller = fallbackInstaller,
             LibraryItem = libraryItem,
@@ -106,8 +109,13 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
 
             // TODO(erri120): add safeguards to only allow groups to be added to the parent groups
             var result = await installer.ExecuteAsync(LibraryItem, loadoutGroup, transaction, loadout, context.CancellationToken);
-            if (result.IsNotSupported)
+            if (result.IsNotSupported(out var reason))
             {
+                if (Logger.IsEnabled(LogLevel.Trace) && !string.IsNullOrEmpty(reason))
+                {
+                    Logger.LogTrace("Installer doesn't support library item `{LibraryItem}` because \"{Reason}\"", LibraryItem.Name, reason);
+                }
+
                 transaction.Dispose();
                 continue;
             }

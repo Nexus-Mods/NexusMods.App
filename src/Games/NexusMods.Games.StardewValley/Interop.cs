@@ -14,37 +14,25 @@ internal static class Interop
 {
     internal static readonly JsonHelper SMAPIJsonHelper = new();
 
-    private static async ValueTask<T?> Deserialize<T>(Stream stream) where T : notnull
+    private static async ValueTask<T?> Deserialize<T>(Stream stream, CancellationToken cancellationToken = default) where T : notnull
     {
         using var sr = new StreamReader(stream, Encoding.UTF8);
-        var json = await sr.ReadToEndAsync();
+        var json = await sr.ReadToEndAsync(cancellationToken: cancellationToken);
 
         var res = SMAPIJsonHelper.Deserialize<T>(json);
         return res;
     }
 
-    private static async ValueTask<T?> DeserializeWithDefaults<T>(Stream stream) where T : notnull
+    private static async ValueTask<T?> DeserializeWithDefaults<T>(Stream stream, CancellationToken cancellationToken = default) where T : notnull
     {
         using var sr = new StreamReader(stream, Encoding.UTF8);
-        var json = await sr.ReadToEndAsync();
+        var json = await sr.ReadToEndAsync(cancellationToken: cancellationToken);
 
         var res = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
         return res;
     }
 
-    public static ValueTask<Manifest?> DeserializeManifest(Stream stream) => Deserialize<Manifest>(stream);
-
-    public static async ValueTask<Manifest?> GetManifest(
-        IFileStore fileStore,
-        SMAPIModLoadoutItem.ReadOnly smapiMod,
-        CancellationToken cancellationToken = default)
-    {
-        var manifestFile = smapiMod.Manifest;
-        if (!manifestFile.IsValid()) return null;
-
-        await using var stream = await fileStore.GetFileStream(manifestFile.AsLoadoutFile().Hash, cancellationToken);
-        return await DeserializeManifest(stream);
-    }
+    public static ValueTask<Manifest?> DeserializeManifest(Stream stream, CancellationToken cancellationToken = default) => Deserialize<Manifest>(stream, cancellationToken: cancellationToken);
 
     public static async ValueTask<ModDatabase?> GetModDatabase(
         IFileStore fileStore,

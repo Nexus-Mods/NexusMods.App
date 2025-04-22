@@ -18,8 +18,6 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
 
     public string SortOrderName => "REDmod Load Order";
 
-    public string SortOrderHeading => "First Loaded REDmod Wins";
-
     public string OverrideInfoTitle => "Load Order for REDmods in Cyberpunk 2077 - First Loaded Wins";
 
     public string OverrideInfoMessage => """
@@ -27,14 +25,15 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
                                          
                                          For example, the 1st position overwrites the 2nd, the 2nd overwrites the 3rd, and so on.
                                          """;
-    public string WinnerIndexToolTip => "First Loaded RedMOD Wins: Items that load first will overwrite changes from items loaded after them."; 
 
-    public string IndexColumnHeader => "LOAD ORDER";
+    public string WinnerIndexToolTip => "First Loaded RedMOD Wins: Items that load first will overwrite changes from items loaded after them.";
 
-    public string NameColumnHeader => "REDMOD NAME";
-    
+    public string IndexColumnHeader => "Load Order";
+
+    public string DisplayNameColumnHeader => "REDmod Name";
     public string EmptyStateMessageTitle => "No REDmods detected";
     public string EmptyStateMessageContents => "Some mods contain REDmod items that alter core gameplay elements. When detected, they will appear here for load order configuration.";
+    public string LearnMoreUrl => "https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/#redmod-load-ordering";
 
     public ListSortDirection SortDirectionDefault => ListSortDirection.Ascending;
 
@@ -99,7 +98,7 @@ public class RedModSortableItemProviderFactory : ISortableItemProviderFactory
 
         throw new InvalidOperationException($"RedModSortableItemProviderFactory: provider not found for loadout {loadoutId}");
     }
-    
+
     public void Dispose()
     {
         foreach (var provider in _providers.Values)

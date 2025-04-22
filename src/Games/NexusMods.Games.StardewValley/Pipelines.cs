@@ -18,7 +18,7 @@ internal static class Pipelines
 
     public static IServiceCollection AddPipelines(this IServiceCollection serviceCollection)
     {
-        return serviceCollection.AddKeyedSingleton<IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest>>(
+        return serviceCollection.AddKeyedSingleton<IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest>>(
             serviceKey: ManifestPipelineKey,
             implementationFactory: static (serviceProvider, _) => CreateManifestPipeline(
                 fileStore: serviceProvider.GetRequiredService<IFileStore>(),
@@ -27,12 +27,12 @@ internal static class Pipelines
         );
     }
 
-    public static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> GetManifestPipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest> GetManifestPipeline(IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredKeyedService<IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest>>(serviceKey: ManifestPipelineKey);
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest>>(serviceKey: ManifestPipelineKey);
     }
 
-    private static IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> CreateManifestPipeline(IFileStore fileStore, IConnection connection)
+    private static IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest> CreateManifestPipeline(IFileStore fileStore, IConnection connection)
     {
         var pipeline = new FileStoreStreamLoader(fileStore)
             .ThenDo(Unit.Default, static (_, _, resource, _) =>
@@ -45,10 +45,10 @@ internal static class Pipelines
 
                 return ValueTask.FromResult(resource.WithData(manifest));
             })
-            .StoreInMemory<SMAPIModLoadoutItem.ReadOnly, Hash, SMAPIManifest>(
-                selector: static mod => mod.Manifest.AsLoadoutFile().Hash,
+            .StoreInMemory<SMAPIManifestLoadoutFile.ReadOnly, Hash, SMAPIManifest>(
+                selector: static manifest => manifest.AsLoadoutFile().Hash,
                 keyComparer: EqualityComparer<Hash>.Default,
-                shouldDeleteKey: (tuple, _) => ValueTask.FromResult(!SMAPIModLoadoutItem.Load(connection.Db, tuple.Item2.Id).IsValid())
+                shouldDeleteKey: (tuple, _) => ValueTask.FromResult(!SMAPIManifestLoadoutFile.Load(connection.Db, tuple.Item2.Id).IsValid())
             );
 
         return pipeline;

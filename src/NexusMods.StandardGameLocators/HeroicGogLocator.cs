@@ -48,13 +48,18 @@ public class HeroicGogLocator : IGameLocator
             var fs = found.Path.FileSystem;
             var gamePath = found.Path;
 
+            ILinuxCompatibilityDataProvider? linuxCompatibilityDataProvider = null;
+
             if (found is HeroicGOGGame heroicGOGGame)
             {
                 var wineData = heroicGOGGame.WineData;
                 if (wineData is not null)
                 {
                     if (wineData.WinePrefixPath.DirectoryExists())
+                    {
                         fs = heroicGOGGame.GetWinePrefix()!.CreateOverlayFileSystem(fs);
+                        linuxCompatibilityDataProvider = new BaseLinuxCompatibilityDataProvider(wineData.WinePrefixPath);
+                    }
                 }
 
                 // NOTE(erri120): GOG builds for Linux are whack, the installer Heroic uses is whack,
@@ -68,6 +73,7 @@ public class HeroicGogLocator : IGameLocator
             {
                 Id = id,
                 BuildId = found.BuildId,
+                LinuxCompatibilityDataProvider = linuxCompatibilityDataProvider,
             });
         }
     }

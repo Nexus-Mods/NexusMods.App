@@ -27,6 +27,7 @@
       <UpToDateCheckInput Remove="Styles\UserControls\Banners\InfoBannerStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\UserControls\StandardButton\StandardButtonStyles.axaml" />
       <UpToDateCheckInput Remove="Styles\Controls\ListBox\ListBoxStyles.axaml" />
+      <UpToDateCheckInput Remove="Styles\UserControls\CollectionLoadoutPage\CollectionLoadoutPageStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -42,6 +43,7 @@
       <AdditionalFiles Include="Styles\Controls\Window\DialogStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LaunchButton\LaunchButtonStyles.axaml" />
       <AdditionalFiles Include="Styles\UserControls\LoadoutBadge\LoadoutBadgeStyles.axaml" />
+      <AdditionalFiles Include="Styles\UserControls\Statusbar\StatusbarStyles.axaml" />
     </ItemGroup>
 
     <ItemGroup>

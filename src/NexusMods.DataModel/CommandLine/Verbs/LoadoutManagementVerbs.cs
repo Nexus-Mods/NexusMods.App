@@ -67,7 +67,8 @@ public static class LoadoutManagementVerbs
         }
         
         using var tx = loadout.Db.Connection.BeginTransaction();
-        
+
+        loadout = loadout.Rebase();
         // Retract the old ids
         foreach (var existingId in loadout.LocatorIds)
             tx.Retract(loadout, Loadout.LocatorIds, existingId);

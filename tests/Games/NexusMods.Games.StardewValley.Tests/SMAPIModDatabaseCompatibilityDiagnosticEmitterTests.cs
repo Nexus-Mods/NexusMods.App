@@ -30,12 +30,14 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
         await InstallModFromNexusMods(loadout, ModId.From(2400), FileId.From(119630));
 
         // Extra Map Layers 0.3.10 (https://www.nexusmods.com/stardewvalley/mods/9633?tab=files)
-        await InstallModFromNexusMods(loadout, ModId.From(9633), FileId.From(75206));
+        var extraMapLayers = await InstallModFromNexusMods(loadout, ModId.From(9633), FileId.From(75206));
 
         var diagnostic = await GetSingleDiagnostic(loadout);
         var modCompatabilityObsoleteMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.ModCompatabilityObsoleteMessageData>>(because: "Extra Map Layers is obsolete in 1.6").Which.MessageData;
 
-        modCompatabilityObsoleteMessageData.SMAPIModName.Should().Be("Extra Map Layers");
+        var mod = modCompatabilityObsoleteMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
+
+        mod.LoadoutItemGroupId.Should().Be(extraMapLayers.LoadoutItemGroupId);
         modCompatabilityObsoleteMessageData.ReasonPhrase.Should().Be("extra map layer support was added in Stardew Valley 1.6. You can delete this mod.");
 
         await VerifyDiagnostic(diagnostic);
@@ -50,12 +52,14 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
         await InstallModFromNexusMods(loadout, ModId.From(2400), FileId.From(119630));
 
         // Persistent Mines 1.0.1 (https://www.nexusmods.com/stardewvalley/mods/14985?tab=files)
-        await InstallModFromNexusMods(loadout, ModId.From(14985), FileId.From(64850));
+        var persistentMines = await InstallModFromNexusMods(loadout, ModId.From(14985), FileId.From(64850));
 
         var diagnostic = await GetSingleDiagnostic(loadout);
         var modCompatabilityAssumeBrokenMessageData = diagnostic.Should().BeOfType<Diagnostic<Diagnostics.ModCompatabilityAssumeBrokenMessageData>>(because: "").Which.MessageData;
 
-        modCompatabilityAssumeBrokenMessageData.SMAPIModName.Should().Be("Persistent Mines");
+        var mod = modCompatabilityAssumeBrokenMessageData.SMAPIMod.ResolveData(ServiceProvider, Connection);
+
+        mod.LoadoutItemGroupId.Should().Be(persistentMines.LoadoutItemGroupId);
         modCompatabilityAssumeBrokenMessageData.ReasonPhrase.Should().Be("affected by breaking changes in the SpaceCore mod API");
         modCompatabilityAssumeBrokenMessageData.ModVersion.Should().Be("1.0.1");
 

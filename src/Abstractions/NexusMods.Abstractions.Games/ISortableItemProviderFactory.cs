@@ -26,18 +26,6 @@ public interface ISortableItemProviderFactory : IDisposable
     string SortOrderName { get; }
     
     /// <summary>
-    /// Short descriptive title for the load order, describing the override behavior of the sort order
-    /// </summary>
-    /// <example>
-    /// "Last Loaded plugin Wins"
-    /// </example>
-    /// <remarks>
-    /// Avoid using "higher" or "lower" terms, as the index numbers can be sorted both in ascending or descending order,
-    /// making their meaning ambiguous.
-    /// </remarks>
-    string SortOrderHeading { get; }
-    
-    /// <summary>
     /// Heading for more details load order override information
     /// </summary>
     /// <example>
@@ -61,10 +49,10 @@ public interface ISortableItemProviderFactory : IDisposable
     string IndexColumnHeader { get; }
     
     /// <summary>
-    /// Header text for the name column
+    /// Header text for the display name column
     /// </summary>
-    string NameColumnHeader { get; }
-    
+    string DisplayNameColumnHeader { get; }
+
     /// <summary>
     /// Title text to display in case there are no sortable items to sort
     /// </summary>
@@ -87,6 +75,11 @@ public interface ISortableItemProviderFactory : IDisposable
     /// Defines whether smaller or greater index numbers win in case of conflicts between items in sorting order
     /// </summary>
     IndexOverrideBehavior IndexOverrideBehavior { get; }
+
+    /// <summary>
+    /// Url for further information about the load order
+    /// </summary>
+    string LearnMoreUrl { get; }
 }
 
 

@@ -58,6 +58,7 @@ public static class Services
         if (startupMode.RunAsMain)
         {
             services
+                .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                 .AddDataModel()
                 .AddLibrary()
                 .AddLibraryModels()
@@ -109,7 +110,9 @@ public static class Services
         }
         else
         {
-            services.AddFileSystem()
+            services
+                .AddSingleton<TimeProvider>(_ => TimeProvider.System)
+                .AddFileSystem()
                 .AddCrossPlatform()
                 .AddDefaultRenderers()
                 .AddSettingsManager()

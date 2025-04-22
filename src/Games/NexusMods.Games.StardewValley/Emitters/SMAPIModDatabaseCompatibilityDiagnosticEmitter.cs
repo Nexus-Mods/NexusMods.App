@@ -1,11 +1,9 @@
 using System.Runtime.CompilerServices;
-using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Resources;
@@ -40,7 +38,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
     private readonly IFileStore _fileStore;
     private readonly IOSInformation _os;
     private readonly ISMAPIWebApi _smapiWebApi;
-    private readonly IResourceLoader<SMAPIModLoadoutItem.ReadOnly, SMAPIManifest> _manifestPipeline;
+    private readonly IResourceLoader<SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest> _manifestPipeline;
 
     private static readonly NamedLink SMAPIModCompatibilityLink = new("SMAPI website", new Uri("https://smapi.io/mods"));
 
@@ -73,15 +71,12 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
         var modDatabase = await GetModDatabase(smapi, cancellationToken);
         if (modDatabase is null) yield break;
 
-        var smapiMods = await Helpers
-            .GetAllManifestsAsync(_logger, loadout, _manifestPipeline, onlyEnabledMods: true, cancellationToken)
-            .ToArrayAsync(cancellationToken);
+        var manifests = await Helpers.GetAllManifestsAsync(_logger, loadout.Db, loadout, onlyEnabled: true, _manifestPipeline, cancellationToken);
+        var list = new List<(SMAPIManifestLoadoutFile.ReadOnly, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();
 
-        var list = new List<(SMAPIModLoadoutItem.ReadOnly smapiMod, SMAPIManifest manifest, ModDataRecordVersionedFields versionedFields)>();
-
-        foreach (var tuple in smapiMods)
+        foreach (var tuple in manifests)
         {
-            var (smapiMod, manifest) = tuple;
+            var (manifestLoadoutItem, manifest) = tuple;
             var uniqueId = manifest.UniqueID;
 
             var dataRecord = modDatabase.Get(uniqueId);
@@ -97,7 +92,7 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
 
             if (!matches) continue;
 
-            list.Add((smapiMod, manifest, versionedFields));
+            list.Add((manifestLoadoutItem, manifest, versionedFields));
         }
 
         var apiMods = await _smapiWebApi.GetModDetails(
@@ -109,22 +104,22 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitter : ILoadoutDiagnostic
 
         foreach (var tuple in list)
         {
-            var (smapiMod, manifest, versionedFields) = tuple;
+            var (manifestLoadoutItem, manifest, versionedFields) = tuple;
             var reasonPhrase = versionedFields.StatusReasonPhrase ?? versionedFields.StatusReasonDetails;
 
             if (versionedFields.Status == ModStatus.Obsolete)
             {
                 yield return Diagnostics.CreateModCompatabilityObsolete(
-                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
-                    SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    SMAPIMod: manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.ToReference(loadout),
+                    SMAPIModName: manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name,
                     ReasonPhrase: reasonPhrase ?? "the feature/fix has been integrated into SMAPI or Stardew Valley or has otherwise been made obsolete.",
                     SMAPIModList: SMAPIModCompatibilityLink
                 );
             } else if (versionedFields.Status == ModStatus.AssumeBroken)
             {
                 yield return Diagnostics.CreateModCompatabilityAssumeBroken(
-                    SMAPIMod: smapiMod.AsLoadoutItemGroup().ToReference(loadout),
-                    SMAPIModName: smapiMod.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                    SMAPIMod: manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.ToReference(loadout),
+                    SMAPIModName: manifestLoadoutItem.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent.AsLoadoutItem().Name,
                     ReasonPhrase: reasonPhrase ?? "it's no longer compatible",
                     ModLink:apiMods.GetLink(manifest.UniqueID, defaultValue: SMAPIModCompatibilityLink),
                     ModVersion: manifest.Version.ToString()

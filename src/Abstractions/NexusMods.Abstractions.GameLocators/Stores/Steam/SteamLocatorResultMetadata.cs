@@ -23,7 +23,10 @@ public record SteamLocatorResultMetadata : IGameLocatorResultMetadata
     /// The `manifestIds` of the installed depots for a found game, according to Steam's associated `appmanifest` file
     /// </summary>
     public ulong[] ManifestIds { get; set; } = [];
-    
+
+    /// <inheritdoc/>
+    public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
+
     /// <inheritdoc />
     public IEnumerable<LocatorId> ToLocatorIds() => ManifestIds.Select(m => LocatorId.From(m.ToString()));
 }

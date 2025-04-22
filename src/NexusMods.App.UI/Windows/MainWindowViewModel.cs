@@ -1,29 +1,33 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Platform.Storage;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.EventBus;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Logging;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.Overlays;
-using NexusMods.App.UI.Overlays.AlphaWarning;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
-using NexusMods.App.UI.Overlays.Login;
-using NexusMods.App.UI.Overlays.MetricsOptIn;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
+using NexusMods.Extensions.BCL;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -35,6 +39,8 @@ namespace NexusMods.App.UI.Windows;
 public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindowViewModel
 {
     private readonly IWindowManager _windowManager;
+    private readonly IConnection _connection;
+    private readonly IServiceProvider _serviceProvider;
 
     public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
     public ReactiveUI.ReactiveCommand<IStorageProvider, System.Reactive.Unit> RegisterStorageProvider { get; }
@@ -47,7 +53,9 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IEventBus eventBus,
         ISettingsManager settingsManager)
     {
+        _serviceProvider = serviceProvider;
         var avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
 
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -73,14 +81,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         {
             ConnectErrors(serviceProvider).DisposeWith(d);
 
-            var alphaWarningViewModel = serviceProvider.GetRequiredService<IAlphaWarningViewModel>();
-            alphaWarningViewModel.WorkspaceController = WorkspaceController;
-            alphaWarningViewModel.Controller = overlayController;
-            alphaWarningViewModel.MaybeShow();
-
-            var metricsOptInViewModel = serviceProvider.GetRequiredService<IMetricsOptInViewModel>();
-            metricsOptInViewModel.Controller = overlayController;
-            metricsOptInViewModel.MaybeShow();
+            var welcomeOverlayViewModel = WelcomeOverlayViewModel.CreateIfNeeded(serviceProvider);
+            if (welcomeOverlayViewModel is not null) overlayController.Enqueue(welcomeOverlayViewModel);
 
             R3.Observable
                 .Return(UpdateChecker.ShouldCheckForUpdate())
@@ -105,10 +107,6 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Select(_ => System.Reactive.Unit.Default)
                 .InvokeReactiveCommand(BringWindowToFront)
                 .DisposeWith(d);
-            
-            var loginMessageVM = serviceProvider.GetRequiredService<ILoginMessageBoxViewModel>();
-            loginMessageVM.Controller = overlayController;
-            loginMessageVM.MaybeShow();
 
             this.WhenAnyValue(vm => vm.Spine.LeftMenuViewModel)
                 .BindToVM(this, vm => vm.LeftMenu)
@@ -130,20 +128,24 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Subscribe(this, static (message, self) =>
                 {
                     var workspaceController = self.WorkspaceController;
-                    if (workspaceController.ActiveWorkspace.Context is not LoadoutContext loadoutContext) return;
+
+                    var tuple = self.GetWorkspaceIdForGame(workspaceController, message.Revision.Collection.GameId);
+                    if (!tuple.HasValue) return;
+
+                    var (loadoutId, workspaceId) = tuple.Value;
 
                     var pageData = new PageData
                     {
                         FactoryId = CollectionDownloadPageFactory.StaticId,
                         Context = new CollectionDownloadPageContext
                         {
-                            TargetLoadout = loadoutContext.LoadoutId,
+                            TargetLoadout = loadoutId,
                             CollectionRevisionMetadataId = message.Revision,
                         },
                     };
 
                     var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, NavigationInput.Default);
-                    workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+                    workspaceController.OpenPage(workspaceId, pageData, behavior);
 
                     using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
                 })
@@ -171,6 +173,41 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         });
     }
 
+    private Optional<(LoadoutId, WorkspaceId)> GetWorkspaceIdForGame(IWorkspaceController workspaceController, GameId gameId)
+    {
+        if (workspaceController.ActiveWorkspace.Context is LoadoutContext existingLoadoutContext && IsCorrectLoadoutForGame(existingLoadoutContext.LoadoutId, gameId))
+            return (existingLoadoutContext.LoadoutId, workspaceController.ActiveWorkspaceId);
+
+        var loadoutId = GetActiveLoadoutForGame(gameId);
+        if (!loadoutId.HasValue) return Optional<(LoadoutId, WorkspaceId)>.None;
+
+        var workspaceViewModel = workspaceController.ChangeOrCreateWorkspaceByContext(
+            predicate: loadoutContext => IsCorrectLoadoutForGame(loadoutContext.LoadoutId, gameId),
+            getPageData: () => Optional<PageData>.None,
+            getWorkspaceContext: () => new LoadoutContext
+            {
+                LoadoutId = loadoutId.Value,
+            }
+        );
+
+        return (loadoutId.Value, workspaceViewModel.Id);
+    }
+
+    private bool IsCorrectLoadoutForGame(LoadoutId loadoutId, GameId gameId)
+    {
+        var loadout = Loadout.Load(_connection.Db, loadoutId);
+        return loadout.IsValid() && loadout.InstallationInstance.Game.GameId == gameId;
+    }
+
+    private Optional<LoadoutId> GetActiveLoadoutForGame(GameId gameId)
+    {
+        var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
+        if (!gameRegistry.InstalledGames.TryGetFirst(x => x.Game.GameId == gameId, out var gameInstallation)) return Optional<LoadoutId>.None;
+
+        if (gameInstallation.Game is not IGame game) return Optional<LoadoutId>.None;
+        return game.Synchronizer.GetCurrentlyActiveLoadout(gameInstallation);
+    }
+    
     private IDisposable ConnectErrors(IServiceProvider provider)
     {
         var settings = provider.GetRequiredService<ISettingsManager>().Get<LoggingSettings>();

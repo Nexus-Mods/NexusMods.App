@@ -50,7 +50,7 @@ public class AppearancePresetInstaller : ALibraryArchiveInstaller
             ))).ToArray();
 
         return modFiles.Length == 0
-            ? ValueTask.FromResult<InstallerResult>(new NotSupported())
+            ? ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: $"Archive contains no files that have the `{extensionPreset}` extension"))
             : ValueTask.FromResult<InstallerResult>(new Success());
     }
 }

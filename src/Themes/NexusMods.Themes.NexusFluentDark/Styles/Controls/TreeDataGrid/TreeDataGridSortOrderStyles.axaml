@@ -2,9 +2,20 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting;assembly=NexusMods.App.UI">
-    
+
+    <Design.PreviewWith>
+        <Border Width="800" Height="600">
+            <sorting:LoadOrderView>
+                <sorting:LoadOrderView.DataContext>
+                    <sorting:LoadOrderDesignViewModel />
+                </sorting:LoadOrderView.DataContext>
+            </sorting:LoadOrderView>
+        </Border>
+    </Design.PreviewWith>
+
+
     <Styles.Resources>
-    <!-- this template is solely used for the load order index column which can't use built in sort functionality
+        <!-- this template is solely used for the load order index column which can't use built in sort functionality
         as it is disabled when drag and drop is enabled. This is the same template as our default 
         TreeDataGridColumnHeader one with the only change being the addition of a button to switch the sort direction 
         while mimicking the default header styles -->
@@ -160,9 +171,9 @@
             <Setter Property="Template" Value="{DynamicResource LoadOrderItemTreeRowTemplate}" />
 
             <Setter Property="Opacity" Value="1" />
-            <Setter Property="Height" Value="62" />
-            <Setter Property="MinHeight" Value="62" />
-            <Setter Property="Margin" Value="0,8,0,0" />
+            <Setter Property="Height" Value="52" />
+            <Setter Property="MinHeight" Value="52" />
+            <Setter Property="Margin" Value="0" />
 
             <!-- templated bindings (passed down to Border#RowBorder) -->
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
@@ -170,6 +181,10 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
 
+            <Style Selector="^ Border#RowOuterBorder">
+                <Setter Property="Padding" Value="0,2,0,2" />
+            </Style>
+            
             <!-- this can't be bound the same as the above template bindings as TreeDataGridRow doesn't have the property -->
             <Style Selector="^ Border#RowBorder">
                 <Setter Property="BoxShadow" Value="{StaticResource DropShadowXS}" />
@@ -183,6 +198,11 @@
             <!-- is not active -->
             <Style Selector="^ Border#RowBorder:not(.IsActive)">
                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
+            </Style>
+
+            <!-- first cell  -->
+            <Style Selector="^ :is(TreeDataGridCell):nth-child(1) > Border#CellBorder">
+                <Setter Property="Padding" Value="0,0,0,0" />
             </Style>
 
             <!-- STATES -->

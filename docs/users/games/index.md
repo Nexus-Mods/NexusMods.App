@@ -14,10 +14,9 @@ The following games are currently supported. Click on the game icon to learn mor
 
 
 ## In Development
-<!-- !!! warning "Work In Progress"
+!!! warning "Work In Progress"
     The games listed below are accessible by toggling the "Enable Unsupported Games" option in the app settings. Support for these titles is incomplete and using the app to mod these games is at the user's own risk.
-    SHOW THIS MESSAGE ON CLOSER TO THE SDV PREVIEW RELEASE!
--->
+
 <div>
 <a href="./Cyberpunk2077" title="Cyberpunk 2077" alt="Cyberpunk 2077">
 <object style="max-width:150px" data="https://github.com/Nexus-Mods/NexusMods.App/blob/main/src/Games/NexusMods.Games.RedEngine/Resources/Cyberpunk2077/icon.png?raw=true" type="image/png">

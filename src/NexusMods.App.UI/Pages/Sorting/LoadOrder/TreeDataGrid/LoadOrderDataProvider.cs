@@ -52,11 +52,11 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         var compositeModel = new CompositeItemModel<Guid>(sortableItem.ItemId);
 
         // DisplayName
-        compositeModel.Add(LoadOrderColumns.NameColumn.NameComponentKey,
+        compositeModel.Add(LoadOrderColumns.DisplayNameColumn.DisplayNameComponentKey,
             new StringComponent(sortableItem.DisplayName, sortableItem.WhenAnyValue(item => item.DisplayName)));
 
         // ModName
-        compositeModel.Add(LoadOrderColumns.NameColumn.ModNameComponentKey,
+        compositeModel.Add(LoadOrderColumns.ModNameColumn.ModNameComponentKey,
             new StringComponent(sortableItem.ModName, sortableItem.WhenAnyValue(item => item.ModName)));
 
         // IsActive

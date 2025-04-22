@@ -38,7 +38,7 @@ public abstract class ALibraryArchiveInstaller : ALibraryFileInstaller, ILibrary
         if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
         {
             Logger.LogError("The provided library item `{Name}` (`{Id}`) is not a library archive!", libraryFile.AsLibraryItem().Name, libraryFile.Id);
-            return ValueTask.FromResult<InstallerResult>(new NotSupported());
+            return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "The provided library item is not a library archive"));
         }
 
         return ExecuteAsync(libraryArchive, loadoutGroup, transaction, loadout, cancellationToken);
