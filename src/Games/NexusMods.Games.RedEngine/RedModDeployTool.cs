@@ -73,7 +73,7 @@ public class RedModDeployTool : ITool
     {
         var provider = (RedModSortableItemProvider)_sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadout);
         // Note: this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
-        var order = provider.GetRedModOrder(loadout.Db);
+        var order = provider.GetRedModOrder(db: loadout.Db);
 
         await loadorderFilePath.WriteAllLinesAsync(order);
     }

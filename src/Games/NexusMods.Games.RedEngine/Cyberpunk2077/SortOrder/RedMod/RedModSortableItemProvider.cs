@@ -56,7 +56,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
 
         // load the previously saved order
-        var order = RetrieveSortableEntries();
+        var order = RetrieveSortOrderEntries(_sortOrderId);
         OrderCache.AddOrUpdate(order);
         
         // populate read only list
@@ -214,9 +214,10 @@ public class RedModSortableItemProvider : ASortableItemProvider
     /// In both cases, the method will perform the normal synchronization of the sorting to the available RedMods,
     /// but the order might not be the most up to date regardless.
     /// </param>
-    public List<string> GetRedModOrder(IDb? db = null)
+    public List<string> GetRedModOrder(SortOrderId? sortOrderEntityId = null,  IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
+        var sortOrderId = sortOrderEntityId ?? _sortOrderId;
 
         var redMods = RedModLoadoutGroup.All(dbToUse)
             .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
@@ -230,7 +231,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
         // Retrieves the order from the database using the passed db
         // NOTE: depending on the db passed, the order might not be the latest
-        var sortOrder = RetrieveSortableEntries(dbToUse);
+        var sortOrder = RetrieveSortOrderEntries(sortOrderId, dbToUse);
 
         // Sanitize the order, applying it to the redMods in questions
         var validatedOrder = SynchronizeSortingToItems(redMods, sortOrder, this);
@@ -279,11 +280,11 @@ public class RedModSortableItemProvider : ASortableItemProvider
         }
     }
 
-    private List<RedModSortableItem> RetrieveSortableEntries(IDb? db = null)
+    private List<RedModSortableItem> RetrieveSortOrderEntries(SortOrderId sortOrderEntityId, IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
 
-        return dbToUse.RetrieveRedModSortOrder(_sortOrderId)
+        return dbToUse.RetrieveRedModSortOrder(sortOrderEntityId)
             .Select(redModSortableItem =>
                 {
                     var sortableItem = redModSortableItem.AsSortableEntry();
