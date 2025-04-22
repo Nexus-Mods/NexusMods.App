@@ -111,7 +111,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             var result = await installer.ExecuteAsync(LibraryItem, loadoutGroup, transaction, loadout, context.CancellationToken);
             if (result.IsNotSupported(out var reason))
             {
-                if (reason is not null && Logger.IsEnabled(LogLevel.Trace))
+                if (Logger.IsEnabled(LogLevel.Trace) && !string.IsNullOrEmpty(reason))
                 {
                     Logger.LogTrace("Installer doesn't support library item `{LibraryItem}` because \"{Reason}\"", LibraryItem.Name, reason);
                 }
