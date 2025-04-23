@@ -22,6 +22,7 @@ internal class FakeProcessFactory : IProcessFactory
     public async Task<CommandResult> ExecuteAsync(
         Command command,
         bool logProcessOutput = true,
+        bool validateExitCode = false,
         CancellationToken cancellationToken = default)
     {
         Callback?.Invoke(command);
