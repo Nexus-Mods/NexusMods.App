@@ -52,22 +52,6 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             await Task.Delay(TimeSpan.FromSeconds(1));
         
             var provider = factory.GetLoadoutSortableItemProvider(loadout);
-    
-            var tsc1 = new TaskCompletionSource<Unit>();
-    
-            // listen for the order to be updated
-            using var _ = provider.SortableItemsChangeSet
-                .QueryWhenChanged(items => items.Count)
-                .Where(count => count == 12)
-                .Distinct()
-                .Subscribe(_ =>
-                    {
-                        if (!tsc1.Task.IsCompleted)
-                        {
-                            tsc1.SetResult(Unit.Default);
-                        }
-                    }
-                );
         
             // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
             // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
@@ -77,18 +61,14 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         
             // wait for the order to be updated, but avoid stalling
 
-            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
-            if (await Task.WhenAny(tsc1.Task, timeoutTask) == timeoutTask)
-            {
-                var currentOrder = provider.GetCurrentSorting();
-                currentOrder.Count.Should().Be(12, because: "SortableItems should have been updated after the mods were installed");
-                // print the contents of SortableItems:
-                foreach (var item in currentOrder)
-                {
-                    _testOutputHelper.WriteLine($"{item.DisplayName} ({item.SortIndex})");
-                }
-                throw new TimeoutException($"Timed out waiting for SortableItems to be updated to contain 12 items, current count: {currentOrder.Count}");
-            }
+            await Task.Delay(TimeSpan.FromSeconds(1));
+        
+            // create a cancellation token that will time out after 30 seconds
+            var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        
+            // get the updated sort order for the loadout with the mods installed
+            var sortOrder = await provider.RefreshSortOrder(cts1.Token, loadout.Db);
+            
             loadout = loadout.Rebase();
             
             var sb = new StringBuilder();
@@ -100,8 +80,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             sb.AppendLine(name);
             sb.AppendLine($"Delta: {delta}");
 
-            var order = provider.GetCurrentSorting();
-            var specificRedMod = order.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
+            var specificRedMod = sortOrder.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
     
             var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var token = cts2.Token;
@@ -144,46 +123,22 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
         
         var provider = factory.GetLoadoutSortableItemProvider(loadout);
         
-        var tsc1 = new TaskCompletionSource<Unit>();
-    
-        // listen for the order to be updated
-        using var _ = provider.SortableItemsChangeSet
-            .QueryWhenChanged(items => items.Count)
-            .Where(count => count == 12)
-            .Distinct()
-            .Subscribe(_ =>
-                {
-                    if (!tsc1.Task.IsCompleted)
-                    {
-                        tsc1.SetResult(Unit.Default);
-                    }
-                }
-            );
-        
         // NOTE(Al12rs): Correctness of test depends also on order of mods added to the loadout,
         // e.g. if RedMods are added one by one rather than in batch, that can affect the order.
         loadout = await AddRedMods(loadout);
         
         await Task.Delay(TimeSpan.FromSeconds(1));
         
-        // wait for the order to be updated, but avoid stalling
-        var timeoutTask = Task.Delay(TimeSpan.FromSeconds(30));
-        if (await Task.WhenAny(tsc1.Task, timeoutTask) == timeoutTask)
-        {
-            var currentOrder = provider.GetCurrentSorting();
-            currentOrder.Count.Should().Be(12, because: "SortableItems should have been updated after the mods were installed");
-            // print the contents of SortableItems:
-            foreach (var item in currentOrder)
-            {
-                _testOutputHelper.WriteLine($"{item.DisplayName} ({item.SortIndex})");
-            }
-            throw new TimeoutException($"Timed out waiting for SortableItems to be updated to contain 12 items, current count: {currentOrder.Count}");
-        }
+        // create a cancellation token that will time out after 30 seconds
+        var cts1 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        
+        // get the updated sort order for the loadout with the mods installed
+        var sortOrder = await provider.RefreshSortOrder(cts1.Token, loadout.Db);
+        
         loadout = loadout.Rebase();
         
-        var order = provider.GetCurrentSorting();
-        var sourceItems = order.Where(item => sourceIndices.Contains(item.SortIndex)).ToArray();
-        var targetItem = order.Single(g => g.SortIndex == targetIndex);
+        var sourceItems = sortOrder.Where(item => sourceIndices.Contains(item.SortIndex)).ToArray();
+        var targetItem = sortOrder.Single(g => g.SortIndex == targetIndex);
         
         var sb = new StringBuilder();
         sb.AppendLine("Starting Order:");
