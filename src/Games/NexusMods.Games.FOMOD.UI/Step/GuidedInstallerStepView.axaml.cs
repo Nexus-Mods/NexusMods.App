@@ -24,11 +24,13 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(view => view.ViewModel!.HighlightedOptionImage)
-                .WhereNotNull()
                 .SubscribeWithErrorLogging(image =>
                 {
-                    HighlightedOptionImage.IsVisible = true;
+                    var tmp = HighlightedOptionImage.Source;
+                    HighlightedOptionImage.IsVisible = image is not null;
                     HighlightedOptionImage.Source = image;
+
+                    if (tmp is IDisposable disposable) disposable.Dispose();
                 })
                 .DisposeWith(disposables);
 
