@@ -310,6 +310,7 @@
                             <TextBlock Text="Modeless" />
                             <controls:StandardButton x:Name="ShowModelessOk" Text="OK" Click="ShowModelessOk_OnClick" />
                             <controls:StandardButton x:Name="ShowModelessOkCancel" Text="OkCancel" Click="ShowModelessOkCancel_OnClick" />
+                            <controls:StandardButton x:Name="ShowModelessPrimary" Text="Primary" Click="ShowModelessPrimary_OnClick" />
                             <!-- <controls:StandardButton x:Name="ShowModelessYesNo" Text="YesNo" Click="ShowModelessYesNo_OnClick" /> -->
                             <!-- <controls:StandardButton x:Name="ShowModelessOkAbort" Text="OkAbort" Click="ShowModelessOkAbort_OnClick" /> -->
                             <!-- <controls:StandardButton x:Name="ShowModelessYesNoCancel" Text="YesNoCancel" Click="ShowModelessYesNoCancel_OnClick" /> -->

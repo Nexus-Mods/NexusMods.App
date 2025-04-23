@@ -43,7 +43,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             // tell windowmanager to show it
             var result = await ViewModel.WindowManager.ShowMessageBox(messageBox, MessageBoxWindowType.Modal);
 
-            Console.WriteLine($@"{buttonDefinitions} result: {result}");
+            Console.WriteLine($@"{title} Result: {result}");
         }
         catch (Exception e)
         {
@@ -166,5 +166,28 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ],
             MessageBoxSize.Medium
         );
+    }
+
+    private void ShowModelessPrimary_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModeless("Something important",
+            "An example showing Primary and Secondary buttons", [
+                new MessageBoxButtonDefinition(
+                    "Secondary",
+                    ButtonDefinitionId.From("cancel"),
+                    null,
+                    null,
+                    ButtonRole.RejectRole
+                ),
+                new MessageBoxButtonDefinition(
+                    "Primary",
+                    ButtonDefinitionId.From("primary"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.PrimaryRole
+                )
+            ],
+            MessageBoxSize.Medium
+        );;
     }
 }

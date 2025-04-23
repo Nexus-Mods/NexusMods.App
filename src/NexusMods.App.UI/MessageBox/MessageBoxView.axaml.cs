@@ -73,24 +73,18 @@ public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonDefinit
                 _ => StandardButton.ShowIconOptions.None
             };
 
-            // Add "Danger" class if the ButtonRole includes DestructiveRole
+            // Add appropriate classes based on the ButtonRole
             if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.DestructiveRole))
-            {
                 button.Classes.Add("Danger");
-            }
             
-            // Add "Info" class if the ButtonRole includes InfoRole
             if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.InfoRole))
-            {
                 button.Classes.Add("Info");
-            }
             
-            // Add "Premium" class if the ButtonRole includes PremiumRole
             if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.PremiumRole))
-            {
                 button.Classes.Add("Premium");
-            }
             
+            if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.PrimaryRole))
+                button.Classes.Add("Primary");
 
             // Add the button to the panel
             buttonsFlexPanel.Children.Add(button);

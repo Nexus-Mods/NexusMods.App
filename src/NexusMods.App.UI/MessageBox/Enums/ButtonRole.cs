@@ -71,5 +71,5 @@ public enum ButtonRole
     /// <summary>
     /// The button is marked as a primary action in the dialog.
     /// </summary>
-    Primary = 1 << 11,
+    PrimaryRole = 1 << 11,
 }

@@ -44,6 +44,15 @@
                     <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
                 </Style>
             </Style>
+            
+            <Style Selector="^.Primary">
+                <Setter Property="Background" Value="{StaticResource PrimaryStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
+                </Style>
+            </Style>
         </Style>
     </UserControl.Styles>
 
