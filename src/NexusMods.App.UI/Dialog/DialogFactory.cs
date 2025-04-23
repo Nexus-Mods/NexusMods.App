@@ -1,12 +1,13 @@
 using Avalonia.Controls;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Pages.Settings;
 
 namespace NexusMods.App.UI.Dialog;
 
 /// <summary>
 /// Provides a factory for creating message boxes with specified properties.
 /// </summary>
-public static class MessageBoxFactory
+public static class DialogFactory
 {
     /// <summary>
     /// Creates a new message box with the specified title, text, button definitions, and size.
@@ -18,7 +19,7 @@ public static class MessageBoxFactory
     /// <returns>
     /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
     /// </returns>
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> Create(
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
         MessageBoxButtonDefinition[] buttonDefinitions,
@@ -32,4 +33,22 @@ public static class MessageBoxFactory
 
         return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
     }
+    
+    public static Dialog<DialogContainerView, DialogContainerViewModel, ButtonDefinitionId> CreateCustomDialog(string text)
+    {
+        
+        // create custom content viewmodel
+        var customViewModel = new CustomContentViewModel(text);
+
+        // create dialog container viewmodel
+        var containerViewModel = new DialogContainerViewModel(customViewModel, "Custom Content", 650, false);
+        
+        var view = new DialogContainerView()
+        {
+            DataContext = containerViewModel
+        };
+
+        return new Dialog<DialogContainerView, DialogContainerViewModel, ButtonDefinitionId>(view, containerViewModel);
+    }
+
 }

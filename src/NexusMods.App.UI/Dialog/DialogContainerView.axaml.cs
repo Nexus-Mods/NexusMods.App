@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
@@ -7,34 +8,56 @@ using Avalonia.Markup.Xaml;
 using DynamicData;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
+using Avalonia.ReactiveUI;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public partial class DialogContainerView : UserControl, IDialogView<ButtonDefinitionId>
+public partial class DialogContainerView : ReactiveUserControl<DialogContainerViewModel>, IDialogView<ButtonDefinitionId>
 {
     private ButtonDefinitionId _buttonResult = ButtonDefinitionId.From("none");
     private Action? _closeAction;
-    
     private Button? closeButton;
-    
+
     public DialogContainerView()
     {
         InitializeComponent();
-        
+
         closeButton = this.FindControl<Button>("CloseButton");
-        
-        if(closeButton != null)
+
+        if (closeButton != null)
             closeButton.Click += CloseWindow;
+
+        // Set the ViewModel for the ViewModelViewHost in the code-behind
+        this.WhenActivated(disposables =>
+        {
+            // Bind the title text block to the ViewModel's WindowTitle property.
+            this.OneWayBind(ViewModel, 
+                    vm => vm.WindowTitle,
+                    view => view.TitleTextBlock.Text)
+                .DisposeWith(disposables);
+            
+            // 
+            this.OneWayBind(ViewModel, 
+                    vm => vm.ShowWindowTitlebar,
+                    view => view.Titlebar.IsVisible)
+                .DisposeWith(disposables);
+            
+            // Bind the content view model.
+            this.OneWayBind(ViewModel, 
+                    vm => vm.ContentViewModel,
+                    view => view.ViewModelHost.ViewModel)
+                .DisposeWith(disposables);
+        });
     }
-    
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        
+
         // need this here so DataContext is set
     }
 
-    
 
     public void CloseWindow(object? sender, EventArgs eventArgs)
     {
@@ -61,4 +84,3 @@ public partial class DialogContainerView : UserControl, IDialogView<ButtonDefini
         _closeAction?.Invoke();
     }
 }
-

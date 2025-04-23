@@ -1,0 +1,42 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="dialog:CustomContentViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                mc:Ignorable="d"
+                                x:Class="NexusMods.App.UI.Dialog.CustomContentView"
+                                d:DataContext="{x:Static dialog:DesignDataContexts.CustomContentDesignViewModel}">
+    
+    <Border Padding="16">
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding CustomText}"
+                       Theme="{StaticResource BodyLGBoldTheme}"/>
+            <TextBlock Text="Download an entire mod collection at full speed with one click without leaving the app."
+                       TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Easy in app mod updates," Foreground="{StaticResource NeutralStrongBrush}"/>
+                <TextBlock Text=" no more manual downloads."/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Uncapped downloads speeds" Foreground="{StaticResource NeutralStrongBrush}"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="No Ads for life," Foreground="{StaticResource NeutralStrongBrush}"/>
+                <TextBlock Text=" even if you cancel!"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <controls:StandardButton x:Name="CancelButton"
+                               Text="Cancel"/>
+                <controls:StandardButton x:Name="UpgradeToPremium"
+                                         Text="Upgrade to Premium"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+    
+</reactiveUi:ReactiveUserControl>
+

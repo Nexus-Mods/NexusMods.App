@@ -8,7 +8,7 @@
              xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
              mc:Ignorable="d" d:DesignWidth="296"
              x:Class="NexusMods.App.UI.Dialog.MessageBoxView"
-             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxViewModel}"
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxDesignViewModel}"
              x:DataType="vm:MessageBoxViewModel">
 
     <!-- Temporary styles to see modal button variations -->

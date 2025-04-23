@@ -4,7 +4,7 @@ using NexusMods.App.UI.Dialog.Enums;
 namespace NexusMods.App.UI.Dialog;
 
 public class Dialog<TView, TViewModel, TReturn> : IDialog<TReturn>
-    where TView : UserControl, IMessageBoxView<TReturn>
+    where TView : UserControl, IDialogView<TReturn>
     where TViewModel : IDialogViewModel<TReturn>
 {
     private TView _view;

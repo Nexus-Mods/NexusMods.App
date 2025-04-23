@@ -5,13 +5,14 @@
              xmlns:vm="clr-namespace:NexusMods.App.UI.Dialog"
              xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
              xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-             mc:Ignorable="d" d:DesignWidth="296"
+             xmlns:reactiveUi="http://reactiveui.net"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
              x:Class="NexusMods.App.UI.Dialog.DialogContainerView"
-             d:DataContext="{x:Static vm:DesignDataContexts.DialogContainerViewModel}"
-             x:DataType="vm:DialogContainerViewModel">
+             x:DataType="vm:DialogContainerViewModel"
+             d:DataContext="{x:Static vm:DesignDataContexts.DialogContainerDesignViewModel}">
 
     <Grid RowDefinitions="Auto,*">
-
+        
         <!-- titlebar -->
         <Grid Name="Titlebar" Grid.Row="0"
               ColumnDefinitions="*,Auto"
@@ -39,11 +40,7 @@
 
         <!-- content -->
         <Border Name="ContentBorder" Grid.Row="1">
-
-            <Border Padding="24">
-                <TextBlock Text="WHATEVER"/>
-            </Border>
-
+            <reactiveUi:ViewModelViewHost Name="ViewModelHost" />
         </Border>
     </Grid>
 </UserControl>

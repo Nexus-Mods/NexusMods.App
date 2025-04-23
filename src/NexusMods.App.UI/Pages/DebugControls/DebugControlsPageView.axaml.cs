@@ -36,7 +36,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             if (ViewModel is null) return;
 
             // create new messagebox
-            var messageBox = MessageBoxFactory.Create(title, message, buttonDefinitions,
+            var messageBox = DialogFactory.CreateMessageBox(title, message, buttonDefinitions,
                 messageBoxSize
             );
 
@@ -59,7 +59,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             if (ViewModel is null) return;
 
             // create new messagebox
-            var messageBox = MessageBoxFactory.Create(title, message, buttonDefinitions,
+            var messageBox = DialogFactory.CreateMessageBox(title, message, buttonDefinitions,
                 messageBoxSize
             );
 
@@ -197,14 +197,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         {
             if (ViewModel is null) return;
 
-            // create new dialog
-            var viewModel = new DialogContainerViewModel();
-            var view = new MessageBoxView()
-            {
-                DataContext = viewModel,
-            };
-
-            var dialog = new Dialog<MessageBoxView, DialogContainerViewModel, ButtonDefinitionId>(view, viewModel);
+            // create dialog
+            var dialog = DialogFactory.CreateCustomDialog("This is lovely text");
 
             // tell windowmanager to show it
             var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);

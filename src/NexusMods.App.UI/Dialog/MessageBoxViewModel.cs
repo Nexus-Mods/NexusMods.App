@@ -9,14 +9,17 @@ namespace NexusMods.App.UI.Dialog;
 
 public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
 {
-    private IDialogView<ButtonDefinitionId>? _view;
     public MessageBoxButtonDefinition[] ButtonDefinitions { get; }
     public string WindowTitle { get; }
     public double WindowMaxWidth { get; }
+    public bool ShowWindowTitlebar { get; } = true;
     public string ContentMessage { get; set; }
     public MessageBoxSize MessageBoxSize { get; }
     public event PropertyChangedEventHandler? PropertyChanged;
     public ViewModelActivator Activator { get; } = null!;
+    
+    public IDialogView<ButtonDefinitionId>? View { get; set; }
+    public ButtonDefinitionId Return { get; set; }
     public ReactiveCommand<ButtonDefinitionId, Unit> ButtonClickCommand { get; }
 
     public MessageBoxViewModel(
@@ -40,22 +43,20 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
         ButtonClickCommand = ReactiveCommand.Create<ButtonDefinitionId>(ButtonClick);
     }
 
-    public ButtonDefinitionId Return { get; set; }
-
     public void SetView(IDialogView<ButtonDefinitionId> view)
     {
-        _view = view;
+        View = view;
     }
 
     private async void ButtonClick(ButtonDefinitionId id)
     {
         await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (_view is null) return;
+                if (View is null) return;
                 
                 //_view.SetButtonResult(Enum.Parse<ButtonResult>(s.Trim(), true));
-                _view.SetButtonResult(id);
-                _view.Close();
+                View.SetButtonResult(id);
+                View.Close();
             }
         );
     }
