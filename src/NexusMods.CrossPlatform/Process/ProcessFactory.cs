@@ -71,8 +71,11 @@ internal class ProcessFactory : IProcessFactory
     public async Task<CommandResult> ExecuteAsync(
         Command command,
         bool logProcessOutput = true,
+        bool validateExitCode = false,
         CancellationToken cancellationToken = default)
     {
+        command = command.WithValidation(validateExitCode ? CommandResultValidation.ZeroExitCode : CommandResultValidation.None);
+
         if (!logProcessOutput)
         {
             // We require a non-null pipe here, for more details, see:
