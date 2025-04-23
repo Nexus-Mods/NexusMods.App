@@ -6,8 +6,8 @@ using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.MessageBox;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
@@ -178,16 +178,16 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         tx.Commit();
     }
     
-    public async Task<ButtonDefinitionId> ShowMessageBox(IMessageBox<ButtonDefinitionId> messageBox, MessageBoxWindowType windowType)
+    public async Task<ButtonDefinitionId> ShowDialog(IDialog<ButtonDefinitionId> dialog, DialogWindowType windowType)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             throw new InvalidOperationException("Application lifetime is not configured properly.");
 
         return windowType switch
         {
-            MessageBoxWindowType.Modal => await messageBox.ShowWindow(desktop.MainWindow, isDialog: true),
-            MessageBoxWindowType.Modeless => await messageBox.ShowWindow(),
-            MessageBoxWindowType.Embedded => throw new NotImplementedException("Embedded window type is not implemented."),
+            DialogWindowType.Modal => await dialog.ShowWindow(desktop.MainWindow, isModal: true),
+            DialogWindowType.Modeless => await dialog.ShowWindow(),
+            DialogWindowType.Embedded => throw new NotImplementedException("Embedded window type is not implemented."),
             _ => throw new InvalidOperationException("Unknown WindowType.")
         };
     }

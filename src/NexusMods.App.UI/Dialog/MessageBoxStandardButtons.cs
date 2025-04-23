@@ -1,7 +1,7 @@
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog.Enums;
 
-namespace NexusMods.App.UI.MessageBox;
+namespace NexusMods.App.UI.Dialog;
 
 /// <summary>
 /// Provides standard button definitions for message boxes, such as "OK" and "Cancel".

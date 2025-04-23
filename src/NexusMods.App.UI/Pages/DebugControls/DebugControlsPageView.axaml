@@ -299,6 +299,7 @@
                             <controls:StandardButton x:Name="ShowModalDeleteMod" Text="Destructive" Click="ShowModalShowModalDeleteMod_OnClick" />
                             <controls:StandardButton x:Name="ShowModalInfo" Text="Info" Click="ShowModalInfo_OnClick" />
                             <controls:StandardButton x:Name="ShowModalPremium" Text="Premium" Click="ShowModalPremium_OnClick" />
+                            <controls:StandardButton x:Name="ShowModalCustom" Text="Custom" Click="ShowModalCustom_OnClick" />
                             <!-- <controls:StandardButton x:Name="ShowModalYesNo" Text="YesNo" Click="ShowModalYesNo_OnClick" /> -->
                             <!-- <controls:StandardButton x:Name="ShowModalOkAbort" Text="OkAbort" Click="ShowModalOkAbort_OnClick" /> -->
                             <!-- <controls:StandardButton x:Name="ShowModalYesNoCancel" Text="YesNoCancel" Click="ShowModalYesNoCancel_OnClick" /> -->

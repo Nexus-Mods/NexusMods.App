@@ -1,4 +1,4 @@
-namespace NexusMods.App.UI.MessageBox.Enums;
+namespace NexusMods.App.UI.Dialog.Enums;
 
 /// <summary>
 /// Represents the size options for a message box.

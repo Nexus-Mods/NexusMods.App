@@ -1,6 +1,6 @@
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog.Enums;
 
-namespace NexusMods.App.UI.MessageBox;
+namespace NexusMods.App.UI.Dialog;
 
 /// <summary>
 /// ViewModel instances used in design mode
@@ -12,4 +12,6 @@ internal static class DesignDataContexts
         "Deleting this mod will remove it from all collections. This action cannot be undone.",
         [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel]
         );
+
+    public static DialogContainerViewModel DialogContainerViewModel { get; } = new();
 }

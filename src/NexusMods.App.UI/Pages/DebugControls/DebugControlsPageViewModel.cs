@@ -4,7 +4,7 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using System.Reactive;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.DebugControls;

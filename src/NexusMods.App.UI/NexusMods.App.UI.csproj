@@ -734,10 +734,14 @@
           <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="MessageBox\MessageBoxViewModel.cs">
-          <DependentUpon>IMessageBoxViewModel.cs</DependentUpon>
+          <DependentUpon>IDialogViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="MessageBox\MessageBox.cs">
-          <DependentUpon>IMessageBox.cs</DependentUpon>
+        <Compile Update="MessageBox\Dialog.cs">
+          <DependentUpon>IDialog.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Dialog\DialogContainerView.axaml.cs">
+          <DependentUpon>DialogContainer.axaml</DependentUpon>
+          <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
 

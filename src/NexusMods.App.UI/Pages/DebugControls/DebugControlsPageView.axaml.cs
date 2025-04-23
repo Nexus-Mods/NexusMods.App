@@ -2,8 +2,8 @@ using System.Reactive.Disposables;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.MessageBox;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Windows;
 using NexusMods.Icons;
 using ReactiveUI;
@@ -41,7 +41,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             );
 
             // tell windowmanager to show it
-            var result = await ViewModel.WindowManager.ShowMessageBox(messageBox, MessageBoxWindowType.Modal);
+            var result = await ViewModel.WindowManager.ShowDialog(messageBox, DialogWindowType.Modal);
 
             Console.WriteLine($@"{title} Result: {result}");
         }
@@ -63,7 +63,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 messageBoxSize
             );
 
-            var result = await ViewModel.WindowManager.ShowMessageBox(messageBox, MessageBoxWindowType.Modeless);
+            var result = await ViewModel.WindowManager.ShowDialog(messageBox, DialogWindowType.Modeless);
             Console.WriteLine($@"{buttonDefinitions} result: {result}");
         }
         catch (Exception e)
@@ -189,5 +189,31 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ],
             MessageBoxSize.Medium
         );;
+    }
+
+    private async void ShowModalCustom_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel is null) return;
+
+            // create new dialog
+            var viewModel = new DialogContainerViewModel();
+            var view = new MessageBoxView()
+            {
+                DataContext = viewModel,
+            };
+
+            var dialog = new Dialog<MessageBoxView, DialogContainerViewModel, ButtonDefinitionId>(view, viewModel);
+
+            // tell windowmanager to show it
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+
+            Console.WriteLine($@"Result: {result}");
+        }
+        catch
+        {
+            throw; // TODO handle exception
+        }
     }
 }

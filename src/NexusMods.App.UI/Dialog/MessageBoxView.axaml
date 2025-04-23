@@ -2,12 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:NexusMods.App.UI.MessageBox"
+             xmlns:vm="clr-namespace:NexusMods.App.UI.Dialog"
              xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
              xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
              xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
              mc:Ignorable="d" d:DesignWidth="296"
-             x:Class="NexusMods.App.UI.MessageBox.MessageBoxView"
+             x:Class="NexusMods.App.UI.Dialog.MessageBoxView"
              d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxViewModel}"
              x:DataType="vm:MessageBoxViewModel">
 
@@ -66,7 +66,7 @@
             <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
                 custom titlebar dragging -->
             <TextBlock Grid.Column="0" Name="TitleTextBlock"
-                       Text="{Binding ContentTitle}"
+                       Text="{Binding WindowTitle}"
                        Foreground="{StaticResource NeutralStrongBrush}"
                        Theme="{StaticResource BodySMSemiTheme}"
                        VerticalAlignment="Center"

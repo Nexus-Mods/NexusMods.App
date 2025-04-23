@@ -6,9 +6,9 @@ using Avalonia.Labs.Panels;
 using Avalonia.Markup.Xaml;
 using DynamicData;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog.Enums;
 
-namespace NexusMods.App.UI.MessageBox;
+namespace NexusMods.App.UI.Dialog;
 
 public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonDefinitionId>
 {

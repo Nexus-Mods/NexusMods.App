@@ -1,6 +1,6 @@
 using System;
 
-namespace NexusMods.App.UI.MessageBox.Enums;
+namespace NexusMods.App.UI.Dialog.Enums;
 
 /// <summary>
 /// Represents the roles that a button can have in a message box dialog.

@@ -1,9 +1,9 @@
-namespace NexusMods.App.UI.MessageBox.Enums;
+namespace NexusMods.App.UI.Dialog.Enums;
 
 /// <summary>
 /// Specifies the type of window to be used for a message box.
 /// </summary>
-public enum MessageBoxWindowType
+public enum DialogWindowType
 {
     /// <summary>
     /// Represents a modal window, which requires the user to interact with it

@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
-using NexusMods.App.UI.MessageBox;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Windows;
@@ -59,7 +59,7 @@ public interface IWindowManager
     /// <returns>Whether the restore was successful.</returns>
     public bool RestoreWindowState(IWorkspaceWindow window);
 
-    public Task<ButtonDefinitionId> ShowMessageBox(IMessageBox<ButtonDefinitionId> messageBox, MessageBoxWindowType windowType);
+    public Task<ButtonDefinitionId> ShowDialog(IDialog<ButtonDefinitionId> dialog, DialogWindowType windowType);
     //
     // public Task<ButtonDefinitionId> ShowModalAsync(string title, string text, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize);
     //

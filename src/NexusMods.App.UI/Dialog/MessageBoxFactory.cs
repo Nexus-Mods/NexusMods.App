@@ -1,7 +1,7 @@
 using Avalonia.Controls;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog.Enums;
 
-namespace NexusMods.App.UI.MessageBox;
+namespace NexusMods.App.UI.Dialog;
 
 /// <summary>
 /// Provides a factory for creating message boxes with specified properties.
@@ -16,9 +16,9 @@ public static class MessageBoxFactory
     /// <param name="buttonDefinitions">An array of <see cref="MessageBoxButtonDefinition"/> specifying the buttons to include in the message box.</param>
     /// <param name="messageBoxSize">The size of the message box (e.g., Small, Medium, or Large).</param>
     /// <returns>
-    /// A <see cref="MessageBox{TView, TViewModel, TButtonId}"/> instance containing the View and ViewModel for the message box.
+    /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
     /// </returns>
-    public static MessageBox<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> Create(
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> Create(
         string title,
         string text,
         MessageBoxButtonDefinition[] buttonDefinitions,
@@ -30,6 +30,6 @@ public static class MessageBoxFactory
             DataContext = viewModel,
         };
 
-        return new MessageBox<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
+        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
     }
 }

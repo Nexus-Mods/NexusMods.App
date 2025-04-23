@@ -1,20 +1,22 @@
+using System.ComponentModel;
 using System.Reactive;
 using Avalonia.Threading;
 using ExCSS;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.MessageBox;
+namespace NexusMods.App.UI.Dialog;
 
-public class MessageBoxViewModel : IMessageBoxViewModel<ButtonDefinitionId>
+public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
 {
-    private IMessageBoxView<ButtonDefinitionId>? _view;
-    
+    private IDialogView<ButtonDefinitionId>? _view;
     public MessageBoxButtonDefinition[] ButtonDefinitions { get; }
-    public string ContentTitle { get; }
+    public string WindowTitle { get; }
+    public double WindowMaxWidth { get; }
     public string ContentMessage { get; set; }
     public MessageBoxSize MessageBoxSize { get; }
-
+    public event PropertyChangedEventHandler? PropertyChanged;
+    public ViewModelActivator Activator { get; } = null!;
     public ReactiveCommand<ButtonDefinitionId, Unit> ButtonClickCommand { get; }
 
     public MessageBoxViewModel(
@@ -23,15 +25,24 @@ public class MessageBoxViewModel : IMessageBoxViewModel<ButtonDefinitionId>
         MessageBoxButtonDefinition[] buttonDefinitions,
         MessageBoxSize messageBoxSize = MessageBoxSize.Small)
     {
-        ContentTitle = title;
+        WindowTitle = title;
         ContentMessage = text;
         ButtonDefinitions = buttonDefinitions;
         MessageBoxSize = messageBoxSize;
-
+        WindowMaxWidth = messageBoxSize switch
+        {
+            MessageBoxSize.Small => 320,
+            MessageBoxSize.Medium => 480,
+            MessageBoxSize.Large => 640,
+            _ => 320
+        };
+        
         ButtonClickCommand = ReactiveCommand.Create<ButtonDefinitionId>(ButtonClick);
     }
 
-    public void SetView(IMessageBoxView<ButtonDefinitionId> view)
+    public ButtonDefinitionId Return { get; set; }
+
+    public void SetView(IDialogView<ButtonDefinitionId> view)
     {
         _view = view;
     }
@@ -48,4 +59,5 @@ public class MessageBoxViewModel : IMessageBoxViewModel<ButtonDefinitionId>
             }
         );
     }
+
 }

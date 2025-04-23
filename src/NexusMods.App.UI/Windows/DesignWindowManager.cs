@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using NexusMods.App.UI.MessageBox;
-using NexusMods.App.UI.MessageBox.Enums;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI.Fody.Helpers;
 
@@ -24,7 +24,7 @@ public class DesignWindowManager : IWindowManager
 
     public void SaveWindowState(IWorkspaceWindow window) { }
     public bool RestoreWindowState(IWorkspaceWindow window) => false;
-    public Task<ButtonDefinitionId> ShowMessageBox(IMessageBox<ButtonDefinitionId> messageBox, MessageBoxWindowType windowType)
+    public Task<ButtonDefinitionId> ShowDialog(IDialog<ButtonDefinitionId> dialog, DialogWindowType windowType)
     {
         throw new NotImplementedException();
     }
