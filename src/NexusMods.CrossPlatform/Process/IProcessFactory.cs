@@ -12,8 +12,9 @@ public interface IProcessFactory
     /// </summary>
     /// <param name="command"></param>
     /// <param name="logProcessOutput"></param>
+    /// <param name="validateExitCode"></param>
     /// <param name="cancellationToken">Allows you to cancel the task, killing the process prematurely.</param>
-    Task<CommandResult> ExecuteAsync(Command command, bool logProcessOutput = true, CancellationToken cancellationToken = default);
+    Task<CommandResult> ExecuteAsync(Command command, bool logProcessOutput = true, bool validateExitCode = false, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Executes the gives process asynchronously.
