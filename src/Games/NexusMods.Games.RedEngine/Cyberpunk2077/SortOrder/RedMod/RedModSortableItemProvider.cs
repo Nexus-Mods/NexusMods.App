@@ -232,7 +232,8 @@ public class RedModSortableItemProvider : ASortableItemProvider
                 )
             )
         );
-
+        
+        // Update the data on the items
         for (var i = 0; i < stagingList.Count; i++)
         {
             var item = stagingList[i];
