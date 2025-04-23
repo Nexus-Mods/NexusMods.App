@@ -137,15 +137,15 @@ public class RedModSortableItemProvider : ASortableItemProvider
         {
             var redModsGroups = RedModLoadoutGroup.All(_connection.Db)
                 .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
-                .Select(g => new RedModWithState( g, g.RedModFolder(), g.IsEnabled()))
+                .Select(g => new RedModWithState(g, g.RedModFolder(), g.IsEnabled()))
                 .ToList();
                 
-            var oldOrder = OrderCache.Items.OfType<RedModSortableItem>().OrderBy(item => item.SortIndex);
+            var oldOrder = OrderCache.Items.OrderBy(item => item.SortIndex).ToList();
             
             if (token.IsCancellationRequested) return;
             
             // Update the order
-            var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder.ToList(), this);
+            var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder, this);
             
             if (token.IsCancellationRequested) return;
 
