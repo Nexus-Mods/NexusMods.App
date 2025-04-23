@@ -3,13 +3,7 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// Represents a game-specific identifier for a sortable item
 /// </summary>
-public interface ISortItemKey : IEquatable<ISortItemKey>
-{
-    /// <summary>
-    /// The hash code computed on the actual key value
-    /// </summary>
-    int GetHashCode();
-}
+public interface ISortItemKey : IEquatable<ISortItemKey> { }
 
 /// <summary>
 /// Convenience container for a sortable item key
