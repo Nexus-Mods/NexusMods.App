@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;

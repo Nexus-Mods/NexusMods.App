@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Kernel;
@@ -12,7 +11,6 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using R3;
-using ReactiveUI;
 
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
