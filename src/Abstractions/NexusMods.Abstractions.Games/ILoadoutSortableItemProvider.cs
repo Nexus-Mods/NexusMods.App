@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
@@ -21,15 +20,16 @@ public interface ILoadoutSortableItemProvider : IDisposable
     public LoadoutId LoadoutId { get; }
     
     /// <summary>
-    /// Observable collection of sorted sortable items in the sort order
-    /// </summary>
-    public ReadOnlyObservableCollection<ISortableItem> SortableItems { get; }
-    
-    /// <summary>
-    /// Change set of sortable items in the sort order
+    /// ChangeSet of sortable items in the sort order
     /// </summary>
     public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
-    
+
+    /// <summary>
+    /// Returns the current sort order of the sortable items in the loadout.
+    /// </summary>
+    /// <returns>A read-only list of <c>ISortableItem</c> objects sorted in ascending sort index order</returns>
+    public IReadOnlyList<ISortableItem> GetCurrentSorting();
+
     /// <summary>
     /// Returns the sortable item with the given id
     /// </summary>

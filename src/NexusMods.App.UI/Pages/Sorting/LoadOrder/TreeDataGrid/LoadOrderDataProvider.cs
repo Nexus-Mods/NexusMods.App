@@ -19,9 +19,9 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         Observable<ListSortDirection> sortDirectionObservable)
     {
         var lastIndexObservable = sortableItemProvider.SortableItemsChangeSet
-            .QueryWhenChanged(query => query.Count == 0 ? 0 : query.Items.Max(item => item.SortIndex))
+            .QueryWhenChanged(query => GetLastIndex(query.Items.ToList()))
             .ToObservable()
-            .Prepend(sortableItemProvider.SortableItems.Count == 0 ? 0 : sortableItemProvider.SortableItems.Max(item => item.SortIndex));
+            .Prepend(GetLastIndex(sortableItemProvider.GetCurrentSorting()));
 
         var topMostIndexObservable = R3.Observable.CombineLatest(
                 sortDirectionObservable,
@@ -41,6 +41,11 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         
         return sortableItemProvider.SortableItemsChangeSet
             .Transform( item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable));
+
+        static int GetLastIndex(IReadOnlyList<ISortableItem> items)
+        {
+            return items.Count == 0 ? 0 : items.Max(item => item.SortIndex);
+        }
     }
 
 

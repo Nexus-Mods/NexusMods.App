@@ -46,10 +46,15 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     public LoadoutId LoadoutId { get; }
 
     /// <inheritdoc />
-    public abstract ReadOnlyObservableCollection<ISortableItem> SortableItems { get; }
+    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
 
     /// <inheritdoc />
-    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
+    public IReadOnlyList<ISortableItem> GetCurrentSorting()
+    {
+        return OrderCache.Items
+            .OrderBy(item => item.SortIndex)
+            .ToList();
+    }
 
     /// <Inheritdoc />
     public Optional<ISortableItem> GetSortableItem(ISortItemKey itemId)

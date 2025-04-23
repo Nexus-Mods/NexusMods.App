@@ -24,10 +24,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
     private readonly IConnection _connection;
     private bool _isDisposed;
 
-    private readonly ReadOnlyObservableCollection<ISortableItem> _readOnlyOrderList;
-
     private readonly CompositeDisposable _disposables = new();
-    public override ReadOnlyObservableCollection<ISortableItem> SortableItems => _readOnlyOrderList;
 
     public static async Task<RedModSortableItemProvider> CreateAsync(
         IConnection connection,
@@ -54,15 +51,6 @@ public class RedModSortableItemProvider : ASortableItemProvider
         // load the previously saved order
         var order = RetrieveSortOrder(SortOrderEntityId);
         OrderCache.AddOrUpdate(order);
-        
-        // Bind the order for the ui
-        OrderCache.Connect()
-            .Transform(item => item)
-            .SortBy(item => item.SortIndex)
-            .ObserveOn(RxApp.MainThreadScheduler)
-            .Bind(out _readOnlyOrderList)
-            .Subscribe()
-            .AddTo(_disposables);
         
         // Observe RedMod groups changes
         GetRedModChangesObservable()
@@ -252,7 +240,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
 
         return stagingList;
     }
-    
+
     /// <inheritdoc />
     protected override async Task PersistSortOrder(IReadOnlyList<ISortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
