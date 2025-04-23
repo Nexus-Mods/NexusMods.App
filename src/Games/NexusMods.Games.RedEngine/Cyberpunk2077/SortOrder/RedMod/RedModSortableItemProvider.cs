@@ -65,7 +65,17 @@ public class RedModSortableItemProvider : ASortableItemProvider
             .AddTo(_disposables);
         
         // Observe RedMod groups changes
-        RedModLoadoutGroup.ObserveAll(_connection)
+        GetRedModChangesObservable()
+            .SubscribeAwait(
+                async (_, token) => { await UpdateOrderCache(token); },
+                awaitOperation: AwaitOperation.Sequential
+            )
+            .AddTo(_disposables);
+    }
+    
+    private Observable<Unit> GetRedModChangesObservable()
+    {
+        return RedModLoadoutGroup.ObserveAll(_connection)
             .Transform((_, redModId) => LoadoutItem.Load(_connection.Db, redModId))
             // Filter by the loadout
             .Filter(item => item.LoadoutId.Equals(LoadoutId))
@@ -77,13 +87,8 @@ public class RedModSortableItemProvider : ASortableItemProvider
                     return item.IsEnabledObservable(_connection)
                         .Select(isEnabled => (RedMod: redMod, RedModFolder: redMod.RedModFolder(), IsEnabled: isEnabled));
                 }
-            )
-            .ToObservable()
-            .SubscribeAwait(
-                async (changes, token) => { await UpdateOrderCache(token); },
-                awaitOperation: AwaitOperation.Sequential
-            )
-            .AddTo(_disposables);
+            ).ToObservable()
+            .Select(_ => Unit.Default);
     }
     
 
