@@ -77,8 +77,9 @@ public class RedModSortableItemProvider : ASortableItemProvider
     {
         return RedModLoadoutGroup.ObserveAll(_connection)
             .Transform((_, redModId) => LoadoutItem.Load(_connection.Db, redModId))
-            // Filter by the loadout
+            // filter by the loadout
             .Filter(item => item.LoadoutId.Equals(LoadoutId))
+            // get the enabled state considering all parents as well
             .TransformOnObservable(item =>
                 {
                     var redMod = RedModLoadoutGroup.Load(_connection.Db, item.Id);
