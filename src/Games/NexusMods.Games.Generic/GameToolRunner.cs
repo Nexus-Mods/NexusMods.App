@@ -41,7 +41,7 @@ public class GameToolRunner
     {
         var isLinux = FileSystem.Shared.OS.IsLinux;
         if (!isLinux)
-            return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken);
+            return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken: cancellationToken);
         
         // For Linux, if the user is managing the game via Steam, we can use proton (via protontricks)
         var install = loadout.InstallationInstance;
@@ -50,9 +50,9 @@ public class GameToolRunner
         {
             var appId = steamLocatorResultMetadata.AppId;
             command = await _protontricks.MakeLaunchCommand(command, appId);
-            return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken);
+            return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken: cancellationToken);
         }
 
-        return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken);
+        return await _processFactory.ExecuteAsync(command, logProcessOutput, cancellationToken: cancellationToken);
     }
 }

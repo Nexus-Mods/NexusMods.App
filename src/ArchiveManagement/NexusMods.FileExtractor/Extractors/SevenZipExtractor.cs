@@ -192,7 +192,7 @@ public class SevenZipExtractor : IExtractor
                 pathsWithInvalidCharacters.Add((fileName, isDirectory));
             }));
 
-        await _processFactory.ExecuteAsync(process, cancellationToken: cancellationToken);
+        await _processFactory.ExecuteAsync(process, validateExitCode: true, cancellationToken: cancellationToken);
         return pathsWithInvalidCharacters;
     }
 
@@ -251,7 +251,7 @@ public class SevenZipExtractor : IExtractor
                 _ = TryParseExtractCommandOutput(line, out var percentage);
             }));
 
-        await _processFactory.ExecuteAsync(process, cancellationToken: cancellationToken);
+        await _processFactory.ExecuteAsync(process, validateExitCode: true, cancellationToken: cancellationToken);
     }
 
     private static bool TryParseExtractCommandOutput(ReadOnlySpan<char> line, out int percentage)
