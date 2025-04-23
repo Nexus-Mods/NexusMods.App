@@ -9,7 +9,7 @@ namespace NexusMods.Networking.NexusWebApi.Auth;
 /// <summary>
 /// OAuth2 based authentication
 /// </summary>
-public class OAuth2MessageFactory : IAuthenticatingMessageFactory
+public class OAuth2MessageFactory : BaseHttpMessageFactory, IAuthenticatingMessageFactory
 {
     private readonly ILogger<OAuth2MessageFactory> _logger;
     private readonly OAuth _auth;
@@ -54,19 +54,18 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
     }
 
     /// <inheritdoc/>
-    public async ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
+    public override async ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
     {
         var token = await GetOrRefreshToken(CancellationToken.None);
         if (token is null) throw new Exception("Unauthorized!");
 
-        var msg = new HttpRequestMessage(method, uri);
-        msg.Headers.Add("Authorization", $"Bearer {token}");
-
-        return msg;
+        var requestMessage = await base.Create(method, uri);
+        requestMessage.Headers.Add("Authorization", $"Bearer {token}");
+        return requestMessage;
     }
 
     /// <inheritdoc/>
-    public async ValueTask<bool> IsAuthenticated()
+    public override async ValueTask<bool> IsAuthenticated()
     {
         var token = await GetOrRefreshToken(CancellationToken.None);
         return token is not null;
@@ -94,11 +93,5 @@ public class OAuth2MessageFactory : IAuthenticatingMessageFactory
             UserRole =  oAuthUserInfo.MembershipRoles.Contains(MembershipRole.Premium) ? UserRole.Premium : oAuthUserInfo.MembershipRoles.Contains(MembershipRole.Supporter) ? UserRole.Supporter : UserRole.Free,
             AvatarUrl = oAuthUserInfo.Avatar,
         };
-    }
-
-    /// <inheritdoc/>
-    public ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken cancel)
-    {
-        return ValueTask.FromResult<HttpRequestMessage?>(null);
     }
 }
