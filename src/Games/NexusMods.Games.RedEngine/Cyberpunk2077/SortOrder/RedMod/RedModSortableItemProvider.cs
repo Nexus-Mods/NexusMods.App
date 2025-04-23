@@ -53,7 +53,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         // Observe RedMod groups changes
         GetRedModChangesObservable()
             .SubscribeAwait(
-                async (_, token) => { await UpdateOrderCache(token); },
+                async (_, token) => { await RefreshSortOrder(token: token); },
                 awaitOperation: AwaitOperation.Sequential
             )
             .AddTo(_disposables);
@@ -116,29 +116,31 @@ public class RedModSortableItemProvider : ASortableItemProvider
             .ToList();
     }
 
-    private async Task UpdateOrderCache(CancellationToken token)
+    public override async Task<IReadOnlyList<ISortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)
     {
         await Semaphore.WaitAsync(token);
         try
         {
-            var redModsGroups = RedModLoadoutGroup.All(_connection.Db)
+            var dbToUse = loadoutDb ?? _connection.Db;
+            
+            var redModsGroups = RedModLoadoutGroup.All(dbToUse)
                 .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
                 .Select(g => new RedModWithState(g, g.RedModFolder(), g.IsEnabled()))
                 .ToList();
                 
             var oldOrder = OrderCache.Items.OrderBy(item => item.SortIndex).ToList();
             
-            if (token.IsCancellationRequested) return;
+            if (token.IsCancellationRequested) return [];
             
             // Update the order
             var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder, this);
             
-            if (token.IsCancellationRequested) return;
+            if (token.IsCancellationRequested) return [];
 
             // Update the database
             await PersistSortOrder(stagingList, SortOrderEntityId, token);
             
-            if (token.IsCancellationRequested) return;
+            if (token.IsCancellationRequested) return [];
 
             // Update the cache
             OrderCache.Edit(innerCache =>
@@ -147,6 +149,8 @@ public class RedModSortableItemProvider : ASortableItemProvider
                     innerCache.AddOrUpdate(stagingList);
                 }
             );
+            
+            return stagingList;
         }
         finally
         {

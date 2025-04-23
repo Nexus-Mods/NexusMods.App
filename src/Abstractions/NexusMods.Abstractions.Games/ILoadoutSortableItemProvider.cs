@@ -1,6 +1,7 @@
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -48,6 +49,14 @@ public interface ILoadoutSortableItemProvider : IDisposable
     /// Validity and outcome of the move may depend on game specific logic, so only some or none of the items may be moved.
     /// </summary>
     Task MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token);
+
+    /// <summary>
+    /// Refreshes the sort order based on the data in the loadout and returns the updated sorted list.
+    /// </summary>
+    /// <param name="loadoutDb">An optional database revision from which to retrieve the latest loadout data, latest availably is used if none is provided</param>
+    /// <param name="token">Cancellation token</param>
+    /// <remarks>The computed load order is persisted, so passing outdated db revisions could result in loss of data.</remarks>
+    Task<IReadOnlyList<ISortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null);
 }
 
 /// <summary>

@@ -172,6 +172,9 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
         }
     }
 
+    /// <inheritdoc />
+    public abstract Task<IReadOnlyList<ISortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null);
+
     /// <summary>
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
