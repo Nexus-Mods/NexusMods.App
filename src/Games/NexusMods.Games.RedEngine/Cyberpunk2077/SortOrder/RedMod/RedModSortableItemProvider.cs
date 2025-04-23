@@ -182,7 +182,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
         IReadOnlyList<ISortableItem> currentOrder,
         RedModSortableItemProvider provider)
     {
-        var redModCurrentOrder = (IReadOnlyList<RedModSortableItem>)currentOrder;
+        var redModCurrentOrder =  currentOrder.OfType<RedModSortableItem>().ToList();
         var redModsToAdd = new List<RedModWithState>();
         var sortableItemsToRemove = new List<RedModSortableItem>();
 
@@ -256,7 +256,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
     /// <inheritdoc />
     protected override async Task PersistSortOrder(IReadOnlyList<ISortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
-        var redModOrderList = (IReadOnlyList<RedModSortableItem>)orderList;
+        var redModOrderList = orderList.OfType<RedModSortableItem>().ToList();
         
         var persistentSortableItems = _connection.Db.RetrieveRedModSortOrder(sortOrderEntityId);
 
