@@ -6,8 +6,8 @@
         xmlns:converters="clr-namespace:NexusMods.App.UI.Converters;assembly=NexusMods.App.UI"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
         xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games">
-    <!-- NOTE(Al12rs): Keep: `xmlns:system="clr-namespace:System;assembly=System.Runtime"` even if marked as unused -->
-    <!-- See false positive error and note for CompositeItemModel later down the file -->
+    <!-- NOTE(Al12rs): Keep: `xmlns:games="clr-namespace:NexusMods.Abstractions.Games;assembly=NexusMods.Abstractions.Games"` even if marked as unused -->
+    <!-- See the false positive error and note for CompositeItemModel later down the file -->
 
     <Design.PreviewWith>
         <Border Classes="Low" Padding="16">
