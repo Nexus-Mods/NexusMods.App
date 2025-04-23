@@ -754,7 +754,7 @@ public class TreeFolderGeneratorForLocationIdTests
     }
 #endif
 
-    private static TreeFolderGeneratorForLocationId<TestTreeItemWithPath, DefaultFolderModelInitializer<TestTreeItemWithPath>> CreateGenerator() => new();
+    private static TreeFolderGeneratorForLocationId<TestTreeItemWithPath, DefaultFolderModelInitializer<TestTreeItemWithPath>> CreateGenerator() => new("");
 
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id) => new(id);
     

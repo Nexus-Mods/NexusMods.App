@@ -22,7 +22,16 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     /// <example>
     /// Represents all files at the 'root' of this <see cref="LocationId"/>
     /// </example>
-    private readonly GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> _rootFolder = new();
+    private readonly GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> _rootFolder;
+
+    /// <summary>
+    /// Creates a folder generator for the given LocationId.
+    /// </summary>
+    /// <param name="rootFolderName">Name of the 'root' node for this folder.</param>
+    public TreeFolderGeneratorForLocationId(RelativePath rootFolderName)
+    {
+        _rootFolder = new GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>(rootFolderName);
+    }
     
     /// <summary>
     /// Obtains an observable set of <see cref="CompositeItemModel{TKey}"/> for the specified folder.
@@ -149,6 +158,11 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     /// </summary>
     /// <remarks>The key is the folder name, without any separators.</remarks>
     public SourceCache<GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>, RelativePath> Folders = new(_ => null!);
+
+    /// <summary>
+    /// Path to the folder node.
+    /// </summary>
+    public RelativePath FolderPath { get; set; }
     
     /// <summary>
     /// A source cache containing all files from this folder and all its subfolders recursively.
@@ -167,7 +181,8 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
 #endif
 
     /// <summary/>
-    public GeneratedFolder()
+    /// <param name="relativePath"></param>
+    public GeneratedFolder(RelativePath relativePath)
     {
         // Create observables for the children and hasChildren status.
         var filesCount = Files.CountChanged.Select(count => count > 0);
@@ -257,7 +272,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
             result = optionalChild.Value;
         else // create a new folder if not already exists
         {
-            result = CreateChildFolder();
+            result = CreateChildFolder(folderName);
             // Note(sewer): No direct API without `Edit` that allows for manually specifying key.
             Folders.Edit(updater => updater.AddOrUpdate(result, folderName));
         }
@@ -282,7 +297,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
         }
     }
 
-    private static GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> CreateChildFolder() => new();
+    private static GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> CreateChildFolder(RelativePath relativePath) => new(relativePath);
 
     public void Dispose()
     {

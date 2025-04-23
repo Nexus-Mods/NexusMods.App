@@ -145,7 +145,7 @@ public class FileCountAggregationTests
     // Helper methods
     private static TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer> CreateGenerator()
     {
-        return new TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer>();
+        return new TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer>("");
     }
     
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id)

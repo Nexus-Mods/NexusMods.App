@@ -173,7 +173,7 @@ public class FileSizeAggregationTests
     // Helper methods
     private static TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileSizeFolderModelInitializer> CreateGenerator()
     {
-        return new TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileSizeFolderModelInitializer>();
+        return new TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileSizeFolderModelInitializer>("");
     }
     
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id, long fileSize)
