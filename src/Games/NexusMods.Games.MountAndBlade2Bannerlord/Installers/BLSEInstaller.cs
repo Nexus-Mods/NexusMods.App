@@ -45,13 +45,15 @@ public class BLSEInstaller : ALibraryArchiveInstaller
     public override ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
+        const string launcherFileName = "Bannerlord.BLSE.Launcher.exe";
+        
         var store = loadout.InstallationInstance.Store;
         var installDir = store == GameStore.XboxGamePass ? (RelativePath)"bin/Gaming.Desktop.x64_Shipping_Client" : (RelativePath)"bin/Win64_Shipping_Client";
 
         // Check if we are BLSE, we'll do a simple file check to determine this.
-        var hasBlseLauncher = libraryArchive.Children.Any(x => x.Path.StartsWith(installDir/"Bannerlord.BLSE.Launcher.exe"));
-        if (!hasBlseLauncher) return ValueTask.FromResult((InstallerResult)(new NotSupported()));
-        
+        var hasBlseLauncher = libraryArchive.Children.Any(x => x.Path.StartsWith(installDir / launcherFileName));
+        if (!hasBlseLauncher) return ValueTask.FromResult((InstallerResult)(new NotSupported(Reason: $"Archive doesn't contain a file named `{launcherFileName}`")));
+
         // This is the group which contains the files for BLSE.
         var modGroup = new LoadoutItemGroup.New(transaction, out var modGroupEntityId)
         {

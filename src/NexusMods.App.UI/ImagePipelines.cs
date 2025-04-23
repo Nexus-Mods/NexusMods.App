@@ -1,14 +1,11 @@
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using BitFaster.Caching;
-using BitFaster.Caching.Lru;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Resources;
-using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Abstractions.Resources.Resilience;
@@ -76,13 +73,13 @@ public static class ImagePipelines
                     connection: serviceProvider.GetRequiredService<IConnection>()
                 )
             )
-            .AddKeyedSingleton<IResourceLoader<Uri, Lifetime<Bitmap>>>(
+            .AddKeyedSingleton<IResourceLoader<Uri, Bitmap>>(
                 serviceKey: GuidedInstallerRemoteImagePipelineKey,
                 implementationFactory: static (serviceProvider, _) => CreateGuidedInstallerRemoteImagePipeline(
                     httpClient: serviceProvider.GetRequiredService<HttpClient>()
                 )
             )
-            .AddKeyedSingleton<IResourceLoader<Hash, Lifetime<Bitmap>>>(
+            .AddKeyedSingleton<IResourceLoader<Hash, Bitmap>>(
                 serviceKey: GuidedInstallerFileImagePipelineKey,
                 implementationFactory: static (serviceProvider, _) => CreateGuidedInstallerFileImagePipeline(
                     fileStore: serviceProvider.GetRequiredService<IFileStore>()
@@ -120,14 +117,14 @@ public static class ImagePipelines
         return serviceProvider.GetRequiredKeyedService<IResourceLoader<EntityId, Bitmap>>(serviceKey: ModPageThumbnailPipelineKey);
     }
 
-    public static IResourceLoader<Uri, Lifetime<Bitmap>> GetGuidedInstallerRemoteImagePipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<Uri, Bitmap> GetGuidedInstallerRemoteImagePipeline(IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredKeyedService<IResourceLoader<Uri, Lifetime<Bitmap>>>(serviceKey: GuidedInstallerRemoteImagePipelineKey);
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<Uri, Bitmap>>(serviceKey: GuidedInstallerRemoteImagePipelineKey);
     }
 
-    public static IResourceLoader<Hash, Lifetime<Bitmap>> GetGuidedInstallerFileImagePipeline(IServiceProvider serviceProvider)
+    public static IResourceLoader<Hash, Bitmap> GetGuidedInstallerFileImagePipeline(IServiceProvider serviceProvider)
     {
-        return serviceProvider.GetRequiredKeyedService<IResourceLoader<Hash, Lifetime<Bitmap>>>(serviceKey: GuidedInstallerFileImagePipelineKey);
+        return serviceProvider.GetRequiredKeyedService<IResourceLoader<Hash, Bitmap>>(serviceKey: GuidedInstallerFileImagePipelineKey);
     }
 
     public static IResourceLoader<Uri, IImage> GetMarkdownRendererRemoteImagePipeline(IServiceProvider serviceProvider)
@@ -244,16 +241,20 @@ public static class ImagePipelines
         return pipeline;
     }
 
-    private static IResourceLoader<Uri, Lifetime<Bitmap>> CreateGuidedInstallerRemoteImagePipeline(HttpClient httpClient)
+    private static IResourceLoader<Uri, Bitmap> CreateGuidedInstallerRemoteImagePipeline(HttpClient httpClient)
     {
         var pipeline = new HttpLoader(httpClient)
             .Decode(decoderType: DecoderType.Skia)
-            .ToAvaloniaBitmap()
-            .UseScopedCache(
-                keyGenerator: static uri => uri,
-                keyComparer: EqualityComparer<Uri>.Default,
-                capacityPartition: new FavorWarmPartition(totalCapacity: 10)
-            );
+            .ToAvaloniaBitmap();
+
+        return pipeline;
+    }
+
+    private static IResourceLoader<Hash, Bitmap> CreateGuidedInstallerFileImagePipeline(IFileStore fileStore)
+    {
+        var pipeline = new FileStoreLoader(fileStore)
+            .Decode(decoderType: DecoderType.Skia)
+            .ToAvaloniaBitmap();
 
         return pipeline;
     }
@@ -267,20 +268,6 @@ public static class ImagePipelines
                 .UseFallbackValue(MarkdownFallback)
             )
             .UseFallbackValue(MarkdownFallback);
-
-        return pipeline;
-    }
-
-    private static IResourceLoader<Hash, Lifetime<Bitmap>> CreateGuidedInstallerFileImagePipeline(IFileStore fileStore)
-    {
-        var pipeline = new FileStoreLoader(fileStore)
-            .Decode(decoderType: DecoderType.Skia)
-            .ToAvaloniaBitmap()
-            .UseScopedCache(
-                keyGenerator: static hash => hash,
-                keyComparer: EqualityComparer<Hash>.Default,
-                capacityPartition: new FavorWarmPartition(totalCapacity: 10)
-            );
 
         return pipeline;
     }

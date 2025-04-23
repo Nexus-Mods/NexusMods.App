@@ -41,13 +41,13 @@ public class GenericPatternMatchInstaller : ALibraryArchiveInstaller
     {
         var installDataTuple = (loadoutGroup, transaction, loadout);
         if (InstallFolderTargets.Length == 0)
-            return ValueTask.FromResult<InstallerResult>(new NotSupported());
+            return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Found no targets to match against"));
 
         var tree = libraryArchive.GetTree();
 
         return InstallFolderTargets.Any(target => TryInstallForTarget(target, tree, installDataTuple))
             ? ValueTask.FromResult<InstallerResult>(new Success())
-            : ValueTask.FromResult<InstallerResult>(new NotSupported());
+            : ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: "Found no matching targets"));
     }
 
     private bool TryInstallForTarget(InstallFolderTarget target, KeyedBox<RelativePath, LibraryArchiveTree> tree, InstallDataTuple installDataTuple)

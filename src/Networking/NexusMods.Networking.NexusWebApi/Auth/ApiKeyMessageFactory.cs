@@ -7,43 +7,38 @@ namespace NexusMods.Networking.NexusWebApi.Auth;
 /// <summary>
 /// Injects Nexus API keys into HTTP messages.
 /// </summary>
-public class ApiKeyMessageFactory(IConnection conn) : IAuthenticatingMessageFactory
+public class ApiKeyMessageFactory(IConnection conn) : BaseHttpMessageFactory, IAuthenticatingMessageFactory
 {
     /// <summary>
     /// The name of the environment variable that contains the API key.
     /// </summary>
     public const string NexusApiKeyEnvironmentVariable = "NEXUS_API_KEY";
     
-    private readonly IConnection _conn = conn;
-
     private string? EnvironmentApiKey => Environment.GetEnvironmentVariable(NexusApiKeyEnvironmentVariable);
 
     private string ApiKey
     {
         get
         {
-            var value = NexusMods.Networking.NexusWebApi.Auth.ApiKey.Get(_conn.Db);
-            if (!string.IsNullOrWhiteSpace(value))
-                return value;
+            var value = NexusMods.Networking.NexusWebApi.Auth.ApiKey.Get(conn.Db);
+            if (!string.IsNullOrWhiteSpace(value)) return value;
 
             return EnvironmentApiKey ?? throw new Exception("No API key set");
         }
     }
 
-    // TODO: Remove dependency on external components here.
-
     /// <inheritdoc />
-    public ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
+    public override async ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
     {
-        var msg = new HttpRequestMessage(method, uri);
-        msg.Headers.Add("apikey", ApiKey);
-        return ValueTask.FromResult(msg);
+        var requestMessage = await base.Create(method, uri);
+        requestMessage.Headers.Add("apikey", ApiKey);
+        return requestMessage;
     }
 
     /// <inheritdoc />
-    public ValueTask<bool> IsAuthenticated()
+    public override ValueTask<bool> IsAuthenticated()
     {
-        var dataStoreResult = !string.IsNullOrWhiteSpace(Auth.ApiKey.Get(_conn.Db));
+        var dataStoreResult = !string.IsNullOrWhiteSpace(Auth.ApiKey.Get(conn.Db));
         return ValueTask.FromResult(dataStoreResult || EnvironmentApiKey != null);
     }
 
@@ -53,7 +48,7 @@ public class ApiKeyMessageFactory(IConnection conn) : IAuthenticatingMessageFact
     /// <param name="apiKey">The new API key set.</param>
     public async ValueTask SetApiKey(string apiKey)
     {
-        await Auth.ApiKey.Set(_conn, apiKey);
+        await Auth.ApiKey.Set(conn, apiKey);
     }
 
     /// <inheritdoc/>
@@ -67,11 +62,5 @@ public class ApiKeyMessageFactory(IConnection conn) : IAuthenticatingMessageFact
             UserRole = result.Data.IsPremium ? UserRole.Premium : result.Data.IsSupporter ? UserRole.Supporter : UserRole.Free,
             AvatarUrl = result.Data.ProfileUrl,
         };
-    }
-
-    /// <inheritdoc/>
-    public ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException ex, CancellationToken token)
-    {
-        return new ValueTask<HttpRequestMessage?>();
     }
 }

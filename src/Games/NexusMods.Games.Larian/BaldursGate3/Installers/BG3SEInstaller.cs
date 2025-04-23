@@ -4,6 +4,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Trees.Traits;
@@ -33,16 +34,14 @@ public class BG3SEInstaller : ALibraryArchiveInstaller
     {
         var tree = libraryArchive.GetTree();
         var nodes = tree.FindSubPathsByKeyUpward([BG3SEFileName]);
-        if (nodes.Count == 0)
-            return ValueTask.FromResult<InstallerResult>(new NotSupported());
-        var dllNode = nodes[0];
+        if (!nodes.TryGetFirst(_ => true, out var dllNode)) return ValueTask.FromResult<InstallerResult>(new NotSupported(Reason: $"Found no file named `{BG3SEFileName}`"));
+
         var parent = dllNode.Parent() ?? tree;
 
-        List<LoadoutFile.New> results = [];
         foreach (var fileNode in parent.EnumerateFilesBfs())
         {
             var relativePath = RelativePath.FromUnsanitizedInput("bin").Join(fileNode.Value.Item.Path.DropFirst(parent.Depth()));
-            var loadoutFile = new LoadoutFile.New(transaction, out var id)
+            _ = new LoadoutFile.New(transaction, out var id)
             {
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
                 {
@@ -57,11 +56,8 @@ public class BG3SEInstaller : ALibraryArchiveInstaller
                 Hash = fileNode.Value.Item.LibraryFile.Value.Hash,
                 Size = fileNode.Value.Item.LibraryFile.Value.Size,
             };
-            results.Add(loadoutFile);
         }
 
-        return results.Count > 0
-            ? ValueTask.FromResult<InstallerResult>(new Success())
-            : ValueTask.FromResult<InstallerResult>(new NotSupported());
+        return ValueTask.FromResult<InstallerResult>(new Success());
     }
 }

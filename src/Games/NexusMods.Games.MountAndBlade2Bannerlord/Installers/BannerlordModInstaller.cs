@@ -35,7 +35,7 @@ public sealed class BannerlordModInstaller : ALibraryArchiveInstaller
     public override async ValueTask<InstallerResult> ExecuteAsync(LibraryArchive.ReadOnly libraryArchive, LoadoutItemGroup.New loadoutGroup, ITransaction transaction, Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var moduleInfoFileTuples = await GetModuleInfoFiles(libraryArchive, cancellationToken);
-        if (moduleInfoFileTuples.Count == 0) return new NotSupported(); // TODO: Will it install in root folder the content?
+        if (moduleInfoFileTuples.Count == 0) return new NotSupported(Reason: "Found no module info files in the archive"); // TODO: Will it install in root folder the content?
 
         var launcherManager = _launcherManagerFactory.Get(loadout.Installation);
         var store = loadout.Installation.Store;
