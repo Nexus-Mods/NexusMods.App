@@ -5,6 +5,11 @@ using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Games;
 
+
+/// <summary>
+/// A loadout-specific provider and manager of sortable items.
+/// Interface without generics to be used for the ui.
+/// </summary>
 public interface ILoadoutSortableItemProvider : IDisposable
 {
     /// <summary>
@@ -58,7 +63,8 @@ public interface ILoadoutSortableItemProvider : IDisposable
 }
 
 /// <summary>
-/// A loadout specific provider and manager of sortable items.
+/// A loadout-specific provider and manager of sortable items.
+/// Interface for implementations, with generics to allow for type-safe access to sortable items.
 /// </summary>
 public interface ILoadoutSortableItemProvider<TItem, TKey> : ILoadoutSortableItemProvider
     where TItem : ISortableItem<TItem, TKey>
@@ -72,26 +78,31 @@ public interface ILoadoutSortableItemProvider<TItem, TKey> : ILoadoutSortableIte
 
     /// <inheritdoc/>
     IReadOnlyList<ISortableItem> ILoadoutSortableItemProvider.GetCurrentSorting() => GetCurrentSorting().Cast<ISortableItem>().ToList();
+    
     /// <inheritdoc cref="ILoadoutSortableItemProvider.GetCurrentSorting"/>
     new IReadOnlyList<TItem> GetCurrentSorting();
 
     /// <inheritdoc/>
     Optional<ISortableItem> ILoadoutSortableItemProvider.GetSortableItem(ISortItemKey itemId) => GetSortableItem((TKey)itemId).Convert(x => (ISortableItem)x);
+    
     /// <inheritdoc cref="ILoadoutSortableItemProvider.GetSortableItem"/>
     Optional<TItem> GetSortableItem(TKey itemId);
 
     /// <inheritdoc/>
     Task ILoadoutSortableItemProvider.SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken cancellation) => SetRelativePosition((TItem)sortableItem, delta, cancellation); 
+    
     /// <inheritdoc cref="ILoadoutSortableItemProvider.SetRelativePosition"/>
     Task SetRelativePosition(TItem sortableItem, int delta, CancellationToken token);
 
     /// <inheritdoc/>
     Task ILoadoutSortableItemProvider.MoveItemsTo(ISortableItem[] sourceItems, ISortableItem targetItem, TargetRelativePosition relativePosition, CancellationToken token) => MoveItemsTo(sourceItems.Cast<TItem>().ToArray(), (TItem)targetItem, relativePosition, token);
+    
     /// <inheritdoc cref="ILoadoutSortableItemProvider.MoveItemsTo"/>
     Task MoveItemsTo(TItem[] sourceItems, TItem targetItem, TargetRelativePosition relativePosition, CancellationToken token);
 
     /// <inheritdoc/>
     async Task<IReadOnlyList<ISortableItem>> ILoadoutSortableItemProvider.RefreshSortOrder(CancellationToken token, IDb? loadoutDb) => (await RefreshSortOrder(token, loadoutDb)).Cast<ISortableItem>().ToList();
+    
     /// <inheritdoc cref="ILoadoutSortableItemProvider.RefreshSortOrder"/>
     new Task<IReadOnlyList<TItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null);
 }

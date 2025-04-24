@@ -1,8 +1,18 @@
 
 namespace NexusMods.Abstractions.Games;
 
+/// <summary>
+/// An abstraction for a sortable item that can be moved around in a list relative to its siblings.
+/// All items in the list will have a non-gaming sort index. If a item is moved the other items will
+/// adjust to compensate for the positional change.
+///
+/// Non-generic interface for the UI.
+/// </summary>
 public interface ISortableItem
 {
+    /// <summary>
+    /// Represents a game-specific id for the item, ideally what the game uses to identify the items, often a path
+    /// </summary>
     public ISortItemKey Key { get; }
     
     /// <summary>
@@ -30,20 +40,21 @@ public interface ISortableItem
 }
 
 /// <summary>
-/// An abstraction for a sortable item that can be moved around in a list relative to its siblings.
-/// All items in the list will have a non-gaming sort index. If a item is moved the other items will
-/// adjust to compensate for the positional change.
+/// <inheritdoc cref="ISortableItem"/>
+/// Generic version of the sortable item interface for use in provider implementations.
 /// </summary>
-public interface ISortableItem<TSelf, TKey> : IComparable<TSelf>, ISortableItem
+public interface ISortableItem<in TSelf, out TKey> : IComparable<TSelf>, ISortableItem
     where TSelf : ISortableItem<TSelf, TKey>
     where TKey : IEquatable<TKey>, ISortItemKey
 {
+    /// <inheritdoc />
     ISortItemKey ISortableItem.Key => Key;
 
     /// <summary>
-    /// Represents a game-specific id for the item, ideally what the game uses to identify the items, often a path
+    /// <inheritdoc cref="ISortableItem.Key" />
+    /// Generic version of the key property
     /// </summary>
-    public TKey Key { get; }
+    public new TKey Key { get; }
 
     int IComparable<TSelf>.CompareTo(TSelf? other)
     {

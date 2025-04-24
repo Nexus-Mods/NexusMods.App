@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
@@ -54,7 +55,7 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     {
         return OrderCache.Items
             .OrderBy(item => item.SortIndex)
-            .ToList();
+            .ToImmutableArray();
     }
 
     /// <Inheritdoc />
