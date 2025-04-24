@@ -13,15 +13,14 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderDataProvider : ILoadOrderDataProvider
 {
-    
-    public IObservable<IChangeSet<CompositeItemModel<Guid>, Guid>> ObserveLoadOrder(
+    public IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> ObserveLoadOrder(
         ILoadoutSortableItemProvider sortableItemProvider,
         Observable<ListSortDirection> sortDirectionObservable)
     {
         var lastIndexObservable = sortableItemProvider.SortableItemsChangeSet
-            .QueryWhenChanged(query => query.Count == 0 ? 0 : query.Items.Max(item => item.SortIndex))
+            .QueryWhenChanged(query => GetLastIndex(query.Items.ToList()))
             .ToObservable()
-            .Prepend(sortableItemProvider.SortableItems.Count == 0 ? 0 : sortableItemProvider.SortableItems.Max(item => item.SortIndex));
+            .Prepend(GetLastIndex(sortableItemProvider.GetCurrentSorting()));
 
         var topMostIndexObservable = R3.Observable.CombineLatest(
                 sortDirectionObservable,
@@ -38,18 +37,23 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
             )
             .Replay(1)
             .RefCount();;
-        
+
         return sortableItemProvider.SortableItemsChangeSet
-            .Transform( item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable));
+            .ChangeKey((key, _) => key)
+            .Transform(item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable));
+
+        static int GetLastIndex(IReadOnlyList<ISortableItem> items)
+        {
+            return items.Count == 0 ? 0 : items.Max(item => item.SortIndex);
+        }
     }
 
-
-    private static CompositeItemModel<Guid> ToLoadOrderItemModel(
+    private static CompositeItemModel<ISortItemKey> ToLoadOrderItemModel(
         ISortableItem sortableItem,
         R3.Observable<int> topMostIndexObservable,
         R3.Observable<int> bottomMostIndexObservable)
     {
-        var compositeModel = new CompositeItemModel<Guid>(sortableItem.ItemId);
+        var compositeModel = new CompositeItemModel<ISortItemKey>(sortableItem.Key);
 
         // DisplayName
         compositeModel.Add(LoadOrderColumns.DisplayNameColumn.DisplayNameComponentKey,

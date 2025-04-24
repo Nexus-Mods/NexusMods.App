@@ -182,8 +182,7 @@ public static class Services
             .AddViewModel<CollectionDownloadViewModel, ICollectionDownloadViewModel>()
             
             .AddView<LoadOrderView, ILoadOrderViewModel>()
-            .AddViewModel<LoadOrderViewModel, ILoadOrderViewModel>()
-            
+
             .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
             .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
 

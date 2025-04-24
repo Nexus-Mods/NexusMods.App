@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Paths;
 
 namespace NexusMods.StandardGameLocators;
 
@@ -58,7 +59,7 @@ public class HeroicGogLocator : IGameLocator
                     if (wineData.WinePrefixPath.DirectoryExists())
                     {
                         fs = heroicGOGGame.GetWinePrefix()!.CreateOverlayFileSystem(fs);
-                        linuxCompatibilityDataProvider = new BaseLinuxCompatibilityDataProvider(wineData.WinePrefixPath);
+                        linuxCompatibilityDataProvider = new LinuxCompatibilityDataProvider(wineData.WinePrefixPath, wineData.EnvironmentVariables);
                     }
                 }
 
@@ -75,6 +76,26 @@ public class HeroicGogLocator : IGameLocator
                 BuildId = found.BuildId,
                 LinuxCompatibilityDataProvider = linuxCompatibilityDataProvider,
             });
+        }
+    }
+
+    private class LinuxCompatibilityDataProvider : BaseLinuxCompatibilityDataProvider
+    {
+        private readonly string? _wineDllOverrides;
+
+        public LinuxCompatibilityDataProvider(
+            AbsolutePath winePrefixDirectoryPath,
+            IReadOnlyDictionary<string, string> wineDataEnvironmentVariables) : base(winePrefixDirectoryPath)
+        {
+            wineDataEnvironmentVariables.TryGetValue(WineParser.WineDllOverridesEnvironmentVariableName, out _wineDllOverrides);
+        }
+
+        public override ValueTask<WineDllOverride[]> GetWineDllOverrides(CancellationToken cancellationToken)
+        {
+            if (_wineDllOverrides is null) return base.GetWineDllOverrides(cancellationToken);
+
+            var result = WineParser.ParseEnvironmentVariable(_wineDllOverrides);
+            return ValueTask.FromResult(result.ToArray());
         }
     }
 }
