@@ -99,10 +99,17 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
                 {
                     try
                     {
-                        return await optionImage.Match(
+                        var resource = await optionImage.Match(
                             f0: uri => remoteImagePipeline.LoadResourceAsync(uri, CancellationToken.None),
                             f1: imageHash => fileImagePipeline.LoadResourceAsync(imageHash.FileHash, CancellationToken.None)
                         );
+
+                        var didLoad = resource.Data.Size.Width <= 0 || resource.Data.Size.Height <= 0;
+                        if (!didLoad) return resource;
+
+                        logger.LogWarning("Image didn't load properly");
+                        return null;
+
                     }
                     catch (Exception e)
                     {
@@ -214,10 +221,7 @@ public class GuidedInstallerStepViewModel : AViewModel<IGuidedInstallerStepViewM
         // https://github.com/Nexus-Mods/NexusMods.App/issues/3056
         Dispatcher.UIThread.Invoke(() =>
         {
-            var tmp = HighlightedOptionImage;
             HighlightedOptionImage = null;
-
-            if (tmp is IDisposable disposable) disposable.Dispose();
         });
     }
 

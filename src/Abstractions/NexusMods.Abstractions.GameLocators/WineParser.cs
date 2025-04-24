@@ -10,6 +10,11 @@ namespace NexusMods.Abstractions.GameLocators;
 public static class WineParser
 {
     /// <summary>
+    /// Environment name.
+    /// </summary>
+    public const string WineDllOverridesEnvironmentVariableName = "WINEDLLOVERRIDES";
+
+    /// <summary>
     /// Parses the given `winetricks.log` file and returns all installed packages.
     /// </summary>
     public static IReadOnlySet<string> ParseWinetricksLogFile(AbsolutePath filePath)

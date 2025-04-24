@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Reactive;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Alerts;
@@ -12,8 +13,8 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// <summary>
     /// TreeDataGridAdapter for the Load Order, for setting up the TreeDataGrid
     /// </summary>
-    TreeDataGridAdapter<CompositeItemModel<Guid>, Guid> Adapter { get; }
-    
+    TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; }
+
     /// <summary>
     /// Name of this sort order type
     /// </summary>

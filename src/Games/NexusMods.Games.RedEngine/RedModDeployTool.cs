@@ -4,6 +4,7 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -73,7 +74,7 @@ public class RedModDeployTool : ITool
     {
         var provider = (RedModSortableItemProvider)_sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadout);
         // Note: this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
-        var order = provider.GetRedModOrder(loadout.Db);
+        var order = provider.GetRedModOrder(db: loadout.Db);
 
         await loadorderFilePath.WriteAllLinesAsync(order);
     }

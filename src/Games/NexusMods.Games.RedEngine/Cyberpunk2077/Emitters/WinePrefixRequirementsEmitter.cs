@@ -27,10 +27,10 @@ public class WinePrefixRequirementsEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var dllOverridesInstructions = WineDiagnosticHelper.GetWineDllOverridesUpdateInstructions(loadout.InstallationInstance, RequiredOverrides);
+        var dllOverridesInstructions = await WineDiagnosticHelper.GetWineDllOverridesUpdateInstructions(loadout.InstallationInstance, RequiredOverrides, cancellationToken: cancellationToken);
         if (dllOverridesInstructions is not null) yield return Diagnostics.CreateRequiredWineDllOverrides(dllOverridesInstructions);
 
-        var winetricksInstructions = WineDiagnosticHelper.GetWinetricksInstructions(loadout.InstallationInstance, RequiredWinetricksPackages);
+        var winetricksInstructions = await WineDiagnosticHelper.GetWinetricksInstructions(loadout.InstallationInstance, RequiredWinetricksPackages, cancellationToken: cancellationToken);
         if (winetricksInstructions is not null) yield return Diagnostics.CreateRequiredWinetricksPackages(winetricksInstructions);
     }
 }

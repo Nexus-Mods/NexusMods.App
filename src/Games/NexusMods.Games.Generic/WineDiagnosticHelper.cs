@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Text;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Extensions.BCL;
 
@@ -8,19 +9,15 @@ namespace NexusMods.Games.Generic;
 
 public static class WineDiagnosticHelper
 {
-    public static string? GetWinetricksInstructions(GameInstallation gameInstallation, ImmutableHashSet<string> requiredPackages)
+    public static async ValueTask<string?> GetWinetricksInstructions(GameInstallation gameInstallation, ImmutableHashSet<string> requiredPackages, CancellationToken cancellationToken = default)
     {
-        // TODO: support more than Steam
-        if (gameInstallation.LocatorResultMetadata is not SteamLocatorResultMetadata steamLocatorResultMetadata) return null;
+        var locatorResultMetadata = gameInstallation.LocatorResultMetadata;
+        if (locatorResultMetadata is null) return null;
 
-        var protonPrefixDirectory = steamLocatorResultMetadata.ProtonPrefixDirectory;
-        if (protonPrefixDirectory is null) return null;
+        var linuxCompatibilityDataProvider = locatorResultMetadata.LinuxCompatibilityDataProvider;
+        if (linuxCompatibilityDataProvider is null) return null;
 
-        var winePrefixDirectory = protonPrefixDirectory.Value.Combine("pfx");
-
-        // https://github.com/Winetricks/winetricks/blob/e73c4d8f71801fe842c0276b603d9c8024d6d957/src/winetricks#L4216-L4225
-        var winetricksFilePath = winePrefixDirectory.Combine("winetricks.log");
-        var installedPackages = WineParser.ParseWinetricksLogFile(winetricksFilePath);
+        var installedPackages = await linuxCompatibilityDataProvider.GetInstalledWinetricksComponents(cancellationToken: cancellationToken);
 
         var missingPackages = requiredPackages.Except(installedPackages);
         if (missingPackages.Count == 0) return null;
@@ -29,24 +26,35 @@ public static class WineDiagnosticHelper
 
         var missingPackagesString = missingPackages.Select(x => $"- `{x}`").Aggregate((a, b) => $"{a}\n{b}");
 
-        sb.AppendLine($"""
+        if (locatorResultMetadata is SteamLocatorResultMetadata)
+        {
+            sb.AppendLine($"""
 Use [protontricks](https://github.com/Matoking/protontricks) to install the following missing required packages:
 
 {missingPackagesString}
 """);
+        }
+        else
+        {
+            sb.AppendLine($"""
+Use [winetricks](https://github.com/Winetricks/winetricks) to install the following missing required packages:
+
+{missingPackagesString}
+""");
+        }
 
         return sb.ToString();
     }
 
-    public static string? GetWineDllOverridesUpdateInstructions(GameInstallation gameInstallation, WineDllOverride[] requiredOverrides)
+    public static async ValueTask<string?> GetWineDllOverridesUpdateInstructions(GameInstallation gameInstallation, WineDllOverride[] requiredOverrides, CancellationToken cancellationToken = default)
     {
-        // TODO: support more than Steam
-        if (gameInstallation.LocatorResultMetadata is not SteamLocatorResultMetadata steamLocatorResultMetadata) return null;
+        var locatorResultMetadata = gameInstallation.LocatorResultMetadata;
+        if (locatorResultMetadata is null) return null;
 
-        var launchOptions = steamLocatorResultMetadata.GetLaunchOptions?.Invoke();
-        if (launchOptions is null) return null;
+        var linuxCompatibilityDataProvider = locatorResultMetadata.LinuxCompatibilityDataProvider;
+        if (linuxCompatibilityDataProvider is null) return null;
 
-        var existingOverrides = WineParser.ParseEnvironmentVariable(launchOptions);
+        var existingOverrides = await linuxCompatibilityDataProvider.GetWineDllOverrides(cancellationToken: cancellationToken);
 
         var overridesToAdd = new List<WineDllOverride>();
         var overridesToUpdate = new List<(WineDllOverride From, WineDllOverride To)>();
@@ -69,7 +77,9 @@ Use [protontricks](https://github.com/Matoking/protontricks) to install the foll
         var sb = new StringBuilder();
 
         var dllOverridesString = requiredOverrides.Select(x => x.ToString()).Aggregate((a, b) => $"{a};{b}");
-        sb.AppendLine($"""
+        if (locatorResultMetadata is SteamLocatorResultMetadata)
+        {
+            sb.AppendLine($"""
 - Open Steam
 - Right-click the game
 - Click on "Properties..."
@@ -80,6 +90,30 @@ Use [protontricks](https://github.com/Matoking/protontricks) to install the foll
 WINEDLLOVERRIDES="{dllOverridesString}" %command%
 ```                  
 """);
+        } else if (locatorResultMetadata is HeroicGOGLocatorResultMetadata)
+        {
+            sb.AppendLine($"""
+- Open Heroic
+- Right-click the game
+- Click on "Settings"
+- Go to the "Advanced" tab
+- Update the environment variables:
+
+```
+WINEDLLOVERRIDES="{dllOverridesString}"
+```
+""");
+        }
+        else
+        {
+            sb.AppendLine($"""
+Update the `WINEDLLOVERRIDES` environment variable to be the following:
+
+```
+{dllOverridesString}
+```
+""");
+        }
         
         return sb.ToString();
     }

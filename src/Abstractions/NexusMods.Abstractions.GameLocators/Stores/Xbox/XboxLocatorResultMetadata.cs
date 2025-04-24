@@ -13,6 +13,9 @@ public record XboxLocatorResultMetadata : IGameLocatorResultMetadata
     /// </summary>
     public required string Id { get; init; }
 
+    /// <inheritdoc/>
+    public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
+
     /// <inheritdoc />
     public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(Id)];
 }
