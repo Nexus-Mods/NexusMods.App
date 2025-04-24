@@ -68,7 +68,25 @@
             
             <!-- Thumbnail -->
             <Border x:Name="ItemModImageBorder">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
+                <controls:ComponentControl x:TypeArguments="games:ISortItemKey" Content="{CompiledBinding}">
+                    <controls:ComponentControl.ComponentTemplate>
+                        <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
+                                                    ComponentKey="{x:Static local:LoadOrderColumns+DisplayNameColumn.ImageComponentKey}">
+                            <controls:ComponentTemplate.DataTemplate>
+                                <DataTemplate DataType="{x:Type controls:ImageComponent}">
+                                    <Panel>
+                                        <Image Source="{CompiledBinding Value.Value}" />
+                                    </Panel>
+                                </DataTemplate>
+                            </controls:ComponentTemplate.DataTemplate>
+
+                        </controls:ComponentTemplate>
+                    </controls:ComponentControl.ComponentTemplate>
+
+                    <controls:ComponentControl.Fallback>
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
+                    </controls:ComponentControl.Fallback>
+                </controls:ComponentControl>
             </Border>
             
             <!-- DisplayName -->
