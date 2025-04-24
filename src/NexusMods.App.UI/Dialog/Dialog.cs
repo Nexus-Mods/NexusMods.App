@@ -3,9 +3,9 @@ using NexusMods.App.UI.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 
-public class Dialog<TView, TViewModel, TReturn> : IDialog<TReturn>
-    where TView : UserControl, IDialogView<TReturn>
-    where TViewModel : IDialogViewModel<TReturn>
+public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
+    where TView : UserControl, IDialogView<TResult>
+    where TViewModel : IDialogViewModel<TResult>
 {
     private TView _view;
     private TViewModel _viewModel;
@@ -16,7 +16,7 @@ public class Dialog<TView, TViewModel, TReturn> : IDialog<TReturn>
         _viewModel = viewModel;
     }
     
-    public Task<TReturn> ShowWindow(Window? owner = null, bool isModal = false)
+    public Task<TResult> ShowWindow(Window? owner = null, bool isModal = false)
     {
         _viewModel.SetView(_view);
 
@@ -31,7 +31,7 @@ public class Dialog<TView, TViewModel, TReturn> : IDialog<TReturn>
         };
 
         window.Closed += _view.CloseWindow;
-        var tcs = new TaskCompletionSource<TReturn>();
+        var tcs = new TaskCompletionSource<TResult>();
         
         _view.SetCloseAction(() =>
         {

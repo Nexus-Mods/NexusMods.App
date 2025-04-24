@@ -1,6 +1,6 @@
 namespace NexusMods.App.UI.Dialog;
 
-public interface IMessageBoxView<TReturn> : IDialogView<TReturn>
+public interface IMessageBoxView<TResult> : IDialogView<TResult>
 {
 
 }

@@ -3,7 +3,7 @@ using NexusMods.App.UI.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 
-public interface IDialog<TReturn>
+public interface IDialog<TResult>
 {
-    public Task<TReturn> ShowWindow(Window? owner = null, bool isModal = false);
+    public Task<TResult> ShowWindow(Window? owner = null, bool isModal = false);
 }

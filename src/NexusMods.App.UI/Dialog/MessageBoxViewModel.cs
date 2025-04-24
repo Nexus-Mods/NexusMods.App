@@ -19,7 +19,7 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
     public ViewModelActivator Activator { get; } = null!;
     
     public IDialogView<ButtonDefinitionId>? View { get; set; }
-    public ButtonDefinitionId Return { get; set; }
+    public ButtonDefinitionId Result { get; set; } 
     public ReactiveCommand<ButtonDefinitionId, Unit> ButtonClickCommand { get; }
 
     public MessageBoxViewModel(

@@ -11,7 +11,7 @@ public class DialogContainerViewModel : IDialogViewModel<ButtonDefinitionId>
 
     public IDialogView<ButtonDefinitionId>? View { get; set; }
     
-    public ButtonDefinitionId Return { get; set; }
+    public ButtonDefinitionId Result { get; set; }
     
     public void SetView(IDialogView<ButtonDefinitionId> view)
     {

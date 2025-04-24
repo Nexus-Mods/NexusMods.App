@@ -41,7 +41,7 @@ public static class DialogFactory
         var customViewModel = new CustomContentViewModel(text);
 
         // create dialog container viewmodel
-        var containerViewModel = new DialogContainerViewModel(customViewModel, "Custom Content", 650, false);
+        var containerViewModel = new DialogContainerViewModel(customViewModel, "Custom Content", 650, true);
         
         var view = new DialogContainerView()
         {

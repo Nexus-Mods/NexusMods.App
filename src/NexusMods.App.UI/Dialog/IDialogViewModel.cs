@@ -3,11 +3,11 @@ using NexusMods.App.UI.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 
-public interface IDialogViewModel<TReturn> : IViewModelInterface
+public interface IDialogViewModel<TResult> : IViewModelInterface
 {
     public IDialogView<ButtonDefinitionId>? View { get; set; }
-    public TReturn? Return { get; set; }
-    void SetView(IDialogView<TReturn> view);
+    public TResult? Result { get; set; }
+    void SetView(IDialogView<TResult> view);
     public string WindowTitle { get; }
     public double WindowMaxWidth { get; }
     public bool ShowWindowTitlebar { get; }
