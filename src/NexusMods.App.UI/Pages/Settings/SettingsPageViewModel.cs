@@ -8,7 +8,6 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
-using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -19,7 +18,7 @@ using ReactiveUI.Fody.Helpers;
 namespace NexusMods.App.UI.Pages.Settings;
 
 [UsedImplicitly]
-public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISettingsPageViewModel, IDialogContentViewModel
+public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISettingsPageViewModel
 {
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
