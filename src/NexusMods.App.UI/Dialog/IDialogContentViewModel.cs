@@ -4,9 +4,9 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public interface IDialogContentViewModel: IViewModelInterface
+public interface IDialogContentViewModel : IViewModelInterface
 {
     void CloseWindow(string id);
-    void SetCloseable(IDialogViewModel<ButtonDefinitionId> dialogViewModel);
+    void SetParent(IDialogViewModel<ButtonDefinitionId> dialogViewModel);
     ReactiveCommand<string, Unit> CloseWindowCommand { get; }
 }

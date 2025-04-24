@@ -32,7 +32,7 @@ public class DialogContainerViewModel : IDialogViewModel<ButtonDefinitionId>
         WindowMaxWidth = windowMaxWidth;
         ShowWindowTitlebar = showWindowTitlebar;
 
-        ContentViewModel.SetCloseable(this);
+        ContentViewModel.SetParent(this);
     }
     
     public async void CloseWindow(ButtonDefinitionId id)

@@ -44,7 +44,7 @@ public class CustomContentViewModel : AViewModel<IDialogContentViewModel>, IDial
     private IDialogViewModel<ButtonDefinitionId>? _parent;
 
 
-    public void SetCloseable(IDialogViewModel<ButtonDefinitionId> dialogViewModel)
+    public void SetParent(IDialogViewModel<ButtonDefinitionId> dialogViewModel)
     {
         _parent = dialogViewModel;
     }

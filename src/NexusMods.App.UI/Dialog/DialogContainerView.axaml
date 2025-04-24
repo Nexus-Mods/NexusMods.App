@@ -6,7 +6,7 @@
              xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
              xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
              xmlns:reactiveUi="http://reactiveui.net"
-             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
              x:Class="NexusMods.App.UI.Dialog.DialogContainerView"
              x:DataType="vm:DialogContainerViewModel"
              d:DataContext="{x:Static vm:DesignDataContexts.DialogContainerDesignViewModel}">

@@ -12,26 +12,27 @@ public partial class CustomContentView : ReactiveUserControl<IDialogContentViewM
     public CustomContentView()
     {
         InitializeComponent();
-        
-        // Set the ViewModel for the ViewModelViewHost in the code-behind
+
         this.WhenActivated(disposables =>
-        {
-            this.OneWayBind(ViewModel, 
-                    vm => vm.CloseWindowCommand,
-                    view => view.CloseButton.Command)
-                .DisposeWith(disposables);
-            
-            this.OneWayBind(ViewModel, 
-                    vm => vm.CloseWindowCommand,
-                    view => view.UpgradeToPremium.Command)
-                .DisposeWith(disposables);
-            
-            this.OneWayBind(ViewModel, 
-                    vm => vm.CloseWindowCommand,
-                    view => view.DoNothing.Command)
-                .DisposeWith(disposables);
-            
-        });
+            {
+                this.OneWayBind(ViewModel,
+                        vm => vm.CloseWindowCommand,
+                        view => view.CloseButton.Command
+                    )
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.CloseWindowCommand,
+                        view => view.UpgradeToPremium.Command
+                    )
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.CloseWindowCommand,
+                        view => view.DoNothing.Command
+                    )
+                    .DisposeWith(disposables);
+            }
+        );
     }
 }
-

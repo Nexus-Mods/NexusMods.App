@@ -90,6 +90,15 @@
             <Grid RowDefinitions="*,Auto" IsVisible="True" Margin="16,0,16,16">
 
                 <StackPanel Grid.Row="0" Spacing="8" Margin="0,16">
+                    <icons:UnifiedIcon Name="ContentIcon" 
+                        Value="{x:Static icons:IconValues.PictogramBox2}"
+                        HorizontalAlignment="Left"
+                        Size="48"/>
+                    <TextBlock Name="ContentHeader"
+                               Text="Header"
+                               Foreground="{StaticResource NeutralStrongBrush}"
+                               Theme="{StaticResource BodyMDSemiTheme}"
+                               TextWrapping="Wrap"/>
                     <TextBlock Name="ContentTextBlock"
                                Text="{Binding ContentMessage}"
                                Foreground="{StaticResource NeutralSubduedBrush}"
