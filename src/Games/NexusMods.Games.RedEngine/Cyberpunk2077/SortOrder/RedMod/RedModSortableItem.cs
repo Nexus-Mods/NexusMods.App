@@ -1,4 +1,6 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
@@ -24,5 +26,6 @@ public class RedModSortableItem : ISortableItem<RedModSortableItem, SortItemKey<
     public int SortIndex { get; set; }
     public string DisplayName { get; }
     public string ModName { get; set; }
+    public Optional<LoadoutItemGroupId> ModGroupId { get; set; }
     public bool IsActive { get; set; }
 }

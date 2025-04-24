@@ -1,4 +1,7 @@
 
+using DynamicData.Kernel;
+using NexusMods.Abstractions.Loadouts;
+
 namespace NexusMods.Abstractions.Games;
 
 /// <summary>
@@ -29,6 +32,12 @@ public interface ISortableItem
     /// The name of the winning mod containing the item
     /// </summary>
     public string ModName { get; set; }
+    
+    /// <summary>
+    /// The optional loadout group id of the mod containing the item.
+    /// Optional since some items my not be part of a loadout group.
+    /// </summary>
+    public Optional<LoadoutItemGroupId> ModGroupId { get; set; }
     
     /// <summary>
     /// Represents whether the item is active in the sort order or not
