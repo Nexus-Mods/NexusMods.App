@@ -5,9 +5,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
@@ -45,12 +45,13 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 
     public TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; }
 
-    public LoadOrderViewModel(LoadoutId loadoutId, 
-        ISortableItemProviderFactory itemProviderFactory, 
+    [UsedImplicitly]
+    public LoadOrderViewModel(
         IServiceProvider serviceProvider,
-        IOSInterop osInterop)
+        ISortableItemProviderFactory itemProviderFactory,
+        ILoadoutSortableItemProvider provider)
     {
-        var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
+        var osInterop = serviceProvider.GetRequiredService<IOSInterop>();
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
         SortOrderName = itemProviderFactory.SortOrderUiMetadata.SortOrderName;
@@ -155,7 +156,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
                                 .Select(optionalItem => optionalItem.Value)
                                 .ToArray();
                             if (sourceItems.Length == 0) return;
-                            
+
                             // Determine target item
                             var targetItem = provider.GetSortableItem(targetModel.Key);
                             if (!targetItem.HasValue) return;
@@ -192,7 +193,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
             }
         );
     }
-    
+
     private static bool PointerIsInVerticalTopHalf(TreeDataGridRowDragEventArgs eventArgs)
     {
         var positionY = eventArgs.Inner.GetPosition(eventArgs.TargetRow).Y / eventArgs.TargetRow.Bounds.Height;
@@ -201,8 +202,8 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
 }
 
 public readonly record struct MoveUpCommandPayload(CompositeItemModel<ISortItemKey> Item);
-public readonly record struct MoveDownCommandPayload(CompositeItemModel<ISortItemKey> Item);
 
+public readonly record struct MoveDownCommandPayload(CompositeItemModel<ISortItemKey> Item);
 
 public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey>,
     ITreeDataGirdMessageAdapter<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>>
@@ -214,7 +215,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     private readonly CompositeDisposable _disposables = new();
 
     public Subject<OneOf<MoveUpCommandPayload, MoveDownCommandPayload>> MessageSubject { get; } = new();
-    
+
     public LoadOrderTreeDataGridAdapter(
         ILoadoutSortableItemProvider sortableItemsProvider,
         IObservable<ListSortDirection> sortDirectionObservable,
@@ -297,7 +298,6 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
                 )
         );
     }
-    
 
     protected override IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> GetRootsObservable(bool viewHierarchical)
     {

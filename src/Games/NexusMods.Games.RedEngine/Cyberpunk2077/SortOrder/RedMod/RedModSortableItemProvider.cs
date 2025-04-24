@@ -17,7 +17,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 using RedModWithState = (RedModLoadoutGroup.ReadOnly RedMod, RelativePath RedModFolder, bool IsEnabled);
 
-public class RedModSortableItemProvider : ASortableItemProvider
+public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableItem, SortItemKey<string>>
 {
     private readonly IConnection _connection;
     private bool _isDisposed;
@@ -116,7 +116,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
             .ToList();
     }
 
-    public override async Task<IReadOnlyList<ISortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)
+    public override async Task<IReadOnlyList<RedModSortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)
     {
         await Semaphore.WaitAsync(token);
         try
@@ -169,10 +169,10 @@ public class RedModSortableItemProvider : ASortableItemProvider
     /// <returns>The new sorting</returns>
     private static IReadOnlyList<RedModSortableItem> SynchronizeSortingToItems(
         IReadOnlyList<RedModWithState> availableRedMods,
-        IReadOnlyList<ISortableItem> currentOrder,
+        IReadOnlyList<RedModSortableItem> currentOrder,
         RedModSortableItemProvider provider)
     {
-        var redModCurrentOrder =  currentOrder.OfType<RedModSortableItem>().ToList();
+        var redModCurrentOrder =  currentOrder.ToList();
         var redModsToAdd = new List<RedModWithState>();
         var sortableItemsToRemove = new List<RedModSortableItem>();
 
@@ -244,9 +244,9 @@ public class RedModSortableItemProvider : ASortableItemProvider
     }
 
     /// <inheritdoc />
-    protected override async Task PersistSortOrder(IReadOnlyList<ISortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
+    protected override async Task PersistSortOrder(IReadOnlyList<RedModSortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
-        var redModOrderList = orderList.OfType<RedModSortableItem>().ToList();
+        var redModOrderList = orderList.ToList();
         
         var persistentSortableItems = _connection.Db.RetrieveRedModSortOrder(sortOrderEntityId);
 
@@ -308,7 +308,7 @@ public class RedModSortableItemProvider : ASortableItemProvider
     /// The items in the returned list can have temporary values for properties such as `ModName` and `IsActive`.
     /// Those will need to be updated after the sortableItems are matched to items in the loadout. 
     /// </remarks>
-    private IReadOnlyList<ISortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
+    private IReadOnlyList<RedModSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
 

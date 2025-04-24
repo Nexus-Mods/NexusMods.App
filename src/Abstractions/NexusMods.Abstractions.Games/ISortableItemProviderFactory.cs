@@ -12,7 +12,7 @@ public interface ISortableItemProviderFactory : IDisposable
     /// Returns a provider of sortable items for a specific loadout
     /// </summary>
     ILoadoutSortableItemProvider GetLoadoutSortableItemProvider(LoadoutId loadoutId);
-    
+
     /// <summary>
     /// Returns id of the type of the loadout
     /// </summary>

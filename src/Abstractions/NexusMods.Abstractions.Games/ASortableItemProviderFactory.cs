@@ -9,10 +9,17 @@ using R3;
 namespace NexusMods.Abstractions.Games;
 
 /// <inheritdoc />
-public abstract class ASortableItemProviderFactory : ISortableItemProviderFactory
+public abstract class ASortableItemProviderFactory<TItem, TKey> : ISortableItemProviderFactory
+    where TItem : ISortableItem<TItem, TKey>
+    where TKey : IEquatable<TKey>, ISortItemKey
 {
+    /// <inheritdoc />
+    public Type ItemType => typeof(TItem);
+    /// <inheritdoc />
+    public Type KeyType => typeof(TKey);
+
     private readonly IConnection _connection;
-    private readonly Dictionary<LoadoutId, ILoadoutSortableItemProvider> _providers = new();
+    private readonly Dictionary<LoadoutId, ILoadoutSortableItemProvider<TItem, TKey>> _providers = new();
     
     /// <inheritdoc />
     public abstract Guid SortOrderTypeId { get; }
@@ -42,8 +49,7 @@ public abstract class ASortableItemProviderFactory : ISortableItemProviderFactor
     /// <inheritdoc />
     public virtual IndexOverrideBehavior IndexOverrideBehavior => IndexOverrideBehavior.GreaterIndexWins;
 
-    
-    public abstract Task<ILoadoutSortableItemProvider> CreateProviderAsync(IConnection connection, LoadoutId currentLoadoutId);
+    protected abstract Task<ILoadoutSortableItemProvider<TItem, TKey>> CreateProviderAsync(IConnection connection, LoadoutId currentLoadoutId);
 
     /// <summary>
     /// Constructor
@@ -96,7 +102,7 @@ public abstract class ASortableItemProviderFactory : ISortableItemProviderFactor
                 }
             });
     }
-    
+
     /// <inheritdoc />
     public virtual ILoadoutSortableItemProvider GetLoadoutSortableItemProvider(LoadoutId loadoutId)
     {
@@ -104,10 +110,10 @@ public abstract class ASortableItemProviderFactory : ISortableItemProviderFactor
         {
             return provider;
         }
-        
+
         throw new InvalidOperationException($"No provider exists to handle {loadoutId}");
     }
-    
+
     private bool _isDisposed;
     
     /// <inheritdoc />

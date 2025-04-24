@@ -8,8 +8,8 @@ public interface ISortItemKey : IEquatable<ISortItemKey> { }
 /// <summary>
 /// Convenience container for a sortable item key
 /// </summary>
-public class SortItemKey<TKey> : ISortItemKey
-    where TKey : notnull, IEquatable<TKey>
+public class SortItemKey<TKey> : ISortItemKey, IEquatable<SortItemKey<TKey>>
+    where TKey : IEquatable<TKey>
 {
     /// <summary>
     /// Constructor
@@ -34,6 +34,12 @@ public class SortItemKey<TKey> : ISortItemKey
         }
 
         return false;
+    }
+
+    public bool Equals(SortItemKey<TKey>? other)
+    {
+        if (other is null) return false;
+        return other.Key.Equals(Key);
     }
 
     /// <inheritdoc cref="GetHashCode" />

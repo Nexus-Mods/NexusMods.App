@@ -14,7 +14,7 @@ public interface ILoadOrderViewModel : IViewModelInterface
     /// TreeDataGridAdapter for the Load Order, for setting up the TreeDataGrid
     /// </summary>
     TreeDataGridAdapter<CompositeItemModel<ISortItemKey>, ISortItemKey> Adapter { get; }
-    
+
     /// <summary>
     /// Name of this sort order type
     /// </summary>
