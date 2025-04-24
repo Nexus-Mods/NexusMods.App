@@ -55,7 +55,7 @@ public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonDefinit
             {
                 Name = $"{buttonDefinition.Id}Button",
                 Text = buttonDefinition.Text,
-                Command = viewModel.ButtonClickCommand,
+                Command = viewModel.CloseWindowCommand,
                 CommandParameter = buttonDefinition.Id,
                 IsDefault = buttonDefinition.ButtonRole.HasFlag(ButtonRole.AcceptRole),
                 IsCancel = buttonDefinition.ButtonRole.HasFlag(ButtonRole.RejectRole),

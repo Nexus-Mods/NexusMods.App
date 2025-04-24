@@ -41,10 +41,12 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
 
         if (isModal && owner != null)
         {
+            window.ShowInTaskbar = false;
             window.ShowDialog(owner);
         }
         else
         {
+            window.ShowInTaskbar = true;
             window.Show();
         }
 

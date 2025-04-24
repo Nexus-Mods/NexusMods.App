@@ -196,14 +196,49 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         try
         {
             if (ViewModel is null) return;
-
-            // create dialog
-            var dialog = DialogFactory.CreateCustomDialog("This is lovely text");
+            
+            // create custom content viewmodel
+            var customViewModel = new CustomContentViewModel("This is lovely text");
+            
+            // create wrapper dialog around the custom content 
+            var dialog = DialogFactory.CreateCustomDialog(customViewModel);
 
             // tell windowmanager to show it
+            // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
             var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+            
+            // check viewmodel properties when dialog has been closed
+            Console.WriteLine($@"result: {result}");
+            Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
+            Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
+            Console.WriteLine($@"MySelectedItem: {customViewModel.MySelectedItem}");
+        }
+        catch
+        {
+            throw; // TODO handle exception
+        }
+    }
 
-            Console.WriteLine($@"Result: {result}");
+    private async void ShowModelessCustom_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel is null) return;
+            
+            // create custom content viewmodel
+            var customViewModel = new CustomContentViewModel("This is lovely text");
+            
+            // create wrapper dialog around the custom content 
+            var dialog = DialogFactory.CreateCustomDialog(customViewModel);
+
+            // tell windowmanager to show it
+            // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
+            
+            // check viewmodel properties when dialog has been closed
+            Console.WriteLine($@"result: {result}");
+            Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
+            Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
         }
         catch
         {

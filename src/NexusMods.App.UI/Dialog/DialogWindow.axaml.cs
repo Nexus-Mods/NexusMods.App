@@ -11,7 +11,7 @@ public partial class DialogWindow : Window
     public DialogWindow()
     {
         CanResize = false;
-        ShowInTaskbar = false;
+        // ShowInTaskbar = false;
         SizeToContent = SizeToContent.WidthAndHeight;
         WindowStartupLocation = WindowStartupLocation.CenterOwner;
         //SystemDecorations = SystemDecorations.Full;

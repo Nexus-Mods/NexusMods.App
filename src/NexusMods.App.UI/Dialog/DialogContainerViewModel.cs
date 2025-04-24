@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using System.Reactive;
+using Avalonia.Threading;
 using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
 
@@ -8,11 +10,10 @@ public class DialogContainerViewModel : IDialogViewModel<ButtonDefinitionId>
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     public ViewModelActivator Activator { get; } = null!;
-
     public IDialogView<ButtonDefinitionId>? View { get; set; }
-    
+
     public ButtonDefinitionId Result { get; set; }
-    
+
     public void SetView(IDialogView<ButtonDefinitionId> view)
     {
         View = view;
@@ -30,5 +31,20 @@ public class DialogContainerViewModel : IDialogViewModel<ButtonDefinitionId>
         WindowTitle = windowTitle;
         WindowMaxWidth = windowMaxWidth;
         ShowWindowTitlebar = showWindowTitlebar;
+
+        ContentViewModel.SetCloseable(this);
     }
+    
+    public async void CloseWindow(ButtonDefinitionId id)
+    {
+        await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (View is null) return;
+                
+                View.SetButtonResult(id);
+                View.Close();
+            }
+        );
+    }
+
 }

@@ -17,10 +17,10 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
     public MessageBoxSize MessageBoxSize { get; }
     public event PropertyChangedEventHandler? PropertyChanged;
     public ViewModelActivator Activator { get; } = null!;
-    
+
+    public ReactiveCommand<ButtonDefinitionId, Unit> CloseWindowCommand { get; }
     public IDialogView<ButtonDefinitionId>? View { get; set; }
     public ButtonDefinitionId Result { get; set; } 
-    public ReactiveCommand<ButtonDefinitionId, Unit> ButtonClickCommand { get; }
 
     public MessageBoxViewModel(
         string title, 
@@ -40,7 +40,7 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
             _ => 320
         };
         
-        ButtonClickCommand = ReactiveCommand.Create<ButtonDefinitionId>(ButtonClick);
+        CloseWindowCommand = ReactiveCommand.Create<ButtonDefinitionId>(CloseWindow);
     }
 
     public void SetView(IDialogView<ButtonDefinitionId> view)
@@ -48,17 +48,15 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
         View = view;
     }
 
-    private async void ButtonClick(ButtonDefinitionId id)
+    public async void CloseWindow(ButtonDefinitionId id)
     {
         await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (View is null) return;
                 
-                //_view.SetButtonResult(Enum.Parse<ButtonResult>(s.Trim(), true));
                 View.SetButtonResult(id);
                 View.Close();
             }
         );
     }
-
 }

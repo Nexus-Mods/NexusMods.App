@@ -50,15 +50,7 @@ public partial class DialogContainerView : ReactiveUserControl<DialogContainerVi
                 .DisposeWith(disposables);
         });
     }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        // need this here so DataContext is set
-    }
-
-
+    
     public void CloseWindow(object? sender, EventArgs eventArgs)
     {
         this.Close();
@@ -83,4 +75,6 @@ public partial class DialogContainerView : ReactiveUserControl<DialogContainerVi
     {
         _closeAction?.Invoke();
     }
+
+    
 }
