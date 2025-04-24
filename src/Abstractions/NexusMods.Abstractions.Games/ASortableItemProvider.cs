@@ -14,6 +14,11 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     private bool _isDisposed;
     
     /// <summary>
+    /// Time to wait for the semaphore before timing out
+    /// </summary>
+    protected readonly TimeSpan SemaphoreTimeout = TimeSpan.FromMinutes(1);
+    
+    /// <summary>
     /// Async semaphore for serializing changes to the sort order
     /// </summary>
     protected readonly SemaphoreSlim Semaphore = new(1, 1);
@@ -67,7 +72,9 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     /// <Inheritdoc />
     public virtual async Task SetRelativePosition(TItem sortableItem, int delta, CancellationToken token)
     {
-        await Semaphore.WaitAsync(token);
+        var hasEntered = await Semaphore.WaitAsync(SemaphoreTimeout, token);
+        if (!hasEntered) throw new TimeoutException($"Timed out waiting for semaphore in SetRelativePosition");
+        
         try
         {
             // Get a stagingList of the items in the order
@@ -119,7 +126,9 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
         TargetRelativePosition relativePosition,
         CancellationToken token)
     {
-        await Semaphore.WaitAsync(token);
+        var hasEntered = await Semaphore.WaitAsync(SemaphoreTimeout, token);
+        if (!hasEntered) throw new TimeoutException($"Timed out waiting for semaphore in MoveItemsTo");
+        
         try
         {
             // Sort the source items to move by their sort index

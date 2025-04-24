@@ -118,7 +118,9 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
 
     public override async Task<IReadOnlyList<RedModSortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)
     {
-        await Semaphore.WaitAsync(token);
+        var hasEntered = await Semaphore.WaitAsync(SemaphoreTimeout, token);
+        if (!hasEntered) throw new TimeoutException($"Timed out waiting for semaphore in RefreshSortOrder");
+        
         try
         {
             var dbToUse = loadoutDb ?? _connection.Db;
