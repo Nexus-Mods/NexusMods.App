@@ -191,6 +191,15 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
     protected abstract Task PersistSortOrder(IReadOnlyList<TItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
+    
+    /// <summary>
+    /// Retrieves the sortable entries for the sortOrderId, and returns them as a list of sortable items.
+    /// </summary>
+    /// <remarks>
+    /// The items in the returned list can have temporary values for properties such as `ModName` and `IsActive`.
+    /// Those will need to be updated after the sortableItems are matched to items in the loadout. 
+    /// </remarks>
+    protected abstract IReadOnlyList<TItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null);
 
     /// <summary>
     /// Obtains the SortOrder model for this provider if it exists, or creates a new one if it doesn't.
