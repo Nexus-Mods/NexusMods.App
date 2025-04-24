@@ -6,7 +6,9 @@ using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.Abstractions.Games;
 
 /// <inheritdoc />
-public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
+public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemProvider<TItem, TKey>
+    where TItem : ISortableItem<TItem, TKey>
+    where TKey : IEquatable<TKey>, ISortItemKey
 {
     private bool _isDisposed;
     
@@ -18,7 +20,7 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     /// <summary>
     /// Source cache of the sortable items used to expose the latest sort order
     /// </summary>
-    protected readonly SourceCache<ISortableItem, ISortItemKey> OrderCache = new(item => item.Key);
+    protected readonly SourceCache<TItem, TKey> OrderCache = new(item => item.Key);
 
     /// <summary>
     /// EntityId for the main SortOrder database entity that this provider is associated with.
@@ -45,10 +47,10 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     public LoadoutId LoadoutId { get; }
 
     /// <inheritdoc />
-    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
+    public IObservable<IChangeSet<TItem, TKey>> SortableItemsChangeSet { get; }
 
     /// <inheritdoc />
-    public IReadOnlyList<ISortableItem> GetCurrentSorting()
+    public IReadOnlyList<TItem> GetCurrentSorting()
     {
         return OrderCache.Items
             .OrderBy(item => item.SortIndex)
@@ -56,13 +58,13 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     }
 
     /// <Inheritdoc />
-    public Optional<ISortableItem> GetSortableItem(ISortItemKey itemId)
+    public Optional<TItem> GetSortableItem(TKey itemId)
     {
         return OrderCache.Lookup(itemId);
     }
 
     /// <Inheritdoc />
-    public virtual async Task SetRelativePosition(ISortableItem sortableItem, int delta, CancellationToken token)
+    public virtual async Task SetRelativePosition(TItem sortableItem, int delta, CancellationToken token)
     {
         await Semaphore.WaitAsync(token);
         try
@@ -111,8 +113,8 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
 
     /// <Inheritdoc />
     public virtual async Task MoveItemsTo(
-        ISortableItem[] sourceItems,
-        ISortableItem targetItem,
+        TItem[] sourceItems,
+        TItem targetItem,
         TargetRelativePosition relativePosition,
         CancellationToken token)
     {
@@ -173,12 +175,12 @@ public abstract class ASortableItemProvider : ILoadoutSortableItemProvider
     }
 
     /// <inheritdoc />
-    public abstract Task<IReadOnlyList<ISortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null);
+    public abstract Task<IReadOnlyList<TItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null);
 
     /// <summary>
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
-    protected abstract Task PersistSortOrder(IReadOnlyList<ISortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
+    protected abstract Task PersistSortOrder(IReadOnlyList<TItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
 
     /// <summary>
     /// Obtains the SortOrder model for this provider if it exists, or creates a new one if it doesn't.

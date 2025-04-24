@@ -1,10 +1,11 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
-using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
+using BindingFlags = System.Reflection.BindingFlags;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
@@ -14,7 +15,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
     private readonly IConnection _connection;
     public ReadOnlyObservableCollection<ILoadOrderViewModel> LoadOrderViewModels { get; }
 
-    public SortingSelectionViewModel(IServiceProvider serviceProvider, LoadoutId loadoutId, IOSInterop osInterop)
+    public SortingSelectionViewModel(IServiceProvider serviceProvider, LoadoutId loadoutId)
     {
         _loadoutId = loadoutId;
         _connection = serviceProvider.GetRequiredService<IConnection>();
@@ -25,10 +26,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
             .GetGame()
             .SortableItemProviderFactories;
 
-        LoadOrderViewModels = new ReadOnlyObservableCollection<ILoadOrderViewModel>(
-            new ObservableCollection<ILoadOrderViewModel>(
-                sortableItemProviders.Select(provider => new LoadOrderViewModel(_loadoutId, provider, serviceProvider, osInterop))
-            )
-        );
+        var enumerable = sortableItemProviders.Select(ILoadOrderViewModel (providerFactory) => new LoadOrderViewModel(serviceProvider, providerFactory, providerFactory.GetLoadoutSortableItemProvider(loadout)));
+        LoadOrderViewModels = new ReadOnlyObservableCollection<ILoadOrderViewModel>(new ObservableCollection<ILoadOrderViewModel>(enumerable));
     }
 }

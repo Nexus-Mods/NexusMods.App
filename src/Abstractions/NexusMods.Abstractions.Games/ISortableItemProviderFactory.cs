@@ -9,12 +9,14 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface ISortableItemProviderFactory : IDisposable
 {
+    Type ItemType { get; }
+    Type KeyType { get; }
+
     /// <summary>
     /// Returns a provider of sortable items for a specific loadout
     /// </summary>
     ILoadoutSortableItemProvider GetLoadoutSortableItemProvider(LoadoutId loadoutId);
-    
-    
+
     /// <summary>
     /// Returns id of the type of the loadout
     /// </summary>
