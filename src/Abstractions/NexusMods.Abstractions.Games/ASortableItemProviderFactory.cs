@@ -16,33 +16,25 @@ public abstract class ASortableItemProviderFactory : ISortableItemProviderFactor
     
     /// <inheritdoc />
     public abstract Guid SortOrderTypeId { get; }
-    
-    /// <inheritdoc />
-    public abstract string LearnMoreUrl { get; }
-    
-    /// <inheritdoc />
-    public virtual string SortOrderName => "Load Order";
-    
-    /// <inheritdoc />
-    public virtual string OverrideInfoMessage => string.Empty;
+
+    /// <summary>
+    /// Static metadata for the sort order type that can be accessed by derived classes for reuse
+    /// </summary>
+    protected static SortOrderUiMetadata StaticSortOrderUiMetadata { get; } = new()
+    {
+        SortOrderName = "Load Order",
+        OverrideInfoTitle = string.Empty,
+        OverrideInfoMessage = string.Empty,
+        WinnerIndexToolTip = "Last Loaded Mod Wins: Items that load last will overwrite changes from items loaded before them.",
+        IndexColumnHeader = "LOAD ORDER",
+        DisplayNameColumnHeader = "NAME",
+        EmptyStateMessageTitle = "No Sortable Mods detected",
+        EmptyStateMessageContents = "Some mods may modify the same game assets. When detected, they will be sortable via this interface.",
+        LearnMoreUrl = string.Empty,
+    };
 
     /// <inheritdoc />
-    public virtual string OverrideInfoTitle => string.Empty;
-    
-    /// <inheritdoc />
-    public virtual string WinnerIndexToolTip => "Last Loaded Mod Wins: Items that load last will overwrite changes from items loaded before them.";
-
-    /// <inheritdoc />
-    public virtual string IndexColumnHeader => "LOAD ORDER";
-
-    /// <inheritdoc />
-    public virtual string DisplayNameColumnHeader => "NAME";
-
-    /// <inheritdoc />
-    public virtual string EmptyStateMessageTitle => "No Sortable Mods detected";
-
-    /// <inheritdoc />
-    public virtual string EmptyStateMessageContents => "Some mods may modify the same game assets. When detected, they will be sortable via this interface.";
+    public virtual SortOrderUiMetadata SortOrderUiMetadata => StaticSortOrderUiMetadata;
 
     /// <inheritdoc />
     public virtual ListSortDirection SortDirectionDefault => ListSortDirection.Ascending;

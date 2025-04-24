@@ -53,12 +53,12 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         var provider = itemProviderFactory.GetLoadoutSortableItemProvider(loadoutId);
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
 
-        SortOrderName = itemProviderFactory.SortOrderName;
-        InfoAlertTitle = itemProviderFactory.OverrideInfoTitle;
-        InfoAlertBody = itemProviderFactory.OverrideInfoMessage;
-        TrophyToolTip = itemProviderFactory.WinnerIndexToolTip;
-        EmptyStateMessageTitle = itemProviderFactory.EmptyStateMessageTitle;
-        EmptyStateMessageContents = itemProviderFactory.EmptyStateMessageContents;
+        SortOrderName = itemProviderFactory.SortOrderUiMetadata.SortOrderName;
+        InfoAlertTitle = itemProviderFactory.SortOrderUiMetadata.OverrideInfoTitle;
+        InfoAlertBody = itemProviderFactory.SortOrderUiMetadata.OverrideInfoMessage;
+        TrophyToolTip = itemProviderFactory.SortOrderUiMetadata.WinnerIndexToolTip;
+        EmptyStateMessageTitle = itemProviderFactory.SortOrderUiMetadata.EmptyStateMessageTitle;
+        EmptyStateMessageContents = itemProviderFactory.SortOrderUiMetadata.EmptyStateMessageContents;
 
         // TODO: load these from settings
         SortDirectionCurrent = itemProviderFactory.SortDirectionDefault;
@@ -81,7 +81,7 @@ public class LoadOrderViewModel : AViewModel<ILoadOrderViewModel>, ILoadOrderVie
         
         LearnMoreAlertCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            await osInterop.OpenUrl(new Uri(itemProviderFactory.LearnMoreUrl));
+            await osInterop.OpenUrl(new Uri(itemProviderFactory.SortOrderUiMetadata.LearnMoreUrl));
         });
 
         SwitchSortDirectionCommand = ReactiveCommand.Create(() =>
@@ -309,7 +309,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
     protected override IColumn<CompositeItemModel<ISortItemKey>>[] CreateColumns(bool viewHierarchical)
     {
         var indexColumn = ColumnCreator.Create<ISortItemKey, LoadOrderColumns.IndexColumn>(
-            columnHeader: _sortableItemsProvider.ParentFactory.IndexColumnHeader,
+            columnHeader: _sortableItemsProvider.ParentFactory.SortOrderUiMetadata.IndexColumnHeader,
             canUserSortColumn: false,
             canUserResizeColumn: false
         );
@@ -320,7 +320,7 @@ public class LoadOrderTreeDataGridAdapter : TreeDataGridAdapter<CompositeItemMod
         [
             expanderColumn,
             ColumnCreator.Create<ISortItemKey, LoadOrderColumns.DisplayNameColumn>(
-                columnHeader: _sortableItemsProvider.ParentFactory.DisplayNameColumnHeader,
+                columnHeader: _sortableItemsProvider.ParentFactory.SortOrderUiMetadata.DisplayNameColumnHeader,
                 canUserSortColumn: false,
                 canUserResizeColumn: false
             ),
