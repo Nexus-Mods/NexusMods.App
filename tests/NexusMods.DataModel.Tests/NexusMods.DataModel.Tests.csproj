@@ -22,6 +22,12 @@
       <PackageReference Include="Verify.Xunit" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Resources\LargeSDVDatabase.rocksdb.zip">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <Target Name="CopyResources" AfterTargets="PostBuildEvent">
         <ItemGroup>
             <_Resources Include="Resources\**" />

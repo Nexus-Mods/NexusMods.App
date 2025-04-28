@@ -1,8 +1,11 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using NexusMods.Cascade;
+using NexusMods.Cascade.Rules;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Library.Models;
@@ -19,6 +22,7 @@ public partial class LibraryItem : IModelDefinition
     /// Name of the library item.
     /// </summary>
     public static readonly StringAttribute Name = new(Namespace, nameof(Name));
+    
 }
 
 public partial class LibraryItem

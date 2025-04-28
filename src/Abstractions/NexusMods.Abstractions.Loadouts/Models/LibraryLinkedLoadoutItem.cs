@@ -1,7 +1,12 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
+using NexusMods.Cascade;
+using NexusMods.Cascade.Rules;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -21,4 +26,7 @@ public partial class LibraryLinkedLoadoutItem : IModelDefinition
     /// The linked library item.
     /// </summary>
     public static readonly ReferenceAttribute<LibraryItem> LibraryItem = new(Namespace, nameof(LibraryItem)) { IsIndexed = true };
+    
+
+    
 }

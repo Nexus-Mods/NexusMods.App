@@ -21,7 +21,7 @@ namespace NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 /// expected to change.
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct UidForMod : IEquatable<UidForMod>
+public struct UidForMod : IEquatable<UidForMod>, IComparable<UidForMod>
 {
     /// <summary>
     /// Unique identifier for the mod, within the specific <see cref="GameId"/>.
@@ -76,6 +76,13 @@ public struct UidForMod : IEquatable<UidForMod>
         {
             return (ModId.GetHashCode() * 397) ^ GameId.GetHashCode();
         }
+    }
+
+    public int CompareTo(UidForMod other)
+    {
+        var modIdComparison = ModId.CompareTo(other.ModId);
+        if (modIdComparison != 0) return modIdComparison;
+        return GameId.CompareTo(other.GameId);
     }
 }
 

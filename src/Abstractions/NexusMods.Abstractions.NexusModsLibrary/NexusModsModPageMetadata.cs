@@ -1,11 +1,18 @@
 using JetBrains.Annotations;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.Cascade;
+using NexusMods.Cascade.Rules;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
+using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.NexusModsLibrary;
 
@@ -63,4 +70,21 @@ public partial class NexusModsModPageMetadata : IModelDefinition
     /// Back-reference to all files from this page.
     /// </summary>
     public static readonly BackReferenceAttribute<NexusModsFileMetadata> Files = new(NexusModsFileMetadata.ModPage);
+
+
+    public static class Queries
+    {
+        /// <summary>
+        /// A count of how many files are in the library for a given ModPage, along with the extracted GameId,
+        /// and the total file size of all files.
+        /// </summary>
+        public static readonly Flow<(EntityId ModPageId, GameId GameId, int FileCount, Size FileSizes, DateTimeOffset MostRecentAdded)> FileStats =
+            Pattern.Create()
+                .Db(out var libraryItemId, NexusModsLibraryItem.ModPageMetadataId, out var modPageId, out var txId)
+                .Db(modPageId, NexusModsModPageMetadata.Uid, out var uid)
+                .Project(uid, uid => uid.GameId, out var gameId)
+                .DbOrDefault(libraryItemId, LibraryFile.Size, out var fileSize)
+                .Db(txId, Transaction.Timestamp, out var timestamp)
+                .Return(modPageId, gameId, libraryItemId.Count(), fileSize.Sum(), timestamp.Max());
+    }
 }

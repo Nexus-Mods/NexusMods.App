@@ -36,6 +36,7 @@
         <PackageReference Include="Microsoft.Extensions.ObjectPool" />
         <PackageReference Include="NexusMods.Archives.Nx" />
         <PackageReference Include="NexusMods.MnemonicDB" />
+        <PackageReference Include="NexusMods.Cascade" />
         <PackageReference Include="Polly.Core"/>
         <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

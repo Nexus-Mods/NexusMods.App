@@ -1,6 +1,13 @@
 using JetBrains.Annotations;
+using NexusMods.Cascade;
+using NexusMods.Cascade.Rules;
+using NexusMods.Cascade.Structures;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
+using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -22,4 +29,17 @@ public partial class LoadoutItemGroup : IModelDefinition
     /// Children of the group.
     /// </summary>
     public static readonly BackReferenceAttribute<LoadoutItem> Children = new(LoadoutItem.Parent);
+
+    /// <summary>
+    /// All the ancestors of a given item
+    /// </summary>
+    public static readonly Flow<KeyedValue<EntityId, EntityId>> ItemAncestors =
+        LoadoutItem.Parent.Ancestors();
+
+    public static readonly Flow<(EntityId LoadoutItemGroupId, int FileCount, Size FileSize)> FileCounts =
+        Pattern.Create()
+            .With(ItemAncestors, out var itemId, out var groupId)
+            .Db(itemId, LoadoutFile.Size, out var fileSize)
+            .Return(groupId, fileSize.Count(), fileSize.Sum());
+
 }
