@@ -119,26 +119,38 @@
                         </Style>
                     </Style>
 
-                    <!-- second column (display name) -->
+                    <!-- second column (thumbnail and display name) -->
                     <Style Selector="^.LoadOrderColumns_DisplayNameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
 
+                            <!-- thumbnail parent -->
                             <Style Selector="^ Border#ItemModImageBorder">
                                 <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                                <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                                 <Setter Property="Width" Value="45" />
                                 <Setter Property="Height" Value="28" />
+                                <!-- easy way to get the rounded corner to mask the image below -->
+                                <Setter Property="ClipToBounds" Value="True" />
+                                <!-- allows the border to be drawn over the background -->
+                                <Setter Property="BackgroundSizing" Value="OuterBorderEdge" />
 
-                                <Style Selector="^ > icons|UnifiedIcon">
-                                    <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
+                                <!-- thumbnail -->
+                                <Style Selector="^ Border.LoadOrderColumns_DisplayNameColumn_ImageComponent Image#ImageThumbnail">
+                                    <Setter Property="Stretch" Value="UniformToFill" />
+                                </Style>
+
+                                <!-- fallback icon -->
+                                <Style Selector="^ icons|UnifiedIcon#FallbackIcon">
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                                     <Setter Property="Size" Value="16" />
                                 </Style>
                             </Style>
+
+                            <!-- display name -->
                             <Style Selector="^ TextBlock#DisplayName">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                             </Style>
                         </Style>
                     </Style>
@@ -171,7 +183,7 @@
                         </Style>
                     </Style>
                 </Style>
-                
+
                 <!-- pointerover -->
                 <Style Selector="^ TreeDataGridRow:pointerover">
 

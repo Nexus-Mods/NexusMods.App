@@ -240,6 +240,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
 
             item.IsActive = redModMatch.IsEnabled;
             item.ModName = redModMatch.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Parent.AsLoadoutItem().Name;
+            item.ModGroupId = redModMatch.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Parent.LoadoutItemGroupId;
         }
 
         return stagingList;
