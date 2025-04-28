@@ -3,11 +3,11 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
-        <ProjectReference Include="..\..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
-        <ProjectReference Include="..\..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
-        <ProjectReference Include="..\..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
-        <ProjectReference Include="..\..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
+        <ProjectReference Include="..\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
+        <ProjectReference Include="..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
+        <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>

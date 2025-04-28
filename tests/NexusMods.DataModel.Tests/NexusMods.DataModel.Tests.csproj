@@ -4,8 +4,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
-      <ProjectReference Include="..\..\src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
+      <ProjectReference Include="..\..\src\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
       <ProjectReference Include="..\..\src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />
       <ProjectReference Include="..\..\src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />

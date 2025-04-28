@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.DataModel", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.DataModel.Tests", "tests\NexusMods.DataModel.Tests\NexusMods.DataModel.Tests.csproj", "{9F803B18-7365-418E-9873-414383CD820B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FileExtractor", "src\ArchiveManagement\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj", "{83B2A024-0218-4F65-B75B-0102DAF38443}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.FileExtractor", "src\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj", "{83B2A024-0218-4F65-B75B-0102DAF38443}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.App.BuildInfo", "src\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj", "{78B79659-4A68-4E92-8765-E6570916792F}"
 EndProject
