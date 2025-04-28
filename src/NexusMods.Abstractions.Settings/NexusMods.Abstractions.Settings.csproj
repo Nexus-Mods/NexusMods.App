@@ -34,6 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.Icons\NexusMods.Icons.csproj" />
+      <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
     </ItemGroup>
 </Project>
