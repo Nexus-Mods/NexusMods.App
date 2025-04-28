@@ -39,7 +39,7 @@
         <ProjectReference Include="..\NexusMods.Settings\NexusMods.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.SingleProcess\NexusMods.SingleProcess.csproj" />
         <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
-        <ProjectReference Include="..\Themes\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj" />
+        <ProjectReference Include="..\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj" />
     </ItemGroup>
    
     <ItemGroup>
