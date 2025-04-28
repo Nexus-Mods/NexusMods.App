@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x348E304EE99E2702
-   - Total attributes: 197
+   - Fingerprint: 0x4C82D494D11186D6
+   - Total attributes: 201
    - Total namespaces: 69
    
 ## Attributes
@@ -159,6 +159,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/Endorsements                         | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/GameId                               | UInt32                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Name                                 | Utf8                    | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/OverallRating                        | Float32                 | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/OverallRatingCount                   | Int32                   | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/RecentRating                         | Float32                 | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/RecentRatingCount                    | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Slug                                 | Ascii                   | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Summary                              | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/TileImageResource                    | Reference               | False   | False | False     | 
