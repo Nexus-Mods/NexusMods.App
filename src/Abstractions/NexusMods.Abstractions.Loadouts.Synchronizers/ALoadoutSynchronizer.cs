@@ -1547,15 +1547,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var cache = baseDb.AttributeCache;
         var nameId = cache.GetAttributeId(Loadout.Name.Id);
         var shortNameId = cache.GetAttributeId(Loadout.ShortName.Id);
-        
-        // Generate a new name and short name
-        var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb)
-            .Where(l => l.IsVisible() && l.InstallationId == loadout.InstallationId)
-            .Select(l => l.ShortName)
-            .ToArray()
-        );
-        var newName = "Loadout " + newShortName;
-        
+
         // Create a mapping of old entity ids to new (temp) entity ids
         Dictionary<EntityId, EntityId> entityIdList = new();
         var remapFn = RemapFn;
@@ -1578,17 +1570,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             
             foreach (var datom in entity)
             {
-                // Rename the loadout
-                if (datom.A == nameId)
-                {
-                    tx.Add(newId, Loadout.Name, newName);
-                    continue;
-                }
-                if (datom.A == shortNameId)
-                {
-                    tx.Add(newId, Loadout.ShortName, newShortName);
-                    continue;
-                }
+
 
                 // Make sure we have enough buffer space
                 if (buffer.Length < datom.ValueSpan.Length)
@@ -1610,9 +1592,27 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
 
         var result = await tx.Commit();
+        var newLoadoutId = result[entityIdList[loadout.Id]];
 
-        return Loadout.Load(Connection.Db, result[entityIdList[loadout.Id]]);
-        
+        // Generate a new name and short name
+        var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb)
+            .Where(l => l.IsVisible() && l.InstallationId == loadout.InstallationId)
+            .Select(l => l.ShortName)
+            .ToArray()
+        );
+
+        var newName = "Loadout " + newShortName;
+
+        {
+            using var tx2 = Connection.BeginTransaction();
+            tx2.Add(newLoadoutId, Loadout.Name, newName);
+            tx2.Add(newLoadoutId, Loadout.ShortName, newShortName);
+
+            await tx2.Commit();
+        }
+
+        return Loadout.Load(Connection.Db, newLoadoutId);
+
         // Local function to remap entity ids in the format Attribute.Remap wants
         EntityId RemapFn(EntityId entityId)
         {
