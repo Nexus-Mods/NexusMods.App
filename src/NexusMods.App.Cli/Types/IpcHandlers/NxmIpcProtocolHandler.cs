@@ -74,6 +74,9 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
             case NXMGogAuthUrl gogUrl:
                 _client.AuthUrl(gogUrl);
                 break;
+            case NXMProtocolRegistrationTest protocolRegistrationTest:
+                _eventBus.Send(new CliMessages.TestProtocolRegistration(protocolRegistrationTest.Id));
+                break;
             case NXMModUrl modUrl:
                 // Check if the user is logged in
                 if (userInfo is not null)
