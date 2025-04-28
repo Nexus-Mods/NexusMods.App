@@ -158,9 +158,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Load
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.GameLocators", "src\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj", "{4334BE5B-C476-415D-B4FA-183723C4D4D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Diagnostics", "src\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj", "{76F37CC8-994C-4A43-AB99-C1618FF83272}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Diagnostics", "src\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj", "{76F37CC8-994C-4A43-AB99-C1618FF83272}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Diagnostics.Sample", "src\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.Sample\NexusMods.App.Generators.Diagnostics.Sample.csproj", "{6AE7F1F0-3E5A-42D9-BFF9-2B8F76410F4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Diagnostics.Sample", "src\NexusMods.App.Generators.Diagnostics.Sample\NexusMods.App.Generators.Diagnostics.Sample.csproj", "{6AE7F1F0-3E5A-42D9-BFF9-2B8F76410F4C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Diagnostics.Tests", "tests\NexusMods.App.Generators.Diagnostics.Tests\NexusMods.App.Generators.Diagnostics.Tests.csproj", "{D497C3DF-C84C-460A-88B9-DD3D129387CC}"
 EndProject

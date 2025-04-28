@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
-        <ProjectReference Include="..\..\src\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" />
     </ItemGroup>
 
 </Project>
