@@ -87,19 +87,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.EventBus\NexusMods.Abstractions.EventBus.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Resources.Resilience\NexusMods.Abstractions.Resources.Resilience.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
-        <ProjectReference Include="..\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
-        <ProjectReference Include="..\Networking\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.EventBus\NexusMods.Abstractions.EventBus.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Resources.Resilience\NexusMods.Abstractions.Resources.Resilience.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
+        <ProjectReference Include="..\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />

@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Telemetry"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Counters.ActiveUsers.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.UsersPerOS.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.UsersPerLanguage.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.UsersPerMembership.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.ManagedGamesCount.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.ModsPerGame.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Counters.GlobalDownloadSize.cs">
+        <DependentUpon>Counters.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.WebUtilities"/>
+    </ItemGroup>
+</Project>
