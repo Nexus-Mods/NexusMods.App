@@ -61,7 +61,9 @@ public static class ApplicationConstants
             InstallationMethod = CompileConstants.InstallationMethod;
         }
 
-        UserAgent = $"NexusModsApp/{Version.ToString(fieldCount: 3)}";
+        UserAgentApplicationName = "NexusModsApp";
+        UserAgentApplicationVersion = Version.ToString(fieldCount: 3);
+        UserAgent = $"{UserAgentApplicationName}/{UserAgentApplicationVersion}";
     }
 
     private static string? GetSha(string input)
@@ -85,6 +87,16 @@ public static class ApplicationConstants
     /// Gets the default user-agent.
     /// </summary>
     public static string UserAgent { get; }
+
+    /// <summary>
+    /// Gets the application name part of the user agent.
+    /// </summary>
+    public static string UserAgentApplicationName { get; }
+
+    /// <summary>
+    /// Gets the application version part of the user agent.
+    /// </summary>
+    public static string UserAgentApplicationVersion { get; }
 
     /// <summary>
     /// Gets the installation method.

@@ -9,5 +9,8 @@
         <ProjectReference Include="..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
         <ProjectReference Include="..\NexusMods.StandardGameLocators.TestHelpers\NexusMods.StandardGameLocators.TestHelpers.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="FindUsedFiles\MarkGameFiles\" />
+    </ItemGroup>
 
 </Project>

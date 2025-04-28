@@ -28,6 +28,7 @@ This can be broken down into the following steps:
 - [Perform a `mark` phase through the DataStore.](#performing-the-mark-phase)
     - Find all files that are in use.
     - This is any `LoadoutItem` which is a file (`LoadoutItemWithTargetPath`) that is not marked as deleted (retracted).
+    - And also any item marked as `BackedUpFile`.
     - This gives us ***UsedFileList (B)***.
 - [Remove all elements in ***AllFileList (A)*** that are *not* in ***UsedFileList (B)***](#removing-unused-items).
     - The removal process involves `'repacking'` all archives which have had their files
@@ -69,7 +70,10 @@ from which files may be referenced from.
       added to the library.
 - Loadouts
     - Loadouts have some `LoadoutItems` which do not correspond to a `LibraryItem`.
-    - Example: `Game Files` and `Overrides` files.
+    - Example: `Overrides` (External Changes) files.
+- Backed up files
+    - Base type of `BackedUpFile`.
+    - Derived types may use names like `SynchronizerBackedUpFile`.
 
 The `DataModel` has the following approximate structure:
 

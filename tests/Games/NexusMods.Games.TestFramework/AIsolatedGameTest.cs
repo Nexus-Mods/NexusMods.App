@@ -336,6 +336,11 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
     /// </summary>
     protected async Task<Loadout.ReadOnly> CreateLoadout()
     {
+        if (!_gameFilesWritten)
+        {
+            await GenerateGameFiles();
+            _gameFilesWritten = true;
+        }
         return await GameInstallation
             .GetGame()
             .Synchronizer

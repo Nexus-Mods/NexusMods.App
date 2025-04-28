@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <!-- NuGet Package Shared Details -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-    <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
-    </ItemGroup>
-</Project>
