@@ -1354,18 +1354,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             {
                 // Prime the hash database to make sure it's loaded
                 await _fileHashService.GetFileHashesDb();
-                
-                var existingLoadoutNames = Loadout.All(Connection.Db)
-                    .Where(l => l.IsVisible()
-                                && l.InstallationInstance.LocationsRegister[LocationId.Game]
-                                == installation.LocationsRegister[LocationId.Game]
-                    )
-                    .Select(l => l.ShortName)
-                    .ToArray();
 
-                var isOnlyLoadout = existingLoadoutNames.Length == 0;
-
-                var shortName = LoadoutNameProvider.GetNewShortName(existingLoadoutNames);
+                var shortName = GetNewShortName(Connection.Db, installation.GameMetadataId);
 
                 using var tx = Connection.BeginTransaction();
 
@@ -1555,8 +1545,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         using var tx = Connection.BeginTransaction();
 
         // Add the loadout
-        entityIdList[loadout.Id] = tx.TempId();
-        
+        var newLoadoutId = tx.TempId();
+        entityIdList[loadout.Id] = newLoadoutId;
+
         // And each item
         foreach (var item in loadout.Items)
         {
@@ -1567,11 +1558,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             // Get the original entity
             var entity = baseDb.Get(oldId);
-            
+
             foreach (var datom in entity)
             {
-
-
                 // Make sure we have enough buffer space
                 if (buffer.Length < datom.ValueSpan.Length)
                     buffer = System.GC.AllocateUninitializedArray<byte>(datom.ValueSpan.Length);
@@ -1591,27 +1580,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
-        var result = await tx.Commit();
-        var newLoadoutId = result[entityIdList[loadout.Id]];
-
-        // Generate a new name and short name
-        var newShortName = LoadoutNameProvider.GetNewShortName(Loadout.All(baseDb)
-            .Where(l => l.IsVisible() && l.InstallationId == loadout.InstallationId)
-            .Select(l => l.ShortName)
-            .ToArray()
-        );
-
+        // NOTE(erri120): using latest DB to prevent duplicate short names
+        var newShortName = GetNewShortName(Connection.Db, loadout.InstallationId);
         var newName = "Loadout " + newShortName;
+        
+        tx.Add(newLoadoutId, Loadout.Name, newName);
+        tx.Add(newLoadoutId, Loadout.ShortName, newShortName);
 
-        {
-            using var tx2 = Connection.BeginTransaction();
-            tx2.Add(newLoadoutId, Loadout.Name, newName);
-            tx2.Add(newLoadoutId, Loadout.ShortName, newShortName);
-
-            await tx2.Commit();
-        }
-
-        return Loadout.Load(Connection.Db, newLoadoutId);
+        var result = await tx.Commit();
+        return Loadout.Load(Connection.Db, result[newLoadoutId]);
 
         // Local function to remap entity ids in the format Attribute.Remap wants
         EntityId RemapFn(EntityId entityId)
@@ -1620,6 +1597,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
+    private static string GetNewShortName(IDb db, GameInstallMetadataId installationId)
+    {
+        var existingShortNames = Loadout.All(db)
+            .Where(l => l.IsVisible() && l.InstallationId == installationId)
+            .Select(l => l.ShortName)
+            .ToArray();
+
+        return LoadoutNameProvider.GetNewShortName(existingShortNames);
+    }
 
     /// <inheritdoc />
     public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
