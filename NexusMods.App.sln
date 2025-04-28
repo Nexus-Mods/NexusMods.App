@@ -112,7 +112,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.IO",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{3C8B4F7A-1964-4166-9E5A-2490BB0DF102}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.BCL", "src\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj", "{943E909F-7466-4975-BF55-E54A3E1EF764}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.BCL", "src\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj", "{943E909F-7466-4975-BF55-E54A3E1EF764}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{789C12BC-EE6D-4374-B7EA-70FA81CA99BF}"
 EndProject
@@ -124,11 +124,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Game
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Games.Diagnostics", "src\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj", "{CE7D28B9-41E3-4E30-A819-32198568B4E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.DependencyInjection", "src\Extensions\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj", "{551A637D-C777-4115-A844-5A5E35B5D099}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.DependencyInjection", "src\NexusMods.Extensions.DependencyInjection\NexusMods.Extensions.DependencyInjection.csproj", "{551A637D-C777-4115-A844-5A5E35B5D099}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.CrossPlatform", "src\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj", "{15FB0F0C-8D31-4B0C-84FC-D591759186B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.Hashing", "src\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj", "{0CC36A6F-1AEE-4D38-ABD0-71C76761F2CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.Hashing", "src\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj", "{0CC36A6F-1AEE-4D38-ABD0-71C76761F2CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.FileExtractor", "src\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj", "{782A244E-1BB1-4FC5-AAAF-0A242960B1CA}"
 EndProject
@@ -150,7 +150,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{9B49FE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Themes.NexusFluentDark", "src\NexusMods.Themes.NexusFluentDark\NexusMods.Themes.NexusFluentDark.csproj", "{F63AF576-7A7C-4CF1-ADD7-6E95829E5C95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.DynamicData", "src\Extensions\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj", "{8F783E71-49E6-4504-97E4-D5D28E7ED949}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Extensions.DynamicData", "src\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj", "{8F783E71-49E6-4504-97E4-D5D28E7ED949}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Abstractions.Loadouts", "src\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj", "{4AE9CD2B-1CFB-418E-A2EA-129A2C2B8D9E}"
 EndProject

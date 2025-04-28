@@ -7,6 +7,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
+      <ProjectReference Include="..\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
     </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\src\Extensions\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
         <ProjectReference Include="..\..\..\src\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj" />

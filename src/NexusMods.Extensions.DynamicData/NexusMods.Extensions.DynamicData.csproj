@@ -6,6 +6,6 @@
       <PackageReference Include="DynamicData" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
     </ItemGroup>
 </Project>
