@@ -5,7 +5,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-        <ProjectReference Include="..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
+        <ProjectReference Include="..\..\src\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.App\NexusMods.App.csproj" />
         <ProjectReference Include="..\..\src\NexusMods.DataModel\NexusMods.DataModel.csproj" />

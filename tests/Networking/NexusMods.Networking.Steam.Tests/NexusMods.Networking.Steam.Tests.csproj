@@ -11,8 +11,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\src\NexusMods.Abstractions.Steam\NexusMods.Abstractions.Steam.csproj" />
-      <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
-      <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.Steam\NexusMods.Networking.Steam.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Networking.Steam\NexusMods.Networking.Steam.csproj" />
     </ItemGroup>
 
 </Project>

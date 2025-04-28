@@ -3,7 +3,7 @@
         <XunitStartupAssembly>NexusMods.Networking.ModUpdates.Tests</XunitStartupAssembly>
     </PropertyGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Networking\NexusMods.Networking.ModUpdates\NexusMods.Networking.ModUpdates.csproj" />
+      <ProjectReference Include="..\..\..\src\NexusMods.Networking.ModUpdates\NexusMods.Networking.ModUpdates.csproj" />
       <ProjectReference Include="..\..\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj" />
     </ItemGroup>
 
