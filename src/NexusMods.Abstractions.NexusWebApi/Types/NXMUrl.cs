@@ -92,7 +92,7 @@ public class NXMUrl
         }
         else if (uri.Host == "protocol-test")
         {
-            result = new NXMProtocolRegistrationTest(uri);
+            result = new NXMProtocolRegistrationCheck(uri);
         }
         else if (uri.Segments.Length >= 5)
         {

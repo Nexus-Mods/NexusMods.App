@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.NexusWebApi.Types;
 /// NXM protocol registration test.
 /// </summary>
 [PublicAPI]
-public class NXMProtocolRegistrationTest : NXMUrl
+public class NXMProtocolRegistrationCheck : NXMUrl
 {
     /// <summary>
     /// Unique ID of the test.
@@ -16,7 +16,7 @@ public class NXMProtocolRegistrationTest : NXMUrl
     /// <summary>
     /// Constructor.
     /// </summary>
-    public NXMProtocolRegistrationTest(Uri uri)
+    public NXMProtocolRegistrationCheck(Uri uri)
     {
         var parsedQuery = System.Web.HttpUtility.ParseQueryString(uri.Query);
         var rawId = parsedQuery["id"] ?? throw new ArgumentException($"invalid nxm url \"{uri}\"");
