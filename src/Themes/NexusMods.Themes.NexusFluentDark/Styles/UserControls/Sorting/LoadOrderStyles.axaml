@@ -119,23 +119,36 @@
                         </Style>
                     </Style>
 
-                    <!-- second column (display name) -->
+                    <!-- second column (thumbnail and display name) -->
                     <Style Selector="^.LoadOrderColumns_DisplayNameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-
-                            <Style Selector="^ Border#ItemModImageBorder">
+                            
+                            <!-- thumbnail -->
+                            <Style Selector="^ Border.LoadOrderColumns_DisplayNameColumn_ImageComponent">
                                 <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                                <Setter Property="BorderThickness" Value="1" />
-                                <Setter Property="BorderBrush" Value="{StaticResource SurfaceTranslucentLowBrush}" />
+                                <Setter Property="BorderThickness" Value="0" />
                                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                                 <Setter Property="Width" Value="45" />
                                 <Setter Property="Height" Value="28" />
-
-                                <Style Selector="^ > icons|UnifiedIcon">
-                                    <Setter Property="Foreground" Value="{StaticResource NeutralWeakBrush}" />
+                                <!-- easy way to get the rounded corner to mask the image below -->
+                                <Setter Property="ClipToBounds" Value="True" />
+                                <!-- allows the border to be drawn over the background -->
+                                <Setter Property="BackgroundSizing" Value="OuterBorderEdge"/>
+                        
+                                <!-- hidden for now as some thumbnails have transparency and I don't think
+                                there is a time anymore that a mod won't have a thumbnail -->
+                                <Style Selector="^ > Panel > icons|UnifiedIcon">
+                                    <Setter Property="IsVisible" Value="False"/>
+                                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                                     <Setter Property="Size" Value="16" />
                                 </Style>
+                        
+                                <Style Selector="^ > Panel > Image">
+                                    <Setter Property="Stretch" Value="UniformToFill" />
+                                </Style>
                             </Style>
+                            
+                            <!-- display name -->
                             <Style Selector="^ TextBlock#DisplayName">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
