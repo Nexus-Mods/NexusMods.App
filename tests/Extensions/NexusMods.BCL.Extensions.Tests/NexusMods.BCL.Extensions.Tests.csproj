@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\..\..\src\Extensions\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
+        <ProjectReference Include="..\..\..\src\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
     </ItemGroup>
 </Project>

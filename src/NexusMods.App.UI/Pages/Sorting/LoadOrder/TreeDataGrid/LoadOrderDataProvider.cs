@@ -1,9 +1,15 @@
 using System.ComponentModel;
 using System.Reactive.Linq;
+using Avalonia.Media.Imaging;
 using DynamicData;
 using Humanizer;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.Resources;
 using NexusMods.App.UI.Controls;
+using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
 using static NexusMods.App.UI.Pages.Sorting.LoadOrderComponents;
@@ -13,6 +19,15 @@ namespace NexusMods.App.UI.Pages.Sorting;
 
 public class LoadOrderDataProvider : ILoadOrderDataProvider
 {
+    private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader;
+    private readonly IConnection _connection;
+
+    public LoadOrderDataProvider(IServiceProvider serviceProvider)
+    {
+        _connection = serviceProvider.GetRequiredService<IConnection>();
+        _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
+    }
+
     public IObservable<IChangeSet<CompositeItemModel<ISortItemKey>, ISortItemKey>> ObserveLoadOrder(
         ILoadoutSortableItemProvider sortableItemProvider,
         Observable<ListSortDirection> sortDirectionObservable)
@@ -39,8 +54,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
             .RefCount();;
 
         return sortableItemProvider.SortableItemsChangeSet
-            .ChangeKey((key, _) => key)
-            .Transform(item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable));
+            .Transform(item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable, _connection, _thumbnailLoader));
 
         static int GetLastIndex(IReadOnlyList<ISortableItem> items)
         {
@@ -51,13 +65,28 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
     private static CompositeItemModel<ISortItemKey> ToLoadOrderItemModel(
         ISortableItem sortableItem,
         R3.Observable<int> topMostIndexObservable,
-        R3.Observable<int> bottomMostIndexObservable)
+        R3.Observable<int> bottomMostIndexObservable,
+        IConnection connection,
+        Lazy<IResourceLoader<EntityId, Bitmap>> thumbnailLoader)
     {
         var compositeModel = new CompositeItemModel<ISortItemKey>(sortableItem.Key);
 
         // DisplayName
         compositeModel.Add(LoadOrderColumns.DisplayNameColumn.DisplayNameComponentKey,
             new StringComponent(sortableItem.DisplayName, sortableItem.WhenAnyValue(item => item.DisplayName)));
+        
+        // Thumbnail
+        if (sortableItem.ModGroupId.HasValue)
+        {
+            if (LoadoutItemGroup.Load(connection.Db, sortableItem.ModGroupId.Value).TryGetAsLibraryLinkedLoadoutItem(out var linkedItem))
+            {
+                if (linkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
+                {
+                    compositeModel.Add(LoadOrderColumns.DisplayNameColumn.ImageComponentKey,
+                        ImageComponent.FromPipeline(thumbnailLoader.Value, nexusLibraryItem.ModPageMetadata, initialValue: ImagePipelines.ModPageThumbnailFallback));
+                }
+            }
+        }
 
         // ModName
         compositeModel.Add(LoadOrderColumns.ModNameColumn.ModNameComponentKey,
