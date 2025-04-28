@@ -1,6 +1,4 @@
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
-using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 

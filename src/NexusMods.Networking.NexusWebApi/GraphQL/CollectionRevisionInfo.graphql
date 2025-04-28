@@ -13,7 +13,7 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
         overallRating
         overallRatingCount
         modCount
-        
+
         modFiles {
             id,
             optional,
@@ -34,6 +34,10 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
             summary
             endorsements
             totalDownloads
+            overallRating
+            overallRatingCount
+            recentRating
+            recentRatingCount
             category {
                 name
                 id

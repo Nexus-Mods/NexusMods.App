@@ -85,7 +85,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public ulong EndorsementCount => _collection.Endorsements;
     public ulong TotalDownloads => _collection.TotalDownloads;
     public Size TotalSize => _revision.TotalSize;
-    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating.ValueOr(0));
+    public Percent OverallRating => Percent.CreateClamped(_revision.Collection.RecentRating.ValueOr(0));
 
     public bool IsAdult => _revision.IsAdult;
     public string AuthorName => _collection.Author.Name;
