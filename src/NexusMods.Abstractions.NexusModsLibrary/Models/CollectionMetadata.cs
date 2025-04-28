@@ -79,4 +79,24 @@ public partial class CollectionMetadata : IModelDefinition
     /// The background image resource.
     /// </summary>
     public static readonly ReferenceAttribute<PersistedDbResource> BackgroundImageResource = new(Namespace, nameof(BackgroundImageResource)) { IsOptional = true };
+
+    /// <summary>
+    /// An average taken from all revision ratings.
+    /// </summary>
+    public static readonly FloatAttribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
+
+    /// <summary>
+    /// Total number of ratings given across all revisions
+    /// </summary>
+    public static readonly Int32Attribute OverallRatingCount = new(Namespace, nameof(OverallRatingCount)) { IsOptional = true };
+
+    /// <summary>
+    /// A 30-day average of all revision ratings.
+    /// </summary>
+    public static readonly FloatAttribute RecentRating = new(Namespace, nameof(RecentRating)) { IsOptional = true };
+
+    /// <summary>
+    /// Total number of ratings given in the last 30 days.
+    /// </summary>
+    public static readonly Int32Attribute RecentRatingCount = new(Namespace, nameof(RecentRatingCount)) { IsOptional = true };
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Collections.Json;
@@ -419,6 +420,16 @@ public partial class NexusModsLibrary
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
         resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);
+
+        if (float.TryParse(collectionInfo.RecentRating ?? "0.0", CultureInfo.InvariantCulture, out var recentRating))
+            resolver.Add(CollectionMetadata.RecentRating, recentRating);
+        if (collectionInfo.RecentRatingCount is not null)
+            resolver.Add(CollectionMetadata.RecentRatingCount, collectionInfo.RecentRatingCount.Value);
+
+        if (float.TryParse(collectionInfo.OverallRating ?? "0.0", CultureInfo.InvariantCulture, out var overallRating))
+            resolver.Add(CollectionMetadata.OverallRating, overallRating);
+        if (collectionInfo.OverallRatingCount is not null)
+            resolver.Add(CollectionMetadata.OverallRatingCount, collectionInfo.OverallRatingCount.Value);
 
         if (Uri.TryCreate(collectionInfo.TileImage?.ThumbnailUrl, UriKind.Absolute, out var tileImageUri))
             resolver.Add(CollectionMetadata.TileImageUri, tileImageUri);
