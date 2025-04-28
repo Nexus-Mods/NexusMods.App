@@ -1561,6 +1561,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             foreach (var datom in entity)
             {
+                if (datom.A == nameId || datom.A == shortNameId) continue;
+
                 // Make sure we have enough buffer space
                 if (buffer.Length < datom.ValueSpan.Length)
                     buffer = System.GC.AllocateUninitializedArray<byte>(datom.ValueSpan.Length);
@@ -1583,12 +1585,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // NOTE(erri120): using latest DB to prevent duplicate short names
         var newShortName = GetNewShortName(Connection.Db, loadout.InstallationId);
         var newName = "Loadout " + newShortName;
-        
+
         tx.Add(newLoadoutId, Loadout.Name, newName);
         tx.Add(newLoadoutId, Loadout.ShortName, newShortName);
 
         var result = await tx.Commit();
-        return Loadout.Load(Connection.Db, result[newLoadoutId]);
+        var newLoadout = Loadout.Load(result.Db, result[newLoadoutId]);
+        return newLoadout;
 
         // Local function to remap entity ids in the format Attribute.Remap wants
         EntityId RemapFn(EntityId entityId)
@@ -1604,7 +1607,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             .Select(l => l.ShortName)
             .ToArray();
 
-        return LoadoutNameProvider.GetNewShortName(existingShortNames);
+        var result = LoadoutNameProvider.GetNewShortName(existingShortNames);
+        return result;
     }
 
     /// <inheritdoc />
