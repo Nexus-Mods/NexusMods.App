@@ -102,6 +102,7 @@ nav:
     - Mod With Confidence: developers/ModWithConfidence.md
     - Contributing: developers/Contributing.md
     - Development Guidelines:
+        - Project Guidelines: developers/development-guidelines/Projects.md
         - Dependency Injection: developers/development-guidelines/DependencyInjection.md
         - Interacting with the File System: developers/development-guidelines/UsingIFileSystem.md
         - Adding a Game: developers/development-guidelines/AddingAGame.md
