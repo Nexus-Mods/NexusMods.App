@@ -11,21 +11,21 @@
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="games:ISortItemKey" />
         </DataTemplate.DataType>
-        
+
         <!-- IndexComponent -->
-        <controls:ComponentControl x:TypeArguments="games:ISortItemKey" 
+        <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
                                    Content="{CompiledBinding}">
             <controls:ComponentControl.ComponentTemplate>
                 <controls:ComponentTemplate x:TypeArguments="local:LoadOrderComponents+IndexComponent"
-                                   ComponentKey="{x:Static local:LoadOrderColumns+IndexColumn.IndexComponentKey}">
+                                            ComponentKey="{x:Static local:LoadOrderColumns+IndexColumn.IndexComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate x:DataType="local:LoadOrderComponents+IndexComponent">
-                            
+
                             <StackPanel x:Name="LoadOrderItemIndexColumnStack">
-                                
+
                                 <!-- Drag indicator -->
                                 <Border x:Name="ItemModDragBorder">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragVerticalDots}"/>
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragVerticalDots}" />
                                 </Border>
 
                                 <controls:StandardButton x:Name="UpButton"
@@ -49,15 +49,15 @@
                                                          Fill="None" />
                                 <Border x:Name="ItemIndexSeparator" />
                             </StackPanel>
-                            
+
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
-                    </controls:ComponentTemplate>
+                </controls:ComponentTemplate>
             </controls:ComponentControl.ComponentTemplate>
         </controls:ComponentControl>
-        
+
     </DataTemplate>
-    
+
     <!-- DisplayName Column -->
     <DataTemplate x:Key="{x:Static local:LoadOrderColumns+DisplayNameColumn.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
@@ -65,7 +65,7 @@
         </DataTemplate.DataType>
 
         <StackPanel x:Name="LoadOrderItemNameColumnStack" Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
-            
+
             <!-- Thumbnail -->
             <Border x:Name="ItemModImageBorder">
                 <controls:ComponentControl x:TypeArguments="games:ISortItemKey" Content="{CompiledBinding}">
@@ -74,12 +74,8 @@
                                                     ComponentKey="{x:Static local:LoadOrderColumns+DisplayNameColumn.ImageComponentKey}">
                             <controls:ComponentTemplate.DataTemplate>
                                 <DataTemplate DataType="{x:Type controls:ImageComponent}">
-                                    <Panel>
-                                        <!-- The below image is drawn after the icon and covers the icon if a thumbnail is present. --> 
-                                        <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
-                                        <Image Source="{CompiledBinding Value.Value}" />
-                                    </Panel>
+                                    <Image x:Name="ImageThumbnail"
+                                           Source="{CompiledBinding Value.Value}" />
                                 </DataTemplate>
                             </controls:ComponentTemplate.DataTemplate>
 
@@ -87,11 +83,12 @@
                     </controls:ComponentControl.ComponentTemplate>
 
                     <controls:ComponentControl.Fallback>
-                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
+                        <icons:UnifiedIcon x:Name="FallbackIcon" 
+                                           Value="{x:Static icons:IconValues.Nexus}" />
                     </controls:ComponentControl.Fallback>
                 </controls:ComponentControl>
             </Border>
-            
+
             <!-- DisplayName -->
             <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
                                        Content="{CompiledBinding}">
@@ -114,19 +111,19 @@
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="games:ISortItemKey" />
         </DataTemplate.DataType>
-            <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
-                                       Content="{CompiledBinding}">
-                <controls:ComponentControl.ComponentTemplate>
-                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                                ComponentKey="{x:Static local:LoadOrderColumns+ModNameColumn.ModNameComponentKey}">
-                        <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate x:DataType="controls:StringComponent" DataType="controls:StringComponent">
-                                <TextBlock x:Name="ModName" Text="{CompiledBinding Value.Value}" />
-                            </DataTemplate>
-                        </controls:ComponentTemplate.DataTemplate>
-                    </controls:ComponentTemplate>
-                </controls:ComponentControl.ComponentTemplate>
-            </controls:ComponentControl>
+        <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
+                                   Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                            ComponentKey="{x:Static local:LoadOrderColumns+ModNameColumn.ModNameComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate x:DataType="controls:StringComponent" DataType="controls:StringComponent">
+                            <TextBlock x:Name="ModName" Text="{CompiledBinding Value.Value}" />
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+        </controls:ComponentControl>
     </DataTemplate>
 
 </ResourceDictionary>

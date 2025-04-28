@@ -122,36 +122,35 @@
                     <!-- second column (thumbnail and display name) -->
                     <Style Selector="^.LoadOrderColumns_DisplayNameColumn">
                         <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
-                            
-                            <!-- thumbnail -->
-                            <Style Selector="^ Border.LoadOrderColumns_DisplayNameColumn_ImageComponent">
+
+                            <!-- thumbnail parent -->
+                            <Style Selector="^ Border#ItemModImageBorder">
                                 <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
-                                <Setter Property="BorderThickness" Value="0" />
                                 <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
                                 <Setter Property="Width" Value="45" />
                                 <Setter Property="Height" Value="28" />
                                 <!-- easy way to get the rounded corner to mask the image below -->
                                 <Setter Property="ClipToBounds" Value="True" />
                                 <!-- allows the border to be drawn over the background -->
-                                <Setter Property="BackgroundSizing" Value="OuterBorderEdge"/>
-                        
-                                <!-- hidden for now as some thumbnails have transparency and I don't think
-                                there is a time anymore that a mod won't have a thumbnail -->
-                                <Style Selector="^ > Panel > icons|UnifiedIcon">
-                                    <Setter Property="IsVisible" Value="False"/>
+                                <Setter Property="BackgroundSizing" Value="OuterBorderEdge" />
+
+                                <!-- thumbnail -->
+                                <Style Selector="^ Border.LoadOrderColumns_DisplayNameColumn_ImageComponent Image#ImageThumbnail">
+                                    <Setter Property="Stretch" Value="UniformToFill" />
+                                </Style>
+
+                                <!-- fallback icon -->
+                                <Style Selector="^ icons|UnifiedIcon#FallbackIcon">
                                     <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                                     <Setter Property="Size" Value="16" />
                                 </Style>
-                        
-                                <Style Selector="^ > Panel > Image">
-                                    <Setter Property="Stretch" Value="UniformToFill" />
-                                </Style>
                             </Style>
-                            
+
                             <!-- display name -->
                             <Style Selector="^ TextBlock#DisplayName">
                                 <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                                 <Setter Property="Foreground" Value="{StaticResource NeutralTranslucentStrongBrush}" />
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                             </Style>
                         </Style>
                     </Style>
@@ -184,7 +183,7 @@
                         </Style>
                     </Style>
                 </Style>
-                
+
                 <!-- pointerover -->
                 <Style Selector="^ TreeDataGridRow:pointerover">
 
