@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj"/>
-        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
+        <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj"/>
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj"/>
+
+        <InternalsVisibleTo Include="NexusMods.Games.AdvancedInstaller.UI.Tests"/>
     </ItemGroup>
 
     <ItemGroup>

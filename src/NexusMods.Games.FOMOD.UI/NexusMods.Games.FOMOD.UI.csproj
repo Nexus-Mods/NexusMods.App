@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-        <ProjectReference Include="..\..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+        <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -34,13 +34,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Networking.HttpDo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Networking.NexusWebApi.Tests", "tests\Networking\NexusMods.Networking.NexusWebApi.Tests\NexusMods.Networking.NexusWebApi.Tests.csproj", "{1D2258DF-12C5-454D-9E30-6B2ECABD9E56}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.RedEngine", "src\Games\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj", "{A9C1152E-6253-41FB-99C6-506F1C755032}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.RedEngine", "src\NexusMods.Games.RedEngine\NexusMods.Games.RedEngine.csproj", "{A9C1152E-6253-41FB-99C6-506F1C755032}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.RedEngine.Tests", "tests\Games\NexusMods.Games.RedEngine.Tests\NexusMods.Games.RedEngine.Tests.csproj", "{B8BA0738-FE06-4CC7-B46D-DF283871F192}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.TestHarness", "src\Games\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj", "{060613B7-92CA-418B-99CC-CA30C0D977DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.TestHarness", "src\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj", "{060613B7-92CA-418B-99CC-CA30C0D977DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "src\Games\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.Generic", "src\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj", "{7CDE7572-9471-4966-B3B3-70DF7D2D9269}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Benchmarks", "benchmarks\NexusMods.Benchmarks\NexusMods.Benchmarks.csproj", "{CB61A764-B3BB-42C0-8CDB-DBE57FB80DF5}"
 EndProject
@@ -62,13 +62,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".solutionItems", ".solution
 		CHANGELOG.md = CHANGELOG.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.FOMOD", "src\Games\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj", "{B43A31B2-1F08-4D8E-9C45-48015FBA983E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.FOMOD", "src\NexusMods.Games.FOMOD\NexusMods.Games.FOMOD.csproj", "{B43A31B2-1F08-4D8E-9C45-48015FBA983E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.FOMOD.Tests", "tests\Games\NexusMods.Games.FOMOD.Tests\NexusMods.Games.FOMOD.Tests.csproj", "{678D0CB7-EA46-4DF2-8C91-E77EA2270C48}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NexusMods.Games.TestFramework", "tests\Games\NexusMods.Games.TestFramework\NexusMods.Games.TestFramework.csproj", "{F9332FAE-1B43-413B-BEA0-780694B77310}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.StardewValley", "src\Games\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj", "{E51435EE-F7F0-4B84-AE80-BBC575DCF868}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.StardewValley", "src\NexusMods.Games.StardewValley\NexusMods.Games.StardewValley.csproj", "{E51435EE-F7F0-4B84-AE80-BBC575DCF868}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.StardewValley.Tests", "tests\Games\NexusMods.Games.StardewValley.Tests\NexusMods.Games.StardewValley.Tests.csproj", "{84C18EE7-86B5-4C1B-B467-93FED213C713}"
 EndProject
@@ -96,13 +96,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.CrossPlatform.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Generic.Tests", "tests\Games\NexusMods.Games.Generic.Tests\NexusMods.Games.Generic.Tests.csproj", "{AA95B93F-23AC-46D5-83B3-2E7AE4BD309C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FOMOD.UI", "src\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj", "{500CE772-93C3-4DA9-9AB3-E9E9EC0A9429}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.FOMOD.UI", "src\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj", "{500CE772-93C3-4DA9-9AB3-E9E9EC0A9429}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.Tests", "tests\Games\NexusMods.Games.AdvancedInstaller.Tests\NexusMods.Games.AdvancedInstaller.Tests.csproj", "{63BC2EE7-18E5-4887-913A-4843DBBE2C8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller", "src\Games\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj", "{E7E68E07-6732-4FA4-BC4D-6E4249B592FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller", "src\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj", "{E7E68E07-6732-4FA4-BC4D-6E4249B592FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI", "src\Games\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj", "{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI", "src\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj", "{07B8ACA6-CE4B-496D-B183-63A57C5F08E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.AdvancedInstaller.UI.Tests", "tests\Games\NexusMods.Games.AdvancedInstaller.UI.Tests\NexusMods.Games.AdvancedInstaller.UI.Tests.csproj", "{2BFAAE53-AFFF-4F0B-AD76-67918665F298}"
 EndProject
@@ -164,7 +164,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Di
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.App.Generators.Diagnostics.Tests", "tests\NexusMods.App.Generators.Diagnostics.Tests\NexusMods.App.Generators.Diagnostics.Tests.csproj", "{D497C3DF-C84C-460A-88B9-DD3D129387CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.StardewValley.SMAPI", "src\Games\NexusMods.Games.StardewValley.SMAPI\NexusMods.Games.StardewValley.SMAPI.csproj", "{674E8B0A-8F77-4DDE-BFCD-618F030DE01B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.StardewValley.SMAPI", "src\NexusMods.Games.StardewValley.SMAPI\NexusMods.Games.StardewValley.SMAPI.csproj", "{674E8B0A-8F77-4DDE-BFCD-618F030DE01B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "src\Examples\Examples.csproj", "{FB0DA053-CA8D-4235-9501-9D6F1A244B56}"
 EndProject
@@ -244,7 +244,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Collections", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Collections.Tests", "tests\NexusMods.Collections.Tests\NexusMods.Collections.Tests.csproj", "{8C817874-7A88-450E-B216-851A1B03684C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Larian", "src\Games\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj", "{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.Larian", "src\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj", "{2A35EBB5-1CA6-4F5D-8CE8-352146C82C28}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.ModUpdates", "src\Networking\NexusMods.Networking.ModUpdates\NexusMods.Networking.ModUpdates.csproj", "{8B246C04-F372-47F6-9397-F658915429A8}"
 EndProject
@@ -270,7 +270,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.DataModel.SchemaV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.DataModel.SchemaVersions.Tests", "tests\NexusMods.DataModel.SchemaVersions.Tests\NexusMods.DataModel.SchemaVersions.Tests.csproj", "{A5A2932D-B3EF-480B-BEBC-793F6FC90EDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBlade2Bannerlord", "src\Games\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj", "{8D7E82BB-2F8D-455A-AF12-C486D9EC3B77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Games.MountAndBlade2Bannerlord", "src\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj", "{8D7E82BB-2F8D-455A-AF12-C486D9EC3B77}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Telemetry.Tests", "tests\NexusMods.Telemetry.Tests\NexusMods.Telemetry.Tests.csproj", "{336387F7-3635-43FE-9C23-CBC0CE534989}"
 EndProject

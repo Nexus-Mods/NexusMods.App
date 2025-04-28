@@ -47,7 +47,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Games\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
+      <ProjectReference Include="..\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
       <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
       <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
     </ItemGroup>
