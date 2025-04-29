@@ -3,8 +3,6 @@ using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
-using ReactiveUI;
-using System.Reactive.Linq;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -45,7 +43,7 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
         LoadoutId = loadoutId;
         SortOrderEntityId = sortOrderId;
         
-        SortableItemsChangeSet = OrderCache.Connect().ObserveOn(RxApp.MainThreadScheduler).RefCount();
+        SortableItemsChangeSet = OrderCache.Connect().RefCount();
     }
 
     /// <inheritdoc />

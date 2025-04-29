@@ -11,7 +11,6 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using R3;
-using ReactiveUI;
 
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
@@ -53,9 +52,11 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
         
         // Observe RedMod groups changes
         GetRedModChangesObservable()
-            .Select(_ => R3.Observable.FromAsync(async ct => await RefreshSortOrder(ct)))
-            .Concat()
-            .Subscribe();
+            .SubscribeAwait(
+                async (_, token) => { await RefreshSortOrder(token: token); },
+                awaitOperation: AwaitOperation.Sequential
+            )
+            .AddTo(_disposables);
     }
     
     private Observable<Unit> GetRedModChangesObservable()
@@ -73,8 +74,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
                     return item.IsEnabledObservable(_connection)
                         .Select(isEnabled => (RedMod: redMod, RedModFolder: redMod.RedModFolder(), IsEnabled: isEnabled));
                 }
-            )
-            .ToObservable()
+            ).ToObservable()
             .Select(_ => Unit.Default);
     }
     
