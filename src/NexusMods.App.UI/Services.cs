@@ -207,6 +207,9 @@ public static class Services
             .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
 
+            .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
+            .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()
+
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
@@ -243,6 +246,7 @@ public static class Services
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
             .AddSingleton<IPageFactory, DebugControlsPageFactory>()
+            .AddSingleton<IPageFactory, ProtocolRegistrationTestPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()
