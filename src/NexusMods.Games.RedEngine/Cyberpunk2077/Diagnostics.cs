@@ -160,16 +160,33 @@ Refer to the {ProtontricksUri} for installation instructions.
     internal static IDiagnosticTemplate MissingRedModDependency = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 4))
-        .WithTitle("Missing 'REDmod' DLC")
-        .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("REDmod DLC is required to install REDmods but is not present.")
+        .WithTitle("REDmod DLC is not installed")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("The official REDmod DLC is required for {ModCount} mod(s) but is not installed.")
         .WithDetails("""
-The {RedmodLink} is required to install REDmods but is not present in your game folder.
+The official REDmod DLC is a mod loader required to use some mods for Cyberpunk 2077. The loadout contains {ModCount} mod(s) that require REDmod to work, but it is not installed.
 
-Please install the {RedmodLink} and start the game at least once.
+### How to Resolve
+1. Install the REDmod DLC - View in {RedmodLink} or the {GenericLink}.
+2. Apply a loadout with REDmod installed.
+
+OR
+
+1. Remove any mods requring REDmod from Installed Mods.
+2. Remove any subfolders of `{RedModFolder}` from External Changes.
+
+### Technical Details 
+Each subfolder in the `{RedModFolder}` represents an installed mod. If any folders are present, REDmod is required. 
+
+After finding {ModCount} mod(s), the REDmod DLC was checked for installation by verifying that `{RedModEXE}` exists.
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<NamedLink>("RedmodLink")
+            .AddValue<NamedLink>("GenericLink")
+            .AddValue<int>("ModCount")
+            .AddValue<string>("RedModFolder")
+            .AddValue<string>("RedModEXE")
         )
         .Finish();
 
