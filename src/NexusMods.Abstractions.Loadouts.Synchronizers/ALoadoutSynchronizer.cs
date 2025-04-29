@@ -1408,9 +1408,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var remappedLoadout = result.Remap(loadout);
 
                 // If there is no currently synced loadout, then we can ingest the game folder
-                if (!remappedLoadout.Installation.Contains(GameInstallMetadata.LastSyncedLoadout))
+                if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(remappedLoadout.Installation, out var lastSyncedLoadoutId))
                 {
                     remappedLoadout = await Synchronize(remappedLoadout);
+                }
+                else
+                {
+                    // check if the last synced loadout is valid (can apparently happen if the user unmanaged the game and manages it again)
+                    var lastSyncedLoadout = Loadout.Load(remappedLoadout.Db, lastSyncedLoadoutId);
+                    if (!lastSyncedLoadout.IsValid())
+                    {
+                        remappedLoadout = await Synchronize(lastSyncedLoadout);
+                    }
                 }
                 return remappedLoadout;
             }

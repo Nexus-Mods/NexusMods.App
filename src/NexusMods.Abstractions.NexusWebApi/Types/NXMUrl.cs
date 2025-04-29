@@ -90,6 +90,10 @@ public class NXMUrl
         {
             result = new NXMGogAuthUrl(uri);
         }
+        else if (uri.Host == "protocol-test")
+        {
+            result = new NXMProtocolRegistrationCheck(uri);
+        }
         else if (uri.Segments.Length >= 5)
         {
             if (uri.Segments[1] == "mods/")
