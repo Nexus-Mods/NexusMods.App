@@ -19,16 +19,25 @@ public static partial class Diagnostics
     internal static IDiagnosticTemplate MissingModWithKnownNexusUri = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 1))
-        .WithTitle("Missing Mod with Known Nexus URI")
+        .WithTitle("Missing Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyName} is not installed")
+        .WithSummary("'{Group}' requires '{DependencyName}' which is not installed")
         .WithDetails("""
-We've detected that the mod `{Group}` contains files that require {DependencyName} to function properly, but it is not installed. You can download the latest 
-version of {DependencyName} from {NexusModsDependencyUri}.
+The mod **{Group}** requires **{DependencyName}** to function, but **{DependencyName}** is not installed.
 
+
+### How to Resolve
+1. Download **{DependencyName}** from {NexusModsDependencyUri}
+2. Add **{DependencyName}** to the loadout. 
+
+OR 
+
+1. Remove **{Group}** from Installed Mods
+
+### Technical Details
 {Explanation}
 
-The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` so we know that the mod `{DependencyName}` is required.
+**{Group}** includes the file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` which indicates that the **{DependencyName}** mod is required.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("Group")
