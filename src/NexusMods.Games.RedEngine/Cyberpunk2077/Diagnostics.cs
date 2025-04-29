@@ -32,7 +32,7 @@ The mod **{Group}** requires **{DependencyName}** to function, but **{Dependency
 
 OR 
 
-1. Remove **{Group}** from Installed Mods
+1. Remove **{Group}** from "Installed Mods"
 
 ### Technical Details
 {Explanation}
@@ -69,7 +69,7 @@ The mod **{Group}** requires **{DependencyName}** to function, but **{Dependency
 
 OR 
 
-1. Remove **{Group}** from Installed Mods
+1. Remove **{Group}** from "Installed Mods"
 
 ### Technical Details
 {Explanation}
@@ -98,16 +98,25 @@ OR
     internal static IDiagnosticTemplate DisabledGroupDependency = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 2))
-        .WithTitle("Disabled Mod Dependency")
+        .WithTitle("Disabled Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyName} is disabled")
+        .WithSummary("'{Group}' requires '{DependencyName}' but it is disabled")
         .WithDetails("""
-We've detected that the mod `{Group}` contains files that require {DependencyName} to function properly, but it is not enabled. Please 
-re-enable `{DependencyGroup}` to resolve this issue.
+The mod **{Group}** requires **{DependencyName}** to function, but **{DependencyGroup}** is not enabled.
 
+
+### How to Resolve
+1. Enable **{DependencyGroup}** in "Installed Mods"
+
+OR
+
+1. Remove **{Group}** from "Installed Mods"
+
+### Technical Details
 {Explanation}
 
-The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` so we know that the mod `{DependencyName}` is required.
+**{Group}** includes the file `{Path}` in `{SearchPath}` (or one of the subfolders) and has the extension `{SearchExtension}` which indicates that the **{DependencyName}** mod is required.
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("Group")
@@ -127,15 +136,22 @@ The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}`
         .WithId(new DiagnosticId(Source, number: 2))
         .WithTitle("Disabled Mod Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyName} is disabled")
+        .WithSummary("'{Group}' requires '{DependencyName}' but it is disabled")
         .WithDetails("""
-We've detected that the mod `{Group}` contains files that require {DependencyName} to function properly, but it is not enabled. Please 
-re-enable `{DependencyGroup}` to resolve this issue.
+The mod **{Group}** requires **{DependencyName}** to function, but **{DependencyGroup}** is not enabled.
 
+
+### How to Resolve
+1. Enable **{DependencyGroup}** in "Installed Mods"
+
+OR
+
+1. Remove **{Group}** from "Installed Mods"
+
+### Technical Details
 {Explanation}
 
-The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` so we looked in the file and found (at line {LineNumber})
-the following usecase of {DependencyName}
+**{Group}** includes the file `{Path}` in `{SearchPath}` (or one of the subfolders) and has the extension `{SearchExtension}`. The file has a reference to **{DependencyName}** on line {LineNumber} indicating that the **{DependencyName}** mod is required.
 
 ```
 {MatchingSegment}
