@@ -175,13 +175,22 @@ OR
     internal static IDiagnosticTemplate MissingProtontricksForRedMod = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 3))
-        .WithTitle("Missing 'Protontricks' dependency")
+        .WithTitle("Protontricks is not installed")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("Protontricks is required to install REDmods but is not present.")
+        .WithSummary("Protontricks is required to use REDmods but is not present.")
         .WithDetails("""
-Protontricks is required to install REDmods but is not present.
+Protontricks is not installed by is required to use the REDmod DLC when playing Cyberpunk 2077 on Linux.
 
-Refer to the {ProtontricksUri} for installation instructions.
+### How to Resolve
+1. Install Protontricks by following the instructions in the {ProtontricksUri}.
+2. Apply a loadout with Protontricks installed.
+
+OR
+
+1. Remove any mods requiring REDmod from "Installed Mods".
+
+### Technical Details
+The OS did not return any information when querying for Protontricks installation information. This indicates that Protontricks is not installed.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<NamedLink>("ProtontricksUri")
@@ -228,13 +237,17 @@ After finding {ModCount} mod(s), the REDmod DLC was checked for installation by 
     internal static IDiagnosticTemplate RequiredWineDllOverrides = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 5))
-        .WithTitle("Update WINE DLL overrides to mod on Linux")
+        .WithTitle("Incorrect WINE configuration")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("These changes are required for Linux")
+        .WithSummary("Update the WINE DLL overrides to mod on Linux")
         .WithDetails("""
-Modding Cyberpunk 2077 on Linux requires you to configure WINE.
+Modding Cyberpunk 2077 on Linux requires you to configure WINE or the game will not launch correctly.
 
+### How to Resolve
 {Instructions}
+
+### Technical Details
+The current WINE DLL overrides are not set up correctly for modding on Linux.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("Instructions")
@@ -246,13 +259,17 @@ Modding Cyberpunk 2077 on Linux requires you to configure WINE.
     internal static IDiagnosticTemplate RequiredWinetricksPackages = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 6))
-        .WithTitle("Install required winetricks packages")
+        .WithTitle("Missing Winetricks packages")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("These packages are required or Linux")
+        .WithSummary("Install required packages to mod on Linux")
         .WithDetails("""
 Modding Cyberpunk 2077 on Linux requires packages to be installed in your WINE prefix.
 
+### How to Resolve
 {Instructions}  
+
+### Technical Details
+The current WINE prefix does not have the required packages installed for modding on Linux.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("Instructions")
