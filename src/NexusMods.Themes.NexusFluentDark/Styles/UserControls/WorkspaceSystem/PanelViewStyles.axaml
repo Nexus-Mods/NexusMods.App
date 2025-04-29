@@ -87,7 +87,7 @@
 
         <!-- multiple tabs -->
         <Style Selector="^:not(:one-tab)">
-            <Style Selector="^Border#TabHeaderBorder">
+            <Style Selector="^ Border#TabHeaderBorder">
                 <!-- <Setter Property="CornerRadius" Value="{StaticResource Rounded-t-lg}" /> -->
                 <Setter Property="Background" Value="{StaticResource BrandTranslucentDark300Brush}" />
 

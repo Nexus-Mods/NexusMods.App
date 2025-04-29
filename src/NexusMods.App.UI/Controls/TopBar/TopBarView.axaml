@@ -252,6 +252,7 @@
         <!-- system buttons -->
         <Border x:Name="SystemButtonsBorder" Grid.Column="4">
             <StackPanel x:Name="SystemButtonsStack" Orientation="Horizontal">
+                <Separator />
                 <controls:StandardButton x:Name="MinimizeButton"
                                          Type="Tertiary"
                                          Fill="None"

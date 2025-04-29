@@ -150,18 +150,21 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             await Task.Delay(50);
         }
 
-        hostWindow.GetObservable(Window.WindowStateProperty).Subscribe(s =>
+        hostWindow.GetObservable(Window.WindowStateProperty).Subscribe(windowState =>
             {
-                if (s != WindowState.Maximized)
-                {
-                    MaximizeButton.LeftIcon = IconValues.WindowMaximize;
-                    ToolTip.SetTip(MaximizeButton, "Maximize");
-                }
-
-                if (s == WindowState.Maximized)
+                // Change the maximize button icon and tooltip based on the window state
+                if (windowState == WindowState.Maximized)
                 {
                     MaximizeButton.LeftIcon = IconValues.WindowRestore;
                     ToolTip.SetTip(MaximizeButton, "Restore");
+                    // Set padding to 7 to account for the Windows-added off screen margin when maximized
+                    hostWindow.Padding = new Thickness(7);
+                }
+                else
+                {
+                    MaximizeButton.LeftIcon = IconValues.WindowMaximize;
+                    ToolTip.SetTip(MaximizeButton, "Maximize");
+                    hostWindow.Padding = new Thickness(0);
                 }
             }
         );

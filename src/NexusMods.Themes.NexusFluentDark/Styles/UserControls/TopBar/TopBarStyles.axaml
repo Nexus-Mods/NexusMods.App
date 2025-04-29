@@ -36,17 +36,26 @@
                 <Setter Property="Margin" Value="0,0,4,0" />
             </Style>
         </Style>
-        
+
+        <Style Selector="^ controls|StandardButton#LoginButton">
+            <Setter Property="Margin" Value="4,0,0,0" />
+        </Style>
+
         <!-- system buttons -->
         <Style Selector="^ Border#SystemButtonsBorder">
-            <Setter Property="Padding" Value="12 0" />
+            <Setter Property="Padding" Value="0 0 12 0" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
-            <Setter Property="BorderThickness" Value="1 0 0 0" />
-            
+
             <Style Selector="^ StackPanel#SystemButtonsStack">
                 <Setter Property="Orientation" Value="Horizontal" />
                 <Setter Property="Spacing" Value="4" />
+                
+                <Style Selector="^ > Separator">
+                    <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+                    <Setter Property="Margin" Value="0 0 12 0" />
+                    <Setter Property="Height" Value="{CompiledBinding $parent[Border].Height}" />
+                    <Setter Property="Width" Value="1" />
+                </Style>
             </Style>
         </Style>
     </Style>

@@ -148,9 +148,7 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 .Select(tuple =>
                     {
                         var (tabCount, isAlone) = tuple;
-                        // we need a floating tab close button if://
-                        // there is 1 tab
-                        // and the tab is not alone
+                        // we need a floating tab close button if there is only one tab and the panel is not alone
                         return tabCount == 1 && !isAlone;
                     }
                 )
