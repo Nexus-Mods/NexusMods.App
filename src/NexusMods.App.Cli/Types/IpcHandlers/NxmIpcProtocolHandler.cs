@@ -123,6 +123,15 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
                     game = installedGame;
                     break;
                 }
+
+                var activeLoadouts = Loadout.All(connection.Db)
+                    .Where(ld => ld.InstallationInstance.Game.GameId == installedGame.Game.GameId);
+                
+                if (activeLoadouts.Any())
+                {
+                    game = installedGame;
+                    break;
+                }
             }
         }
         if (game is null)
