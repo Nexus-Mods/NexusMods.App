@@ -32,12 +32,7 @@ This page lists the recommended system requirements to install and run the app o
 
 ### Linux Dependencies
 
-The App requires the following programs to be available on the system `PATH` at runtime:
-
-- `xdg-settings` (part of [xdg-utils](https://www.freedesktop.org/wiki/Software/xdg-utils/))
-- `update-desktop-database` (part of [desktop-file-utils](https://www.freedesktop.org/wiki/Software/desktop-file-utils/)) to update the MIME cache after creating a desktop entry file for the NXM link handler.
-
-In addition, the following libraries are required:
+The following libraries are required:
 
 - [FUSE 2](https://github.com/AppImage/AppImageKit/wiki/FUSE) if running the AppImage
 - `glibc` 2.2.5 or newer
