@@ -3,7 +3,7 @@
         xmlns:ui="clr-namespace:NexusMods.App.UI.Controls.TopBar;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
-    
+
     <Design.PreviewWith>
         <Border Width="1280" Height="52">
             <ui:TopBarView />
@@ -12,52 +12,42 @@
 
     <!-- Style Definitions -->
     <Style Selector="ui|TopBarView">
-        
-        <!-- one off avatar button for the top bar -->
-        <Style Selector="^ Button#AvatarMenuItemButton">
-            <Setter Property="CornerRadius" Value="999" />
-            <Setter Property="Height" Value="32" />
-            <Setter Property="Width" Value="32" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
 
+        <!-- one off avatar button for the top bar -->
+        <Style Selector="^ controls|StandardButton#AvatarMenuItemButton">
             <Style Selector="^ icons|UnifiedIcon#AvatarUnifiedIcon">
-                <Setter Property="Size" Value="26" />
+                <Setter Property="Size" Value="20" />
                 <Setter Property="HorizontalAlignment" Value="Center" />
                 <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="0 3" />
                 <Setter Property="Clip">
-                    <EllipseGeometry Rect="0, 0, 26, 26" />
+                    <EllipseGeometry Rect="0, 0, 20, 20" />
                 </Setter>
             </Style>
-            
-            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}" />
-            </Style>
-            
-            <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-            </Style>
-            
-            <Style Selector="^:flyout-open /template/ ContentPresenter#PART_ContentPresenter">
-                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
-            </Style>
-            
-            <Style Selector="^:flyout-open icons|UnifiedIcon#AvatarUnifiedIcon">
-                <Setter Property="Opacity" Value="0.7" />
-            </Style>
         </Style>
-        
+
         <Style Selector="^ TextBlock#PremiumTextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
-        
+
         <!-- this specific icon fills the horizontal space a bit too much -->
         <Style Selector="^ controls|StandardButton#GiveFeedbackButton">
             <Style Selector="^ icons|UnifiedIcon#PART_LeftIcon">
                 <Setter Property="Margin" Value="0,0,4,0" />
             </Style>
         </Style>
-
         
+        <!-- system buttons -->
+        <Style Selector="^ Border#SystemButtonsBorder">
+            <Setter Property="Padding" Value="12 0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentModerateBrush}" />
+            <Setter Property="BorderThickness" Value="1 0 0 0" />
+            
+            <Style Selector="^ StackPanel#SystemButtonsStack">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Spacing" Value="4" />
+            </Style>
+        </Style>
     </Style>
 </Styles>

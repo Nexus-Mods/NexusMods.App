@@ -13,7 +13,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem">
 
     <Design.DataContext>
         <topBar:TopBarDesignViewModel />
@@ -22,7 +23,7 @@
     <Grid x:Name="MainGrid"
           Height="52"
           VerticalAlignment="Top"
-          ShowGridLines="True">
+          ShowGridLines="False">
 
         <Grid.ColumnDefinitions>
             <!-- min width is 232 to never go left of the left menu section -->
@@ -32,7 +33,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        
+
         <!-- <Border -->
         <!--         Grid.ColumnSpan="5" -->
         <!--         IsHitTestVisible="False"/> -->
@@ -45,8 +46,8 @@
                     VerticalAlignment="Center">
 
             <TextBlock x:Name="ActiveWorkspaceTitleTextBlock"
-                       Theme="{StaticResource HeadingXSSemiTheme}"
-                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                       Theme="{StaticResource BodyXLBoldTheme}"
+                       Foreground="{StaticResource NeutralModerateBrush}" />
 
             <TextBlock x:Name="ActiveWorkspaceSubtitleTextBlock"
                        Theme="{StaticResource BodyMDNormalTheme}"
@@ -82,21 +83,28 @@
                                          Type="Tertiary"
                                          Fill="None"
                                          LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
+                <controls:StandardButton x:Name="NewTabButton"
+                                         ToolTip.Tip="New Tab"
+                                         ShowLabel="False"
+                                         ShowIcon="Left"
+                                         Size="Medium"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         LeftIcon="{x:Static icons:IconValues.Tab}" />
+                <reactiveUi:ViewModelViewHost x:Name="AddPanelComboViewModelViewHost" />
             </StackPanel>
-
-            <reactiveUi:ViewModelViewHost VerticalAlignment="Center" x:Name="AddPanelViewModelViewHost" />
         </StackPanel>
 
 
         <!-- right column (buttons, settings, login) -->
-        <StackPanel Grid.Column="3" Margin="12 0" Orientation="Horizontal" Spacing="12">
+        <StackPanel Grid.Column="3" Margin="12 0" Orientation="Horizontal">
 
             <!-- help button -->
             <controls:StandardButton Type="Tertiary"
                                      Fill="None"
                                      LeftIcon="{x:Static icons:IconValues.HelpOutline}"
                                      ShowLabel="False"
-                                     ShowIcon="IconOnly"
+                                     ShowIcon="Left"
                                      Size="Medium"
                                      ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
                 <controls:StandardButton.Flyout>
@@ -157,7 +165,7 @@
                                           Fill="None"
                                           LeftIcon="{x:Static icons:IconValues.CogOutline}"
                                           ShowLabel="False"
-                                          ShowIcon="IconOnly"
+                                          ShowIcon="Left"
                                           Size="Medium"
                                           ToolTip.Tip="{x:Static resources:Language.SettingsView_Title}" />
 
@@ -172,9 +180,11 @@
                                          ToolTip.Tip="{x:Static resources:Language.TopBarActions__LOG_IN_ToolTip}" />
 
                 <!-- avatar button -->
-                <Button x:Name="AvatarMenuItemButton"
-                        ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
-                    <Button.Flyout>
+                <controls:StandardButton x:Name="AvatarMenuItemButton"
+                                         ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}"
+                                         Fill="None"
+                                         Size="Medium">
+                    <controls:StandardButton.Flyout>
                         <MenuFlyout>
                             <MenuItem x:Name="OpenNexusModsProfileMenuItem"
                                       Header="{x:Static resources:Language.TopBar_MyProfile}">
@@ -203,10 +213,10 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuFlyout>
-                    </Button.Flyout>
+                    </controls:StandardButton.Flyout>
                     <icons:UnifiedIcon x:Name="AvatarUnifiedIcon"
                                        Value="{x:Static icons:IconValues.AvatarTest}" />
-                </Button>
+                </controls:StandardButton>
 
                 <!-- premium label -->
                 <TextBlock x:Name="PremiumTextBlock"
@@ -240,28 +250,33 @@
         </StackPanel>
 
         <!-- system buttons -->
-        <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="4" Margin="0, 0,16,0">
-            <controls:StandardButton x:Name="MinimizeButton"
-                                     Type="Tertiary"
-                                     Fill="None"
-                                     LeftIcon="{x:Static icons:IconValues.WindowMinimize}"
-                                     ShowIcon="Left"
-                                     ShowLabel="False" 
-                                     Click="MinimizeWindow"/>
-            <controls:StandardButton x:Name="MaximizeButton"
-                                     Type="Tertiary"
-                                     Fill="None"
-                                     LeftIcon="{x:Static icons:IconValues.WindowMaximize}"
-                                     ShowIcon="Left"
-                                     ShowLabel="False"
-                                     Click="MaximizeWindow" />
-            <controls:StandardButton x:Name="CloseButton"
-                                     Type="Tertiary"
-                                     Fill="None"
-                                     LeftIcon="{x:Static icons:IconValues.Close}"
-                                     ShowIcon="Left"
-                                     ShowLabel="False" 
-                                     Click="CloseWindow"/>
-        </StackPanel>
+        <Border x:Name="SystemButtonsBorder" Grid.Column="4">
+            <StackPanel x:Name="SystemButtonsStack" Orientation="Horizontal">
+                <controls:StandardButton x:Name="MinimizeButton"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         Size="Medium"
+                                         LeftIcon="{x:Static icons:IconValues.WindowMinimize}"
+                                         ShowIcon="Left"
+                                         ShowLabel="False"
+                                         Click="MinimizeWindow" />
+                <controls:StandardButton x:Name="MaximizeButton"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         Size="Medium"
+                                         LeftIcon="{x:Static icons:IconValues.WindowMaximize}"
+                                         ShowIcon="Left"
+                                         ShowLabel="False"
+                                         Click="MaximizeWindow" />
+                <controls:StandardButton x:Name="CloseButton"
+                                         Type="Tertiary"
+                                         Fill="None"
+                                         Size="Medium"
+                                         LeftIcon="{x:Static icons:IconValues.Close}"
+                                         ShowIcon="Left"
+                                         ShowLabel="False"
+                                         Click="CloseWindow" />
+            </StackPanel>
+        </Border>
     </Grid>
 </reactiveUi:ReactiveUserControl>

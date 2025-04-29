@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:workspaceSystem="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                mc:Ignorable="d" d:DesignHeight="250" d:DesignWidth="150"
+                                mc:Ignorable="d" d:DesignHeight="36"
                                 x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelDropDownView">
     <Design.DataContext>
         <workspaceSystem:AddPanelDropDownDesignViewModel />
@@ -16,6 +16,9 @@
         <TextBlock Text="{x:Static resources:Language.AddPanelToolTip}" />
     </ToolTip.Tip>
     
-    <ComboBox x:Name="CreatePanelComboBox" Classes="AddPanelDropDown" />
+    <ComboBox x:Name="CreatePanelComboBox" Classes="AddPanelDropDown" 
+              VerticalAlignment="Center"
+              Margin="0"
+              Padding="0"/>
     
 </reactiveUi:ReactiveUserControl>

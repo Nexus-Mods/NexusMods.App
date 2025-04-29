@@ -38,6 +38,17 @@
                         <controls:StandardButton Text="Left" Size="Medium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Text="Right" Size="Medium" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Text="Both" Size="Medium" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium">
+                            <icons:UnifiedIcon x:Name="AvatarUnifiedIcon" 
+                                               Value="{x:Static icons:IconValues.AvatarTest}"
+                                               Size="20"
+                                               Margin="0 3">
+                                <icons:UnifiedIcon.Clip>
+                                    <EllipseGeometry Rect="0, 0, 20, 20" />
+                                </icons:UnifiedIcon.Clip>
+                            </icons:UnifiedIcon>
+                        </controls:StandardButton>
+                        
                         <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
@@ -385,6 +396,7 @@
             
             <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeExtraSmall}" />
+                <Setter Property="Margin" Value="-2,2,-2,3" />
             </Style>
         </Style>
 
@@ -398,6 +410,7 @@
 
             <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeMedium}" />
+                <Setter Property="Margin" Value="2,2,2,3" />
             </Style>
 
             <Style Selector="^ TextBlock#PART_Label">

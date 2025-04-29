@@ -15,7 +15,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {        
         ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
         ExtendClientAreaToDecorationsHint = true;
-        ExtendClientAreaTitleBarHeightHint = -1;
+        ExtendClientAreaTitleBarHeightHint = 52; // 52 pixels drag height to match the top bar
         
         InitializeComponent();
 

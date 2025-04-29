@@ -1,7 +1,7 @@
 using System.Reactive.Disposables;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
-using Avalonia.VisualTree;
 using DynamicData.Binding;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Icons;
@@ -29,13 +29,14 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 this.BindCommand(ViewModel, vm => vm.SelectedTab!.GoForwardInHistoryCommand, view => view.GoForwardInHistory)
                     .DisposeWith(d);
 
-                this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
+                this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelComboViewModelViewHost.ViewModel)
                     .DisposeWith(d);
 
+                this.BindCommand(ViewModel, vm => vm.NewTabCommand, view => view.NewTabButton)
+                    .DisposeWith(d);
 
                 this.BindCommand(ViewModel, vm => vm.OpenSettingsCommand, view => view.OpenSettingsButton)
                     .DisposeWith(d);
-
 
                 this.BindCommand(ViewModel, vm => vm.ViewChangelogCommand, view => view.ViewChangelogMenuItem)
                     .DisposeWith(d);
@@ -45,7 +46,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
                 this.BindCommand(ViewModel, vm => vm.ShowWelcomeMessageCommand, view => view.ShowWelcomeMessageMenuItem)
                     .DisposeWith(d);
-                
+
                 this.BindCommand(ViewModel, vm => vm.OpenDiscordCommand, view => view.OpenDiscordMenuItem)
                     .DisposeWith(d);
 
@@ -57,7 +58,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
                 this.BindCommand(ViewModel, vm => vm.OpenStatusPageCommand, view => view.OpenStatusPageMenuItem)
                     .DisposeWith(d);
-                
+
                 this.BindCommand(ViewModel, vm => vm.LoginCommand, view => view.LoginButton)
                     .DisposeWith(d);
 
@@ -68,22 +69,22 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsProfileCommand, view => view.OpenNexusModsProfileMenuItem)
                     .DisposeWith(d);
-                
+
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.OpenGetPremiumMenuItem)
                     .DisposeWith(d);
-                
+
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.FreeButton)
                     .DisposeWith(d);
-                
+
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsPremiumCommand, view => view.SupporterButton)
                     .DisposeWith(d);
-                
+
                 this.BindCommand(ViewModel, vm => vm.OpenNexusModsAccountSettingsCommand, view => view.OpenNexusModsAccountSettingsMenuItem)
                     .DisposeWith(d);
 
                 this.BindCommand(ViewModel, vm => vm.LogoutCommand, view => view.SignOutMenuItem)
                     .DisposeWith(d);
-                
+
                 this.WhenAnyValue(
                         view => view.ViewModel!.IsLoggedIn,
                         view => view.ViewModel!.UserRole
@@ -91,26 +92,21 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                     .Subscribe(userinfo =>
                         {
                             var (isLoggedIn, userRole) = userinfo;
-                            
+
                             PremiumTextBlock.IsVisible = isLoggedIn && userRole == UserRole.Premium;
                             SupporterButton.IsVisible = isLoggedIn && userRole == UserRole.Supporter;
-                            FreeButton.IsVisible = isLoggedIn && userRole == UserRole.Free; 
-                            OpenGetPremiumMenuItem.IsVisible = isLoggedIn && userRole != UserRole.Premium; 
+                            FreeButton.IsVisible = isLoggedIn && userRole == UserRole.Free;
+                            OpenGetPremiumMenuItem.IsVisible = isLoggedIn && userRole != UserRole.Premium;
                         }
                     )
                     .DisposeWith(d);
 
-                this.WhenValueChanged(
-                        x => x.ViewModel!.Username
+                this.WhenValueChanged(x => x.ViewModel!.Username
                     )
-                    .Subscribe(username =>
-                    {
-                        ToolTip.SetTip(AvatarMenuItemButton, $"Logged in to Nexus Mods as {username}");
-                    })
+                    .Subscribe(username => { ToolTip.SetTip(AvatarMenuItemButton, $"Logged in to Nexus Mods as {username}"); })
                     .DisposeWith(d);
 
-                this.WhenValueChanged(
-                        x => x.ViewModel!.IsLoggedIn
+                this.WhenValueChanged(x => x.ViewModel!.IsLoggedIn
                     )
                     .Subscribe(b =>
                         {
@@ -121,8 +117,10 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                     .DisposeWith(d);
             }
         );
+
+        SubscribeToWindowState();
     }
-    
+
     private void CloseWindow(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var hostWindow = (Window)this.VisualRoot!;
@@ -133,19 +131,39 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
     {
         var hostWindow = (Window)this.VisualRoot!;
 
-        if (hostWindow.WindowState == WindowState.Normal)
-        {
-            hostWindow.WindowState = WindowState.Maximized;
-        }
-        else
-        {
-            hostWindow.WindowState = WindowState.Normal;
-        }
+        hostWindow.WindowState = hostWindow.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
     }
 
     private void MinimizeWindow(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        Window hostWindow = (Window)this.VisualRoot!;
+        var hostWindow = (Window)this.VisualRoot!;
         hostWindow.WindowState = WindowState.Minimized;
+    }
+
+    private async void SubscribeToWindowState()
+    {
+        var hostWindow = (Window)this.VisualRoot!;
+
+        while (hostWindow == null)
+        {
+            hostWindow = (Window)this.VisualRoot!;
+            await Task.Delay(50);
+        }
+
+        hostWindow.GetObservable(Window.WindowStateProperty).Subscribe(s =>
+            {
+                if (s != WindowState.Maximized)
+                {
+                    MaximizeButton.LeftIcon = IconValues.WindowMaximize;
+                    ToolTip.SetTip(MaximizeButton, "Maximize");
+                }
+
+                if (s == WindowState.Maximized)
+                {
+                    MaximizeButton.LeftIcon = IconValues.WindowRestore;
+                    ToolTip.SetTip(MaximizeButton, "Restore");
+                }
+            }
+        );
     }
 }
