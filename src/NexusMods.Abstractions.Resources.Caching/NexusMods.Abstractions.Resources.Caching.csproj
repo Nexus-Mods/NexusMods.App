@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Resources\NexusMods.Abstractions.Resources.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BitFaster.Caching" />
+    </ItemGroup>
+
+</Project>
