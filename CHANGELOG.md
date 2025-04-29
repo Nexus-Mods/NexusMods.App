@@ -1,14 +1,30 @@
-# v0.10.1 - 2025-04-XX
+# v0.10.2 - 2025-04-XX
+This release adds Cyberpunk 2077 to the supported games, improves the installation of Stardew Valley mods without a manifest file and includes a draggable load order view for Cyberpunk 2077 REDmods. 
 
-* Cyberpunk 2077 added to supported games
-* Cyberpunk 2077 - added diagnostics to help Linux users get their environment set up to start modding
-* Stardew Valley - Better support for mods that don't include a manifest.json (e.g. translations). 
-* UI - New toolbars (action bars?)
-* UI - Reduced the size of all buttons to make the UI more compact
-* Memory usage - Optimised memory usage for file tree views.(?)
-* Load order - Drag and drop prototype (REDmod)
+## Cyberpunk 2077 support
+In this build, we're confident that we've got all the basics in place for players to mod Cyberpunk 2077 with the app. The app offers the following features:
+
+* Compatibility with the Steam and GOG Galaxy releases.
+* Support for all the most common types of mod: REDmod, archives, REDscript, and framework mods such (e.g. Cyber Engine Tweaks).
+* Support for collections
+* Health Check diagnostics for missing dependencies.
+* Health Check diagnostics to help set up a Linux environment to mod the game.
+* REDmod Load Order management and deployment.
+
+Your can read more about the available features in the [documentation](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/). 
+
+## Drag and drop Load Order (REDmod)
+The REDmod load order page has been updated with a fresh new look and support for re-ordering mods by dragging and dropping rows in the list. This will serve as the foundation of the load order pages we'll implement for other games in future. 
+
+![The REDmod load order page, showing the drag and drop capability.](https://i.imgur.com/M1oXyMt.gif)
+
+## More Features
+* Stardew Valley - We've updated the installation logic to better recognise mods that do not includes a manifest file - including translations and asset replacers. 
+* Implemented new toolbar designs across the app.
+* Reduced the size of all buttons in the UI for better use of space.
 
 ## Technical Changes
+* We've optimised memory usage for some very inefficient pages, including file tree views.(?)
 * Removed the Xbox Game Pass (Microsoft Store) experimental toggle because it currently isn't functional for any game. 
 * When first starting the app, instead of having to click through 3 separate pop-up, we've now merged them into one.
 * The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
@@ -20,6 +36,12 @@
 * Fixed an issue where FOMODs with paths could cause the app to crash.
 * Fixed an issue where the app would crash when view FOMOD images in a certain way. 
 
+## Known Issues
+* After that app runs REDmod during the apply process, an error message will pop up even if the REDmod succeeded.
+* The app will attempt to run the REDmod.exe even if it is not installed, resulting in an error message. 
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
 
 # v0.9.2 - 2025-04-07
 This is a bug-fix release that corrects an issue causing the "Update Available" pop-up to appear even when on the latest version.
