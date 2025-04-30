@@ -105,7 +105,7 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/format-list-checkbox/
     public static readonly IconValue FormatListCheckbox = new ProjektankerIcon("mdi-format-list-checkbox");
     
-    public static readonly IconValue FormatListNumbered = new ProjektankerIcon("mdi-format-list-numbers");
+    public static readonly IconValue FormatListNumbered = new ProjektankerIcon("mdi-format-list-numbered");
     
     // https://pictogrammers.com/library/mdi/icon/dots-grid/
     public static readonly IconValue DotsGrid = new ProjektankerIcon("mdi-dots-grid");
