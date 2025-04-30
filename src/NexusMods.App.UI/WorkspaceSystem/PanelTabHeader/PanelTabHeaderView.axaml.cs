@@ -64,7 +64,7 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
                     removeHandler => Container.PointerReleased -= removeHandler
                 )
                 .Select(static eventPattern => eventPattern.EventArgs)
-                .Where(eventArgs => eventArgs.InitialPressMouseButton != MouseButton.Middle &&
+                .Where(eventArgs => eventArgs.InitialPressMouseButton == MouseButton.Middle &&
                                     Bounds.Contains(eventArgs.GetPosition(this)))
                 .Select(_ => Unit.Default)
                 .InvokeReactiveCommand(this, view => view.ViewModel!.CloseTabCommand)
