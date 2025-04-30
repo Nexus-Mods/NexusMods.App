@@ -179,7 +179,7 @@ OR
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("Protontricks is required to use REDmods but is not present.")
         .WithDetails("""
-Protontricks is not installed by is required to use the REDmod DLC when playing Cyberpunk 2077 on Linux.
+Protontricks is not installed but is required to use the REDmod DLC when playing Cyberpunk 2077 on Linux.
 
 ### How to Resolve
 1. Install Protontricks by following the instructions in the {ProtontricksUri}.
