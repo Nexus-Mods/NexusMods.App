@@ -96,6 +96,7 @@ nav:
       - users/faq/index.md
       - How to find the log files: users/faq/LogFiles.md
       - Nexus Mods Download Issues: users/faq/NexusModsDownloads.md
+      - Linux Protocol Registration: users/faq/LinuxProtocolRegistration.md
     - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md

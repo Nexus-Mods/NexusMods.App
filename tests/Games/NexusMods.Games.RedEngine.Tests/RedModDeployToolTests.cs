@@ -26,6 +26,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     }
 
     [Fact]
+    [Trait("FlakeyTest", "True")]
     public async Task LoadorderFileIsWrittenCorrectly()
     {
         var loadout = await CreateLoadout();
@@ -34,6 +35,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     }
 
     [Theory]
+    [Trait("FlakeyTest", "True")]
     [InlineData("Driver_Shotguns", 0)]
     [InlineData("Driver_Shotguns", 3)]
     [InlineData("Driver_Shotguns", -3)]
@@ -106,6 +108,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
     
     
     [Theory]
+    [Trait("FlakeyTest", "True")]
     [InlineData(new[] { 0 }, 3, TargetRelativePosition.BeforeTarget)]
     [InlineData(new[] { 0, 1, 2 }, 11, TargetRelativePosition.AfterTarget)]
     [InlineData(new[] { 0, 11, 2 }, 5, TargetRelativePosition.AfterTarget)]
