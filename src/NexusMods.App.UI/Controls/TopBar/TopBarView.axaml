@@ -21,7 +21,7 @@
     </Design.DataContext>
 
     <Grid x:Name="MainGrid"
-          Height="52"
+          Height="44"
           VerticalAlignment="Top"
           ShowGridLines="False">
 
@@ -44,16 +44,8 @@
                     Spacing="{StaticResource Spacing-1.5}"
                     Margin="16,0"
                     VerticalAlignment="Center">
-
-            <TextBlock x:Name="ActiveWorkspaceTitleTextBlock"
-                       Theme="{StaticResource BodyXLBoldTheme}"
-                       Foreground="{StaticResource NeutralModerateBrush}" />
-
-            <TextBlock x:Name="ActiveWorkspaceSubtitleTextBlock"
-                       Theme="{StaticResource BodyMDNormalTheme}"
-                       Foreground="{StaticResource NeutralSubduedBrush}"
-                       VerticalAlignment="Center"
-                       IsVisible="False" />
+            <TextBlock x:Name="ActiveWorkspaceTitleTextBlock" />
+            <TextBlock x:Name="ActiveWorkspaceSubtitleTextBlock" IsVisible="False" />
         </StackPanel>
 
         <!-- center column -->
@@ -73,7 +65,7 @@
                                          Size="Medium"
                                          Type="Tertiary"
                                          Fill="None"
-                                         LeftIcon="{x:Static icons:IconValues.ArrowBack}" />
+                                         LeftIcon="{x:Static icons:IconValues.ArrowBack}"/>
 
                 <controls:StandardButton x:Name="GoForwardInHistory"
                                          ToolTip.Tip="{x:Static resources:Language.TopBar_Forward_ToolTip}"
@@ -83,6 +75,7 @@
                                          Type="Tertiary"
                                          Fill="None"
                                          LeftIcon="{x:Static icons:IconValues.ArrowForward}" />
+                
                 <controls:StandardButton x:Name="NewTabButton"
                                          ToolTip.Tip="New Tab"
                                          ShowLabel="False"
@@ -90,7 +83,7 @@
                                          Size="Medium"
                                          Type="Tertiary"
                                          Fill="None"
-                                         LeftIcon="{x:Static icons:IconValues.Tab}" />
+                                         LeftIcon="{x:Static icons:IconValues.Tab}"/>
                 <reactiveUi:ViewModelViewHost x:Name="AddPanelComboViewModelViewHost" />
             </StackPanel>
         </StackPanel>
@@ -100,13 +93,14 @@
         <StackPanel Grid.Column="3" Margin="12 0" Orientation="Horizontal">
 
             <!-- help button -->
-            <controls:StandardButton Type="Tertiary"
-                                     Fill="None"
-                                     LeftIcon="{x:Static icons:IconValues.HelpOutline}"
-                                     ShowLabel="False"
-                                     ShowIcon="Left"
-                                     Size="Medium"
-                                     ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
+            <controls:StandardButton  x:Name="HelpButton"
+                                      Type="Tertiary"
+                                      Fill="None"
+                                      LeftIcon="{x:Static icons:IconValues.HelpOutline}"
+                                      ShowLabel="False"
+                                      ShowIcon="Left"
+                                      Size="Medium"
+                                      ToolTip.Tip="{x:Static resources:Language.TopBar_Help_ToolTip}">
                 <controls:StandardButton.Flyout>
                     <MenuFlyout>
                         <navigation:NavigationMenuItem
@@ -220,9 +214,6 @@
 
                 <!-- premium label -->
                 <TextBlock x:Name="PremiumTextBlock"
-                           Theme="{StaticResource TitleSMSemiTheme}"
-                           VerticalAlignment="Center"
-                           Margin="12,0,0,0"
                            Text="{x:Static resources:Language.Nexus_Premium_Status__Premium}" />
 
                 <!-- supporter button -->
@@ -232,8 +223,7 @@
                                          Size="Small"
                                          ShowIcon="None">
                     <TextBlock
-                        Text="{x:Static resources:Language.Nexus_Premium_Status__Supporter}"
-                        Theme="{StaticResource TitleSMSemiTheme}" />
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Supporter}" />
                 </controls:StandardButton>
 
                 <!-- free button -->
@@ -243,8 +233,7 @@
                                          Size="Small"
                                          ShowIcon="None">
                     <TextBlock
-                        Text="{x:Static resources:Language.Nexus_Premium_Status__Free}"
-                        Theme="{StaticResource TitleSMSemiTheme}" />
+                        Text="{x:Static resources:Language.Nexus_Premium_Status__Free}" />
                 </controls:StandardButton>
             </StackPanel>
         </StackPanel>

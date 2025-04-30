@@ -5,13 +5,29 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Width="1280" Height="52">
+        <Border Width="1280">
             <ui:TopBarView />
         </Border>
     </Design.PreviewWith>
 
+    <Styles.Resources>
+        <StaticResource x:Key="TopBarActiveForeground" ResourceKey="NeutralModerateBrush" />
+        <StaticResource x:Key="TopBarInactiveForeground" ResourceKey="NeutralSubduedBrush" />
+    </Styles.Resources>
+
+
     <!-- Style Definitions -->
     <Style Selector="ui|TopBarView">
+
+        <Style Selector="^ TextBlock#ActiveWorkspaceTitleTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+        </Style>
+
+        <Style Selector="^ TextBlock#ActiveWorkspaceSubtitleTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDNormalTheme}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+        </Style>
 
         <!-- one off avatar button for the top bar -->
         <Style Selector="^ controls|StandardButton#AvatarMenuItemButton">
@@ -28,12 +44,23 @@
 
         <Style Selector="^ TextBlock#PremiumTextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="LineHeight" Value="0" />
+            <Setter Property="Margin" Value="6 0 0 0" />
         </Style>
 
-        <!-- this specific icon fills the horizontal space a bit too much -->
-        <Style Selector="^ controls|StandardButton#GiveFeedbackButton">
-            <Style Selector="^ icons|UnifiedIcon#PART_LeftIcon">
-                <Setter Property="Margin" Value="0,0,4,0" />
+        <Style Selector="^ controls|StandardButton#SupporterButton,
+        ^ controls|StandardButton#FreeButton">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+
+            <Style Selector="^ TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="0" />
             </Style>
         </Style>
 
@@ -41,7 +68,7 @@
             <Setter Property="Margin" Value="4,0,0,0" />
         </Style>
 
-        <!-- system buttons -->
+        <!-- system buttons area -->
         <Style Selector="^ Border#SystemButtonsBorder">
             <Setter Property="Padding" Value="0 0 12 0" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -49,14 +76,76 @@
             <Style Selector="^ StackPanel#SystemButtonsStack">
                 <Setter Property="Orientation" Value="Horizontal" />
                 <Setter Property="Spacing" Value="4" />
-                
+
                 <Style Selector="^ > Separator">
                     <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}" />
                     <Setter Property="Margin" Value="0 0 12 0" />
                     <Setter Property="Height" Value="{CompiledBinding $parent[Border].Height}" />
                     <Setter Property="Width" Value="1" />
                 </Style>
+
             </Style>
+        </Style>
+
+        <!-- using psuedoclasses has higher priority than controltheme styles,
+        needed for setting button properties from styles -->
+        <Style Selector="^:not(:window-active)">
+            <Style Selector="^ TextBlock#ActiveWorkspaceTitleTextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
+            </Style>
+            <Style
+                Selector="^ controls|StandardButton#GoBackInHistory,
+            ^ controls|StandardButton#GoForwardInHistory,
+            ^ controls|StandardButton#NewTabButton,
+            ^ controls|StandardButton#HelpButton,
+            ^ controls|StandardButton#OpenSettingsButton">
+                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
+            </Style>
+            <Style
+                Selector="^ controls|StandardButton#FreeButton TextBlock,
+            ^ controls|StandardButton#SupporterButton TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
+            </Style>
+
+            <Style Selector="^ TextBlock#PremiumTextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
+            </Style>
+            <!-- all system buttons -->
+            <Style Selector="^ Border#SystemButtonsBorder controls|StandardButton">
+                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
+            </Style>
+        </Style>
+
+        <Style Selector="^:window-active">
+            <Style Selector="^ TextBlock#ActiveWorkspaceTitleTextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
+            </Style>
+            <Style
+                Selector="^ controls|StandardButton#GoBackInHistory,
+            ^ controls|StandardButton#GoForwardInHistory,
+            ^ controls|StandardButton#NewTabButton,
+            ^ controls|StandardButton#HelpButton,
+            ^ controls|StandardButton#OpenSettingsButton">
+                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
+            </Style>
+            <Style
+                Selector="^ controls|StandardButton#FreeButton TextBlock,
+            ^ controls|StandardButton#SupporterButton TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
+            </Style>
+            <Style Selector="^ TextBlock#PremiumTextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
+            </Style>
+            <!-- all system buttons -->
+            <Style Selector="^ Border#SystemButtonsBorder controls|StandardButton">
+                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
+            </Style>
+        </Style>
+
+        <!-- this is last to override everything above it and specifically for close button -->
+        <Style Selector="^ controls|StandardButton#CloseButton:pointerover">
+            <Setter Property="Background" Value="{StaticResource DangerSubduedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
         </Style>
     </Style>
 </Styles>

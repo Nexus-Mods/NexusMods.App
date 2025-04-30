@@ -1,6 +1,8 @@
 using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using DynamicData.Binding;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -9,6 +11,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.TopBar;
 
+[PseudoClasses(":window-active")]
 public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
 {
     public TopBarView()
@@ -166,6 +169,12 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                     ToolTip.SetTip(MaximizeButton, "Maximize");
                     hostWindow.Padding = new Thickness(0);
                 }
+            }
+        );
+
+        hostWindow.GetObservable(Window.IsActiveProperty).Subscribe(isActive =>
+            {
+                this.PseudoClasses.Set(":window-active", isActive);
             }
         );
     }

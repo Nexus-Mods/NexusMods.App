@@ -329,13 +329,16 @@
                                     Spacing="{StaticResource Spacing-0.5}">
                             <icons:UnifiedIcon Name="PART_LeftIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
+                                               Foreground="{TemplateBinding Foreground}"
                                                Margin="0,2,0,3" />
                             <TextBlock Name="PART_Label"
                                        Text="{TemplateBinding Text}"
+                                       Foreground="{TemplateBinding Foreground}"
                                        Margin="2,2"
                                        VerticalAlignment="Center"/>
                             <icons:UnifiedIcon Name="PART_RightIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
+                                               Foreground="{TemplateBinding Foreground}"
                                                Margin="0,2,0,3"/>
                         </StackPanel>
                     </Border>
