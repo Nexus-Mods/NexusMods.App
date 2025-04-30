@@ -23,14 +23,14 @@ The REDmod load order page has been updated with a fresh new look and support fo
 ![The REDmod load order page, showing the drag and drop capability.](https://i.imgur.com/M1oXyMt.gif)
 
 ## More Features
+* When starting the app for the first time, the welcome, data consent, and log in messages have been combined into a single pop-up.
 * Stardew Valley - We've updated the installation logic to better recognise mods that do not include a manifest file - including translations and asset replacers. 
 * Implemented new toolbar designs across the app.
+* Added empty state for collections with no required mods.
 * Reduced the size of all buttons in the UI for better use of space.
 
 ## Technical Changes
-* We've optimised memory usage for some very inefficient pages, including file tree views.
 * Removed the Xbox Game Pass (Microsoft Store) experimental toggle because it currently isn't functional for any game. 
-* When first starting the app, instead of having to click through 3 separate pop-up, we've now merged them into one.
 * The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
 * Installers that don't support an archive now provide a reason in the logs.
 
@@ -40,7 +40,9 @@ The REDmod load order page has been updated with a fresh new look and support fo
 * Fixed an issue where FOMODs with paths could cause the app to crash.
 * Fixed an issue where the app would crash when view FOMOD images in a certain way. 
 * Fixed a bug where a collection could not be installed without applying the loadout at least once. 
-* Fixed an issue where the app would should an error message if the game/tool it launched returned a non-zero exit code (e.g. REDmod)
+* Fixed an issue where the app would should an error message if the game/tool it launched returned a non-zero exit code (e.g. REDmod).
+* Fixed an issue with the app would sometimes not back up game files correctly when replaced by files from mods.
+* Fixed collections download pages opening inside the wrong game.
 
 ## Known Issues
 * The Epic Games release of Cyberpunk 2077 is detected but not supported. 
