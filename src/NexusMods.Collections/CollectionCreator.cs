@@ -15,11 +15,11 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
-    public static CollectionRoot CreateCollectionManifest(
+    public static (CollectionRoot, CollectionMetadata.New, CollectionRevisionMetadata.New) CreateCollection(
         ITransaction tx,
         LoadoutItemGroup.ReadOnly group,
         IGameDomainToGameIdMappingCache mappingCache,
-        User.ReadOnly creator,
+        User.ReadOnly author,
         CollectionSlug collectionSlug)
     {
         var gameId = group.AsLoadoutItem().Loadout.Installation.GameId;
@@ -30,7 +30,7 @@ public static class CollectionCreator
             Name = group.AsLoadoutItem().Name,
             GameId = gameId,
             Slug = collectionSlug,
-            AuthorId = creator.UserId,
+            AuthorId = author,
         };
 
         var collectionRevisionMetadata = new CollectionRevisionMetadata.New(tx)
@@ -71,12 +71,12 @@ public static class CollectionCreator
             {
                 Name = collectionMetadata.Name,
                 DomainName = gameDomain,
-                Author = creator.Name,
+                Author = author.Name,
                 Description = collectionMetadata.Summary ?? string.Empty,
             },
         };
 
-        return collectionManifest;
+        return (collectionManifest, collectionMetadata, collectionRevisionMetadata);
     }
 
     private static CollectionMod ToCollectionMod(
