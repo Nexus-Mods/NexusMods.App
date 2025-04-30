@@ -1,7 +1,8 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.CrossPlatform.Process;
+using R3;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
@@ -11,7 +12,7 @@ public class LoadOrdersWipPageViewModel : APageViewModel<ILoadOrdersWIPPageViewM
 
     public LoadOrdersWipPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
-        SortingSelectionViewModel = new SortingSelectionViewModel(serviceProvider, loadoutId);
+        SortingSelectionViewModel = new SortingSelectionViewModel(serviceProvider, loadoutId, Optional<Observable<bool>>.None);
         TabTitle = "Load Orders";
     }
 }

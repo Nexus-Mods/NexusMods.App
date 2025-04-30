@@ -2,16 +2,19 @@ using System.ComponentModel;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
+using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -40,6 +43,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     
     [Reactive] public bool IsCollection { get; private set; } 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
+    
+    [Reactive] public IViewModelInterface RulesSectionViewModel { get; private set; }
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
     {
@@ -63,14 +68,25 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 async (_, _) => await ToggleCollectionGroup(collectionGroupId, !IsCollectionEnabled, connection), 
                 configureAwait: false
             );
+            
+            // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
+            // so we show the `sorting views here` view here instead
+            var isSingleCollectionObservable = CollectionGroup.ObserveAll(connection)
+                .Filter(collection => collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId)
+                .Transform(collection => collection.Id)
+                .QueryWhenChanged(collections => collections.Count == 1)
+                .ToObservable();
+            
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, loadoutId, canEditObservable:isSingleCollectionObservable);
         }
         else
         {
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, loadoutId, Optional<Observable<bool>>.None);
         }
-
+        
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 

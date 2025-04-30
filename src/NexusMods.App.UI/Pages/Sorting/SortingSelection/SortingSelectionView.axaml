@@ -5,6 +5,8 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.SortingSelectionView">
 
@@ -22,7 +24,22 @@
 
         <TabControl.ContentTemplate>
             <DataTemplate DataType="sorting:ILoadOrderViewModel">
-                <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
+                <controls:EmptyState x:Name="EditInAllViewState"
+                                     Icon="{x:Static icons:IconValues.FormatListNumbered}"
+                                     Header="Edit Rules from All view when multiple collections are installed"
+                                     IsActive="{CompiledBinding $parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).CanEdit.Value}">
+                    
+                    <controls:EmptyState.Subtitle>
+                        <StackPanel>
+                            <TextBlock Text="Rules can be edited in “All” which combines mods from all installed collections."/>
+                            <controls:StandardButton LeftIcon="{x:Static icons:IconValues.FormatAlignJustify}"
+                                                     ShowIcon="Left"
+                                                     Text="Edit rules in “All”"
+                                                     Type="Secondary"/>
+                        </StackPanel>
+                    </controls:EmptyState.Subtitle>
+                    <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
+                </controls:EmptyState>
             </DataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>
