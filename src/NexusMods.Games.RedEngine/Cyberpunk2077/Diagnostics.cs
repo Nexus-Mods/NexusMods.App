@@ -183,7 +183,7 @@ Protontricks is not installed but is required to use the REDmod DLC when playing
 
 ### How to Resolve
 1. Install Protontricks by following the instructions in the {ProtontricksUri}.
-2. Apply a loadout with Protontricks installed.
+2. Restart the app.
 
 OR
 
