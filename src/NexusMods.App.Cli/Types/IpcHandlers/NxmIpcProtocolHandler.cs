@@ -74,6 +74,9 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
             case NXMGogAuthUrl gogUrl:
                 _client.AuthUrl(gogUrl);
                 break;
+            case NXMProtocolRegistrationCheck protocolRegistrationTest:
+                _eventBus.Send(new CliMessages.TestProtocolRegistration(protocolRegistrationTest.Id));
+                break;
             case NXMModUrl modUrl:
                 // Check if the user is logged in
                 if (userInfo is not null)
@@ -119,6 +122,15 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
             if (installedGame.Game.GameId == gameId)
             {
                 if (syncService.TryGetLastAppliedLoadout(installedGame, out loadout))
+                {
+                    game = installedGame;
+                    break;
+                }
+
+                var activeLoadouts = Loadout.All(connection.Db)
+                    .Where(ld => ld.InstallationInstance.Game.GameId == installedGame.Game.GameId);
+                
+                if (activeLoadouts.Any())
                 {
                     game = installedGame;
                     break;

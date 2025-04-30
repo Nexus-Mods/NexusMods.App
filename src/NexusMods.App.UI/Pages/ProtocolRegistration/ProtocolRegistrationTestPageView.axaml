@@ -1,0 +1,34 @@
+<reactive:ReactiveUserControl
+    x:TypeArguments="local:IProtocolRegistrationTestPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactive="clr-namespace:Avalonia.ReactiveUI;assembly=Avalonia.ReactiveUI"
+    xmlns:local="clr-namespace:NexusMods.App.UI.Pages"
+    xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="NexusMods.App.UI.Pages.ProtocolRegistrationTestPageView">
+    
+    <StackPanel Orientation="Vertical">
+        <Button x:Name="ButtonStartTest">
+            <TextBlock>Start Test</TextBlock>
+        </Button>
+
+        <StackPanel Orientation="Vertical" x:Name="WaitingPanel" IsVisible="False">
+            <spinner:Spinner Width="24" Height="24"/>
+            <TextBlock>
+                Waiting to get back a response.
+                If a different instance of the app or a completely different program opens,
+                then your protocol registration is broken.
+            </TextBlock>
+            <Button x:Name="ButtonStopTest"><TextBlock>Cancel Test</TextBlock></Button>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" x:Name="ResultPanel" IsVisible="False">
+            <TextBlock x:Name="TextResult"/>
+        </StackPanel>
+    </StackPanel>
+
+</reactive:ReactiveUserControl>
+
