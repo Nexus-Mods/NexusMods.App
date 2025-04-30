@@ -182,8 +182,7 @@ public static class Services
             .AddViewModel<CollectionDownloadViewModel, ICollectionDownloadViewModel>()
             
             .AddView<LoadOrderView, ILoadOrderViewModel>()
-            .AddViewModel<LoadOrderViewModel, ILoadOrderViewModel>()
-            
+
             .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
             .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
 
@@ -207,6 +206,9 @@ public static class Services
 
             .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
+
+            .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
+            .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -244,6 +246,7 @@ public static class Services
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
             .AddSingleton<IPageFactory, DebugControlsPageFactory>()
+            .AddSingleton<IPageFactory, ProtocolRegistrationTestPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()

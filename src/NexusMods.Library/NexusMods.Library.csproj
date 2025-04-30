@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
-        <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj" />
-        <ProjectReference Include="..\Games\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Library\NexusMods.Abstractions.Library.csproj" />
+        <ProjectReference Include="..\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj" />
+        <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj" />
     </ItemGroup>
 </Project>

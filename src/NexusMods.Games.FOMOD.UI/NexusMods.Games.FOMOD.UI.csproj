@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ReactiveUI.Fody" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Step\GuidedInstallerStepView.axaml.cs">
+            <DependentUpon>GuidedInstallerStepView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Step\GuidedInstallerStepViewModel.cs">
+            <DependentUpon>IGuidedInstallerStepViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Window\GuidedInstallerWindow.axaml.cs">
+            <DependentUpon>GuidedInstallerWindow.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Window\GuidedInstallerWindowViewModel.cs">
+            <DependentUpon>IGuidedInstallerWindowViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Window\GuidedInstallerWindowDesignViewModel.cs">
+          <DependentUpon>IGuidedInstallerWindowViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Step\GuidedInstallerStepDesignViewModel.cs">
+          <DependentUpon>IGuidedInstallerStepViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Group\GuidedInstallerGroupViewModel.cs">
+          <DependentUpon>IGuidedInstallerGroupViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Group\GuidedInstallerGroupDesignViewModel.cs">
+          <DependentUpon>IGuidedInstallerGroupViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Options\GuidedInstallerOptionViewModel.cs">
+          <DependentUpon>IGuidedInstallerOptionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Options\GuidedInstallerOptionDesignViewModel.cs">
+          <DependentUpon>IGuidedInstallerOptionViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="FooterStepper\FooterStepperViewModel.cs">
+          <DependentUpon>IFooterStepperViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="FooterStepper\FooterStepperDesignViewModel.cs">
+          <DependentUpon>IFooterStepperViewModel.cs</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Resources\Language.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Language.resx</DependentUpon>
+        </Compile>
+
+        <EmbeddedResource Update="Resources\Language.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>Language.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+</Project>

@@ -1,9 +1,11 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
@@ -54,6 +56,18 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
                     removeHandler => Container.PointerPressed -= removeHandler
                 ).Select(_ => true)
                 .BindToView(this, view => view.ViewModel!.IsSelected)
+                .DisposeWith(disposables);
+                
+            Observable
+                .FromEventPattern<PointerReleasedEventArgs>(
+                    addHandler => Container.PointerReleased += addHandler,
+                    removeHandler => Container.PointerReleased -= removeHandler
+                )
+                .Select(static eventPattern => eventPattern.EventArgs)
+                .Where(eventArgs => eventArgs.InitialPressMouseButton != MouseButton.Middle &&
+                                    Bounds.Contains(eventArgs.GetPosition(this)))
+                .Select(_ => Unit.Default)
+                .InvokeReactiveCommand(this, view => view.ViewModel!.CloseTabCommand)
                 .DisposeWith(disposables);
         });
     }

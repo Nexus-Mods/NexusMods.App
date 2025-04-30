@@ -32,7 +32,7 @@ public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider servicePr
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, SharedColumns.ItemSize>(sortDirection: ListSortDirection.Descending),
-            ColumnCreator.Create<EntityId, SharedColumns.Value<uint>>(),
+            ColumnCreator.Create<EntityId, Columns.FileCount>(),
         ];
     }
 }
