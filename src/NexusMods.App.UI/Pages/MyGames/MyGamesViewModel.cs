@@ -44,6 +44,7 @@ namespace NexusMods.App.UI.Pages.MyGames;
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
     private const string TrelloPublicRoadmapUrl = "https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap";
+    private const string MissingGamesUrl = "https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=04-reportmissinggame.md";
 
     private readonly ILibraryService _libraryService;
     private readonly CollectionDownloader _collectionDownloader;
@@ -83,10 +84,9 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         var provider = serviceProvider;
         _windowManager = windowManager;
 
-        GiveFeedbackCommand = ReactiveCommand.Create(() =>
+        GiveFeedbackCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            var welcomeOverlayViewModel = serviceProvider.GetRequiredService<IWelcomeOverlayViewModel>();
-            overlayController.Enqueue(welcomeOverlayViewModel);
+            await osInterop.OpenUrl(new Uri(MissingGamesUrl));
         });
 
         OpenRoadmapCommand = ReactiveCommand.CreateFromTask(async () =>

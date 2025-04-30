@@ -21,12 +21,7 @@ public enum LoadoutKind : byte
     VanillaState,
     
     /// <summary>
-    /// This loadout has been deleted and is marked for garbage collection.
+    /// This loadout is being deleted.
     /// </summary>
-    /// <remarks>
-    ///     This is expressed as a separate loadout kind because retractions
-    ///     in MnemonicDB function as records. Storing this as a property
-    ///     allows us to therefore more efficiently delete a loadout.
-    /// </remarks>
     Deleted,
 }
