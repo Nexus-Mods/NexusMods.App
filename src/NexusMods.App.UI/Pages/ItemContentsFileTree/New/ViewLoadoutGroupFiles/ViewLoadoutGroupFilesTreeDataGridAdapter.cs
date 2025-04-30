@@ -91,6 +91,6 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
             subscribeWhenCreated: true,
             observeOutsideUiThread: true
         );
-        model.Add(SharedColumns.Value<uint>.ComponentKey, component);
+        model.Add(Columns.FileCount.ComponentKey, component);
     }
 }
