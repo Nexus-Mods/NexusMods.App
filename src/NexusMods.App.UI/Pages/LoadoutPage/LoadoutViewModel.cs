@@ -44,7 +44,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public bool IsCollection { get; private set; } 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
     
-    [Reactive] public IViewModelInterface RulesSectionViewModel { get; private set; }
+    [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
     {
