@@ -4,7 +4,7 @@ This release adds Cyberpunk 2077 to supported games, improves the installation o
 ## Cyberpunk 2077 support
 In this build, we're confident that we've got all the basics in place for players to mod Cyberpunk 2077 with the app. We're looking for feedback from experienced Cyberpunk modders to ensure we've not missed anything important before we announce support to the wider community. 
 
-![The games section showing Cyberpunk on Steam and GOG as options.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1746008920-725693632.png)
+![The games section showing Cyberpunk on Steam and GOG as options.](./docs/changelog-assets/80c1fdba8263069e9bbe9f640dca8b31.webp)
 
 The app offers the following features:
 
