@@ -73,12 +73,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
 
-        var hasSelection = Adapter.SelectedModels
-            .ObserveCountChanged()
-            .Select(count => count > 0);
-            
-        
-
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
         
         var loadout = Loadout.Load(connection.Db, loadoutId);
