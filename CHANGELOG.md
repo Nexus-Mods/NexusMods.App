@@ -9,13 +9,13 @@ In this build, we're confident that we've got all the basics in place for player
 The app offers the following features:
 
 * Compatibility with the Steam and GOG Galaxy releases on Windows and Linux.
-* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods such (e.g. Cyber Engine Tweaks).
+* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods (e.g. Cyber Engine Tweaks).
 * Support for collections
 * Health Check diagnostics for missing dependencies.
 * Health Check diagnostics to help set up a Linux environment to mod the game.
 * REDmod Load Order management and deployment.
 
-Your can read more about the available features in the [documentation](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/). 
+You can read more about the available features in the [documentation](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/). 
 
 ## Drag and drop Load Order (REDmod)
 The REDmod load order page has been updated with a fresh new look and support for re-ordering mods by dragging and dropping rows in the list. This will serve as the foundation of the load order pages we'll implement for other games in future. 
@@ -23,22 +23,22 @@ The REDmod load order page has been updated with a fresh new look and support fo
 ![The REDmod load order page, showing the drag and drop capability.](https://i.imgur.com/M1oXyMt.gif)
 
 ## More Features
-* When starting the app for the first time, the welcome, data consent, and log in messages have been combined into a single pop-up.
-* Stardew Valley - We've updated the installation logic to better recognise mods that do not include a manifest file - including translations and asset replacers. 
+* When starting the app for the first time, the welcome, data consent, and log-in messages have been combined into a single pop-up.
+* Stardew Valley - We've updated the installation logic to better recognise mods that do not include a manifest file, including translations and asset replacers. 
 * Implemented new toolbar designs across the app.
 * Added empty state for collections with no required mods.
 * Reduced the size of all buttons in the UI for better use of space.
 
 ## Technical Changes
-* Removed the Xbox Game Pass (Microsoft Store) experimental toggle because it currently isn't functional for any game. 
-* The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
+* Removed the Xbox Game Pass (Microsoft Store) experimental toggle because it is currently not functional for any game. 
+* The version number of the app will now be shown as 3 places, rather than 4 (e.g. 0.10.0, not 0.10.0.0).
 * Installers that don't support an archive now provide a reason in the logs.
 
 ## Bug Fixes
 * Fixed an issue with the text alignment in the "Delete mods" pop-up.
 * Fixed an issue caused by folder names with trailing whitespace characters.
 * Fixed an issue where FOMODs with paths could cause the app to crash.
-* Fixed an issue where the app would crash when view FOMOD images in a certain way. 
+* Fixed an issue where the app would crash when viewing FOMOD images in a certain way. 
 * Fixed a bug where a collection could not be installed without applying the loadout at least once. 
 * Fixed an issue where the app would show an error message if the game/tool it launched returned a non-zero exit code (e.g. REDmod).
 * Fixed an issue with the app would sometimes not back up game files correctly when replaced by files from mods.
