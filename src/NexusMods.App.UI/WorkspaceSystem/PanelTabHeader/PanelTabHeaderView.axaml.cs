@@ -61,21 +61,15 @@ public partial class PanelTabHeaderView : ReactiveUserControl<IPanelTabHeaderVie
                 .BindToView(this, view => view.ViewModel!.IsSelected)
                 .DisposeWith(disposables);
             
-            Observable.FromEventPattern<PointerEventArgs>(
-                addHandler => Container.PointerMoved += addHandler,
-                removeHandler => Container.PointerMoved -= removeHandler)
-                .Do(eventPattern =>
-                {
-                    var position = eventPattern.EventArgs.GetPosition(this);
-                    _pointerCaptured = Bounds.Contains(position);
-                })
-                .Subscribe()
-                .DisposeWith(disposables);
-                
             Observable.FromEventPattern<PointerReleasedEventArgs>(
                 addHandler => Container.PointerReleased += addHandler,
                 removeHandler => Container.PointerReleased -= removeHandler
-                ).Where(eventPattern => _pointerCaptured && eventPattern.EventArgs.InitialPressMouseButton == MouseButton.Middle)
+                ).Where(eventPattern => eventPattern.EventArgs.InitialPressMouseButton == MouseButton.Middle && 
+                                        Bounds.Contains(eventPattern.EventArgs.GetPosition(this)) && 
+                                        eventPattern.EventArgs.GetIntermediatePoints(this).FirstOrOptional(_ => true)
+                                            .Convert(point => Bounds.Contains(point.Position)) 
+                                            .ValueOr(false)
+                )
                 .Select(_ => Unit.Default)
                 .InvokeReactiveCommand(this, view => view.ViewModel!.CloseTabCommand)
                 .DisposeWith(disposables);
