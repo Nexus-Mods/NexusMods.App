@@ -210,7 +210,7 @@ The official REDmod DLC is a mod loader required to use some mods for Cyberpunk 
 
 ### How to Resolve
 1. Install the REDmod DLC - View in {RedmodLink} or the {GenericLink}.
-2. Apply a loadout with REDmod installed.
+2. Apply a loadout with REDmod installed or restart the app.
 
 OR
 
