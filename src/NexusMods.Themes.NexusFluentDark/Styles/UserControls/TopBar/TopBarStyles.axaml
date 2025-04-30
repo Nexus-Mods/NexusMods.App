@@ -97,23 +97,7 @@
             <Style Selector="^ TextBlock#ActiveWorkspaceTitleTextBlock">
                 <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
             </Style>
-            <Style
-                Selector="^ controls|StandardButton#GoBackInHistory,
-            ^ controls|StandardButton#GoForwardInHistory,
-            ^ controls|StandardButton#NewTabButton,
-            ^ controls|StandardButton#HelpButton,
-            ^ controls|StandardButton#OpenSettingsButton">
-                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
-            </Style>
-            <Style
-                Selector="^ controls|StandardButton#FreeButton TextBlock,
-            ^ controls|StandardButton#SupporterButton TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
-            </Style>
-
-            <Style Selector="^ TextBlock#PremiumTextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
-            </Style>
+            
             <!-- all system buttons -->
             <Style Selector="^ Border#SystemButtonsBorder controls|StandardButton">
                 <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
@@ -124,22 +108,7 @@
             <Style Selector="^ TextBlock#ActiveWorkspaceTitleTextBlock">
                 <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
             </Style>
-            <Style
-                Selector="^ controls|StandardButton#GoBackInHistory,
-            ^ controls|StandardButton#GoForwardInHistory,
-            ^ controls|StandardButton#NewTabButton,
-            ^ controls|StandardButton#HelpButton,
-            ^ controls|StandardButton#OpenSettingsButton">
-                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
-            </Style>
-            <Style
-                Selector="^ controls|StandardButton#FreeButton TextBlock,
-            ^ controls|StandardButton#SupporterButton TextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
-            </Style>
-            <Style Selector="^ TextBlock#PremiumTextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
-            </Style>
+            
             <!-- all system buttons -->
             <Style Selector="^ Border#SystemButtonsBorder controls|StandardButton">
                 <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
