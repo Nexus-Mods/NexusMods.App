@@ -267,7 +267,9 @@ The current WINE DLL overrides are not set up correctly for modding on Linux.
         .WithSeverity(DiagnosticSeverity.Critical)
         .WithSummary("Install required packages to mod on Linux")
         .WithDetails("""
-Modding Cyberpunk 2077 on Linux requires certain packages to be installed in your WINE prefix. Winetricks packages are often required for modding because they provide essential components or libraries that the game or its mods depend on to function correctly. 
+Modding Cyberpunk 2077 on Linux requires certain packages to be installed in your WINE prefix. 
+
+Winetricks packages are often required for modding because they provide essential components or libraries which allow the app to manage your game correctly. 
 
 
 ### How to Resolve
