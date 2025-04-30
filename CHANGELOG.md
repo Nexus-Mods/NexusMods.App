@@ -1,11 +1,15 @@
-# v0.10.2 - 2025-04-XX
-This release adds Cyberpunk 2077 to the supported games, improves the installation of Stardew Valley mods without a manifest file and includes a draggable load order view for Cyberpunk 2077 REDmods. 
+# v0.10.2 - 2025-04-30
+This release adds Cyberpunk 2077 to supported games, improves the installation of Stardew Valley mods without a manifest file and includes a draggable load order view for Cyberpunk 2077 REDmods. 
 
 ## Cyberpunk 2077 support
-In this build, we're confident that we've got all the basics in place for players to mod Cyberpunk 2077 with the app. The app offers the following features:
+In this build, we're confident that we've got all the basics in place for players to mod Cyberpunk 2077 with the app. We're looking for feedback from experienced Cyberpunk modders to ensure we've not missed anything important before we announce support to the wider community. 
 
-* Compatibility with the Steam and GOG Galaxy releases.
-* Support for all the most common types of mod: REDmod, archives, REDscript, and framework mods such (e.g. Cyber Engine Tweaks).
+![The games section showing Cyberpunk on Steam and GOG as options.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1746008920-725693632.png)
+
+The app offers the following features:
+
+* Compatibility with the Steam and GOG Galaxy releases on Windows and Linux.
+* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods such (e.g. Cyber Engine Tweaks).
 * Support for collections
 * Health Check diagnostics for missing dependencies.
 * Health Check diagnostics to help set up a Linux environment to mod the game.
@@ -19,12 +23,12 @@ The REDmod load order page has been updated with a fresh new look and support fo
 ![The REDmod load order page, showing the drag and drop capability.](https://i.imgur.com/M1oXyMt.gif)
 
 ## More Features
-* Stardew Valley - We've updated the installation logic to better recognise mods that do not includes a manifest file - including translations and asset replacers. 
+* Stardew Valley - We've updated the installation logic to better recognise mods that do not include a manifest file - including translations and asset replacers. 
 * Implemented new toolbar designs across the app.
 * Reduced the size of all buttons in the UI for better use of space.
 
 ## Technical Changes
-* We've optimised memory usage for some very inefficient pages, including file tree views.(?)
+* We've optimised memory usage for some very inefficient pages, including file tree views.
 * Removed the Xbox Game Pass (Microsoft Store) experimental toggle because it currently isn't functional for any game. 
 * When first starting the app, instead of having to click through 3 separate pop-up, we've now merged them into one.
 * The version number of the app will now be shown as 3 places, rather than 4. (e.g. 0.10.0, not 0.10.0.0)
@@ -39,7 +43,7 @@ The REDmod load order page has been updated with a fresh new look and support fo
 * Fixed an issue where the app would should an error message if the game/tool it launched returned a non-zero exit code (e.g. REDmod)
 
 ## Known Issues
-* After that app runs REDmod during the apply process, an error message will pop up even if the REDmod succeeded.
+* The Epic Games release of Cyberpunk 2077 is detected but not supported. 
 * The app will attempt to run the REDmod.exe even if it is not installed, resulting in an error message. 
 * The sort order for some columns does not work as expected.
 * The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
