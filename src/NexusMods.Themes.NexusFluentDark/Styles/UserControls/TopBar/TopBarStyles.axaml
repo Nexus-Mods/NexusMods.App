@@ -94,10 +94,6 @@
         <!-- using psuedoclasses has higher priority than controltheme styles,
         needed for setting button properties from styles -->
         <Style Selector="^:not(:window-active)">
-            <Style Selector="^ TextBlock#ActiveWorkspaceTitleTextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
-            </Style>
-            
             <!-- all system buttons -->
             <Style Selector="^ Border#SystemButtonsBorder controls|StandardButton">
                 <Setter Property="Foreground" Value="{StaticResource TopBarInactiveForeground}" />
@@ -105,10 +101,6 @@
         </Style>
 
         <Style Selector="^:window-active">
-            <Style Selector="^ TextBlock#ActiveWorkspaceTitleTextBlock">
-                <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
-            </Style>
-            
             <!-- all system buttons -->
             <Style Selector="^ Border#SystemButtonsBorder controls|StandardButton">
                 <Setter Property="Foreground" Value="{StaticResource TopBarActiveForeground}" />
