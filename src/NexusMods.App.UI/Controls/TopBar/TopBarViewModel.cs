@@ -151,16 +151,18 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
                 await osInterop.OpenUrl(uri);
             }
         );
-        
+
         NewTabCommand = ReactiveCommand.Create(() =>
-        {
-            var workspaceId = workspaceController.ActiveWorkspaceId;
-            var panelId = workspaceController.ActiveWorkspace.SelectedPanel.Id;
-            
-            workspaceController.OpenPage(workspaceId, 
-                Optional<PageData>.None, 
-                new OpenPageBehavior.NewTab(panelId));
-        });
+            {
+                var workspaceId = workspaceController.ActiveWorkspaceId;
+                var panelId = workspaceController.ActiveWorkspace.SelectedPanel.Id;
+
+                workspaceController.OpenPage(workspaceId,
+                    Optional<PageData>.None,
+                    new OpenPageBehavior.NewTab(panelId)
+                );
+            }
+        );
 
         OpenNexusModsAccountSettingsCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(NexusModsUrlBuilder.UserSettingsUri); });
 

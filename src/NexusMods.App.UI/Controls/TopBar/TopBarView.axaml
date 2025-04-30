@@ -19,6 +19,7 @@
         <topBar:TopBarDesignViewModel />
     </Design.DataContext>
 
+    <!-- DockPanel used to allow the system buttons to be docked to the right -->
     <DockPanel>
 
         <!-- system buttons -->
@@ -52,6 +53,7 @@
             </StackPanel>
         </Border>
 
+        <!-- Rest of space filled with the top bar -->
         <Grid x:Name="MainGrid"
               Height="44"
               VerticalAlignment="Top"
@@ -111,7 +113,7 @@
                                              Type="Tertiary"
                                              Fill="None"
                                              LeftIcon="{x:Static icons:IconValues.Tab}" />
-                    <reactiveUi:ViewModelViewHost x:Name="AddPanelComboViewModelViewHost" />
+                    <reactiveUi:ViewModelViewHost x:Name="AddPanelViewModelViewHost" />
                 </StackPanel>
             </StackPanel>
 

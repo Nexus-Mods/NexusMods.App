@@ -32,7 +32,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 this.BindCommand(ViewModel, vm => vm.SelectedTab!.GoForwardInHistoryCommand, view => view.GoForwardInHistory)
                     .DisposeWith(d);
 
-                this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelComboViewModelViewHost.ViewModel)
+                this.OneWayBind(ViewModel, vm => vm.AddPanelDropDownViewModel, view => view.AddPanelViewModelViewHost.ViewModel)
                     .DisposeWith(d);
 
                 this.BindCommand(ViewModel, vm => vm.NewTabCommand, view => view.NewTabButton)
@@ -162,6 +162,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                     MaximizeButton.LeftIcon = IconValues.WindowRestore;
                     ToolTip.SetTip(MaximizeButton, "Restore");
                     // Set padding to 7 to account for the Windows-added off screen margin when maximized
+                    // Ideally we would just use Window.OffScreenMargin but it doesn't work consistently such as when you maximize with a double click
                     hostWindow.Padding = new Thickness(7);
                 }
                 else
@@ -173,10 +174,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
             }
         );
 
-        hostWindow.GetObservable(Window.IsActiveProperty).Subscribe(isActive =>
-            {
-                this.PseudoClasses.Set(":window-active", isActive);
-            }
+        hostWindow.GetObservable(Window.IsActiveProperty).Subscribe(isActive => { this.PseudoClasses.Set(":window-active", isActive); }
         );
     }
 }

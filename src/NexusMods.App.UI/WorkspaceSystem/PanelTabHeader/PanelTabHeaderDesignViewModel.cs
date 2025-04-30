@@ -8,7 +8,7 @@ public class PanelTabHeaderDesignViewModel : PanelTabHeaderViewModel
 {
     public PanelTabHeaderDesignViewModel() : base(PanelTabId.DefaultValue)
     {
-        Title = "tab headers";
+        Title = "Very long name for tab headers";
 
         try
         {

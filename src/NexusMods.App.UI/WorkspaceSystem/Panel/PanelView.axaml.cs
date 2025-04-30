@@ -147,8 +147,8 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                 view => view.ViewModel!.IsAlone)
                 .Select(tuple =>
                     {
-                        var (tabCount, isAlone) = tuple;
                         // we need a floating tab close button if there is only one tab and the panel is not alone
+                        var (tabCount, isAlone) = tuple;
                         return tabCount == 1 && !isAlone;
                     }
                 )
@@ -166,7 +166,6 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
                     {
                         TabHeaderBorder.IsVisible = !hasOneTab;
                         PseudoClasses.Set(":one-tab", hasOneTab);
-                        // FloatingClosePanelBorder.IsVisible = hasOneTab;
                     }
                 )
                 .DisposeWith(disposables);
@@ -178,7 +177,6 @@ public partial class PanelView : ReactiveUserControl<IPanelViewModel>
             this.WhenAnyValue(view => view.ViewModel!.IsAlone)
                 .SubscribeWithErrorLogging(isAlone =>
                     {
-                        //FloatingClosePanelBorder.IsVisible = !isAlone;
                         PseudoClasses.Set(":alone", isAlone);
                     }
                 )
