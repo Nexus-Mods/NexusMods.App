@@ -2,11 +2,11 @@ using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Metadata;
-using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using DynamicData.Binding;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Icons;
+using NexusMods.Paths;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.TopBar;
@@ -161,15 +161,21 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                 {
                     MaximizeButton.LeftIcon = IconValues.WindowRestore;
                     ToolTip.SetTip(MaximizeButton, "Restore");
+                    
                     // Set padding to 7 to account for the Windows-added off screen margin when maximized
                     // Ideally we would just use Window.OffScreenMargin but it doesn't work consistently such as when you maximize with a double click
-                    hostWindow.Padding = new Thickness(7);
+
+                    hostWindow.Padding = OSInformation.Shared.MatchPlatform(
+                        onWindows: () =>  new Thickness(7),
+                        onLinux: () => default(Thickness),
+                        onOSX: () => default(Thickness)
+                    );
                 }
                 else
                 {
                     MaximizeButton.LeftIcon = IconValues.WindowMaximize;
                     ToolTip.SetTip(MaximizeButton, "Maximize");
-                    hostWindow.Padding = new Thickness(0);
+                    hostWindow.Padding = default(Thickness);
                 }
             }
         );
