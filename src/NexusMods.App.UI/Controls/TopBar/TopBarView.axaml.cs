@@ -147,6 +147,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
     {
         var hostWindow = (Window)this.VisualRoot!;
 
+        // Wait for the VisualRoot to be set
         while (hostWindow == null)
         {
             hostWindow = (Window)this.VisualRoot!;

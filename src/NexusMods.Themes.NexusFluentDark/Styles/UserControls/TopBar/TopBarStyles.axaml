@@ -70,8 +70,12 @@
 
         <!-- system buttons area -->
         <Style Selector="^ Border#SystemButtonsBorder">
+            <!-- makes sure the system buttons are obviously usable when really small width -->
+            <Setter Property="Background" Value="{StaticResource SurfaceBaseBrush}" />
             <Setter Property="Padding" Value="0 0 12 0" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <!-- makes sure the system buttons are always on top of the top bar -->
+            <Setter Property="ZIndex" Value="999" />
 
             <Style Selector="^ StackPanel#SystemButtonsStack">
                 <Setter Property="Orientation" Value="Horizontal" />
