@@ -1,5 +1,6 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 
 /// <summary>
@@ -22,4 +23,13 @@ public readonly struct LoadoutItemTreeItemWithPath : ITreeItemWithPath
 
     public static implicit operator LoadoutItemTreeItemWithPath(LoadoutItem.ReadOnly item) => new(item);
     public static implicit operator LoadoutItem.ReadOnly(LoadoutItemTreeItemWithPath adapter) => adapter._item;
+}
+
+/// <summary>
+/// A factory for creating <see cref="LoadoutItemTreeItemWithPath"/> from <see cref="EntityId"/>.
+/// And a database connection.
+/// </summary>
+public readonly struct LoadoutItemTreeItemWithPathFactory(IConnection connection) : ITreeItemWithPathFactory<EntityId, LoadoutItemTreeItemWithPath>
+{
+    public LoadoutItemTreeItemWithPath CreateItem(EntityId key) => new LoadoutItem.ReadOnly(connection.Db, key);
 }
