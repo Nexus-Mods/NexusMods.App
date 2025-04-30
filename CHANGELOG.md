@@ -40,7 +40,7 @@ The REDmod load order page has been updated with a fresh new look and support fo
 * Fixed an issue where FOMODs with paths could cause the app to crash.
 * Fixed an issue where the app would crash when view FOMOD images in a certain way. 
 * Fixed a bug where a collection could not be installed without applying the loadout at least once. 
-* Fixed an issue where the app would should an error message if the game/tool it launched returned a non-zero exit code (e.g. REDmod).
+* Fixed an issue where the app would show an error message if the game/tool it launched returned a non-zero exit code (e.g. REDmod).
 * Fixed an issue with the app would sometimes not back up game files correctly when replaced by files from mods.
 * Fixed collections download pages opening inside the wrong game.
 
