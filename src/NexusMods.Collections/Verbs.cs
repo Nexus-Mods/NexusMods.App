@@ -34,9 +34,9 @@ internal static class Verbs
         collection
 #if DEBUG
             .AddVerb(() => GatherCollectionDefinitions)
+            .AddVerb(() => CreateCollection)
 #endif
-            .AddVerb(() => InstallCollection)
-            .AddVerb(() => CreateCollection);
+            .AddVerb(() => InstallCollection);
 
     [Verb("install-collection", "Installs a collection into the given loadout")]
     private static async Task<int> InstallCollection([Injected] IRenderer renderer,
