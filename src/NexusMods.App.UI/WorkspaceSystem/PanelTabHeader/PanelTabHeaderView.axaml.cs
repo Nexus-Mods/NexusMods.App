@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.ReactiveUI;
-using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
 using ReactiveUI;
