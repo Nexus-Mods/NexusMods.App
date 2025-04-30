@@ -16,8 +16,10 @@
     <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.0.0" />
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.79" />
-    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.9.122" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.9.122" />
+    <PackageVersion Include="NexusMods.Cascade" Version="9999.0.0-localbuild" />
+    <PackageVersion Include="NexusMods.Cascade.SourceGenerator" Version="9999.0.0-localbuild" />
+    <PackageVersion Include="NexusMods.MnemonicDB" Version="9999.0.0-localbuild" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="9999.0.0-localbuild" />
     <PackageVersion Include="NexusMods.Hashing.xxHash3.Paths" Version="3.0.3" />
     <PackageVersion Include="NexusMods.Hashing.xxHash3" Version="3.0.3" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.6.4" />
@@ -92,7 +94,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="9.0.3" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
