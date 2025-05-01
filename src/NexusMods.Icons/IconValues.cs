@@ -392,6 +392,9 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/window-maximize/
     public static readonly IconValue WindowMaximize = new ProjektankerIcon("mdi-window-maximize");
     
+    // https://pictogrammers.com/library/mdi/icon/window-restore/
+    public static readonly IconValue WindowRestore = new ProjektankerIcon("mdi-window-restore");
+    
     // https://pictogrammers.com/library/mdi/icon/refresh/
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");
 
