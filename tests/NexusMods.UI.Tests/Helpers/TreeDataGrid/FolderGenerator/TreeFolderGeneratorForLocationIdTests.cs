@@ -218,8 +218,8 @@ public class TreeFolderGeneratorForLocationIdTests
         var hasChildren = false;
         
         // Act
-        using var hasChildrenSub = generator.ModelForRoot().GetHasChildrenObservable_ForTestingOnly().Subscribe(x => hasChildren = x);
-        using var children = BindChildren(generator.ModelForRoot().GetChildrenObservable_ForTestingOnly(), out var childrenCollection);
+        using var hasChildrenSub = generator.ModelForRoot().HasChildrenObservable.Subscribe(x => hasChildren = x);
+        using var children = BindChildren(generator.ModelForRoot().ChildrenObservable, out var childrenCollection);
         
         // Assert
         hasChildren.Should().BeFalse();
@@ -236,8 +236,8 @@ public class TreeFolderGeneratorForLocationIdTests
         var generator = CreateGenerator();
         var hasChildren = false;
         
-        using var hasChildrenSub = generator.ModelForRoot().GetHasChildrenObservable_ForTestingOnly().Subscribe(x => hasChildren = x);
-        using var children = BindChildren(generator.ModelForRoot().GetChildrenObservable_ForTestingOnly(), out var childrenCollection);
+        using var hasChildrenSub = generator.ModelForRoot().HasChildrenObservable.Subscribe(x => hasChildren = x);
+        using var children = BindChildren(generator.ModelForRoot().ChildrenObservable, out var childrenCollection);
         
         // Assert initial state
         hasChildren.Should().BeFalse();
@@ -268,8 +268,8 @@ public class TreeFolderGeneratorForLocationIdTests
         var generator = CreateGenerator();
         var rootHasChildren = false;
         
-        using var rootHasChildrenSub = generator.ModelForRoot().GetHasChildrenObservable_ForTestingOnly().Subscribe(x => rootHasChildren = x);
-        using var rootChildren = BindChildren(generator.ModelForRoot().GetChildrenObservable_ForTestingOnly(), out var rootChildrenCollection);
+        using var rootHasChildrenSub = generator.ModelForRoot().HasChildrenObservable.Subscribe(x => rootHasChildren = x);
+        using var rootChildren = BindChildren(generator.ModelForRoot().ChildrenObservable, out var rootChildrenCollection);
         
         // Assert initial state
         rootHasChildren.Should().BeFalse();
@@ -285,8 +285,8 @@ public class TreeFolderGeneratorForLocationIdTests
         // Get folder and check its observables
         var folder = generator.GetOrCreateFolder("folder", out _, out _);
         var folderHasChildren = false;
-        using var folderHasChildrenSub = folder.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folderHasChildren = x);
-        using var folderChildren = BindChildren(folder.Model.GetChildrenObservable_ForTestingOnly(), out var folderChildrenCollection);
+        using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
+        using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
         
         folderHasChildren.Should().BeTrue();
         folderChildrenCollection.Should().ContainSingle().Which.Should().Be(fileModel);
@@ -312,8 +312,8 @@ public class TreeFolderGeneratorForLocationIdTests
         var generator = CreateGenerator();
         var rootHasChildren = false;
         
-        using var rootHasChildrenSub = generator.ModelForRoot().GetHasChildrenObservable_ForTestingOnly().Subscribe(x => rootHasChildren = x);
-        using var rootChildren = BindChildren(generator.ModelForRoot().GetChildrenObservable_ForTestingOnly(), out var rootChildrenCollection);
+        using var rootHasChildrenSub = generator.ModelForRoot().HasChildrenObservable.Subscribe(x => rootHasChildren = x);
+        using var rootChildren = BindChildren(generator.ModelForRoot().ChildrenObservable, out var rootChildrenCollection);
         
         // Assert initial state
         rootHasChildren.Should().BeFalse();
@@ -330,8 +330,8 @@ public class TreeFolderGeneratorForLocationIdTests
         // Get folder and bind observables
         var folder = generator.GetOrCreateFolder("folder", out _, out _);
         var folderHasChildren = false;
-        using var folderHasChildrenSub = folder.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folderHasChildren = x);
-        using var folderChildren = BindChildren(folder.Model.GetChildrenObservable_ForTestingOnly(), out var folderChildrenCollection);
+        using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
+        using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
         
         // Assert folder observables
         folderHasChildren.Should().BeTrue();
@@ -366,8 +366,8 @@ public class TreeFolderGeneratorForLocationIdTests
         var generator = CreateGenerator();
         var rootHasChildren = false;
         
-        using var rootHasChildrenSub = generator.ModelForRoot().GetHasChildrenObservable_ForTestingOnly().Subscribe(x => rootHasChildren = x);
-        using var rootChildren = BindChildren(generator.ModelForRoot().GetChildrenObservable_ForTestingOnly(), out var rootChildrenCollection);
+        using var rootHasChildrenSub = generator.ModelForRoot().HasChildrenObservable.Subscribe(x => rootHasChildren = x);
+        using var rootChildren = BindChildren(generator.ModelForRoot().ChildrenObservable, out var rootChildrenCollection);
         
         // Assert initial state
         rootHasChildren.Should().BeFalse();
@@ -388,24 +388,24 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Check folder1 observables
         var folder1HasChildren = false;
-        using var folder1HasChildrenSub = folder1.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folder1HasChildren = x);
-        using var folder1Children = BindChildren(folder1.Model.GetChildrenObservable_ForTestingOnly(), out var folder1ChildrenCollection);
+        using var folder1HasChildrenSub = folder1.Model.HasChildrenObservable.Subscribe(x => folder1HasChildren = x);
+        using var folder1Children = BindChildren(folder1.Model.ChildrenObservable, out var folder1ChildrenCollection);
         folder1HasChildren.Should().BeTrue();
         folder1ChildrenCollection.Should().ContainSingle(); // Contains folder2
         folder1.FolderName.Should().Be((RelativePath)"folder1");
         
         // Check folder2 observables
         var folder2HasChildren = false;
-        using var folder2HasChildrenSub = folder2.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folder2HasChildren = x);
-        using var folder2Children = BindChildren(folder2.Model.GetChildrenObservable_ForTestingOnly(), out var folder2ChildrenCollection);
+        using var folder2HasChildrenSub = folder2.Model.HasChildrenObservable.Subscribe(x => folder2HasChildren = x);
+        using var folder2Children = BindChildren(folder2.Model.ChildrenObservable, out var folder2ChildrenCollection);
         folder2HasChildren.Should().BeTrue();
         folder2ChildrenCollection.Should().ContainSingle(); // Contains folder3
         folder2.FolderName.Should().Be((RelativePath)"folder2");
         
         // Check folder3 observables
         var folder3HasChildren = false;
-        using var folder3HasChildrenSub = folder3.Model.GetHasChildrenObservable_ForTestingOnly().Subscribe(x => folder3HasChildren = x);
-        using var folder3Children = BindChildren(folder3.Model.GetChildrenObservable_ForTestingOnly(), out var folder3ChildrenCollection);
+        using var folder3HasChildrenSub = folder3.Model.HasChildrenObservable.Subscribe(x => folder3HasChildren = x);
+        using var folder3Children = BindChildren(folder3.Model.ChildrenObservable, out var folder3ChildrenCollection);
         folder3HasChildren.Should().BeTrue();
         folder3ChildrenCollection.Should().ContainSingle().Which.Should().Be(fileModel); // Contains file
         folder3.FolderName.Should().Be((RelativePath)"folder3");

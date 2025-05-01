@@ -56,12 +56,12 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
-    public IObservable<bool> HasChildrenObservable { private get; init; }
+    public IObservable<bool> HasChildrenObservable { get; init; }
 
     private readonly BindableReactiveProperty<bool> _hasChildren = new();
     public IReadOnlyBindableReactiveProperty<bool> HasChildren => _hasChildren;
 
-    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { private get; init; }
+    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; }
 
     private ObservableList<TModel> _children = [];
     private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
@@ -191,18 +191,4 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     {
         return model.WhenActivated(block);
     }
-
-    /// <summary>
-    /// Provides the internal HasChildrenObservable. FOR TESTING ONLY.
-    /// </summary>
-    [Obsolete("Internal use for testing ONLY. Do not use in production code.")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    internal IObservable<bool> GetHasChildrenObservable_ForTestingOnly() => HasChildrenObservable;
-
-    /// <summary>
-    /// Provides the internal ChildrenObservable. FOR TESTING ONLY.
-    /// </summary>
-    [Obsolete("Internal use for testing ONLY. Do not use in production code.")]
-    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-    internal IObservable<IChangeSet<TModel, TKey>> GetChildrenObservable_ForTestingOnly() => ChildrenObservable;
 }

@@ -2,6 +2,7 @@ using DynamicData;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
+using System.Reactive.Linq;
 
 namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 
@@ -24,6 +25,33 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObservableRoots()
     {
         return RootCache.Connect();
+    }
+
+    /// <summary>
+    /// A variant of <see cref="ObservableRoots"/> which returns the contents of
+    /// a single 'LocationId' when there's only one root (LocationId). Used for
+    /// better UI/UX experience.
+    ///
+    /// In simpler words, don't show the 'GAME' folder if we only have files in 'GAME'.
+    /// But if we have 'GAME' and 'SAVES', show both!
+    /// </summary>
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> SimplifiedObservableRoots()
+    {
+        return ObservableRoots()
+            .Select(_ => LocationIdToTree.Count) // tied 1:1 with root count
+            .Select(GetAdaptedChangeSet) // get either changeset with 1 root, or with all roots.
+            .Switch();
+    }
+
+    private IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetAdaptedChangeSet(int count)
+    {
+        // Return all roots
+        if (count != 1) 
+            return ObservableRoots();
+
+        // Else if there's only one location ID, return its children
+        var singleRoot = LocationIdToTree.Values.First();
+        return singleRoot.ObservableChildren();
     }
 
     /// <summary>

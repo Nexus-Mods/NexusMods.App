@@ -42,6 +42,14 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     }
     
     /// <summary>
+    /// Returns an observable changeset of children items from the root folder.
+    /// </summary>
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObservableChildren()
+    {
+        return _rootFolder.Model.ChildrenObservable;
+    }
+    
+    /// <summary>
     /// Invoked on every file received from the caller.
     /// This adds the file to the inner tree.
     /// </summary>
