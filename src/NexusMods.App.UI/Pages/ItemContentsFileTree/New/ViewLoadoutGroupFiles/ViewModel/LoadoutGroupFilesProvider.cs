@@ -72,8 +72,8 @@ public class LoadoutGroupFilesProvider
         var iconUpdates = itemUpdates.Select(FileToIconValue);
         var sizeUpdates = itemUpdates.Select(x => x.Size);
         
-        fileItemModel.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: FileToFileName(modFile), valueObservable: nameUpdates));
-        fileItemModel.Add(Columns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(initialValue: FileToIconValue(modFile), valueObservable: iconUpdates));
+        fileItemModel.Add(SharedColumns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: FileToFileName(modFile), valueObservable: nameUpdates));
+        fileItemModel.Add(SharedColumns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(initialValue: FileToIconValue(modFile), valueObservable: iconUpdates));
         fileItemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(initialValue: modFile.Size, valueObservable: sizeUpdates));
         // Note(sewer): File Count omitted to avoid rendering a '1' for every file for cleanliness.
         //              Will see how this goes once the columns are actually there.

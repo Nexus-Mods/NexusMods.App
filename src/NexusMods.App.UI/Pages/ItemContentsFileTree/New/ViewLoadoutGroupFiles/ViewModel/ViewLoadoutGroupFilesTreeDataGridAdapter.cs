@@ -38,13 +38,13 @@ public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider servicePr
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<EntityId, Columns.NameWithFileIcon>();
+        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.NameWithFileIcon>();
 
         return
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
             ColumnCreator.Create<EntityId, SharedColumns.ItemSize>(sortDirection: ListSortDirection.Descending),
-            ColumnCreator.Create<EntityId, Columns.FileCount>(),
+            ColumnCreator.Create<EntityId, SharedColumns.FileCount>(),
         ];
     }
 }
@@ -69,7 +69,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
     }
     private static void AddNameAndIcon<TFolderModelInitializer>(CompositeItemModel<EntityId> model, GeneratedFolder<LoadoutItemTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
     {
-        model.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: folder.FolderName.ToString(), valueObservable: Observable.Return(folder.FolderName.ToString())));
+        model.Add(SharedColumns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: folder.FolderName.ToString(), valueObservable: Observable.Return(folder.FolderName.ToString())));
 
         // Add the icon for the folder, making it flip on 'IsExpanded'.
         var iconStream = model
@@ -80,7 +80,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
 
         // hand it off to your icon‐component
         model.Add(
-            Columns.NameWithFileIcon.IconComponentKey,
+            SharedColumns.NameWithFileIcon.IconComponentKey,
             new UnifiedIconComponent(
                 initialValue: IconValues.Folder,
                 valueObservable: iconStream,
@@ -117,6 +117,6 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
             subscribeWhenCreated: true,
             observeOutsideUiThread: true
         );
-        model.Add(Columns.FileCount.ComponentKey, component);
+        model.Add(SharedColumns.FileCount.ComponentKey, component);
     }
 }
