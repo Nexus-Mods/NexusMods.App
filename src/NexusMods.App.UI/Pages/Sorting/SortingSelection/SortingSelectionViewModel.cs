@@ -62,6 +62,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
             if (canEditObservable.HasValue)
             {
                 canEditObservable.Value
+                    .ObserveOnUIThreadDispatcher()
                     .Subscribe(x => _canEdit.Value = x)
                     .DisposeWith(d);
             }
