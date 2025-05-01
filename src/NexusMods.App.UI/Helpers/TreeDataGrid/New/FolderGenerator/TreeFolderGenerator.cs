@@ -16,7 +16,7 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
     where TFolderModelInitializer : IFolderModelInitializer<TTreeItemWithPath>
 {
     internal readonly Dictionary<LocationId, TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>> LocationIdToTree = new();
-    internal readonly SourceCache<CompositeItemModel<EntityId>, EntityId> RootCache = new(model => model.Key); // Assuming CompositeItemModel<EntityId> has EntityId Key
+    internal readonly SourceCache<CompositeItemModel<EntityId>, EntityId> RootCache = new(model => model.Key);
 
     /// <summary>
     /// Returns an observable changeset of root items, suitable for binding to a TreeDataGrid.
