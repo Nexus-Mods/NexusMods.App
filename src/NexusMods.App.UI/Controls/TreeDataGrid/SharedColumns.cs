@@ -87,8 +87,8 @@ public static class SharedColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<ValueComponent<uint>>(ComponentKey);
-            var bValue = b.GetOptional<ValueComponent<uint>>(ComponentKey);
+            var aValue = a.GetOptional<UInt32Component>(ComponentKey);
+            var bValue = b.GetOptional<UInt32Component>(ComponentKey);
             // Assuming ValueComponent has a comparable Value property or implements IComparable
             // Adjust the comparison logic if ValueComponent comparison needs specific handling
             return aValue.Compare(bValue); 

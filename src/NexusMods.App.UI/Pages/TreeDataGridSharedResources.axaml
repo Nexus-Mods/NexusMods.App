@@ -85,5 +85,71 @@
         </controls:ComponentControl>
     </DataTemplate>
 
-</ResourceDictionary>
+    <DataTemplate x:Key="{x:Static controls:SharedColumns+NameWithFileIcon.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
 
+        <Grid ColumnDefinitions="Auto,Auto" ClipToBounds="True">
+            <!-- File / Directory Icon -->
+            <controls:ComponentControl Grid.Column="0" x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:UnifiedIconComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.IconComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:UnifiedIconComponent}">
+                                <icons:UnifiedIcon Value="{CompiledBinding Value.Value}" Classes="FileTypeIcon" Margin="0" Size="20" />
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+
+                <controls:ComponentControl.Fallback>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.File}" Classes="FileTypeIcon" Margin="0" Size="20" />
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+
+            <!-- File Name -->
+            <controls:ComponentControl Grid.Column="1" x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.StringComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:StringComponent}">
+                                <TextBlock Text="{CompiledBinding Value.Value}" Margin="4,0,8,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+
+                <controls:ComponentControl.Fallback>
+                    <TextBlock Text="-" Margin="4,0,8,0" VerticalAlignment="Center" />
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="{x:Static controls:SharedColumns+FileCount.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:UInt32Component"
+                                            ComponentKey="{x:Static controls:SharedColumns+FileCount.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:UInt32Component}">
+                            <TextBlock Text="{CompiledBinding Value.Value}" />
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="" /> <!-- Files have no 'inner file count' so should be empty -->
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+</ResourceDictionary>

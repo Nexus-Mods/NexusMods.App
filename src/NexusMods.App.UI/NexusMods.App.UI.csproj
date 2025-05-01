@@ -378,6 +378,9 @@
         <Compile Update="Controls\TreeDataGrid\ComponentKey.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\UInt32Component.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\Trees\Files\FileTreeNodeViewModel.cs">
           <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>
         </Compile>
