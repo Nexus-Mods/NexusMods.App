@@ -8,13 +8,27 @@
         </Border>
     </Design.PreviewWith>
     
+    <Styles.Resources>
+        <StaticResource x:Key="PanelViewCornerRadius" ResourceKey="Rounded-lg"/>
+        <SolidColorBrush x:Key="PanelBorderBrushUnselected" Color="Transparent"/>
+        <StaticResource x:Key="PanelBorderBrushSelected" ResourceKey="BrandNeutral600"/>
+    </Styles.Resources>
+    
     <Style Selector="ui|PanelView">
         
-        <Style Selector="^ Border#PanelBorder">
+        <!-- Both Border's below need CornerRadius as one is clipping the content below, and the other is drawing the 
+        border and needs setting specifically -->
+        
+        <Style Selector="^ Border#PanelClipBorder">
+            <Setter Property="ClipToBounds" Value="True" />
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="{StaticResource PanelViewCornerRadius}" />
+        </Style>
+        
+        <Style Selector="^ Border#PanelBorder">
+            <Setter Property="CornerRadius" Value="{StaticResource PanelViewCornerRadius}" />
             <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrushUnselected}" />
         </Style>
     
         <Style Selector="^ ItemsControl#TabContents">
@@ -38,7 +52,7 @@
         <Style Selector="^:alone">
             <Style Selector="^ Border#PanelBorder">
                 <Setter Property="BorderThickness" Value="2" />
-                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrushUnselected}" />
             </Style>
         </Style>
 
@@ -49,7 +63,7 @@
             <Style Selector="^:selected">
                 <Style Selector="^ Border#PanelBorder">
                     <Setter Property="BorderThickness" Value="2" />
-                    <Setter Property="BorderBrush" Value="{StaticResource BrandNeutral600}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrushSelected}" />
                 </Style>
             </Style>
 
@@ -57,7 +71,7 @@
             <Style Selector="^:not(:selected)">
                 <Style Selector="^ Border#PanelBorder">
                     <Setter Property="BorderThickness" Value="2" />
-                    <Setter Property="BorderBrush" Value="Transparent" />
+                    <Setter Property="BorderBrush" Value="{StaticResource PanelBorderBrushUnselected}" />
                 </Style>
             </Style>
         </Style>
