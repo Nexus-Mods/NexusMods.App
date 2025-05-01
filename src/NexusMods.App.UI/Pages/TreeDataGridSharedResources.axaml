@@ -98,14 +98,14 @@
                                                 ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.IconComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
                             <DataTemplate DataType="{x:Type controls:UnifiedIconComponent}">
-                                <icons:UnifiedIcon Value="{CompiledBinding Value.Value}" Classes="FileTypeIcon" Margin="0" Size="20" />
+                                <icons:UnifiedIcon Value="{CompiledBinding Value.Value}" Classes="FileTypeIcon" />
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
 
                 <controls:ComponentControl.Fallback>
-                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.File}" Classes="FileTypeIcon" Margin="0" Size="20" />
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.File}" Classes="FileTypeIcon" />
                 </controls:ComponentControl.Fallback>
             </controls:ComponentControl>
 
@@ -116,14 +116,14 @@
                                                 ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.StringComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
                             <DataTemplate DataType="{x:Type controls:StringComponent}">
-                                <TextBlock Text="{CompiledBinding Value.Value}" Margin="4,0,8,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{CompiledBinding Value.Value}" Classes="FileNameTextBlock" />
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
 
                 <controls:ComponentControl.Fallback>
-                    <TextBlock Text="-" Margin="4,0,8,0" VerticalAlignment="Center" />
+                    <TextBlock Text="-" Classes="FileNameTextBlock" />
                 </controls:ComponentControl.Fallback>
             </controls:ComponentControl>
         </Grid>
