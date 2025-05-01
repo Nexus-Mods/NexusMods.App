@@ -28,17 +28,6 @@
     The best solution I've found so far is to have a Panel and two child Borders. Using Panel as a parent means both 
     children are drawn over the same area and not stacked, this allows us to layer. One Border is the clipping border which 
     contains the nested content and the other has the BorderBrush that is drawn over the top of everything. 
-    
-    <Panel>
-      <Border x:Name="PanelClippingBorder">
-        <WhateverContent />
-          <NestedContent />
-        <MoreContent />
-      </Border>
-      <Border x:Name="PanelBorder" />
-    </Panel>
-    
-    Borders by default stretch h and v to fill their parent. So these two Borders will always be the same size. One is clipping the content (and so PanelBorder has CornerRadius set). The other one, as it's drawn after, it's drawing an outline with a transparent background over all of it. (edited) 
      -->
     <Panel>
         <Border x:Name="PanelClipBorder">
@@ -48,8 +37,9 @@
                         <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
                             <Border Grid.Column="0" x:Name="ScrollLeftButtonBorder">
                                 <controls:StandardButton x:Name="ScrollLeftButton"
-                                                         Size="Medium"
-                                                         ShowIcon="IconOnly"
+                                                         Size="ExtraSmall"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False"
                                                          LeftIcon="{x:Static icons:IconValues.ChevronLeft}"
                                                          Fill="None"
                                                          Margin="8,0,8,0" />
@@ -83,16 +73,14 @@
                                             HorizontalAlignment="Stretch">
 
                                         <controls:StandardButton x:Name="AddTabButton1"
-                                                                 Size="Medium"
-                                                                 ShowIcon="IconOnly"
+                                                                 Size="ExtraSmall"
+                                                                 ShowIcon="Left"
+                                                                 ShowLabel="False"
                                                                  LeftIcon="{x:Static icons:IconValues.Add}"
                                                                  Fill="None"
-                                                                 Margin="8,0,0,0" />
-
+                                                                 Margin="0"
+                                                                 ToolTip.Tip="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
                                     </Border>
-                                    <ToolTip.Tip>
-                                        <TextBlock Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
-                                    </ToolTip.Tip>
                                 </Grid>
 
                             </ScrollViewer>
@@ -101,15 +89,18 @@
                                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
 
                                     <controls:StandardButton x:Name="AddTabButton2"
-                                                             Size="Medium"
-                                                             ShowIcon="IconOnly"
+
+                                                             Size="ExtraSmall"
+                                                             ShowIcon="Left"
+                                                             ShowLabel="False"
                                                              LeftIcon="{x:Static icons:IconValues.Add}"
                                                              Fill="None"
-                                                             Margin="8,0,0,0" />
+                                                             Margin="0" />
 
                                     <controls:StandardButton x:Name="ScrollRightButton"
-                                                             Size="Medium"
-                                                             ShowIcon="IconOnly"
+                                                             Size="ExtraSmall"
+                                                             ShowIcon="Left"
+                                                             ShowLabel="False"
                                                              LeftIcon="{x:Static icons:IconValues.ChevronRight}"
                                                              Fill="None" />
                                 </StackPanel>
@@ -120,24 +111,48 @@
                             <StackPanel
                                 x:Name="TabHeaderSideArea"
                                 Orientation="Horizontal"
-                                Classes="Spacing-3"
-                                Margin="6, 0, 8, 0">
+                                Spacing="{StaticResource Spacing-1}"
+                                Margin="4, 0, 8, 0">
                                 <!-- NOTE(insomnious): needs an extra 2 on the right margin to account for the 2px border -->
 
                                 <!-- TODO: Remove this hiding Border when PoppedOut panels are implemented -->
                                 <Border IsVisible="False">
-                                    <Button x:Name="PopOutPanelButton"
-                                            Classes="PanelTitlebar OpenInWindow" />
+                                    <controls:StandardButton x:Name="PopOutPanelButton"
+                                                             Size="ExtraSmall"
+                                                             ShowIcon="Left"
+                                                             ShowLabel="False"
+                                                             LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                                             Fill="None" />
                                 </Border>
 
                                 <controls:StandardButton x:Name="ClosePanelButton"
-                                                         Size="Medium"
-                                                         ShowIcon="IconOnly"
+                                                         Size="ExtraSmall"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False"
                                                          LeftIcon="{x:Static icons:IconValues.Close}"
                                                          Fill="None" />
                             </StackPanel>
                         </Border>
                     </Grid>
+                </Border>
+
+                <Border Grid.Row="1"
+                        x:Name="FloatingClosePanelBorder"
+                        IsVisible="False"
+                        Background="{StaticResource SurfaceLowBrush}"
+                        CornerRadius="4"
+                        BorderThickness="0"
+                        BorderBrush="{StaticResource SurfaceMidBrush}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="0 8 8 0"
+                        ZIndex="999">
+                    <controls:StandardButton x:Name="ClosePanelButton2"
+                                             Size="ExtraSmall"
+                                             ShowIcon="Left"
+                                             ShowLabel="False"
+                                             LeftIcon="{x:Static icons:IconValues.Close}"
+                                             Fill="None" />
                 </Border>
 
                 <ItemsControl Grid.Row="1" x:Name="TabContents">
