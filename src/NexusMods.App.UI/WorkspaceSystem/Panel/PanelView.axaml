@@ -28,7 +28,18 @@
     The best solution I've found so far is to have a Panel and two child Borders. Using Panel as a parent means both 
     children are drawn over the same area and not stacked, this allows us to layer. One Border is the clipping border which 
     contains the nested content and the other has the BorderBrush that is drawn over the top of everything. 
-     --> 
+    
+    <Panel>
+      <Border x:Name="PanelClippingBorder">
+        <WhateverContent />
+          <NestedContent />
+        <MoreContent />
+      </Border>
+      <Border x:Name="PanelBorder" />
+    </Panel>
+    
+    Borders by default stretch h and v to fill their parent. So these two Borders will always be the same size. One is clipping the content (and so PanelBorder has CornerRadius set). The other one, as it's drawn after, it's drawing an outline with a transparent background over all of it. (edited) 
+     -->
     <Panel>
         <Border x:Name="PanelClipBorder">
             <Grid RowDefinitions="Auto, *">
@@ -146,7 +157,7 @@
                 </ItemsControl>
             </Grid>
         </Border>
-        <Border x:Name="PanelBorder"/>
+        <Border x:Name="PanelBorder" />
     </Panel>
 
 </reactive:ReactiveUserControl>
