@@ -28,8 +28,10 @@ using NexusMods.Collections;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
 
@@ -42,6 +44,9 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
     [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
+    private readonly R3.ReactiveProperty<bool> _isSingleCollection = new(true);
+    
+    public ReadOnlyReactiveProperty<bool> HasSingleCollection => _isSingleCollection;
     public IApplyControlViewModel ApplyControlViewModel { get; }
 
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
@@ -299,6 +304,14 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 LeftMenuItemLibrary
                     .WhenAnyValue(item => item.IsActive, item => item.IsSelected, (isActive, isSelected) => isActive || isSelected)
                     .Subscribe(isActive => NewDownloadModelCount = isActive ? 0 : NewDownloadModelCount)
+                    .DisposeWith(disposable);
+
+                CollectionGroup.ObserveAll(conn)
+                    .Filter(collection => collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
+                    .Transform(collection => collection.Id)
+                    .QueryWhenChanged(collections => collections.Count == 1)
+                    .ToObservable()
+                    .Subscribe(hasSingleCollection => _isSingleCollection.Value = hasSingleCollection)
                     .DisposeWith(disposable);
             }
         );

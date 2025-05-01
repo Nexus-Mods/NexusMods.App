@@ -5,12 +5,14 @@ using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
+using R3;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
 
 public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems { get; }
+    public ReadOnlyReactiveProperty<bool> HasSingleCollection { get; } = new ReactiveProperty<bool>(true);
     public WorkspaceId WorkspaceId { get; } = new();
     public IApplyControlViewModel ApplyControlViewModel { get; } = new ApplyControlDesignViewModel();
     
