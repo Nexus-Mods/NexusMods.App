@@ -12,7 +12,7 @@ public class LoadOrdersWipPageViewModel : APageViewModel<ILoadOrdersWIPPageViewM
 
     public LoadOrdersWipPageViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId) : base(windowManager)
     {
-        SortingSelectionViewModel = new SortingSelectionViewModel(serviceProvider, loadoutId, Optional<Observable<bool>>.None);
+        SortingSelectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
         TabTitle = "Load Orders";
     }
 }

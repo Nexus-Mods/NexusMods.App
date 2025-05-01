@@ -77,14 +77,14 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .QueryWhenChanged(collections => collections.Count == 1)
                 .ToObservable();
             
-            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, loadoutId, canEditObservable:isSingleCollectionObservable);
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, canEditObservable:isSingleCollectionObservable);
         }
         else
         {
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
-            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, loadoutId, Optional<Observable<bool>>.None);
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
         }
         
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });

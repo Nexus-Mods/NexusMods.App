@@ -5,6 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.App.UI.Windows;
+using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;
@@ -19,8 +23,10 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
     
     private readonly BindableReactiveProperty<bool> _canEdit = new (true);
     public IReadOnlyBindableReactiveProperty<bool> CanEdit => _canEdit;
-
-    public SortingSelectionViewModel(IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<Observable<bool>> canEditObservable)
+    
+    public ReactiveCommand<NavigationInformation> OpenAllModsLoadoutPageCommand { get; }
+    
+    public SortingSelectionViewModel(IServiceProvider serviceProvider, IWindowManager windowManager, LoadoutId loadoutId, Optional<Observable<bool>> canEditObservable)
     {
         _loadoutId = loadoutId;
         _connection = serviceProvider.GetRequiredService<IConnection>();
@@ -33,6 +39,23 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
 
         var enumerable = sortableItemProviders.Select(ILoadOrderViewModel (providerFactory) => new LoadOrderViewModel(serviceProvider, providerFactory, providerFactory.GetLoadoutSortableItemProvider(loadout)));
         LoadOrderViewModels = new ReadOnlyObservableCollection<ILoadOrderViewModel>(new ObservableCollection<ILoadOrderViewModel>(enumerable));
+        
+        OpenAllModsLoadoutPageCommand = new ReactiveCommand<NavigationInformation>(info =>
+            {
+                var pageData = new PageData
+                {
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext()
+                    {
+                        LoadoutId = loadoutId,
+                        GroupScope = Optional<LoadoutItemGroupId>.None,
+                    },
+                };
+                var workspaceController = windowManager.ActiveWorkspaceController;
+                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+                workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+            }
+        );
         
         this.WhenActivated(d =>
         {
