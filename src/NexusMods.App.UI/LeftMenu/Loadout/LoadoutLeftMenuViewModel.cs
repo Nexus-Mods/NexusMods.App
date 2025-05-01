@@ -311,6 +311,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     .Transform(collection => collection.Id)
                     .QueryWhenChanged(collections => collections.Count == 1)
                     .ToObservable()
+                    .ObserveOnUIThreadDispatcher()
                     .Subscribe(hasSingleCollection => _isSingleCollection.Value = hasSingleCollection)
                     .DisposeWith(disposable);
             }
