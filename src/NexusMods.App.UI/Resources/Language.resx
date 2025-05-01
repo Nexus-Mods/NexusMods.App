@@ -531,10 +531,13 @@
         <value>Get mods:</value>
     </data>
     <data name="FileOriginsPage_FromDrive" xml:space="preserve">
-        <value>From drive</value>
+        <value>Browse drive</value>
     </data>
     <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
-        <value>From Nexus Mods</value>
+        <value>Browse Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
+        <value>Browse Nexus Mods</value>
     </data>
     <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
         <value>View</value>

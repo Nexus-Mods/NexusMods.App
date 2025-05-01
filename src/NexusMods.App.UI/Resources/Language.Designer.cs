@@ -989,6 +989,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Browse Nexus Mods.
+        /// </summary>
+        public static string FileOriginsPage_BrowseCollectionsNexusMods {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_BrowseCollectionsNexusMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Check Nexus Mods for available mod file updates.
         /// </summary>
         public static string FileOriginsPage_CheckForUpdates_ToolTip {
@@ -998,7 +1007,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From drive.
+        ///   Looks up a localized string similar to Browse drive.
         /// </summary>
         public static string FileOriginsPage_FromDrive {
             get {
@@ -1025,7 +1034,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From Nexus Mods.
+        ///   Looks up a localized string similar to Browse Nexus Mods.
         /// </summary>
         public static string FileOriginsPage_FromNexusMods {
             get {
