@@ -7,6 +7,7 @@ using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.UI;
@@ -48,6 +49,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
 
     [Reactive] public int ItemCount { get; private set; }
+
+    [Reactive] public bool HasRulesSection { get; private set; } = false;
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
     {
@@ -111,6 +114,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
             }
         );
+        
+        var numSortableItemProviders = loadout
+            .InstallationInstance
+            .GetGame()
+            .SortableItemProviderFactories.Length;
+        HasRulesSection = numSortableItemProviders > 0;
 
         ViewFilesCommand = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)

@@ -27,4 +27,6 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     ISortingSelectionViewModel RulesSectionViewModel { get; }
     
     public int ItemCount { get; }
+    
+    public bool HasRulesSection { get; }
 }
