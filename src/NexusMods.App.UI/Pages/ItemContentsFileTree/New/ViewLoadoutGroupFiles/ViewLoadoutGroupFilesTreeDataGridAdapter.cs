@@ -70,7 +70,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
     }
     private static void AddNameAndIcon<TFolderModelInitializer>(CompositeItemModel<EntityId> model, GeneratedFolder<LoadoutItemTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
     {
-        model.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: folder.FolderPath.FileName.ToString(), valueObservable: Observable.Return(folder.FolderPath.FileName.ToString())));
+        model.Add(Columns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: folder.FolderName.ToString(), valueObservable: Observable.Return(folder.FolderName.ToString())));
 
         // Add the icon for the folder, making it flip on 'IsExpanded'.
         var iconStream = model

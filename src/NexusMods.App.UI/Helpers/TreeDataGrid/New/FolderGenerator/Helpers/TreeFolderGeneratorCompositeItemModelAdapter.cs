@@ -66,7 +66,8 @@ public class TreeFolderGeneratorCompositeItemModelAdapter<TTreeItemWithPath, TTr
                     FolderGenerator.OnReceiveFile(_factory.CreateItem(change.Current.Key), change.Current);
                     break;
                 case ChangeReason.Moved:
-                    // For moved items, treat as a remove followed by an add
+                    // Note(sewer): This case is not tested, I don't know how to trigger
+                    // this event.
                     FolderGenerator.OnDeleteFile(_factory.CreateItem(change.Current.Key), change.Current);
                     FolderGenerator.OnReceiveFile(_factory.CreateItem(change.Current.Key), change.Current);
                     break;

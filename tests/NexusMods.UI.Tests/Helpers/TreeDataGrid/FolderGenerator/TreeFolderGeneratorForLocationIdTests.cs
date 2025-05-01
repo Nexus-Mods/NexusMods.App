@@ -53,12 +53,14 @@ public class TreeFolderGeneratorForLocationIdTests
         var folder1 = rootFolder.Folders.Lookup("folder1").Value;
         folder1.Files.Count.Should().Be(0);
         folder1.Folders.Count.Should().Be(1);
+        folder1.FolderName.Should().Be((RelativePath)"folder1");
         
         // Navigate to folder2
         var folder2 = folder1.Folders.Lookup("folder2").Value;
         folder2.Files.Count.Should().Be(1);
         folder2.Files.Lookup(fileId).HasValue.Should().BeTrue();
         folder2.Files.Lookup(fileId).Value.Should().Be(fileModel);
+        folder2.FolderName.Should().Be((RelativePath)"folder2");
     }
     
     [Fact]
@@ -154,19 +156,23 @@ public class TreeFolderGeneratorForLocationIdTests
         folder.Should().NotBeNull();
         parentFolder.Should().NotBeNull();
         parentFolderName.Should().Be("folder3");
-        
+        folder.FolderName.Should().Be((RelativePath)"folder3");
+
         // Navigate from root to confirm structure
         var rootFolder = generator.GetOrCreateFolder("", out _, out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         var folder1 = rootFolder.Folders.Lookup("folder1").Value;
         folder1.Folders.Count.Should().Be(1);
+        folder1.FolderName.Should().Be((RelativePath)"folder1");
         
         var folder2 = folder1.Folders.Lookup("folder2").Value;
         folder2.Folders.Count.Should().Be(1);
+        folder2.FolderName.Should().Be((RelativePath)"folder2");
         
         var folder3 = folder2.Folders.Lookup("folder3").Value;
         folder3.Should().BeSameAs(folder);
+        folder3.FolderName.Should().Be((RelativePath)"folder3");
     }
     
     [Fact]
@@ -386,6 +392,7 @@ public class TreeFolderGeneratorForLocationIdTests
         using var folder1Children = BindChildren(folder1.Model.GetChildrenObservable_ForTestingOnly(), out var folder1ChildrenCollection);
         folder1HasChildren.Should().BeTrue();
         folder1ChildrenCollection.Should().ContainSingle(); // Contains folder2
+        folder1.FolderName.Should().Be((RelativePath)"folder1");
         
         // Check folder2 observables
         var folder2HasChildren = false;
@@ -393,6 +400,7 @@ public class TreeFolderGeneratorForLocationIdTests
         using var folder2Children = BindChildren(folder2.Model.GetChildrenObservable_ForTestingOnly(), out var folder2ChildrenCollection);
         folder2HasChildren.Should().BeTrue();
         folder2ChildrenCollection.Should().ContainSingle(); // Contains folder3
+        folder2.FolderName.Should().Be((RelativePath)"folder2");
         
         // Check folder3 observables
         var folder3HasChildren = false;
@@ -400,6 +408,7 @@ public class TreeFolderGeneratorForLocationIdTests
         using var folder3Children = BindChildren(folder3.Model.GetChildrenObservable_ForTestingOnly(), out var folder3ChildrenCollection);
         folder3HasChildren.Should().BeTrue();
         folder3ChildrenCollection.Should().ContainSingle().Which.Should().Be(fileModel); // Contains file
+        folder3.FolderName.Should().Be((RelativePath)"folder3");
         
         // Act - Remove the file
         generator.OnDeleteFile(filePath, fileModel);
@@ -435,14 +444,17 @@ public class TreeFolderGeneratorForLocationIdTests
         var parent1 = rootFolder.Folders.Lookup("parent1").Value;
         parent1.Folders.Count.Should().Be(1);
         parent1.Files.Count.Should().Be(0);
+        parent1.FolderName.Should().Be((RelativePath)"parent1");
         
         var parent2 = parent1.Folders.Lookup("parent2").Value;
         parent2.Folders.Count.Should().Be(1);
         parent2.Files.Count.Should().Be(0);
+        parent2.FolderName.Should().Be((RelativePath)"parent2");
         
         var parent3 = parent2.Folders.Lookup("parent3").Value;
         parent3.Files.Count.Should().Be(1);
         parent3.Files.Lookup(fileId).HasValue.Should().BeTrue();
+        parent3.FolderName.Should().Be((RelativePath)"parent3");
         
         // Act - Delete the file
         var result = generator.OnDeleteFile(filePath, fileModel);

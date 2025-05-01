@@ -160,9 +160,9 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     public SourceCache<GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>, RelativePath> Folders = new(_ => null!);
 
     /// <summary>
-    /// Path to the folder node.
+    /// Name of this folder node.
     /// </summary>
-    public RelativePath FolderPath { get; set; }
+    public RelativePath FolderName { get; set; }
     
     /// <summary>
     /// A source cache containing all files from this folder and all its subfolders recursively.
@@ -181,9 +181,11 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
 #endif
 
     /// <summary/>
-    /// <param name="relativePath"></param>
-    public GeneratedFolder(RelativePath relativePath)
+    /// <param name="folderName">Name of this folder node.</param>
+    public GeneratedFolder(RelativePath folderName)
     {
+        FolderName = folderName;
+        
         // Create observables for the children and hasChildren status.
         var filesCount = Files.CountChanged.Select(count => count > 0);
         var foldersCount = Folders.CountChanged.Select(count => count > 0);
@@ -297,7 +299,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
         }
     }
 
-    private static GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> CreateChildFolder(RelativePath relativePath) => new(relativePath);
+    private static GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> CreateChildFolder(RelativePath folderName) => new(folderName);
 
     public void Dispose()
     {
