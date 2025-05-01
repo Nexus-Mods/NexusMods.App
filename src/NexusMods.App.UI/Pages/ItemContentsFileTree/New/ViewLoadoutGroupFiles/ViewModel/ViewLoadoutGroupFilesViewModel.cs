@@ -4,8 +4,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Controls.Trees;
-using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -17,7 +15,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
 
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 
 [UsedImplicitly]
 public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel

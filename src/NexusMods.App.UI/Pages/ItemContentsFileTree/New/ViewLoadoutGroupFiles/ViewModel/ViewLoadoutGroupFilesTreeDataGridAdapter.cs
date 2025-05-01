@@ -4,14 +4,13 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Aggregation;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator.Helpers;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles;
+namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 
 /// <summary>
 /// Implementation of <see cref="TreeDataGridAdapter{TModel,TKey}"/> 
