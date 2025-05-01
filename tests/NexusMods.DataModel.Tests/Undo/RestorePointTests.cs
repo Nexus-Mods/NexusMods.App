@@ -13,7 +13,7 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
     [Fact]
     public async Task CanGetRestorePoints()
     {
-        await using var tmpConn = await ConnectionFor("two_sdv_collections_added_removed.zip");
+        await using var tmpConn = await ConnectionFor("with_bloom.zip");
 
         var undoService = tmpConn.Host.Services.GetRequiredService<UndoService>();
 

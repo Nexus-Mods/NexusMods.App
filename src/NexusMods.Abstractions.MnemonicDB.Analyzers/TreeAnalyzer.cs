@@ -15,7 +15,6 @@ public class TreeAnalyzer : IAnalyzer<FrozenSet<EntityId>>
         dbOld ??= dbNew.Connection.AsOf(TxId.From(dbNew.BasisTxId.Value - 1));
         
         HashSet<EntityId> modified = new();
-        
         foreach (var datom in dbNew.RecentlyAdded)
         {
             if (!modified.Add(datom.E)) continue;

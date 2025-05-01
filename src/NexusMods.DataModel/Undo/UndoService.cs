@@ -70,7 +70,9 @@ public class UndoService
         var tx = _conn.BeginTransaction();
         var processed = new HashSet<EntityId>();
         
-        while (toProcess.Count > 0 && processed.Count < 20000)
+        var seen = new HashSet<Symbol>();
+        
+        while (toProcess.Count > 0)
         {
             var current = toProcess.First(); 
             toProcess.Remove(current);
@@ -81,8 +83,8 @@ public class UndoService
             var currentState = currentDb.Datoms(current);
 
 
-            CompareEntities(currentState, processed, toProcess, desiredState, tx);
-            ExtractBackReferences(currentDb, current, ignoreAttrs, processed, toProcess, revertDb);
+            CompareEntities(current, currentState, processed, toProcess, desiredState, tx, seen, currentDb.AttributeCache);
+            ExtractBackReferences(currentDb, current, ignoreAttrs, processed, toProcess, revertDb, seen);
         }
 
         // Mark the transaction as a snapshot
@@ -91,15 +93,16 @@ public class UndoService
         //await tx.Commit();
     }
 
-    private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, HashSet<EntityId> processed, HashSet<EntityId> toProcess, IDb revertDb)
+    private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, HashSet<EntityId> processed, HashSet<EntityId> toProcess, IDb revertDb, HashSet<Symbol> seenIds)
     {
         var backReferenceDatoms = currentDb.Datoms(SliceDescriptor.CreateReferenceTo(current));
-                
+        var resolver = currentDb.AttributeCache;
         foreach (var datom in backReferenceDatoms)
         {
             if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E))
                 continue;
             toProcess.Add(datom.E);
+            seenIds.Add(resolver.GetSymbol(datom.A));
         }
                 
         var backReferenceDesiredState = revertDb.Datoms(SliceDescriptor.CreateReferenceTo(current));
@@ -108,35 +111,45 @@ public class UndoService
             if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E))
                 continue;
             toProcess.Add(datom.E);
+            seenIds.Add(resolver.GetSymbol(datom.A));
         }
     }
 
-    private static void CompareEntities(EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx)
+    private static void CompareEntities(EntityId current, EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, HashSet<Symbol> seenIds, AttributeCache cache)
     {
-        foreach (var datom in currentState)
+        
+        
+        
+        foreach (var avData in currentState.GetAVEnumerable())
         {
-            if (datom.Prefix.ValueTag == ValueTag.Reference)
+            
+            seenIds.Add(cache.GetSymbol(avData.A));
+            
+            if (avData.ValueType == ValueTag.Reference)
             {
-                var value = EntityIdSerializer.Read(datom.ValueSpan);
+                var value = EntityIdSerializer.Read(avData.Value.Span);
                 if (!processed.Contains(value)) 
                     toProcess.Add(value);
             }
                 
-            if (!desiredState.Contains(datom)) 
-                tx.Add(datom.Retract());
+            if (!desiredState.Contains(avData)) 
+                tx.Add(current, avData.A, avData.ValueType, avData.Value.Span, true);
         }
 
-        foreach (var datom in desiredState)
+        foreach (var datom in desiredState.GetAVEnumerable())
         {
-            if (datom.Prefix.ValueTag == ValueTag.Reference)
+            
+            seenIds.Add(cache.GetSymbol(datom.A));
+            
+            if (datom.ValueType == ValueTag.Reference)
             {
-                var value = EntityIdSerializer.Read(datom.ValueSpan);
+                var value = EntityIdSerializer.Read(datom.Value.Span);
                 if (!processed.Contains(value)) 
                     toProcess.Add(value);
             }
                 
             if (!currentState.Contains(datom)) 
-                tx.Add(datom);
+                tx.Add(current, datom.A, datom.ValueType, datom.Value.Span);
         }
     }
 }
