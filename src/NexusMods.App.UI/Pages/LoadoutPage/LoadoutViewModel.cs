@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
@@ -45,6 +46,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public bool IsCollectionEnabled { get; private set; }
     
     [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
+
+    [Reactive] public int ItemCount { get; private set; }
 
     public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
     {
@@ -216,6 +219,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .Subscribe(isEnabled => IsCollectionEnabled = isEnabled)
                     .AddTo(disposables);
             }
+
+            LoadoutDataProviderHelper.CountAllLoadoutItems(serviceProvider, loadoutFilter)
+                .OnUI()
+                .Subscribe(count => ItemCount = count)
+                .DisposeWith(disposables);
+
         });
     }
 

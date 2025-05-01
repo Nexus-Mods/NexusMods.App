@@ -25,4 +25,6 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     bool IsCollectionEnabled { get; }
     
     ISortingSelectionViewModel RulesSectionViewModel { get; }
+    
+    public int ItemCount { get; }
 }

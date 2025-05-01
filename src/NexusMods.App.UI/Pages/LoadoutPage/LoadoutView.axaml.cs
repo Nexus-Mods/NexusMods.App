@@ -46,6 +46,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.DataContext)
                 .AddTo(disposables);
             
+            this.OneWayBind(ViewModel, vm => vm.ItemCount, view => view.ModsCount.Text)
+                .AddTo(disposables);
+            
             this.BindCommand(ViewModel, vm => vm.CollectionToggleCommand, view => view.CollectionToggle)
                 .AddTo(disposables);
             
