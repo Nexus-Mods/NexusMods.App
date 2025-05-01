@@ -118,10 +118,12 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                         }
                     )
                     .DisposeWith(d);
+                
+                SubscribeToWindowState(d);
             }
         );
 
-        SubscribeToWindowState();
+        
     }
 
     private void CloseWindow(object sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -143,44 +145,55 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
         hostWindow.WindowState = WindowState.Minimized;
     }
 
-    private async void SubscribeToWindowState()
+    private void SubscribeToWindowState(CompositeDisposable d)
     {
-        var hostWindow = (Window)this.VisualRoot!;
-
-        // Wait for the VisualRoot to be set
-        while (hostWindow == null)
-        {
-            hostWindow = (Window)this.VisualRoot!;
-            await Task.Delay(50);
-        }
-
-        hostWindow.GetObservable(Window.WindowStateProperty).Subscribe(windowState =>
+        var windowStateSerialDisposable = new SerialDisposable();
+        var activeStateDisposable = new SerialDisposable();
+        
+        windowStateSerialDisposable.DisposeWith(d);
+        activeStateDisposable.DisposeWith(d);
+            
+        this.WhenAnyValue(view => view.VisualRoot)
+            .WhereNotNull()
+            .Subscribe(visualRoot =>
             {
-                // Change the maximize button icon and tooltip based on the window state
-                if (windowState == WindowState.Maximized)
-                {
-                    MaximizeButton.LeftIcon = IconValues.WindowRestore;
-                    ToolTip.SetTip(MaximizeButton, "Restore");
+                var hostWindow = (Window)visualRoot;
+                
+                windowStateSerialDisposable.Disposable = hostWindow.GetObservable(Window.WindowStateProperty)
+                    .Subscribe(windowState =>
+                        {
+                            // Change the maximize button icon and tooltip based on the window state
+                            if (windowState == WindowState.Maximized)
+                            {
+                                MaximizeButton.LeftIcon = IconValues.WindowRestore;
+                                ToolTip.SetTip(MaximizeButton, "Restore");
                     
-                    // Set padding to 7 to account for the Windows-added off screen margin when maximized
-                    // Ideally we would just use Window.OffScreenMargin but it doesn't work consistently such as when you maximize with a double click
+                                // Set padding to 7 to account for the Windows-added off screen margin when maximized
+                                // Ideally we would just use Window.OffScreenMargin but it doesn't work consistently such as when you maximize with a double click
 
-                    hostWindow.Padding = OSInformation.Shared.MatchPlatform(
-                        onWindows: () =>  new Thickness(7),
-                        onLinux: () => default(Thickness),
-                        onOSX: () => default(Thickness)
+                                hostWindow.Padding = OSInformation.Shared.MatchPlatform(
+                                    onWindows: () =>  new Thickness(7),
+                                    onLinux: () => default(Thickness),
+                                    onOSX: () => default(Thickness)
+                                );
+                            }
+                            else
+                            {
+                                MaximizeButton.LeftIcon = IconValues.WindowMaximize;
+                                ToolTip.SetTip(MaximizeButton, "Maximize");
+                                hostWindow.Padding = default(Thickness);
+                            }
+                        }
                     );
-                }
-                else
-                {
-                    MaximizeButton.LeftIcon = IconValues.WindowMaximize;
-                    ToolTip.SetTip(MaximizeButton, "Maximize");
-                    hostWindow.Padding = default(Thickness);
-                }
-            }
-        );
-
-        hostWindow.GetObservable(Window.IsActiveProperty).Subscribe(isActive => { this.PseudoClasses.Set(":window-active", isActive); }
-        );
+                
+                activeStateDisposable.Disposable = hostWindow.GetObservable(WindowBase.IsActiveProperty)
+                    .Subscribe(isActive =>
+                        {
+                            this.PseudoClasses.Set(":window-active", isActive);
+                        }
+                    );
+                
+            })
+            .DisposeWith(d);
     }
 }
