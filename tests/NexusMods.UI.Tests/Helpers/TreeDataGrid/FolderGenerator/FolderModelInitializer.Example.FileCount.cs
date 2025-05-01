@@ -13,6 +13,8 @@ namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 /// </summary>
 public class FileCountAggregationTests
 {
+    private readonly IncrementingNumberGenerator _generator = new();
+    
     [Fact]
     public void FileCountInitializer_ShouldTrackRecursiveFileCount()
     {
@@ -51,10 +53,10 @@ public class FileCountAggregationTests
         generator.OnReceiveFile(file4Path, file4Model);
         
         // Get folder models
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
-        var folder1 = generator.GetOrCreateFolder("folder1", out _, out _);
-        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", out _, out _);
-        var folder2 = generator.GetOrCreateFolder("folder2", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var folder1 = generator.GetOrCreateFolder("folder1", _generator, out _, out _);
+        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", _generator, out _, out _);
+        var folder2 = generator.GetOrCreateFolder("folder2", _generator, out _, out _);
         
         // Act - verify file counts
         
@@ -79,8 +81,8 @@ public class FileCountAggregationTests
         
         generator.OnReceiveFile(file1Path, file1Model);
         
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
-        var folder1 = generator.GetOrCreateFolder("folder1", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var folder1 = generator.GetOrCreateFolder("folder1", _generator, out _, out _);
         
         // Initial counts
         rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);
@@ -94,7 +96,7 @@ public class FileCountAggregationTests
         generator.OnReceiveFile(file2Path, file2Model);
         
         // Get reference to the new subfolder
-        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", out _, out _);
+        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", _generator, out _, out _);
         
         // Assert - Counts should be updated
         rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(2);
@@ -121,9 +123,9 @@ public class FileCountAggregationTests
         generator.OnReceiveFile(file1Path, file1Model);
         generator.OnReceiveFile(file2Path, file2Model);
         
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
-        var folder1 = generator.GetOrCreateFolder("folder1", out _, out _);
-        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var folder1 = generator.GetOrCreateFolder("folder1", _generator, out _, out _);
+        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", _generator, out _, out _);
         
         // Verify initial counts
         rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(2);
@@ -143,9 +145,9 @@ public class FileCountAggregationTests
     }
     
     // Helper methods
-    private static TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer> CreateGenerator()
+    private TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer> CreateGenerator()
     {
-        return new TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer>("");
+        return new TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer>("", _generator);
     }
     
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id)

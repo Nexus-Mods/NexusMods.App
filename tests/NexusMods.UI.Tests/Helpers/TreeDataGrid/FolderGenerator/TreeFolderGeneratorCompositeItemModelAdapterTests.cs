@@ -19,7 +19,8 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
     /// Source of the observable changeset being used during testing as input.
     /// </summary>
     private readonly SourceCache<CompositeItemModel<EntityId>, EntityId> _sourceCache;
-    private readonly StubTreeItemFactory _factory;
+    private readonly StubTreeItemFactory _factory = new();
+    private readonly IncrementingNumberGenerator _generator = new();
     
     /// <summary>
     /// The adapter under test.
@@ -27,7 +28,6 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
     private readonly TreeFolderGeneratorCompositeItemModelAdapter<StubTreeItem, StubTreeItemFactory, EntityId, DefaultFolderModelInitializer<StubTreeItem>> _adapter;
     
     public TreeFolderGeneratorCompositeItemModelAdapterTests() {
-        _factory = new StubTreeItemFactory();
         _sourceCache = new SourceCache<CompositeItemModel<EntityId>, EntityId>(model => model.Key);
         _adapter = new TreeFolderGeneratorCompositeItemModelAdapter<StubTreeItem, StubTreeItemFactory, EntityId, DefaultFolderModelInitializer<StubTreeItem>>
             (_factory, _sourceCache.Connect());
@@ -57,7 +57,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         
         // Access the root folder of the location tree
         var locationTree = _adapter.FolderGenerator.LocationIdToTree[location];
-        var rootFolder = locationTree.GetOrCreateFolder("", out _, out _);
+        var rootFolder = locationTree.GetOrCreateFolder("", _generator, out _, out _);
         
         // Verify the file exists in the root folder
         rootFolder.Files.Count.Should().Be(1);
@@ -87,7 +87,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         var locationTree = _adapter.FolderGenerator.LocationIdToTree[location];
 
         // Get the root folder
-        var rootFolder = locationTree.GetOrCreateFolder("", out _, out _);
+        var rootFolder = locationTree.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         // Validate folder1 exists
@@ -157,7 +157,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         // Get the folder containing the files
         var locationTree = _adapter.FolderGenerator.LocationIdToTree[location];
         var folderPath = (RelativePath)"folder";
-        var folder = locationTree.GetOrCreateFolder(folderPath, out _, out _);
+        var folder = locationTree.GetOrCreateFolder(folderPath, _generator, out _, out _);
         
         // Verify initial state
         folder.Files.Count.Should().Be(2);

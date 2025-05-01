@@ -18,7 +18,8 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
 {
     internal readonly Dictionary<LocationId, TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>> LocationIdToTree = new();
     internal readonly SourceCache<CompositeItemModel<EntityId>, EntityId> RootCache = new(model => model.Key);
-
+    private IncrementingNumberGenerator _incrementingNumberGenerator = new();
+    
     /// <summary>
     /// Returns an observable changeset of root items, suitable for binding to a TreeDataGrid.
     /// </summary>
@@ -65,7 +66,7 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
         var path = item.GetPath();
         if (!LocationIdToTree.TryGetValue(path.LocationId, out var tree))
         {
-            tree = new TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>(path.LocationId.ToString());
+            tree = new TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>(path.LocationId.ToString(), _incrementingNumberGenerator);
             LocationIdToTree.Add(path.LocationId, tree);
             RootCache.AddOrUpdate(tree.ModelForRoot());
         }

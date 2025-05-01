@@ -11,6 +11,8 @@ namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 
 public class TreeFolderGeneratorForLocationIdTests
 {
+    private readonly IncrementingNumberGenerator _generator = new();
+    
     [Fact]
     public void OnReceiveFile_AddsFileToRoot_WhenPathHasNoParent()
     {
@@ -25,7 +27,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
 
         // Assert
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Files.Lookup(fileId).HasValue.Should().BeTrue();
         rootFolder.Files.Lookup(fileId).Value.Should().Be(fileModel);
         rootFolder.Files.Count.Should().Be(1);
@@ -45,7 +47,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Assert
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Files.Count.Should().Be(0);
         rootFolder.Folders.Count.Should().Be(1);
 
@@ -76,7 +78,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get folder and check initial refcount
-        var folder = generator.GetOrCreateFolder("folder", out _, out _);
+        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
         folder.Files.Count.Should().Be(1);
 
         // Act again with same file - should not increment refcount
@@ -111,7 +113,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         result.Should().BeTrue(); // Folder should be empty now
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Folders.Count.Should().Be(0); // Folder should be removed
     }
     
@@ -136,7 +138,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         result.Should().BeFalse(); // Folder should not be empty
-        var folder = generator.GetOrCreateFolder("folder", out _, out _);
+        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
         folder.Files.Count.Should().Be(1);
         folder.Files.Lookup(fileId1).HasValue.Should().BeFalse();
         folder.Files.Lookup(fileId2).HasValue.Should().BeTrue();
@@ -150,7 +152,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Act
         var generator = CreateGenerator();
-        var folder = generator.GetOrCreateFolder(path, out var parentFolder, out var parentFolderName);
+        var folder = generator.GetOrCreateFolder(path, _generator, out var parentFolder, out var parentFolderName);
         
         // Assert
         folder.Should().NotBeNull();
@@ -159,7 +161,7 @@ public class TreeFolderGeneratorForLocationIdTests
         folder.FolderName.Should().Be((RelativePath)"folder3");
 
         // Navigate from root to confirm structure
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         var folder1 = rootFolder.Folders.Lookup("folder1").Value;
@@ -183,10 +185,10 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Act - create folder first time
         var generator = CreateGenerator();
-        var initialFolder = generator.GetOrCreateFolder(path, out _, out _);
+        var initialFolder = generator.GetOrCreateFolder(path, _generator, out _, out _);
         
         // Act - get the same folder again
-        var retrievedFolder = generator.GetOrCreateFolder(path, out var parentFolder, out var parentFolderName);
+        var retrievedFolder = generator.GetOrCreateFolder(path, _generator, out var parentFolder, out var parentFolderName);
         
         // Assert
         retrievedFolder.Should().BeSameAs(initialFolder);
@@ -205,7 +207,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         model.Should().NotBeNull();
-        model.Should().BeSameAs(generator.GetOrCreateFolder("", out _, out _).Model);
+        model.Should().BeSameAs(generator.GetOrCreateFolder("", _generator, out _, out _).Model);
     }
     
     // Observable-specific tests
@@ -283,7 +285,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Should contain the folder
         
         // Get folder and check its observables
-        var folder = generator.GetOrCreateFolder("folder", out _, out _);
+        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
         var folderHasChildren = false;
         using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
         using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
@@ -328,7 +330,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Contains folder
         
         // Get folder and bind observables
-        var folder = generator.GetOrCreateFolder("folder", out _, out _);
+        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
         var folderHasChildren = false;
         using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
         using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
@@ -381,7 +383,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Contains folder1
         
         // Get all folders
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         var folder1 = rootFolder.Folders.Lookup("folder1").Value;
         var folder2 = folder1.Folders.Lookup("folder2").Value;
         var folder3 = folder2.Folders.Lookup("folder3").Value;
@@ -438,7 +440,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Verify initial structure
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         var parent1 = rootFolder.Folders.Lookup("parent1").Value;
@@ -463,7 +465,7 @@ public class TreeFolderGeneratorForLocationIdTests
         result.Should().BeTrue(); // The folder should be empty and deleted
         
         // Verify that all parent folders were deleted
-        rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Folders.Count.Should().Be(0); // parent1 should be deleted
         
         // Try to get the folders that should no longer exist
@@ -476,7 +478,7 @@ public class TreeFolderGeneratorForLocationIdTests
     {
         // Arrange
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         
         // Act
         using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -502,7 +504,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath1, fileModel1);
         generator.OnReceiveFile(filePath2, fileModel2);
         
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         
         // Act
         using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -536,7 +538,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath2, fileModel2);
         generator.OnReceiveFile(filePath3, fileModel3);
         
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         
         // Act - Get recursive files from root
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -588,7 +590,7 @@ public class TreeFolderGeneratorForLocationIdTests
         var fileModel3 = CreateFileModel(fileId3);
         
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         
         // Set up subscription to monitor changes
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -663,7 +665,7 @@ public class TreeFolderGeneratorForLocationIdTests
         var fileModel3 = CreateFileModel(fileId3);
         
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         
         // Set up subscription to monitor changes
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -710,7 +712,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get the root folder and verify the structure
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         // Get parent1 folder
@@ -743,7 +745,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get the root folder and verify the structure
-        var rootFolder = generator.GetOrCreateFolder("", out _, out _);
+        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
         var parent1 = rootFolder.Folders.Lookup("parent1").Value;
         var parent2 = parent1.Folders.Lookup("parent2").Value;
         var parent3 = parent2.Folders.Lookup("parent3").Value;
@@ -766,7 +768,7 @@ public class TreeFolderGeneratorForLocationIdTests
     }
 #endif
 
-    private static TreeFolderGeneratorForLocationId<TestTreeItemWithPath, DefaultFolderModelInitializer<TestTreeItemWithPath>> CreateGenerator() => new("");
+    private TreeFolderGeneratorForLocationId<TestTreeItemWithPath, DefaultFolderModelInitializer<TestTreeItemWithPath>> CreateGenerator() => new("", _generator);
 
     private static CompositeItemModel<EntityId> CreateFileModel(EntityId id) => new(id);
     

@@ -23,14 +23,21 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     /// Represents all files at the 'root' of this <see cref="LocationId"/>
     /// </example>
     private readonly GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> _rootFolder;
+    
+    /// <summary>
+    /// For creation of fake unique <see cref="EntityId"/>(s) for folders.
+    /// </summary>
+    private readonly IncrementingNumberGenerator _incrementingNumberGenerator;
 
     /// <summary>
     /// Creates a folder generator for the given LocationId.
     /// </summary>
     /// <param name="rootFolderName">Name of the 'root' node for this folder.</param>
-    public TreeFolderGeneratorForLocationId(RelativePath rootFolderName)
+    /// <param name="incrementingNumberGenerator"></param>
+    public TreeFolderGeneratorForLocationId(RelativePath rootFolderName, IncrementingNumberGenerator incrementingNumberGenerator)
     {
-        _rootFolder = new GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>(rootFolderName);
+        _incrementingNumberGenerator = incrementingNumberGenerator;
+        _rootFolder = new GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>(rootFolderName, incrementingNumberGenerator.GetNextNumber());
     }
     
     /// <summary>
@@ -58,7 +65,7 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     internal void OnReceiveFile(RelativePath path, CompositeItemModel<EntityId> itemModel)
     {
         var folderPath = path.Parent;
-        var folder = GetOrCreateFolder(folderPath, out _, out _);
+        var folder = GetOrCreateFolder(folderPath, _incrementingNumberGenerator, out _, out _);
         folder.AddFileItemModel(itemModel);
     }
     
@@ -71,7 +78,7 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     /// <returns>True if the folder in which the path resides was deleted.</returns>
     internal bool OnDeleteFile(RelativePath path, CompositeItemModel<EntityId> itemModel)
     {
-        var folder = GetOrCreateFolder(path.Parent, out var parentFolder, out var parentFolderName);
+        var folder = GetOrCreateFolder(path.Parent, _incrementingNumberGenerator, out var parentFolder, out var parentFolderName);
         var deleteFolder = folder.DeleteFileItemModel(itemModel.Key);
 
         if (deleteFolder)
@@ -98,7 +105,7 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
         // Note: We use '.Parent' because `GetAllParents` includes the path itself.
         foreach (var parentPath in folderPath.Parent.GetAllParents())
         {
-            var folder = GetOrCreateFolder(parentPath, out var parentFolder, out var parentFolderName);
+            var folder = GetOrCreateFolder(parentPath, _incrementingNumberGenerator, out var parentFolder, out var parentFolderName);
             if (folder.ShouldDeleteFolder())
                 parentFolder.DeleteSubfolder(parentFolderName);
             else
@@ -111,9 +118,10 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     /// to the specified folder. If the folder does not exist, it will be created.
     /// </summary>
     /// <param name="path">The path of the folder to obtain.</param>
+    /// <param name="incrementingNumberGenerator">For creating unique 'EntityId'(s).</param>
     /// <param name="parentFolder">The parent of the folder returned.</param>
     /// <param name="parentFolderName">Name of the parent folder.</param>
-    internal GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateFolder(RelativePath path, out GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> parentFolder, out RelativePath parentFolderName)
+    internal GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateFolder(RelativePath path, IncrementingNumberGenerator incrementingNumberGenerator, out GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> parentFolder, out RelativePath parentFolderName)
     {
         // Go through all parents of the path, and create them if they don't exist.
         parentFolder = _rootFolder;
@@ -123,7 +131,7 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
         foreach (var part in path.GetParts())
         {
             parentFolder = currentFolder;
-            currentFolder = currentFolder.GetOrCreateChildFolder(part);
+            currentFolder = currentFolder.GetOrCreateChildFolder(part, incrementingNumberGenerator);
             parentFolderName = part;
         }
         
@@ -190,7 +198,8 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
 
     /// <summary/>
     /// <param name="folderName">Name of this folder node.</param>
-    public GeneratedFolder(RelativePath folderName)
+    /// <param name="entityIdOffset">Offset for the fake <see cref="EntityId"/> when generating a folder.</param>
+    public GeneratedFolder(RelativePath folderName, ulong entityIdOffset)
     {
         FolderName = folderName;
         
@@ -210,20 +219,35 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
 
         var childrenObservable = fileChildren.Merge(folderChildren);
 
+        // Note(sewer): https://nexus-mods.github.io/NexusMods.MnemonicDB/IndexFormat/#key-format
+        //              (👆 out of date when writing this comment, but still relevant)
+        
+        // The EntityId is an incrementing value, within a single partition that may
+        // contain 72,057,594,037,927,936 values [May 01 2025]. We decrement from the
+        // max value here, so a collision can only happen if the database is (basically)
+        // full. In the (basically impossible) case we get there, we'd have much
+        // bigger problems than some fake EntityId(s).
+
+        // The ID occupies the lower bits (unlikely to change), so a subtract is all we need.
+        // The 'partition' will never be decremented until all 7.2x10^16 values
+        // are exhausted.
+        var value = EntityId.MaxValueNoPartition.Value - entityIdOffset;
+        // TODO: Add a 'SetValuePortion' to MnemonicDB EntityID API to solidify this claim.
+        
         // Initialize the Model property passing the created observables.
-        Model = new CompositeItemModel<EntityId>(EntityId.MaxValueNoPartition)
+        Model = new CompositeItemModel<EntityId>(EntityId.From(value))
         {
             HasChildrenObservable = hasChildrenObservable,
             ChildrenObservable = childrenObservable
         };
-        
+
         // Initialize the model using the user provided function
         TFolderModelInitializer.InitializeModel(Model, this);
-        
+
         // Set up recursive file tracking
         // 1. Add all direct files to the recursive collection
         _subscriptions.Add(Files.Connect().PopulateInto(_allFilesRecursive));
-        
+
         // 2. Track subfolders and their files recursively
         _subscriptions.Add(
             Folders.Connect()
@@ -266,7 +290,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     /// </summary>
     /// <returns>True if the folder is empty (no files) and has no subfolders.</returns>
     public bool ShouldDeleteFolder() => Files.Count == 0 && Folders.Count == 0;
-    
+
     /// <summary>
     /// Gets or creates a child folder within this <see cref="GeneratedFolder{TTreeItemWithPath, TFolderModelInitializer}"/>
     /// </summary>
@@ -274,7 +298,10 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     ///     Name of the (single) folder, for example, 'saves'.
     ///     Should not contain separators or other subfolders.
     /// </param>
-    public GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateChildFolder(RelativePath folderName)
+    /// <param name="incrementingNumberGenerator">
+    ///     For creating unique 'EntityId'(s).
+    /// </param>
+    public GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateChildFolder(RelativePath folderName, IncrementingNumberGenerator incrementingNumberGenerator)
     {
         var optionalChild = Folders.Lookup(folderName);
         GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>  result;
@@ -282,7 +309,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
             result = optionalChild.Value;
         else // create a new folder if not already exists
         {
-            result = CreateChildFolder(folderName);
+            result = CreateChildFolder(folderName, incrementingNumberGenerator.GetNextNumber());
             // Note(sewer): No direct API without `Edit` that allows for manually specifying key.
             Folders.Edit(updater => updater.AddOrUpdate(result, folderName));
         }
@@ -307,7 +334,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
         }
     }
 
-    private static GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> CreateChildFolder(RelativePath folderName) => new(folderName);
+    private static GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> CreateChildFolder(RelativePath folderName, ulong entityIdOffset) => new(folderName, entityIdOffset);
 
     public void Dispose()
     {
