@@ -27,7 +27,7 @@
                 <controls:EmptyState x:Name="EditInAllViewState"
                                      Icon="{x:Static icons:IconValues.FormatListNumbered}"
                                      Header="Edit Rules from All view when multiple collections are installed"
-                                     IsActive="{CompiledBinding $parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).CanEdit.Value}">
+                                     IsActive="{CompiledBinding !$parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).CanEdit.Value}">
                     
                     <controls:EmptyState.Subtitle>
                         <StackPanel>
