@@ -8,7 +8,7 @@
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="60"
+    mc:Ignorable="d" d:DesignWidth="400"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelTabHeaderView">
 
     <Design.DataContext>
@@ -22,10 +22,11 @@
                    LastChildFill="False">
 
             <controls:StandardButton x:Name="CloseTabButton"
-                                     ShowIcon="IconOnly"
+                                     ShowIcon="Left"
+                                     ShowLabel="False"
                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                      Fill="None"
-                                     Size="Medium"
+                                     Size="ExtraSmall"
                                      DockPanel.Dock="Right" Margin="0, 0, 8, 0" />
 
             <DockPanel

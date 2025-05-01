@@ -13,6 +13,9 @@
     HorizontalContentAlignment="Center"
     VerticalContentAlignment="Center">
 
-    <icons:UnifiedIcon x:Name="Icon" Size="30" IsVisible="False" />
+    <icons:UnifiedIcon x:Name="Icon" 
+                       Size="24" 
+                       Foreground="{StaticResource NeutralSubduedBrush}"
+                       IsVisible="False"  />
 
 </reactive:ReactiveUserControl>

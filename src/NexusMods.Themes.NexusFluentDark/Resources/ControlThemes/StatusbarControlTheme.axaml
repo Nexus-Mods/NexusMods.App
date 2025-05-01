@@ -61,6 +61,18 @@
                     </StackPanel>
                     <TextBlock Text="1 of 9 required mods" />
                 </controls:Statusbar>
+                <controls:Statusbar Classes="Warning">
+                    <StackPanel>
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall"
+                                                 ShowLabel="False"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                    </StackPanel>
+                    <TextBlock Text="1 of 9 required mods" />
+                </controls:Statusbar>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -74,22 +86,23 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
         <Setter Property="Padding" Value="24, 12,24,0" />
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Border
-                        MinHeight="{TemplateBinding MinHeight}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                        Background="{StaticResource SurfaceLowBrush}"
-                        Padding="{TemplateBinding Padding}">
+                    MinHeight="{TemplateBinding MinHeight}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                    Background="{StaticResource SurfaceLowBrush}"
+                    Padding="{TemplateBinding Padding}">
                     <Border Name="ButtonContainer"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Background="{TemplateBinding Background}"
                             Padding="8"
-                            HorizontalAlignment="Stretch">
+                            HorizontalAlignment="Stretch"
+                            BackgroundSizing="OuterBorderEdge">
                         <StackPanel Orientation="Horizontal">
                             <ItemsPresenter Name="PART_ItemsPresenter"
                                             ItemsPanel="{TemplateBinding ItemsPanel}" />
@@ -102,9 +115,14 @@
         <Style Selector="^.Info">
             <Setter Property="Background" Value="#331D4ED8" />
         </Style>
-        
+
         <Style Selector="^.Primary">
             <Setter Property="Background" Value="#33FB923C" />
+        </Style>
+
+        <Style Selector="^.Warning">
+            <Setter Property="Background" Value="#1AFEF08A" />
+            <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
         </Style>
     </ControlTheme>
 

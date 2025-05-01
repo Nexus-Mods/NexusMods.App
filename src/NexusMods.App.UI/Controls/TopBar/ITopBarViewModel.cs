@@ -29,6 +29,7 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> OpenNexusModsProfileCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsPremiumCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenNexusModsAccountSettingsCommand { get; }
+    public ReactiveCommand<Unit, Unit> NewTabCommand { get; }
 
     public bool IsLoggedIn { get; }
     public UserRole UserRole { get; }
@@ -36,6 +37,6 @@ public interface ITopBarViewModel : IViewModelInterface
     public string? Username { get; }
 
     public IAddPanelDropDownViewModel AddPanelDropDownViewModel { get; set; }
-
+    
     public IPanelTabViewModel? SelectedTab { get; set; }
 }

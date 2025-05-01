@@ -11,122 +11,168 @@
     mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView">
 
+    <!-- NOTE (insomnious): We have an ongoing Avalonia issue in how Backgrounds/CornerRadius/BorderBrush work together. It's not a bug
+    but more just needing to know what happens and the best way to work with it so it feels right.
     
-    <Border x:Name="PanelBorder">
-        <Grid RowDefinitions="Auto, *">
-            <Border Grid.Row="0" x:Name="TabHeaderBorder">
-                <Grid ColumnDefinitions="*, Auto">
-                    <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
-                        <Border Grid.Column="0" x:Name="ScrollLeftButtonBorder">
-                            <controls:StandardButton x:Name="ScrollLeftButton"
-                                                     Size="Medium"
-                                 ShowIcon="IconOnly"
-                                 LeftIcon="{x:Static icons:IconValues.ChevronLeft}"
-                                 Fill="None"
-                                 Margin="8,0,8,0"/>
-                        </Border>
+    Child elements are drawn after the parent and so if the parent has a rounded border, and ClipToBounds is set to true,
+    the child background (which is a default rectangle the size of the bounds) corners are clipped by the parent. 
+    If the parent has a BorderBrush (which is an inner border), then the child background is drawn over the parent border 
+    as this border is drawn before and within the bounds.
+    
+    A background is going to be drawn rectangular unless the specific control has a CornerRadius value set and so if we 
+    wanted to solve the problem of the child background being drawn over the parent border, we need to set each child 
+    control to have a matching corner radius. This isn't acceptable as it means we need to set the same value in multiple 
+    places and do lots of work based on what child and where it is and will involve a lot of work to maintain and reduce 
+    reusability.    
+     
+    The best solution I've found so far is to have a Panel and two child Borders. Using Panel as a parent means both 
+    children are drawn over the same area and not stacked, this allows us to layer. One Border is the clipping border which 
+    contains the nested content and the other has the BorderBrush that is drawn over the top of everything. 
+     -->
+    <Panel>
+        <Border x:Name="PanelClipBorder">
+            <Grid RowDefinitions="Auto, *">
+                <Border Grid.Row="0" x:Name="TabHeaderBorder">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
+                            <Border Grid.Column="0" x:Name="ScrollLeftButtonBorder">
+                                <controls:StandardButton x:Name="ScrollLeftButton"
+                                                         Size="ExtraSmall"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False"
+                                                         LeftIcon="{x:Static icons:IconValues.ChevronLeft}"
+                                                         Fill="None"
+                                                         Margin="8,0,8,0" />
+                            </Border>
 
-                        <ScrollViewer Grid.Column="1"
-                                      x:Name="TabHeaderScrollViewer"
-                                      VerticalScrollBarVisibility="Disabled"
-                                      HorizontalScrollBarVisibility="Auto">
-                            <Grid ColumnDefinitions="Auto, Auto, *">
-                                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                                    <ItemsControl x:Name="TabHeaders" Height="36">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Classes="Spacing-none" 
-                                                    Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
+                            <ScrollViewer Grid.Column="1"
+                                          x:Name="TabHeaderScrollViewer"
+                                          VerticalScrollBarVisibility="Disabled"
+                                          HorizontalScrollBarVisibility="Auto">
+                                <Grid ColumnDefinitions="Auto, Auto, *">
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                        <ItemsControl x:Name="TabHeaders" Height="36">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Classes="Spacing-none"
+                                                                Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
 
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
-                                                <reactive:ViewModelViewHost ViewModel="{CompiledBinding Header}" />
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                                
-                                <Separator x:Name="OneTabLine" Grid.Column="1" Margin="4,0,0,0"/>
-                                
-                                <Border Grid.Column="2" x:Name="AddTabButton1Container"
-                                        HorizontalAlignment="Stretch">
-                                    
-                                    <controls:StandardButton x:Name="AddTabButton1"
-                                                             Size="Medium"
-                                                             ShowIcon="IconOnly"
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
+                                                    <reactive:ViewModelViewHost ViewModel="{CompiledBinding Header}" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+
+                                    <Separator x:Name="OneTabLine" Grid.Column="1" Margin="4,0,0,0" />
+
+                                    <Border Grid.Column="2" x:Name="AddTabButton1Container"
+                                            HorizontalAlignment="Stretch">
+
+                                        <controls:StandardButton x:Name="AddTabButton1"
+                                                                 Size="ExtraSmall"
+                                                                 ShowIcon="Left"
+                                                                 ShowLabel="False"
+                                                                 LeftIcon="{x:Static icons:IconValues.Add}"
+                                                                 Fill="None"
+                                                                 Margin="0"
+                                                                 ToolTip.Tip="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
+                                    </Border>
+                                </Grid>
+
+                            </ScrollViewer>
+
+                            <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
+
+                                    <controls:StandardButton x:Name="AddTabButton2"
+
+                                                             Size="ExtraSmall"
+                                                             ShowIcon="Left"
+                                                             ShowLabel="False"
                                                              LeftIcon="{x:Static icons:IconValues.Add}"
                                                              Fill="None"
-                                                             Margin="8,0,0,0"/>
-                                    
+                                                             Margin="0" />
+
+                                    <controls:StandardButton x:Name="ScrollRightButton"
+                                                             Size="ExtraSmall"
+                                                             ShowIcon="Left"
+                                                             ShowLabel="False"
+                                                             LeftIcon="{x:Static icons:IconValues.ChevronRight}"
+                                                             Fill="None" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Column="1" x:Name="TabHeaderSideAreaBorder">
+                            <StackPanel
+                                x:Name="TabHeaderSideArea"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource Spacing-1}"
+                                Margin="4, 0, 8, 0">
+                                <!-- NOTE(insomnious): needs an extra 2 on the right margin to account for the 2px border -->
+
+                                <!-- TODO: Remove this hiding Border when PoppedOut panels are implemented -->
+                                <Border IsVisible="False">
+                                    <controls:StandardButton x:Name="PopOutPanelButton"
+                                                             Size="ExtraSmall"
+                                                             ShowIcon="Left"
+                                                             ShowLabel="False"
+                                                             LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                                             Fill="None" />
                                 </Border>
-                                <ToolTip.Tip>
-                                    <TextBlock Text="{x:Static resources:Language.Panel_Add_tab_ToolTip}" />
-                                </ToolTip.Tip>
-                            </Grid>
 
-                        </ScrollViewer>
-
-                        <Border Grid.Column="2" x:Name="TabHeaderAddAndScrollBorder">
-                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-1}">
-                                
-                                <controls:StandardButton x:Name="AddTabButton2"
-                                                         Size="Medium"
-                                                         ShowIcon="IconOnly"
-                                                         LeftIcon="{x:Static icons:IconValues.Add}"
-                                                         Fill="None"
-                                                         Margin="8,0,0,0" />
-                                
-                                <controls:StandardButton x:Name="ScrollRightButton"
-                                                         Size="Medium"
-                                                         ShowIcon="IconOnly"
-                                                         LeftIcon="{x:Static icons:IconValues.ChevronRight}"
+                                <controls:StandardButton x:Name="ClosePanelButton"
+                                                         Size="ExtraSmall"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False"
+                                                         LeftIcon="{x:Static icons:IconValues.Close}"
                                                          Fill="None" />
                             </StackPanel>
                         </Border>
                     </Grid>
+                </Border>
 
-                    <Border Grid.Column="1" x:Name="TabHeaderSideAreaBorder">
-                        <StackPanel
-                            x:Name="TabHeaderSideArea"
-                            Orientation="Horizontal"
-                            Classes="Spacing-3"
-                            Margin="6, 0, 8, 0">
-                            <!-- NOTE(insomnious): needs an extra 2 on the right margin to account for the 2px border -->
-                            
-                            <!-- TODO: Remove this hiding Border when PoppedOut panels are implemented -->
-                            <Border IsVisible="False">
-                                <Button x:Name="PopOutPanelButton"
-                                        Classes="PanelTitlebar OpenInWindow" />
-                            </Border>
+                <Border Grid.Row="1"
+                        x:Name="FloatingClosePanelBorder"
+                        IsVisible="False"
+                        Background="{StaticResource SurfaceLowBrush}"
+                        CornerRadius="4"
+                        BorderThickness="0"
+                        BorderBrush="{StaticResource SurfaceMidBrush}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="0 8 8 0"
+                        ZIndex="999">
+                    <controls:StandardButton x:Name="ClosePanelButton2"
+                                             Size="ExtraSmall"
+                                             ShowIcon="Left"
+                                             ShowLabel="False"
+                                             LeftIcon="{x:Static icons:IconValues.Close}"
+                                             Fill="None" />
+                </Border>
 
-                            <controls:StandardButton x:Name="ClosePanelButton"
-                                                     Size="Medium"
-                                                     ShowIcon="IconOnly"
-                                                     LeftIcon="{x:Static icons:IconValues.Close}"
-                                                     Fill="None" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </Border>
+                <ItemsControl Grid.Row="1" x:Name="TabContents">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid RowDefinitions="*" ColumnDefinitions="*" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-            <ItemsControl Grid.Row="1" x:Name="TabContents">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Grid RowDefinitions="*" ColumnDefinitions="*" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
-                        <reactive:ViewModelViewHost x:Name="ViewModelViewHost"
-                                                    IsVisible="{CompiledBinding IsVisible, Mode=OneWay}"
-                                                    ViewModel="{CompiledBinding Contents.ViewModel, Mode=OneWay}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Grid>
-    </Border>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type workspace:IPanelTabViewModel}">
+                            <reactive:ViewModelViewHost x:Name="ViewModelViewHost"
+                                                        IsVisible="{CompiledBinding IsVisible, Mode=OneWay}"
+                                                        ViewModel="{CompiledBinding Contents.ViewModel, Mode=OneWay}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Border>
+        <Border x:Name="PanelBorder" />
+    </Panel>
 
 </reactive:ReactiveUserControl>
