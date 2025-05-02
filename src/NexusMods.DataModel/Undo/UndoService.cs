@@ -52,6 +52,8 @@ public class UndoService
     private static readonly IAttribute[] IgnoreAttributes =
     [
         GameInstallMetadata.LastSyncedLoadoutId,
+        GameInstallMetadata.LastSyncedLoadoutTransactionId,
+        DiskStateEntry.GameId,
         Loadout.LastAppliedDateTime,
         LoadoutItem.ParentId,
     ];
@@ -83,14 +85,14 @@ public class UndoService
             var currentState = currentDb.Datoms(current);
 
 
-            CompareEntities(current, currentState, processed, toProcess, desiredState, tx, seen, currentDb.AttributeCache);
+            CompareEntities(current, currentState, processed, toProcess, desiredState, tx, seen, currentDb.AttributeCache, ignoreAttrs);
             ExtractBackReferences(currentDb, current, ignoreAttrs, processed, toProcess, revertDb, seen);
         }
 
         // Mark the transaction as a snapshot
         tx.Add(EntityId.From(TxId.Tmp.Value), LoadoutSnapshot.Snapshot, revisionRevision.EntityId);
 
-        //await tx.Commit();
+        await tx.Commit();
     }
 
     private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, HashSet<EntityId> processed, HashSet<EntityId> toProcess, IDb revertDb, HashSet<Symbol> seenIds)
@@ -101,6 +103,7 @@ public class UndoService
         {
             if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E))
                 continue;
+            
             toProcess.Add(datom.E);
             seenIds.Add(resolver.GetSymbol(datom.A));
         }
@@ -115,14 +118,15 @@ public class UndoService
         }
     }
 
-    private static void CompareEntities(EntityId current, EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, HashSet<Symbol> seenIds, AttributeCache cache)
+    private static void CompareEntities(EntityId current, EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, HashSet<Symbol> seenIds, AttributeCache cache, FrozenSet<AttributeId> ignoreAttrs)
     {
         
         
         
         foreach (var avData in currentState.GetAVEnumerable())
         {
-            
+            if (ignoreAttrs.Contains(avData.A))
+                continue;
             seenIds.Add(cache.GetSymbol(avData.A));
             
             if (avData.ValueType == ValueTag.Reference)
@@ -138,6 +142,8 @@ public class UndoService
 
         foreach (var datom in desiredState.GetAVEnumerable())
         {
+            if (ignoreAttrs.Contains(datom.A))
+                continue;
             
             seenIds.Add(cache.GetSymbol(datom.A));
             

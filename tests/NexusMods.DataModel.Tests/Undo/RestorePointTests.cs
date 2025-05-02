@@ -28,9 +28,9 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
                 Timestamp = row.Revision.Timestamp.ToString(),
                 ModCount = row.ModCount
             }
-        );
-        
-        await undoService.RevertTo(restorePoints.Skip(2).First().Revision);
+        ).ToArray();
+        var toRevertTo = restorePoints.Skip(2).First().Revision;
+        await undoService.RevertTo(toRevertTo);
         
         restorePoints = (await undoService.RevisionsFor(loadout))
             .OrderBy(row => row.Revision.Timestamp);
