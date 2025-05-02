@@ -1,20 +1,22 @@
 using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
+using JetBrains.Annotations;
+using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
+using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
 
-public partial class ViewLoadoutGroupView : ReactiveUserControl<IViewLoadoutGroupFilesViewModel>
+[UsedImplicitly]
+public partial class ViewLoadoutGroupFilesView : ReactiveUserControl<IViewLoadoutGroupFilesViewModel>
 {
-    public ViewLoadoutGroupView()
+    public ViewLoadoutGroupFilesView()
     {
         InitializeComponent();
-
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<ViewLoadoutGroupFilesView, IViewLoadoutGroupFilesViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.FileTreeAdapter!);
         this.WhenActivated(disposables =>
         {
-            //this.OneWayBind(ViewModel, vm => vm.FileTreeViewModel, v => v.FilesTreeView.ViewModel)
-            //    .DisposeWith(disposables);
-
             this.BindCommand(ViewModel, vm => vm.OpenEditorCommand, view => view.OpenEditorMenuItem)
                 .DisposeWith(disposables);
             

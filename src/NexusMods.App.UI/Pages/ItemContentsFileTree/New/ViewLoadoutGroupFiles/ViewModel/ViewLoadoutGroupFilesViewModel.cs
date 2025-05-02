@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -21,14 +22,13 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.
 public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel
 {
     // IViewLoadoutGroupFilesViewModel
-    [Reactive] public ItemContentsFileTreePageContext? Context { get; set; }
+    [Reactive] public ViewLoadoutGroupFilesPageContext? Context { get; set; }
     [Reactive] public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; [UsedImplicitly] set; }
     [Reactive] public ReactiveCommand<Unit> RemoveCommand { get; [UsedImplicitly] set; }
     [Reactive] public CompositeItemModel<EntityId>? SelectedItem { get; set; }
+    [Reactive] public ViewLoadoutGroupFilesTreeDataGridAdapter? FileTreeAdapter { get; set; }
     
     // Private state.
-    private ViewLoadoutGroupFilesTreeDataGridAdapter? FileTreeAdapter { get; set; }
-    
     private DisposableBag _disposables = new();
     private readonly SerialDisposable _selectedItemsSubscription = new();
     

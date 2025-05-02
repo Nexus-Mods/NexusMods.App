@@ -743,8 +743,8 @@
         <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\ViewModel\ViewLoadoutGroupFilesViewModel.cs">
           <DependentUpon>IViewLoadoutGroupFilesViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\View\ViewLoadoutGroupView.cs">
-          <DependentUpon>ViewLoadoutGroupView.axaml</DependentUpon>
+        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\View\ViewLoadoutGroupFilesView.cs">
+          <DependentUpon>ViewLoadoutGroupFilesView.axaml</DependentUpon>
         </Compile>
     </ItemGroup>
 

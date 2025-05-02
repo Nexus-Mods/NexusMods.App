@@ -71,7 +71,7 @@ public static class SharedColumns
             return aValue.Compare(bValue);
         }
 
-        public const string ColumnTemplateResourceKey = Prefix + "Name";
+        public const string ColumnTemplateResourceKey = Prefix + "NameWithFileIcon";
         public static readonly ComponentKey StringComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(StringComponent));
         public static readonly ComponentKey IconComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(UnifiedIconComponent));
 

@@ -11,7 +11,7 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:viewModel="clr-namespace:NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View.ViewLoadoutGroupView">
+    x:Class="NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View.ViewLoadoutGroupFilesView">
 
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">
@@ -34,7 +34,12 @@
             </StackPanel>
         </Border>
 
-        <!-- <trees:FileTreeView Grid.Row="1" x:Name="FilesTreeView" /> -->
+        <TreeDataGrid x:Name="TreeDataGrid"
+                      ShowColumnHeaders="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      Classes="Compact" />
+        
     </Grid>
 
 </reactive:ReactiveUserControl>

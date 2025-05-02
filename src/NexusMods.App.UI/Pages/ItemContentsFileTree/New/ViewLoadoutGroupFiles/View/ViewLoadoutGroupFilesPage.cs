@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
 
-[JsonName("NexusMods.App.UI.Pages.ItemContentsFileTreePageContext")]
+[JsonName("NexusMods.App.UI.Pages.ViewLoadoutGroupFilesPageContext")]
 public record ViewLoadoutGroupFilesPageContext : IPageFactoryContext
 {
     public required LoadoutItemGroupId[] GroupIds { get; init; }
