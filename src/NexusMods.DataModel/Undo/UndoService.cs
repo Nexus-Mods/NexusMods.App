@@ -72,21 +72,26 @@ public class UndoService
         var tx = _conn.BeginTransaction();
         var processed = new HashSet<EntityId>();
         
-        var seen = new HashSet<Symbol>();
-        
         while (toProcess.Count > 0)
         {
-            var current = toProcess.First(); 
+            var current = toProcess.First();
             toProcess.Remove(current);
+
+            // Skip if the entity has already been processed
             if (!processed.Add(current))
                 continue;
+            
+            // Skip if the entity is a transaction entity
+            if (current.Partition == PartitionId.Transactions)
+                continue;
+
 
             var desiredState = revertDb.Datoms(current);
             var currentState = currentDb.Datoms(current);
 
 
-            CompareEntities(current, currentState, processed, toProcess, desiredState, tx, seen, currentDb.AttributeCache, ignoreAttrs);
-            ExtractBackReferences(currentDb, current, ignoreAttrs, processed, toProcess, revertDb, seen);
+            CompareEntities(current, currentState, processed, toProcess, desiredState, tx, ignoreAttrs);
+            ExtractBackReferences(currentDb, current, ignoreAttrs, processed, toProcess, revertDb);
         }
 
         // Mark the transaction as a snapshot
@@ -95,44 +100,39 @@ public class UndoService
         await tx.Commit();
     }
 
-    private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, HashSet<EntityId> processed, HashSet<EntityId> toProcess, IDb revertDb, HashSet<Symbol> seenIds)
+    private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, HashSet<EntityId> processed, HashSet<EntityId> toProcess, IDb revertDb)
     {
         var backReferenceDatoms = currentDb.Datoms(SliceDescriptor.CreateReferenceTo(current));
         var resolver = currentDb.AttributeCache;
         foreach (var datom in backReferenceDatoms)
         {
-            if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E))
+            if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E) || datom.E.Partition == PartitionId.Transactions)
                 continue;
             
             toProcess.Add(datom.E);
-            seenIds.Add(resolver.GetSymbol(datom.A));
         }
                 
         var backReferenceDesiredState = revertDb.Datoms(SliceDescriptor.CreateReferenceTo(current));
         foreach (var datom in backReferenceDesiredState)
         {
-            if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E))
+            if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E)  || datom.E.Partition == PartitionId.Transactions)
                 continue;
             toProcess.Add(datom.E);
-            seenIds.Add(resolver.GetSymbol(datom.A));
         }
     }
 
-    private static void CompareEntities(EntityId current, EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, HashSet<Symbol> seenIds, AttributeCache cache, FrozenSet<AttributeId> ignoreAttrs)
+    private static void CompareEntities(EntityId current, EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, FrozenSet<AttributeId> ignoreAttrs)
     {
-        
-        
         
         foreach (var avData in currentState.GetAVEnumerable())
         {
             if (ignoreAttrs.Contains(avData.A))
                 continue;
-            seenIds.Add(cache.GetSymbol(avData.A));
             
             if (avData.ValueType == ValueTag.Reference)
             {
                 var value = EntityIdSerializer.Read(avData.Value.Span);
-                if (!processed.Contains(value)) 
+                if (!processed.Contains(value) && value.Partition != PartitionId.Transactions)
                     toProcess.Add(value);
             }
                 
@@ -145,12 +145,10 @@ public class UndoService
             if (ignoreAttrs.Contains(datom.A))
                 continue;
             
-            seenIds.Add(cache.GetSymbol(datom.A));
-            
             if (datom.ValueType == ValueTag.Reference)
             {
                 var value = EntityIdSerializer.Read(datom.Value.Span);
-                if (!processed.Contains(value)) 
+                if (!processed.Contains(value) && value.Partition != PartitionId.Transactions) 
                     toProcess.Add(value);
             }
                 

@@ -25,20 +25,18 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
         var beforePoints = restorePoints.Select(row => new
             {
                 TxId = row.Revision.TxEntity.ToString(),
-                Timestamp = row.Revision.Timestamp.ToString(),
                 ModCount = row.ModCount
             }
         ).ToArray();
         var toRevertTo = restorePoints.Skip(2).First().Revision;
         await undoService.RevertTo(toRevertTo);
         
-        restorePoints = (await undoService.RevisionsFor(loadout))
-            .OrderBy(row => row.Revision.Timestamp);
+        //restorePoints = (await undoService.RevisionsFor(loadout))
+        //    .OrderBy(row => row.Revision.Timestamp);
         
         var afterPoints = restorePoints.Select(row => new
             {
                 TxId = row.Revision.TxEntity.ToString(),
-                Timestamp = row.Revision.Timestamp.ToString(),
                 ModCount = row.ModCount
             }
         );

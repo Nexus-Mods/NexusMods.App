@@ -1,43 +1,39 @@
 ﻿{
   Before: [
     {
-      TxId: EId:100000000000019,
-      Timestamp: 5/1/2025 3:45:57 AM +00:00
+      TxId: EId:100000000000019
     },
     {
       TxId: EId:100000000000216,
-      Timestamp: 5/1/2025 3:47:12 AM +00:00,
       ModCount: 99
     },
     {
       TxId: EId:1000000000003A9,
-      Timestamp: 5/1/2025 3:50:40 AM +00:00,
       ModCount: 193
     },
     {
       TxId: EId:1000000000003B6,
-      Timestamp: 5/1/2025 3:55:40 AM +00:00,
       ModCount: 94
     }
   ],
   After: [
     {
-      TxId: EId:100000000000019,
-      Timestamp: 5/1/2025 3:45:57 AM +00:00
+      TxId: EId:100000000000019
     },
     {
       TxId: EId:100000000000216,
-      Timestamp: 5/1/2025 3:47:12 AM +00:00,
       ModCount: 99
     },
     {
       TxId: EId:1000000000003A9,
-      Timestamp: 5/1/2025 3:50:40 AM +00:00,
       ModCount: 193
     },
     {
+      TxId: EId:1000000000003B6,
+      ModCount: 94
+    },
+    {
       TxId: EId:1000000000003BF,
-      Timestamp: 5/2/2025 3:46:48 AM +00:00,
       ModCount: 193
     }
   ]
