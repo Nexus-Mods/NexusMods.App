@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using NexusMods.App.UI.LeftMenu.Items;
-using R3;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
 
@@ -8,7 +7,7 @@ public interface ILoadoutLeftMenuViewModel : ILeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems { get; }
     
-    public ReadOnlyReactiveProperty<bool> HasSingleCollection { get; }
+    public bool HasSingleCollection { get; }
     
     public IApplyControlViewModel ApplyControlViewModel { get; }
     

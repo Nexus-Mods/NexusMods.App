@@ -40,7 +40,7 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
                 .BindTo(this, x => x.MenuItemsControl.ItemsSource)
                 .DisposeWith(disposables);
             
-            this.OneWayBind(ViewModel, vm => vm.HasSingleCollection.CurrentValue, view => view.LoadoutItem.IsVisible, input => !input)
+            this.OneWayBind(ViewModel, vm => vm.HasSingleCollection, view => view.LoadoutItem.IsVisible, input => !input)
                 .DisposeWith(disposables);
             
             InstalledModsSectionText.Text = Language.LeftMenu_Label_Installed_Mods.ToUpperInvariant();

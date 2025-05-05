@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.LeftMenu.Loadout;
 public class LoadoutLeftMenuDesignViewModel : AViewModel<ILoadoutLeftMenuViewModel>, ILoadoutLeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems { get; }
-    public ReadOnlyReactiveProperty<bool> HasSingleCollection { get; } = new ReactiveProperty<bool>(true);
+    public bool HasSingleCollection { get; } = true;
     public WorkspaceId WorkspaceId { get; } = new();
     public IApplyControlViewModel ApplyControlViewModel { get; } = new ApplyControlDesignViewModel();
     

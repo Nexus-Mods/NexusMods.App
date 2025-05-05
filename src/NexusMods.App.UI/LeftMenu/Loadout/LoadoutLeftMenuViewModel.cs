@@ -44,9 +44,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
     [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
-    private readonly R3.ReactiveProperty<bool> _isSingleCollection = new(true);
-    
-    public ReadOnlyReactiveProperty<bool> HasSingleCollection => _isSingleCollection;
+    [Reactive] public bool HasSingleCollection { get; private set; } = true;
     public IApplyControlViewModel ApplyControlViewModel { get; }
 
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
@@ -312,7 +310,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     .QueryWhenChanged(collections => collections.Count == 1)
                     .ToObservable()
                     .ObserveOnUIThreadDispatcher()
-                    .Subscribe(hasSingleCollection => _isSingleCollection.Value = hasSingleCollection)
+                    .Subscribe(hasSingleCollection => HasSingleCollection = hasSingleCollection)
                     .DisposeWith(disposable);
             }
         );
