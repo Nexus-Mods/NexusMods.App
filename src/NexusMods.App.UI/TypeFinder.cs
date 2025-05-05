@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.DebugControls;
@@ -39,6 +40,7 @@ internal class TypeFinder : ITypeFinder
         typeof(LoadoutPageContext),
         typeof(LoadOrdersWIPPageContext),
         typeof(CollectionLoadoutPageContext),
+        typeof(ProtocolRegistrationTestPageContext),
 
         // workspace context
         typeof(EmptyContext),

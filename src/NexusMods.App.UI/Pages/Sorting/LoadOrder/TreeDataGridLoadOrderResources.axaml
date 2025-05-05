@@ -64,33 +64,41 @@
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="games:ISortItemKey" />
         </DataTemplate.DataType>
 
-        <StackPanel x:Name="LoadOrderItemNameColumnStack" Orientation="Horizontal" Spacing="{StaticResource Spacing-3}">
+        <!-- using a Grid so that when we have resized columns, the DisplayName width will calculate properly -->
+        <Grid ColumnDefinitions="Auto, *">
 
             <!-- Thumbnail -->
-            <Border x:Name="ItemModImageBorder">
-                <controls:ComponentControl x:TypeArguments="games:ISortItemKey" Content="{CompiledBinding}">
-                    <controls:ComponentControl.ComponentTemplate>
-                        <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
-                                                    ComponentKey="{x:Static local:LoadOrderColumns+DisplayNameColumn.ImageComponentKey}">
-                            <controls:ComponentTemplate.DataTemplate>
-                                <DataTemplate DataType="{x:Type controls:ImageComponent}">
-                                    <Image x:Name="ImageThumbnail"
-                                           Source="{CompiledBinding Value.Value}" />
-                                </DataTemplate>
-                            </controls:ComponentTemplate.DataTemplate>
+            <!-- parent border so we can set size and mask the children -->
+            <Border Grid.Column="0" x:Name="ParentBorder">
+                <!-- panel so we can overlay a translucent Border over the image or the fallback -->
+                <Panel x:Name="ParentPanel">
+                    <controls:ComponentControl x:TypeArguments="games:ISortItemKey" Content="{CompiledBinding}">
+                        <controls:ComponentControl.ComponentTemplate>
+                            <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
+                                                        ComponentKey="{x:Static local:LoadOrderColumns+DisplayNameColumn.ImageComponentKey}">
+                                <controls:ComponentTemplate.DataTemplate>
+                                    <DataTemplate DataType="{x:Type controls:ImageComponent}">
+                                        <Image x:Name="ImageThumbnail"
+                                               Source="{CompiledBinding Value.Value}" />
+                                    </DataTemplate>
+                                </controls:ComponentTemplate.DataTemplate>
 
-                        </controls:ComponentTemplate>
-                    </controls:ComponentControl.ComponentTemplate>
+                            </controls:ComponentTemplate>
+                        </controls:ComponentControl.ComponentTemplate>
 
-                    <controls:ComponentControl.Fallback>
-                        <icons:UnifiedIcon x:Name="FallbackIcon" 
-                                           Value="{x:Static icons:IconValues.Nexus}" />
-                    </controls:ComponentControl.Fallback>
-                </controls:ComponentControl>
+                        <controls:ComponentControl.Fallback>
+                            <Border x:Name="FallbackBorder">
+                                <icons:UnifiedIcon x:Name="FallbackIcon"
+                                                   Value="{x:Static icons:IconValues.Nexus}" />
+                            </Border>
+                        </controls:ComponentControl.Fallback>
+                    </controls:ComponentControl>
+                    <Border x:Name="ItemModImageBorder" />
+                </Panel>
             </Border>
 
             <!-- DisplayName -->
-            <controls:ComponentControl x:TypeArguments="games:ISortItemKey"
+            <controls:ComponentControl Grid.Column="1" x:TypeArguments="games:ISortItemKey"
                                        Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
@@ -103,7 +111,7 @@
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
-        </StackPanel>
+        </Grid>
     </DataTemplate>
 
     <!-- ModName Column -->

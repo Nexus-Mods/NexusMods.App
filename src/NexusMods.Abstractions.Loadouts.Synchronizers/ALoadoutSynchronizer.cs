@@ -1408,9 +1408,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var remappedLoadout = result.Remap(loadout);
 
                 // If there is no currently synced loadout, then we can ingest the game folder
-                if (!remappedLoadout.Installation.Contains(GameInstallMetadata.LastSyncedLoadout))
+                if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(remappedLoadout.Installation, out var lastSyncedLoadoutId))
                 {
                     remappedLoadout = await Synchronize(remappedLoadout);
+                }
+                else
+                {
+                    // check if the last synced loadout is valid (can apparently happen if the user unmanaged the game and manages it again)
+                    var lastSyncedLoadout = Loadout.Load(remappedLoadout.Db, lastSyncedLoadoutId);
+                    if (!lastSyncedLoadout.IsValid())
+                    {
+                        remappedLoadout = await Synchronize(lastSyncedLoadout);
+                    }
                 }
                 return remappedLoadout;
             }
@@ -1481,13 +1490,25 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         await _jobMonitor.Begin(new UnmanageGameJob(installation), async ctx =>
             {
-
                 var metadata = installation.GetMetadata(Connection);
 
                 if (GetCurrentlyActiveLoadout(installation).HasValue)
                     await DeactivateCurrentLoadout(installation);
 
                 await ctx.YieldAsync();
+
+                {
+                    using var tx1 = Connection.BeginTransaction();
+                    foreach (var loadout in metadata.Loadouts)
+                    {
+                        tx1.Add(loadout.Id, Loadout.LoadoutKind, LoadoutKind.Deleted);
+                    }
+                    await tx1.Commit();
+
+                    metadata = installation.GetMetadata(Connection);
+                    Debug.Assert(metadata.Loadouts.All(x => !x.IsVisible()), "all loadouts shouldn't be visible anymore");
+                }
+
                 foreach (var loadout in metadata.Loadouts)
                 {
                     _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
@@ -1614,7 +1635,15 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task DeleteLoadout(LoadoutId loadoutId, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {
+        {
+            using var tx1 = Connection.BeginTransaction();
+            tx1.Add(loadoutId, Loadout.LoadoutKind, LoadoutKind.Deleted);
+            await tx1.Commit();
+        }
+
         var loadout = Loadout.Load(Connection.Db, loadoutId);
+        Debug.Assert(!loadout.IsVisible(), "loadout shouldn't be visible anymore");
+
         var metadata = GameInstallMetadata.Load(Connection.Db, loadout.InstallationInstance.GameMetadataId);
         if (GameInstallMetadata.LastSyncedLoadout.TryGetValue(metadata, out var lastAppliedLoadout) && lastAppliedLoadout == loadoutId.Value)
         {

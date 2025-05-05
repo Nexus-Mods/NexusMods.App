@@ -22,11 +22,15 @@ Diagnostics are shown in the following situations:
     - [TweakXL](https://www.nexusmods.com/cyberpunk2077/mods/4197) - Detected by `.tweak` files in the `r6/tweaks` folder.
     - [ArchiveXL](https://www.nexusmods.com/cyberpunk2077/mods/4198) - Detected by `.xl` files in the `archives` folder. 
     - [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107) - Detected by `.lua` files in the `bin/x64/plugins/cyber_engine_tweaks` folder. 
+- When playing on Linux and any of the following issues are detected:
+    - Protontricks is not installed (required for REDmod DLC)
+    - Winetricks packages are missing
+    - WINE DLL overrides are not setup correctly
 
 ### REDmod Load Ordering
 Some mods for Cyberpunk 2077 make use of the official REDmod format for loading content. The Load Order page allows users to decide on the order in which the game will load content from REDmods. By default, the mods at the **top** of the list will win if they have conflicting changes with another REDmod lower down in the order. 
 
-![REDmod Load Order for Cyberpunk 2077.](../images/0.7.1/Cyberpunk2077LoadOrder.webp)
+![REDmod Load Order for Cyberpunk 2077.](../images/0.10.2/Cyberpunk2077LoadOrder.webp)
 
 You can learn more about the REDmod format on [community wiki](https://wiki.redmodding.org/cyberpunk-2077-modding/for-mod-users/users-modding-cyberpunk-2077/redmod/usage).
 
@@ -51,7 +55,8 @@ This game can be managed via the app on the following operating systems and plat
 |---|---|---|---|
 | :fontawesome-brands-steam: [Steam](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle: | :material-check-circle: | :material-close-thick: |
 | <img src="../../images/GOG.com_logo_white.svg" alt="GOG" width="14"/> [GOG](https://store.steampowered.com/app/1091500/Cyberpunk_2077/) | :material-check-circle:[^1] | :material-check-circle:[^1][^2] | :material-close-thick: |
-| <img src="../../images/epic-games.svg" alt="Epic Games Store" width="14"/> [Epic Games Store](https://store.epicgames.com/en-US/p/cyberpunk-2077) | :material-check-circle: | :material-close-thick: | :material-close-thick: |
+| <img src="../../images/epic-games.svg" alt="Epic Games Store" width="14"/> [Epic Games Store](https://store.epicgames.com/en-US/p/cyberpunk-2077) | :material-close-thick:[^3] | :material-close-thick: | :material-close-thick: |
 
 [^1]: Offline backup installs from GOG.com cannot be detected automatically.
-[^2]: [Heroic Launcher](https://heroicgameslauncher.com/) is required. 
+[^2]: [Heroic Launcher](https://heroicgameslauncher.com/) is required.  
+[^3]: Epic Games Store is temporarily unsupported. <a href="https://github.com/Nexus-Mods/NexusMods.App/issues/3116">More.</a>
