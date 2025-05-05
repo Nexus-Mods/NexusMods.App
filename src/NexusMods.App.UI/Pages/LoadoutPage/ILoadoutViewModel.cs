@@ -29,4 +29,6 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     public int ItemCount { get; }
     
     public bool HasRulesSection { get; }
+    
+    public LoadoutPageSubTabs SelectedSubTab { get; }
 }

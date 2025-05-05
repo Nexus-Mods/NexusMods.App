@@ -66,6 +66,19 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                     CollectionToolbar.Classes.ToggleIf("Warning", !isEnabled);
                 })
                 .AddTo(disposables);
+            
+            this.WhenAnyValue( view => view.ViewModel!.SelectedSubTab)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(selectedSubTab =>
+                {
+                    RulesTabControl.SelectedItem = selectedSubTab switch
+                    {
+                        LoadoutPageSubTabs.Mods => ModsTabItem,
+                        LoadoutPageSubTabs.Rules => RulesTabItem,
+                        _ => throw new ArgumentOutOfRangeException(nameof(selectedSubTab), selectedSubTab, null)
+                    };
+                })
+                .AddTo(disposables);
         });
     }
 }

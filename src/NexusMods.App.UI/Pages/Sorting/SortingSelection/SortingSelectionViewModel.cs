@@ -49,6 +49,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
                     {
                         LoadoutId = loadoutId,
                         GroupScope = Optional<LoadoutItemGroupId>.None,
+                        SelectedSubTab = LoadoutPageSubTabs.Rules,
                     },
                 };
                 var workspaceController = windowManager.ActiveWorkspaceController;

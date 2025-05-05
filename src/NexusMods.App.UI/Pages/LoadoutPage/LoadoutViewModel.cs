@@ -51,8 +51,14 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public int ItemCount { get; private set; }
 
     [Reactive] public bool HasRulesSection { get; private set; } = false;
+    [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
 
-    public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
+    public LoadoutViewModel(
+        IWindowManager windowManager,
+        IServiceProvider serviceProvider,
+        LoadoutId loadoutId,
+        Optional<LoadoutItemGroupId> collectionGroupId = default,
+        Optional<LoadoutPageSubTabs> selectedSubTab = default) : base(windowManager)
     {
         var loadoutFilter = new LoadoutFilter
         {
@@ -120,6 +126,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             .GetGame()
             .SortableItemProviderFactories.Length;
         HasRulesSection = numSortableItemProviders > 0;
+
+        SelectedSubTab = selectedSubTab switch
+        {
+            { HasValue: true, Value: LoadoutPageSubTabs.Rules } => HasRulesSection ? LoadoutPageSubTabs.Rules : LoadoutPageSubTabs.Mods,
+            _ => LoadoutPageSubTabs.Mods,
+        };
 
         ViewFilesCommand = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)
