@@ -180,10 +180,8 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     {
         var request = new HttpRequestMessage(HttpMethod.Get, Uri);
 
-        // NOTE(erri120): Our first request is a normal GET request that downloads the entire file for.
-        // Follow-up requests are range requests, if the server allows it. A range response uses 206 Partial Content
-
-        if (!AcceptRanges.Value)
+        // NOTE(erri120): use a normal GET request for the entire file
+        if (!AcceptRanges.Value || TotalBytesDownloaded == Size.Zero)
         {
             // NOTE(erri120): Using If-Match to ensure that what we're downloading didn't suddenly change
             if (ETag.HasValue)
@@ -225,8 +223,6 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
         return request;
     }
-
-
 
     private async ValueTask FetchMetadata(IJobContext context)
     {
