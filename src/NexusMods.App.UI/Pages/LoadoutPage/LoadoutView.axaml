@@ -69,7 +69,7 @@
                     </StackPanel>
                 </TabItem.Header>
 
-                <Grid Grid.Row="1" RowDefinitions="Auto, *">
+                <Grid RowDefinitions="Auto, *">
                     <Border Grid.Row="0" Classes="Toolbar">
                         <StackPanel>
                             <navigation:NavigationControl x:Name="ViewFilesButton"
