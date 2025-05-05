@@ -45,11 +45,6 @@ public interface IFileHashesService
     public bool TryGetVanityVersion(LocatorIdsWithGameStore locatorIdsWithGameStore, out VanityVersion version);
 
     /// <summary>
-    /// Tries to get a vanity version based on the manually added game installation metadata.
-    /// </summary>
-    public bool TryGetVanityVersionManually(GameInstallation game, out VanityVersion version);
-
-    /// <summary>
     /// Tries to get all locator IDs for the given store and vanity version.
     /// </summary>
     public bool TryGetLocatorIdsForVanityVersion(GameStore gameStore, VanityVersion version, out LocatorId[] locatorIds);

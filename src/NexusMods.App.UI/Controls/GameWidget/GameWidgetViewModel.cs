@@ -46,8 +46,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
                     {
                         await fileHashesService.GetFileHashesDb();
                         var locatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
-                        if (!fileHashesService.TryGetVanityVersion((installation.Store, locatorIds), out var vanityVersion) &&
-                            !fileHashesService.TryGetVanityVersionManually(installation, out vanityVersion))
+                        if (!fileHashesService.TryGetVanityVersion((installation.Store, locatorIds), out var vanityVersion))
                             return "Version: Unknown";
                         return $"Version: {vanityVersion.Value}";
                     })

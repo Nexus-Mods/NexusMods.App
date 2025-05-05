@@ -94,7 +94,6 @@ public abstract class AGame : IGame
             LocatorResultMetadata = metadata.Metadata,
             Locator = locator,
             GameMetadataId = dbId,
-            Version = metadata.Version,
         };
     }
 
