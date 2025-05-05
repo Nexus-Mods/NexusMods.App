@@ -286,8 +286,6 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
     /// <inheritdoc />
     public IDb Current => _currentDb?.Db ?? throw new InvalidOperationException("No database connected");
-
-    /// <inheritdoc />
     public bool TryGetVanityVersion(LocatorIdsWithGameStore locatorIdsWithGameStore, out VanityVersion version)
     {
         if (TryGetGameVersionDefinition(locatorIdsWithGameStore, out var versionDefinition))
@@ -295,7 +293,18 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             version = VanityVersion.From(versionDefinition.Name);
             return true;
         }
-
+        version = VanityVersion.DefaultValue;
+        return false;
+    }
+    
+    /// <inheritdoc />
+    public bool TryGetVanityVersionManually(GameInstallation game, out VanityVersion version)
+    {
+        if (game.Version is not null && game.Store == GameStore.ManuallyAdded)
+        {
+            version = VanityVersion.From(game.Version.ToString());
+            return true;
+        }
         version = VanityVersion.DefaultValue;
         return false;
     }
@@ -384,6 +393,11 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 _logger.LogDebug("No version found for locator metadata");
                 return false;
             }
+        }
+        else if (gameStore == GameStore.ManuallyAdded)
+        {
+            // Manually added games don't have a version definition
+            return false;
         }
         else
         {

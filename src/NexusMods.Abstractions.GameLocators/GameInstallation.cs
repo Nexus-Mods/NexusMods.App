@@ -36,6 +36,11 @@ public class GameInstallation : IEquatable<GameInstallation>
     public GameStore Store { get; init; } = GameStore.Unknown;
 
     /// <summary>
+    /// The <see cref="Version"/> of the game found. See <see cref="GameLocatorResult"/>
+    /// </summary>
+    public Version? Version { get; init; }
+
+    /// <summary>
     /// Gets the metadata returned by the game locator.
     /// </summary>
     public IGameLocatorResultMetadata? LocatorResultMetadata { get; init; }
