@@ -13,7 +13,8 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
     [Fact]
     public async Task CanGetRestorePoints()
     {
-        await using var tmpConn = await ConnectionFor("with_bloom.zip");
+        // Load up a database with two collections installed, and the first one deleted
+        await using var tmpConn = await ConnectionFor("two_sdv_collections_added_removed.zip");
 
         var undoService = tmpConn.Host.Services.GetRequiredService<UndoService>();
 
@@ -22,18 +23,19 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
         var restorePoints = (await undoService.RevisionsFor(loadout))
             .OrderBy(row => row.Revision.Timestamp);
 
+        // Get the restore points before hand
         var beforePoints = restorePoints.Select(row => new
             {
                 TxId = row.Revision.TxEntity.ToString(),
                 ModCount = row.ModCount
             }
         ).ToArray();
+        
+        // Revert to a point where both collections were installed
         var toRevertTo = restorePoints.Skip(2).First().Revision;
         await undoService.RevertTo(toRevertTo);
         
-        //restorePoints = (await undoService.RevisionsFor(loadout))
-        //    .OrderBy(row => row.Revision.Timestamp);
-        
+        // Get the restore points after restoring the collection
         var afterPoints = restorePoints.Select(row => new
             {
                 TxId = row.Revision.TxEntity.ToString(),
@@ -41,6 +43,7 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
             }
         );
 
+        // Verify the mod counts and restore points
         await Verify(new { Before = beforePoints, After = afterPoints });
     }
 

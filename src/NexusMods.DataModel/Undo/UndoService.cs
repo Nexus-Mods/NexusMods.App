@@ -11,24 +11,37 @@ using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
 namespace NexusMods.DataModel.Undo;
 
+/// <summary>
+/// Service for undoing loadout changes, getting restore points, etc. 
+/// </summary>
 public class UndoService
 {
     private readonly IConnection _conn;
 
+    /// <summary>
+    /// DI constructor 
+    /// </summary>
+    /// <param name="connection"></param>
     public UndoService(IConnection connection)
     {
         _conn = connection;
     }
 
-    public async Task<OutletNode<LoadoutRevisionWithStats>> RevisionsFor(EntityId loadout)
-    {
-        return await _conn.Topology.OutletAsync(Queries.LoadoutRevisionsWithMetadata
+    /// <summary>
+    /// Get a query of all the valid restore points (revisions) for the given loadout.
+    /// </summary>
+    public async Task<IQueryResult<LoadoutRevisionWithStats>> RevisionsFor(EntityId loadout)
+    { 
+        return await _conn.Topology.QueryAsync(Queries.LoadoutRevisionsWithMetadata
             .Where(row => row.RowId == loadout)
             .Select(row => LoadoutStats(_conn, row)));
     }
     
     private static readonly Inlet<EntityId> LoadoutId = new();
     
+    /// <summary>
+    /// For now our stats only include getting the count of valid mods
+    /// </summary>
     private static readonly Flow<(EntityId LoadoutId, int ModCount)> ModCount =
         Pattern.Create()
             .Each(LoadoutId, out var loadoutId)
@@ -37,6 +50,10 @@ public class UndoService
             .Return(loadoutId, itemId.Count());
     
 
+    /// <summary>
+    /// This query isn't super efficient, but for every stat loadout we have to load one or (in the future) two
+    /// databases. So it's O(n) for the number of revisions for now. We can optimize it in the future
+    /// </summary>
     private static LoadoutRevisionWithStats LoadoutStats(IConnection conn, LoadoutRevision revision)
     {
         var newDb = conn.AsOf(TxId.From(revision.TxEntity.Value));
@@ -44,18 +61,21 @@ public class UndoService
         var loadoutInlet = newDb.Topology.Intern(LoadoutId);
         loadoutInlet.Values = [revision.RowId];
         
-        var modCount = newDb.Topology.Outlet(ModCount).FirstOrDefault().ModCount;
-        return new LoadoutRevisionWithStats(revision, modCount); 
+        using var modCount = newDb.Topology.Query(ModCount);
+        return new LoadoutRevisionWithStats(revision, modCount.FirstOrDefault().ModCount); 
     }
     
 
+    /// <summary>
+    /// Attributes to ignore when undoing loadouts. Any of these attributes will not be reverted, and the entities pointed to
+    /// in the E or V parts of the datom will not be traversed during the revert process.
+    /// </summary>
     private static readonly IAttribute[] IgnoreAttributes =
     [
         GameInstallMetadata.LastSyncedLoadoutId,
         GameInstallMetadata.LastSyncedLoadoutTransactionId,
         DiskStateEntry.GameId,
         Loadout.LastAppliedDateTime,
-        LoadoutItem.ParentId,
     ];
 
     /// <summary>
