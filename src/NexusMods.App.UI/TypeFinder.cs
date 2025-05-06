@@ -6,6 +6,7 @@ using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
+using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
@@ -36,6 +37,7 @@ internal class TypeFinder : ITypeFinder
         typeof(TextEditorPageContext),
         typeof(MyLoadoutsPageContext),
         typeof(ItemContentsFileTreePageContext),
+        typeof(ViewLoadoutGroupFilesPageContext),
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),
         typeof(LoadOrdersWIPPageContext),

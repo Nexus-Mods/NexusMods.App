@@ -34,7 +34,7 @@
             </StackPanel>
         </Border>
 
-        <TreeDataGrid x:Name="TreeDataGrid"
+        <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
                       ShowColumnHeaders="True"
                       CanUserResizeColumns="True"
                       CanUserSortColumns="True"
