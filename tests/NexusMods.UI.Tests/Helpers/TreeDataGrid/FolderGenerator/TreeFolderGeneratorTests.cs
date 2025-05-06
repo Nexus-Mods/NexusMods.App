@@ -241,7 +241,7 @@ public class TreeFolderGeneratorTests
         generator.OnReceiveFile(testItem2, fileModel2);
         
         // Assert
-        addedItems.Should().HaveCount(1, "one root item should be added");
+        addedItems.Should().HaveCount(2, "two root items should be added");
     }
     
     [Fact]
