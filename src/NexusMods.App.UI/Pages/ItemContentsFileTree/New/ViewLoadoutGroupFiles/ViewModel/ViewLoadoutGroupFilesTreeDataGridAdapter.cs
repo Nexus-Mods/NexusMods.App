@@ -17,7 +17,7 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.
 /// </summary>
 public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>
 {
-    private readonly LoadoutGroupFilesProvider _loadoutGroupFilesProvider = serviceProvider.GetRequiredService<LoadoutGroupFilesProvider>();
+    private readonly LoadoutGroupFilesProvider _loadoutGroupFilesProvider = new(serviceProvider);
     
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
