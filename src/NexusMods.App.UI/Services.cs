@@ -215,9 +215,6 @@ public static class Services
             .AddView<ViewLoadoutGroupFilesView, IViewLoadoutGroupFilesViewModel>()
             .AddViewModel<ViewLoadoutGroupFilesViewModel, IViewLoadoutGroupFilesViewModel>()
 
-            .AddView<LibraryView, ILibraryViewModel>()
-            .AddView<LoadoutView, ILoadoutViewModel>()
-
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
             .AddWindowDataAttributesModel()
