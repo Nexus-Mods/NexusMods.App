@@ -6,6 +6,12 @@
         <PackageReference Include="OneOf"/>
         <PackageReference Include="Avalonia"/>
         <PackageReference Include="Avalonia.Svg.Skia"/>
+        <PackageReference Include="Avalonia.Skia" />
+        <PackageReference Include="SkiaSharp"/>
+        <PackageReference Include="SkiaSharp.HarfBuzz"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.macOS"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Win32"/>
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign"/>
     </ItemGroup>
 
