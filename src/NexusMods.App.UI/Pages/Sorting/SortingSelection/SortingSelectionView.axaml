@@ -29,16 +29,21 @@
                                      Icon="{x:Static icons:IconValues.FormatListNumbered}"
                                      Header="Edit Rules from All view when multiple collections are installed"
                                      IsActive="{CompiledBinding !$parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).CanEdit.Value}">
-                    
+
                     <controls:EmptyState.Subtitle>
                         <StackPanel>
-                            <TextBlock Text="Rules can be edited in “All” which combines mods from all installed collections."/>
-                            <navigation:NavigationControl x:Name="OpenAllModsLoadoutButton" 
-                                                     LeftIcon="{x:Static icons:IconValues.FormatAlignJustify}"
-                                                     ShowIcon="Left"
-                                                     Text="Edit rules in “All”"
-                                                     Type="Secondary"
-                                                     Command="{CompiledBinding $parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).OpenAllModsLoadoutPageCommand}"/>
+                            <TextBlock
+                                Text="Rules can be edited in “All” which combines mods from all installed collections." />
+                            <!-- StackPanel ready to contain more buttons --> 
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16" Spacing="{StaticResource Spacing-2}">
+                                <navigation:NavigationControl x:Name="OpenAllModsLoadoutButton"
+                                                              LeftIcon="{x:Static icons:IconValues.FormatAlignJustify}"
+                                                              ShowIcon="Left"
+                                                              Text="Edit rules in “All”"
+                                                              Type="Secondary"
+                                                              Fill="Strong"
+                                                              Command="{CompiledBinding $parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).OpenAllModsLoadoutPageCommand}" />
+                            </StackPanel>
                         </StackPanel>
                     </controls:EmptyState.Subtitle>
                     <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
