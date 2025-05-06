@@ -24,9 +24,11 @@ public interface IPanelResizerViewModel : IViewModelInterface
     /// X=0.5 and Y=0.5 will be in the center of the workspace.
     /// </remarks>
     public Point LogicalEndPoint { get; set; }
-
-    public Point ActualStartPoint { get; set; }
-    public Point ActualEndPoint { get; set; }
+    
+    /// <summary>
+    /// The actual start and end points of the resizer in the workspace.
+    /// </summary>
+    public (Point ActualStartPoint, Point ActualEndPoint) ActualPoints { get; set; }
 
     /// <summary>
     /// Gets whether the resizer is horizontally aligned.

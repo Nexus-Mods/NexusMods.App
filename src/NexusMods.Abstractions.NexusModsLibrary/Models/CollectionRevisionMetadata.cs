@@ -35,12 +35,12 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// Whether the collection contains adult mods.
     /// </summary>
-    public static readonly BooleanAttribute IsAdult = new(Namespace, nameof(IsAdult));
+    public static readonly BooleanAttribute IsAdult = new(Namespace, nameof(IsAdult)) { IsOptional = true };
 
     /// <summary>
     /// Total download size according to external sources.
     /// </summary>
-    public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize));
+    public static readonly SizeAttribute TotalSize = new(Namespace, nameof(TotalSize)) { IsOptional = true };
 
     /// <summary>
     /// The overall rating of this revision (often displayed as a percentage).

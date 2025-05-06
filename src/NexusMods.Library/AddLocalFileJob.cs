@@ -28,7 +28,7 @@ internal class AddLocalFileJob : IJobDefinitionWithStart<AddLocalFileJob, LocalF
     public async ValueTask<LocalFile.ReadOnly> StartAsync(IJobContext<AddLocalFileJob> context)
     {
         using var tx = Connection.BeginTransaction();
-        var libraryFile = await AddLibraryFileJob.Create(ServiceProvider, tx, FilePath, doCommit: true, doBackup: false);
+        var libraryFile = await AddLibraryFileJob.Create(ServiceProvider, tx, FilePath);
 
         var localFile = new LocalFile.New(tx, libraryFile.LibraryFileId)
         {

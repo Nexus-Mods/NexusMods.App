@@ -135,6 +135,9 @@
                     <icons:UnifiedIcon Classes="FolderUploadOutline" />
                     <icons:UnifiedIcon Classes="TrophyOutline" />
                     <icons:UnifiedIcon Classes="DragVerticalDots" />
+                    <icons:UnifiedIcon Classes="WindowMaximize" />
+                    <icons:UnifiedIcon Classes="WindowMinimize" />
+                    <icons:UnifiedIcon Classes="WindowRestore" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -701,5 +704,14 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.DragVerticalDots">
         <Setter Property="Value" Value="{x:Static icons:IconValues.DragVerticalDots}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.WindowMaximize">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.WindowMaximize}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.WindowMinimize">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.WindowMinimize}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.WindowRestore">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.WindowRestore}" />
     </Style>
 </Styles>
