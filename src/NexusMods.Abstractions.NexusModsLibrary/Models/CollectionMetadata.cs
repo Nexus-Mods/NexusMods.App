@@ -1,8 +1,6 @@
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Resources.DB;
-using NexusMods.Abstractions.Telemetry;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -33,8 +31,8 @@ public partial class CollectionMetadata : IModelDefinition
     /// <summary>
     /// The short description of the collection
     /// </summary>
-    public static readonly StringAttribute Summary = new(Namespace, nameof(Summary));
-    
+    public static readonly StringAttribute Summary = new(Namespace, nameof(Summary)) { IsOptional = true };
+
     /// <summary>
     /// The Curating user of the collection.
     /// </summary>
@@ -53,12 +51,12 @@ public partial class CollectionMetadata : IModelDefinition
     /// <summary>
     /// Total number of times the collection was downloaded.
     /// </summary>
-    public static readonly UInt64Attribute TotalDownloads = new(Namespace, nameof(TotalDownloads));
+    public static readonly UInt64Attribute TotalDownloads = new(Namespace, nameof(TotalDownloads)) { IsOptional = true };
 
     /// <summary>
     /// The number of endorsements the collection has.
     /// </summary>
-    public static readonly UInt64Attribute Endorsements = new(Namespace, nameof(Endorsements));
+    public static readonly UInt64Attribute Endorsements = new(Namespace, nameof(Endorsements)) { IsOptional = true };
 
     /// <summary>
     /// The tile image uri.

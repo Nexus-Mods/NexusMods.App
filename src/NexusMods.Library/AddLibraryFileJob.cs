@@ -31,7 +31,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         new(".dat"),
     ];
 
-    public static IJobTask<AddLibraryFileJob, LibraryFile.New> Create(IServiceProvider provider, ITransaction transaction, AbsolutePath filePath, bool doCommit, bool doBackup)
+    public static IJobTask<AddLibraryFileJob, LibraryFile.New> Create(IServiceProvider provider, ITransaction transaction, AbsolutePath filePath)
     {
         var monitor = provider.GetRequiredService<IJobMonitor>();
         var job = new AddLibraryFileJob
