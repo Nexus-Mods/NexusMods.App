@@ -14,7 +14,8 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:windows="clr-namespace:NexusMods.App.UI.Windows"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{StaticResource SurfaceBaseBrush}">
 
     <Design.DataContext>
         <!--
@@ -25,8 +26,7 @@
         <windows:MainWindowViewModel />
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="72, 232, *" RowDefinitions="Auto, *, 48"
-          Background="{StaticResource SurfaceBaseBrush}">
+    <Grid ColumnDefinitions="72, 232, *" RowDefinitions="Auto, *, 48">
 
         <Border x:Name="OverlayBorder"
                 Background="{StaticResource BrandTranslucentDark800Brush}"

@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using Avalonia.Platform;
 using NexusMods.App.UI.Extensions;
 using ReactiveUI;
 
@@ -11,7 +12,11 @@ namespace NexusMods.App.UI.Windows;
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
     public MainWindow()
-    {
+    {        
+        ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
+        ExtendClientAreaToDecorationsHint = true;
+        ExtendClientAreaTitleBarHeightHint = 44; // 44 pixels drag height to match the top bar
+        
         InitializeComponent();
 
         #if DEBUG
@@ -78,4 +83,6 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         ViewModel?.OnClose();
         base.OnClosing(e);
     }
+    
+    
 }

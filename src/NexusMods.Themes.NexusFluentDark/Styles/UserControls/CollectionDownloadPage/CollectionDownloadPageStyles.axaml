@@ -25,7 +25,7 @@
                 <!-- darkens underlying background image -->
                 <Setter Property="Background" Value="{StaticResource CollectionHeaderImageLinearGradientBrush}" />
                 <Setter Property="HorizontalAlignment" Value="Stretch" />
-                <Setter Property="Padding" Value="24,24,24,20" />
+                <Setter Property="Padding" Value="24,24,36,20" />
 
                 <Style Selector="^ StackPanel#Header">
                     <Style Selector="^ Border#MainContentBorder">

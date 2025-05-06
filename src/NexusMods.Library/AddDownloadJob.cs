@@ -35,7 +35,7 @@ internal class AddDownloadJob : IJobDefinitionWithStart<AddDownloadJob, LibraryF
         await context.YieldAsync();
         using var tx = Connection.BeginTransaction();
 
-        var libraryFile = await AddLibraryFileJob.Create(ServiceProvider, tx, DownloadJob.Result, true, false);
+        var libraryFile = await AddLibraryFileJob.Create(ServiceProvider, tx, DownloadJob.Result);
         await DownloadJob.Job.AddMetadata(tx, libraryFile);
 
         var transactionResult = await tx.Commit();

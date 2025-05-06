@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Generators.Diagnostics;
 using NexusMods.Paths;
+using static NexusMods.Games.RedEngine.Constants;
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 
 public partial class MissingProtontricksForRedModEmitter : ILoadoutDiagnosticEmitter
@@ -25,7 +26,15 @@ public partial class MissingProtontricksForRedModEmitter : ILoadoutDiagnosticEmi
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
+        var install = loadout.InstallationInstance;
+        var locations = install.LocationsRegister;
+        var redModPath = locations.GetResolvedPath(RedModPath);
+
         if (!FileSystem.Shared.OS.IsLinux || _protontricksDependency == null)
+            yield break;
+
+        // If there is no REDmod EXE, we don't need Protontricks.
+        if (redModPath.FileExists)
             yield break;
 
         var installInfo = await _protontricksDependency.QueryInstallationInformation(cancellationToken);

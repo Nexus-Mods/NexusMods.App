@@ -19,16 +19,25 @@ public static partial class Diagnostics
     internal static IDiagnosticTemplate MissingModWithKnownNexusUri = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 1))
-        .WithTitle("Missing Mod with Known Nexus URI")
+        .WithTitle("Missing Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyName} is not installed")
+        .WithSummary("'{Group}' requires '{DependencyName}' which is not installed")
         .WithDetails("""
-We've detected that the mod `{Group}` contains files that require {DependencyName} to function properly, but it is not installed. You can download the latest 
-version of {DependencyName} from {NexusModsDependencyUri}.
+The mod **{Group}** requires **{DependencyName}** to function, but **{DependencyName}** is not installed.
 
+
+### How to Resolve
+1. Download **{DependencyName}** from {NexusModsDependencyUri}
+2. Add **{DependencyName}** to the loadout. 
+
+OR 
+
+1. Remove **{Group}** from "Installed Mods"
+
+### Technical Details
 {Explanation}
 
-The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` so we know that the mod `{DependencyName}` is required.
+**{Group}** includes the file `{Path}` in `{SearchPath}` (or one of the subfolders) and has the extension `{SearchExtension}` which indicates that the **{DependencyName}** mod is required.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("Group")
@@ -47,17 +56,25 @@ The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}`
     internal static IDiagnosticTemplate MissingModWithKnownNexusUriWithStringSegment = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 1))
-        .WithTitle("Missing Mod with Known Nexus URI")
+        .WithTitle("Missing Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyName} is not installed")
+        .WithSummary("'{Group}' requires '{DependencyName}' which is not installed")
         .WithDetails("""
-We've detected that the mod `{Group}` contains files that require {DependencyName} to function properly, but it is not installed. You can download the latest 
-version of {DependencyName} from {NexusModsDependencyUri}.
+The mod **{Group}** requires **{DependencyName}** to function, but **{DependencyName}** is not installed.
 
+
+### How to Resolve
+1. Download **{DependencyName}** from {NexusModsDependencyUri}
+2. Add **{DependencyName}** to the loadout. 
+
+OR 
+
+1. Remove **{Group}** from "Installed Mods"
+
+### Technical Details
 {Explanation}
 
-The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` so we looked in the file and found (at line {LineNumber})
-the following usecase of {DependencyName}
+**{Group}** includes the file `{Path}` in `{SearchPath}` (or one of the subfolders) and has the extension `{SearchExtension}`. The file has a reference to **{DependencyName}** on line {LineNumber} indicating that the **{DependencyName}** mod is required.
 
 ```
 {MatchingSegment}
@@ -81,16 +98,25 @@ the following usecase of {DependencyName}
     internal static IDiagnosticTemplate DisabledGroupDependency = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 2))
-        .WithTitle("Disabled Mod Dependency")
+        .WithTitle("Disabled Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyName} is disabled")
+        .WithSummary("'{Group}' requires '{DependencyName}' but it is disabled")
         .WithDetails("""
-We've detected that the mod `{Group}` contains files that require {DependencyName} to function properly, but it is not enabled. Please 
-re-enable `{DependencyGroup}` to resolve this issue.
+The mod **{Group}** requires **{DependencyName}** to function, but **{DependencyGroup}** is not enabled.
 
+
+### How to Resolve
+1. Enable **{DependencyGroup}** in "Installed Mods"
+
+OR
+
+1. Remove **{Group}** from "Installed Mods"
+
+### Technical Details
 {Explanation}
 
-The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` so we know that the mod `{DependencyName}` is required.
+**{Group}** includes the file `{Path}` in `{SearchPath}` (or one of the subfolders) and has the extension `{SearchExtension}` which indicates that the **{DependencyName}** mod is required.
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddDataReference<LoadoutItemGroupReference>("Group")
@@ -110,15 +136,22 @@ The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}`
         .WithId(new DiagnosticId(Source, number: 2))
         .WithTitle("Disabled Mod Dependency")
         .WithSeverity(DiagnosticSeverity.Warning)
-        .WithSummary("{DependencyName} is disabled")
+        .WithSummary("'{Group}' requires '{DependencyName}' but it is disabled")
         .WithDetails("""
-We've detected that the mod `{Group}` contains files that require {DependencyName} to function properly, but it is not enabled. Please 
-re-enable `{DependencyGroup}` to resolve this issue.
+The mod **{Group}** requires **{DependencyName}** to function, but **{DependencyGroup}** is not enabled.
 
+
+### How to Resolve
+1. Enable **{DependencyGroup}** in "Installed Mods"
+
+OR
+
+1. Remove **{Group}** from "Installed Mods"
+
+### Technical Details
 {Explanation}
 
-The file `{Path}` is in `{SearchPath}` and has the extension `{SearchExtension}` so we looked in the file and found (at line {LineNumber})
-the following usecase of {DependencyName}
+**{Group}** includes the file `{Path}` in `{SearchPath}` (or one of the subfolders) and has the extension `{SearchExtension}`. The file has a reference to **{DependencyName}** on line {LineNumber} indicating that the **{DependencyName}** mod is required.
 
 ```
 {MatchingSegment}
@@ -142,13 +175,22 @@ the following usecase of {DependencyName}
     internal static IDiagnosticTemplate MissingProtontricksForRedMod = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 3))
-        .WithTitle("Missing 'Protontricks' dependency")
+        .WithTitle("Protontricks is not installed")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("Protontricks is required to install REDmods but is not present.")
+        .WithSummary("Protontricks is required to use REDmods but is not present.")
         .WithDetails("""
-Protontricks is required to install REDmods but is not present.
+Protontricks is not installed but is required to use the REDmod DLC when playing Cyberpunk 2077 on Linux.
 
-Refer to the {ProtontricksUri} for installation instructions.
+### How to Resolve
+1. Install Protontricks by following the instructions in the {ProtontricksUri}.
+2. Restart the app.
+
+OR
+
+1. Remove any mods requiring REDmod from "Installed Mods".
+
+### Technical Details
+The OS did not return any information when querying for Protontricks installation information. This indicates that Protontricks is not installed.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<NamedLink>("ProtontricksUri")
@@ -160,16 +202,33 @@ Refer to the {ProtontricksUri} for installation instructions.
     internal static IDiagnosticTemplate MissingRedModDependency = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 4))
-        .WithTitle("Missing 'REDmod' DLC")
-        .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("REDmod DLC is required to install REDmods but is not present.")
+        .WithTitle("REDmod DLC is not installed")
+        .WithSeverity(DiagnosticSeverity.Warning)
+        .WithSummary("The official REDmod DLC is required for {ModCount} mod(s) but is not installed.")
         .WithDetails("""
-The {RedmodLink} is required to install REDmods but is not present in your game folder.
+The official REDmod DLC is a mod loader required to use some mods for Cyberpunk 2077. The loadout contains {ModCount} mod(s) that require REDmod to work, but it is not installed.
 
-Please install the {RedmodLink} and start the game at least once.
+### How to Resolve
+1. Install the REDmod DLC - View in {RedmodLink} or the {GenericLink}.
+2. Apply a loadout with REDmod installed or restart the app.
+
+OR
+
+1. Remove any mods requring REDmod from Installed Mods.
+2. Remove any subfolders of `{RedModFolder}` from External Changes.
+
+### Technical Details 
+Each subfolder in the `{RedModFolder}` represents an installed mod. If any folders are present, REDmod is required. 
+
+After finding {ModCount} mod(s), the REDmod DLC was checked for installation by verifying that `{RedModEXE}` exists.
+
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<NamedLink>("RedmodLink")
+            .AddValue<NamedLink>("GenericLink")
+            .AddValue<int>("ModCount")
+            .AddValue<string>("RedModFolder")
+            .AddValue<string>("RedModEXE")
         )
         .Finish();
 
@@ -178,13 +237,21 @@ Please install the {RedmodLink} and start the game at least once.
     internal static IDiagnosticTemplate RequiredWineDllOverrides = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 5))
-        .WithTitle("Update WINE DLL overrides to mod on Linux")
+        .WithTitle("Incorrect WINE configuration")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("These changes are required for Linux")
+        .WithSummary("Update the WINE DLL overrides to mod on Linux")
         .WithDetails("""
-Modding Cyberpunk 2077 on Linux requires you to configure WINE.
+Modding Cyberpunk 2077 on Linux requires you to configure WINE or the game will not launch correctly.
 
+A WINE DLL override is a configuration setting that tells WINE not to use its own built-in version of a specific Windows DLL, but instead to use a native (real) Windows DLL file that you provide.
+
+### How to Resolve
 {Instructions}
+
+### Technical Details
+Many mods use custom loaders or injectors to hook into the game process that are implemented as wrapper or replacements for system DLLs. These mod-provided DLLs would normally get loaded on Windows when they are found inside the game folder, but on WINE, the default behaviour is different and the internal WINE versions are used by default instead. Configuring WINE DLL OVERRIDEs allows changing that behaviour to instead load the mod provided DLLs.
+
+The current WINE DLL overrides are not set up correctly for modding on Linux.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("Instructions")
@@ -196,13 +263,20 @@ Modding Cyberpunk 2077 on Linux requires you to configure WINE.
     internal static IDiagnosticTemplate RequiredWinetricksPackages = DiagnosticTemplateBuilder
         .Start()
         .WithId(new DiagnosticId(Source, number: 6))
-        .WithTitle("Install required winetricks packages")
+        .WithTitle("Missing Winetricks packages")
         .WithSeverity(DiagnosticSeverity.Critical)
-        .WithSummary("These packages are required or Linux")
+        .WithSummary("Install required packages to mod on Linux")
         .WithDetails("""
-Modding Cyberpunk 2077 on Linux requires packages to be installed in your WINE prefix.
+Modding Cyberpunk 2077 on Linux requires certain packages to be installed in your WINE prefix. 
 
+Winetricks packages are often required for modding because they provide essential components or libraries which allow the app to manage your game correctly. 
+
+
+### How to Resolve
 {Instructions}  
+
+### Technical Details
+The current WINE prefix does not have the required packages installed for modding on Linux.
 """)
         .WithMessageData(messageBuilder => messageBuilder
             .AddValue<string>("Instructions")

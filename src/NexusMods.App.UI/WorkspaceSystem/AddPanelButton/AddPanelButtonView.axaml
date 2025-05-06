@@ -7,18 +7,16 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-    mc:Ignorable="d" d:DesignWidth="80" d:DesignHeight="60"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    mc:Ignorable="d"
     x:Class="NexusMods.App.UI.WorkspaceSystem.AddPanelButtonView">
 
     <Design.DataContext>
         <workspace:AddPanelButtonDesignViewModel />
     </Design.DataContext>
 
-    <Button x:Name="AddPanelButton" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <StackPanel Orientation="Horizontal">
-            <icons:UnifiedIcon x:Name="ButtonImage" />
-            <icons:UnifiedIcon x:Name="PlusIcon" Value="{x:Static icons:IconValues.Add}" />
-        </StackPanel>
-    </Button>
+    <controls:StandardButton x:Name="AddPanelButton" Fill="None">
+        <icons:UnifiedIcon x:Name="ButtonImage" />
+    </controls:StandardButton>
 
 </reactive:ReactiveUserControl>

@@ -3,6 +3,11 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
         xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
 
+    <!-- This file is used for expected child controls such as Buttons, Seperators etc.
+    The ControlTheme in src/NexusMods.Themes.NexusFluentDark/Resources/ControlThemes/StatusbarControlTheme.axaml
+    is used for the actual parent control template and styles.
+     -->
+
     <Design.PreviewWith>
         <Border Width="800">
             <StackPanel>
@@ -35,7 +40,17 @@
                         <controls:StandardButton Text="Button 3" Fill="Weak"
                                                  Size="ExtraSmall" />
                     </StackPanel>
-                    <TextBlock Text="1 of 9 required mods" />
+                    <StackPanel>
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
+                                           Foreground="{StaticResource SuccessModerateBrush}"/>
+                        <TextBlock Text="1 of 9 required mods" />
+                    </StackPanel>
+                    <controls:Divider />
+                    <StackPanel>
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"
+                                           Foreground="{StaticResource SuccessModerateBrush}" />
+                        <TextBlock Text="1 of 9 required mods" />
+                    </StackPanel>
                 </controls:Statusbar>
                 <controls:Statusbar Classes="Info">
                     <StackPanel>
@@ -61,6 +76,26 @@
                     </StackPanel>
                     <TextBlock Text="1 of 9 required mods" />
                 </controls:Statusbar>
+                <controls:Statusbar Classes="Warning">
+                    <StackPanel>
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall"
+                                                 ShowLabel="False"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
+                        <controls:StandardButton Text="Button 3" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                    </StackPanel>
+                    <StackPanel>
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.WarningAmber}" />
+                        <TextBlock Text="1 of 9 required mods" />
+                    </StackPanel>
+                    <controls:Divider />
+                    <StackPanel>
+                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.WarningAmber}" />
+                        <TextBlock Text="1 of 9 required mods" />
+                    </StackPanel>
+                </controls:Statusbar>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -75,14 +110,19 @@
             <Setter Property="Width" Value="1" />
         </Style>
 
-        <!-- button group -->
+        <!-- button group/control group -->
         <Style Selector="^ > StackPanel">
+            <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Orientation" Value="Horizontal" />
             <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
         </Style>
-
-        <Style Selector="^ > TextBlock">
+        
+        <Style Selector="^ TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        
+        <Style Selector="^ icons|UnifiedIcon">
+            <Setter Property="Size" Value="16" />
         </Style>
     </Style>
 </Styles>

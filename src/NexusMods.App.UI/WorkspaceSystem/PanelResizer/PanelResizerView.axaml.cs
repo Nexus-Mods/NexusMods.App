@@ -44,9 +44,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Subscribe()
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(
-                    view => view.ViewModel!.ActualStartPoint,
-                    view => view.ViewModel!.ActualEndPoint)
+            this.WhenAnyValue(view => view.ViewModel!.ActualPoints)
                 .SubscribeWithErrorLogging(tuple =>
                 {
                     if (ViewModel is null) return;

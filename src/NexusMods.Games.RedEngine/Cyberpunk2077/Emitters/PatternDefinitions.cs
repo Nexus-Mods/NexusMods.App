@@ -149,9 +149,14 @@ And we detect that this mod is installed by looking for `TweakXL.dll` in the `re
             DependantSearchPatterns = [
                 new DependantSearchPattern
                 {
-                    Path = new GamePath(LocationId.Game, ""),
+                    Path = new GamePath(LocationId.Game, "mods"),
                     Extension = new Extension(".xl"),
                 },
+                new DependantSearchPattern
+                {
+                    Path = new GamePath(LocationId.Game, "archive"),
+                    Extension = new Extension(".xl"),
+                }
             ],
             Explanation = """
 ArchiveXL is a mod that allows other mods to load custom resources without touching the original game files. We detect the use of this mod by looking for `.xl` files in the game folder, and we 

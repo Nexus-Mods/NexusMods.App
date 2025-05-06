@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Library;
@@ -26,6 +27,11 @@ public interface ILibraryService
     /// Adds a local file to the library.
     /// </summary>
     IJobTask<IAddLocalFile, LocalFile.ReadOnly> AddLocalFile(AbsolutePath absolutePath);
+
+    /// <summary>
+    /// Adds a library file.
+    /// </summary>
+    Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source);
 
     /// <summary>
     /// Installs a library item into a target loadout.
