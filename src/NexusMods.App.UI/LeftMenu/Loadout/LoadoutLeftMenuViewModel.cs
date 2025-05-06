@@ -251,7 +251,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                                 FactoryId = ItemContentsFileTreePageFactory.StaticId,
                                 Context = new ItemContentsFileTreePageContext
                                 {
-                                    GroupId = group.LoadoutItemGroupId,
+                                    GroupIds = [ group.LoadoutItemGroupId ],
                                     IsReadOnly = false,
                                 },
                             }
