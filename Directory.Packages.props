@@ -1,9 +1,9 @@
 <Project>
   <ItemGroup>
-    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Labs.Panels" Version="11.2.0" />
-    <PackageVersion Include="Avalonia.Skia" Version="11.2.4" />
-    <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.2.0" />
+    <PackageVersion Include="Avalonia.Skia" Version="11.3.0" />
+    <PackageVersion Include="AvaloniaEdit.TextMate" Version="11.3.0" />
     <PackageVersion Include="Jitbit.FastCache" Version="1.1.0" />
     <PackageVersion Include="K4os.Compression.LZ4" Version="1.3.8" />
     <PackageVersion Include="Bannerlord.ModuleManager" Version="6.0.246" />
@@ -67,16 +67,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
     <PackageVersion Include="NetEscapades.EnumGenerators" Version="1.0.0-beta07" PrivateAssets="all" ExcludeAssets="compile;runtime" />
-    <PackageVersion Include="Avalonia" Version="11.2.6" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.2.6" />
+    <PackageVersion Include="Avalonia" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.0" />
     <PackageVersion Include="Avalonia.Controls.TreeDataGrid" Version="11.1.1" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.2.6" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.2.6" />
-    <PackageVersion Include="Avalonia.Headless" Version="11.2.6" />
-    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.2.6" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.2.6" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.Headless" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.ReactiveUI" Version="11.3.0" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.0" />
     <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.6.1" />
-    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.2.0.2" />
+    <PackageVersion Include="Avalonia.Svg.Skia" Version="11.3.0" />
     <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc2" />
     <!-- keep this version in sync with Avalonia (https://github.com/whistyun/Markdown.Avalonia?tab=readme-ov-file#nuget) -->
     <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.3-a1" />
