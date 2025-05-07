@@ -20,18 +20,14 @@ using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 
 [UsedImplicitly]
-public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel, IDisposable
+public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel
 {
     // IViewLoadoutGroupFilesViewModel
     [Reactive] public ViewLoadoutGroupFilesPageContext? Context { get; set; }
-    [Reactive] public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; [UsedImplicitly] set; }
-    [Reactive] public ReactiveCommand<Unit> RemoveCommand { get; [UsedImplicitly] set; }
+    [Reactive] public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; [UsedImplicitly] set; } = null!;
+    [Reactive] public ReactiveCommand<Unit> RemoveCommand { get; [UsedImplicitly] set; } = null!;
     [Reactive] public CompositeItemModel<EntityId>? SelectedItem { get; set; }
     [Reactive] public ViewLoadoutGroupFilesTreeDataGridAdapter? FileTreeAdapter { get; set; }
-    
-    // Private state.
-    private DisposableBag _disposables = new();
-    private readonly SerialDisposable _selectedItemsSubscription = new();
     
     public ViewLoadoutGroupFilesViewModel(
         ILogger<ViewLoadoutGroupFilesViewModel> logger,
@@ -41,9 +37,17 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
     {
         TabIcon = IconValues.FolderOpen;
         TabTitle = "File Tree";
-
-        OpenEditorCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
-            .Select(connection, static (item, connection) =>
+        
+        this.WhenActivated(disposables =>
+        {
+            // Note(sewer):
+            // For instant disposing of the TreeDataGridAdapter(s), for when the Context of the
+            // ViewModel is dynamically changed. Since the adapter may hold a lot of memory (a whole file tree that beams events),
+            // immediate disposal is preferable for saving CPU cycles and memory.
+            SerialDisposable treeDataGridAdapterDisposable = new();
+            
+            OpenEditorCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
+                .Select(connection, static (item, connection) =>
                 {
                     // Directories in future code will not constitute valid entities,
                     // so we filter out here. 
@@ -82,42 +86,38 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                 var workspaceId = workspaceController.ActiveWorkspaceId;
                 workspaceController.OpenPage(workspaceId, pageData, behavior);
             })
-            .AddTo(ref _disposables);
+            .DisposeWith(disposables);
 
-        var writeableContextObservable = this.ObservePropertyChanged(vm => vm.Context).Select(context => context is { IsReadOnly: false });
-        var hasSelectionObservable = this.ObservePropertyChanged(vm => vm.SelectedItem).Select(item => item is not null);
-        
-        // ReSharper disable once InvokeAsExtensionMethod
-        RemoveCommand = Observable.CombineLatest(
-                writeableContextObservable, hasSelectionObservable,
-                resultSelector: (isWritable, hasSelection) => isWritable && hasSelection
-            )
-            .ToReactiveCommand<Unit>(async (_, _) =>
-                {
-                    var fileId = SelectedItem!.Key;
-                    var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, fileId);
-                    if (!loadoutFile.IsValid())
+            var writeableContextObservable = this.ObservePropertyChanged(vm => vm.Context).Select(context => context is { IsReadOnly: false });
+            var hasSelectionObservable = this.ObservePropertyChanged(vm => vm.SelectedItem).Select(item => item is not null);
+            
+            // ReSharper disable once InvokeAsExtensionMethod
+            RemoveCommand = Observable.CombineLatest(
+                    writeableContextObservable, hasSelectionObservable,
+                    resultSelector: (isWritable, hasSelection) => isWritable && hasSelection
+                )
+                .ToReactiveCommand<Unit>(async (_, _) =>
                     {
-                        logger.LogError("Unable to find Loadout File with ID `{FileId}`. This is indicative of a bug.", fileId);
-                        return;
+                        var fileId = SelectedItem!.Key;
+                        var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, fileId);
+                        if (!loadoutFile.IsValid())
+                        {
+                            logger.LogError("Unable to find Loadout File with ID `{FileId}`. This is indicative of a bug.", fileId);
+                            return;
+                        }
+
+                        // TODO: Support directories here, once that's integrated.
+                        // The RemoveFileOrFolder API already handles this, when we integrate folders,
+                        // which is why we use 'GamePath' as entry point.
+                        var gamePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath;
+                        var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
+                        if (result == LoadoutItemGroupHelpers.GroupOperationStatus.NoItemsDeleted)
+                            logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 
+                                gamePath, string.Join(", ", Context!.GroupIds));
                     }
-
-                    // TODO: Support directories here, once that's integrated.
-                    // The RemoveFileOrFolder API already handles this, when we integrate folders,
-                    // which is why we use 'GamePath' as entry point.
-                    var gamePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath;
-                    var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
-                    if (result == LoadoutItemGroupHelpers.GroupOperationStatus.NoItemsDeleted)
-                        logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 
-                            gamePath, string.Join(", ", Context!.GroupIds));
-                }
-            )
-            .AddTo(ref _disposables);
-
-        _selectedItemsSubscription.AddTo(ref _disposables);
-        
-        this.WhenActivated(disposables =>
-        {
+                )
+                .DisposeWith(disposables);
+            
             // Set the title based on the first valid group
             this.ObservePropertyChanged(vm => vm.Context)
                 .WhereNotNull()
@@ -151,7 +151,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                         
                         // Update the selection subscription
                         // Note: This auto disposes last.
-                        _selectedItemsSubscription.Disposable = compositeDisposable;
+                        treeDataGridAdapterDisposable.Disposable = compositeDisposable;
             
                         // Initial update
                         SelectedItem = FileTreeAdapter.SelectedModels.FirstOrDefault();
@@ -159,12 +159,8 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                 )
                 .Subscribe()
                 .DisposeWith(disposables);
+
+            treeDataGridAdapterDisposable.DisposeWith(disposables);
         });
-    }
-    
-    public void Dispose()
-    {
-        _disposables.Dispose();
-        GC.SuppressFinalize(this);
     }
 }
