@@ -91,10 +91,19 @@ public static class Verbs
                         var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
                         {
                             manifestPath.Parent.CreateDirectory();
-                            await using var outputStream = manifestPath.Create();
-                            await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions,
-                                token
-                            );
+                            while (true)
+                            {
+                                try
+                                {
+                                    await using var outputStream = manifestPath.Create();
+                                    await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions, token);
+                                    break;
+                                }
+                                catch (IOException)
+                                {
+                                    await Task.Delay(1000, token);
+                                }
+                            }
                         }
 
                         await IndexManifest(steamSession, renderer, steamAppId,
