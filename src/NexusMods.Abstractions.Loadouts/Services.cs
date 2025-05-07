@@ -23,6 +23,7 @@ public static class Services
             .AddLibraryLinkedLoadoutItemModel()
             .AddLoadoutItemWithTargetPathModel()
             .AddLoadoutFileModel()
+            .AddLoadoutSnapshotModel()
             .AddDeletedFileModel()
             .AddCollectionGroupModel()
             .AddSortOrderModel()

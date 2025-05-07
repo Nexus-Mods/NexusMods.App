@@ -314,8 +314,15 @@ internal class Client : IClient
                 await using var depotStream = await depotResult.Content.ReadAsStreamAsync(token);
                 await using var depotDeflateStream = new ZLibStream(depotStream, CompressionMode.Decompress);
 
-                var depot = await JsonSerializer.DeserializeAsync<DepotResponse>(depotDeflateStream, _jsonSerializerOptions, token);
-                return depot!.Depot;
+                try
+                {
+                    var depot = await JsonSerializer.DeserializeAsync<DepotResponse>(depotDeflateStream, _jsonSerializerOptions, token);
+                    return depot!.Depot;
+                }
+                catch (JsonException ex)
+                {
+                    throw new Exception($"Failed to deserialize the depot response. {ex.Message}");
+                }
             }
         );
     }

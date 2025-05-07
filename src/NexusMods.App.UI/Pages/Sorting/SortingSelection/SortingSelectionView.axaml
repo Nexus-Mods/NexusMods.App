@@ -5,6 +5,9 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
                                 x:Class="NexusMods.App.UI.Pages.Sorting.SortingSelectionView">
 
@@ -22,7 +25,29 @@
 
         <TabControl.ContentTemplate>
             <DataTemplate DataType="sorting:ILoadOrderViewModel">
-                <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
+                <controls:EmptyState x:Name="EditInAllViewState"
+                                     Icon="{x:Static icons:IconValues.FormatListNumbered}"
+                                     Header="Edit Rules from All view when multiple collections are installed"
+                                     IsActive="{CompiledBinding !$parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).CanEdit.Value}">
+
+                    <controls:EmptyState.Subtitle>
+                        <StackPanel>
+                            <TextBlock
+                                Text="Rules can be edited in “All” which combines mods from all installed collections." />
+                            <!-- StackPanel ready to contain more buttons --> 
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0 16" Spacing="{StaticResource Spacing-2}">
+                                <navigation:NavigationControl x:Name="OpenAllModsLoadoutButton"
+                                                              LeftIcon="{x:Static icons:IconValues.FormatAlignJustify}"
+                                                              ShowIcon="Left"
+                                                              Text="Edit rules in “All”"
+                                                              Type="Secondary"
+                                                              Fill="Strong"
+                                                              Command="{CompiledBinding $parent[sorting:SortingSelectionView].((sorting:ISortingSelectionViewModel)DataContext).OpenAllModsLoadoutPageCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </controls:EmptyState.Subtitle>
+                    <sorting:LoadOrderView ViewModel="{CompiledBinding}" />
+                </controls:EmptyState>
             </DataTemplate>
         </TabControl.ContentTemplate>
     </TabControl>

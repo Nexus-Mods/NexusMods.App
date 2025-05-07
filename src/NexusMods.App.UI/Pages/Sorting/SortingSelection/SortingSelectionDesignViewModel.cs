@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using NexusMods.Abstractions.UI;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
+using NexusMods.App.UI.Controls.Navigation;
+using R3;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
@@ -9,6 +11,9 @@ public class SortingSelectionDesignViewModel : AViewModel<ISortingSelectionViewM
 {
     private readonly ISettingsManager _settingsManager;
     public ReadOnlyObservableCollection<ILoadOrderViewModel> LoadOrderViewModels { get; }
+    public IReadOnlyBindableReactiveProperty<bool> CanEdit { get; } = new BindableReactiveProperty<bool>(true);
+    public ReactiveCommand<NavigationInformation> OpenAllModsLoadoutPageCommand { get; } = new (_ => { });
+
     public SortingSelectionDesignViewModel(IServiceProvider serviceProvider)
     {
         _settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();

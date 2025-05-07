@@ -183,9 +183,6 @@ public static class Services
             
             .AddView<LoadOrderView, ILoadOrderViewModel>()
 
-            .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
-            .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
-
             .AddView<UpgradeToPremiumView, IUpgradeToPremiumViewModel>()
             .AddViewModel<UpgradeToPremiumViewModel, IUpgradeToPremiumViewModel>()
 
@@ -242,7 +239,6 @@ public static class Services
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
-            .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
             .AddSingleton<IPageFactory, DebugControlsPageFactory>()

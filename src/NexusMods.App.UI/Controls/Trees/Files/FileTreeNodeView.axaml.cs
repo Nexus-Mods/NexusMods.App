@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
@@ -48,16 +49,16 @@ public partial class FileTreeNodeView : ReactiveUserControl<IFileTreeNodeViewMod
         switch (vm.ChangeType)
         {
             case FileChangeType.Added:
-                FileNameTextBlock.Classes.Add("ForegroundSuccessStrong");
-                EntryIcon.Classes.Add("ForegroundSuccessStrong");
+                FileNameTextBlock.Classes.Add("Success");
+                EntryIcon.Classes.Add("Success");
                 break;
             case FileChangeType.Modified:
-                FileNameTextBlock.Classes.Add("ForegroundInfoStrong");
-                EntryIcon.Classes.Add("ForegroundInfoStrong");
+                FileNameTextBlock.Classes.Add("Suggestion");
+                EntryIcon.Classes.Add("Suggestion");
                 break;
             case FileChangeType.Removed:
-                FileNameTextBlock.Classes.Add("ForegroundDangerStrong");
-                EntryIcon.Classes.Add("ForegroundDangerStrong");
+                FileNameTextBlock.Classes.Add("Critical");
+                EntryIcon.Classes.Add("Critical");
                 FileNameTextBlock.TextDecorations = TextDecorations.Strikethrough;
                 break;
             case FileChangeType.None:

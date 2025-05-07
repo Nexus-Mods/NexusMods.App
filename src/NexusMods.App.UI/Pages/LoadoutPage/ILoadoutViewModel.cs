@@ -1,4 +1,5 @@
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
@@ -22,4 +23,12 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     bool IsCollection { get; }
     
     bool IsCollectionEnabled { get; }
+    
+    ISortingSelectionViewModel RulesSectionViewModel { get; }
+    
+    public int ItemCount { get; }
+    
+    public bool HasRulesSection { get; }
+    
+    public LoadoutPageSubTabs SelectedSubTab { get; }
 }
