@@ -38,7 +38,7 @@
                            TextAlignment="Center"
                            Foreground="{StaticResource NeutralStrongBrush}">
                     Welcome to the
-                    <Span Foreground="{StaticResource StardewLinearGradientBrush}">Stardew Valley Preview</Span>
+                    <Span Foreground="{StaticResource AppLinearGradientBrush}">Nexus Mods App</Span>
                 </TextBlock>
 
                 <TextBlock Theme="{StaticResource BodyMDNormalTheme}"

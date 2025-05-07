@@ -8,6 +8,11 @@
         <GradientStop Color="#4ADE80" Offset="0" />
         <GradientStop Color="#2563EB" Offset="1" />
     </LinearGradientBrush>
+    
+    <LinearGradientBrush x:Key="AppLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+        <GradientStop Color="#FB923C" Offset="0" />
+        <GradientStop Color="#EA580C" Offset="1" />
+    </LinearGradientBrush>
 
     <!-- SurfaceLow 75% to SurfaceLow 100% -->
     <Color x:Key="CollectionHeaderImageLinearGradientStartColor">#BF1D1D21</Color>
