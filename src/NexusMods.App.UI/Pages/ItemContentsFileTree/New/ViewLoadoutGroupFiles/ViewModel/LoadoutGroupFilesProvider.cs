@@ -32,7 +32,7 @@ public class LoadoutGroupFilesProvider
     {
         return LoadoutItem
             .ObserveAll(_connection)
-            .FilterOnObservable((x, entityId) => _connection
+            .FilterOnObservable((_, entityId) => _connection
                 .ObserveDatoms(LoadoutItem.Parent, entityId)
                 .AsEntityIds()
                 .FilterInModFiles(_connection, filesFilter)
@@ -81,9 +81,9 @@ public class LoadoutGroupFilesProvider
         return fileItemModel;
     }
 
-    private string FileToFilePath(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3;
+    private static string FileToFilePath(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3;
     private static IconValue FileToIconValue(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFileName(modFile)).Extension.GetIconType().GetIconValue();
-    private static string FileToFileName(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3.FileName;
+    private static string FileToFileName(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFilePath(modFile)).FileName;
 }
 
 internal static class LoadoutFilesObservableExtensions
@@ -106,7 +106,7 @@ internal static class LoadoutFilesObservableExtensions
             var hasParent = LoadoutItem.Parent.TryGetValue(segment, out var parentId);
             if (!hasParent)
                 return false;
-            
+
             return modFilesFilter.ModIds
                 .AsValueEnumerable()
                 .Any(filter => parentId.Equals(filter.Value));

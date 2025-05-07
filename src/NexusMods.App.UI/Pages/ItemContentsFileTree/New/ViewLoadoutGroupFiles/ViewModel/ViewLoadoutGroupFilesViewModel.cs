@@ -135,6 +135,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                         // Dispose any existing adapter first, in case context is changed.
                         FileTreeAdapter?.Dispose();
                         FileTreeAdapter = new ViewLoadoutGroupFilesTreeDataGridAdapter(provider, new ModFilesFilter(context.GroupIds.ToArray()));
+                        FileTreeAdapter.Activate().AddTo(disposables);
                         
                         // Update the selection subscription
                         // Note: This auto disposes last.
