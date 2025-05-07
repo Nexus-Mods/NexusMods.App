@@ -9,6 +9,7 @@ using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator.Helpers;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 using ReactiveUI;
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 
@@ -93,15 +94,15 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
     {
         // Create an observable that transforms the file items to their sizes then sums them
         var fileSizeObservable = folder.GetAllFilesRecursiveObservable()
-            .Transform(fileModel => fileModel.TryGet<ValueComponent<long>>(SharedColumns.ItemSize.ComponentKey, out var sizeComponent) ? sizeComponent.Value.Value : 0L)
-            .Sum(x => x); // Sum up all the sizes
+            .Transform(fileModel => fileModel.TryGet<SizeComponent>(SharedColumns.ItemSize.ComponentKey, out var sizeComponent) ? (long)sizeComponent.Value.Value.Value : 0L)
+            .Sum(x => x) // Note(sewer): dynamicdata summation lacks unsigned. But we're talking 64-bit, good luck reaching >8 exabytes on a mod.
+            .Select(x => Size.From((ulong)x)); // Sum up all the sizes
         
         // Add a ValueComponent that will update automatically when the observed total size changes
-        var component = new ValueComponent<long>(
-            initialValue: 0,
+        var component = new SizeComponent(
+            initialValue: Size.Zero,
             valueObservable: fileSizeObservable,
-            subscribeWhenCreated: true,
-            observeOutsideUiThread: true
+            subscribeWhenCreated: true
         );
         model.Add(SharedColumns.ItemSize.ComponentKey, component);
     }
