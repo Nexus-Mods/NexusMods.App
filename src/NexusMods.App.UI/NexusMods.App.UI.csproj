@@ -650,9 +650,6 @@
         <Compile Update="Pages\Sorting\Prototype\LoadOrderItemModel.cs">
           <DependentUpon>ILoadOrderItemModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\Sorting\LoadOrdersWipPageViewModel.cs">
-          <DependentUpon>ILoadOrdersWIPPageViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\Sorting\SortingSelectionView\SortingSelectionView.axaml.cs">
           <DependentUpon>SortingSelectionView.axaml</DependentUpon>
           <SubType>Code</SubType>
