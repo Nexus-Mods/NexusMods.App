@@ -33,30 +33,35 @@ internal static class CliVerbs
         return 0;
     }
 
-    [Verb("remove-game", "Manually unregister a manually-added game from the database")]
+    [Verb("remove-game", "Manually unregister a game from the database")]
     private static async Task<int> RemoveGame(
         [Injected] IEnumerable<IGameLocator> locators,
         [Injected] IRenderer renderer,
         [Injected] IConnection conn,
         [Option("g", "game", "The game to unregister")] IGame game,
-        [Option("id", "entityID", "The EntityId of the game to remove")]
-        string id)
+        [Option("id", "entityID", "The EntityId of the manually-added game to remove", true)] string id = null!)
     {
-        var locator = locators.OfType<ManuallyAddedLocator>().First();
-        var entId = EntityId.From(Convert.ToUInt64(id, 16));
+        var isManuallyAdded = false;
         var db = conn.Db;
-        // Removes loadouts associated with this game first
+        // Removes loadouts associated with this game
         var managedInstallations = Loadout.All(db)
             .Select(loadout => loadout.InstallationInstance)
             .Distinct();
         foreach (var installation in managedInstallations)
         {
-            if (installation.Locator != locator || installation.Game != game) continue;
+            if (installation.Game != game) continue;
             var synchronizer = installation.GetGame().Synchronizer;
             await synchronizer.UnManage(installation, false);
+            if (installation.Locator is ManuallyAddedLocator)
+                isManuallyAdded = true;
         }
-        // Remove the game from the database
-        await locator.Remove(entId);
+        // Removes the game from the database if id is provided and is manually added
+        if (id != null! && isManuallyAdded)
+        {
+            var locator = locators.OfType<ManuallyAddedLocator>().First();
+            var entId = EntityId.From(Convert.ToUInt64(id, 16));
+            await locator.Remove(entId);
+        }
         await renderer.Text("Game removed successfully.");
         return 0;
     }
