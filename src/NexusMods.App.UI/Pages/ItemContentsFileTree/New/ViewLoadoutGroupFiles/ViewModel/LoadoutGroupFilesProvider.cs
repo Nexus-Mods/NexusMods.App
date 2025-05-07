@@ -107,9 +107,10 @@ internal static class LoadoutFilesObservableExtensions
             if (!hasParent)
                 return false;
 
-            return modFilesFilter.ModIds
+            var matchesAnyId = modFilesFilter.ModIds
                 .AsValueEnumerable()
                 .Any(filter => parentId.Equals(filter.Value));
+            return matchesAnyId;
         });
     }
 }
