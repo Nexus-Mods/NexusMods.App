@@ -64,6 +64,12 @@
         <PackageReference Include="Avalonia.Labs.Panels" />
         <PackageReference Include="Avalonia.ReactiveUI" />
         <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Avalonia.Skia" />
+        <PackageReference Include="SkiaSharp"/>
+        <PackageReference Include="SkiaSharp.HarfBuzz"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.macOS"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Win32"/>
         <PackageReference Include="Avalonia.Themes.Fluent" />
         <PackageReference Include="AvaloniaEdit.TextMate" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia"/>
