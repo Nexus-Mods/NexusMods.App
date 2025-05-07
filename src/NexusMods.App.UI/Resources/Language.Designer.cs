@@ -1187,7 +1187,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CATEGORY.
+        ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string Helpers_GenerateHeader_CATEGORY {
             get {
@@ -1196,7 +1196,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FILE COUNT.
+        ///   Looks up a localized string similar to File count.
         /// </summary>
         public static string Helpers_GenerateHeader_File_Count {
             get {
@@ -1205,7 +1205,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GAME.
+        ///   Looks up a localized string similar to Game.
         /// </summary>
         public static string Helpers_GenerateHeader_GAME {
             get {
@@ -1214,7 +1214,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSTALLED.
+        ///   Looks up a localized string similar to Installed.
         /// </summary>
         public static string Helpers_GenerateHeader_INSTALLED {
             get {
@@ -1223,7 +1223,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOD NAME.
+        ///   Looks up a localized string similar to Mod name.
         /// </summary>
         public static string Helpers_GenerateHeader_MOD_NAME {
             get {
@@ -1232,7 +1232,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NAME.
+        ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Helpers_GenerateHeader_NAME {
             get {
@@ -1241,7 +1241,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SIZE.
+        ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string Helpers_GenerateHeader_SIZE {
             get {
@@ -1259,7 +1259,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STATUS.
+        ///   Looks up a localized string similar to Status.
         /// </summary>
         public static string Helpers_GenerateHeader_STATUS {
             get {
@@ -1268,7 +1268,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VERSION.
+        ///   Looks up a localized string similar to Version.
         /// </summary>
         public static string Helpers_GenerateHeader_VERSION {
             get {

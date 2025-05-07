@@ -97,28 +97,28 @@
         <value>Cancel and delete downloads?</value>
     </data>
     <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
-        <value>NAME</value>
+        <value>Name</value>
     </data>
     <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
-        <value>VERSION</value>
+        <value>Version</value>
     </data>
     <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
-        <value>CATEGORY</value>
+        <value>Category</value>
     </data>
     <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
-        <value>INSTALLED</value>
+        <value>Installed</value>
     </data>
     <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
-        <value>MOD NAME</value>
+        <value>Mod name</value>
     </data>
     <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
-        <value>GAME</value>
+        <value>Game</value>
     </data>
     <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
-        <value>SIZE</value>
+        <value>Size</value>
     </data>
     <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
-        <value>STATUS</value>
+        <value>Status</value>
     </data>
     <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
         <value>GAME RUNNING...</value>
@@ -399,7 +399,7 @@
         <comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
     </data>
     <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
-        <value>FILE COUNT</value>
+        <value>File count</value>
     </data>
     <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
         <value>All supported games have been added. No new games detected.</value>
