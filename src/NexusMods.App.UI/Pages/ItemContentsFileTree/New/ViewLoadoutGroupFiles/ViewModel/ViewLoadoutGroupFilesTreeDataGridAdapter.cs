@@ -27,14 +27,10 @@ public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider servicePr
         if (!viewHierarchical)
             return filesObservable;
 
-        // Note(sewer): This is 'hardcoded' to display only mod files for the time being,
-        // as to retain the existing behaviour/UI we had beforehand. But we can now display
-        // things such as saves.
-        
         // Make a folder generator and adapt
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var adapter = new TreeFolderGeneratorLoadoutTreeItemAdapter<LoadoutGroupFilesTreeFolderModelInitializer>(connection, filesObservable);
-        return adapter.FolderGenerator.ObservableRoots();
+        return adapter.FolderGenerator.SimplifiedObservableRoots(); // Match previous behaviour pre-CompositeItemModels.
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
