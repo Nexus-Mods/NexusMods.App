@@ -3,10 +3,8 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Aggregation;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
-using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator.Helpers;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
@@ -20,18 +18,7 @@ public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider servicePr
 {
     private readonly LoadoutGroupFilesProvider _loadoutGroupFilesProvider = new(serviceProvider);
     
-    protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
-    {
-        // If we are requesting a flat view, we can skip folder generation.
-        var filesObservable = _loadoutGroupFilesProvider.ObserveModFiles(filesFilter, useFullFilePaths: !viewHierarchical);
-        if (!viewHierarchical)
-            return filesObservable;
-
-        // Make a folder generator and adapt
-        var connection = serviceProvider.GetRequiredService<IConnection>();
-        var adapter = new TreeFolderGeneratorLoadoutTreeItemAdapter<LoadoutGroupFilesTreeFolderModelInitializer>(connection, filesObservable);
-        return adapter.FolderGenerator.SimplifiedObservableRoots(); // Match previous behaviour pre-CompositeItemModels.
-    }
+    protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical) => _loadoutGroupFilesProvider.ObserveModFiles(filesFilter, useFullFilePaths: !viewHierarchical);
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
     {

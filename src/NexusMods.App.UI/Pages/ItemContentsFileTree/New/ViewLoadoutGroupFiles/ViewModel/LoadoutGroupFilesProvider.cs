@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Trees.Common;
+using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator.Helpers;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
@@ -51,8 +52,16 @@ public class LoadoutGroupFilesProvider
     /// <param name="useFullFilePaths">Renders the file names as full file paths, for when the data is viewed outside a tree.</param>
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveModFiles(ModFilesFilter filesFilter, bool useFullFilePaths)
     {
-        return FilteredModFiles(filesFilter)
-              .Transform(x => ToModFileItemModel(new LoadoutFile.ReadOnly(x.Db, x.EntitySegment, x.Id), useFullFilePaths));
+        var filesObservable = FilteredModFiles(filesFilter)
+            .Transform(x => ToModFileItemModel(new LoadoutFile.ReadOnly(x.Db, x.EntitySegment, x.Id), useFullFilePaths));
+
+        // If we are requesting a flat view, we can skip folder generation.
+        if (useFullFilePaths)
+            return filesObservable;
+
+        // Otherwise make all the folders via adapter.
+        var adapter = new TreeFolderGeneratorLoadoutTreeItemAdapter<LoadoutGroupFilesTreeFolderModelInitializer>(_connection, filesObservable);
+        return adapter.FolderGenerator.SimplifiedObservableRoots(); // Match previous behaviour pre-CompositeItemModels.
     }
 
     private CompositeItemModel<EntityId> ToModFileItemModel(LoadoutFile.ReadOnly modFile, bool useFullFilePaths)
