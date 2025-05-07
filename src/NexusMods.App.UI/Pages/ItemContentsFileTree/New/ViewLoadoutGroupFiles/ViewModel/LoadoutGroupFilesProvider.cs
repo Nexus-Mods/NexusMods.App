@@ -28,16 +28,20 @@ public class LoadoutGroupFilesProvider
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    private IObservable<IChangeSet<LoadoutItem.ReadOnly, EntityId>> FilteredModFiles(ModFilesFilter filesFilter)
+    private IObservable<IChangeSet<LoadoutFile.ReadOnly, EntityId>> FilteredModFiles(ModFilesFilter filesFilter)
     {
-        return LoadoutItem
+        return LoadoutFile
             .ObserveAll(_connection)
-            .FilterOnObservable((_, entityId) => _connection
+            .Filter(x => LoadoutFilesObservableExtensions.FilterEntityId(_connection, filesFilter, x.Id));
+        /*
+        .FilterOnObservable((_, entityId) =>
+            _connection
                 .ObserveDatoms(LoadoutItem.Parent, entityId)
                 .AsEntityIds()
-                .FilterInModFiles(_connection, filesFilter)
+                .FilterInModFiles(_connection, filesFilter);
                 .IsNotEmpty()
-            );
+        );
+        */
     }
 
     /// <summary>
@@ -93,25 +97,22 @@ internal static class LoadoutFilesObservableExtensions
         IConnection connection,
         ModFilesFilter modFilesFilter)
     {
-        return source.Filter(datom =>
-        {
-            var segment = connection.Db.Get(datom.E);
-            
-            // Assert that this is a LoadoutFile, in case the group contains non-Files.
-            var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, segment, datom.E);
-            if (!loadoutFile.IsValid())
-                return false;
-            
-            // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
-            var hasParent = LoadoutItem.Parent.TryGetValue(segment, out var parentId);
-            if (!hasParent)
-                return false;
+        return source.Filter(datom => FilterEntityId(connection, modFilesFilter, datom.E));
+    }
 
-            var matchesAnyId = modFilesFilter.ModIds
-                .AsValueEnumerable()
-                .Any(filter => parentId.Equals(filter.Value));
-            return matchesAnyId;
-        });
+    internal static bool FilterEntityId(IConnection connection, ModFilesFilter modFilesFilter, EntityId eId)
+    {
+        var segment = connection.Db.Get(eId);
+
+        // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
+        var hasParent = LoadoutItem.Parent.TryGetValue(segment, out var parentId);
+        if (!hasParent)
+            return false;
+
+        var matchesAnyId = modFilesFilter.ModIds
+            .AsValueEnumerable()
+            .Any(filter => parentId.Equals(filter.Value));
+        return matchesAnyId;
     }
 }
 
