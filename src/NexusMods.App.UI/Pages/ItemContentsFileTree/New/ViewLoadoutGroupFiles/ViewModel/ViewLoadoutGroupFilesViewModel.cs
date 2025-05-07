@@ -127,7 +127,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                 .Do(group => TabTitle = group!.Value.AsLoadoutItem().Name)
                 .Subscribe()
                 .DisposeWith(disposables);
-            
+
             // Populate the file tree
             this.ObservePropertyChanged(vm => vm.Context)
                 .WhereNotNull()

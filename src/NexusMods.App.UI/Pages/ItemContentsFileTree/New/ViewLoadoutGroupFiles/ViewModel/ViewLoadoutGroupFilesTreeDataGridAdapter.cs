@@ -106,13 +106,13 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
     private static void AddInnerFileCount<TFolderModelInitializer>(CompositeItemModel<EntityId> model, GeneratedFolder<LoadoutItemTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
     {
         var fileCountObservable = folder.GetAllFilesRecursiveObservable()
-            .Count(); // Note(sewer): This is DynamicData's Count. Not Reactive's !!
+            .Count() // Note(sewer): This is DynamicData's Count. Not Reactive's !!
+            .Select(x => (uint)x);
 
-        var component = new ValueComponent<int>(
+        var component = new UInt32Component(
             initialValue: 0,
             valueObservable: fileCountObservable,
-            subscribeWhenCreated: true,
-            observeOutsideUiThread: true
+            subscribeWhenCreated: true
         );
         model.Add(SharedColumns.FileCount.ComponentKey, component);
     }
