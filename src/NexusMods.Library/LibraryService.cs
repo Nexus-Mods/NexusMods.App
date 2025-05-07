@@ -47,6 +47,11 @@ public sealed class LibraryService : ILibraryService
         return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
 
+    public async Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source)
+    {
+        return await AddLibraryFileJob.Create(_serviceProvider, transaction, filePath: source);
+    }
+
     public IJobTask<IInstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> InstallItem(
         LibraryItem.ReadOnly libraryItem,
         LoadoutId targetLoadout,

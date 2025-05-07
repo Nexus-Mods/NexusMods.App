@@ -15,8 +15,8 @@ public class CollectionInfo
     public string AuthorUrl { get; init; } = string.Empty;
     
     [JsonPropertyName("name")]
-    public string Name { get; init; } = string.Empty;
-    
+    public required string Name { get; init; } = string.Empty;
+
     [JsonPropertyName("description")]
     public string Description { get; init; } = string.Empty;
     
