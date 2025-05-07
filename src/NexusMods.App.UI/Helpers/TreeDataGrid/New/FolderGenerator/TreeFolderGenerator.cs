@@ -18,15 +18,15 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
 {
     internal readonly Dictionary<LocationId, TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelInitializer>> LocationIdToTree = new();
     internal readonly SourceCache<CompositeItemModel<EntityId>, EntityId> RootCache = new(model => model.Key);
-    private IncrementingNumberGenerator _incrementingNumberGenerator = new();
-    
+    private readonly IncrementingNumberGenerator _incrementingNumberGenerator = new();
+    private readonly IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> _observableRoots;
+
+    public TreeFolderGenerator() => _observableRoots = RootCache.Connect().RefCount();
+
     /// <summary>
     /// Returns an observable changeset of root items, suitable for binding to a TreeDataGrid.
     /// </summary>
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObservableRoots()
-    {
-        return RootCache.Connect();
-    }
+    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObservableRoots() => _observableRoots;
 
     /// <summary>
     /// A variant of <see cref="ObservableRoots"/> which returns the contents of
@@ -38,7 +38,7 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
     /// </summary>
     public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> SimplifiedObservableRoots()
     {
-        return ObservableRoots()
+        return _observableRoots
             .Select(_ => LocationIdToTree.Count) // tied 1:1 with root count
             .Select(GetAdaptedChangeSet) // get either changeset with 1 root, or with all roots.
             .Switch();
@@ -47,8 +47,8 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
     private IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetAdaptedChangeSet(int count)
     {
         // Return all roots
-        if (count != 1) 
-            return ObservableRoots();
+        if (count != 1)
+            return _observableRoots;
 
         // Else if there's only one location ID, return its children
         var singleRoot = LocationIdToTree.Values.First();
