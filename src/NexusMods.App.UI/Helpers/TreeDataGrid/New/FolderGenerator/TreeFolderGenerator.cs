@@ -12,7 +12,7 @@ namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 /// </summary>
 /// <typeparam name="TTreeItemWithPath">The type used to denote the file in the tree.</typeparam>
 /// <typeparam name="TFolderModelInitializer">The initializer for folder models.</typeparam>
-public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> 
+public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> : IDisposable
     where TTreeItemWithPath : ITreeItemWithPath
     where TFolderModelInitializer : IFolderModelInitializer<TTreeItemWithPath>
 {
@@ -95,5 +95,12 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>
         RootCache.Remove(rootModel);
         LocationIdToTree.Remove(path.LocationId);
         rootModel.Dispose();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        RootCache.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

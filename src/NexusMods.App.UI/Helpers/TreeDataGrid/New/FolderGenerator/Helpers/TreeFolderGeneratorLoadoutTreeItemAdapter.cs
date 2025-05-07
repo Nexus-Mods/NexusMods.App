@@ -16,7 +16,6 @@ public class TreeFolderGeneratorLoadoutTreeItemAdapter<TFolderModelInitializer> 
         TFolderModelInitializer // Column info.
     > where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
 {
-
     /// <inheritdoc />
     public TreeFolderGeneratorLoadoutTreeItemAdapter(IConnection connection, IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> changes) : base(new LoadoutItemTreeItemWithPathFactory(connection), changes) { }
 }

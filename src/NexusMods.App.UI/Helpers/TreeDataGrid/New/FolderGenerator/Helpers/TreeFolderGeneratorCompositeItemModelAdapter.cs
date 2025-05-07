@@ -1,6 +1,7 @@
 using DynamicData;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 
 namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator.Helpers;
 
@@ -16,7 +17,7 @@ namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator.Helpers;
 ///     Subscription is dropped when this item is GC'd.
 ///     For an integration example, look at "ViewLoadoutGroupFilesTreeDataGridAdapter". 
 /// </remarks>
-public class TreeFolderGeneratorCompositeItemModelAdapter<TTreeItemWithPath, TTreeItemWithPathFactory, TKey, TFolderModelInitializer>
+public class TreeFolderGeneratorCompositeItemModelAdapter<TTreeItemWithPath, TTreeItemWithPathFactory, TKey, TFolderModelInitializer> : IDisposable
     where TTreeItemWithPath : ITreeItemWithPath
     where TTreeItemWithPathFactory : ITreeItemWithPathFactory<EntityId, TTreeItemWithPath>
     where TKey : notnull
@@ -75,5 +76,12 @@ public class TreeFolderGeneratorCompositeItemModelAdapter<TTreeItemWithPath, TTr
                     throw new ArgumentOutOfRangeException(nameof(change.Reason), change.Reason, @"Unhandled change reason");
             }
         }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        FolderGenerator.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

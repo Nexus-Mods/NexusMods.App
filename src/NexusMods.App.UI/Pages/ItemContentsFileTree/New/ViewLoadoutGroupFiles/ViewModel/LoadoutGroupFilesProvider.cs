@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Trees.Common;
+using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator.Helpers;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
@@ -61,7 +62,9 @@ public class LoadoutGroupFilesProvider
 
         // Otherwise make all the folders via adapter.
         var adapter = new TreeFolderGeneratorLoadoutTreeItemAdapter<LoadoutGroupFilesTreeFolderModelInitializer>(_connection, filesObservable);
-        return adapter.FolderGenerator.SimplifiedObservableRoots(); // Match previous behaviour pre-CompositeItemModels.
+        var wrapper = new DisposableObservableWrapper<IChangeSet<CompositeItemModel<EntityId>, EntityId>>
+            (adapter.FolderGenerator.SimplifiedObservableRoots(), adapter);
+        return wrapper; // Use `SimplifiedObservableRoots` to match previous behaviour pre-CompositeItemModels.
     }
 
     private CompositeItemModel<EntityId> ToModFileItemModel(LoadoutFile.ReadOnly modFile, bool useFullFilePaths)
