@@ -47,5 +47,38 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
         await Verify(new { Before = beforePoints, After = afterPoints });
     }
 
+    /// <summary>
+    /// During testing, we found that undoing certain transactions could corrupt the database (due to a sorting bug)
+    /// </summary>
+    [Fact]
+    public async Task UndoDoesntCorruptTheDatabase()
+    {
+        // Load up a database with two collections installed, and the first one deleted
+        await using var tmpConn = await ConnectionFor("corruption_error_db.zip");
+
+        var undoService = tmpConn.Host.Services.GetRequiredService<UndoService>();
+
+        var loadout = Loadout.All(tmpConn.Connection.Db).First(l => l.Id == EntityId.From(0x200000000003755));
+
+        var restorePoints = (await undoService.RevisionsFor(loadout))
+            .OrderBy(row => row.Revision.Timestamp);
+
+        await tmpConn.Connection.FlushAndCompact(false);
+        var prevCount = restorePoints.Count();
+        for (var i = 0; i < 4; i++)
+        {
+            var points = restorePoints.ToArray();
+            var pnt = points[i % 2 == 0 ? 1 : 6];
+            await undoService.RevertTo(pnt.Revision);
+        }
+        
+        var afterPoints = restorePoints.Select(row => new
+            {
+                TxId = row.Revision.TxEntity.ToString(),
+                ModCount = row.ModCount
+            }
+        );
+    }
+
     
 }
