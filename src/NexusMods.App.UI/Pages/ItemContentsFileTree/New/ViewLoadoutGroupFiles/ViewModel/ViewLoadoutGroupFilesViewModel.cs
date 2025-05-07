@@ -14,6 +14,7 @@ using ObservableCollections;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
 
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
@@ -135,15 +136,21 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                         // Dispose any existing adapter first, in case context is changed.
                         FileTreeAdapter?.Dispose();
                         FileTreeAdapter = new ViewLoadoutGroupFilesTreeDataGridAdapter(provider, new ModFilesFilter(context.GroupIds.ToArray()));
-                        FileTreeAdapter.Activate().AddTo(disposables);
+
+                        var compositeDisposable = new CompositeDisposable();
+                        FileTreeAdapter.Activate().AddTo(compositeDisposable);
+                        FileTreeAdapter.SelectedModels
+                            .ObserveCountChanged(notifyCurrentCount: true)
+                            .Subscribe(FileTreeAdapter, (_, adapter) =>
+                                {
+                                    SelectedItem = adapter.SelectedModels.FirstOrDefault();
+                                }
+                            )
+                            .AddTo(compositeDisposable);
                         
                         // Update the selection subscription
                         // Note: This auto disposes last.
-                        _selectedItemsSubscription.Disposable = FileTreeAdapter.SelectedModels
-                            .ObserveCountChanged(notifyCurrentCount: true)
-                            .Subscribe(FileTreeAdapter, (_, adapter) => {
-                                SelectedItem = adapter.SelectedModels.FirstOrDefault();
-                            });
+                        _selectedItemsSubscription.Disposable = compositeDisposable;
             
                         // Initial update
                         SelectedItem = FileTreeAdapter.SelectedModels.FirstOrDefault();
