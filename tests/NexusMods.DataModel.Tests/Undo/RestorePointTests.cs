@@ -63,8 +63,8 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
         var restorePoints = (await undoService.RevisionsFor(loadout))
             .OrderBy(row => row.Revision.Timestamp);
 
-        await tmpConn.Connection.FlushAndCompact(false);
-        var prevCount = restorePoints.Count();
+        // This would cause a crash before the fix
+        await tmpConn.Connection.FlushAndCompact();
         for (var i = 0; i < 4; i++)
         {
             var points = restorePoints.ToArray();
