@@ -224,7 +224,7 @@ public static class ImagePipelines
                 referenceAttribute: NexusModsModPageMetadata.ThumbnailResource,
                 identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
                 partitionId: PartitionId.User(ImagePartitionId),
-                expiresAfter: TimeSpan.FromDays(1)
+                expiresAfter: TimeSpan.FromDays(14)
             )
             .Decode(decoderType: DecoderType.Qoi)
             .ToAvaloniaBitmap()
