@@ -16,6 +16,9 @@ public partial class ViewLoadoutGroupFilesView : ReactiveUserControl<IViewLoadou
         TreeDataGridViewHelper.SetupTreeDataGridAdapter<ViewLoadoutGroupFilesView, IViewLoadoutGroupFilesViewModel, CompositeItemModel<EntityId>, EntityId>(this, TreeDataGrid, vm => vm.FileTreeAdapter!);
         this.WhenActivated(disposables =>
         {
+            this.OneWayBind(ViewModel, vm => vm.FileTreeAdapter!.Source.Value, view => view.TreeDataGrid.Source)
+                .DisposeWith(disposables);
+            
             this.BindCommand(ViewModel, vm => vm.OpenEditorCommand, view => view.OpenEditorMenuItem)
                 .DisposeWith(disposables);
             
