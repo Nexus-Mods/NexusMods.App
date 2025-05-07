@@ -49,7 +49,8 @@ public sealed class ImageResizer<TResourceIdentifier> : ANestedResourceLoader<TR
 
         return ValueTask.FromResult(resource with
             {
-                Data = original.Resize(targetSize, quality: SKFilterQuality.Low),
+                // previous Resize method was obsolete
+                Data = original.Resize(targetSize, SKSamplingOptions.Default),
             }
         );
     }
