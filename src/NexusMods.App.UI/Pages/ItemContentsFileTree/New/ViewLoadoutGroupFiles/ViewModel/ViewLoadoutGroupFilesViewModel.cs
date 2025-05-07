@@ -20,7 +20,7 @@ using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 
 [UsedImplicitly]
-public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel
+public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel, IDisposable
 {
     // IViewLoadoutGroupFilesViewModel
     [Reactive] public ViewLoadoutGroupFilesPageContext? Context { get; set; }
@@ -147,6 +147,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                                 }
                             )
                             .AddTo(compositeDisposable);
+                        FileTreeAdapter.AddTo(compositeDisposable); // cleanup self.
                         
                         // Update the selection subscription
                         // Note: This auto disposes last.
@@ -164,5 +165,6 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
     public void Dispose()
     {
         _disposables.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
