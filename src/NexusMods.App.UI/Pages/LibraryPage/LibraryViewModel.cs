@@ -53,6 +53,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public ReactiveCommand<Unit> OpenFilePickerCommand { get; }
 
     public ReactiveCommand<Unit> OpenNexusModsCommand { get; }
+    public ReactiveCommand<Unit> OpenNexusModsCollectionsCommand { get; }
 
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
@@ -157,6 +158,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             {
                 var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
                 var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain.Value);
+                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
+            },
+            awaitOperation: AwaitOperation.Parallel,
+            configureAwait: false
+        );
+        OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
+                var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain.Value);
                 await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Parallel,
