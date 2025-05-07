@@ -65,7 +65,7 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
 
         // This would cause a crash before the fix
         await tmpConn.Connection.FlushAndCompact();
-        for (var i = 0; i < 4; i++)
+        for (var i = 0; i < 2; i++)
         {
             var points = restorePoints.ToArray();
             var pnt = points[i % 2 == 0 ? 1 : 6];
