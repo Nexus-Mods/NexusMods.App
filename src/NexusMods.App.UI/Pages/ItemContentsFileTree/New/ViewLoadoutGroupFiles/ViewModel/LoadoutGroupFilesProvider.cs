@@ -72,7 +72,7 @@ public class LoadoutGroupFilesProvider
         //              BindableReactiveProperty from the component, so actually, not filtering
         //              might be better. Food for thought.
         var itemUpdates = LoadoutFile.Observe(_connection, modFile.Id);
-        var nameUpdates = itemUpdates.Select(x => useFullFilePaths ? FileToFileName(x) : FileToFilePath(x));
+        var nameUpdates = itemUpdates.Select(x => useFullFilePaths ? FileToFilePath(x) : FileToFileName(x));
         var iconUpdates = itemUpdates.Select(FileToIconValue);
         var sizeUpdates = itemUpdates.Select(x => x.Size);
         
