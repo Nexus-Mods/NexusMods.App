@@ -69,6 +69,7 @@ public class AvaloniaApp : IDisposable
             catch (Exception e)
             {
                 _logger.LogError(e, "While setting up AvaloniaApp");
+                tcs.SetException(e);
             }
         })
         {
