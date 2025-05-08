@@ -163,7 +163,7 @@ internal static class Verbs
 
         using var tx = connection.BeginTransaction();
 
-        var collectionManifest = CollectionCreator.CreateCollection(
+        var collectionManifest = CollectionCreator.LoadoutItemGroupToCollectionManifest(
             group: collectionGroup.AsLoadoutItemGroup(),
             mappingCache: mappingCache,
             author: user

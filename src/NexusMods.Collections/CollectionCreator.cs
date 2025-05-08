@@ -14,7 +14,10 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
-    public static CollectionRoot CreateCollection(
+    /// <summary>
+    /// Creates a collection JSON manifest from a loadout item group.
+    /// </summary>
+    public static CollectionRoot LoadoutItemGroupToCollectionManifest(
         LoadoutItemGroup.ReadOnly group,
         IGameDomainToGameIdMappingCache mappingCache,
         User.ReadOnly author)

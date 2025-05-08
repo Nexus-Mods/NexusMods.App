@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using DynamicData.Kernel;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Models;
@@ -39,12 +40,18 @@ public partial class NexusModsLibrary
         httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
 
         var response = await _httpClient.PutAsync(presignedUploadUrl.UploadUri, httpContent, cancellationToken: cancellationToken);
+        if (response.IsSuccessStatusCode) return presignedUploadUrl;
 
-        var s = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+        var responseMessage = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+        _logger.LogError("Failed to upload collection archive, response code={ResponseCode}, response reason=`{ResponseReason}`, response message=`{ResponseMessage}`", response.StatusCode, response.ReasonPhrase, responseMessage);
 
+        response.EnsureSuccessStatusCode();
         return presignedUploadUrl;
     }
 
+    /// <summary>
+    /// Uploads a new collection to Nexus Mods and adds it to the app.
+    /// </summary>
     public async ValueTask<CollectionRevisionMetadata.ReadOnly> CreateCollection(
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
