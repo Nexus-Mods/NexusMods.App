@@ -84,7 +84,7 @@ public static class LoadoutItemGroupHelpers
     /// <param name="connection">The connection used to MnemonicDB.</param>
     /// <param name="groupIds">The <see cref="LoadoutItemGroup"/> IDs (usually mod) to search within.</param>
     /// <param name="gamePath">The game path to match. Searches for an exact match.</param>
-    /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
+    /// <param name="requireAllGroups">If true, throws <see cref="InvalidOperationException"/> when any group is missing. If false, continues with available groups.</param>
     /// <returns>The matching <see cref="LoadoutItemWithTargetPath.ReadOnly"/> if found; otherwise, null.</returns>
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing.</exception>
     public static LoadoutFile.ReadOnly? FindMatchingFile(IConnection connection, LoadoutItemGroupId[] groupIds, GamePath gamePath, bool requireAllGroups = true)

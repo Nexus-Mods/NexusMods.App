@@ -1,6 +1,7 @@
 using System.Reactive.Disposables;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
@@ -26,7 +27,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
     [Reactive] public ViewLoadoutGroupFilesPageContext? Context { get; set; }
     [Reactive] public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; [UsedImplicitly] set; } = null!;
     [Reactive] public ReactiveCommand<Unit> RemoveCommand { get; [UsedImplicitly] set; } = null!;
-    [Reactive] public CompositeItemModel<EntityId>? SelectedItem { get; set; }
+    [Reactive] public CompositeItemModel<GamePath>? SelectedItem { get; set; }
     [Reactive] public ViewLoadoutGroupFilesTreeDataGridAdapter? FileTreeAdapter { get; set; }
     
     public ViewLoadoutGroupFilesViewModel(
@@ -37,7 +38,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
     {
         TabIcon = IconValues.FolderOpen;
         TabTitle = "File Tree";
-        
+
         this.WhenActivated(disposables =>
         {
             // Note(sewer):
@@ -47,35 +48,33 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
             SerialDisposable treeDataGridAdapterDisposable = new();
             
             OpenEditorCommand = this.ObservePropertyChanged(vm => vm.SelectedItem)
-                .Select(connection, static (item, connection) =>
+                .Select((this, connection), static (item, state) =>
                 {
-                    // Directories in future code will not constitute valid entities,
-                    // so we filter out here. 
+                    // If no item is currently selected, we obviously can't open the editor.
                     if (item == null)
                         return false;
 
-                    var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, item.Key);
-                    return loadoutFile.IsValid();
+                    var gamePath = item.Key;
+                    var file = LoadoutItemGroupHelpers.FindMatchingFile
+                        (state.connection, state.Item1.Context!.GroupIds, gamePath, false);
+
+                    // If we can't find a file, then it's a directory, which we can't open an editor for.
+                    return !file.HasValue;
                 }
             )
             .ToReactiveCommand<NavigationInformation>(info =>
             {
                 // Note(sewer): Is it possible to avoid a double entity load here?
-                var fileId = SelectedItem!.Key;
-                var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, fileId);
-                if (!loadoutFile.IsValid())
-                {
-                    logger.LogError("Unable to find Loadout File with ID `{FileId}`. This is indicative of a bug.", fileId);
-                    return;
-                }
-
+                var gamePath = SelectedItem!.Key;
+                var file = LoadoutItemGroupHelpers.FindMatchingFile(connection, Context!.GroupIds, gamePath);
+                
                 var pageData = new PageData
                 {
                     FactoryId = TextEditorPageFactory.StaticId,
                     Context = new TextEditorPageContext
                     {
-                        FileId = loadoutFile.LoadoutFileId,
-                        FilePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath.Item3,
+                        FileId = (LoadoutFileId) file!.Value.Id, // not null because command was executable
+                        FilePath = gamePath.Path,
                         IsReadOnly = Context!.IsReadOnly,
                     },
                 };
@@ -98,18 +97,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                 )
                 .ToReactiveCommand<Unit>(async (_, _) =>
                     {
-                        var fileId = SelectedItem!.Key;
-                        var loadoutFile = new LoadoutFile.ReadOnly(connection.Db, fileId);
-                        if (!loadoutFile.IsValid())
-                        {
-                            logger.LogError("Unable to find Loadout File with ID `{FileId}`. This is indicative of a bug.", fileId);
-                            return;
-                        }
-
-                        // TODO: Support directories here, once that's integrated.
-                        // The RemoveFileOrFolder API already handles this, when we integrate folders,
-                        // which is why we use 'GamePath' as entry point.
-                        var gamePath = loadoutFile.AsLoadoutItemWithTargetPath().TargetPath;
+                        var gamePath = SelectedItem!.Key;
                         var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
                         if (result == LoadoutItemGroupHelpers.GroupOperationStatus.NoItemsDeleted)
                             logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 

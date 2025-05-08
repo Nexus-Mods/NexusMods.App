@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using DynamicData;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Trees.Common;
@@ -12,6 +13,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.Paths;
 using ZLinq;
+using static NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel.PathHelpers;
+
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 
 /// <summary>
@@ -28,19 +31,21 @@ public class LoadoutGroupFilesProvider
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    private IObservable<IChangeSet<LoadoutFile.ReadOnly, EntityId>> FilteredModFiles(ModFilesFilter filesFilter)
+    private IObservable<IChangeSet<LoadoutFile.ReadOnly, GamePath>> FilteredModFiles(ModFilesFilter filesFilter)
     {
         return LoadoutFile
             .ObserveAll(_connection)
-            .Filter(x => LoadoutFilesObservableExtensions.FilterEntityId(_connection, filesFilter, x.Id));
+            .Filter(x => LoadoutFilesObservableExtensions.FilterEntityId(_connection, filesFilter, x.Id))
+            .ChangeKey(FileToGamePath);
         /*
-        .FilterOnObservable((_, entityId) =>
-            _connection
-                .ObserveDatoms(LoadoutItem.Parent, entityId)
-                .AsEntityIds()
-                .FilterInModFiles(_connection, filesFilter);
-                .IsNotEmpty()
-        );
+            .FilterOnObservable((_, entityId) =>
+               _connection
+                   .ObserveDatoms(LoadoutItem.Parent, entityId)
+                   .AsEntityIds()
+                   .FilterInModFiles(_connection, filesFilter)
+                   .IsNotEmpty()
+           )
+           .ChangeKey(FileToGamePath);
         */
     }
 
@@ -49,7 +54,7 @@ public class LoadoutGroupFilesProvider
     /// </summary>
     /// <param name="filesFilter">A filter which specifies one or more mod groups of items to display.</param>
     /// <param name="useFullFilePaths">Renders the file names as full file paths, for when the data is viewed outside a tree.</param>
-    public IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> ObserveModFiles(ModFilesFilter filesFilter, bool useFullFilePaths)
+    public IObservable<IChangeSet<CompositeItemModel<GamePath>, GamePath>> ObserveModFiles(ModFilesFilter filesFilter, bool useFullFilePaths)
     {
         var filesObservable = FilteredModFiles(filesFilter)
             .Transform(x => ToModFileItemModel(new LoadoutFile.ReadOnly(x.Db, x.EntitySegment, x.Id), useFullFilePaths));
@@ -59,20 +64,20 @@ public class LoadoutGroupFilesProvider
             return filesObservable;
 
         // Otherwise make all the folders via adapter.
-        var adapter = new TreeFolderGeneratorLoadoutTreeItemAdapter<LoadoutGroupFilesTreeFolderModelInitializer>(_connection, filesObservable);
-        var wrapper = new DisposableObservableWrapper<IChangeSet<CompositeItemModel<EntityId>, EntityId>>
+        var adapter = new TreeFolderGeneratorLoadoutTreeItemAdapter<LoadoutGroupFilesTreeFolderModelInitializer>(filesObservable);
+        var wrapper = new DisposableObservableWrapper<IChangeSet<CompositeItemModel<GamePath>, GamePath>>
             (adapter.FolderGenerator.SimplifiedObservableRoots(), adapter);
         return wrapper; // Use `SimplifiedObservableRoots` to match previous behaviour pre-CompositeItemModels.
     }
 
-    private CompositeItemModel<EntityId> ToModFileItemModel(LoadoutFile.ReadOnly modFile, bool useFullFilePaths)
+    private CompositeItemModel<GamePath> ToModFileItemModel(LoadoutFile.ReadOnly modFile, bool useFullFilePaths)
     {
         // Files don't have children.
         // We inject the relevant folders at the listener level, i.e. whatever calls `ObserveModFiles`
-        var fileItemModel = new CompositeItemModel<EntityId>(modFile.Id)
+        var fileItemModel = new CompositeItemModel<GamePath>(FileToGamePath(modFile))
         {
             HasChildrenObservable = Observable.Return(false),
-            ChildrenObservable = Observable.Empty<IChangeSet<CompositeItemModel<EntityId>, EntityId>>(),
+            ChildrenObservable = Observable.Empty<IChangeSet<CompositeItemModel<GamePath>, GamePath>>(),
         };
     
         // Observe changes. 
@@ -94,20 +99,29 @@ public class LoadoutGroupFilesProvider
 
         return fileItemModel;
     }
+}
 
-    private static string FileToFilePath(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3;
-    private static IconValue FileToIconValue(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFileName(modFile)).Extension.GetIconType().GetIconValue();
-    private static string FileToFileName(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFilePath(modFile)).FileName;
+internal static class PathHelpers
+{
+    internal static GamePath FileToGamePath(LoadoutFile.ReadOnly modFile)
+    {
+        var path = modFile.AsLoadoutItemWithTargetPath().TargetPath;
+        return new GamePath(path.Item2, path.Item3);
+    }
+    internal static string FileToFilePath(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3;
+    internal static IconValue FileToIconValue(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFileName(modFile)).Extension.GetIconType().GetIconValue();
+    internal static string FileToFileName(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFilePath(modFile)).FileName;
 }
 
 internal static class LoadoutFilesObservableExtensions
 {
-    internal static IObservable<IChangeSet<Datom, EntityId>> FilterInModFiles(
+    internal static IObservable<IChangeSet<Datom, GamePath>> FilterInModFiles(
         this IObservable<IChangeSet<Datom, EntityId>> source,
         IConnection connection,
         ModFilesFilter modFilesFilter)
     {
-        return source.Filter(datom => FilterEntityId(connection, modFilesFilter, datom.E));
+        return source.ChangeKey(x => FileToGamePath(new LoadoutFile.ReadOnly(connection.Db, x.E)))
+              .Filter(datom => FilterEntityId(connection, modFilesFilter, datom.E));
     }
 
     internal static bool FilterEntityId(IConnection connection, ModFilesFilter modFilesFilter, EntityId eId)

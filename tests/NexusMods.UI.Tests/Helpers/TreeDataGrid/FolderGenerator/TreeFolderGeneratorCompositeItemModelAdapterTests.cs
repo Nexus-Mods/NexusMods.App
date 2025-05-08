@@ -2,7 +2,6 @@ using DynamicData;
 using FluentAssertions;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using NexusMods.App.UI.Controls;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Abstractions.GameLocators;
 
@@ -17,22 +16,21 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
     /// <summary>
     /// Source of the observable changeset being used during testing as input.
     /// </summary>
-    private readonly SourceCache<CompositeItemModel<EntityId>, EntityId> _sourceCache;
+    private readonly SourceCache<CompositeItemModel<GamePath>, GamePath> _sourceCache;
     private readonly StubTreeItemFactory _factory = new();
-    private readonly IncrementingNumberGenerator _generator = new();
     
     /// <summary>
     /// The adapter under test.
     /// </summary>
-    private readonly TreeFolderGeneratorCompositeItemModelAdapter<StubTreeItem, StubTreeItemFactory, EntityId, DefaultFolderModelInitializer<StubTreeItem>> _adapter;
+    private readonly TreeFolderGeneratorCompositeItemModelAdapter<StubTreeItem, StubTreeItemFactory, GamePath, DefaultFolderModelInitializer<StubTreeItem>> _adapter;
     
     public TreeFolderGeneratorCompositeItemModelAdapterTests() {
-        _sourceCache = new SourceCache<CompositeItemModel<EntityId>, EntityId>(model => model.Key);
-        _adapter = new TreeFolderGeneratorCompositeItemModelAdapter<StubTreeItem, StubTreeItemFactory, EntityId, DefaultFolderModelInitializer<StubTreeItem>>
+        _sourceCache = new SourceCache<CompositeItemModel<GamePath>, GamePath>(model => model.Key);
+        _adapter = new TreeFolderGeneratorCompositeItemModelAdapter<StubTreeItem, StubTreeItemFactory, GamePath, DefaultFolderModelInitializer<StubTreeItem>>
             (_factory, _sourceCache.Connect());
     }
 
-    private CompositeItemModel<EntityId> CreateModel(EntityId key) => new(key);
+    private CompositeItemModel<GamePath> CreateModel(GamePath key) => new(key);
 
     /// <summary>
     /// Tests that when a model is added to the source cache, the specific file is created
@@ -42,25 +40,23 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
     public void Adapt_Add_CreateSpecificFileInLocationTree()
     {
         // Arrange
-        var key = EntityId.From(1UL);
-        var location = LocationId.Game;
-        var path = new GamePath(location, (RelativePath)"file.txt");
-        _factory.SetPath(key, path);
-        var model = CreateModel(key);
+        var locationId = LocationId.Game;
+        var path = new GamePath(locationId, (RelativePath)"file.txt");
+        var model = CreateModel(path);
 
         // Act
         _sourceCache.AddOrUpdate(model);
 
         // Assert
-        _adapter.FolderGenerator.LocationIdToTree.Should().ContainKey(location);
+        _adapter.FolderGenerator.LocationIdToTree.Should().ContainKey(locationId);
         
         // Access the root folder of the location tree
-        var locationTree = _adapter.FolderGenerator.LocationIdToTree[location];
-        var rootFolder = locationTree.GetOrCreateFolder("", _generator, out _, out _);
+        var locationTree = _adapter.FolderGenerator.LocationIdToTree[locationId];
+        var rootFolder = locationTree.GetOrCreateFolder(GamePath.Empty(locationId), out _, out _);
         
         // Verify the file exists in the root folder
         rootFolder.Files.Count.Should().Be(1);
-        rootFolder.Files.Items.First().Key.Should().Be(key);
+        rootFolder.Files.Items.First().Key.Should().Be(path);
     }
 
     /// <summary>
@@ -70,23 +66,21 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
     public void Adapt_Add_CreatesCorrectFolderStructure()
     {
         // Arrange
-        var key = EntityId.From(5UL);
-        var location = LocationId.Game;
-        var path = new GamePath(location, (RelativePath)"folder1/folder2/file.txt");
-        _factory.SetPath(key, path);
-        var model = CreateModel(key);
+        var locationId = LocationId.Game;
+        var path = new GamePath(locationId, (RelativePath)"folder1/folder2/file.txt");
+        var model = CreateModel(path);
 
         // Act
         _sourceCache.AddOrUpdate(model);
 
         // Assert
-        _adapter.FolderGenerator.LocationIdToTree.Should().ContainKey(location);
+        _adapter.FolderGenerator.LocationIdToTree.Should().ContainKey(locationId);
         
         // Access the location tree
-        var locationTree = _adapter.FolderGenerator.LocationIdToTree[location];
+        var locationTree = _adapter.FolderGenerator.LocationIdToTree[locationId];
 
         // Get the root folder
-        var rootFolder = locationTree.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = locationTree.GetOrCreateFolder(GamePath.Empty(locationId), out _, out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         // Validate folder1 exists
@@ -100,7 +94,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         folder2.Files.Count.Should().Be(1);
         
         // Validate file exists in folder2
-        folder2.Files.Items.First().Key.Should().Be(key);
+        folder2.Files.Items.First().Key.Should().Be(path);
     }
 
     /// <summary>
@@ -111,22 +105,20 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
     public void Adapt_Remove_RemovesLocationTree_WhenLastFile()
     {
         // Arrange
-        var key = EntityId.From(2UL);
-        var location = LocationId.Saves;
-        var path = new GamePath(location, (RelativePath)"a.txt");
-        _factory.SetPath(key, path);
-        var model = CreateModel(key);
+        var locationId = LocationId.Saves;
+        var path = new GamePath(locationId, (RelativePath)"a.txt");
+        var model = CreateModel(path);
 
         // Act - add
         _sourceCache.AddOrUpdate(model);
         // Assert - added
-        _adapter.FolderGenerator.LocationIdToTree.Should().ContainKey(location);
+        _adapter.FolderGenerator.LocationIdToTree.Should().ContainKey(locationId);
 
         // Act - remove
         _sourceCache.Remove(model);
 
         // Assert - removed
-        _adapter.FolderGenerator.LocationIdToTree.Should().NotContainKey(location);
+        _adapter.FolderGenerator.LocationIdToTree.Should().NotContainKey(locationId);
     }
 
     /// <summary>
@@ -136,18 +128,13 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
     public void Adapt_Refresh_DoesNotDuplicateFiles()
     {
         // Arrange
-        var key1 = EntityId.From(6UL);
-        var key2 = EntityId.From(7UL);
         var location = LocationId.Game;
-        
+
         var path1 = new GamePath(location, (RelativePath)"folder/file1.txt");
         var path2 = new GamePath(location, (RelativePath)"folder/file2.txt");
-        
-        _factory.SetPath(key1, path1);
-        _factory.SetPath(key2, path2);
-        
-        var model1 = CreateModel(key1);
-        var model2 = CreateModel(key2);
+
+        var model1 = CreateModel(path1);
+        var model2 = CreateModel(path2);
 
         // Act - add both files
         _sourceCache.AddOrUpdate(model1);
@@ -155,8 +142,8 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         
         // Get the folder containing the files
         var locationTree = _adapter.FolderGenerator.LocationIdToTree[location];
-        var folderPath = (RelativePath)"folder";
-        var folder = locationTree.GetOrCreateFolder(folderPath, _generator, out _, out _);
+        var folderPath = new GamePath(location, (RelativePath)"folder");
+        var folder = locationTree.GetOrCreateFolder(folderPath, out _, out _);
         
         // Verify initial state
         folder.Files.Count.Should().Be(2);
@@ -169,8 +156,8 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         folder.Files.Count.Should().Be(2);
         
         // Verify each specific file exists once
-        folder.Files.Items.Count(item => item.Key == key1).Should().Be(1);
-        folder.Files.Items.Count(item => item.Key == key2).Should().Be(1);
+        folder.Files.Items.Count(item => item.Key == path1).Should().Be(1);
+        folder.Files.Items.Count(item => item.Key == path2).Should().Be(1);
     }
         
     private class StubTreeItem(GamePath path) : ITreeItemWithPath
@@ -178,10 +165,8 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         public GamePath GetPath() => path;
     }
 
-    private class StubTreeItemFactory : ITreeItemWithPathFactory<EntityId, StubTreeItem>
+    private class StubTreeItemFactory : ITreeItemWithPathFactory<GamePath, StubTreeItem>
     {
-        private readonly Dictionary<EntityId, GamePath> _mappings = new();
-        public void SetPath(EntityId key, GamePath path) => _mappings[key] = path;
-        public StubTreeItem CreateItem(EntityId key) => new(_mappings[key]);
+        public StubTreeItem CreateItem(GamePath key) => new(key);
     }
 }

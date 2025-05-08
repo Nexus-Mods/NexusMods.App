@@ -13,11 +13,10 @@ public class TreeFolderGeneratorTests
     public void OnReceiveFile_AddsRootNode_ForFirstFileInLocation()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
         var filePath = new GamePath(locationId, (RelativePath)"file.txt");
-        var fileModel = CreateFileModel(fileId);
-        var testItem = CreateTestTreeItem(fileId, filePath);
+        var fileModel = CreateFileModel(filePath);
+        var testItem = CreateTestTreeItem(filePath);
 
         // Act
         var generator = CreateGenerator();
@@ -32,11 +31,10 @@ public class TreeFolderGeneratorTests
     public void OnReceiveFile_AddsFileUnderCorrectLocationRoot()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
         var filePath = new GamePath(locationId, (RelativePath)"file.txt");
-        var fileModel = CreateFileModel(fileId);
-        var testItem = CreateTestTreeItem(fileId, filePath);
+        var fileModel = CreateFileModel(filePath);
+        var testItem = CreateTestTreeItem(filePath);
 
         // Act
         var generator = CreateGenerator();
@@ -51,17 +49,15 @@ public class TreeFolderGeneratorTests
     public void OnReceiveFile_OrganizesFilesUnderSeparateLocationRoots()
     {
         // Arrange
-        var fileId1 = EntityId.From(0UL);
         var locationId1 = LocationId.Game;
         var filePath1 = new GamePath(locationId1, (RelativePath)"file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
 
-        var fileId2 = EntityId.From(1UL);
         var locationId2 = LocationId.Saves;
         var filePath2 = new GamePath(locationId2, (RelativePath)"file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
 
         // Act
         var generator = CreateGenerator();
@@ -81,15 +77,13 @@ public class TreeFolderGeneratorTests
         // Arrange
         var locationId = LocationId.Game;
         
-        var fileId1 = EntityId.From(0UL);
         var filePath1 = new GamePath(locationId, (RelativePath)"file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         
-        var fileId2 = EntityId.From(1UL);
         var filePath2 = new GamePath(locationId, (RelativePath)"file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
 
         // Act
         var generator = CreateGenerator();
@@ -108,11 +102,10 @@ public class TreeFolderGeneratorTests
     public void OnDeleteFile_RemovesLocationRoot_WhenLastFileInLocationDeleted()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
         var filePath = new GamePath(locationId, (RelativePath)"file.txt");
-        var fileModel = CreateFileModel(fileId);
-        var testItem = CreateTestTreeItem(fileId, filePath);
+        var fileModel = CreateFileModel(filePath);
+        var testItem = CreateTestTreeItem(filePath);
 
         // Act
         var generator = CreateGenerator();
@@ -136,13 +129,12 @@ public class TreeFolderGeneratorTests
     {
         // Arrange
         var generator = CreateGenerator();
-        var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
         var filePath = new GamePath(locationId, (RelativePath)"file.txt");
-        var fileModel = CreateFileModel(fileId);
-        var testItem = CreateTestTreeItem(fileId, filePath);
+        var fileModel = CreateFileModel(filePath);
+        var testItem = CreateTestTreeItem(filePath);
         
-        var addedItems = new List<CompositeItemModel<EntityId>>();
+        var addedItems = new List<CompositeItemModel<GamePath>>();
         
         // Subscribe to the observable
         using var subscription = generator.ObservableRoots()
@@ -172,17 +164,15 @@ public class TreeFolderGeneratorTests
         var locationId = LocationId.Game;
         
         // Add first file to create the root
-        var fileId1 = EntityId.From(0UL);
         var filePath1 = new GamePath(locationId, (RelativePath)"file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         generator.OnReceiveFile(testItem1, fileModel1);
         
         // Prepare second file
-        var fileId2 = EntityId.From(1UL);
         var filePath2 = new GamePath(locationId, (RelativePath)"file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
         
         var rootChangesDetected = false;
         
@@ -208,21 +198,19 @@ public class TreeFolderGeneratorTests
         var generator = CreateGenerator();
         
         // Add first file to create the first root
-        var fileId1 = EntityId.From(0UL);
         var locationId1 = LocationId.Game;
         var filePath1 = new GamePath(locationId1, (RelativePath)"file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         generator.OnReceiveFile(testItem1, fileModel1);
         
         // Prepare file for second root
-        var fileId2 = EntityId.From(1UL);
         var locationId2 = LocationId.Saves;
         var filePath2 = new GamePath(locationId2, (RelativePath)"file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
         
-        var addedItems = new List<CompositeItemModel<EntityId>>();
+        var addedItems = new List<CompositeItemModel<GamePath>>();
         
         // Subscribe to the observable after first file added
         using var subscription = generator.ObservableRoots()
@@ -249,15 +237,14 @@ public class TreeFolderGeneratorTests
     {
         // Arrange
         var generator = CreateGenerator();
-        var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
         var filePath = new GamePath(locationId, (RelativePath)"file.txt");
-        var fileModel = CreateFileModel(fileId);
-        var testItem = CreateTestTreeItem(fileId, filePath);
+        var fileModel = CreateFileModel(filePath);
+        var testItem = CreateTestTreeItem(filePath);
         
         // Add a file to create the root
         generator.OnReceiveFile(testItem, fileModel);
-        var removedItems = new List<CompositeItemModel<EntityId>>();
+        var removedItems = new List<CompositeItemModel<GamePath>>();
         
         // Subscribe to the observable after file is added
         using var subscription = generator.ObservableRoots()
@@ -287,15 +274,13 @@ public class TreeFolderGeneratorTests
         var locationId = LocationId.Game;
         
         // Add two files to the same root
-        var fileId1 = EntityId.From(0UL);
         var filePath1 = new GamePath(locationId, (RelativePath)"file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         
-        var fileId2 = EntityId.From(1UL);
         var filePath2 = new GamePath(locationId, (RelativePath)"file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
         
         generator.OnReceiveFile(testItem1, fileModel1);
         generator.OnReceiveFile(testItem2, fileModel2);
@@ -321,11 +306,10 @@ public class TreeFolderGeneratorTests
     public void OnDeleteFile_DoesNothing_WhenFileNotFound()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
         var locationId = LocationId.Game;
         var filePath = new GamePath(locationId, (RelativePath)"file.txt");
-        var fileModel = CreateFileModel(fileId);
-        var testItem = CreateTestTreeItem(fileId, filePath);
+        var fileModel = CreateFileModel(filePath);
+        var testItem = CreateTestTreeItem(filePath);
 
         // Act
         var generator = CreateGenerator();
@@ -344,15 +328,13 @@ public class TreeFolderGeneratorTests
         // Arrange
         var locationId = LocationId.Game;
         
-        var fileId1 = EntityId.From(0UL);
         var filePath1 = new GamePath(locationId, (RelativePath)"folder1/file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         
-        var fileId2 = EntityId.From(1UL);
         var filePath2 = new GamePath(locationId, (RelativePath)"folder1/folder2/file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
 
         // Act
         var generator = CreateGenerator();
@@ -371,20 +353,17 @@ public class TreeFolderGeneratorTests
         var locationId1 = LocationId.Game;
         var locationId2 = LocationId.Saves;
         
-        var fileId1 = EntityId.From(0UL);
         var filePath1 = new GamePath(locationId1, (RelativePath)"folder1/file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         
-        var fileId2 = EntityId.From(1UL);
         var filePath2 = new GamePath(locationId1, (RelativePath)"folder1/folder2/file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
 
-        var fileId3 = EntityId.From(2UL);
         var filePath3 = new GamePath(locationId2, (RelativePath)"file3.txt");
-        var fileModel3 = CreateFileModel(fileId3);
-        var testItem3 = CreateTestTreeItem(fileId3, filePath3);
+        var fileModel3 = CreateFileModel(filePath3);
+        var testItem3 = CreateTestTreeItem(filePath3);
 
         // Act
         var generator = CreateGenerator();
@@ -404,7 +383,7 @@ public class TreeFolderGeneratorTests
     {
         // Arrange
         var generator = CreateGenerator();
-        var itemsReceived = new List<CompositeItemModel<EntityId>>();
+        var itemsReceived = new List<CompositeItemModel<GamePath>>();
         
         // Act - subscribe to the simplified observable
         using var subscription = generator.SimplifiedObservableRoots()
@@ -435,21 +414,19 @@ public class TreeFolderGeneratorTests
         var locationId = LocationId.Game;
         
         // Create files with a folder structure
-        var fileId1 = EntityId.From(0UL);
         var filePath1 = new GamePath(locationId, (RelativePath)"folder1/file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         
-        var fileId2 = EntityId.From(1UL);
         var filePath2 = new GamePath(locationId, (RelativePath)"folder2/file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
         
         // Add files to create the root and folder structure
         generator.OnReceiveFile(testItem1, fileModel1);
         generator.OnReceiveFile(testItem2, fileModel2);
         
-        var itemsReceived = new List<CompositeItemModel<EntityId>>();
+        var itemsReceived = new List<CompositeItemModel<GamePath>>();
         
         // Act - subscribe to the simplified observable
         using var subscription = generator.SimplifiedObservableRoots()
@@ -466,7 +443,7 @@ public class TreeFolderGeneratorTests
         
         // Verify we're getting folders, not the location root
         foreach (var item in itemsReceived)
-            item.Key.Should().NotBe(locationId, "the location ID itself should not be emitted");
+            item.Key.Should().NotBe(GamePath.Empty(locationId), "the location ID itself should not be emitted");
     }
     
     [Fact]
@@ -476,23 +453,21 @@ public class TreeFolderGeneratorTests
         var generator = CreateGenerator();
         
         // Create files in two different locations
-        var fileId1 = EntityId.From(0UL);
         var locationId1 = LocationId.Game;
         var filePath1 = new GamePath(locationId1, (RelativePath)"file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         
-        var fileId2 = EntityId.From(1UL);
         var locationId2 = LocationId.Saves;
         var filePath2 = new GamePath(locationId2, (RelativePath)"file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
         
         // Add files to create the roots
         generator.OnReceiveFile(testItem1, fileModel1);
         generator.OnReceiveFile(testItem2, fileModel2);
         
-        var rootsReceived = new List<CompositeItemModel<EntityId>>();
+        var rootsReceived = new List<CompositeItemModel<GamePath>>();
         
         // Act - subscribe to the simplified observable
         using var subscription = generator.SimplifiedObservableRoots()
@@ -514,24 +489,22 @@ public class TreeFolderGeneratorTests
         var generator = CreateGenerator();
         
         // First file in first location
-        var fileId1 = EntityId.From(0UL);
         var locationId1 = LocationId.Game;
         var filePath1 = new GamePath(locationId1, (RelativePath)"folder1/file1.txt");
-        var fileModel1 = CreateFileModel(fileId1);
-        var testItem1 = CreateTestTreeItem(fileId1, filePath1);
+        var fileModel1 = CreateFileModel(filePath1);
+        var testItem1 = CreateTestTreeItem(filePath1);
         
         // Second file in second location 
-        var fileId2 = EntityId.From(1UL);
         var locationId2 = LocationId.Saves;
         var filePath2 = new GamePath(locationId2, (RelativePath)"file2.txt");
-        var fileModel2 = CreateFileModel(fileId2);
-        var testItem2 = CreateTestTreeItem(fileId2, filePath2);
+        var fileModel2 = CreateFileModel(filePath2);
+        var testItem2 = CreateTestTreeItem(filePath2);
         
         // Add first file to create one root
         generator.OnReceiveFile(testItem1, fileModel1);
         
-        var allItemsReceived = new List<CompositeItemModel<EntityId>>();
-        var removedItems = new List<CompositeItemModel<EntityId>>();
+        var allItemsReceived = new List<CompositeItemModel<GamePath>>();
+        var removedItems = new List<CompositeItemModel<GamePath>>();
         
         // Subscribe to the simplified observable
         using var subscription = generator.SimplifiedObservableRoots()
@@ -576,16 +549,16 @@ public class TreeFolderGeneratorTests
 
     private static TreeFolderGenerator<TestTreeItemWithPath, DefaultFolderModelInitializer<TestTreeItemWithPath>> CreateGenerator() => new();
 
-    private static CompositeItemModel<EntityId> CreateFileModel(EntityId id)
+    private static CompositeItemModel<GamePath> CreateFileModel(GamePath path)
     {
-        return new CompositeItemModel<EntityId>(id);
+        return new CompositeItemModel<GamePath>(path);
     }
 
-    private static TestTreeItemWithPath CreateTestTreeItem(EntityId id, GamePath path)
+    private static TestTreeItemWithPath CreateTestTreeItem(GamePath path)
     {
         return new TestTreeItemWithPath
         {
-            Key = id,
+            Key = path,
             LocationId = path.LocationId,
             RelativePath = path.Path,
             Name = path.Path.FileName

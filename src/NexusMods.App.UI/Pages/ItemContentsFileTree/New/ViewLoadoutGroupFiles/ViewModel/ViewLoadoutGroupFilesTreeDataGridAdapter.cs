@@ -3,10 +3,10 @@ using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Aggregation;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 using NexusMods.Icons;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
@@ -14,21 +14,21 @@ namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.
 /// <summary>
 /// Implementation of <see cref="TreeDataGridAdapter{TModel,TKey}"/> 
 /// </summary>
-public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>
+public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<GamePath>, GamePath>
 {
     private readonly LoadoutGroupFilesProvider _loadoutGroupFilesProvider = new(serviceProvider);
     
-    protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical) => _loadoutGroupFilesProvider.ObserveModFiles(filesFilter, useFullFilePaths: !viewHierarchical);
+    protected override IObservable<IChangeSet<CompositeItemModel<GamePath>, GamePath>> GetRootsObservable(bool viewHierarchical) => _loadoutGroupFilesProvider.ObserveModFiles(filesFilter, useFullFilePaths: !viewHierarchical);
 
-    protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
+    protected override IColumn<CompositeItemModel<GamePath>>[] CreateColumns(bool viewHierarchical)
     {
-        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.NameWithFileIcon>();
+        var nameColumn = ColumnCreator.Create<GamePath, SharedColumns.NameWithFileIcon>();
 
         return
         [
-            viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.Create<EntityId, SharedColumns.ItemSize>(sortDirection: ListSortDirection.Descending),
-            ColumnCreator.Create<EntityId, SharedColumns.FileCount>(),
+            viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<GamePath>, GamePath>.CreateExpanderColumn(nameColumn) : nameColumn,
+            ColumnCreator.Create<GamePath, SharedColumns.ItemSize>(sortDirection: ListSortDirection.Descending),
+            ColumnCreator.Create<GamePath, SharedColumns.FileCount>(),
         ];
     }
 }
@@ -39,19 +39,19 @@ public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider servicePr
 /// - Track combined file counts
 /// - Within the folder
 /// </summary>
-public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
+public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
 {
     /// <inheritdoc/>
     public static void InitializeModel<TFolderModelInitializer>(
-        CompositeItemModel<EntityId> model,
-        GeneratedFolder<LoadoutItemTreeItemWithPath, TFolderModelInitializer> folder)
-        where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
+        CompositeItemModel<GamePath> model,
+        GeneratedFolder<GamePathTreeItemWithPath, TFolderModelInitializer> folder)
+        where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
     {
         AddNameAndIcon(model, folder);
         AddCombinedFileSize(model, folder);
         AddInnerFileCount(model, folder);
     }
-    private static void AddNameAndIcon<TFolderModelInitializer>(CompositeItemModel<EntityId> model, GeneratedFolder<LoadoutItemTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
+    private static void AddNameAndIcon<TFolderModelInitializer>(CompositeItemModel<GamePath> model, GeneratedFolder<GamePathTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
     {
         model.Add(SharedColumns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: folder.FolderName.ToString(), valueObservable: Observable.Return(folder.FolderName.ToString())));
 
@@ -73,7 +73,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
         );
     }
 
-    private static void AddCombinedFileSize<TFolderModelInitializer>(CompositeItemModel<EntityId> model, GeneratedFolder<LoadoutItemTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
+    private static void AddCombinedFileSize<TFolderModelInitializer>(CompositeItemModel<GamePath> model, GeneratedFolder<GamePathTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
     {
         // Create an observable that transforms the file items to their sizes then sums them
         var fileSizeObservable = folder.GetAllFilesRecursiveObservable()
@@ -90,7 +90,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
         model.Add(SharedColumns.ItemSize.ComponentKey, component);
     }
     
-    private static void AddInnerFileCount<TFolderModelInitializer>(CompositeItemModel<EntityId> model, GeneratedFolder<LoadoutItemTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<LoadoutItemTreeItemWithPath>
+    private static void AddInnerFileCount<TFolderModelInitializer>(CompositeItemModel<GamePath> model, GeneratedFolder<GamePathTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
     {
         var fileCountObservable = folder.GetAllFilesRecursiveObservable()
             .Count() // Note(sewer): This is DynamicData's Count. Not Reactive's !!
