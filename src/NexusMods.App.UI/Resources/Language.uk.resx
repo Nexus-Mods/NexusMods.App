@@ -1,0 +1,1245 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<root>
+    <xsd:schema
+        id="root"
+        xmlns=""
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
+    >
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value
+        >System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value
+        >System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="Newsfeed" xml:space="preserve">
+        <value>Стрічка новин</value>
+    </data>
+    <data name="MyGames" xml:space="preserve">
+        <value>Мої ігри</value>
+    </data>
+    <data name="BrowseGames" xml:space="preserve">
+        <value>Огляд ігор</value>
+    </data>
+    <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
+        <value>Діагностика та дані про використання</value>
+    </data>
+    <data name="MetricsOptIn_MainMessage" xml:space="preserve">
+        <value
+        >Ми хотіли б збирати діагностичні дані та дані про використання для покращення продуктивності та вашого досвіду. Ці дані допомагають нам виявляти проблеми, оптимізувати функції та забезпечувати кращу роботу програми Nexus Mods для всіх.&#x0a;&#x0a;Ваші дані оброблятимуться відповідно до нашої Політики конфіденційності. Ви можете змінити свої уподобання будь-коли в налаштуваннях.&#x0a;&#x0a;Бажаєте увімкнути збір даних?</value>
+    </data>
+    <data name="MetricsOptIn_ALLOW" xml:space="preserve">
+        <value>Дозволити</value>
+    </data>
+    <data name="MetricsOptIn_DENY" xml:space="preserve">
+        <value>Заборонити</value>
+    </data>
+    <data name="Updater_UPDATE" xml:space="preserve">
+        <value>Переглянути оновлення</value>
+    </data>
+    <data name="Updater_UpdateAvailable" xml:space="preserve">
+        <value>Доступне оновлення {0}</value>
+    </data>
+    <data name="Updater_GenericMessage" xml:space="preserve">
+        <value
+        >Вашу поточну версію {0} можна оновити до останньої версії {1}. Обов'язково повністю закрийте програму перед оновленням.</value>
+    </data>
+    <data name="Updater_UsePackageManager" xml:space="preserve">
+        <value
+        >Ви можете оновити програму за допомогою менеджера пакетів, який ви використовували для її встановлення.</value>
+    </data>
+    <data name="Updater_UseInnoSetup" xml:space="preserve">
+        <value
+        >Ви можете оновити програму, завантаживши інсталятор і запустивши його після закриття програми.</value>
+    </data>
+    <data name="Updater_UseFlatpak" xml:space="preserve">
+        <value>Ви можете оновити програму за допомогою Flatpak.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
+        <value>Будь ласка, виберіть файл модифікації для встановлення.</value>
+    </data>
+    <data name="LoadoutGridView_AddMod_FileType_Archive" xml:space="preserve">
+        <value>Архів</value>
+    </data>
+    <data name="DownloadTaskViewModel_Version_Unknown" xml:space="preserve">
+        <value>Невідомо</value>
+    </data>
+    <data name="DownloadTaskViewModel_Field_Unknown" xml:space="preserve">
+        <value>Невідомо</value>
+    </data>
+    <data name="MessageBox_Button_Yes" xml:space="preserve">
+        <value>Так</value>
+    </data>
+    <data name="MessageBox_Button_No" xml:space="preserve">
+        <value>Ні</value>
+    </data>
+    <data name="MessageBox_Button_Ok" xml:space="preserve">
+        <value>OK</value>
+    </data>
+    <data
+        name="CancelDownloadOverlayView_Description_download_will_be_cancelled"
+        xml:space="preserve"
+    >
+        <value>Завантаження {0} буде скасовано, а файли видалено.</value>
+    </data>
+    <data name="CancelDownloadOverlayView_Title" xml:space="preserve">
+        <value>Скасувати та видалити завантаження?</value>
+    </data>
+    <data name="Helpers_GenerateHeader_NAME" xml:space="preserve">
+        <value>НАЗВА</value>
+    </data>
+    <data name="Helpers_GenerateHeader_VERSION" xml:space="preserve">
+        <value>ВЕРСІЯ</value>
+    </data>
+    <data name="Helpers_GenerateHeader_CATEGORY" xml:space="preserve">
+        <value>КАТЕГОРІЯ</value>
+    </data>
+    <data name="Helpers_GenerateHeader_INSTALLED" xml:space="preserve">
+        <value>ВСТАНОВЛЕНО</value>
+    </data>
+    <data name="Helpers_GenerateHeader_MOD_NAME" xml:space="preserve">
+        <value>НАЗВА МОДУ</value>
+    </data>
+    <data name="Helpers_GenerateHeader_GAME" xml:space="preserve">
+        <value>ГРА</value>
+    </data>
+    <data name="Helpers_GenerateHeader_SIZE" xml:space="preserve">
+        <value>РОЗМІР</value>
+    </data>
+    <data name="Helpers_GenerateHeader_STATUS" xml:space="preserve">
+        <value>СТАТУС</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_RUNNING" xml:space="preserve">
+        <value>ГРА ЗАПУЩЕНА...</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_LAUNCH" xml:space="preserve">
+        <value>ГРАТИ</value>
+    </data>
+    <data name="LaunchButtonViewModel_LaunchGame_ToolTip" xml:space="preserve">
+        <value>Натисніть, щоб запустити гру</value>
+    </data>
+    <data name="StringFormatters__SecondsRemaining_secs" xml:space="preserve">
+        <value>{0} сек</value>
+    </data>
+    <data name="StringFormatters__MinutesRemaining_mins" xml:space="preserve">
+        <value>{0} хв</value>
+    </data>
+    <data name="StringFormatters__HoursRemaining__hours" xml:space="preserve">
+        <value>{0} год</value>
+    </data>
+    <data
+        name="StringFormatters__In_progress__numDownloads"
+        xml:space="preserve"
+    >
+        <value> ({0})</value>
+    </data>
+    <data name="DownloadStatus_Idle" xml:space="preserve">
+        <value>Очікування</value>
+    </data>
+    <data name="DownloadStatus_Progress" xml:space="preserve">
+        <value>Виконується</value>
+    </data>
+    <data name="Nexus_Premium_Status__Premium" xml:space="preserve">
+        <value>ПРЕМІУМ</value>
+    </data>
+    <data name="Nexus_Premium_Status__Free" xml:space="preserve">
+        <value>БЕЗКОШТОВНО</value>
+    </data>
+    <data name="Nexus_Premium_Status__Supporter" xml:space="preserve">
+        <value>ПІДТРИМКА</value>
+    </data>
+    <data name="SearchBox__Search" xml:space="preserve">
+        <value>Пошук</value>
+    </data>
+    <data name="TopBarActions__LOG_IN" xml:space="preserve">
+        <value>Увійти</value>
+    </data>
+    <data name="GameWidget__Add_game" xml:space="preserve">
+        <value>Додати гру</value>
+    </data>
+    <data name="DownloadsView__DOWNLOADS" xml:space="preserve">
+        <value>Завантаження</value>
+    </data>
+    <data name="DownloadsView__In_Progress" xml:space="preserve">
+        <value>Виконується</value>
+    </data>
+    <data name="DownloadsView__Completed" xml:space="preserve">
+        <value>Завершено</value>
+    </data>
+    <data name="DownloadsView__Download_history" xml:space="preserve">
+        <value>Історія завантажень</value>
+    </data>
+    <data name="DownloadsView_UnderDevelopment" xml:space="preserve">
+        <value
+        >Сторінка завантажень наразі переробляється і буде замінена в майбутньому оновленні. Вибачте за незручності.</value>
+    </data>
+    <data
+        name="NexusLoginOverlayView__Please_Click_Authorize"
+        xml:space="preserve"
+    >
+        <value>Будь ласка, натисніть "Авторизувати" на вебсайті</value>
+    </data>
+    <data name="NexusLoginOverlayView__BROWSER_DIDNT_OPEN" xml:space="preserve">
+        <value>Браузер не відкрився автоматично?</value>
+    </data>
+    <data name="NexusLoginOverlayView_Please_copy_url" xml:space="preserve">
+        <value
+        >Будь ласка, скопіюйте наступну URL-адресу у вікно вашого браузера. Ми підтримуємо Chrome, Safari, Firefox та Edge.</value>
+    </data>
+    <data name="DownloadCompleted_COMPLETED" xml:space="preserve">
+        <value>Завершено</value>
+    </data>
+    <data name="DownloadCompleted_Clear_All" xml:space="preserve">
+        <value>Очистити все</value>
+    </data>
+    <data name="DownloadHistoryView__HISTORY" xml:space="preserve">
+        <value>Історія</value>
+    </data>
+    <data name="DownloadInProgressView__IN_PROGRESS" xml:space="preserve">
+        <value>Виконується</value>
+    </data>
+    <data name="DownloadInProgressView__Cancel" xml:space="preserve">
+        <value>Скасувати</value>
+    </data>
+    <data name="DownloadInProgressView__Pause" xml:space="preserve">
+        <value>Пауза</value>
+    </data>
+    <data name="DownloadInProgressView__Pause_All" xml:space="preserve">
+        <value>Призупинити все</value>
+    </data>
+    <data name="InProgressTitleTextBlock" xml:space="preserve">
+        <value>Завантаження</value>
+    </data>
+    <data name="BoldMinutesRemainingTextBlock" xml:space="preserve">
+        <value>0 хв</value>
+    </data>
+    <data name="MinutesRemainingTextBlock" xml:space="preserve">
+        <value>залишилось</value>
+    </data>
+    <data name="InProgressView_InProgressView_Remaining" xml:space="preserve">
+        <value>залишилось</value>
+    </data>
+    <data name="HomeView__We_found_games" xml:space="preserve">
+        <value>Ми знайшли ігри, готові до модифікації!</value>
+    </data>
+    <data name="HomeView__CANT_SEE_YOUR_GAME" xml:space="preserve">
+        <value>Не бачите свою гру?</value>
+    </data>
+    <data name="HomeView__BROWSE_ALL_GAMES" xml:space="preserve">
+        <value>Переглянути всі ігри</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod" xml:space="preserve">
+        <value>Видалити</value>
+    </data>
+    <data name="FileOriginPage_AddMod" xml:space="preserve">
+        <value>Встановити</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced" xml:space="preserve">
+        <value>Розширена установка</value>
+    </data>
+    <data name="MyGamesView__Ready_to_mod" xml:space="preserve">
+        <value>Додані ігри</value>
+    </data>
+    <data name="MyGamesView__Detected_games" xml:space="preserve">
+        <value>Підтримувані ігри</value>
+    </data>
+    <data name="MyGamesView__Page_Description" xml:space="preserve">
+        <value>Додайте ігри, щоб почати</value>
+    </data>
+    <data name="Button_Manage" xml:space="preserve">
+        <value>Керувати</value>
+    </data>
+    <data name="ProgressBar_ProgressTextFormat__Total_1_0" xml:space="preserve">
+        <value>Всього {1:0}%</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_FormatStatus_Queued"
+        xml:space="preserve"
+    >
+        <value>У черзі</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_FormatStatus_Paused"
+        xml:space="preserve"
+    >
+        <value>Призупинено</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_FormatStatus_Downloading"
+        xml:space="preserve"
+    >
+        <value>Завантаження...</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_FormatStatus_Installing"
+        xml:space="preserve"
+    >
+        <value>Встановлення...</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_FormatStatus_Complete"
+        xml:space="preserve"
+    >
+        <value>Завершено</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_FormatStatus_Analyzing"
+        xml:space="preserve"
+    >
+        <value>Аналіз...</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_Text_Queued_0_"
+        xml:space="preserve"
+    >
+        <value>У черзі 0%</value>
+    </data>
+    <data name="PanelTabHeaderViewModel_Title_New_Tab" xml:space="preserve">
+        <value>Нова вкладка</value>
+    </data>
+    <data name="DownloadInProgressView__Resume" xml:space="preserve">
+        <value>Відновити</value>
+    </data>
+    <data name="DownloadInProgressView__Resume_All" xml:space="preserve">
+        <value>Відновити все</value>
+    </data>
+    <data
+        name="CancelDownloadOverlayView_Description__Download"
+        xml:space="preserve"
+    >
+        <value>завантаження</value>
+    </data>
+    <data
+        name="CancelDownloadOverlayView_Description_downloads"
+        xml:space="preserve"
+    >
+        <value>завантажень</value>
+    </data>
+    <data name="InProgress_NoDownloadsTextBlock" xml:space="preserve">
+        <value>Немає завантажень</value>
+    </data>
+    <data name="SpineDownloadButton_ToolTip" xml:space="preserve">
+        <value>Завантаження</value>
+    </data>
+    <data name="SpineHomeButton_ToolTip_Home" xml:space="preserve">
+        <value>Головна</value>
+    </data>
+    <data name="LoadoutViewPageTitle" xml:space="preserve">
+        <value>Усі</value>
+    </data>
+    <data name="Downloads_WorkspaceTitle" xml:space="preserve">
+        <value>Завантаження</value>
+    </data>
+    <data name="HomeWorkspace_Title" xml:space="preserve">
+        <value>Головна</value>
+    </data>
+    <data name="InProgressDownloadsPage_Title" xml:space="preserve">
+        <value>Завантаження</value>
+    </data>
+    <data name="LoadoutGridView__View_Files" xml:space="preserve">
+        <value>Переглянути файли моду</value>
+    </data>
+    <data name="FileTreeNodeView__View" xml:space="preserve">
+        <value>Перегляд</value>
+    </data>
+    <data name="ViewModInfoPage_Title" xml:space="preserve">
+        <value>Інформація про мод</value>
+    </data>
+    <data name="ViewModFilesView_Location" xml:space="preserve">
+        <value>Розташування:</value>
+    </data>
+    <data name="ViewModFilesView_Locations" xml:space="preserve">
+        <value>Розташування:</value>     </data>
+    <data name="ApplyControlViewModel__ACTIVATE_LOADOUT" xml:space="preserve">
+        <value>Активувати Набір</value>     </data>
+    <data name="ApplyControlViewModel__ACTIVATE_AND_APPLY" xml:space="preserve">
+        <value>Активувати та Застосувати</value>
+    </data>
+    <data name="ApplyControlViewModel__APPLY" xml:space="preserve">
+        <value>ЗАСТОСУВАТИ</value>
+    </data>
+    <data name="ApplyingControlView__ApplyingText" xml:space="preserve">
+        <value>Застосування...</value>
+    </data>
+    <data name="Helpers_ERROR" xml:space="preserve">
+        <value>Помилка</value>
+    </data>
+    <data name="ErrorView_Title" xml:space="preserve">
+        <value>Щось пішло не так</value>
+    </data>
+    <data name="ErrorView_MissingMod_Description" xml:space="preserve">
+        <value
+        >Мод, до якого ви намагаєтеся отримати доступ, було видалено або він відсутній.</value>
+    </data>
+    <data name="ViewModInfoPage_NotFound_Title" xml:space="preserve">
+        <value>Мод не знайдено</value>
+    </data>
+    <data name="ErrorView_MissingMod_Subheader" xml:space="preserve">
+        <value>Мод не знайдено</value>
+    </data>
+    <data
+        name="DiagnosticDetailsView_SeverityTitle_SUGGESTION"
+        xml:space="preserve"
+    >
+        <value>Пропозиція</value>
+    </data>
+    <data
+        name="DiagnosticDetailsView_SeverityTitle_WARNING"
+        xml:space="preserve"
+    >
+        <value>Попередження</value>
+    </data>
+    <data
+        name="DiagnosticDetailsView_SeverityTitle_CRITICAL_ERROR"
+        xml:space="preserve"
+    >
+        <value>Критична помилка</value>
+    </data>
+    <data
+        name="DiagnosticDetailsView_SeverityTitle_HIDDEN"
+        xml:space="preserve"
+    >
+        <value>Приховано</value>
+    </data>
+    <data
+        name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics"
+        xml:space="preserve"
+    >
+        <value>Перевірка стану</value>
+    </data>
+    <data
+        name="LoadoutLeftMenuViewModel_Diagnostics_ToolTip"
+        xml:space="preserve"
+    >
+        <value
+        >Перевірте свій Набір на наявність проблем та дізнайтеся, як їх вирішити за потреби</value>
+    </data>
+    <data name="DiagnosticListView_DiagnosticListView_All" xml:space="preserve">
+        <value>Усі ({0})</value>
+        <comment>0 - це плейсхолдер для числа</comment>
+    </data>
+    <data
+        name="DiagnosticListView_DiagnosticListView_Critical"
+        xml:space="preserve"
+    >
+        <value>Критичні ({0})</value>
+        <comment>0 - це плейсхолдер для числа</comment>
+    </data>
+    <data
+        name="DiagnosticListView_DiagnosticListView_Warnings"
+        xml:space="preserve"
+    >
+        <value>Попередження ({0})</value>
+        <comment>0 - це плейсхолдер для числа</comment>
+    </data>
+    <data
+        name="DiagnosticListView_DiagnosticListView_Suggestions"
+        xml:space="preserve"
+    >
+        <value>Пропозиції ({0})</value>
+        <comment>0 - це плейсхолдер для числа</comment>
+    </data>
+    <data
+        name="DiagnosticListView_DiagnosticListView_There_are_no_diagnostics"
+        xml:space="preserve"
+    >
+        <value>Діагностичних повідомлень немає</value>
+    </data>
+    <data name="IngestButtonTextBlock_Text" xml:space="preserve">
+        <value>Імпортувати</value>     </data>
+    <data
+        name="ModFileTreeViewModel_StatusBar_Files__0__1"
+        xml:space="preserve"
+    >
+        <value>Файли: {0} ({1})</value>
+        <comment
+        >{0} представляє число, {1} представляє форматований розмір (напр., 12 ГБ)</comment>
+    </data>
+    <data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
+        <value>КІЛЬКІСТЬ ФАЙЛІВ</value>
+    </data>
+    <data name="MyGamesView__NoGamesDetectedText" xml:space="preserve">
+        <value>Усі підтримувані ігри додано. Нових ігор не виявлено.</value>
+    </data>
+    <data name="MyGamesView__NoGamesManagedText" xml:space="preserve">
+        <value>Додайте ігри, щоб почати модифікацію</value>
+    </data>
+    <data name="GameWidget__Adding_game" xml:space="preserve">
+        <value>Додавання гри...</value>
+    </data>
+    <data name="GameWidget__View" xml:space="preserve">
+        <value>Перегляд</value>
+    </data>
+    <data name="GameWidget__RemoveGame_ToolTip" xml:space="preserve">
+        <value>Видаляє гру та всі моди, встановлені програмою</value>
+    </data>
+    <data name="GameWidget__Removing_game" xml:space="preserve">
+        <value>Видалення гри...</value>
+    </data>
+    <data name="ApplyDiff_Refresh" xml:space="preserve">
+        <value>Оновити</value>
+    </data>
+    <data name="Helpers_GenerateHeader_State" xml:space="preserve">
+        <value>СТАН</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_ToFormattedChangeState_Added"
+        xml:space="preserve"
+    >
+        <value>Додано</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_ToFormattedChangeState_Modified"
+        xml:space="preserve"
+    >
+        <value>Змінено</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_ToFormattedChangeState_Contents_modified"
+        xml:space="preserve"
+    >
+        <value>Вміст змінено</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_ToFormattedChangeState_Removed"
+        xml:space="preserve"
+    >
+        <value>Видалено</value>
+    </data>
+    <data
+        name="DiffTreeViewModel_StatusBar__File_Loadout_Disk"
+        xml:space="preserve"
+    >
+        <value>Файли: Набір {0} ({1})  Диск {2} ({3})</value>
+        <comment
+        >{0} та {2} - кількість файлів, {1} та {3} - форматовані розміри файлів</comment>
+    </data>
+    <data
+        name="DiffTreeViewModel_StatusBar__Apply_changes"
+        xml:space="preserve"
+    >
+        <value>Застосувати зміни: Додавання {0} Зміна {1} Видалення {2}</value>
+        <comment
+        >{0}, {1} та {2} - цілі числа, що представляють кількість файлів</comment>
+    </data>
+    <data
+        name="DiffTreeViewModel_StatusBar__Data_to_process___0_"
+        xml:space="preserve"
+    >
+        <value>Дані для обробки: {0}</value>
+        <comment
+        >{0} - форматований розмір файлу, що представляє дані для обробки</comment>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges" xml:space="preserve">
+        <value>Переглянути зміни</value>
+    </data>
+    <data name="ApplyDiffViewModel_PageTitle" xml:space="preserve">
+        <value>Переглянути зміни</value>
+    </data>
+    <data name="SettingsView_Title" xml:space="preserve">
+        <value>Налаштування</value>
+    </data>
+    <data name="DialogButton_CANCEL" xml:space="preserve">
+        <value>Скасувати</value>
+    </data>
+    <data name="DialogButton_SAVE" xml:space="preserve">
+        <value>Зберегти</value>
+    </data>
+    <data name="DialogButton_DELETE_MODS" xml:space="preserve">
+        <value>Видалити мод(и)</value>
+    </data>
+    <data name="SettingEntryView_NeedRestartMessage" xml:space="preserve">
+        <value
+        >Програму потрібно буде перезапустити для застосування цього налаштування</value>
+    </data>
+    <data name="FileOriginsPage_AddButtonText" xml:space="preserve">
+        <value>Додати</value>
+    </data>
+    <data name="DialogButton_Discard" xml:space="preserve">
+        <value>Скасувати зміни</value>
+    </data>
+    <data
+        name="ChangelogPageViewModel_ChangelogPageViewModel_Changelog"
+        xml:space="preserve"
+    >
+        <value>Журнал змін</value>
+    </data>
+    <data
+        name="DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics"
+        xml:space="preserve"
+    >
+        <value>Перевірка стану</value>
+    </data>
+    <data name="LibraryPageTitle" xml:space="preserve">
+        <value>Бібліотека</value>
+    </data>
+    <data name="LibraryPageTitleToolTip" xml:space="preserve">
+        <value>Керуйте завантаженими модами та колекціями</value>
+    </data>
+    <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
+        <value>Назва моду</value>
+    </data>
+    <data name="FileOriginsPageView_VersionHeader" xml:space="preserve">
+        <value>Версія</value>
+    </data>
+    <data name="FileOriginsPageView_SizeHeader" xml:space="preserve">
+        <value>Розмір</value>
+    </data>
+    <data name="FileOriginsPageView_DownloadedHeader" xml:space="preserve">
+        <value>Завантажено</value>
+    </data>
+    <data name="FileOriginsPageView_InstalledHeader" xml:space="preserve">
+        <value>Встановлено</value>
+    </data>
+    <data name="FileOriginsPageView_ActionHeader" xml:space="preserve">
+        <value>Дія</value>
+    </data>
+    <data
+        name="DownloadStatusDesignViewModel_FormatStatus_Cancelled"
+        xml:space="preserve"
+    >
+        <value>Скасовано</value>
+    </data>
+    <data name="DownloadInProgressView__Clear" xml:space="preserve">
+        <value>Очистити</value>
+    </data>
+    <data name="DownloadInProgressView__Clear_completed" xml:space="preserve">
+        <value>Очистити завершені</value>
+    </data>
+    <data name="DownloadInProgressView__View_in_library" xml:space="preserve">
+        <value>Переглянути в бібліотеці</value>
+    </data>
+    <data name="LoadoutGridView__Remove" xml:space="preserve">
+        <value>Видалити</value>     </data>
+    <data name="LoginMessageView_BodyTextBlock" xml:space="preserve">
+        <value
+        >Щоб легко завантажувати моди з Nexus Mods, вам потрібно увійти за допомогою свого облікового запису Nexus Mods.  Щоб додати моди вручну з вашого диска, вхід не потрібен.</value>
+    </data>
+    <data name="LoginMessageView_Title" xml:space="preserve">
+        <value>Увійдіть, щоб почати</value>
+    </data>
+    <data name="FileOriginsPage_GetMods" xml:space="preserve">
+        <value>Отримати моди:</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive" xml:space="preserve">
+        <value>Із диска</value>
+    </data>
+    <data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
+        <value>Із Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
+        <value>Перегляд</value>
+    </data>
+    <data name="AddPanelToolTip" xml:space="preserve">
+        <value>Додати панель для розділеного перегляду</value>
+    </data>
+    <data name="MaxPanelsAddedToolTip" xml:space="preserve">
+        <value>Досягнуто максимальної кількості панелей</value>
+    </data>
+    <data name="Panel_Add_tab_ToolTip" xml:space="preserve">
+        <value>Додати вкладку</value>
+    </data>
+    <data name="TopBar_MyProfile" xml:space="preserve">
+        <value>Мій профіль</value>
+    </data>
+    <data name="TopBar_SignOut" xml:space="preserve">
+        <value>Вийти</value>
+    </data>
+    <data name="TopBar_AccountSettings" xml:space="preserve">
+        <value>Налаштування облікового запису</value>
+    </data>
+    <data name="TopBar_GetPremiumMenuItem" xml:space="preserve">
+        <value>Оновити до Преміум</value>
+    </data>
+    <data name="ViewChangelogMenuItem.Header" xml:space="preserve">
+        <value>Переглянути журнал змін</value>
+    </data>
+    <data name="ViewAppLogsMenuItem.Header" xml:space="preserve">
+        <value>Переглянути журнали програми</value>
+    </data>
+    <data name="ShowWelcomeMessageMenuItem.Header" xml:space="preserve">
+        <value>Про програму</value>
+    </data>
+    <data name="OpenDiscordMenuItem.Header" xml:space="preserve">
+        <value>Discord</value>
+    </data>
+    <data name="OpenGitHubMenuItem.Header" xml:space="preserve">
+        <value>GitHub</value>
+    </data>
+    <data name="OpenForumsMenuItem.Header" xml:space="preserve">
+        <value>Форуми Nexus Mods</value>
+    </data>
+    <data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
+        <value>Сторінка статусу</value>
+    </data>
+    <data
+        name="NavigationControl_NavigationControl_Open_in_new_tab"
+        xml:space="preserve"
+    >
+        <value>Відкрити в новій вкладці</value>
+    </data>
+    <data
+        name="NavigationControl_NavigationControl_Open_in_new_panel"
+        xml:space="preserve"
+    >
+        <value>Відкрити в новій панелі</value>
+    </data>
+    <data name="TopBar_Help_ToolTip" xml:space="preserve">
+        <value>Допомога та відгуки</value>
+    </data>
+    <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
+        <value>Встановити вибраний(і) мод(и) до цього Набору</value>
+    </data>
+    <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
+        <value>Назавжди видалити цей мод з вашої Бібліотеки</value>
+    </data>
+    <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
+        <value
+        >Виберіть конкретні файли з моду для додавання до вашого Набору</value>
+    </data>
+    <data name="ApplyControlView_ViewApplyChanges_ToolTip" xml:space="preserve">
+        <value
+        >Переглянути зміни, які будуть застосовані до папки вашої гри</value>
+    </data>
+    <data name="ApplyControlView_Apply_ToolTip" xml:space="preserve">
+        <value>Застосувати зміни до папки гри</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Added"
+        xml:space="preserve"
+    >
+        <value>Файл буде додано</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFile"
+        xml:space="preserve"
+    >
+        <value>Файл буде змінено</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_Removed"
+        xml:space="preserve"
+    >
+        <value>Файл буде видалено</value>
+    </data>
+    <data
+        name="IFileTreeNodeViewModel_FormattedChangeStateToolTip_ModifiedFolder"
+        xml:space="preserve"
+    >
+        <value>Папка містить змінені файли</value>
+    </data>
+    <data name="InfoBanner_PrefixProperty_Did_you_know_" xml:space="preserve">
+        <value>Чи знаєте ви?</value>
+    </data>
+    <data name="NewTabPageInfoBannerText1" xml:space="preserve">
+        <value
+        >Ви можете додати панелі для розділеного перегляду, обравши</value>
+    </data>
+    <data name="NewTabPageInfoBannerText2" xml:space="preserve">
+        <value>кнопку на панелі інструментів</value>
+    </data>
+    <data
+        name="LoadoutGrid_EmptyModlistSubtitle_Add_from_library"
+        xml:space="preserve"
+    >
+        <value>Встановіть свої моди з Бібліотеки</value>
+    </data>
+    <data
+        name="LoadoutGridViewModel_EmptyModlistTitleString"
+        xml:space="preserve"
+    >
+        <value>До {0} не додано жодних модів</value>
+        <comment>{0} - назва гри, якою зараз керують</comment>
+    </data>
+    <data name="EmptyLibraryTitleText" xml:space="preserve">
+        <value>У вашій Бібліотеці немає модів</value>
+    </data>
+    <data
+        name="FileOriginsPageViewModel_EmptyLibrarySubtitleText"
+        xml:space="preserve"
+    >
+        <value>Завантажте моди для {0} з Nexus Mods</value>
+        <comment>{0} - назва гри, якою зараз керують</comment>
+    </data>
+    <data name="DiagnosticListView.Page_Title" xml:space="preserve">
+        <value>Перевірка стану</value>
+    </data>
+    <data name="DiagnosticListView.Page_Description" xml:space="preserve">
+        <value
+        >Перевірте свій Набір на наявність проблем та дізнайтеся, як їх вирішити за потреби</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Header" xml:space="preserve">
+        <value>Ваш набір пройшов перевірку стану без проблем</value>
+    </data>
+    <data name="DiagnosticListView.EmptyState.Subtitle" xml:space="preserve">
+        <value>Готово до гри.</value>
+    </data>
+    <data
+        name="LoadoutCardViewModel_CreationTimeConverter_Created__0_"
+        xml:space="preserve"
+    >
+        <value>Створено {0}</value>
+        <comment
+        >Де {0} - це час у зручному форматі (напр., "Створено 2 години тому")</comment>
+    </data>
+    <data
+        name="LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_"
+        xml:space="preserve"
+    >
+        <value>Востаннє застосовано: {0}</value>
+        <comment
+        >Де {0} - це час у зручному форматі (напр., "Востаннє застосовано 2 години тому")</comment>
+    </data>
+    <data
+        name="LoadoutCardViewModel_FormatNumMods_Mods__0_"
+        xml:space="preserve"
+    >
+        <value>Моди: {0}</value>
+        <comment>Де {0} - кількість модів у Наборі</comment>
+    </data>
+    <data name="MyLoadoutsPageTitle" xml:space="preserve">
+        <value>Мої Набори</value>
+    </data>
+    <data name="MyLoadoutsPageDescriptionText" xml:space="preserve">
+        <value
+        >Створюйте Набори для ігор, які містять власні індивідуальні налаштування модів. Перемикайтеся між Наборами та застосовуйте той, з яким хочете грати.</value>
+    </data>
+    <data name="SettingsView_Description" xml:space="preserve">
+        <value>Керуйте своїми налаштуваннями.</value>
+    </data>
+
+    <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
+        <value>Набори для {0}</value>
+        <comment>Де {0} - назва гри</comment>
+    </data>
+    <data name="CreateNewLoadoutCarViewTexBlock" xml:space="preserve">
+        <value>Створити новий</value>
+    </data>
+    <data name="LoadoutCardViewCurrentlyAppliedTextBlock" xml:space="preserve">
+        <value>Застосовано</value>
+    </data>
+    <data name="LoadoutCardViewCreateCopyButton" xml:space="preserve">
+        <value>Створити копію</value>
+    </data>
+    <data name="LoadoutCardViewDeletingText" xml:space="preserve">
+        <value>Видалення...</value>
+    </data>
+    <data name="LoadoutCardViewCreatingText" xml:space="preserve">
+        <value>Створення...</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Subtitle" xml:space="preserve">
+        <value
+        >Набори дозволяють перемикатися між різними стилями гри, налаштовуючи кожен з них різними модами та конфігураціями.</value>
+    </data>
+    <data name="MyLoadoutsEmptyState_Header" xml:space="preserve">
+        <value>Вам потрібно додати гру перед використанням Наборів</value>
+    </data>
+
+        <data name="LibraryItemDeleteConfirmation_Title" xml:space="preserve">
+        <value>Назавжди видалити мод(и)</value>
+    </data>
+
+    <data
+        name="LibraryItemDeleteConfirmation_HeaderQuestion"
+        xml:space="preserve"
+    >
+        <value>Видалення цих модів назавжди видаляє їх із програми:</value>
+    </data>
+
+    <data name="LibraryItemDeleteConfirmation_UsedBy" xml:space="preserve">
+        <value>Використовується {0}:</value>
+    </data>
+
+    <data
+        name="LibraryItemDeleteConfirmation_UsedByWithLoadout"
+        xml:space="preserve"
+    >
+        <value>Використовується {0} - {1}:</value>     </data>
+
+    <data
+        name="LibraryItemDeleteConfirmation_DeleteModsButton"
+        xml:space="preserve"
+    >
+        <value>Видалити мод(и)</value>
+    </data>
+
+    <data name="Updated_ViewUninstallDocs" xml:space="preserve">
+        <value>Як видалити програму Nexus Mods</value>
+    </data>
+    <data name="HumanizedDateTime_Never" xml:space="preserve">
+        <value>Ніколи</value>
+    </data>
+    <data name="ApplyControlView__ApplyingToolTip" xml:space="preserve">
+        <value>Застосування змін до гри</value>
+    </data>
+    <data name="LoadoutCard_DeleteLoadoutToolTip" xml:space="preserve">
+        <value>Видалити Набір</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods" xml:space="preserve">
+        <value>Усі ({0})</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_ToolTip" xml:space="preserve">
+        <value>Переглянути та керувати всіма встановленими модами</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Title" xml:space="preserve">
+        <value>Гра вже запущена</value>
+    </data>
+    <data name="ErrorGameAlreadyRunning_Description" xml:space="preserve">
+        <value>Схоже, {0} вже запущена.
+Щоб застосувати зміни або запустити гру знову, будь ласка, спершу закрийте гру.</value>
+    </data>
+    <data name="FileOriginPage_SwitchView" xml:space="preserve">
+        <value>Змінити вигляд</value>
+    </data>
+    <data name="FileOriginPage_SwitchView_ToolTip" xml:space="preserve">
+        <value>Показати або приховати групи сторінок модів</value>
+    </data>
+    <data name="FileOriginsPage_FromDrive_ToolTip" xml:space="preserve">
+        <value>Імпортувати мод з вашого комп'ютера</value>
+    </data>
+    <data name="FileOriginsPage_FromNexus_ToolTip" xml:space="preserve">
+        <value>Відкрити Nexus Mods</value>
+    </data>
+    <data name="FileOriginsPage_CheckForUpdates_ToolTip" xml:space="preserve">
+        <value>Перевірити Nexus Mods на наявність оновлень файлів модів</value>
+    </data>
+    <data name="TopBar_Forward_ToolTip" xml:space="preserve">
+        <value>Вперед</value>
+    </data>
+    <data name="TopBar_Back_ToolTip" xml:space="preserve">
+        <value>Назад</value>
+    </data>
+    <data name="TopBar_GiveFeedback_ToolTip" xml:space="preserve">
+        <value
+        >Натисніть, щоб залишити відгук і допомогти нам покращитися.</value>
+    </data>
+    <data name="TopBarActions__LOG_IN_ToolTip" xml:space="preserve">
+        <value>Підключіть свій обліковий запис Nexus Mods</value>
+    </data>
+    <data name="LoadoutGridView__Remove_ToolTip" xml:space="preserve">
+        <value>Видалити вибраний(і) мод(и) з цього Набору</value>
+    </data>
+    <data name="LoadoutGridView__View_Files_ToolTip" xml:space="preserve">
+        <value>Переглянути файли, що містяться в цьому моді</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_Ready_to_install"
+        xml:space="preserve"
+    >
+        <value>Усі необхідні моди завантажено. Готово до встановлення.</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_Num_required_mods_downloaded"
+        xml:space="preserve"
+    >
+        <value
+        >{0} з {1} необхідних модів завантажено. Завершіть завантаження для встановлення.</value>
+    </data>
+    <data name="FileOriginPage_UpdateAll" xml:space="preserve">
+        <value>Оновити все</value>
+    </data>
+    <data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
+        <value>Встановлені моди</value>
+    </data>
+    <data name="LeftMenu_Label_Utilities" xml:space="preserve">
+        <value>Утиліти</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed"
+        xml:space="preserve"
+    >
+        <value>Готово до гри - Усі необхідні моди встановлено</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_Single" xml:space="preserve">
+        <value>Завантажити оновлення</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_CounterInBracket" xml:space="preserve">
+        <value>Завантажити оновлення ({0})</value>
+    </data>
+    <data name="LibraryItemButtonUpdate_All" xml:space="preserve">
+        <value>Завантажити все</value>
+    </data>
+    <data name="LoadoutView_Title_Installed_Mods_Default" xml:space="preserve">
+        <value>Усі</value>
+    </data>
+    <data name="LoadoutLeftMenuViewModel_External_Changes" xml:space="preserve">
+        <value>Зовнішні зміни</value>
+    </data>
+    <data
+        name="LoadoutLeftMenuViewModel_External_Changes_ToolTip"
+        xml:space="preserve"
+    >
+        <value
+        >Перегляньте, видаліть або відновіть зміни, зроблені поза програмою.</value>
+    </data>
+
+    <data
+        name="CollectionDownloadViewModel_DownloadRequired"
+        xml:space="preserve"
+    >
+        <value>Авто-завантажити все</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_InstallCollection"
+        xml:space="preserve"
+    >
+        <value>Встановити Колекцію</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_ViewCollection"
+        xml:space="preserve"
+    >
+        <value>Переглянути встановлену Колекцію</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_UpdateCollection"
+        xml:space="preserve"
+    >
+        <value>Оновити до Ревізії {0}</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_DownloadOptional"
+        xml:space="preserve"
+    >
+        <value>Авто-завантажити все необов'язкове</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_InstallOptional"
+        xml:space="preserve"
+    >
+        <value>Встановити все необов'язкове</value>
+    </data>
+
+
+    <data name="RemoveGameOverlayView_Title" xml:space="preserve">
+        <value>Видалення {0}</value>
+    </data>
+    <data name="RemoveGameOverlayView_Description" xml:space="preserve">
+        <value
+        >Видалення видалить усі моди та колекції для {0}, але ваші завантажені моди залишаться. Якщо ви знову додасте гру, ці моди все ще будуть доступні у вашій Бібліотеці.</value>
+    </data>
+    <data name="RemoveGameOverlayView_ToggleDescription" xml:space="preserve">
+        <value
+        >Також видалити {0} завантажених модів та {1} колекцій для {2}.</value>
+    </data>
+    <data name="RemoveGameOverlayView_CancelButton" xml:space="preserve">
+        <value>Скасувати</value>
+    </data>
+    <data name="RemoveGameOverlayView_RemoveButton" xml:space="preserve">
+        <value>Видалити гру та моди</value>
+    </data>
+    <data
+        name="RemoveGameOverlayView_RemoveButton_AlsoDelete"
+        xml:space="preserve"
+    >
+        <value>Видалити гру та видалити моди</value>
+    </data>
+
+    <data
+        name="ManualDownloadRequiredOverlayView_InfoTitle"
+        xml:space="preserve"
+    >
+        <value>Потрібне ручне завантаження</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_InfoDescription"
+        xml:space="preserve"
+    >
+        <value
+        >Ця колекція вимагає для завершення специфічні файли модів зі сторонніх вебсайтів. Виконайте ці кроки, щоб продовжити з ручним завантаженням:</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_InfoStep1"
+        xml:space="preserve"
+    >
+        <value
+        >Натисніть кнопку 'Відкрити браузер' нижче, щоб перейти на потрібний вебсайт.</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_InfoStep2"
+        xml:space="preserve"
+    >
+        <value
+        >Знайдіть та завантажте файл моду '{0}' (Розмір файлу: {1})</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_InfoStep3"
+        xml:space="preserve"
+    >
+        <value
+        >Поверніться до цього вікна та додайте завантажений(і) файл(и) за допомогою кнопки 'Додати файл'.</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_InfoInstructionsDescription"
+        xml:space="preserve"
+    >
+        <value>Куратор колекції надав наступні додаткові інструкції:</value>
+    </data>
+
+
+
+    <data
+        name="ManualDownloadRequiredOverlayView_CheckingTitle"
+        xml:space="preserve"
+    >
+        <value>Перевірка доданого файлу</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_CheckingText"
+        xml:space="preserve"
+    >
+        <value>Будь ласка, зачекайте, поки ми перевіряємо доданий файл.</value>
+    </data>
+
+
+    <data
+        name="ManualDownloadRequiredOverlayView_ErrorTitle"
+        xml:space="preserve"
+    >
+        <value>Додано неправильний файл моду</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_ErrorStep1"
+        xml:space="preserve"
+    >
+        <value
+        >Будь ласка, перевірте, чи додали ви правильний файл та версію.</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_ErrorStep2"
+        xml:space="preserve"
+    >
+        <value
+        >Для отримання вказівок перегляньте вкладку 'Додаткові інструкції', яка може містити додаткові деталі щодо необхідного файлу та версії.</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_ErrorStep3"
+        xml:space="preserve"
+    >
+        <value
+        >Якщо ви не можете знайти правильний файл, розгляньте можливість повідомити про проблему куратору колекції як про потенційну помилку.</value>
+    </data>
+    <data
+        name="ManualDownloadRequiredOverlayView_ErrorReportBugText"
+        xml:space="preserve"
+    >
+        <value>Повідомити про помилку</value>
+    </data>
+
+    <data
+        name="CollectionComponents_ExternalDownloadAction_ToolTip"
+        xml:space="preserve"
+    >
+        <value
+        >Спроба автоматичного завантаження стороннього моду. Якщо автоматичне завантаження неможливе, буде надано опцію ручного завантаження.</value>
+    </data>
+    <data
+        name="CollectionComponents_ManualDownloadAction_ToolTip"
+        xml:space="preserve"
+    >
+        <value
+        >Автоматичне завантаження недоступне. Натисніть, щоб відкрити сторонній сайт для завантаження та ручного додавання моду.</value>
+    </data>
+
+
+
+
+    <data
+        name="CollectionDownloadViewModel_StatsMods_ToolTip"
+        xml:space="preserve"
+    >
+        <value>Моди</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_StatsEndorsements_ToolTip"
+        xml:space="preserve"
+    >
+        <value>Схвалення</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_StatsDownloads_ToolTip"
+        xml:space="preserve"
+    >
+        <value>Завантаження</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_StatsSize_ToolTip"
+        xml:space="preserve"
+    >
+        <value>Розмір</value>
+    </data>
+    <data
+        name="CollectionDownloadViewModel_StatsRating_ToolTip"
+        xml:space="preserve"
+    >
+        <value>Рейтинг успішності</value>
+    </data>
+    <data name="ManageGameWarning_Title" xml:space="preserve">
+        <value>Керування цією грою вплине на існуючі моди</value>
+    </data>
+    <data name="ManageGameWarning_Desc1" xml:space="preserve">
+        <value
+        >Якщо у вас є існуючі моди, вони будуть виявлені і їх можна буде використовувати разом із програмою на сторінці 'Зовнішні зміни'.  Однак, якщо ви пізніше припините керувати цією грою або видалите програму, ці моди будуть назавжди видалені з папки вашої гри.</value>
+    </data>
+    <data name="ManageGameWarning_Desc2" xml:space="preserve">
+        <value
+        >Щоб зберегти будь-які моди, які ви хочете залишити, будь ласка, створіть їх резервну копію перед продовженням.</value>
+    </data>
+    <data name="ManageGameWarning_Cancel" xml:space="preserve">
+        <value>Скасувати</value>
+    </data>
+    <data name="ManageGameWarning_Continue" xml:space="preserve">
+        <value>Продовжити</value>
+    </data>
+
+
+    <data name="UpgradeToPremiumView_Title" xml:space="preserve">
+        <value
+        >Перейдіть на Преміум для завантаження колекцій одним кліком</value>
+    </data>
+    <data name="UpgradeToPremiumView_Desc1" xml:space="preserve">
+        <value
+        >Завантажуйте цілу колекцію модів на повній швидкості одним кліком, не виходячи з програми. Безкоштовні користувачі можуть встановлювати моди індивідуально зі списку.</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
+        <value>Преміум користувачі також отримують:</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
+        <value>Необмежена швидкість завантаження</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
+        <value>Без реклами назавжди, навіть якщо ви скасуєте підписку!</value>
+    </data>
+    <data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
+        <value
+        >Підтримка творців - Преміум допомагає винагороджувати авторів модів</value>
+    </data>
+
+    <data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
+        <value>Скасувати</value>
+    </data>
+    <data name="UpgradeToPremiumView_LearnMoreButton" xml:space="preserve">
+        <value>Дізнатися більше</value>
+    </data>
+    <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
+        <value>Оновити до Преміум</value>
+    </data>
+</root>
