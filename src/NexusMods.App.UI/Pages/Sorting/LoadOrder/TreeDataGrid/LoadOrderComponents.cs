@@ -83,7 +83,8 @@ public static class LoadOrderColumns
         public const string ColumnTemplateResourceKey = nameof(LoadOrderColumns) + "_" + nameof(DisplayNameColumn);
 
         public static readonly ComponentKey DisplayNameComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + "DisplayNameComponent");
-
+        public static readonly ComponentKey ImageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(ImageComponent));
+        
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
             throw new NotImplementedException();
@@ -101,7 +102,7 @@ public static class LoadOrderColumns
         public const string ColumnTemplateResourceKey = nameof(LoadOrderColumns) + "_" + nameof(ModNameColumn);
 
         public static readonly ComponentKey ModNameComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + "ModNameComponent");
-
+        
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
             throw new NotImplementedException();

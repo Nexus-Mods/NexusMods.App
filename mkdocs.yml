@@ -96,12 +96,14 @@ nav:
       - users/faq/index.md
       - How to find the log files: users/faq/LogFiles.md
       - Nexus Mods Download Issues: users/faq/NexusModsDownloads.md
+      - Linux Protocol Registration: users/faq/LinuxProtocolRegistration.md
     - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md
     - Mod With Confidence: developers/ModWithConfidence.md
     - Contributing: developers/Contributing.md
     - Development Guidelines:
+        - Project Guidelines: developers/development-guidelines/Projects.md
         - Dependency Injection: developers/development-guidelines/DependencyInjection.md
         - Interacting with the File System: developers/development-guidelines/UsingIFileSystem.md
         - Adding a Game: developers/development-guidelines/AddingAGame.md
@@ -111,7 +113,11 @@ nav:
         - UI Styling Guidelines: developers/development-guidelines/UIStylingGuidelines.md
         - Using Workspaces: developers/development-guidelines/UsingWorkspaces.md
         - Diagnostics: developers/development-guidelines/Diagnostics.md
-        - Release Process: developers/ReleaseProcess.md
+        - Processes:
+          - Release Process: developers/development-guidelines/Processes/ReleaseProcess.md
+          - Ceremonies: developers/development-guidelines/Processes/Ceremonies.md
+          - Design Process: developers/development-guidelines/Processes/DesignProcess.md
+          - QA Process: developers/development-guidelines/Processes/QAProcess.md
 
     - Decisions:
         - Backend:

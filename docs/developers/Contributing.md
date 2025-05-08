@@ -21,6 +21,27 @@ helping you make things like new 'Windows' and 'Controls' easier.
 
 Make sure to follow our [Development Guidelines](./development-guidelines/UICodingGuidelines.md).
 
+### Debugging the App
+This app is designed to be used with [games](../users/games/index.md) that are currently supported. It is recommended to
+have a supported game installed on your system to debug the app with full functionality.
+
+If you want to contribute to the app without a supported game installed, you can continue
+doing so by manually adding a supported game. However, supported games that are manually added and not installed properly for 
+testing purposes may not be playable. You can still use the app to test the UI and other features, 
+but some features may not work as expected. To add a supported game manually:
+
+1. Have a directory ready and copy its path for the game you want to add to store its mods.
+2. After building the project, go to your terminal and change the directory to the `src/NexusMods.App/bin/Debug/net9.0` folder.
+3. Enter the following CLI command and replace the arguments: 
+   ```bash
+   NexusMods.App as-main add-game -g "Game Name" -v [Version] -p "Path"
+   ```
+4. Save the `EntityID` provided and run the app to check if the game is listed in the "My Games" section.
+5. Later on, you can remove the game by running the following CLI command:
+   ```bash
+   NexusMods.App as-main remove-game -g "Game Name" -id "EntityID"
+   ```
+
 ## Translations
 
 Translations are currently handled via the IDE. See [this issue](https://github.com/Nexus-Mods/NexusMods.App/issues/598) for more details.

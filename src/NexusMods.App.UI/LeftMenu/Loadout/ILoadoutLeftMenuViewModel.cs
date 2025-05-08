@@ -7,6 +7,8 @@ public interface ILoadoutLeftMenuViewModel : ILeftMenuViewModel
 {
     public ReadOnlyObservableCollection<ILeftMenuItemViewModel> LeftMenuCollectionItems { get; }
     
+    public bool HasSingleCollection { get; }
+    
     public IApplyControlViewModel ApplyControlViewModel { get; }
     
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }

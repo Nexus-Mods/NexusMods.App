@@ -44,7 +44,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             .ToReactiveCommand<NavigationInformation>(info =>
             {
                 var gamePath = SelectedItem!.Key;
-                var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
+                var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupIds.First());
                 var found = group
                     .Children
                     .OfTypeLoadoutItemWithTargetPath()
@@ -88,7 +88,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             .ToReactiveCommand<Unit>(async (_, _) =>
                 {
                     var gamePath = SelectedItem!.Key;
-                    var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupId);
+                    var group = LoadoutItemGroup.Load(connection.Db, Context!.GroupIds.First());
                     var loadoutItemsToDelete = group
                         .Children
                         .OfTypeLoadoutItemWithTargetPath()
@@ -121,7 +121,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
             // Populate the file tree
             this.ObservePropertyChanged(vm => vm.Context)
                 .WhereNotNull()
-                .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupId))
+                .Select(context => LoadoutItemGroup.Load(connection.Db, context.GroupIds.First()))
                 .Where(group => group.IsValid())
                 .Do(group => TabTitle = group.AsLoadoutItem().Name)
                 .Select(group => new LoadoutItemGroupFileTreeViewModel(group))

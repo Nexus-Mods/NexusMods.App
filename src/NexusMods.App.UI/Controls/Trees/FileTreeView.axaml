@@ -41,9 +41,9 @@
                     <TextBlock x:Name="ModFilesStateTextBlock" 
                                Text="{CompiledBinding FormattedChangeState}"
                                VerticalAlignment="Center" 
-                               Classes.ForegroundSuccessStrong="{CompiledBinding IsChangeAdded}"
-                               Classes.ForegroundInfoStrong="{CompiledBinding IsChangeModified}"
-                               Classes.ForegroundDangerStrong="{CompiledBinding IsChangeRemoved}">
+                               Classes.Success="{CompiledBinding IsChangeAdded}"
+                               Classes.Suggestion="{CompiledBinding IsChangeModified}"
+                               Classes.Critical="{CompiledBinding IsChangeRemoved}">
                         <ToolTip.Tip>
                             <TextBlock Text="{CompiledBinding FormattedChangeStateToolTip}" />
                         </ToolTip.Tip>

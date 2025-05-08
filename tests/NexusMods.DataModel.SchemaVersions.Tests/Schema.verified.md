@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x348E304EE99E2702
-   - Total attributes: 197
-   - Total namespaces: 69
+   - Fingerprint: 0xD654D05310A9C461
+   - Total attributes: 202
+   - Total namespaces: 70
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -109,6 +109,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.LoadoutItemGroup/Group                                          | Null                    | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutItemWithTargetPath/TargetPath                            | Tuple3_Ref_UShort_Utf8I | True    | False | False     | 
 | NexusMods.Loadouts.LoadoutOverridesGroup/OverridesFor                              | Reference               | False   | False | False     | 
+| NexusMods.Loadouts.LoadoutSnapshot/Snapshot                                        | Reference               | False   | True  | False     | 
 | NexusMods.Loadouts.SortOrder/Loadout                                               | Reference               | True    | False | False     | 
 | NexusMods.Loadouts.SortOrder/SortOrderTypeId                                       | UInt128                 | False   | False | False     | 
 | NexusMods.Loadouts.SortableEntry/ParentSortOrder                                   | Reference               | True    | False | False     | 
@@ -159,6 +160,10 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/Endorsements                         | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/GameId                               | UInt32                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Name                                 | Utf8                    | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/OverallRating                        | Float32                 | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/OverallRatingCount                   | Int32                   | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/RecentRating                         | Float32                 | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/RecentRatingCount                    | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Slug                                 | Ascii                   | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Summary                              | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/TileImageResource                    | Reference               | False   | False | False     | 

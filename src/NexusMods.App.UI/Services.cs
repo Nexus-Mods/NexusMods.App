@@ -184,10 +184,6 @@ public static class Services
             .AddViewModel<CollectionDownloadViewModel, ICollectionDownloadViewModel>()
             
             .AddView<LoadOrderView, ILoadOrderViewModel>()
-            .AddViewModel<LoadOrderViewModel, ILoadOrderViewModel>()
-            
-            .AddView<LoadOrdersWIPPageView,ILoadOrdersWIPPageViewModel>()
-            .AddViewModel<LoadOrdersWipPageViewModel, ILoadOrdersWIPPageViewModel>()
 
             .AddView<UpgradeToPremiumView, IUpgradeToPremiumViewModel>()
             .AddViewModel<UpgradeToPremiumViewModel, IUpgradeToPremiumViewModel>()
@@ -213,6 +209,9 @@ public static class Services
             // Dialogs
             .AddView<CustomContentView, IDialogContentViewModel>()
             .AddViewModel<CustomContentViewModel, IDialogContentViewModel>()
+
+            .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
+            .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -246,10 +245,10 @@ public static class Services
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()
-            .AddSingleton<IPageFactory, LoadOrdersWIPPageFactory>()
             .AddSingleton<IPageFactory, CollectionLoadoutPageFactory>()
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
             .AddSingleton<IPageFactory, DebugControlsPageFactory>()
+            .AddSingleton<IPageFactory, ProtocolRegistrationTestPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()

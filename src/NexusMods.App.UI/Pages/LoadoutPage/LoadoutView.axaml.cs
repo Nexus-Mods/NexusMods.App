@@ -40,6 +40,18 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.OneWayBind(ViewModel, vm => vm.IsCollection, view => view.CollectionToolbar.IsVisible)
                 .AddTo(disposables);
             
+            this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.ViewModel)
+                .AddTo(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.DataContext)
+                .AddTo(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.ItemCount, view => view.ModsCount.Text)
+                .AddTo(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.HasRulesSection, view => view.RulesTabItem.IsVisible)
+                .AddTo(disposables);
+            
             this.BindCommand(ViewModel, vm => vm.CollectionToggleCommand, view => view.CollectionToggle)
                 .AddTo(disposables);
             
@@ -52,6 +64,19 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                     ToolbarDisabled.IsVisible = !isEnabled;
                     
                     CollectionToolbar.Classes.ToggleIf("Warning", !isEnabled);
+                })
+                .AddTo(disposables);
+            
+            this.WhenAnyValue( view => view.ViewModel!.SelectedSubTab)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(selectedSubTab =>
+                {
+                    RulesTabControl.SelectedItem = selectedSubTab switch
+                    {
+                        LoadoutPageSubTabs.Mods => ModsTabItem,
+                        LoadoutPageSubTabs.Rules => RulesTabItem,
+                        _ => throw new ArgumentOutOfRangeException(nameof(selectedSubTab), selectedSubTab, null)
+                    };
                 })
                 .AddTo(disposables);
         });

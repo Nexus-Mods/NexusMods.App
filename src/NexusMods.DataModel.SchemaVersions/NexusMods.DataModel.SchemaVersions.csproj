@@ -10,14 +10,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj" />
-      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
-      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.Collections\NexusMods.Abstractions.Collections.csproj" />
-      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Loadouts\NexusMods.Abstractions.Loadouts.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.Collections\NexusMods.Abstractions.Collections.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
       <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
-      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
       <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
-      <ProjectReference Include="..\Abstractions\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
+      <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>

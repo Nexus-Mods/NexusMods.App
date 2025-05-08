@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="LinqGen" />
-    </ItemGroup>
-</Project>

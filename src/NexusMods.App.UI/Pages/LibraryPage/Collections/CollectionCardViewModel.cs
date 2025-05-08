@@ -78,16 +78,16 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public string Name => _collection.Name;
     [Reactive] public Bitmap? Image { get; private set; }
     [Reactive] public Bitmap? AuthorAvatar { get; private set; }
-    public string Summary => _collection.Summary;
+    public string Summary => _collection.Summary.ValueOr(string.Empty);
     public string Category => _collection.Category.Name;
     public int NumDownloads => _revision.Downloads.Count;
     public RevisionNumber RevisionNumber => _revision.RevisionNumber;
-    public ulong EndorsementCount => _collection.Endorsements;
-    public ulong TotalDownloads => _collection.TotalDownloads;
-    public Size TotalSize => _revision.TotalSize;
-    public Percent OverallRating => Percent.CreateClamped(_revision.OverallRating.ValueOr(0));
+    public ulong EndorsementCount => _collection.Endorsements.ValueOr(0ul);
+    public ulong TotalDownloads => _collection.TotalDownloads.ValueOr(0ul);
+    public Size TotalSize => _revision.TotalSize.ValueOr(Size.Zero);
+    public Percent OverallRating => Percent.CreateClamped(_revision.Collection.RecentRating.ValueOr(0));
 
-    public bool IsAdult => _revision.IsAdult;
+    public bool IsAdult => _revision.IsAdult.ValueOr(false);
     public string AuthorName => _collection.Author.Name;
     public ReactiveCommand<NavigationInformation> OpenCollectionDownloadPageCommand { get; }
 

@@ -1,13 +1,11 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using Avalonia.Controls;
-using Avalonia.Controls.Models.TreeDataGrid;
-using Avalonia.Input;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.Games;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using ReactiveUI;
-using Guid = System.Guid;
 
 namespace NexusMods.App.UI.Pages.Sorting;
 
@@ -17,7 +15,7 @@ public partial class LoadOrderView : ReactiveUserControl<ILoadOrderViewModel>
     {
         InitializeComponent();
         
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadOrderView, ILoadOrderViewModel, CompositeItemModel<Guid>, Guid>(
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadOrderView, ILoadOrderViewModel, CompositeItemModel<ISortItemKey>, ISortItemKey>(
             this,
             SortOrderTreeDataGrid,
             vm => vm.Adapter,

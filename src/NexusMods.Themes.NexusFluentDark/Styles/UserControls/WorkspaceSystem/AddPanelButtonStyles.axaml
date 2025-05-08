@@ -1,0 +1,26 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:NexusMods.App.UI.WorkspaceSystem;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
+    <Design.PreviewWith>
+        <Border Padding="16">
+            <ui:AddPanelButtonView>
+                <ui:AddPanelButtonView.DataContext>
+                    <ui:AddPanelButtonDesignViewModel />
+                </ui:AddPanelButtonView.DataContext>
+            </ui:AddPanelButtonView>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="ui|AddPanelButtonView">
+
+        <Style Selector="^ controls|StandardButton#AddPanelButton">
+            <Style Selector="^ icons|UnifiedIcon#ButtonImage">
+                <Setter Property="Size" Value="20" />
+                <Setter Property="Margin" Value="0 3" />
+            </Style>
+        </Style>
+    </Style>
+</Styles>

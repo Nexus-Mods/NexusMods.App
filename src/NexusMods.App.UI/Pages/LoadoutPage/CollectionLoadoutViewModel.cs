@@ -60,9 +60,9 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
             AuthorName = revisionMetadata.Value.Collection.Author.Name;
             IsLocalCollection = false;
             
-            EndorsementCount = revisionMetadata.Value.Collection.Endorsements;
-            TotalDownloads = revisionMetadata.Value.Collection.TotalDownloads;
-            TotalSize = revisionMetadata.Value.TotalSize;
+            EndorsementCount = revisionMetadata.Value.Collection.Endorsements.ValueOr(0ul);
+            TotalDownloads = revisionMetadata.Value.Collection.TotalDownloads.ValueOr(0ul);
+            TotalSize = revisionMetadata.Value.TotalSize.ValueOr(Size.Zero);
             OverallRating = Percent.CreateClamped(revisionMetadata.Value.OverallRating.ValueOr(0));
         }
         else
