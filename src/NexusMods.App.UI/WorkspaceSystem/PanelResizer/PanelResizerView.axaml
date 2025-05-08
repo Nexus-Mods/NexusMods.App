@@ -12,7 +12,7 @@
     Padding="5">
     
     <Border x:Name="DragHighlight" 
-            Background="{StaticResource NeutralSubduedBrush}"
+            Background="{StaticResource BrandNeutral600}"
             CornerRadius="999" 
             Opacity="0">
         <Border.Transitions>
