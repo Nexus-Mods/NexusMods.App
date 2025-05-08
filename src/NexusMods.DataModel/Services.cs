@@ -8,7 +8,6 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
-using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
@@ -39,7 +38,6 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         coll.AddMnemonicDB();
-        coll.AddAnalyzers();
         coll.AddMigrations();
 
         // Settings
