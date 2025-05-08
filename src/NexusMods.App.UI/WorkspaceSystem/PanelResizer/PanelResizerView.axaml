@@ -6,16 +6,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelResizerView"
     Background="Transparent"
-    HorizontalContentAlignment="Center"
-    VerticalContentAlignment="Center">
-
-    <icons:UnifiedIcon x:Name="Icon" 
-                       Size="24" 
-                       Foreground="{StaticResource NeutralSubduedBrush}"
-                       IsVisible="False"  />
+    Padding="5">
+    
+    <Border x:Name="DragHighlight" 
+            Background="{StaticResource NeutralSubduedBrush}"
+            CornerRadius="999" 
+            Opacity="0">
+        <Border.Transitions>
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="0:0:0.2"/>
+            </Transitions>
+        </Border.Transitions>
+    </Border>
 
 </reactive:ReactiveUserControl>
