@@ -223,7 +223,8 @@ public static class ImagePipelines
                 connection: connection,
                 referenceAttribute: NexusModsModPageMetadata.ThumbnailResource,
                 identifierToHash: static uri => uri.ToString().xxHash3AsUtf8(),
-                partitionId: PartitionId.User(ImagePartitionId)
+                partitionId: PartitionId.User(ImagePartitionId),
+                expiresAfter: TimeSpan.FromDays(14)
             )
             .Decode(decoderType: DecoderType.Qoi)
             .ToAvaloniaBitmap()
