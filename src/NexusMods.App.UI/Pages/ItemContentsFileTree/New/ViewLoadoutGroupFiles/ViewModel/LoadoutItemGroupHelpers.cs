@@ -79,6 +79,49 @@ public static class LoadoutItemGroupHelpers
     }
 
     /// <summary>
+    /// Finds a loadout file matching the specified game path within the given loadout item groups.
+    /// </summary>
+    /// <param name="connection">The connection used to MnemonicDB.</param>
+    /// <param name="groupIds">The <see cref="LoadoutItemGroup"/> IDs (usually mod) to search within.</param>
+    /// <param name="gamePath">The game path to match. Searches for an exact match.</param>
+    /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
+    /// <returns>The matching <see cref="LoadoutItemWithTargetPath.ReadOnly"/> if found; otherwise, null.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing.</exception>
+    public static LoadoutFile.ReadOnly? FindMatchingFile(IConnection connection, LoadoutItemGroupId[] groupIds, GamePath gamePath, bool requireAllGroups = true)
+    {
+        var (validGroups, _) = LoadAllGroups(connection, groupIds, requireAllGroups);
+        
+        if (validGroups.Length == 0)
+            return null;
+            
+        foreach (var group in validGroups)
+        {
+            foreach (var item in group.Children.OfTypeLoadoutItemWithTargetPath())
+            {
+                if (item.TargetPath == gamePath)
+                    return item.ToLoadoutFile();
+            }
+        }
+        
+        return null;
+    }
+
+    private static bool PathMatches(LoadoutItemWithTargetPath.ReadOnly item, GamePath path)
+    {
+        return item.TargetPath.Item2.Equals(path.LocationId) && item.TargetPath.Item3.StartsWith(path.Path);
+    }
+
+    private static bool PathMatchesAny(LoadoutItemWithTargetPath.ReadOnly item, GamePath[] paths)
+    {
+        foreach (var path in paths)
+        {
+            if (PathMatches(item, path))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
     /// Loads all specified <see cref="LoadoutItemGroup"/>(s) from the database.
     /// </summary>
     /// <param name="connection">Database connection to use for loading</param>
@@ -104,21 +147,6 @@ public static class LoadoutItemGroupHelpers
 
         return (validGroups.ToArray(), missingGroups.ToArray());
     }
-    
-    private static bool PathMatches(LoadoutItemWithTargetPath.ReadOnly item, GamePath path)
-    {
-        return item.TargetPath.Item2.Equals(path.LocationId) && item.TargetPath.Item3.StartsWith(path.Path);
-    }
-
-    private static bool PathMatchesAny(LoadoutItemWithTargetPath.ReadOnly item, GamePath[] paths)
-    {
-        foreach (var path in paths)
-        {
-            if (PathMatches(item, path))
-                return true;
-        }
-        return false;
-    }
 
     private static async Task DeleteFiles(IConnection connection, LoadoutItemWithTargetPath.ReadOnly[] loadoutItemsToDelete)
     {
@@ -136,6 +164,24 @@ public static class LoadoutItemGroupHelpers
     /// <param name="groupIds">Array of group IDs to check</param>
     /// <returns>The first valid group found, or null if none are valid</returns>
     public static LoadoutItemGroup.ReadOnly? GetFirstValidGroup(IConnection connection, Span<LoadoutItemGroupId> groupIds)
+    {
+        foreach (var groupId in groupIds)
+        {
+            var group = LoadoutItemGroup.Load(connection.Db, groupId);
+            if (group.IsValid())
+                return group;
+        }
+
+        return null;
+    }
+    
+    /// <summary>
+    /// Gets the first valid <see cref="LoadoutItemGroup"/> from the specified group IDs.
+    /// </summary>
+    /// <param name="connection">Database connection to use for loading</param>
+    /// <param name="groupIds">Array of group IDs to check</param>
+    /// <returns>The first valid group found, or null if none are valid</returns>
+    public static LoadoutItemGroup.ReadOnly? GetFirstValidGroup(IConnection connection, Span<EntityId> groupIds)
     {
         foreach (var groupId in groupIds)
         {
