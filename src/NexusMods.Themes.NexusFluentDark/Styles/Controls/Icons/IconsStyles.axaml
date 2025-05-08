@@ -120,6 +120,7 @@
                     <icons:UnifiedIcon Classes="Account" />
                     <icons:UnifiedIcon Classes="FormatListBullet" />
                     <icons:UnifiedIcon Classes="FormatListCheckbox" />
+                    <icons:UnifiedIcon Classes="FormatListNumbered" />
                     <icons:UnifiedIcon Classes="DotsGrid" />
                     <icons:UnifiedIcon Classes="FormatAlignJustify" />
                     <icons:UnifiedIcon Classes="MoreVertical" />
@@ -635,6 +636,9 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.FormatListCheckbox">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FormatListCheckbox}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.FormatListNumbered">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.FormatListNumbered}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.DotsGrid">
         <Setter Property="Value" Value="{x:Static icons:IconValues.DotsGrid}" />

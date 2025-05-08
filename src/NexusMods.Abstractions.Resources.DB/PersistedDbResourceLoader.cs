@@ -30,6 +30,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
     private readonly IdentifierToEntityId _identifierToEntityId;
     private readonly AttributeId _referenceAttributeId;
     private readonly Optional<PartitionId> _partitionId;
+    private readonly Optional<TimeSpan> _expiresAfter;
 
     /// <summary>
     /// Constructor.
@@ -40,6 +41,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
         IdentifierToHash identifierToHash,
         IdentifierToEntityId identifierToEntityId,
         Optional<PartitionId> partitionId,
+        Optional<TimeSpan> expiresAfter,
         IResourceLoader<TResourceIdentifier, byte[]> innerLoader)
     {
         _connection = connection;
@@ -51,6 +53,7 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
         _referenceAttribute = referenceAttribute;
         _referenceAttributeId = _connection.AttributeCache.GetAttributeId(_referenceAttribute.Id);
         _partitionId = partitionId;
+        _expiresAfter = expiresAfter;
     }
 
     /// <inheritdoc/>
@@ -97,10 +100,11 @@ public sealed class PersistedDbResourceLoader<TResourceIdentifier> : IResourceLo
         using var tx = _connection.BeginTransaction();
         var tmpId = _partitionId.HasValue ? tx.TempId(_partitionId.Value) : tx.TempId();
 
+        var expiresAt = _expiresAfter.HasValue ? TimeProvider.System.GetUtcNow() + _expiresAfter.Value : resource.ExpiresAt;
         var persisted = new PersistedDbResource.New(tx, tmpId)
         {
             Data = resource.Data,
-            ExpiresAt = resource.ExpiresAt,
+            ExpiresAt = expiresAt,
             ResourceIdentifierHash = _identifierToHash(resourceIdentifier.Item2),
         };
 
@@ -126,17 +130,19 @@ public static partial class ExtensionsMethods
         ReferenceAttribute<PersistedDbResource> referenceAttribute,
         PersistedDbResourceLoader<TResourceIdentifier>.IdentifierToHash identifierToHash,
         PersistedDbResourceLoader<TResourceIdentifier>.IdentifierToEntityId identifierToEntityId,
-        Optional<PartitionId> partitionId)
+        Optional<PartitionId> partitionId,
+        Optional<TimeSpan> expiresAfter = default)
         where TResourceIdentifier : notnull
     {
         return inner.Then(
-            state: (connection, referenceAttribute, identifierToHash, identifierToEntityId, partitionId),
+            state: (connection, referenceAttribute, identifierToHash, identifierToEntityId, partitionId, expiresAfter),
             factory: static (input, inner) => new PersistedDbResourceLoader<TResourceIdentifier>(
                 connection: input.connection,
                 referenceAttribute: input.referenceAttribute,
                 identifierToHash: input.identifierToHash,
                 identifierToEntityId: input.identifierToEntityId,
                 partitionId: input.partitionId,
+                expiresAfter: input.expiresAfter,
                 innerLoader: inner
             )
         );
@@ -150,17 +156,19 @@ public static partial class ExtensionsMethods
         IConnection connection,
         ReferenceAttribute<PersistedDbResource> referenceAttribute,
         Func<TResourceIdentifier, Hash> identifierToHash,
-        Optional<PartitionId> partitionId)
+        Optional<PartitionId> partitionId,
+        Optional<TimeSpan> expiresAfter = default)
         where TResourceIdentifier : notnull
     {
         return inner.Then(
-            state: (connection, referenceAttribute, identifierToHash, partitionId),
+            state: (connection, referenceAttribute, identifierToHash, partitionId, expiresAfter),
             factory: static (input, inner) => new PersistedDbResourceLoader<ValueTuple<EntityId, TResourceIdentifier>>(
                 connection: input.connection,
                 referenceAttribute: input.referenceAttribute,
                 identifierToHash: tuple => input.identifierToHash(tuple.Item2),
                 identifierToEntityId: static tuple => tuple.Item1,
                 partitionId: input.partitionId,
+                expiresAfter: input.expiresAfter,
                 innerLoader: inner
             )
         );

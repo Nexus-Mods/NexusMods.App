@@ -38,7 +38,6 @@ internal class TypeFinder : ITypeFinder
         typeof(ItemContentsFileTreePageContext),
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),
-        typeof(LoadOrdersWIPPageContext),
         typeof(CollectionLoadoutPageContext),
         typeof(ProtocolRegistrationTestPageContext),
 
