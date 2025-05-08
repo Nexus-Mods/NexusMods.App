@@ -39,7 +39,7 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
             }
         );
         
-        var appName = CompileConstants.IsDebug ? "DEVELOPMENT USE ONLY" : "Stardew Valley Preview";
+        var appName = CompileConstants.IsDebug ? "DEVELOPMENT USE ONLY" : "Preview";
 
         AppVersion = GetAppVersion();
         AppName = $"{appName}:";
