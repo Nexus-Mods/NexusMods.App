@@ -1,5 +1,11 @@
 using System.Reactive.Disposables;
+using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
+using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Windows;
+using NexusMods.Icons;
 using ReactiveUI;
 using R3;
 
@@ -10,15 +16,233 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     public DebugControlsPageView()
     {
         InitializeComponent();
-        
+
         this.WhenActivated(disposables =>
+            {
+                this.OneWayBind(ViewModel, vm => vm.GenerateUnhandledException, v => v.GenerateUnhandledException.Command)
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.MarkdownRenderer, v => v.MarkdownRendererViewModelViewHost.ViewModel)
+                    .DisposeWith(disposables);
+            }
+        );
+    }
+
+
+    private async void ShowModal(string title, string message, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize)
+    {
+        try
         {
-            this.OneWayBind(ViewModel, vm => vm.GenerateUnhandledException, v => v.GenerateUnhandledException.Command)
-                .DisposeWith(disposables);
+            if (ViewModel is null) return;
+
+            // create new messagebox
+            var messageBox = DialogFactory.CreateMessageBox(title, message, buttonDefinitions,
+                messageBoxSize
+            );
+
+            // tell windowmanager to show it
+            var result = await ViewModel.WindowManager.ShowDialog(messageBox, DialogWindowType.Modal);
+
+            Console.WriteLine($@"{title} Result: {result}");
+        }
+        catch (Exception e)
+        {
+            throw; // TODO handle exception
+        }
+    }
+
+
+    private async void ShowModeless(string title, string message, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize)
+    {
+        try
+        {
+            if (ViewModel is null) return;
+
+            // create new messagebox
+            var messageBox = DialogFactory.CreateMessageBox(title, message, buttonDefinitions,
+                messageBoxSize
+            );
+
+            var result = await ViewModel.WindowManager.ShowDialog(messageBox, DialogWindowType.Modeless);
+            Console.WriteLine($@"{buttonDefinitions} result: {result}");
+        }
+        catch (Exception e)
+        {
+            throw; // TODO handle exception
+        }
+    }
+
+
+    private void ShowModalOk_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModal("Test Modal",
+            "This is an Ok modal",
+            [MessageBoxStandardButtons.Ok],
+            MessageBoxSize.Small
+        );
+
+    private void ShowModalOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModal("Test Modal",
+            "This is an OkCancel modal",
+            [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+            MessageBoxSize.Medium
+        );
+
+    private void ShowModalShowModalDeleteMod_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModal("Delete this mod?",
+            "Deleting this mod will remove it from all collections. This action cannot be undone.", [
+                MessageBoxStandardButtons.Cancel,
+                new MessageBoxButtonDefinition(
+                    "Yes, delete",
+                    ButtonDefinitionId.From("yes-delete"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.DestructiveRole
+                )
+            ],
+            MessageBoxSize.Small
+        );
+    }
+
+    private void ShowModelessOk_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModeless("Test Modeless",
+            "This is an Ok modeless",
+            [MessageBoxStandardButtons.Ok],
+            MessageBoxSize.Small
+        );
+
+    private void ShowModelessOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
+        ShowModeless("Test Modeless",
+            "This is an OkCancel modeless",
+            [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+            MessageBoxSize.Small
+        );
+
+    private void ShowModalInfo_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModal("Updating mods",
+            "Updating mods installed in multiple collections. Updating will apply to all local collections where the mod is installed.", [
+                new MessageBoxButtonDefinition(
+                    "Cancel with icon",
+                    ButtonDefinitionId.From("cancel"),
+                    IconValues.Warning,
+                    null,
+                    ButtonRole.RejectRole
+                ),
+                new MessageBoxButtonDefinition(
+                    "Update in 2 collections",
+                    ButtonDefinitionId.From("update"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.InfoRole
+                )
+            ],
+            MessageBoxSize.Large
+        );
+    }
+
+    private void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModal("Go Premium",
+            "Download entire collections at full speed with one click, no browser, no manual downloads.", [
+                new MessageBoxButtonDefinition(
+                    "Cancel",
+                    ButtonDefinitionId.From("cancel"),
+                    null,
+                    null,
+                    ButtonRole.RejectRole
+                ),
+                new MessageBoxButtonDefinition(
+                    "Find out more",
+                    ButtonDefinitionId.From("find-out-more")
+                ),
+                new MessageBoxButtonDefinition(
+                    "Get Premium",
+                    ButtonDefinitionId.From("get-premium"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.PremiumRole
+                )
+            ],
+            MessageBoxSize.Medium
+        );
+    }
+
+    private void ShowModelessPrimary_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModeless("Something important",
+            "An example showing Primary and Secondary buttons", [
+                new MessageBoxButtonDefinition(
+                    "Secondary",
+                    ButtonDefinitionId.From("cancel"),
+                    null,
+                    null,
+                    ButtonRole.RejectRole
+                ),
+                new MessageBoxButtonDefinition(
+                    "Primary",
+                    ButtonDefinitionId.From("primary"),
+                    null,
+                    null,
+                    ButtonRole.AcceptRole | ButtonRole.PrimaryRole
+                )
+            ],
+            MessageBoxSize.Medium
+        );;
+    }
+
+    private async void ShowModalCustom_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel is null) return;
             
-            this.OneWayBind(ViewModel, vm => vm.MarkdownRenderer, v => v.MarkdownRendererViewModelViewHost.ViewModel)
-                .DisposeWith(disposables);
-        });
+            // create custom content viewmodel
+            var customViewModel = new CustomContentViewModel("This is lovely text");
+            
+            // create wrapper dialog around the custom content 
+            var dialog = DialogFactory.CreateCustomDialog(customViewModel);
+
+            // tell windowmanager to show it
+            // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+            
+            // check viewmodel properties when dialog has been closed
+            Console.WriteLine($@"result: {result}");
+            Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
+            Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
+            Console.WriteLine($@"MySelectedItem: {customViewModel.MySelectedItem}");
+        }
+        catch
+        {
+            throw; // TODO handle exception
+        }
+    }
+
+    private async void ShowModelessCustom_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel is null) return;
+            
+            // create custom content viewmodel
+            var customViewModel = new CustomContentViewModel("This is lovely text");
+            
+            // create wrapper dialog around the custom content 
+            var dialog = DialogFactory.CreateCustomDialog(customViewModel);
+
+            // tell windowmanager to show it
+            // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
+            
+            // check viewmodel properties when dialog has been closed
+            Console.WriteLine($@"result: {result}");
+            Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
+            Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
+        }
+        catch
+        {
+            throw; // TODO handle exception
+        }
     }
 }
-

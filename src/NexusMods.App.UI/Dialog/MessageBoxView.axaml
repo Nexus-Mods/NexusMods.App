@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:NexusMods.App.UI.Dialog"
+             xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+             xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+             xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+             mc:Ignorable="d" d:DesignWidth="296"
+             x:Class="NexusMods.App.UI.Dialog.MessageBoxView"
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxDesignViewModel}"
+             x:DataType="vm:MessageBoxViewModel">
+
+    <!-- Temporary styles to see modal button variations -->
+    <UserControl.Styles>
+        <Style Selector="controls|StandardButton">
+            <Style Selector="^ /template/ TextBlock#PART_Label">
+                <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
+            </Style>
+            
+            <Style Selector="^.Danger">
+                <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource DangerSubduedBrush}" />
+                </Style>
+            </Style>
+            
+            <Style Selector="^.Info">
+                <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource InfoSubduedBrush}" />
+                </Style>
+            </Style>
+            
+            <Style Selector="^.Premium">
+                <Setter Property="Background" Value="{StaticResource PremiumStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
+                </Style>
+            </Style>
+            
+            <Style Selector="^.Primary">
+                <Setter Property="Background" Value="{StaticResource PrimaryStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
+                </Style>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- titlebar -->
+        <Grid Name="Titlebar" Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              Margin="16,16,16,0">
+
+            <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
+                custom titlebar dragging -->
+            <TextBlock Grid.Column="0" Name="TitleTextBlock"
+                       Text="{Binding WindowTitle}"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodySMSemiTheme}"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Close"
+                       IsHitTestVisible="False" />
+
+            <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
+                                     DockPanel.Dock="Right"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                     ShowIcon="IconOnly"
+                                     ShowLabel="False"
+                                     Fill="None"
+                                     Type="Tertiary"
+                                     VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- content -->
+        <Border Name="ContentBorder" Grid.Row="1">
+
+            <!-- simple text and buttons -->
+            <Grid RowDefinitions="*,Auto" IsVisible="True" Margin="16,0,16,16">
+
+                <StackPanel Grid.Row="0" Spacing="8" Margin="0,16">
+                    <icons:UnifiedIcon Name="ContentIcon" 
+                        Value="{x:Static icons:IconValues.PictogramBox2}"
+                        HorizontalAlignment="Left"
+                        Size="48"/>
+                    <TextBlock Name="ContentHeader"
+                               Text="Header"
+                               Foreground="{StaticResource NeutralStrongBrush}"
+                               Theme="{StaticResource BodyMDSemiTheme}"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Name="ContentTextBlock"
+                               Text="{Binding ContentMessage}"
+                               Foreground="{StaticResource NeutralSubduedBrush}"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- buttons -->
+                <panels:FlexPanel Name="ButtonsFlexPanel" Grid.Row="1"
+                                  ColumnSpacing="8">
+                    <controls:StandardButton Name="CancelButton" Text="Cancel"
+                                             panels:Flex.Grow="1"
+                                             panels:Flex.Shrink="0"
+                                             panels:Flex.Basis="0%" />
+                    <controls:StandardButton Name="OkButton" Text="OK"
+                                             Command="{Binding ButtonClickCommand}"
+                                             CommandParameter="{Binding $self.Text}"
+                                             IsDefault="True"
+                                             IsVisible="{Binding IsOkShowed}"
+                                             panels:Flex.Grow="1"
+                                             panels:Flex.Shrink="0"
+                                             panels:Flex.Basis="0%"
+                                             Classes="Danger" />
+                </panels:FlexPanel>
+
+            </Grid>
+
+        </Border>
+    </Grid>
+</UserControl>

@@ -21,6 +21,7 @@ using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
+using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -135,6 +136,7 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             
+            
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
             .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
             .AddView<LoadoutCardView, ILoadoutCardViewModel>()
@@ -203,6 +205,10 @@ public static class Services
 
             .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
+            
+            // Dialogs
+            .AddView<CustomContentView, IDialogContentViewModel>()
+            .AddViewModel<CustomContentViewModel, IDialogContentViewModel>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()
@@ -277,6 +283,8 @@ public static class Services
             .AddSingleton<UpdateChecker>()
             .AddFileSystem()
             .AddImagePipelines();
+        
+        
     }
 
 }
