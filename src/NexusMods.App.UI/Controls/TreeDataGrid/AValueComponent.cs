@@ -24,7 +24,8 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
     /// <param name="initialValue">Initial value.</param>
     /// <param name="valueObservable">Observable.</param>
     /// <param name="subscribeWhenCreated">Whether to subscribe immediately when the component gets created or when the component gets activated.</param>
-    protected AValueComponent(T initialValue, IObservable<T> valueObservable, bool subscribeWhenCreated = false) : this(initialValue, valueObservable.ToObservable(), subscribeWhenCreated) { }
+    /// <param name="observeOutsideUiThread">Observes outside of the UI thread. Debug only, eliminated by the JIT in release.</param>
+    protected AValueComponent(T initialValue, IObservable<T> valueObservable, bool subscribeWhenCreated = false, bool observeOutsideUiThread = false) : this(initialValue, valueObservable.ToObservable(), subscribeWhenCreated, observeOutsideUiThread) { }
 
     /// <summary>
     /// Constructor.
@@ -32,7 +33,8 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
     /// <param name="initialValue">Initial value.</param>
     /// <param name="valueObservable">Observable.</param>
     /// <param name="subscribeWhenCreated">Whether to subscribe immediately when the component gets created or when the component gets activated.</param>
-    protected AValueComponent(T initialValue, Observable<T> valueObservable, bool subscribeWhenCreated = false)
+    /// <param name="observeOutsideUiThread">Observes outside of the UI thread. Debug only, eliminated by the JIT in release.</param>
+    protected AValueComponent(T initialValue, Observable<T> valueObservable, bool subscribeWhenCreated = false, bool observeOutsideUiThread = false)
     {
         if (!subscribeWhenCreated)
         {
@@ -48,7 +50,9 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
         }
         else
         {
-            Value = valueObservable.ObserveOnUIThreadDispatcher().ToBindableReactiveProperty(initialValue: initialValue);
+            Value = !observeOutsideUiThread 
+                ? valueObservable.ObserveOnUIThreadDispatcher().ToBindableReactiveProperty(initialValue: initialValue) 
+                : valueObservable.ToBindableReactiveProperty(initialValue: initialValue); // Testing/Debug only.
         }
     }
 
@@ -87,7 +91,8 @@ public class ValueComponent<T> : AValueComponent<T>, IItemModelComponent<ValueCo
         T initialValue,
         IObservable<T> valueObservable,
         bool subscribeWhenCreated = false,
-        IComparer<T>? comparer = null) : base(initialValue, valueObservable, subscribeWhenCreated)
+        IComparer<T>? comparer = null,
+        bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread)
     {
         _comparer = comparer ?? Comparer<T>.Default;
     }
@@ -97,7 +102,8 @@ public class ValueComponent<T> : AValueComponent<T>, IItemModelComponent<ValueCo
         T initialValue,
         R3.Observable<T> valueObservable,
         bool subscribeWhenCreated = false,
-        IComparer<T>? comparer = null) : base(initialValue, valueObservable, subscribeWhenCreated)
+        IComparer<T>? comparer = null,
+        bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread)
     {
         _comparer = comparer ?? Comparer<T>.Default;
     }
