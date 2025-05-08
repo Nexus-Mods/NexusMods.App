@@ -1,16 +1,12 @@
-using System.Collections.Frozen;
-using System.Reactive.Linq;
-using DynamicData;
-using DynamicData.Alias;
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Analyzers;
+using NexusMods.Abstractions.Loadouts.Rows;
+using NexusMods.Cascade;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
-using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.DataModel.Tests;
 
@@ -19,6 +15,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
     [Fact]
     public async Task DeletingAModShouldUpdateTheLoadout()
     {
+        using var loadouts = await Connection.Topology.QueryAsync(Loadout.MostRecentTxForLoadout);
         using var tx = Connection.BeginTransaction();
         var loadoutId = tx.TempId();
 
@@ -56,20 +53,20 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
         fileId = result[fileId];
         groupId = result[groupId];
 
-        var changedItems = new List<EntityId>();
+        await Connection.Topology.FlushEffectsAsync();
+        var firstRow = loadouts.First();
+        firstRow.RowId.Should().Be(loadoutId);
+        var originalTx = firstRow.TxId.Value;
 
-        using var updates = Connection.Revisions.Select(r => r.AnalyzerData<TreeAnalyzer, FrozenSet<EntityId>>())
-                .Subscribe(itm => changedItems.Add(itm));
         
-        changedItems.Clear();
-        
+        // Delete a file and the row should update
         using var tx2 = Connection.BeginTransaction();
         tx2.Delete(fileId, false);
-        await tx2.Commit();
+        var result2 = await tx2.Commit();
+        await Connection.Topology.FlushEffectsAsync();
+        firstRow.RowId.Should().Be(loadoutId);
+        firstRow.TxId.Should().NotBe(originalTx);
         
-        changedItems.Should().Contain(loadoutId);
-        changedItems.Should().Contain(groupId);
-        changedItems.Should().Contain(fileId);
 
     }
 }

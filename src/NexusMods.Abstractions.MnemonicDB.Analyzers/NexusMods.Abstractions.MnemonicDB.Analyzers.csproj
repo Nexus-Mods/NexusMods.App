@@ -1,8 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <!-- NuGet Package Shared Details -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-    
-    <ItemGroup>
-      <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
-    </ItemGroup>
-</Project>
