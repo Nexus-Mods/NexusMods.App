@@ -178,7 +178,7 @@ public class TreeFolderGeneratorTests
         
         // Subscribe to the observable after first file added
         using var subscription = generator.ObservableRoots()
-            .Subscribe(changes => 
+            .Subscribe(_ => 
             {
                 rootChangesDetected = true;
             });
@@ -289,7 +289,7 @@ public class TreeFolderGeneratorTests
         
         // Subscribe to the observable after both files are added
         using var subscription = generator.ObservableRoots()
-            .Subscribe(changes => 
+            .Subscribe(_ => 
             {
                 rootChangesDetected = true;
             });
