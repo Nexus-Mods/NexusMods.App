@@ -19,13 +19,7 @@ public partial class Loadout
             .Db(out var loadoutItem, LoadoutItem.LoadoutId, out var loadoutId)
             .Return(loadoutId, loadoutItem);
 
-    /// <summary>
-    /// Include all sort order entities that are associated with a loadout
-    /// </summary>
-    private static readonly Flow<(EntityId Loadout, EntityId Entity)> LoadoutSortOrderSubFlow =
-        Pattern.Create()
-            .Db(out var sortItem, SortOrder.LoadoutId, out var loadoutId)
-            .Return(loadoutId, sortItem);
+
     
     /// <summary>
     /// Include the loadout itself
@@ -41,7 +35,6 @@ public partial class Loadout
     /// </summary>
     public static readonly UnionFlow<(EntityId Loadout, EntityId Entity)> LoadoutAssociatedEntities =
         new UnionFlow<(EntityId Loadout, EntityId Entity)>(LoadoutEntitySubFlow)
-            .With(LoadoutSortOrderSubFlow)
             .With(LoadoutItemsSubFlow);
 
 
