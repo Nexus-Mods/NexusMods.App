@@ -27,3 +27,67 @@ fragment ModFragment on Mod {
     updatedAt,
     uid
 }
+
+fragment CollectionRevisionFragment on CollectionRevision {
+    id
+    assetsSizeBytes
+    revisionNumber
+    adultContent
+    totalSize
+    overallRating
+    overallRatingCount
+    modCount
+
+    modFiles {
+        id,
+        optional,
+        gameId,
+        fileId,
+        file {
+            ...ModFileFragment
+            mod {
+                ...ModFragment
+            }
+        }
+        updatePolicy,
+        version,
+    }
+
+    collection {
+        ...CollectionFragment
+    }
+}
+
+fragment CategoryFragment on Category {
+    id
+    name
+}
+
+fragment CollectionFragment on Collection {
+    slug
+    name
+    summary
+    endorsements
+    totalDownloads
+    overallRating
+    overallRatingCount
+    recentRating
+    recentRatingCount
+    category {
+        ...CategoryFragment
+    }
+    tileImage {
+        thumbnailUrl(size: small)
+    }
+    headerImage {
+        url
+    }
+    user {
+        ...UserFragment
+    }
+    game {
+        id
+        name
+        domainName
+    }
+}

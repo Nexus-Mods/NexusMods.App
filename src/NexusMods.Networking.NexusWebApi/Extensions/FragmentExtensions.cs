@@ -18,7 +18,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves a category.
     /// </summary>
-    public static EntityId Resolve(this ICollectionRevisionInfo_CollectionRevision_Collection_Category category, IDb db, ITransaction tx)
+    public static EntityId Resolve(this ICategoryFragment category, IDb db, ITransaction tx)
     {
         var resolver = GraphQLResolver.Create(db, tx, CollectionCategory.NexusId, (ulong)category.Id);
         resolver.Add(CollectionCategory.Name, category.Name);

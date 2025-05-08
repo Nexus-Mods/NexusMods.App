@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.BuildInfo;
 
@@ -21,8 +22,8 @@ public class BaseHttpMessageFactory : IHttpMessageFactory
     }
 
     /// <inheritdoc/>
-    public virtual ValueTask<bool> IsAuthenticated() => ValueTask.FromResult(false);
+    public virtual AuthenticationHeaderValue? GetAuthenticationHeaderValue() => null;
 
     /// <inheritdoc/>
-    public virtual ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException exception, CancellationToken cancellationToken) => ValueTask.FromResult<HttpRequestMessage?>(null);
+    public virtual ValueTask<bool> IsAuthenticated() => ValueTask.FromResult(false);
 }

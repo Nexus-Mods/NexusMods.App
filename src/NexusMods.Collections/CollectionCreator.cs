@@ -7,7 +7,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 
@@ -15,30 +14,16 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
-    public static (CollectionRoot, CollectionMetadata.New, CollectionRevisionMetadata.New) CreateCollection(
-        ITransaction tx,
+    /// <summary>
+    /// Creates a collection JSON manifest from a loadout item group.
+    /// </summary>
+    public static CollectionRoot LoadoutItemGroupToCollectionManifest(
         LoadoutItemGroup.ReadOnly group,
         IGameDomainToGameIdMappingCache mappingCache,
-        User.ReadOnly author,
-        CollectionSlug collectionSlug)
+        User.ReadOnly author)
     {
         var gameId = group.AsLoadoutItem().Loadout.Installation.GameId;
         var gameDomain = mappingCache.TryGetDomain(gameId, CancellationToken.None).Value;
-
-        var collectionMetadata = new CollectionMetadata.New(tx)
-        {
-            Name = group.AsLoadoutItem().Name,
-            GameId = gameId,
-            Slug = collectionSlug,
-            AuthorId = author,
-        };
-
-        var collectionRevisionMetadata = new CollectionRevisionMetadata.New(tx)
-        {
-            CollectionId = collectionMetadata,
-            RevisionId = RevisionId.From((ulong)Random.Shared.NextInt64(minValue: 0, maxValue: long.MaxValue)),
-            RevisionNumber = RevisionNumber.From(1),
-        };
 
         var collectionMods = new List<CollectionMod>();
 
@@ -51,10 +36,10 @@ public static class CollectionCreator
             CollectionMod collectionMod;
             if (libraryItem.TryGetAsNexusModsLibraryItem(out var nexusModsLibraryItem))
             {
-                collectionMod = ToCollectionMod(tx, collectionRevisionMetadata, nexusModsLibraryItem, libraryFile, index: collectionMods.Count);
+                collectionMod = ToCollectionMod(nexusModsLibraryItem, libraryFile);
             } else if (libraryItem.TryGetAsDownloadedFile(out downloadedFile))
             {
-                collectionMod = ToCollectionMod(tx, collectionRevisionMetadata, gameDomain, downloadedFile, index: collectionMods.Count);
+                collectionMod = ToCollectionMod(gameDomain, downloadedFile);
             }
             else
             {
@@ -69,38 +54,21 @@ public static class CollectionCreator
             Mods = collectionMods.ToArray(),
             Info = new CollectionInfo
             {
-                Name = collectionMetadata.Name,
+                Name = group.AsLoadoutItem().Name,
                 DomainName = gameDomain,
                 Author = author.Name,
-                Description = collectionMetadata.Summary ?? string.Empty,
+                Description = string.Empty,
             },
         };
 
-        return (collectionManifest, collectionMetadata, collectionRevisionMetadata);
+        return collectionManifest;
     }
 
     private static CollectionMod ToCollectionMod(
-        ITransaction tx,
-        CollectionRevisionMetadata.New collectionRevisionMetadata,
         GameDomain gameDomain,
-        DownloadedFile.ReadOnly downloadedFile,
-        int index)
+        DownloadedFile.ReadOnly downloadedFile)
     {
         var libraryFile = downloadedFile.AsLibraryFile();
-
-        _ = new CollectionDownloadExternal.New(tx, out var id)
-        {
-            Uri = downloadedFile.DownloadPageUri,
-            Size = libraryFile.Size,
-            Md5 = libraryFile.Md5.Value,
-            CollectionDownload = new CollectionDownload.New(tx, id)
-            {
-                Name = libraryFile.FileName,
-                CollectionRevisionId = collectionRevisionMetadata,
-                IsOptional = false,
-                ArrayIndex = index,
-            },
-        };
 
         return new CollectionMod
         {
@@ -117,28 +85,11 @@ public static class CollectionCreator
     }
 
     private static CollectionMod ToCollectionMod(
-        ITransaction tx,
-        CollectionRevisionMetadata.New collectionRevisionMetadata,
         NexusModsLibraryItem.ReadOnly nexusModsLibraryItem,
-        Optional<LibraryFile.ReadOnly> libraryFile,
-        int index)
+        Optional<LibraryFile.ReadOnly> libraryFile)
     {
         var nexusModsFile = nexusModsLibraryItem.FileMetadata;
         var nexusModsModPage = nexusModsFile.ModPage;
-
-        _ = new CollectionDownloadNexusMods.New(tx, out var id)
-        {
-            FileMetadataId = nexusModsFile,
-            FileUid = nexusModsFile.Uid,
-            ModUid = nexusModsModPage.Uid,
-            CollectionDownload = new CollectionDownload.New(tx, id)
-            {
-                Name = nexusModsFile.Name,
-                CollectionRevisionId = collectionRevisionMetadata,
-                IsOptional = false,
-                ArrayIndex = index,
-            },
-        };
 
         return new CollectionMod
         {

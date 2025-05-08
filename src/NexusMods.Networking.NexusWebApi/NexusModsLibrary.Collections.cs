@@ -1,8 +1,11 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using DynamicData.Kernel;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections.Json;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -14,6 +17,8 @@ using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
+using StrawberryShake;
+using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
 namespace NexusMods.Networking.NexusWebApi;
 using GameIdCache = Dictionary<GameDomain, GameId>;
@@ -22,6 +27,120 @@ using ModAndDownload = (Mod Mod, CollectionDownload.ReadOnly Download);
 
 public partial class NexusModsLibrary
 {
+    private async ValueTask<PresignedUploadUrl> UploadCollectionArchive(IStreamFactory archiveStreamFactory, CancellationToken cancellationToken)
+    {
+        var result = await _gqlClient.GetCollectionRevisionUploadUrl.ExecuteAsync(cancellationToken: cancellationToken);
+        result.EnsureNoErrors();
+
+        var data = result.Data?.CollectionRevisionUploadUrl!;
+        var presignedUploadUrl = new PresignedUploadUrl(new Uri(data.Url), data.Uuid);
+
+        await using var stream = await archiveStreamFactory.GetStreamAsync();
+        using HttpContent httpContent = new StreamContent(stream);
+        httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+
+        var response = await _httpClient.PutAsync(presignedUploadUrl.UploadUri, httpContent, cancellationToken: cancellationToken);
+        if (response.IsSuccessStatusCode) return presignedUploadUrl;
+
+        var responseMessage = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+        _logger.LogError("Failed to upload collection archive, response code={ResponseCode}, response reason=`{ResponseReason}`, response message=`{ResponseMessage}`", response.StatusCode, response.ReasonPhrase, responseMessage);
+
+        response.EnsureSuccessStatusCode();
+        return presignedUploadUrl;
+    }
+
+    /// <summary>
+    /// Uploads a new collection to Nexus Mods and adds it to the app.
+    /// </summary>
+    public async ValueTask<CollectionRevisionMetadata.ReadOnly> CreateCollection(
+        IStreamFactory archiveStreamFactory,
+        CollectionRoot collectionManifest,
+        CancellationToken cancellationToken)
+    {
+        var payload = ManifestToPayload(collectionManifest);
+        var presignedUploadUrl = await UploadCollectionArchive(archiveStreamFactory, cancellationToken: cancellationToken);
+
+        var result = await _gqlClient.CreateCollection.ExecuteAsync(
+            payload: payload,
+            uuid: presignedUploadUrl.UUID,
+            cancellationToken: cancellationToken
+        );
+
+        result.EnsureNoErrors();
+
+        var data = result.Data?.CreateCollection!;
+        if (!data.Success) throw new NotImplementedException();
+
+        var revision = await AddCollectionToDatabase(collectionManifest, data.Collection, data.Revision, cancellationToken);
+        return revision;
+    }
+
+    private static CollectionPayload ManifestToPayload(CollectionRoot manifest)
+    {
+        return new CollectionPayload
+        {
+            CollectionSchemaId = 1,
+            AdultContent = false, // TODO
+            CollectionManifest = new CollectionManifest
+            {
+                Info = new CollectionManifestInfo
+                {
+                    Author = manifest.Info.Author,
+                    AuthorUrl = manifest.Info.AuthorUrl,
+                    Description = manifest.Info.Description,
+                    DomainName = manifest.Info.DomainName.Value,
+                    GameVersions = [],
+                    Name = manifest.Info.Name,
+                    Summary = string.Empty, // TODO
+                },
+                Mods = manifest.Mods.Select(x => new CollectionManifestMod
+                {
+                    DomainName = x.DomainName.Value,
+                    Name = x.Name,
+                    Optional = x.Optional,
+                    Version = x.Version,
+                    Author = string.Empty, // TODO
+                    Source = new CollectionManifestModSource
+                    {
+                        AdultContent = null, // TODO
+                        Url = x.Source.Url?.ToString(),
+                        FileExpression = x.Source.FileExpression.ToString(),
+                        FileId = (int)x.Source.FileId.Value,
+                        ModId = (int)x.Source.ModId.Value,
+                        FileSize = (int)x.Source.FileSize.Value,
+                        LogicalFilename = x.Source.LogicalFilename,
+                        Md5 = x.Source.Md5.ToString(),
+                        Type = ConvertSourceType(x.Source.Type),
+                        UpdatePolicy = ConvertUpdatePolicy(x.Source.UpdatePolicy),
+                    },
+                }).ToArray(),
+            },
+        };
+
+        static ModSource ConvertSourceType(ModSourceType sourceType)
+        {
+            return sourceType switch
+            {
+                ModSourceType.NexusMods => ModSource.Nexus,
+                ModSourceType.Bundle => ModSource.Bundle,
+                ModSourceType.Browse => ModSource.Browse,
+                ModSourceType.Direct => ModSource.Direct,
+                _ => throw new ArgumentOutOfRangeException(nameof(sourceType), sourceType, null)
+            };
+        }
+
+        static UpdatePolicy ConvertUpdatePolicy(Abstractions.Collections.Json.UpdatePolicy sourceUpdatePolicy)
+        {
+            return sourceUpdatePolicy switch
+            {
+                Abstractions.Collections.Json.UpdatePolicy.ExactVersionOnly => UpdatePolicy.Exact,
+                Abstractions.Collections.Json.UpdatePolicy.PreferExact => UpdatePolicy.Prefer,
+                Abstractions.Collections.Json.UpdatePolicy.LatestVersion => UpdatePolicy.Latest,
+                _ => throw new ArgumentOutOfRangeException(nameof(sourceUpdatePolicy), sourceUpdatePolicy, null)
+            };
+        }
+    }
+    
     /// <summary>
     /// Gets or adds the provided collection revision.
     /// </summary>
@@ -38,7 +157,6 @@ public partial class NexusModsLibrary
         if (revisions.TryGetFirst(out var revision)) return revision;
 
         var collectionRoot = await ParseCollectionJsonFile(collectionLibraryFile, cancellationToken);
-        var gameIds = await CacheGameIds(collectionRoot, cancellationToken);
 
         var apiResult = await _gqlClient.CollectionRevisionInfo.ExecuteAsync(
             slug: slug.Value,
@@ -50,25 +168,37 @@ public partial class NexusModsLibrary
         var collectionRevisionInfo = apiResult.Data?.CollectionRevision;
         if (collectionRevisionInfo is null) throw new NotSupportedException($"API call returned no data for collection slug `{slug}` revision `{revisionNumber}`");
 
+        var revisionMetadata = await AddCollectionToDatabase(collectionRoot, collectionRevisionInfo.Collection, collectionRevisionInfo, cancellationToken);
+        return revisionMetadata;
+    }
+
+    private async ValueTask<CollectionRevisionMetadata.ReadOnly> AddCollectionToDatabase(
+        CollectionRoot collectionManifest,
+        ICollectionFragment collectionFragment,
+        ICollectionRevisionFragment collectionRevisionFragment,
+        CancellationToken cancellationToken)
+    {
+        var gameIds = await CacheGameIds(collectionManifest, cancellationToken);
+
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
 
-        var collectionEntityId = UpdateCollectionInfo(db, tx, slug, collectionRevisionInfo.Collection);
-        var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, revisionNumber, collectionEntityId, collectionRevisionInfo);
+        var collectionEntityId = UpdateCollectionInfo(db, tx, collectionFragment);
+        var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, collectionEntityId, collectionRevisionFragment);
 
-        var resolvedEntitiesLookup = ResolveModFiles(db, tx, collectionRoot, gameIds, collectionRevisionInfo);
-        UpdateFiles(db, tx, collectionRevisionEntityId, collectionRevisionInfo, collectionRoot, gameIds, resolvedEntitiesLookup);
+        var resolvedEntitiesLookup = ResolveModFiles(db, tx, collectionManifest, gameIds, collectionRevisionFragment);
+        UpdateFiles(db, tx, collectionRevisionEntityId, collectionRevisionFragment, collectionManifest, gameIds, resolvedEntitiesLookup);
 
         var results = await tx.Commit();
         var revisionMetadata = CollectionRevisionMetadata.Load(results.Db, results[collectionRevisionEntityId]);
 
         using var ruleTx = _connection.BeginTransaction();
-        AddCollectionDownloadRules(ruleTx, collectionRoot, revisionMetadata);
+        AddCollectionDownloadRules(ruleTx, collectionManifest, revisionMetadata);
         await ruleTx.Commit();
 
-        return revisionMetadata;
+        return revisionMetadata.Rebase(_connection.Db);
     }
-
+    
     /// <summary>
     /// Gets all revision numbers that are newer than the current revision.
     /// </summary>
@@ -213,7 +343,7 @@ public partial class NexusModsLibrary
         ITransaction tx,
         CollectionRoot collectionRoot,
         GameIdCache gameIds,
-        ICollectionRevisionInfo_CollectionRevision collectionRevision)
+        ICollectionRevisionFragment collectionRevision)
     {
         var res = new ResolvedEntitiesLookup();
         var modPageIds = new Dictionary<UidForMod, EntityId>();
@@ -281,7 +411,7 @@ public partial class NexusModsLibrary
         IDb db,
         ITransaction tx,
         CollectionRevisionMetadataId collectionRevisionEntityId,
-        ICollectionRevisionInfo_CollectionRevision revisionInfo,
+        ICollectionRevisionFragment revisionInfo,
         CollectionRoot collectionRoot,
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
@@ -382,15 +512,14 @@ public partial class NexusModsLibrary
     private static EntityId UpdateRevisionInfo(
         IDb db,
         ITransaction tx,
-        RevisionNumber revisionNumber,
         EntityId collectionEntityId,
-        ICollectionRevisionInfo_CollectionRevision revisionInfo)
+        ICollectionRevisionFragment revisionInfo)
     {
         var revisionId = RevisionId.From((ulong)revisionInfo.Id);
         var resolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, revisionId);
 
         resolver.Add(CollectionRevisionMetadata.RevisionId, revisionId);
-        resolver.Add(CollectionRevisionMetadata.RevisionNumber, revisionNumber);
+        resolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revisionInfo.RevisionNumber));
         resolver.Add(CollectionRevisionMetadata.CollectionId, collectionEntityId);
         resolver.Add(CollectionRevisionMetadata.IsAdult, revisionInfo.AdultContent);
 
@@ -410,9 +539,9 @@ public partial class NexusModsLibrary
     private static EntityId UpdateCollectionInfo(
         IDb db,
         ITransaction tx,
-        CollectionSlug slug,
-        ICollectionRevisionInfo_CollectionRevision_Collection collectionInfo)
+        ICollectionFragment collectionInfo)
     {
+        var slug = CollectionSlug.From(collectionInfo.Slug);
         var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
