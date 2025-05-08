@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
@@ -28,6 +29,23 @@ public class OAuth2MessageFactory : BaseHttpMessageFactory, IAuthenticatingMessa
     }
 
     private readonly IConnection _conn;
+
+    /// <inheritdoc/>
+    public override AuthenticationHeaderValue? GetAuthenticationHeaderValue()
+    {
+        var token = GetToken();
+        if (token is null) return null;
+
+        return new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    private string? GetToken()
+    {
+        if (!JWTToken.TryFind(_conn.Db, out var token)) return null;
+        if (!token.HasExpired) return token.AccessToken;
+
+        return null;
+    }
 
     private async ValueTask<string?> GetOrRefreshToken(CancellationToken cancellationToken)
     {
