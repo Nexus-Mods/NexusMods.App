@@ -34,18 +34,23 @@
                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}"
                                    Size="56" />
 
-                <TextBlock Theme="{StaticResource BodyXLBoldTheme}"
-                           TextAlignment="Center"
-                           Foreground="{StaticResource NeutralStrongBrush}">
-                    Welcome to the
-                    <Span Foreground="{StaticResource AppLinearGradientBrush}">Nexus Mods App</Span>
-                </TextBlock>
+                <StackPanel>
+                    <TextBlock Theme="{StaticResource BodyXLBoldTheme}"
+                               TextAlignment="Center"
+                               Foreground="{StaticResource NeutralStrongBrush}"
+                               Text="Welcome to the"/>
+                    <TextBlock Theme="{StaticResource BodyXLBoldTheme}"
+                               TextAlignment="Center"
+                               Foreground="{StaticResource AppLinearGradientBrush}"
+                               Text="Nexus Mods App Preview"/>
+                </StackPanel>
+                
 
                 <TextBlock Theme="{StaticResource BodyMDNormalTheme}"
                            TextAlignment="Center"
                            TextWrapping="Wrap"
                            Foreground="{StaticResource NeutralSubduedBrush}"
-                           Text="Currently, the app supports Stardew Valley, with more games coming soon. Share your feedback anytime using the 'Give Feedback' button in the footer." />
+                           Text="Currently, the app supports Stardew Valley and Cyberpunk 2077 with more games coming soon. Share your feedback anytime using the 'Give Feedback' button in the footer." />
             </StackPanel>
 
             <StackPanel Spacing="8">
@@ -55,7 +60,7 @@
                            Foreground="{StaticResource NeutralSubduedBrush}"
                            Text="Join the discussion on:" />
 
-                <StackPanel Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Spacing-4}" HorizontalAlignment="Center">
                     <controls:StandardButton x:Name="ButtonOpenDiscord"
                                              Text="Discord"
                                              Type="Secondary"
@@ -95,7 +100,7 @@
                 <Border Height="1" Background="{StaticResource SurfaceMidBrush}" />
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                            Spacing="{StaticResource Spacing-2.5}">
+                            Spacing="{StaticResource Spacing-4}">
 
                     <controls:StandardButton x:Name="ButtonClose"
                                              Text="Close"

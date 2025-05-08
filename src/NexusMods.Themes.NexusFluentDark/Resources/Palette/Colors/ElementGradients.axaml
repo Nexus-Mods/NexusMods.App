@@ -10,8 +10,8 @@
     </LinearGradientBrush>
     
     <LinearGradientBrush x:Key="AppLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-        <GradientStop Color="#FB923C" Offset="0" />
-        <GradientStop Color="#EA580C" Offset="1" />
+        <GradientStop Color="{StaticResource BrandPrimary400}" Offset="0" />
+        <GradientStop Color="{StaticResource BrandPrimary600}" Offset="1" />
     </LinearGradientBrush>
 
     <!-- SurfaceLow 75% to SurfaceLow 100% -->
