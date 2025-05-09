@@ -51,6 +51,7 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="NexusMods.UI.Tests" />
+        <InternalsVisibleTo Include="NexusMods.App.UI.Tests" />
     </ItemGroup>
 
     <ItemGroup>
@@ -381,6 +382,9 @@
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\TreeDataGrid\ComponentKey.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\TreeDataGrid\UInt32Component.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\Trees\Files\FileTreeNodeViewModel.cs">
@@ -739,8 +743,11 @@
         <Compile Update="Pages\ProtocolRegistration\ProtocolRegistrationTestPageViewModel.cs">
           <DependentUpon>IProtocolRegistrationTestPageViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\ViewLoadoutGroupFilesViewModel.cs">
+        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\ViewModel\ViewLoadoutGroupFilesViewModel.cs">
           <DependentUpon>IViewLoadoutGroupFilesViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\View\ViewLoadoutGroupFilesView.cs">
+          <DependentUpon>ViewLoadoutGroupFilesView.axaml</DependentUpon>
         </Compile>
     </ItemGroup>
 

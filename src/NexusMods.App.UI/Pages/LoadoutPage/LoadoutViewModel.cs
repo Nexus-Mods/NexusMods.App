@@ -15,6 +15,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
+using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
@@ -146,8 +147,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var pageData = new PageData
                     {
-                        FactoryId = ItemContentsFileTreePageFactory.StaticId,
-                        Context = new ItemContentsFileTreePageContext
+                        FactoryId = ViewLoadoutGroupFilesPageFactory.StaticId,
+                        Context = new ViewLoadoutGroupFilesPageContext
                         {
                             GroupIds = [ group.Value.Id ],
                             IsReadOnly = isReadonly,

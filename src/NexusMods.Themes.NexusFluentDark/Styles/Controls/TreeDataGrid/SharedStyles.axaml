@@ -68,5 +68,18 @@
 
     </Style>
 
+    <!-- NameWithFileIcon.ColumnTemplateResourceKey column -->
+    <Style Selector="TreeDataGridTemplateCell.SharedColumn_NameWithFileIcon /template/ ContentPresenter#PART_ContentPresenter">
+        <!-- Styles specific to the 'NameWithFileIcon' template (root is Grid) -->
+        <Style Selector="^ icons|UnifiedIcon.FileTypeIcon">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Size" Value="20" />
+        </Style>
+        <Style Selector="^ TextBlock.FileNameTextBlock">
+            <Setter Property="Margin" Value="4,0,8,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+    </Style>
 </Styles>
 
