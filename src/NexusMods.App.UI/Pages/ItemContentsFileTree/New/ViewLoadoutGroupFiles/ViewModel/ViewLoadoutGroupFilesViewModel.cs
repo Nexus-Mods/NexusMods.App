@@ -59,7 +59,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                         (state.connection, state.Item1.Context!.GroupIds, gamePath, false);
 
                     // If we can't find a file, then it's a directory, which we can't open an editor for.
-                    return !file.HasValue;
+                    return file.HasValue;
                 }
             )
             .ToReactiveCommand<NavigationInformation>(info =>
