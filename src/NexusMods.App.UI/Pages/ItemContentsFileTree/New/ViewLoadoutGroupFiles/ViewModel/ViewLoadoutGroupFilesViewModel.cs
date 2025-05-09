@@ -98,10 +98,15 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                 .ToReactiveCommand<Unit>(async (_, _) =>
                     {
                         var gamePath = SelectedItem!.Key;
+                        
+                        // Unselect last item.
+                        SelectedItem = null;
+                        
                         var result = await LoadoutItemGroupHelpers.RemoveFileOrFolder(connection, Context!.GroupIds, gamePath, requireAllGroups: false);
                         if (result == LoadoutItemGroupHelpers.GroupOperationStatus.NoItemsDeleted)
                             logger.LogError("Unable to find Loadout files with path `{Path}` in groups: {Groups}", 
                                 gamePath, string.Join(", ", Context!.GroupIds));
+
                     }
                 )
                 .DisposeWith(disposables);
