@@ -27,7 +27,7 @@ public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider servicePr
         return
         [
             viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<GamePath>, GamePath>.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.Create<GamePath, SharedColumns.ItemSize>(sortDirection: ListSortDirection.Descending),
+            ColumnCreator.Create<GamePath, SharedColumns.ItemSizeOverGamePath>(sortDirection: ListSortDirection.Descending),
             ColumnCreator.Create<GamePath, SharedColumns.FileCount>(),
         ];
     }
@@ -57,7 +57,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
 
         // Add the icon for the folder, making it flip on 'IsExpanded'.
         var iconStream = model
-            .WhenAnyValue(m => m.IsExpanded)                    // ReactiveUI extension on IReactiveObject
+            .WhenAnyValue(m => m.IsExpanded)
             .Select(exp => exp
                 ? IconValues.FolderOpen
                 : IconValues.Folder);
@@ -77,7 +77,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
     {
         // Create an observable that transforms the file items to their sizes then sums them
         var fileSizeObservable = folder.GetAllFilesRecursiveObservable()
-            .Transform(fileModel => fileModel.TryGet<SizeComponent>(SharedColumns.ItemSize.ComponentKey, out var sizeComponent) ? (long)sizeComponent.Value.Value.Value : 0L)
+            .Transform(fileModel => fileModel.TryGet<SizeComponent>(SharedColumns.ItemSizeOverGamePath.ComponentKey, out var sizeComponent) ? (long)sizeComponent.Value.Value.Value : 0L)
             .Sum(x => x) // Note(sewer): dynamicdata summation lacks unsigned. But we're talking 64-bit, good luck reaching >8 exabytes on a mod.
             .Select(x => Size.From((ulong)x)); // Sum up all the sizes
         
@@ -87,7 +87,7 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
             valueObservable: fileSizeObservable,
             subscribeWhenCreated: true
         );
-        model.Add(SharedColumns.ItemSize.ComponentKey, component);
+        model.Add(SharedColumns.ItemSizeOverGamePath.ComponentKey, component);
     }
     
     private static void AddInnerFileCount<TFolderModelInitializer>(CompositeItemModel<GamePath> model, GeneratedFolder<GamePathTreeItemWithPath, TFolderModelInitializer> folder) where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>

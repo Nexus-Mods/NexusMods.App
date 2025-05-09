@@ -100,4 +100,24 @@ public static class SharedColumns
         public static string GetColumnHeader() => "File Count";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
+    
+    /// <summary>
+    /// A variant of <see cref="ItemSize"/> used with <see cref="CompositeItemModel{GamePath}"/> as opposed to
+    /// <see cref="CompositeItemModel{EntityId}"/>
+    /// </summary>
+    [UsedImplicitly]
+    public sealed class ItemSizeOverGamePath : ICompositeColumnDefinition<ItemSizeOverGamePath>
+    {
+        public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
+        {
+            var aValue = a.GetOptional<SizeComponent>(key: ComponentKey);
+            var bValue = b.GetOptional<SizeComponent>(key: ComponentKey);
+            return aValue.Compare(bValue);
+        }
+
+        public const string ColumnTemplateResourceKey = Prefix + "_GamePath_" + nameof(ItemSize);
+        public static readonly ComponentKey ComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_GamePath_" + nameof(SizeComponent));
+        public static string GetColumnHeader() => "Size";
+        public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
+    }
 }
