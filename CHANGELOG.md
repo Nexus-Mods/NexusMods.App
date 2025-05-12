@@ -1,12 +1,55 @@
 # v0.11.0 - 2025-05-XX
 
 ## Cyberpunk 2077 support
+In this build, we're confident that we've got all the basics in place for players to mod Cyberpunk 2077 with the app. We soft launched this support in the previous version and had some great feedback from the users who tried it out - thank you! 
 
-## More features
+![The games section showing Cyberpunk on Steam and GOG as options.](./docs/changelog-assets/80c1fdba8263069e9bbe9f640dca8b31.webp)
+
+The app offers the following features:
+
+* Compatibility with the Steam and GOG Galaxy releases on Windows and Linux.
+* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods (e.g. Cyber Engine Tweaks).
+* Support for collections
+* Health Check diagnostics for missing dependencies.
+* Health Check diagnostics to help set up a Linux environment to mod the game.
+* REDmod Load Order management and deployment.
+
+You can read more about the available features in the [documentation](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/). 
+
+## New Load Order Tab
+To make it easier to access your REDmod Load Order in Cyberpunk 2077, we've added a new tab to the "My Mods" and "All" sections in the left menu. 
+
+
+
+When installing mods without using collection, the "My Mods" screen will allow you manage your load order via the "Rules" tab.
+
+When using multiple collections, the "All" section under "Installed Mods" will allow you to manage your load order via the "Rules" tab. 
+
+This will tab will be expanded in future to include other load-order or file-order rules related to the mods in your loadout or collection. 
+
+## More Features
+* Updated the Health Check messages for Cyberpunk 2077 to match the structure of other diagnostic messages
+* When hovering the cursor to resize panels, a solid line will now appear to better indicate which panel will be adjusted.
+* The app now has it's own minimise, maximise and close buttons, removing the operating system "chrome" and saving more vertical space. 
+* The tab bar is now hidden until there are at least two tabs in a panel
+* Tabs can now be closed with a  middle click 
+* Added mod thumbnails to the load order page
 
 ## Technical Changes
+* Replaced the Stardew Valley preview UI elements with game agnostic versions
+* Added the core backend frameworks required for the "Undo" feature
+* Added the core backend frameworks to allow the app to create and share collections
+* Improved the stability of downloads by requesting the entire file rather than using range requests
+* Use the recent rating for collections instead of "All time"
+* The app will now send headers with Nexus Mods requests to allow us to better track mod manager usage
 
 ## Bug Fixes
+* Games can be unmanaged via command line (thanks to Michael-Kowata on GitHub)
+* Fixed missing colours to represent added, removed, or changed files on the Preview Changes page
+* Fixed a crash when snapping to full screen with multiple panels open
+* Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game
+* When un-managing a game, loadouts for that game will be hidden to prevent a crash when trying to access them
+* Fixed a bug where copying a loadout could result in two loadouts with the same name
 
 ## Known Issues
 * The Epic Games release of Cyberpunk 2077 is detected but not supported. 
@@ -15,25 +58,6 @@
 * The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
 * The table header sorting and active tab states are not saved and are reset each time the view is loaded.
 
-
-* Load order moved to "Rules" tab
-* Custom UI Chrome
-* Updated UI for CP2077 (Generic Preview instead of SDV preview)
-* Improvements to panel resizing (better drag handles?)
-* Games can be unmanaged via command line (fix by Michael-Kowata in the community)
-* Fixed missing colours on Preview Changes page
-* Added the backend required for the "Undo" feature
-* Improved performance of tree view
-* Started the backend work required to allow users to create collections
-* Fixed a crash when snapping to full screen with multiple panels open
-* Fetch downloads via the entire file rather than using range requests to improve stability.
-* Tabs can be closed on middle click 
-* Updated CP2077 Health Check messages
-* Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game
-* When un-managing a game, loadouts for that game will be hidden to prevent a crash when trying to access them.
-* Use the recent rating for collections instead of "All time"
-* Fixed a bug where copying a loadout could result in two loadouts with the same name. 
-* Added mod thumbnails to the load order page
 
 # v0.10.2 - 2025-04-30
 This release adds Cyberpunk 2077 to supported games, improves the installation of Stardew Valley mods without a manifest file and includes a draggable load order view for Cyberpunk 2077 REDmods. 
