@@ -1,8 +1,10 @@
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Paths;
 using static NexusMods.Games.RedEngine.Constants;
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 
@@ -13,32 +15,45 @@ public partial class MissingRedModEmitter : ILoadoutDiagnosticEmitter
     public static readonly NamedLink RedmodGOGLink = new("GOG Galaxy", new Uri("goggalaxy://openStoreUrl/embed.gog.com/game/cyberpunk_2077_redmod"));
     public static readonly NamedLink RedmodEGSLink = new("the Epic Games Store", new Uri("com.epicgames.launcher://store/p/cyberpunk-2077"));
 
-    public async IAsyncEnumerable<Diagnostic> Diagnose(
-        Loadout.ReadOnly loadout,
-        CancellationToken cancellationToken)
+    internal static bool HasRedMods(Loadout.ReadOnly loadout, out AbsolutePath redModInstallFolder, out int numRedModDirs)
     {
-        var install = loadout.InstallationInstance;
-        var locations = install.LocationsRegister;
-        var redModPath = locations.GetResolvedPath(RedModPath);
-        var redModInstallFolder = locations.GetResolvedPath(RedModInstallFolder);
+        redModInstallFolder = loadout.InstallationInstance.LocationsRegister.GetResolvedPath(RedModInstallFolder);
 
         if (!redModInstallFolder.DirectoryExists())
-            yield break;
+        {
+            numRedModDirs = 0;
+            return false;
+        }
 
-        var redModDirs = redModInstallFolder.EnumerateDirectories("*", false);
+        var redModDirs = redModInstallFolder
+            .EnumerateDirectories("*", false)
+            .Where(x => x.EnumerateFiles(pattern: "*", recursive: false).Any());
 
-        if (redModDirs.Count() == 0)
-            yield break;
+        numRedModDirs = redModDirs.Count();
+        return numRedModDirs > 0;
+    }
 
-        if (redModPath.FileExists)
-            yield break;
+    internal static bool HasRedModToolInstalled(Loadout.ReadOnly loadout, out AbsolutePath redModPath)
+    {
+        redModPath = loadout.InstallationInstance.LocationsRegister.GetResolvedPath(RedModPath);
+        return redModPath.FileExists;
+    }
+
+    public async IAsyncEnumerable<Diagnostic> Diagnose(
+        Loadout.ReadOnly loadout,
+        [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        if (!HasRedMods(loadout, out var redModInstallFolder, out var numRedModDirs)) yield break;
+        if (HasRedModToolInstalled(loadout, out var redModPath)) yield break;
+
+        var store = loadout.InstallationInstance.Store;
 
         NamedLink link;
-        if (install.Store == GameStore.GOG)
+        if (store == GameStore.GOG)
             link = RedmodGOGLink;
-        else if (install.Store == GameStore.Steam)
+        else if (store == GameStore.Steam)
             link = RedmodSteamLink;
-        else if (install.Store == GameStore.EGS)
+        else if (store == GameStore.EGS)
             link = RedmodEGSLink;
         else
             link = RedmodGenericLink;
@@ -46,9 +61,11 @@ public partial class MissingRedModEmitter : ILoadoutDiagnosticEmitter
         yield return Diagnostics.CreateMissingRedModDependency(
             RedmodLink: link,
             GenericLink: RedmodGenericLink,
-            ModCount: redModDirs.Count(),
+            ModCount: numRedModDirs,
             RedModFolder: redModInstallFolder.ToString(),
             RedModEXE: redModPath.ToString()
         );
+
+        await Task.Yield();
     }
 }

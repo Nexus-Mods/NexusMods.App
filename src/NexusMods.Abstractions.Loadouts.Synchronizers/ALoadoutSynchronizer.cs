@@ -40,11 +40,10 @@ using DiskState = Entities<DiskStateEntry.ReadOnly>;
 [PublicAPI]
 public class ALoadoutSynchronizer : ILoadoutSynchronizer
 {
- 
     private readonly ScopedAsyncLock _lock = new();
     private readonly IFileStore _fileStore;
 
-    private readonly ILogger _logger;
+    protected readonly ILogger Logger;
     private readonly IOSInformation _os;
     private readonly ISorter _sorter;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
@@ -75,7 +74,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
         _fileHashService = fileHashService;
 
-        _logger = logger;
+        Logger = logger;
         _fileStore = fileStore;
         _sorter = sorter;
         Connection = conn;
@@ -200,7 +199,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             // See https://partner.steamgames.com/doc/store/application/depots#depot_mounting_rules for steam example
             if (exists)
             {
-                _logger.LogWarning("Found duplicate game file `{Path}` in Loadout {LoadoutName} for game {Game}", gameFile.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
+                Logger.LogWarning("Found duplicate game file `{Path}` in Loadout {LoadoutName} for game {Game}", gameFile.Path, loadout.Name, loadout.InstallationInstance.Game.Name);
             }
             
             // If the entry already exists, we replace it
@@ -293,7 +292,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var locatorIds = loadout.LocatorIds.Distinct().ToArray();
         if (locatorIds.Length != loadout.LocatorIds.Count)
-            _logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on Loadout {} for game `{Game}` when getting game state", loadout.LocatorIds, loadout.Name, loadout.InstallationInstance.Game.Name);
+            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on Loadout {} for game `{Game}` when getting game state", loadout.LocatorIds, loadout.Name, loadout.InstallationInstance.Game.Name);
         
         foreach (var item in _fileHashService.GetGameFiles((loadout.InstallationInstance.Store, locatorIds)))
         {
@@ -494,7 +493,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // NOTE(erri120): It would be very odd if we re-query the game, and it's not installed anymore
         if (!gameLocatorResults.TryGetFirst(result => result.Store == loadout.InstallationInstance.Store, out var gameLocatorResult))
         {
-            _logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.InstallationInstance.Store, loadout.InstallationInstance.Game.Name);
+            Logger.LogCritical("Found no installation of the game `{Store}`/`{Game}` anymore!", loadout.InstallationInstance.Store, loadout.InstallationInstance.Game.Name);
             return loadout;
         }
 
@@ -502,7 +501,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var newLocatorIds = metadataLocatorIds.Distinct().ToArray();
         
         if (newLocatorIds.Length != metadataLocatorIds.Length)
-            _logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while reprocessing game updates", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
+            Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while reprocessing game updates", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
 
         var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds).Count();
         var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds).Count();
@@ -554,7 +553,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         else
         {
             tx.Add(loadout, Loadout.GameVersion, VanityVersion.DefaultValue);
-            _logger.LogWarning("Found no vanity version for locator IDs `{LocatorIds}` (`{Store}`)", newLocatorIds, gameLocatorResult.Store);
+            Logger.LogWarning("Found no vanity version for locator IDs `{LocatorIds}` (`{Store}`)", newLocatorIds, gameLocatorResult.Store);
         }
         
         loadout = loadout.Rebase();
@@ -650,7 +649,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             if (!node.Actions.HasFlag(Actions.WarnOfConflict))
                 continue;
-            _logger.LogWarning("Conflict in {Path}", path);
+            Logger.LogWarning("Conflict in {Path}", path);
         }
     }
 
@@ -660,7 +659,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         {
             if (!node.Actions.HasFlag(Actions.WarnOfUnableToExtract))
                 continue;
-            _logger.LogWarning("Unable to extract {Path}", path);
+            Logger.LogWarning("Unable to extract {Path}", path);
         }
     }
 
@@ -728,7 +727,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         // Extract files to disk
-        _logger.LogDebug("Extracting {Count} files to disk", toExtract.Count);
+        Logger.LogDebug("Extracting {Count} files to disk", toExtract.Count);
         
         if (toExtract.Count > 0)
         {
@@ -1245,7 +1244,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             ref var diskStateEntity = ref CollectionsMarshal.GetValueRefOrAddDefault(previousDiskState, path, out var hasExistingDiskStateEntity);
             if (hasExistingDiskStateEntity)
             {
-                _logger.LogWarning("Duplicate path in disk state: `{Path}`", path);
+                Logger.LogWarning("Duplicate path in disk state: `{Path}`", path);
             }
 
             diskStateEntity = previousDiskStateEntity;
@@ -1274,7 +1273,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 if (!isNewPath)
                 {
-                    _logger.LogDebug("Skipping already indexed file at `{Path}`", file);
+                    Logger.LogDebug("Skipping already indexed file at `{Path}`", file);
                     return;
                 }
 
@@ -1342,7 +1341,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 return hash.XxHash3;
         }
 
-        _logger.LogDebug("Didn't find matching hash data for file `{Path}`, falling back to doing a full hash", file);
+        Logger.LogDebug("Didn't find matching hash data for file `{Path}`, falling back to doing a full hash", file);
         return await file.XxHash3Async(token: token);
     }
 
@@ -1367,13 +1366,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     
                     if (distinctLocatorIds.Length != metadataLocatorIds.Length)
                     {
-                        _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when creating new loadout", metadataLocatorIds, installation.Game.Name);
+                        Logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when creating new loadout", metadataLocatorIds, installation.Game.Name);
                     }
                     locatorIds.AddRange(distinctLocatorIds);
                 }
 
                 if (!_fileHashService.TryGetVanityVersion((installation.Store, locatorIds.ToArray()), out var version))
-                    _logger.LogWarning("Unable to find game version for {Game}", installation.GameMetadataId);
+                    Logger.LogWarning("Unable to find game version for {Game}", installation.GameMetadataId);
 
                 var loadout = new Loadout.New(tx)
                 {
@@ -1443,7 +1442,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (locatorIds.Length != metadataLocatorIds.Length)
         {
-            _logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when deactivating loadout", metadataLocatorIds, installation.Game.Name);
+            Logger.LogWarning("Duplicate locator ids `{LocatorIds}` found in LocatorResultMetadata for {Game} when deactivating loadout", metadataLocatorIds, installation.Game.Name);
         }
         
         await ResetToOriginalGameState(installation, locatorIds);
@@ -1511,7 +1510,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
                 foreach (var loadout in metadata.Loadouts)
                 {
-                    _logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
+                    Logger.LogInformation("Deleting loadout {Loadout} - {ShortName}", loadout.Name, loadout.ShortName);
                     await ctx.YieldAsync();
                     await DeleteLoadout(loadout, GarbageCollectorRunMode.DoNotRun);
                 }
