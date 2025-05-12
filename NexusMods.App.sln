@@ -296,6 +296,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.GitHub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.GitHub.Tests", "tests\NexusMods.Networking.GitHub.Tests\NexusMods.Networking.GitHub.Tests.csproj", "{5B201091-811F-4931-8FD2-0F64EFD5A6CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Sdk", "src\NexusMods.Sdk\NexusMods.Sdk.csproj", "{6C6760B5-8717-47C2-B3EF-0501F3F9E805}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -782,6 +784,10 @@ Global
 		{5B201091-811F-4931-8FD2-0F64EFD5A6CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B201091-811F-4931-8FD2-0F64EFD5A6CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B201091-811F-4931-8FD2-0F64EFD5A6CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C6760B5-8717-47C2-B3EF-0501F3F9E805}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C6760B5-8717-47C2-B3EF-0501F3F9E805}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C6760B5-8717-47C2-B3EF-0501F3F9E805}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C6760B5-8717-47C2-B3EF-0501F3F9E805}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -920,6 +926,7 @@ Global
 		{653CF228-7CD2-4C1B-8B4F-1332B66A33A2} = {0CB73565-1207-4A56-A79F-6A8E9BBD795C}
 		{16847A6C-EADC-45E3-8354-52C7DE356941} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
 		{5B201091-811F-4931-8FD2-0F64EFD5A6CA} = {897C4198-884F-448A-B0B0-C2A6D971EAE0}
+		{6C6760B5-8717-47C2-B3EF-0501F3F9E805} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
