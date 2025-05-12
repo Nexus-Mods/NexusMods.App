@@ -33,6 +33,7 @@
                         
             <Style Selector="^ > Panel > Image">
                 <Setter Property="Stretch" Value="UniformToFill" />
+                <Setter Property="StretchDirection" Value="Both" />
             </Style>
             
             <!-- The below aren't used yet but thought I'd placeholder it for future -->

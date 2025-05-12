@@ -24,7 +24,7 @@ public static class WineDiagnosticHelper
 
         var sb = new StringBuilder();
 
-        var missingPackagesString = missingPackages.Select(x => $"- `{x}`").Aggregate((a, b) => $"{a}\n{b}");
+        var missingPackagesString = missingPackages.Select(x => $"* `{x}`").Aggregate((a, b) => $"{a}\n{b}");
 
         if (locatorResultMetadata is SteamLocatorResultMetadata)
         {
@@ -80,11 +80,11 @@ Use [winetricks](https://github.com/Winetricks/winetricks) to install the follow
         if (locatorResultMetadata is SteamLocatorResultMetadata)
         {
             sb.AppendLine($"""
-- Open Steam
-- Right-click the game
-- Click on "Properties..."
-- Open the "General" section
-- Update "Launch Options" to be the following:
+* Open Steam
+* Right-click the game
+* Click on "Properties..."
+* Open the "General" section
+* Update "Launch Options" to be the following:
 
 ```
 WINEDLLOVERRIDES="{dllOverridesString}" %command%
@@ -93,11 +93,11 @@ WINEDLLOVERRIDES="{dllOverridesString}" %command%
         } else if (locatorResultMetadata is HeroicGOGLocatorResultMetadata)
         {
             sb.AppendLine($"""
-- Open Heroic
-- Right-click the game
-- Click on "Settings"
-- Go to the "Advanced" tab
-- Update the environment variables:
+* Open the Heroic Games Launcher
+* Right-click the game
+* Click on "Settings"
+* Go to the "Advanced" tab
+* Update the environment variables:
 
 ```
 WINEDLLOVERRIDES="{dllOverridesString}"

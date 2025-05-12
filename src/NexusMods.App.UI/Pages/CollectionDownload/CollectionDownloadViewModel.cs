@@ -437,15 +437,15 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     public BindableReactiveProperty<Optional<RevisionNumber>> NewestRevisionNumber { get; } = new();
 
     public string Name => _collection.Name;
-    public string Summary => _collection.Summary;
-    public ulong EndorsementCount => _collection.Endorsements;
-    public ulong TotalDownloads => _collection.TotalDownloads;
+    public string Summary => _collection.Summary.ValueOr(string.Empty);
+    public ulong EndorsementCount => _collection.Endorsements.ValueOr(0ul);
+    public ulong TotalDownloads => _collection.TotalDownloads.ValueOr(0ul);
     public string Category => _collection.Category.Name;
-    public Size TotalSize => _revision.TotalSize;
+    public Size TotalSize => _revision.TotalSize.ValueOr(Size.Zero);
     public Percent OverallRating => Percent.CreateClamped(_revision.Collection.RecentRating.ValueOr(0));
 
     public string AuthorName => _collection.Author.Name;
-    public bool IsAdult => _revision.IsAdult;
+    public bool IsAdult => _revision.IsAdult.ValueOr(false);
     public CollectionSlug Slug => _collection.Slug;
     public RevisionNumber RevisionNumber => _revision.RevisionNumber;
 

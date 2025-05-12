@@ -44,9 +44,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Subscribe()
                 .DisposeWith(disposables);
 
-            this.WhenAnyValue(
-                    view => view.ViewModel!.ActualStartPoint,
-                    view => view.ViewModel!.ActualEndPoint)
+            this.WhenAnyValue(view => view.ViewModel!.ActualPoints)
                 .SubscribeWithErrorLogging(tuple =>
                 {
                     if (ViewModel is null) return;
@@ -78,7 +76,7 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
                 .Do(_ =>
                 {
                     _isPressed = true;
-                    Icon.IsVisible = true;
+                    DragHighlight.Opacity = 1;
                 })
                 .Finally(() =>
                 {
@@ -121,18 +119,17 @@ public partial class PanelResizerView : ReactiveUserControl<IPanelResizerViewMod
     private void PopulateFromViewModel(IPanelResizerViewModel viewModel)
     {
         Cursor = viewModel.IsHorizontal ? CursorHorizontal : CursorVertical;
-        Icon.Classes.Add(viewModel.IsHorizontal ? "DragHorizontal" : "DragVertical");
     }
 
     protected override void OnPointerEntered(PointerEventArgs e)
     {
-        Icon.IsVisible = true;
+        DragHighlight.Opacity = 1;
         base.OnPointerEntered(e);
     }
 
     protected override void OnPointerExited(PointerEventArgs e)
     {
-        if (!_isPressed) Icon.IsVisible = false;
+        if (!_isPressed) DragHighlight.Opacity = 0;
         base.OnPointerExited(e);
     }
 }

@@ -3,7 +3,8 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-                    xmlns:gameLocators="clr-namespace:NexusMods.Abstractions.GameLocators;assembly=NexusMods.Abstractions.GameLocators">
+                    xmlns:gameLocators="clr-namespace:NexusMods.Abstractions.GameLocators;assembly=NexusMods.Abstractions.GameLocators"
+                    xmlns:converters="clr-namespace:NexusMods.App.UI.Converters">
 
     <DataTemplate x:Key="{x:Static controls:SharedColumns+Name.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
@@ -18,11 +19,8 @@
                         <controls:ComponentTemplate.DataTemplate>
                             <DataTemplate DataType="{x:Type controls:ImageComponent}">
                                     <Panel>
-                                        <!-- The below image is drawn after the icon and covers the icon if a thumbnail is present. --> 
-                                        <!-- If no thumbnail, then the below Image is null\transparent and so the icon is seen -->
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" />
                                         <Image Source="{CompiledBinding Value.Value}" />
-                                        
+                                               
                                         <!-- The below grid is used to overlay the badge icons on top of the image.
                                         This is not used yet but thought I'd placeholder it for future -->
                                         <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Top" IsVisible="False">

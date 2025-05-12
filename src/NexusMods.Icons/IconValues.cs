@@ -105,6 +105,8 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/format-list-checkbox/
     public static readonly IconValue FormatListCheckbox = new ProjektankerIcon("mdi-format-list-checkbox");
     
+    public static readonly IconValue FormatListNumbered = new ProjektankerIcon("mdi-format-list-numbered");
+    
     // https://pictogrammers.com/library/mdi/icon/dots-grid/
     public static readonly IconValue DotsGrid = new ProjektankerIcon("mdi-dots-grid");
     
@@ -391,6 +393,9 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/window-maximize/
     public static readonly IconValue WindowMaximize = new ProjektankerIcon("mdi-window-maximize");
+    
+    // https://pictogrammers.com/library/mdi/icon/window-restore/
+    public static readonly IconValue WindowRestore = new ProjektankerIcon("mdi-window-restore");
     
     // https://pictogrammers.com/library/mdi/icon/refresh/
     public static readonly IconValue Refresh = new ProjektankerIcon("mdi-refresh");

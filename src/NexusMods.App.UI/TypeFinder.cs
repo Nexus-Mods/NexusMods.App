@@ -40,7 +40,6 @@ internal class TypeFinder : ITypeFinder
         typeof(ViewLoadoutGroupFilesPageContext),
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),
-        typeof(LoadOrdersWIPPageContext),
         typeof(CollectionLoadoutPageContext),
         typeof(ProtocolRegistrationTestPageContext),
 

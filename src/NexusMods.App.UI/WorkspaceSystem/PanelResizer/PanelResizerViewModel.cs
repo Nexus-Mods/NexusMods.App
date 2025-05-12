@@ -11,9 +11,7 @@ public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelR
 {
     [Reactive] public Point LogicalStartPoint { get; set; }
     [Reactive] public Point LogicalEndPoint { get; set; }
-
-    [Reactive] public Point ActualStartPoint { get; set; }
-    [Reactive] public Point ActualEndPoint { get; set; }
+    [Reactive] public (Point ActualStartPoint, Point ActualEndPoint) ActualPoints { get; set; }
 
     public bool IsHorizontal { get; }
 
@@ -46,8 +44,7 @@ public class PanelResizerViewModel : AViewModel<IPanelResizerViewModel>, IPanelR
     {
         var matrix = Matrix.CreateScale(_workspaceSize.Width, _workspaceSize.Height);
 
-        ActualStartPoint = LogicalStartPoint.Transform(matrix);
-        ActualEndPoint = LogicalEndPoint.Transform(matrix);
+        ActualPoints = (LogicalStartPoint.Transform(matrix), LogicalEndPoint.Transform(matrix));
     }
 
     public void Arrange(Size workspaceSize)

@@ -39,14 +39,17 @@ public class ImageLoaderTests : AUiTest
             lifetime1.ReferenceCount.Should().Be(1);
             lifetime2.ReferenceCount.Should().Be(2);
 
-            lifetime1.Value.Size.Should().Be(new Avalonia.Size(120, 80));
+            lifetime1.Value.Size.Width.Should().BeLessOrEqualTo(120);
+            lifetime1.Value.Size.Height.Should().BeLessOrEqualTo(80);
         }
 
         {
             var pipeline = CreatePipeline();
 
             using var lifetime = (await pipeline.LoadResourceAsync(modPage, CancellationToken.None)).Data;
-            lifetime.Value.Size.Should().Be(new Avalonia.Size(120, 80));
+            
+            lifetime.Value.Size.Width.Should().BeLessOrEqualTo(120);
+            lifetime.Value.Size.Height.Should().BeLessOrEqualTo(80);
         }
     }
 

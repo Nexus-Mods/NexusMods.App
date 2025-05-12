@@ -211,7 +211,8 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <!-- using transparent border to make up for other states needing border -->
         <Setter Property="BorderThickness" Value="2" />
-        <Setter Property="BorderBrush" Value="{StaticResource SurfaceTransparentBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
 
