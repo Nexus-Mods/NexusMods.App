@@ -1,3 +1,40 @@
+# v0.11.0 - 2025-05-XX
+
+## Cyberpunk 2077 support
+
+## More features
+
+## Technical Changes
+
+## Bug Fixes
+
+## Known Issues
+* The Epic Games release of Cyberpunk 2077 is detected but not supported. 
+* The app will attempt to run the REDmod.exe even if it is not installed, resulting in an error message. 
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+
+
+* Load order moved to "Rules" tab
+* Custom UI Chrome
+* Updated UI for CP2077 (Generic Preview instead of SDV preview)
+* Improvements to panel resizing (better drag handles?)
+* Games can be unmanaged via command line (fix by Michael-Kowata in the community)
+* Fixed missing colours on Preview Changes page
+* Added the backend required for the "Undo" feature
+* Improved performance of tree view
+* Started the backend work required to allow users to create collections
+* Fixed a crash when snapping to full screen with multiple panels open
+* Fetch downloads via the entire file rather than using range requests to improve stability.
+* Tabs can be closed on middle click 
+* Updated CP2077 Health Check messages
+* Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game
+* When un-managing a game, loadouts for that game will be hidden to prevent a crash when trying to access them.
+* Use the recent rating for collections instead of "All time"
+* Fixed a bug where copying a loadout could result in two loadouts with the same name. 
+* Added mod thumbnails to the load order page
+
 # v0.10.2 - 2025-04-30
 This release adds Cyberpunk 2077 to supported games, improves the installation of Stardew Valley mods without a manifest file and includes a draggable load order view for Cyberpunk 2077 REDmods. 
 
