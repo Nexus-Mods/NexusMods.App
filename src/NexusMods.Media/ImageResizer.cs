@@ -33,17 +33,18 @@ public sealed class ImageResizer<TResourceIdentifier> : ANestedResourceLoader<TR
         */
         if (_maintainAspectRatio)
         {
-            var aspectRatio = (float)original.Height / original.Width;
-
-            if (_newSize.Width > _newSize.Height)
+            var originalAspectRatio = (float)original.Width / original.Height;
+            var targetAspectRatio = (float)_newSize.Width / _newSize.Height;
+    
+            if (originalAspectRatio > targetAspectRatio)
             {
-                var newHeight = (int)(_newSize.Width * aspectRatio);
-                targetSize = new SKSizeI(_newSize.Width, newHeight);
+                // Original is wider compared to target - width becomes the limiting factor
+                targetSize = new SKSizeI(_newSize.Width, (int)(_newSize.Width / originalAspectRatio));
             }
             else
             {
-                var newWidth = (int)(_newSize.Height / aspectRatio);
-                targetSize = new SKSizeI(newWidth, _newSize.Height);
+                // Original is taller compared to target - height becomes the limiting factor
+                targetSize = new SKSizeI((int)(_newSize.Height * originalAspectRatio), _newSize.Height);
             }
         }
 
