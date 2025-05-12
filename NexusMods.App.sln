@@ -302,6 +302,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI.Sdk", "src\Nex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.UI", "src\NexusMods.UI\NexusMods.UI.csproj", "{B0C9D2D7-BAD3-4649-9C4A-53F8871696EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Cli", "src\NexusMods.Cli\NexusMods.Cli.csproj", "{F93C4296-F441-4514-A78F-2EEC3DDFCF8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -800,6 +802,10 @@ Global
 		{B0C9D2D7-BAD3-4649-9C4A-53F8871696EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0C9D2D7-BAD3-4649-9C4A-53F8871696EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0C9D2D7-BAD3-4649-9C4A-53F8871696EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F93C4296-F441-4514-A78F-2EEC3DDFCF8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F93C4296-F441-4514-A78F-2EEC3DDFCF8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F93C4296-F441-4514-A78F-2EEC3DDFCF8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F93C4296-F441-4514-A78F-2EEC3DDFCF8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -941,6 +947,7 @@ Global
 		{6C6760B5-8717-47C2-B3EF-0501F3F9E805} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{3E10AF2D-A8D0-42F0-B0E7-C1390DBE1242} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{B0C9D2D7-BAD3-4649-9C4A-53F8871696EC} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
+		{F93C4296-F441-4514-A78F-2EEC3DDFCF8A} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
