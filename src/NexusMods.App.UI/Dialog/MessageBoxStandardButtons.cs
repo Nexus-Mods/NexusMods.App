@@ -9,24 +9,25 @@ namespace NexusMods.App.UI.Dialog;
 public static class MessageBoxStandardButtons
 {
     /// <summary>
-    /// Represents an "OK" button with an accept role.
+    /// Represents an "OK" button with an accept action.
     /// </summary>
     public static readonly MessageBoxButtonDefinition Ok = new(
         "OK",
         ButtonDefinitionId.From("ok"),
         null,
         null,
-        ButtonRole.AcceptRole
+        ButtonAction.Accept,
+        ButtonStyling.Primary
     );
 
     /// <summary>
-    /// Represents a "Cancel" button with a reject role.
+    /// Represents a "Cancel" button with a reject action.
     /// </summary>
     public static readonly MessageBoxButtonDefinition Cancel = new(
         "Cancel",
         ButtonDefinitionId.From("cancel"),
         null,
         null,
-        ButtonRole.RejectRole
+        ButtonAction.Reject
     );
 }

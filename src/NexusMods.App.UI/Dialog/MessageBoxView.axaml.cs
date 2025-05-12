@@ -1,3 +1,5 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Controls;
@@ -5,32 +7,70 @@ using Avalonia.Data;
 using Avalonia.Labs.Panels;
 using Avalonia.Markup.Xaml;
 using DynamicData;
+using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
+using ReactiveUI;
+using Avalonia.ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonDefinitionId>
+public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, IMessageBoxView<ButtonDefinitionId>
 {
     private ButtonDefinitionId _buttonResult = ButtonDefinitionId.From("none");
     private Action? _closeAction;
-    
+
     private Button? closeButton;
-    
+
     public MessageBoxView()
     {
         InitializeComponent();
-        
+
         closeButton = this.FindControl<Button>("CloseButton");
-        
-        if(closeButton != null)
+
+        if (closeButton != null)
             closeButton.Click += CloseWindow;
+
+        this.WhenActivated(disposables =>
+            {
+                this.OneWayBind(ViewModel,
+                        vm => vm.ShowWindowTitlebar,
+                        view => view.Titlebar.IsVisible
+                    )
+                    .DisposeWith(disposables);
+
+                // Bind the title text block to the ViewModel's WindowTitle property.
+                this.OneWayBind(ViewModel,
+                        vm => vm.WindowTitle,
+                        view => view.TitleTextBlock.Text
+                    )
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.ContentMessage,
+                        view => view.ContentTextBlock.Text
+                    )
+                    .DisposeWith(disposables);
+
+                // Bind the content view model
+                this.OneWayBind(ViewModel,
+                        vm => vm.ContentViewModel,
+                        view => view.ViewModelHost.ViewModel
+                    )
+                    .DisposeWith(disposables);
+                
+                this.WhenAnyValue(view => view.ViewModel!.ContentViewModel)
+                    .Select(vm => vm != null)
+                    .BindTo(this, v => v.ViewModelHost.IsVisible)
+                    .DisposeWith(disposables);
+            }
+        );
     }
-    
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        
+
         // need this here so DataContext is set
         GenerateButtons();
     }
@@ -57,8 +97,8 @@ public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonDefinit
                 Text = buttonDefinition.Text,
                 Command = viewModel.CloseWindowCommand,
                 CommandParameter = buttonDefinition.Id,
-                IsDefault = buttonDefinition.ButtonRole.HasFlag(ButtonRole.AcceptRole),
-                IsCancel = buttonDefinition.ButtonRole.HasFlag(ButtonRole.RejectRole),
+                IsDefault = buttonDefinition.ButtonAction == ButtonAction.Accept,
+                IsCancel = buttonDefinition.ButtonAction == ButtonAction.Reject,
                 [Flex.GrowProperty] = 1,
                 [Flex.ShrinkProperty] = 0,
                 [Flex.BasisProperty] = FlexBasis.Parse("0%"),
@@ -74,16 +114,16 @@ public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonDefinit
             };
 
             // Add appropriate classes based on the ButtonRole
-            if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.DestructiveRole))
+            if (buttonDefinition.ButtonStyling == ButtonStyling.Destructive)
                 button.Classes.Add("Danger");
-            
-            if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.InfoRole))
+
+            if (buttonDefinition.ButtonStyling == ButtonStyling.Info)
                 button.Classes.Add("Info");
-            
-            if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.PremiumRole))
+
+            if (buttonDefinition.ButtonStyling == ButtonStyling.Premium)
                 button.Classes.Add("Premium");
-            
-            if (buttonDefinition.ButtonRole.HasFlag(ButtonRole.PrimaryRole))
+
+            if (buttonDefinition.ButtonStyling == ButtonStyling.Primary)
                 button.Classes.Add("Primary");
 
             // Add the button to the panel
@@ -116,4 +156,3 @@ public partial class MessageBoxView : UserControl, IMessageBoxView<ButtonDefinit
         _closeAction?.Invoke();
     }
 }
-

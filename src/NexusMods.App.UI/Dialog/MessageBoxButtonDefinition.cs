@@ -18,11 +18,13 @@ public readonly partial struct ButtonDefinitionId { }
 /// <param name="Id">The unique identifier for the button.</param>
 /// <param name="LeftIcon">An optional icon displayed to the left of the button text.</param>
 /// <param name="RightIcon">An optional icon displayed to the right of the button text.</param>
-/// <param name="ButtonRole">The role of the button, indicating its purpose or behavior in the dialog.</param>
+/// <param name="ButtonAction">The action associated with the button.</param>
+/// <param name="ButtonStyling">The styling applied to the button.</param>
 public record MessageBoxButtonDefinition(
     string Text,
     ButtonDefinitionId Id,
     IconValue? LeftIcon = null,
     IconValue? RightIcon = null,
-    ButtonRole ButtonRole = ButtonRole.None
+    ButtonAction ButtonAction = ButtonAction.None,
+    ButtonStyling ButtonStyling = ButtonStyling.None
 );

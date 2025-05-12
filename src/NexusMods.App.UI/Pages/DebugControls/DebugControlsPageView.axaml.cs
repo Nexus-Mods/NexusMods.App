@@ -97,7 +97,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     ButtonDefinitionId.From("yes-delete"),
                     null,
                     null,
-                    ButtonRole.AcceptRole | ButtonRole.DestructiveRole
+                    ButtonAction.Accept,
+                    ButtonStyling.Destructive
                 )
             ],
             MessageBoxSize.Small
@@ -127,14 +128,15 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     ButtonDefinitionId.From("cancel"),
                     IconValues.Warning,
                     null,
-                    ButtonRole.RejectRole
+                    ButtonAction.Reject
                 ),
                 new MessageBoxButtonDefinition(
                     "Update in 2 collections",
                     ButtonDefinitionId.From("update"),
                     null,
                     null,
-                    ButtonRole.AcceptRole | ButtonRole.InfoRole
+                    ButtonAction.Accept,
+                    ButtonStyling.Info
                 )
             ],
             MessageBoxSize.Large
@@ -150,7 +152,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     ButtonDefinitionId.From("cancel"),
                     null,
                     null,
-                    ButtonRole.RejectRole
+                    ButtonAction.Reject
                 ),
                 new MessageBoxButtonDefinition(
                     "Find out more",
@@ -161,7 +163,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     ButtonDefinitionId.From("get-premium"),
                     null,
                     null,
-                    ButtonRole.AcceptRole | ButtonRole.PremiumRole
+                    ButtonAction.Accept,
+                    ButtonStyling.Premium
                 )
             ],
             MessageBoxSize.Medium
@@ -177,18 +180,19 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     ButtonDefinitionId.From("cancel"),
                     null,
                     null,
-                    ButtonRole.RejectRole
+                    ButtonAction.Reject
                 ),
                 new MessageBoxButtonDefinition(
                     "Primary",
                     ButtonDefinitionId.From("primary"),
                     null,
                     null,
-                    ButtonRole.AcceptRole | ButtonRole.PrimaryRole
+                    ButtonAction.Accept,
+                    ButtonStyling.Primary
                 )
             ],
             MessageBoxSize.Medium
-        );;
+        );
     }
 
     private async void ShowModalCustom_OnClick(object? sender, RoutedEventArgs e)
@@ -196,17 +200,39 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         try
         {
             if (ViewModel is null) return;
-            
+
             // create custom content viewmodel
-            var customViewModel = new CustomContentViewModel("This is lovely text");
-            
+            var customViewModel = new CustomContentViewModel("This is more lovely text");
+
             // create wrapper dialog around the custom content 
-            var dialog = DialogFactory.CreateCustomDialog(customViewModel);
+            var dialog = DialogFactory.CreateCustomDialog(
+                "Custom Dialog",
+                "This is lovely text",
+                [
+                    new MessageBoxButtonDefinition(
+                        "Secondary",
+                        ButtonDefinitionId.From("cancel"),
+                        null,
+                        null,
+                        ButtonAction.Reject
+                    ),
+                    new MessageBoxButtonDefinition(
+                        "Primary",
+                        ButtonDefinitionId.From("primary"),
+                        null,
+                        null,
+                        ButtonAction.Accept,
+                        ButtonStyling.Primary
+                    )
+                ],
+                MessageBoxSize.Medium,
+                customViewModel
+            );
 
             // tell windowmanager to show it
             // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
             var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-            
+
             // check viewmodel properties when dialog has been closed
             Console.WriteLine($@"result: {result}");
             Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
@@ -224,17 +250,39 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         try
         {
             if (ViewModel is null) return;
-            
+
             // create custom content viewmodel
-            var customViewModel = new CustomContentViewModel("This is lovely text");
-            
+            var customViewModel = new CustomContentViewModel("This is more lovely text");
+
             // create wrapper dialog around the custom content 
-            var dialog = DialogFactory.CreateCustomDialog(customViewModel);
+            var dialog = DialogFactory.CreateCustomDialog(
+                "Custom Dialog",
+                "This is lovely text",
+                [
+                    new MessageBoxButtonDefinition(
+                        "Secondary",
+                        ButtonDefinitionId.From("cancel"),
+                        null,
+                        null,
+                        ButtonAction.Reject
+                    ),
+                    new MessageBoxButtonDefinition(
+                        "Primary",
+                        ButtonDefinitionId.From("primary"),
+                        null,
+                        null,
+                        ButtonAction.Accept,
+                        ButtonStyling.Primary
+                    )
+                ],
+                MessageBoxSize.Medium,
+                customViewModel
+            );
 
             // tell windowmanager to show it
             // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
             var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
-            
+
             // check viewmodel properties when dialog has been closed
             Console.WriteLine($@"result: {result}");
             Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");

@@ -6,9 +6,10 @@
              xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
              xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
              xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+             xmlns:reactiveUi="http://reactiveui.net"
              mc:Ignorable="d" d:DesignWidth="296"
              x:Class="NexusMods.App.UI.Dialog.MessageBoxView"
-             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxDesignViewModel}"
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxCustomDesignViewModel}"
              x:DataType="vm:MessageBoxViewModel">
 
     <!-- Temporary styles to see modal button variations -->
@@ -100,10 +101,12 @@
                                Theme="{StaticResource BodyMDSemiTheme}"
                                TextWrapping="Wrap"/>
                     <TextBlock Name="ContentTextBlock"
-                               Text="{Binding ContentMessage}"
                                Foreground="{StaticResource NeutralSubduedBrush}"
                                TextWrapping="Wrap"/>
+                    <!-- content -->
+                        <reactiveUi:ViewModelViewHost Name="ViewModelHost" />
                 </StackPanel>
+                
 
                 <!-- buttons -->
                 <panels:FlexPanel Name="ButtonsFlexPanel" Grid.Row="1"

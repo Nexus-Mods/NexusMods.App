@@ -43,16 +43,20 @@ public static class DialogFactory
     /// <returns>
     /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the dialog's view, view model, and result type.
     /// </returns>
-    public static Dialog<DialogContainerView, DialogContainerViewModel, ButtonDefinitionId> CreateCustomDialog(IDialogContentViewModel viewModel)
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateCustomDialog(
+        string title,
+        string text,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        MessageBoxSize messageBoxSize,
+        IDialogContentViewModel contentViewModel)
     {
-        // create dialog container viewmodel
-        var containerViewModel = new DialogContainerViewModel(viewModel, "Custom Content", 650, false);
         
-        var view = new DialogContainerView()
+        var viewModel = new MessageBoxViewModel(title, text, buttonDefinitions, messageBoxSize, contentViewModel);
+        var view = new MessageBoxView()
         {
-            DataContext = containerViewModel
+            DataContext = viewModel,
         };
 
-        return new Dialog<DialogContainerView, DialogContainerViewModel, ButtonDefinitionId>(view, containerViewModel);
+        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
     }
 }

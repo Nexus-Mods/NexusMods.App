@@ -10,7 +10,7 @@
                                 x:Class="NexusMods.App.UI.Dialog.CustomContentView"
                                 d:DataContext="{x:Static dialog:DesignDataContexts.CustomContentDesignViewModel}">
     
-    <Border Padding="16">
+    <Border Padding="0">
         <StackPanel Spacing="8">
             <TextBlock Text="{Binding CustomText}"
                        Theme="{StaticResource BodyLGBoldTheme}"/>

@@ -22,11 +22,14 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
     public IDialogView<ButtonDefinitionId>? View { get; set; }
     public ButtonDefinitionId Result { get; set; } 
 
+    public IDialogContentViewModel? ContentViewModel { get; set; }
+    
     public MessageBoxViewModel(
         string title, 
         string text, 
         MessageBoxButtonDefinition[] buttonDefinitions,
-        MessageBoxSize messageBoxSize = MessageBoxSize.Small)
+        MessageBoxSize messageBoxSize = MessageBoxSize.Small,
+        IDialogContentViewModel? contentViewModel = null)
     {
         WindowTitle = title;
         ContentMessage = text;
@@ -39,6 +42,9 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
             MessageBoxSize.Large => 640,
             _ => 320
         };
+
+        ContentViewModel = contentViewModel;
+        ContentViewModel?.SetParent(this);
         
         CloseWindowCommand = ReactiveCommand.Create<ButtonDefinitionId>(CloseWindow);
     }

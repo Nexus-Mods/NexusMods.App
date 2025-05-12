@@ -742,10 +742,6 @@
         <Compile Update="MessageBox\Dialog.cs">
           <DependentUpon>IDialog.cs</DependentUpon>
         </Compile>
-        <Compile Update="Dialog\DialogContainerView.axaml.cs">
-          <DependentUpon>DialogContainer.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Pages\ProtocolRegistration\ProtocolRegistrationTestPageViewModel.cs">
           <DependentUpon>IProtocolRegistrationTestPageViewModel.cs</DependentUpon>
         </Compile>
