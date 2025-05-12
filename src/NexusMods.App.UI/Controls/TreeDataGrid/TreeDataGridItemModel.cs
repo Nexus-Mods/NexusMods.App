@@ -56,12 +56,12 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
-    public IObservable<bool> HasChildrenObservable { private get; init; }
+    public IObservable<bool> HasChildrenObservable { get; init; }
 
     private readonly BindableReactiveProperty<bool> _hasChildren = new();
     public IReadOnlyBindableReactiveProperty<bool> HasChildren => _hasChildren;
 
-    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { private get; init; }
+    public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; }
 
     private ObservableList<TModel> _children = [];
     private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
