@@ -126,6 +126,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapter<TTreeItemWithPath, TTr
     /// </summary>
     public readonly TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> FolderGenerator;
     private readonly TTreeItemWithPathFactory _factory;
+    private readonly IDisposable _adaptDisposable;
 
     /// <summary>
     /// Creates a new instance of <see cref="TreeFolderGeneratorCompositeItemModelAdapter{TTreeItemWithPath,TTreeItemWithPathFactory,TKey,TFolderModelInitializer}"/>.
@@ -140,7 +141,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapter<TTreeItemWithPath, TTr
         FolderGenerator = new TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer>();
         
         // Subscribe to the changes and pipe them into Adapt
-        changes.Subscribe(Adapt);
+        _adaptDisposable = changes.Subscribe(Adapt);
     }
 
     /// <summary>
@@ -179,6 +180,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapter<TTreeItemWithPath, TTr
     /// <inheritdoc />
     public void Dispose()
     {
+        _adaptDisposable.Dispose();
         FolderGenerator.Dispose();
         GC.SuppressFinalize(this);
     }
