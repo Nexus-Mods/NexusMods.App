@@ -133,7 +133,7 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
                         var compositeDisposable = new CompositeDisposable();
                         FileTreeAdapter.Activate().AddTo(compositeDisposable);
                         FileTreeAdapter.SelectedModels
-                            .ObserveCountChanged(notifyCurrentCount: true)
+                            .ObserveChanged()
                             .Subscribe(FileTreeAdapter, (_, adapter) =>
                                 {
                                     SelectedItem = adapter.SelectedModels.FirstOrDefault();
