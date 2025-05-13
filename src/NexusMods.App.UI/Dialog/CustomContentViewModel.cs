@@ -10,7 +10,7 @@ public class CustomContentViewModel : AViewModel<IDialogContentViewModel>, IDial
 {
     public bool DontAskAgain { get; set; }
     public bool ShouldEndorseDownloadedMods { get; set; }
-    public ReactiveCommand<string, Unit> CloseWindowCommand { get; }
+    //public ReactiveCommand<string, Unit> CloseWindowCommand { get; }
     public string CustomText { get; set; }
     public ObservableCollection<string> MyItems { get; set; } = new ()
     {
@@ -19,33 +19,10 @@ public class CustomContentViewModel : AViewModel<IDialogContentViewModel>, IDial
         "Item 3"
     };
 
-    private string? _mySelectedItem;
-    public string? MySelectedItem
-    {
-        get { return _mySelectedItem; }
-        set
-        {
-            // Some logic here
-            _mySelectedItem = value;
-        }
-    }
-    
+    public string? MySelectedItem { get; set; }
+
     public CustomContentViewModel(string text)
     {
         CustomText = text;
-        CloseWindowCommand = ReactiveCommand.Create<string>(CloseWindow);
-    }
-
-    public void CloseWindow(string id)
-    {
-        _parent?.CloseWindow(ButtonDefinitionId.From(string.IsNullOrEmpty(id) ? "none" : id));
-    }
-
-    private IDialogViewModel<ButtonDefinitionId>? _parent;
-
-
-    public void SetParent(IDialogViewModel<ButtonDefinitionId> dialogViewModel)
-    {
-        _parent = dialogViewModel;
     }
 }

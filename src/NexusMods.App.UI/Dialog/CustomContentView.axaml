@@ -16,18 +16,6 @@
                        Theme="{StaticResource BodyLGBoldTheme}"/>
             <TextBlock Text="Download an entire mod collection at full speed with one click without leaving the app."
                        TextWrapping="Wrap"/>
-            <StackPanel Orientation="Horizontal" Spacing="12">
-                <controls:StandardButton x:Name="CloseButton"
-                                         Text="Close"
-                                         CommandParameter="close"
-                                         IsCancel="True"/>
-                <controls:StandardButton x:Name="UpgradeToPremium"
-                                         Text="Upgrade to Premium"
-                                         CommandParameter="upgrade-to-premium"
-                                         IsDefault="True"/>
-                <controls:StandardButton x:Name="DoNothing"
-                                         Text="Do Nothing" />
-            </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Easy in app mod updates," Foreground="{StaticResource NeutralStrongBrush}"/>
                 <TextBlock Text=" no more manual downloads."/>

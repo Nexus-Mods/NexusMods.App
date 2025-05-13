@@ -15,30 +15,27 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
         _view = view;
         _viewModel = viewModel;
     }
-    
-    public Task<TResult> ShowWindow(Window? owner = null, bool isModal = false)
-    {
-        _viewModel.SetView(_view);
 
+    public Task<TResult?> ShowWindow(Window? owner = null, bool isModal = false)
+    {
         var window = new DialogWindow()
         {
             Content = _view,
             DataContext = _viewModel,
             
             Title = _viewModel.WindowTitle,
-
-            MaxWidth = _viewModel.WindowMaxWidth
+            Width = _viewModel.WindowWidth,
         };
 
-        window.Closed += _view.CloseWindow;
-        var tcs = new TaskCompletionSource<TResult>();
-        
-        _view.SetCloseAction(() =>
-        {
-            tcs.TrySetResult(_view.GetButtonResult());
-            window.Close();
-        });
+        var tcs = new TaskCompletionSource<TResult?>();
 
+        // when the window is closed, set the result and complete the task
+        window.Closed += (o, args) =>
+        {
+            tcs.TrySetResult(_viewModel.Result);
+        };
+
+        // show the window in the taskbar if it's not modal
         if (isModal && owner != null)
         {
             window.ShowInTaskbar = false;

@@ -3,6 +3,7 @@ using System.Reactive;
 using Avalonia.Threading;
 using ExCSS;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
@@ -10,23 +11,24 @@ namespace NexusMods.App.UI.Dialog;
 public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
 {
     public MessageBoxButtonDefinition[] ButtonDefinitions { get; }
+    public ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> CloseWindowCommand { get; }
     public string WindowTitle { get; }
-    public double WindowMaxWidth { get; }
-    public bool ShowWindowTitlebar { get; } = true;
+    public double WindowWidth { get; }
     public string ContentMessage { get; set; }
+    public IconValue? Icon { get; }
     public MessageBoxSize MessageBoxSize { get; }
     public event PropertyChangedEventHandler? PropertyChanged;
     public ViewModelActivator Activator { get; } = null!;
 
-    public ReactiveCommand<ButtonDefinitionId, Unit> CloseWindowCommand { get; }
     public IDialogView<ButtonDefinitionId>? View { get; set; }
-    public ButtonDefinitionId Result { get; set; } 
+    public ButtonDefinitionId Result { get; set; }
 
     public IDialogContentViewModel? ContentViewModel { get; set; }
-    
+
     public MessageBoxViewModel(
-        string title, 
-        string text, 
+        string title,
+        string text,
+        IconValue? icon,
         MessageBoxButtonDefinition[] buttonDefinitions,
         MessageBoxSize messageBoxSize = MessageBoxSize.Small,
         IDialogContentViewModel? contentViewModel = null)
@@ -35,33 +37,21 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
         ContentMessage = text;
         ButtonDefinitions = buttonDefinitions;
         MessageBoxSize = messageBoxSize;
-        WindowMaxWidth = messageBoxSize switch
+        WindowWidth = messageBoxSize switch
         {
             MessageBoxSize.Small => 320,
             MessageBoxSize.Medium => 480,
             MessageBoxSize.Large => 640,
-            _ => 320
+            _ => 320,
         };
 
+        Icon = icon;
         ContentViewModel = contentViewModel;
-        ContentViewModel?.SetParent(this);
-        
-        CloseWindowCommand = ReactiveCommand.Create<ButtonDefinitionId>(CloseWindow);
-    }
 
-    public void SetView(IDialogView<ButtonDefinitionId> view)
-    {
-        View = view;
-    }
-
-    public async void CloseWindow(ButtonDefinitionId id)
-    {
-        await Dispatcher.UIThread.InvokeAsync(() =>
+        CloseWindowCommand = ReactiveCommand.Create<ButtonDefinitionId, ButtonDefinitionId>((id) =>
             {
-                if (View is null) return;
-                
-                View.SetButtonResult(id);
-                View.Close();
+                Result = id;
+                return id;
             }
         );
     }

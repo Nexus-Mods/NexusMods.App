@@ -59,11 +59,14 @@ public interface IWindowManager
     /// <returns>Whether the restore was successful.</returns>
     public bool RestoreWindowState(IWorkspaceWindow window);
 
+    /// <summary>
+    /// Displays a dialog window of the specified type.
+    /// </summary>
+    /// <param name="dialog">The dialog to display.</param>
+    /// <param name="windowType">The type of the dialog window.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the button definition ID 
+    /// of the button that was clicked to close the dialog.
+    /// </returns>
     public Task<ButtonDefinitionId> ShowDialog(IDialog<ButtonDefinitionId> dialog, DialogWindowType windowType);
-    //
-    // public Task<ButtonDefinitionId> ShowModalAsync(string title, string text, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize);
-    //
-    // public Task<ButtonDefinitionId> ShowModelessAsync(string title, string text, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize);
-    //
-    // public Task<ButtonDefinitionId> ShowEmbeddedAsync(string title, string text);
 }

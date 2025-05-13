@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Dialog;
 
@@ -14,6 +15,7 @@ public static class DialogFactory
     /// </summary>
     /// <param name="title">The title of the message box.</param>
     /// <param name="text">The main content or message displayed in the message box.</param>
+    /// <param name="icon">An optional icon to display in the message box.</param>
     /// <param name="buttonDefinitions">An array of <see cref="MessageBoxButtonDefinition"/> specifying the buttons to include in the message box.</param>
     /// <param name="messageBoxSize">The size of the message box (e.g., Small, Medium, or Large).</param>
     /// <returns>
@@ -22,10 +24,11 @@ public static class DialogFactory
     public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
+        IconValue? icon,
         MessageBoxButtonDefinition[] buttonDefinitions,
         MessageBoxSize messageBoxSize)
     {
-        var viewModel = new MessageBoxViewModel(title, text, buttonDefinitions, messageBoxSize);
+        var viewModel = new MessageBoxViewModel(title, text, icon, buttonDefinitions, messageBoxSize);
         var view = new MessageBoxView()
         {
             DataContext = viewModel,
@@ -35,23 +38,22 @@ public static class DialogFactory
     }
     
     /// <summary>
-    /// Creates a custom dialog with the specified content view model.
+    /// Creates a new message box with the specified title, custom content, button definitions, and size.
     /// </summary>
-    /// <param name="viewModel">
-    /// An instance of <see cref="IDialogContentViewModel"/> that represents the content to be displayed in the dialog.
-    /// </param>
+    /// <param name="title">The title of the message box.</param>
+    /// <param name="customContentViewModel">A custom content ViewModel to display in the message box.</param>
+    /// <param name="buttonDefinitions">An array of <see cref="MessageBoxButtonDefinition"/> specifying the buttons to include in the message box.</param>
+    /// <param name="messageBoxSize">The size of the message box (e.g., Small, Medium, or Large).</param>
     /// <returns>
-    /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the dialog's view, view model, and result type.
+    /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
     /// </returns>
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateCustomDialog(
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
-        string text,
+        IDialogContentViewModel customContentViewModel,
         MessageBoxButtonDefinition[] buttonDefinitions,
-        MessageBoxSize messageBoxSize,
-        IDialogContentViewModel contentViewModel)
+        MessageBoxSize messageBoxSize)
     {
-        
-        var viewModel = new MessageBoxViewModel(title, text, buttonDefinitions, messageBoxSize, contentViewModel);
+        var viewModel = new MessageBoxViewModel(title, "", null, buttonDefinitions, messageBoxSize, customContentViewModel);
         var view = new MessageBoxView()
         {
             DataContext = viewModel,

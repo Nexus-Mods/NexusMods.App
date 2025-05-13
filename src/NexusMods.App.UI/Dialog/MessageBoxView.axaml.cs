@@ -12,6 +12,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
 using Avalonia.ReactiveUI;
+using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Dialog;
 
@@ -20,25 +21,29 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
     private ButtonDefinitionId _buttonResult = ButtonDefinitionId.From("none");
     private Action? _closeAction;
 
-    private Button? closeButton;
+    private Button? _closeButton;
+    private UnifiedIcon? _icon;
 
     public MessageBoxView()
     {
         InitializeComponent();
 
-        closeButton = this.FindControl<Button>("CloseButton");
+        _closeButton = this.FindControl<Button>("CloseButton");
 
-        if (closeButton != null)
-            closeButton.Click += CloseWindow;
+        if (_closeButton != null)
+            _closeButton.Click += CloseButton_OnClick;
+
+        _icon = this.FindControl<UnifiedIcon>("ContentIcon");
 
         this.WhenActivated(disposables =>
             {
+                // Bind the CloseWindowCommand to the CloseButton's Command.
                 this.OneWayBind(ViewModel,
-                        vm => vm.ShowWindowTitlebar,
-                        view => view.Titlebar.IsVisible
+                        vm => vm.CloseWindowCommand,
+                        view => view.CloseButton.Command
                     )
                     .DisposeWith(disposables);
-
+                
                 // Bind the title text block to the ViewModel's WindowTitle property.
                 this.OneWayBind(ViewModel,
                         vm => vm.WindowTitle,
@@ -46,22 +51,43 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
                     )
                     .DisposeWith(disposables);
 
+                // Bind the message text block to the ViewModel's ContentMessage property.
                 this.OneWayBind(ViewModel,
                         vm => vm.ContentMessage,
                         view => view.ContentTextBlock.Text
                     )
                     .DisposeWith(disposables);
 
-                // Bind the content view model
+                // bind the icon to the icon property
+                this.OneWayBind(ViewModel,
+                        vm => vm.Icon,
+                        view => view.ContentIcon.Value
+                    )
+                    .DisposeWith(disposables);
+
+                // bind the content view model
                 this.OneWayBind(ViewModel,
                         vm => vm.ContentViewModel,
                         view => view.ViewModelHost.ViewModel
                     )
                     .DisposeWith(disposables);
-                
+
+                // only show the icon if the icon is not null
+                this.WhenAnyValue(view => view.ViewModel!.Icon)
+                    .Select(icon => icon is not null)
+                    .Subscribe(b => { ContentIcon.IsVisible = b; })
+                    .DisposeWith(disposables);
+
+                // only show custom content if the content view model is not null
+                // and then hide the generic content
                 this.WhenAnyValue(view => view.ViewModel!.ContentViewModel)
-                    .Select(vm => vm != null)
-                    .BindTo(this, v => v.ViewModelHost.IsVisible)
+                    .Subscribe(customContent =>
+                        {
+                            var hasCustomContent = customContent is not null;
+                            CustomContentContainer.IsVisible = hasCustomContent;
+                            GenericContentContainer.IsVisible = !hasCustomContent;
+                        }
+                    )
                     .DisposeWith(disposables);
             }
         );
@@ -81,7 +107,8 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
         var buttonsFlexPanel = this.FindControl<FlexPanel>("ButtonsFlexPanel");
         if (buttonsFlexPanel == null) return;
 
-        // Clear existing buttons
+        // Clear existing buttons and make invisible in case nothing gets added
+        buttonsFlexPanel.IsVisible = false;
         buttonsFlexPanel.Children.Clear();
 
         // Access the ButtonDefinitions from the DataContext (assumes it's bound to MessageBoxViewModel)
@@ -113,46 +140,38 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
                 _ => StandardButton.ShowIconOptions.None
             };
 
-            // Add appropriate classes based on the ButtonRole
-            if (buttonDefinition.ButtonStyling == ButtonStyling.Destructive)
-                button.Classes.Add("Danger");
-
-            if (buttonDefinition.ButtonStyling == ButtonStyling.Info)
-                button.Classes.Add("Info");
-
-            if (buttonDefinition.ButtonStyling == ButtonStyling.Premium)
-                button.Classes.Add("Premium");
-
-            if (buttonDefinition.ButtonStyling == ButtonStyling.Primary)
-                button.Classes.Add("Primary");
+            switch (buttonDefinition.ButtonStyling)
+            {
+                // Add appropriate classes based on the ButtonRole
+                case ButtonStyling.Destructive:
+                    button.Classes.Add("Danger");
+                    break;
+                case ButtonStyling.Info:
+                    button.Classes.Add("Info");
+                    break;
+                case ButtonStyling.Premium:
+                    button.Classes.Add("Premium");
+                    break;
+                case ButtonStyling.Primary:
+                    button.Classes.Add("Primary");
+                    break;
+                case ButtonStyling.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             // Add the button to the panel
             buttonsFlexPanel.Children.Add(button);
         }
+
+        buttonsFlexPanel.IsVisible = true;
     }
 
-    public void CloseWindow(object? sender, EventArgs eventArgs)
-    {
-        this.Close();
-    }
-
-    public void SetCloseAction(Action closeAction)
-    {
-        _closeAction = closeAction;
-    }
-
-    public void SetButtonResult(ButtonDefinitionId buttonResult)
-    {
-        _buttonResult = buttonResult;
-    }
-
-    public ButtonDefinitionId GetButtonResult()
-    {
-        return _buttonResult;
-    }
-
-    public void Close()
+    public void CloseButton_OnClick(object? sender, EventArgs eventArgs)
     {
         _closeAction?.Invoke();
     }
+
+    public ButtonDefinitionId Result { get; }
 }

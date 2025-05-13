@@ -12,27 +12,5 @@ public partial class CustomContentView : ReactiveUserControl<IDialogContentViewM
     public CustomContentView()
     {
         InitializeComponent();
-
-        this.WhenActivated(disposables =>
-            {
-                this.OneWayBind(ViewModel,
-                        vm => vm.CloseWindowCommand,
-                        view => view.CloseButton.Command
-                    )
-                    .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel,
-                        vm => vm.CloseWindowCommand,
-                        view => view.UpgradeToPremium.Command
-                    )
-                    .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel,
-                        vm => vm.CloseWindowCommand,
-                        view => view.DoNothing.Command
-                    )
-                    .DisposeWith(disposables);
-            }
-        );
     }
 }

@@ -7,9 +7,9 @@
              xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
              xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
              xmlns:reactiveUi="http://reactiveui.net"
-             mc:Ignorable="d" d:DesignWidth="296"
+             mc:Ignorable="d" 
              x:Class="NexusMods.App.UI.Dialog.MessageBoxView"
-             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxCustomDesignViewModel}"
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxDesignWithIconViewModel}"
              x:DataType="vm:MessageBoxViewModel">
 
     <!-- Temporary styles to see modal button variations -->
@@ -18,7 +18,7 @@
             <Style Selector="^ /template/ TextBlock#PART_Label">
                 <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
             </Style>
-            
+
             <Style Selector="^.Danger">
                 <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -27,7 +27,7 @@
                     <Setter Property="Background" Value="{StaticResource DangerSubduedBrush}" />
                 </Style>
             </Style>
-            
+
             <Style Selector="^.Info">
                 <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -36,7 +36,7 @@
                     <Setter Property="Background" Value="{StaticResource InfoSubduedBrush}" />
                 </Style>
             </Style>
-            
+
             <Style Selector="^.Premium">
                 <Setter Property="Background" Value="{StaticResource PremiumStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -45,7 +45,7 @@
                     <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
                 </Style>
             </Style>
-            
+
             <Style Selector="^.Primary">
                 <Setter Property="Background" Value="{StaticResource PrimaryStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -72,7 +72,9 @@
                        Theme="{StaticResource BodySMSemiTheme}"
                        VerticalAlignment="Center"
                        ToolTip.Tip="Close"
-                       IsHitTestVisible="False" />
+                       IsHitTestVisible="False" 
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis"/>
 
             <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
                                      DockPanel.Dock="Right"
@@ -88,29 +90,35 @@
         <Border Name="ContentBorder" Grid.Row="1">
 
             <!-- simple text and buttons -->
-            <Grid RowDefinitions="*,Auto" IsVisible="True" Margin="16,0,16,16">
+            <Grid RowDefinitions="*,Auto" IsVisible="True" Margin="16,16,16,16">
 
-                <StackPanel Grid.Row="0" Spacing="8" Margin="0,16">
-                    <icons:UnifiedIcon Name="ContentIcon" 
-                        Value="{x:Static icons:IconValues.PictogramBox2}"
-                        HorizontalAlignment="Left"
-                        Size="48"/>
-                    <TextBlock Name="ContentHeader"
-                               Text="Header"
-                               Foreground="{StaticResource NeutralStrongBrush}"
-                               Theme="{StaticResource BodyMDSemiTheme}"
-                               TextWrapping="Wrap"/>
-                    <TextBlock Name="ContentTextBlock"
-                               Foreground="{StaticResource NeutralSubduedBrush}"
-                               TextWrapping="Wrap"/>
-                    <!-- content -->
+                <Panel Grid.Row="0" >
+                    <!-- generic content - only show this if no custom content is provided -->
+                    <StackPanel Name="GenericContentContainer" Spacing="8" Margin="0">
+                        <icons:UnifiedIcon Name="ContentIcon"
+                                           Value="{x:Static icons:IconValues.PictogramBox2}"
+                                           HorizontalAlignment="Left"
+                                           Size="48" />
+                        <TextBlock Name="ContentHeader"
+                                   Text="Header"
+                                   Foreground="{StaticResource NeutralStrongBrush}"
+                                   Theme="{StaticResource BodyMDSemiTheme}"
+                                   TextWrapping="Wrap" />
+
+                        <TextBlock Name="ContentTextBlock"
+                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    
+                    <!-- custom content - show this if custom content is provided -->
+                    <StackPanel Name="CustomContentContainer" Spacing="8" Margin="0">
                         <reactiveUi:ViewModelViewHost Name="ViewModelHost" />
-                </StackPanel>
-                
+                    </StackPanel>
+                </Panel>
 
                 <!-- buttons -->
                 <panels:FlexPanel Name="ButtonsFlexPanel" Grid.Row="1"
-                                  ColumnSpacing="8">
+                                  ColumnSpacing="8" Margin="0 16 0 0">
                     <controls:StandardButton Name="CancelButton" Text="Cancel"
                                              panels:Flex.Grow="1"
                                              panels:Flex.Shrink="0"

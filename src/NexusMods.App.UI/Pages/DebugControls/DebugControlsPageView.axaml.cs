@@ -29,21 +29,16 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     }
 
 
-    private async void ShowModal(string title, string message, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize)
+    private async void ShowModal(IDialog<ButtonDefinitionId> dialog)
     {
         try
         {
             if (ViewModel is null) return;
-
-            // create new messagebox
-            var messageBox = DialogFactory.CreateMessageBox(title, message, buttonDefinitions,
-                messageBoxSize
-            );
 
             // tell windowmanager to show it
-            var result = await ViewModel.WindowManager.ShowDialog(messageBox, DialogWindowType.Modal);
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
 
-            Console.WriteLine($@"{title} Result: {result}");
+            Console.WriteLine($@"ShowModal Result: {result}");
         }
         catch (Exception e)
         {
@@ -52,19 +47,14 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     }
 
 
-    private async void ShowModeless(string title, string message, MessageBoxButtonDefinition[] buttonDefinitions, MessageBoxSize messageBoxSize)
+    private async void ShowModeless(IDialog<ButtonDefinitionId> dialog)
     {
         try
         {
             if (ViewModel is null) return;
 
-            // create new messagebox
-            var messageBox = DialogFactory.CreateMessageBox(title, message, buttonDefinitions,
-                messageBoxSize
-            );
-
-            var result = await ViewModel.WindowManager.ShowDialog(messageBox, DialogWindowType.Modeless);
-            Console.WriteLine($@"{buttonDefinitions} result: {result}");
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
+            Console.WriteLine($@"ShowModeless Result: {result}");
         }
         catch (Exception e)
         {
@@ -73,24 +63,39 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     }
 
 
-    private void ShowModalOk_OnClick(object? sender, RoutedEventArgs e) =>
-        ShowModal("Test Modal",
+    private void ShowModalOk_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var dialog = DialogFactory.CreateMessageBox(
+            "Test Modal",
             "This is an Ok modal",
+            IconValues.PictogramCelebrate,
             [MessageBoxStandardButtons.Ok],
             MessageBoxSize.Small
         );
 
-    private void ShowModalOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
-        ShowModal("Test Modal",
+        ShowModal(dialog);
+    }
+
+    private void ShowModalOkCancel_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var dialog = DialogFactory.CreateMessageBox(
+            "Test Modal",
             "This is an OkCancel modal",
+            null,
             [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
             MessageBoxSize.Medium
         );
 
+        ShowModal(dialog);
+    }
+
     private void ShowModalShowModalDeleteMod_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModal("Delete this mod?",
-            "Deleting this mod will remove it from all collections. This action cannot be undone.", [
+        var dialog = DialogFactory.CreateMessageBox(
+            "Delete this mod?",
+            "Deleting this mod will remove it from all collections. This action cannot be undone.",
+            IconValues.Cog,
+            [
                 MessageBoxStandardButtons.Cancel,
                 new MessageBoxButtonDefinition(
                     "Yes, delete",
@@ -103,26 +108,16 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ],
             MessageBoxSize.Small
         );
+
+        ShowModal(dialog
+        );
     }
-
-    private void ShowModelessOk_OnClick(object? sender, RoutedEventArgs e) =>
-        ShowModeless("Test Modeless",
-            "This is an Ok modeless",
-            [MessageBoxStandardButtons.Ok],
-            MessageBoxSize.Small
-        );
-
-    private void ShowModelessOkCancel_OnClick(object? sender, RoutedEventArgs e) =>
-        ShowModeless("Test Modeless",
-            "This is an OkCancel modeless",
-            [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
-            MessageBoxSize.Small
-        );
 
     private void ShowModalInfo_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModal("Updating mods",
-            "Updating mods installed in multiple collections. Updating will apply to all local collections where the mod is installed.", [
+        var dialog = DialogFactory.CreateMessageBox("Updating mods",
+            "Updating mods installed in multiple collections. Updating will apply to all local collections where the mod is installed.",
+            null, [
                 new MessageBoxButtonDefinition(
                     "Cancel with icon",
                     ButtonDefinitionId.From("cancel"),
@@ -141,12 +136,16 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ],
             MessageBoxSize.Large
         );
+
+        ShowModal(dialog);
     }
 
     private void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModal("Go Premium",
-            "Download entire collections at full speed with one click, no browser, no manual downloads.", [
+        var dialog = DialogFactory.CreateMessageBox("Go Premium",
+            "Download entire collections at full speed with one click, no browser, no manual downloads.",
+            IconValues.Premium,
+            [
                 new MessageBoxButtonDefinition(
                     "Cancel",
                     ButtonDefinitionId.From("cancel"),
@@ -169,12 +168,15 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ],
             MessageBoxSize.Medium
         );
+
+        ShowModal(dialog);
     }
 
     private void ShowModelessPrimary_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModeless("Something important",
-            "An example showing Primary and Secondary buttons", [
+        var dialog = DialogFactory.CreateMessageBox("Something important",
+            "An example showing Primary and Secondary buttons",
+            null, [
                 new MessageBoxButtonDefinition(
                     "Secondary",
                     ButtonDefinitionId.From("cancel"),
@@ -193,6 +195,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ],
             MessageBoxSize.Medium
         );
+
+        ShowModeless(dialog);
     }
 
     private async void ShowModalCustom_OnClick(object? sender, RoutedEventArgs e)
@@ -205,9 +209,9 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             var customViewModel = new CustomContentViewModel("This is more lovely text");
 
             // create wrapper dialog around the custom content 
-            var dialog = DialogFactory.CreateCustomDialog(
+            var dialog = DialogFactory.CreateMessageBox(
                 "Custom Dialog",
-                "This is lovely text",
+                customViewModel,
                 [
                     new MessageBoxButtonDefinition(
                         "Secondary",
@@ -225,8 +229,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                         ButtonStyling.Primary
                     )
                 ],
-                MessageBoxSize.Medium,
-                customViewModel
+                MessageBoxSize.Medium
             );
 
             // tell windowmanager to show it
@@ -255,9 +258,9 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             var customViewModel = new CustomContentViewModel("This is more lovely text");
 
             // create wrapper dialog around the custom content 
-            var dialog = DialogFactory.CreateCustomDialog(
+            var dialog = DialogFactory.CreateMessageBox(
                 "Custom Dialog",
-                "This is lovely text",
+                customViewModel,
                 [
                     new MessageBoxButtonDefinition(
                         "Secondary",
@@ -275,8 +278,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                         ButtonStyling.Primary
                     )
                 ],
-                MessageBoxSize.Medium,
-                customViewModel
+                MessageBoxSize.Medium
             );
 
             // tell windowmanager to show it

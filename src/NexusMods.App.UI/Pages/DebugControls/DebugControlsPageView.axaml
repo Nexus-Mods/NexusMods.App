@@ -282,7 +282,7 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
-                        <TextBlock Text="Overlays" />
+                        <TextBlock Text="Dialogs" />
                     </StackPanel>
                 </TabItem.Header>
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
@@ -300,23 +300,13 @@
                             <controls:StandardButton x:Name="ShowModalInfo" Text="Info" Click="ShowModalInfo_OnClick" />
                             <controls:StandardButton x:Name="ShowModalPremium" Text="Premium" Click="ShowModalPremium_OnClick" />
                             <controls:StandardButton x:Name="ShowModalCustom" Text="Custom" Click="ShowModalCustom_OnClick" />
-                            <!-- <controls:StandardButton x:Name="ShowModalYesNo" Text="YesNo" Click="ShowModalYesNo_OnClick" /> -->
-                            <!-- <controls:StandardButton x:Name="ShowModalOkAbort" Text="OkAbort" Click="ShowModalOkAbort_OnClick" /> -->
-                            <!-- <controls:StandardButton x:Name="ShowModalYesNoCancel" Text="YesNoCancel" Click="ShowModalYesNoCancel_OnClick" /> -->
-                            <!-- <controls:StandardButton x:Name="ShowModalYesNoAbort" Text="YesNoAbort" Click="ShowModalYesNoAbort_OnClick" /> -->
                         </StackPanel>
 
                         <!-- modeless -->
                         <StackPanel Spacing="8">
                             <TextBlock Text="Modeless" />
-                            <controls:StandardButton x:Name="ShowModelessOk" Text="OK" Click="ShowModelessOk_OnClick" />
-                            <controls:StandardButton x:Name="ShowModelessOkCancel" Text="OkCancel" Click="ShowModelessOkCancel_OnClick" />
                             <controls:StandardButton x:Name="ShowModelessPrimary" Text="Primary" Click="ShowModelessPrimary_OnClick" />
                             <controls:StandardButton x:Name="ShowModelessCustom" Text="Custom" Click="ShowModelessCustom_OnClick" />
-                            <!-- <controls:StandardButton x:Name="ShowModelessYesNo" Text="YesNo" Click="ShowModelessYesNo_OnClick" /> -->
-                            <!-- <controls:StandardButton x:Name="ShowModelessOkAbort" Text="OkAbort" Click="ShowModelessOkAbort_OnClick" /> -->
-                            <!-- <controls:StandardButton x:Name="ShowModelessYesNoCancel" Text="YesNoCancel" Click="ShowModelessYesNoCancel_OnClick" /> -->
-                            <!-- <controls:StandardButton x:Name="ShowModelessYesNoAbort" Text="YesNoAbort" Click="ShowModelessYesNoAbort_OnClick" /> -->
                         </StackPanel>
                     </StackPanel>
                 </Border>
