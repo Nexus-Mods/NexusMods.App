@@ -138,7 +138,7 @@ public class FileSizeAggregationTests
         folder1.Model.Get<SizeComponent>(ComponentKey).Value.Value.Value.Should().Be(100);    // Only file1 remains
         
         // subfolder should have been removed since it's empty
-        var folderExists = folder1.Folders.Lookup("subfolder").HasValue;
+        var folderExists = folder1.Folders.Lookup(new GamePath(locationId, "folder1/subfolder")).HasValue;
         folderExists.Should().BeFalse();
     }
     

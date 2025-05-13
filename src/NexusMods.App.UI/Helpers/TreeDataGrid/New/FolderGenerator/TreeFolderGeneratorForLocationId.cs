@@ -75,9 +75,9 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     internal bool OnDeleteFile(GamePath path, CompositeItemModel<GamePath> itemModel)
     {
         var folder = GetOrCreateFolder(path.Parent, out var parentFolder, out var parentFolderName);
-        var deleteFolder = folder.DeleteFileItemModel(itemModel.Key);
+        folder.DeleteFileItemModel(itemModel.Key);
 
-        if (deleteFolder)
+        if (folder.ShouldDeleteFolder())
         {
             parentFolder.DeleteSubfolder(parentFolderName);
             
@@ -85,17 +85,18 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
             //              path isn't necessarily super optimized.
             //              We should ideally be avoiding allocations there, and it is possible, but
             //              the paths library lacks what we need in Span'ified form.
-            DeleteEmptyFolderChain(path.Parent);
+            return DeleteEmptyFolderChain(path.Parent);
         }
 
-        return deleteFolder; 
+        return false; 
     }
     
     /// <summary>
     /// Deletes empty folders along the path chain.
     /// </summary>
     /// <param name="folderPath">The path of the folder to check for emptiness.</param>
-    private void DeleteEmptyFolderChain(GamePath folderPath)
+    /// <returns>True if all the folders were deleted up to the top level, false otherwise</returns>
+    private bool DeleteEmptyFolderChain(GamePath folderPath)
     {
         // Get all parent paths, from nearest to farthest (root)
         // Note: We use '.Parent' because `GetAllParents` includes the path itself.
@@ -105,8 +106,10 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
             if (folder.ShouldDeleteFolder())
                 parentFolder.DeleteSubfolder(parentFolderName);
             else
-                break;
+                return false;
         }
+
+        return true;
     }
 
     /// <summary>
@@ -115,20 +118,20 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     /// </summary>
     /// <param name="path">The path of the folder to obtain.</param>
     /// <param name="parentFolder">The parent of the folder returned.</param>
-    /// <param name="parentFolderName">Name of the parent folder.</param>
-    internal GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateFolder(GamePath path, out GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> parentFolder, out RelativePath parentFolderName)
+    /// <param name="parentFolderPath">Name of the parent folder.</param>
+    internal GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateFolder(GamePath path, out GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> parentFolder, out GamePath parentFolderPath)
     {
         // Go through all parents of the path, and create them if they don't exist.
         parentFolder = _rootFolder;
-        parentFolderName = "";
+        parentFolderPath = GamePath.Empty(path.LocationId);
         
         var currentFolder = _rootFolder;
         foreach (var partAsGamePath in path.Path.GetAllParents().Reverse())
         {
             var part = partAsGamePath.FileName;
             parentFolder = currentFolder;
-            currentFolder = currentFolder.GetOrCreateChildFolder(part, new GamePath(path.LocationId, partAsGamePath));
-            parentFolderName = part;
+            parentFolderPath = new GamePath(path.LocationId, partAsGamePath);
+            currentFolder = currentFolder.GetOrCreateChildFolder(part, parentFolderPath);
         }
         
         return currentFolder;
@@ -170,7 +173,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     ///     And this folder is 'game'.
     ///     Then the key is 'data'.
     /// </remarks>
-    public readonly SourceCache<GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>, RelativePath> Folders = new(x => null!);
+    public readonly SourceCache<GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer>, GamePath> Folders = new(x => x.FullPath);
 
     /// <summary>
     /// Full path to the folder node.
@@ -258,14 +261,13 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     /// Removes a file CompositeItemModel from this folder
     /// </summary>
     /// <param name="key">The full path of the item to remove.</param>
-    /// <returns>True if this folder is empty.</returns>
+    /// <returns>True if the item was removed</returns>
     public bool DeleteFileItemModel(GamePath key)
     {
-        var alreadyPresent = Files.Lookup(key).HasValue;
-        if (alreadyPresent)
-            Files.Remove(key);
-
-        return ShouldDeleteFolder();
+        if (!Files.Lookup(key).HasValue)
+            return false;
+        Files.Remove(key);
+        return true;
     }
 
     /// <summary>
@@ -286,7 +288,7 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     /// </param>
     public GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateChildFolder(RelativePath part, GamePath fullPath)
     {
-        var optionalChild = Folders.Lookup(part);
+        var optionalChild = Folders.Lookup(fullPath);
         GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> result;
         if (optionalChild.HasValue)
             result = optionalChild.Value;
@@ -294,25 +296,25 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
         {
             result = CreateChildFolder(fullPath);
             // Note(sewer): No direct API without `Edit` that allows for manually specifying key.
-            Folders.Edit(updater => updater.AddOrUpdate(result, part));
+            Folders.Edit(updater => updater.AddOrUpdate(result, fullPath));
         }
 
         return result;
     }
 
     /// <summary>
-    /// Deletes a subfolder with a given name.
+    /// Deletes a subfolder with a given GamePath. Only for first level subfolders.
     /// </summary>
-    /// <param name="folderName">The name of the folder to delete from.</param>
-    public void DeleteSubfolder(RelativePath folderName)
+    /// <param name="folderPath">The gamePath of the subfolder to delete from.</param>
+    public void DeleteSubfolder(GamePath folderPath)
     {
         // Note(sewer): This sucks. In DynamicData you can't get value from the delete, neither
         // in the Edit API or the parent Remove API.
-        var lookup = Folders.Lookup(folderName);
+        var lookup = Folders.Lookup(folderPath);
         if (lookup.HasValue)
         {
             var subfolder = lookup.Value;
-            Folders.Remove(folderName);
+            Folders.Remove(folderPath);
             subfolder.Dispose();
         }
     }

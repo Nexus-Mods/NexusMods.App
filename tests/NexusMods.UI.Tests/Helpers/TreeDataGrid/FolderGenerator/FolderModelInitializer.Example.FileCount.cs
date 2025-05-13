@@ -137,7 +137,7 @@ public class FileCountAggregationTests
         folder1.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
         
         // subfolder should have been removed since it's empty
-        var folderExists = folder1.Folders.Lookup("subfolder").HasValue;
+        var folderExists = folder1.Folders.Lookup(new GamePath(locationId, "folder1/subfolder")).HasValue;
         folderExists.Should().BeFalse();
     }
     
