@@ -362,7 +362,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public Dictionary<GamePath, SyncNode> Flatten(Loadout.ReadOnly loadout)
     {
-        return BuildSyncTree([], [], loadout);
+        var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
+        var currentState = loadout.Installation.DiskStateEntries;
+        return BuildSyncTree(DiskStateToPathPartPair(currentState), DiskStateToPathPartPair(previouslyApplied), loadout);
     }
 
     /// <summary>

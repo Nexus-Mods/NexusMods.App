@@ -80,10 +80,21 @@ public class UndoService
 
         foreach (var (key, value) in flattenedCurrent)
         {
-            if (!_fileStore.HaveFile(value.Loadout.Hash))
-                missingBackup += 1;
+            // Ignore any files that are not part of the loadout (but may exist on disk)
+            if (!value.HaveLoadout)
+                continue;
+
+            // If it's a game file, and we'd need to write the file (what's on disk is different), increment the missing count 
+            // if we don't have a source for the file
+            if (value.SourceItemType == LoadoutSourceItemType.Game && 
+                !(value.HaveDisk || value.Disk.Hash != value.Loadout.Hash) && 
+                !_fileStore.HaveFile(value.Loadout.Hash))
+            {
+                missingBackup++;
+            }
+                
             
-            if (flattenedPrev.TryGetValue(key, out var prevValue))
+            if (flattenedPrev.TryGetValue(key, out var prevValue) && prevValue.HaveLoadout)
             {
                 if (prevValue.Loadout.Hash != value.Loadout.Hash)
                 {
@@ -98,10 +109,9 @@ public class UndoService
         
         foreach (var (key, _) in flattenedPrev)
         {
-            if (!flattenedCurrent.ContainsKey(key))
-            {
-                removed++;
-            }
+            if (flattenedCurrent.TryGetValue(key, out var currentValue) && currentValue.HaveLoadout)
+                continue;
+            removed++;
         }
         
         return new LoadoutRevisionWithStats
