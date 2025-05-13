@@ -95,7 +95,7 @@ public class TextEditorPageViewModel : APageViewModel<ITextEditorPageViewModel>,
 
             using (var streamFactory = new MemoryStreamFactory(Context.FilePath, new MemoryStream(bytes, writable: false)))
             {
-                if (!await fileStore.HaveFile(hash))
+                if (!fileStore.HaveFile(hash))
                     await fileStore.BackupFiles([new ArchivedFileEntry(streamFactory, hash, size)], deduplicate: false);
             }
 

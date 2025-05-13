@@ -286,7 +286,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
     /// <inheritdoc />
     public IDb Current => _currentDb?.Db ?? throw new InvalidOperationException("No database connected");
-
+    
     /// <inheritdoc />
     public bool TryGetVanityVersion(LocatorIdsWithGameStore locatorIdsWithGameStore, out VanityVersion version)
     {

@@ -54,7 +54,7 @@ public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager s
                      .Concat(loadout1SharedModHashes)
                      .Concat(loadout2SharedModHashes))
         {
-            (await _fileStore.HaveFile(hash)).Should().BeTrue();
+            _fileStore.HaveFile(hash).Should().BeTrue();
         }
 
         // Act: All files are referenced.
@@ -64,13 +64,13 @@ public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager s
         foreach (var hash in loadout1ModHashes.Concat(loadout1SharedModHashes)
                      .Concat(loadout2SharedModHashes))
         {
-            (await _fileStore.HaveFile(hash)).Should().BeTrue();
+            _fileStore.HaveFile(hash).Should().BeTrue();
         }
         
         // And assert loadout2ModHashes were removed.
         foreach (var hash in loadout2ModHashes)
         {
-            (await _fileStore.HaveFile(hash)).Should().BeFalse();
+            _fileStore.HaveFile(hash).Should().BeFalse();
         }
     }
     public class Startup

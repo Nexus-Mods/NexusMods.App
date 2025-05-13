@@ -14,7 +14,7 @@ public interface IFileStore
     /// </summary>
     /// <param name="hash"></param>
     /// <returns></returns>
-    public ValueTask<bool> HaveFile(Hash hash);
+    public bool HaveFile(Hash hash);
 
     /// <summary>
     /// Backup the given set of files.

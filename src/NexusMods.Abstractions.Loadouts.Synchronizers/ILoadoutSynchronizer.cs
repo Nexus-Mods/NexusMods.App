@@ -29,6 +29,12 @@ public interface ILoadoutSynchronizer
     Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadoutTree);
     
     /// <summary>
+    /// Builds a sync tree, not taking into account the current state of the game folder, simply flattening the loadout
+    /// into a list of winning files
+    /// </summary>
+    Dictionary<GamePath, SyncNode> Flatten(Loadout.ReadOnly loadoutTree);
+    
+    /// <summary>
     /// Processes the sync tree to create the signature and actions for each file, changes are made in-place on the tree.
     /// </summary>
     void ProcessSyncTree(Dictionary<GamePath, SyncNode> syncTree);

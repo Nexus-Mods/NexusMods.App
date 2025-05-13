@@ -33,20 +33,20 @@ public class MarkGameTestFilesTest(ITestOutputHelper testOutputHelper) : AGCStub
 
         // As a sanity test, confirm that we have backed up the test file.
         // This proves our initial assertion that synchronizer runs as expected
-        (await FileStore.HaveFile(ExpectedHash)).Should().Be(true);
+        FileStore.HaveFile(ExpectedHash).Should().Be(true);
         
         // Act: Run a GC.
         var gc = CreateGC();
         RunGarbageCollector(gc, out _);
 
         // Assert: No game files should be deleted from FileStore, they are roots.
-        (await FileStore.HaveFile(ExpectedHash)).Should().Be(true);
+        FileStore.HaveFile(ExpectedHash).Should().Be(true);
         
         // Unmanage the game (with GC)
         await Synchronizer.UnManage(GameInstallation, runGc: true);
         
         // The file should be gone, because we deleted/retracted all the roots.
-        (await FileStore.HaveFile(ExpectedHash)).Should().Be(false);
+        FileStore.HaveFile(ExpectedHash).Should().Be(false);
     }
     
     private AbsolutePath RunGarbageCollector(ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper> collector, out List<Hash> toDelete)

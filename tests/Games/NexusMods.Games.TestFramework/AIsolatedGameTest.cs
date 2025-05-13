@@ -277,7 +277,7 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
             
             // Create the file to backup.
             hashes.Add(hash);
-            if (!await FileStore.HaveFile(hash))
+            if (!FileStore.HaveFile(hash))
             {
                 records.Add(new ArchivedFileEntry(
                     new MemoryStreamFactory(path, new MemoryStream(data)),

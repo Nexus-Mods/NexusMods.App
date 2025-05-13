@@ -6,9 +6,9 @@ namespace NexusMods.Benchmarks.Benchmarks.Loadouts.Harness;
 
 public class DummyFileStore : IFileStore
 {
-    public ValueTask<bool> HaveFile(Hash hash)
+    public bool HaveFile(Hash hash)
     {
-        return ValueTask.FromResult(false);
+        return false;
     }
 
     public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)

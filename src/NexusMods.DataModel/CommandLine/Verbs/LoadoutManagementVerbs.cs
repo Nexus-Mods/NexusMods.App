@@ -250,9 +250,9 @@ public static class LoadoutManagementVerbs
         
         var revisions = await undoService.RevisionsFor(loadout);
         
-        await revisions.OrderBy(r => r.Revision.Timestamp)
-            .Select((r, idx) => (idx, r.Revision.Timestamp, r.Revision.TxEntity, r.ModCount))
-            .RenderTable(renderer, "Rev #", "Timestamp", "Tx", "ModCount");
+        await revisions.OrderBy(r => r.TxId)
+            .Select((r, idx) => (idx, r.Timestamp, r.TxId, r.Added, r.Removed))
+            .RenderTable(renderer, "Rev #", "Timestamp", "Tx", "Added", "Removed");
 
         return 0;
     }
@@ -268,11 +268,11 @@ public static class LoadoutManagementVerbs
         
         var revisions = await undoService.RevisionsFor(loadout);
         
-        var revision = revisions.OrderBy(r => r.Revision.Timestamp)
-            .Select((r, idx) => (Idx: idx, r.Revision))
+        var revision = revisions.OrderBy(r => r.TxId)
+            .Select((r, idx) => (Idx: idx, r.RowId, r.TxId))
             .FirstOrDefault(row => row.Idx == revisionNumber);
         
-        await undoService.RevertTo(revision.Revision);
+        await undoService.RevertTo(revision.RowId, TxId.From(revision.TxId.Value));
         
         return 0;
     }

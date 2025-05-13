@@ -59,12 +59,12 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public ValueTask<bool> HaveFile(Hash hash)
+    public bool HaveFile(Hash hash)
     {
         using var lck = _lock.ReadLock();
         var db = _conn.Db;
         var archivedFiles = ArchivedFile.FindByHash(db, hash).Any(x => x.IsValid());
-        return ValueTask.FromResult(archivedFiles);
+        return archivedFiles;
     }
 
     /// <inheritdoc />
@@ -79,7 +79,7 @@ public class NxFileStore : IFileStore
         var streams = new List<Stream>();
         foreach (var backup in distinct)
         {
-            if (deduplicate && await HaveFile(backup.Hash))
+            if (deduplicate && HaveFile(backup.Hash))
                 continue;
             
             var stream = await backup.StreamFactory.GetStreamAsync();

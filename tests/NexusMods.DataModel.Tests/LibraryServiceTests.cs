@@ -83,7 +83,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         nestedLibraryFile.TryGetAsLibraryArchive(out _).Should().BeFalse();
         
         // File should be available in the file store
-        var isStored = await _fileStore.HaveFile(nestedLibraryFile.Hash);
+        var isStored = _fileStore.HaveFile(nestedLibraryFile.Hash);
         isStored.Should().BeTrue();
         
         // print the contents of the parent archive
@@ -96,7 +96,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         var result = new StringBuilder();
         foreach (var entry in archive.Children.OrderBy(x => x.Path))
         {
-            result.AppendLine($"{entry.Path} - {entry.AsLibraryFile().Size} -  {entry.AsLibraryFile().Hash} - Stored : {await _fileStore.HaveFile(entry.AsLibraryFile().Hash)}");
+            result.AppendLine($"{entry.Path} - {entry.AsLibraryFile().Size} -  {entry.AsLibraryFile().Hash} - Stored : {_fileStore.HaveFile(entry.AsLibraryFile().Hash)}");
         }
 
         return result.ToString();

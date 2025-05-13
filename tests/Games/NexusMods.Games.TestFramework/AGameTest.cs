@@ -197,7 +197,7 @@ public abstract class AGameTest<TGame> where TGame : AGame
             
             // Create the file to backup.
             hashes.Add(hash);
-            if (!await FileStore.HaveFile(hash))
+            if (!FileStore.HaveFile(hash))
             {
                 records.Add(new ArchivedFileEntry(
                     new MemoryStreamFactory(path, new MemoryStream(data)),

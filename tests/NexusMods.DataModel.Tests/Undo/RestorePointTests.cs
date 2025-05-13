@@ -21,25 +21,27 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
         var loadout = Loadout.All(tmpConn.Connection.Db).First();
 
         var restorePoints = (await undoService.RevisionsFor(loadout))
-            .OrderBy(row => row.Revision.Timestamp);
+            .OrderBy(row => row.TxId);
 
         // Get the restore points before hand
         var beforePoints = restorePoints.Select(row => new
             {
-                TxId = row.Revision.TxEntity.ToString(),
-                ModCount = row.ModCount
+                TxId = row.TxId.ToString(),
+                Added = row.Added,
+                Removed = row.Removed,
             }
         ).ToArray();
         
         // Revert to a point where both collections were installed
-        var toRevertTo = restorePoints.Skip(2).First().Revision;
-        await undoService.RevertTo(toRevertTo);
+        var toRevertTo = restorePoints.Skip(2).First();
+        await undoService.RevertTo(toRevertTo.LoadoutId, TxId.From(toRevertTo.TxId.Value));
         
         // Get the restore points after restoring the collection
         var afterPoints = restorePoints.Select(row => new
             {
-                TxId = row.Revision.TxEntity.ToString(),
-                ModCount = row.ModCount
+                TxId = row.TxId.ToString(),
+                Added = row.Added,
+                Removed = row.Removed,
             }
         );
 
@@ -61,7 +63,7 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
         var loadout = Loadout.All(tmpConn.Connection.Db).First(l => l.Id == EntityId.From(0x200000000003755));
 
         var restorePoints = (await undoService.RevisionsFor(loadout))
-            .OrderBy(row => row.Revision.Timestamp);
+            .OrderBy(row => row.TxId);
 
         // This would cause a crash before the fix
         await tmpConn.Connection.FlushAndCompact();
@@ -69,13 +71,14 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
         {
             var points = restorePoints.ToArray();
             var pnt = points[i % 2 == 0 ? 1 : 6];
-            await undoService.RevertTo(pnt.Revision);
+            await undoService.RevertTo(pnt.LoadoutId, TxId.From(pnt.TxId.Value));
         }
         
         var afterPoints = restorePoints.Select(row => new
             {
-                TxId = row.Revision.TxEntity.ToString(),
-                ModCount = row.ModCount
+                TxId = row.TxId.ToString(),
+                Added = row.Added,
+                Removed = row.Removed,
             }
         );
     }

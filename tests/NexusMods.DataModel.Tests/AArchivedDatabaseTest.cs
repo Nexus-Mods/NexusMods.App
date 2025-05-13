@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -20,6 +21,7 @@ using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.StardewValley;
+using NexusMods.Jobs;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
@@ -76,6 +78,7 @@ public abstract class AArchivedDatabaseTest
             .AddStubbedStardewValley()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
+            .AddJobMonitor()
             .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
             {
                 HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
@@ -171,6 +174,9 @@ public abstract class AArchivedDatabaseTest
         var services = host.Services;
         
         var connection = services.GetRequiredService<IConnection>();
+        
+        var hashesService = services.GetRequiredService<IFileHashesService>();
+        await hashesService.GetFileHashesDb();
         
         var migrationService = services.GetRequiredService<MigrationService>();
         await migrationService.MigrateAll();

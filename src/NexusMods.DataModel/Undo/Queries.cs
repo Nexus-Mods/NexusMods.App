@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Cascade;
 using NexusMods.Cascade.Flows;
 using NexusMods.Cascade.Patterns;
+using NexusMods.Cascade.Structures;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Cascade;
@@ -38,7 +39,8 @@ public static class Queries
     public static readonly Flow<LoadoutRevision> LoadoutRevisionsWithMetadata =
         Pattern.Create()
             .Match(LoadoutSnapshots, out var loadoutId, out var txEntity)
-            .Db(txEntity, Transaction.Timestamp, out var timestamp)
-            .ReturnLoadoutRevision(loadoutId, txEntity, timestamp);
+            .MatchDefault(LoadoutSnapshots.Select(p => new KeyedValue<EntityId, EntityId>(p.Loadout, p.TxEntityId)), loadoutId, out var otherTxId)
+            .IsLessThan(otherTxId, txEntity)
+            .ReturnLoadoutRevision(loadoutId, txEntity, otherTxId.Max());
     
 }

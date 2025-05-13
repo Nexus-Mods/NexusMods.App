@@ -359,6 +359,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return BuildSyncTree(DiskStateToPathPartPair(metadata.DiskStateEntries), DiskStateToPathPartPair(previouslyApplied), loadout);
     }
 
+    /// <inheritdoc />
+    public Dictionary<GamePath, SyncNode> Flatten(Loadout.ReadOnly loadout)
+    {
+        return BuildSyncTree([], [], loadout);
+    }
+
     /// <summary>
     /// Converts Mnemonic db disk state entries to path part pairs.
     /// </summary>
@@ -926,7 +932,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// </summary>
     protected bool HaveArchive(Hash hash)
     {
-        return _fileStore.HaveFile(hash).Result;
+        return _fileStore.HaveFile(hash);
     }
     
     /// <summary>
@@ -1167,7 +1173,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 var path = installation.LocationsRegister.GetResolvedPath(gamePath);
                 Debug.Assert(node.HaveDisk, "Node must have a disk entry to backup");
                 
-                if (await _fileStore.HaveFile(node.Disk.Hash))
+                if (_fileStore.HaveFile(node.Disk.Hash))
                     return;
                 
                 var archivedFile = new ArchivedFileEntry

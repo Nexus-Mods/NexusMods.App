@@ -1,5 +1,9 @@
 using System.Collections.Frozen;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Cascade;
 using NexusMods.Cascade.Patterns;
 using NexusMods.MnemonicDB.Abstractions;
@@ -17,14 +21,18 @@ namespace NexusMods.DataModel.Undo;
 public class UndoService
 {
     private readonly IConnection _conn;
+    private readonly IFileStore _fileStore;
+    private static readonly Inlet<IDb> _gameDb = new();
+    
 
     /// <summary>
     /// DI constructor 
     /// </summary>
     /// <param name="connection"></param>
-    public UndoService(IConnection connection)
+    public UndoService(IConnection connection, IFileStore fileStore)
     {
         _conn = connection;
+        _fileStore = fileStore;
     }
 
     /// <summary>
@@ -34,35 +42,77 @@ public class UndoService
     { 
         return await _conn.Topology.QueryAsync(Queries.LoadoutRevisionsWithMetadata
             .Where(row => row.RowId == loadout)
-            .Select(row => LoadoutStats(_conn, row)));
+            .Select(LoadoutStats));
     }
-    
-    private static readonly Inlet<EntityId> LoadoutId = new();
-    
-    /// <summary>
-    /// For now our stats only include getting the count of valid mods
-    /// </summary>
-    private static readonly Flow<(EntityId LoadoutId, int ModCount)> ModCount =
+
+    private static readonly Flow<(EntityId Loadout, EntityId ModFile)> ModFiles =
         Pattern.Create()
-            .Each(LoadoutId, out var loadoutId)
-            .Db(out var itemId, LoadoutItem.LoadoutId, loadoutId)
-            .Db(itemId, LibraryLinkedLoadoutItem.LibraryItemId, out _)
-            .Return(loadoutId, itemId.Count());
+            .Db(out var item, LoadoutItem.LoadoutId, out var loadoutId)
+            .Db(item, LibraryLinkedLoadoutItem.LibraryItemId, out _)
+            .Return(loadoutId, item);
+    
     
 
     /// <summary>
     /// This query isn't super efficient, but for every stat loadout we have to load one or (in the future) two
     /// databases. So it's O(n) for the number of revisions for now. We can optimize it in the future
     /// </summary>
-    private static LoadoutRevisionWithStats LoadoutStats(IConnection conn, LoadoutRevision revision)
+    private LoadoutRevisionWithStats LoadoutStats(LoadoutRevision revision)
     {
-        var newDb = conn.AsOf(TxId.From(revision.TxEntity.Value));
+        var currentDb = _conn.AsOf(TxId.From(revision.TxEntity.Value));
+        var prevDb = _conn.AsOf(TxId.From(revision.PrevTxEntity.Value));
 
-        var loadoutInlet = newDb.Topology.Intern(LoadoutId);
-        loadoutInlet.Values = [revision.RowId];
+        var currentLoadout = Loadout.Load(currentDb, revision.EntityId);
+        var prevLoadout = Loadout.Load(prevDb, revision.EntityId);
+
+        var synchronizer = currentLoadout.InstallationInstance.GetGame().Synchronizer;
+        var currentDiskState = currentLoadout.Rebase().Installation.Rebase().DiskStateEntries;
         
-        using var modCount = newDb.Topology.Query(ModCount);
-        return new LoadoutRevisionWithStats(revision, modCount.FirstOrDefault().ModCount); 
+        var flattenedCurrent = synchronizer.Flatten(currentLoadout);
+        Dictionary<GamePath, SyncNode> flattenedPrev = new();
+        if (prevLoadout.IsValid()) 
+            flattenedPrev = synchronizer.Flatten(prevLoadout);
+
+        var added = 0;
+        var removed = 0;
+        var modified = 0;
+        var missingBackup = 0;
+
+        foreach (var (key, value) in flattenedCurrent)
+        {
+            if (!_fileStore.HaveFile(value.Loadout.Hash))
+                missingBackup += 1;
+            
+            if (flattenedPrev.TryGetValue(key, out var prevValue))
+            {
+                if (prevValue.Loadout.Hash != value.Loadout.Hash)
+                {
+                    modified++;
+                }
+            }
+            else
+            {
+                added++;
+            }
+        }
+        
+        foreach (var (key, _) in flattenedPrev)
+        {
+            if (!flattenedCurrent.ContainsKey(key))
+            {
+                removed++;
+            }
+        }
+        
+        return new LoadoutRevisionWithStats
+        {
+            LoadoutId = revision.EntityId,
+            TxId = revision.TxEntity,
+            Added = added,
+            Removed = removed,
+            Modified = modified,
+            Timestamp = DateTimeOffset.MinValue
+        };
     }
     
 
@@ -81,13 +131,13 @@ public class UndoService
     /// <summary>
     /// Reverts the given loadout to the given revision.
     /// </summary>
-    public async Task RevertTo(LoadoutRevision revisionRevision)
+    public async Task RevertTo(EntityId loadout, TxId asOfId)
     {
         var currentDb = _conn.Db;
-        var revertDb = _conn.AsOf(TxId.From(revisionRevision.TxEntity.Value));
+        var revertDb = _conn.AsOf(TxId.From(asOfId.Value));
         var ignoreAttrs = IgnoreAttributes.Select(a => currentDb.AttributeCache.GetAttributeId(a.Id)).ToFrozenSet();
         var toProcess = new HashSet<EntityId>();
-        toProcess.Add(revisionRevision.RowId);
+        toProcess.Add(loadout);
 
         var tx = _conn.BeginTransaction();
         var processed = new HashSet<EntityId>();
@@ -115,7 +165,7 @@ public class UndoService
         }
 
         // Mark the transaction as a snapshot
-        tx.Add(EntityId.From(TxId.Tmp.Value), LoadoutSnapshot.Snapshot, revisionRevision.EntityId);
+        tx.Add(EntityId.From(TxId.Tmp.Value), LoadoutSnapshot.Snapshot, loadout);
 
         await tx.Commit();
     }

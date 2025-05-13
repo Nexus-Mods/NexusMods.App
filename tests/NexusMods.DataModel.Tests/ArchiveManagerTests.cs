@@ -51,7 +51,7 @@ public class ArchiveManagerTests
 
         // Verify the files exist in the file store
         foreach (var hash in hashes)
-            (await _manager.HaveFile(hash)).Should().BeTrue();
+            _manager.HaveFile(hash).Should().BeTrue();
 
         // Extract some of the files
         var extractionCount = Random.Shared.Next(fileCount);
