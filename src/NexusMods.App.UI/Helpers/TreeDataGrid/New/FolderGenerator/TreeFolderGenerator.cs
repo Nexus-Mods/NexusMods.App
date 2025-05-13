@@ -92,7 +92,6 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> : I
         var rootModel = tree.ModelForRoot();
         RootCache.Remove(rootModel);
         LocationIdToTree.Remove(path.LocationId);
-        rootModel.Dispose();
     }
 
     /// <inheritdoc />

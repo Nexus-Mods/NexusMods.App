@@ -322,7 +322,6 @@ public class GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> : IDisp
     {
         Files.Dispose();
         Folders.Dispose();
-        Model.Dispose();
         _allFilesRecursive.Dispose();
         _subscriptions.Dispose();
 #if DEBUG
