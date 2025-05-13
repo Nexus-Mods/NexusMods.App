@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Paths;
 
@@ -52,11 +54,12 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
     public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
     {
         loadout = await base.Synchronize(loadout);
-        var hasRedMods = RedModInfoFile.All(loadout.Db)
-            .Any(l => l.AsLoadoutFile().AsLoadoutItemWithTargetPath().AsLoadoutItem().LoadoutId == loadout.LoadoutId);
-        
-        if (!hasRedMods) 
+        if (!MissingRedModEmitter.HasRedMods(loadout, out _, out var numRedModDirs)) return loadout;
+        if (!MissingRedModEmitter.HasRedModToolInstalled(loadout, out _))
+        {
+            Logger.LogError("RedMod tool isn't installed but the loadout contains `{Count}` red mods", numRedModDirs);
             return loadout;
+        }
 
         await _redModTool.Execute(loadout, CancellationToken.None);
         return await base.Synchronize(loadout);

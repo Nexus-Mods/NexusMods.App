@@ -30,7 +30,7 @@ namespace NexusMods.Games.MountAndBlade2Bannerlord;
 /// Maintained by the BUTR Team
 /// https://github.com/BUTR
 /// </summary>
-public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGame
+public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpicGame
 {
     public static readonly GameId GameIdStatic = GameId.From(3174);
     public static readonly GameDomain DomainStatic = GameDomain.From("mountandblade2bannerlord");
@@ -54,7 +54,9 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IEpicGame, IXboxGa
 
     public IEnumerable<uint> SteamIds => [261550u];
     public IEnumerable<long> GogIds => [1802539526, 1564781494];
-    public IEnumerable<string> EpicCatalogItemId => ["Chickadee"];
+
+    // The Epic Games Store is not supported yet, managing the game will put the user into a state where they cannot apply a loadout. 
+    // public IEnumerable<string> EpicCatalogItemId => ["Chickadee"];
     public IEnumerable<string> XboxIds => ["TaleWorldsEntertainment.MountBladeIIBannerlord"];
 
     public override IStreamFactory Icon =>
