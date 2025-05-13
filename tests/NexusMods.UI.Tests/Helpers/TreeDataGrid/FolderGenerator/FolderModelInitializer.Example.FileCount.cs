@@ -52,10 +52,10 @@ public class FileCountAggregationTests
         generator.OnReceiveFile(file4Path, file4Model);
         
         // Get folder models
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
-        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _, out _);
-        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _, out _);
-        var folder2 = generator.GetOrCreateFolder(new GamePath(locationId, "folder2"), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
+        var folder2 = generator.GetOrCreateFolder(new GamePath(locationId, "folder2"), out _);
         
         // Act - verify file counts
         
@@ -80,8 +80,8 @@ public class FileCountAggregationTests
         
         generator.OnReceiveFile(file1Path, file1Model);
         
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
-        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
         
         // Initial counts
         rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
@@ -94,7 +94,7 @@ public class FileCountAggregationTests
         generator.OnReceiveFile(file2Path, file2Model);
         
         // Get reference to the new subfolder
-        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _, out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
         
         // Assert - Counts should be updated
         rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(2);
@@ -120,9 +120,9 @@ public class FileCountAggregationTests
         generator.OnReceiveFile(file1Path, file1Model);
         generator.OnReceiveFile(file2Path, file2Model);
         
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
-        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _, out _);
-        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
         
         // Verify initial counts
         rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(2);

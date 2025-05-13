@@ -52,7 +52,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         
         // Access the root folder of the location tree
         var locationTree = _adapter.FolderGenerator.LocationIdToTree[locationId];
-        var rootFolder = locationTree.GetOrCreateFolder(GamePath.Empty(locationId), out _, out _);
+        var rootFolder = locationTree.GetOrCreateFolder(GamePath.Empty(locationId), out _);
         
         // Verify the file exists in the root folder
         rootFolder.Files.Count.Should().Be(1);
@@ -80,7 +80,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         var locationTree = _adapter.FolderGenerator.LocationIdToTree[locationId];
 
         // Get the root folder
-        var rootFolder = locationTree.GetOrCreateFolder(GamePath.Empty(locationId), out _, out _);
+        var rootFolder = locationTree.GetOrCreateFolder(GamePath.Empty(locationId), out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         // Validate folder1 exists
@@ -143,7 +143,7 @@ public class TreeFolderGeneratorCompositeItemModelAdapterTests
         // Get the folder containing the files
         var locationTree = _adapter.FolderGenerator.LocationIdToTree[location];
         var folderPath = new GamePath(location, (RelativePath)"folder");
-        var folder = locationTree.GetOrCreateFolder(folderPath, out _, out _);
+        var folder = locationTree.GetOrCreateFolder(folderPath, out _);
         
         // Verify initial state
         folder.Files.Count.Should().Be(2);

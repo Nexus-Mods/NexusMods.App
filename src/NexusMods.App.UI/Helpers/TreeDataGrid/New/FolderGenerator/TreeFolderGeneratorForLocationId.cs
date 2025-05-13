@@ -61,7 +61,7 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     internal void OnReceiveFile(GamePath path, CompositeItemModel<GamePath> itemModel)
     {
         var folderPath = path.Parent;
-        var folder = GetOrCreateFolder(folderPath, out _, out _);
+        var folder = GetOrCreateFolder(folderPath, out _);
         folder.AddFileItemModel(itemModel);
     }
     
@@ -74,12 +74,12 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     /// <returns>True if the folder in which the path resides was deleted.</returns>
     internal bool OnDeleteFile(GamePath path, CompositeItemModel<GamePath> itemModel)
     {
-        var folder = GetOrCreateFolder(path.Parent, out var parentFolder, out var parentFolderName);
+        var folder = GetOrCreateFolder(path.Parent, out var parentFolder);
         folder.DeleteFileItemModel(itemModel.Key);
 
         if (folder.ShouldDeleteFolder())
         {
-            parentFolder.DeleteSubfolder(parentFolderName);
+            parentFolder.DeleteSubfolder(folder.FullPath);
             
             // Note(sewer): This is a very rare path in practice, deletes are very infrequent, so this
             //              path isn't necessarily super optimized.
@@ -102,9 +102,9 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
         // Note: We use '.Parent' because `GetAllParents` includes the path itself.
         foreach (var parentPath in folderPath.Parent.GetAllParents())
         {
-            var folder = GetOrCreateFolder(parentPath, out var parentFolder, out var parentFolderName);
+            var folder = GetOrCreateFolder(parentPath, out var parentFolder);
             if (folder.ShouldDeleteFolder())
-                parentFolder.DeleteSubfolder(parentFolderName);
+                parentFolder.DeleteSubfolder(parentPath);
             else
                 return false;
         }
@@ -118,20 +118,17 @@ public class TreeFolderGeneratorForLocationId<TTreeItemWithPath, TFolderModelIni
     /// </summary>
     /// <param name="path">The path of the folder to obtain.</param>
     /// <param name="parentFolder">The parent of the folder returned.</param>
-    /// <param name="parentFolderPath">Name of the parent folder.</param>
-    internal GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateFolder(GamePath path, out GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> parentFolder, out GamePath parentFolderPath)
+    internal GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> GetOrCreateFolder(GamePath path, out GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> parentFolder)
     {
         // Go through all parents of the path, and create them if they don't exist.
         parentFolder = _rootFolder;
-        parentFolderPath = GamePath.Empty(path.LocationId);
         
         var currentFolder = _rootFolder;
         foreach (var partAsGamePath in path.Path.GetAllParents().Reverse())
         {
             var part = partAsGamePath.FileName;
             parentFolder = currentFolder;
-            parentFolderPath = new GamePath(path.LocationId, partAsGamePath);
-            currentFolder = currentFolder.GetOrCreateChildFolder(part, parentFolderPath);
+            currentFolder = currentFolder.GetOrCreateChildFolder(part, new GamePath(path.LocationId, partAsGamePath));
         }
         
         return currentFolder;

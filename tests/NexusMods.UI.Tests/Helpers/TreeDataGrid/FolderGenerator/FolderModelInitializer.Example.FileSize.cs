@@ -54,10 +54,10 @@ public class FileSizeAggregationTests
         generator.OnReceiveFile(file4Path, file4Model);
 
         // Get folder models
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
-        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _, out _);
-        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _, out _);
-        var folder2 = generator.GetOrCreateFolder(new GamePath(locationId, "folder2"), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
+        var folder2 = generator.GetOrCreateFolder(new GamePath(locationId, "folder2"), out _);
         
         // Act - verify file sizes
         
@@ -82,8 +82,8 @@ public class FileSizeAggregationTests
         
         generator.OnReceiveFile(file1Path, file1Model);
         
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
-        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
         
         // Initial sizes
         rootFolder.Model.Get<SizeComponent>(ComponentKey).Value.Value.Value.Should().Be(100);
@@ -96,7 +96,7 @@ public class FileSizeAggregationTests
         generator.OnReceiveFile(file2Path, file2Model);
         
         // Get reference to the new subfolder
-        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _, out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
         
         // Assert - Sizes should be updated
         rootFolder.Model.Get<SizeComponent>(ComponentKey).Value.Value.Value.Should().Be(300); // 100 + 200
@@ -121,9 +121,9 @@ public class FileSizeAggregationTests
         generator.OnReceiveFile(file1Path, file1Model);
         generator.OnReceiveFile(file2Path, file2Model);
         
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
-        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _, out _);
-        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
         
         // Verify initial sizes
         rootFolder.Model.Get<SizeComponent>(ComponentKey).Value.Value.Value.Should().Be(300); // 100 + 200
@@ -158,8 +158,8 @@ public class FileSizeAggregationTests
         generator.OnReceiveFile(file1Path, file1Model);
         generator.OnReceiveFile(file2Path, file2Model);
         
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
-        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
         
         // Assert
         rootFolder.Model.Get<SizeComponent>(ComponentKey).Value.Value.Value.Should().Be(100); // Only the non-empty file contributes

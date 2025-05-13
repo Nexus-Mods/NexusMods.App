@@ -25,7 +25,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
 
         // Assert
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Files.Lookup(filePath).HasValue.Should().BeTrue();
         rootFolder.Files.Lookup(filePath).Value.Should().Be(fileModel);
         rootFolder.Files.Count.Should().Be(1);
@@ -45,7 +45,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Assert
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Files.Count.Should().Be(0);
         rootFolder.Folders.Count.Should().Be(1);
 
@@ -56,7 +56,7 @@ public class TreeFolderGeneratorForLocationIdTests
         folder1.FolderName.Should().Be((RelativePath)"folder1");
         
         // Navigate to folder2
-        var folder2 = folder1.Folders.Lookup(new GamePath(locationId, "folder2")).Value;
+        var folder2 = folder1.Folders.Lookup(new GamePath(locationId, "folder1/folder2")).Value;
         folder2.Files.Count.Should().Be(1);
         folder2.Files.Lookup(filePath).HasValue.Should().BeTrue();
         folder2.Files.Lookup(filePath).Value.Should().Be(fileModel);
@@ -76,7 +76,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get folder and check initial refcount
-        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         folder.Files.Count.Should().Be(1);
 
         // Act again with same file - should not increment refcount
@@ -111,7 +111,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         result.Should().BeTrue(); // Folder should be empty now
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(0); // Folder should be removed
     }
     
@@ -135,7 +135,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         result.Should().BeFalse(); // Folder should not be empty
-        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         folder.Files.Count.Should().Be(1);
         folder.Files.Lookup(filePath1).HasValue.Should().BeFalse();
         folder.Files.Lookup(filePath2).HasValue.Should().BeTrue();
@@ -150,16 +150,16 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Act
         var generator = CreateGenerator();
-        var folder = generator.GetOrCreateFolder(path, out var parentFolder, out var parentFolderName);
+        var folder = generator.GetOrCreateFolder(path, out var parentFolder);
         
         // Assert
         folder.Should().NotBeNull();
         parentFolder.Should().NotBeNull();
-        parentFolderName.Should().Be(path);
+        folder.FullPath.Should().Be(path);
         folder.FolderName.Should().Be((RelativePath)"folder3");
 
         // Navigate from root to confirm structure
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         var folder1 = rootFolder.Folders.Lookup(new GamePath(locationId, "folder1")).Value;
@@ -184,15 +184,15 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Act - create folder first time
         var generator = CreateGenerator();
-        var initialFolder = generator.GetOrCreateFolder(path, out _, out _);
+        var initialFolder = generator.GetOrCreateFolder(path, out _);
         
         // Act - get the same folder again
-        var retrievedFolder = generator.GetOrCreateFolder(path, out var parentFolder, out var parentFolderName);
+        var retrievedFolder = generator.GetOrCreateFolder(path, out var parentFolder);
         
         // Assert
         retrievedFolder.Should().BeSameAs(initialFolder);
         parentFolder.Should().NotBeNull();
-        parentFolderName.Should().Be(new GamePath(locationId, "folder1/folder2"));
+        retrievedFolder.FullPath.Should().Be(new GamePath(locationId, "folder1/folder2"));
     }
     
     [Fact]
@@ -206,7 +206,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         model.Should().NotBeNull();
-        model.Should().BeSameAs(generator.GetOrCreateFolder(new GamePath(LocationId.From(1), ""), out _, out _).Model);
+        model.Should().BeSameAs(generator.GetOrCreateFolder(new GamePath(LocationId.From(1), ""), out _).Model);
     }
     
     // Observable-specific tests
@@ -284,7 +284,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Should contain the folder
         
         // Get folder and check its observables
-        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         var folderHasChildren = false;
         using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
         using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
@@ -328,7 +328,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Contains folder
         
         // Get folder and bind observables
-        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         var folderHasChildren = false;
         using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
         using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
@@ -381,10 +381,10 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Contains folder1
         
         // Get all folders
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         var folder1 = rootFolder.Folders.Lookup(new GamePath(locationId, "folder1")).Value;
         var folder2 = folder1.Folders.Lookup(new GamePath(locationId, "folder1/folder2")).Value;
-        var folder3 = folder2.Folders.Lookup(new GamePath(locationId, "folder1/folder2/folder3/file.txt")).Value;
+        var folder3 = folder2.Folders.Lookup(new GamePath(locationId, "folder1/folder2/folder3")).Value;
         
         // Check folder1 observables
         var folder1HasChildren = false;
@@ -438,7 +438,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Verify initial structure
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         var parent1 = rootFolder.Folders.Lookup(new GamePath(locationId, "parent1")).Value;
@@ -463,7 +463,7 @@ public class TreeFolderGeneratorForLocationIdTests
         result.Should().BeTrue(); // The folder should be empty and deleted
         
         // Verify that all parent folders were deleted
-        rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(0); // parent1 should be deleted
         
         // Try to get the folders that should no longer exist
@@ -477,7 +477,7 @@ public class TreeFolderGeneratorForLocationIdTests
         // Arrange
         var locationId = LocationId.From(1);
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Act
         using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -502,7 +502,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath1, fileModel1);
         generator.OnReceiveFile(filePath2, fileModel2);
         
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Act
         using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -533,7 +533,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath2, fileModel2);
         generator.OnReceiveFile(filePath3, fileModel3);
         
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Act - Get recursive files from root
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -582,7 +582,7 @@ public class TreeFolderGeneratorForLocationIdTests
         var fileModel3 = CreateFileModel(filePath3);
         
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Set up subscription to monitor changes
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -654,7 +654,7 @@ public class TreeFolderGeneratorForLocationIdTests
         var fileModel3 = CreateFileModel(filePath3);
         
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Set up subscription to monitor changes
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -701,7 +701,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get the root folder and verify the structure
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         // Get parent1 folder
@@ -734,7 +734,7 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get the root folder and verify the structure
-        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         var parent1 = rootFolder.Folders.Lookup(new GamePath(locationId, "parent1")).Value;
         var parent2 = parent1.Folders.Lookup(new GamePath(locationId, "parent1/parent2")).Value;
         var parent3 = parent2.Folders.Lookup(new GamePath(locationId, "parent1/parent2/parent3")).Value;
