@@ -7,6 +7,7 @@ using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Cascade;
 using NexusMods.Cascade.Patterns;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -42,7 +43,7 @@ public class UndoService
     { 
         return await _conn.Topology.QueryAsync(Queries.LoadoutRevisionsWithMetadata
             .Where(row => row.RowId == loadout)
-            .Select(LoadoutStats));
+            .ParallelSelect(LoadoutStats));
     }
 
     private static readonly Flow<(EntityId Loadout, EntityId ModFile)> ModFiles =
@@ -61,6 +62,8 @@ public class UndoService
     {
         var currentDb = _conn.AsOf(TxId.From(revision.TxEntity.Value));
         var prevDb = _conn.AsOf(TxId.From(revision.PrevTxEntity.Value));
+
+        var txEntity = Transaction.Load(currentDb, revision.TxEntity);
 
         var currentLoadout = Loadout.Load(currentDb, revision.EntityId);
         var prevLoadout = Loadout.Load(prevDb, revision.EntityId);
@@ -121,7 +124,8 @@ public class UndoService
             Added = added,
             Removed = removed,
             Modified = modified,
-            Timestamp = DateTimeOffset.MinValue
+            MissingGameFiles = missingBackup,
+            Timestamp = txEntity.Timestamp,
         };
     }
     

@@ -29,6 +29,8 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
                 TxId = row.TxId.ToString(),
                 Added = row.Added,
                 Removed = row.Removed,
+                Modified = row.Modified,
+                MissingGameFiles = row.MissingGameFiles,
             }
         ).ToArray();
         
@@ -42,6 +44,8 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
                 TxId = row.TxId.ToString(),
                 Added = row.Added,
                 Removed = row.Removed,
+                Modified = row.Modified,
+                MissingGameFiles = row.MissingGameFiles,
             }
         );
 

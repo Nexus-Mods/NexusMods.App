@@ -9,4 +9,4 @@ namespace NexusMods.DataModel.Undo;
 /// </summary>
 public partial record struct LoadoutRevision(EntityId EntityId, EntityId TxEntity, EntityId PrevTxEntity) : IRowDefinition;
 
-public partial record struct LoadoutRevisionWithStats(EntityId LoadoutId, EntityId TxId, int Added, int Removed, int Modified, DateTimeOffset Timestamp) : IRowDefinition;
+public partial record struct LoadoutRevisionWithStats(EntityId LoadoutId, EntityId TxId, int Added, int Removed, int Modified, int MissingGameFiles, DateTimeOffset Timestamp) : IRowDefinition;

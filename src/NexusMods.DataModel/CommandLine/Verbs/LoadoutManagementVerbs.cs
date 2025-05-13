@@ -251,8 +251,8 @@ public static class LoadoutManagementVerbs
         var revisions = await undoService.RevisionsFor(loadout);
         
         await revisions.OrderBy(r => r.TxId)
-            .Select((r, idx) => (idx, r.Timestamp, r.TxId, r.Added, r.Removed))
-            .RenderTable(renderer, "Rev #", "Timestamp", "Tx", "Added", "Removed");
+            .Select((r, idx) => (idx, r.Timestamp, r.TxId, r.Added, r.Removed, r.Modified, r.MissingGameFiles))
+            .RenderTable(renderer, "Rev #", "Timestamp", "Tx", "Added", "Removed", "Modified", "Missing Game Files");
 
         return 0;
     }
