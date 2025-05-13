@@ -28,19 +28,12 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
     public static bool Headless { get; set; } = false;
 
     public bool WasOpenedDirectly { get; set; }
-
-    private readonly Lazy<IConnection> _conn;
-    private ILogger<AdvancedManualInstallerUI> _logger;
+    private readonly ILogger<AdvancedManualInstallerUI> _logger;
 
     /// <summary>
     /// Construct the UI handler for the Advanced Manual Installer.
     /// </summary>
-    public AdvancedManualInstallerUI(IServiceProvider provider, ILogger<AdvancedManualInstallerUI> logger) : base(provider, logger)
-    {
-        // Delay to avoid circular dependency.
-        _conn = new Lazy<IConnection>(provider.GetRequiredService<IConnection>);
-        _logger = logger;
-    }
+    public AdvancedManualInstallerUI(IServiceProvider provider, ILogger<AdvancedManualInstallerUI> logger) : base(provider, logger) => _logger = logger;
 
     public override async ValueTask<InstallerResult> ExecuteAsync(
         LibraryArchive.ReadOnly libraryArchive,
