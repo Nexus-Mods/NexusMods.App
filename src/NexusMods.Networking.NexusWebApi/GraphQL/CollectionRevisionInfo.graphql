@@ -5,57 +5,6 @@ query CollectionRevisionInfo($slug: String!, $revisionNumber: Int!, $viewAdultCo
 {
     collectionRevision(slug: $slug, revision: $revisionNumber, viewAdultContent: $viewAdultContent)
     {
-        id
-        assetsSizeBytes
-        revisionNumber
-        adultContent
-        totalSize
-        overallRating
-        overallRatingCount
-        modCount
-
-        modFiles {
-            id,
-            optional,
-            gameId,
-            fileId,
-            file {
-                ...ModFileFragment
-                mod {
-                    ...ModFragment
-                }
-            }
-            updatePolicy,
-            version,
-        }
-
-        collection {
-            name
-            summary
-            endorsements
-            totalDownloads
-            overallRating
-            overallRatingCount
-            recentRating
-            recentRatingCount
-            category {
-                name
-                id
-            }
-            tileImage {
-                thumbnailUrl(size: small)
-            }
-            headerImage {
-                url
-            }
-            user {
-                ...UserFragment
-            }
-            game {
-                id
-                name
-                domainName
-            }
-        }
+        ...CollectionRevisionFragment
     }
 }

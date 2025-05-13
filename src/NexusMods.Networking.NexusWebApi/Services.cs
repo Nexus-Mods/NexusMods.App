@@ -4,6 +4,7 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
+using NexusMods.App.BuildInfo;
 using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
@@ -55,8 +56,19 @@ public static class Services
             .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
 
-        collection.AddNexusGraphQLClient()
-            .ConfigureHttpClient(http => http.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql"));
+        collection
+            .AddNexusGraphQLClient()
+            .ConfigureHttpClient((serviceProvider, httpClient) =>
+            {
+                httpClient.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql");
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
+
+                var authenticationHeaderValue = serviceProvider.GetRequiredService<IHttpMessageFactory>().GetAuthenticationHeaderValue();
+                if (authenticationHeaderValue is null) return;
+
+                httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
+            });
+
         return collection;
     }
 }

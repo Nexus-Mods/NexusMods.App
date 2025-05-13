@@ -165,30 +165,17 @@ public class NexusApiClient : INexusApiClient
     private async Task<Response<T>> SendAsync<T>(HttpRequestMessage message, JsonTypeInfo<T> typeInfo,
         CancellationToken token = default)
     {
-        try
-        {
-            using var response = await _httpClient.SendAsync(message, token);
-            if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException(response.ReasonPhrase, null, response.StatusCode);
+        using var response = await _httpClient.SendAsync(message, token);
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException(response.ReasonPhrase, null, response.StatusCode);
 
-            var data = await response.Content.ReadFromJsonAsync(typeInfo, token);
-            return new Response<T>
-            {
-                Data = data!,
-                Metadata = ParseHeaders(response),
-                StatusCode = response.StatusCode
-            };
-        }
-        catch (HttpRequestException ex)
+        var data = await response.Content.ReadFromJsonAsync(typeInfo, token);
+        return new Response<T>
         {
-            var newMessage = await _factory.HandleError(message, ex, token);
-            if (newMessage != null)
-            {
-                return await SendAsync(newMessage, typeInfo, token);
-            }
-
-            throw;
-        }
+            Data = data!,
+            Metadata = ParseHeaders(response),
+            StatusCode = response.StatusCode,
+        };
     }
 
     private ResponseMetadata ParseHeaders(HttpResponseMessage result)

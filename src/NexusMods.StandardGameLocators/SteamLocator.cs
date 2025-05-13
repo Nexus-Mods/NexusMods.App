@@ -69,7 +69,8 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
             if (parserResult.IsFailed || !parserResult.Value.LocalAppData.TryGetValue(_steamGame.AppId, out var localAppData)) return ValueTask.FromResult<WineDllOverride[]>([]);
 
             var launchOptions = localAppData.LaunchOptions;
-            var result = WineParser.ParseEnvironmentVariable(launchOptions);
+            var section = WineParser.GetWineDllOverridesSection(launchOptions);
+            var result = WineParser.ParseEnvironmentVariable(section);
             return ValueTask.FromResult(result.ToArray());
         }
     }

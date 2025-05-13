@@ -46,7 +46,7 @@ public static class WineParser
     }
 
     /// <summary>
-    /// Parses the <see cref="EnvironmentVariableName"/>.
+    /// Parses the environment variable out of a string.
     /// </summary>
     public static IReadOnlyList<WineDllOverride> ParseEnvironmentVariable(ReadOnlySpan<char> environmentVariableValue)
     {
@@ -55,13 +55,12 @@ public static class WineParser
         var results = new List<WineDllOverride>();
 
         // https://gitlab.winehq.org/wine/wine/-/wikis/Wine-User's-Guide#winedlloverrides-dll-overrides
-        var span = GetWineDllOverridesSection(environmentVariableValue);
 
         // NOTE(erri120): DLLs are separated with a semicolon
-        var splitEnumerator = span.Split(';');
+        var splitEnumerator = environmentVariableValue.Split(';');
         foreach (var splitRange in splitEnumerator)
         {
-            var section = span[splitRange];
+            var section = environmentVariableValue[splitRange];
 
             var index = section.LastIndexOf('=');
             if (index == -1) continue;
@@ -112,18 +111,20 @@ public static class WineParser
         return overrideTypesSpan[..typesIndex].ToArray();
     }
 
-    private static ReadOnlySpan<char> GetWineDllOverridesSection(ReadOnlySpan<char> input)
+    /// <summary>
+    /// Gets the DLL overrides section.
+    /// </summary>
+    public static ReadOnlySpan<char> GetWineDllOverridesSection(ReadOnlySpan<char> input)
     {
         const string prefix = "WINEDLLOVERRIDES=";
 
-        var span = input;
-        if (!span.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) return span;
+        var index = input.IndexOf(prefix, StringComparison.OrdinalIgnoreCase);
+        if (index == -1) return ReadOnlySpan<char>.Empty;
 
-        span = span[prefix.Length..];
-        if (!span.StartsWith('"')) return span;
+        var span = input[(index + prefix.Length)..];
 
         span = span[1..];
-        var index = span.IndexOf('"');
+        index = span.IndexOf('"');
         span = span[..index];
 
         return span;

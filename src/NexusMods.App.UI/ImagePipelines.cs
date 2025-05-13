@@ -31,7 +31,7 @@ public static class ImagePipelines
     private static readonly Bitmap CollectionTileFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-tile-fallback.png")));
     private static readonly Bitmap CollectionBackgroundFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/collection-background-fallback.png")));
     private static readonly Bitmap UserAvatarFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
-    internal static readonly Bitmap ModPageThumbnailFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/transparent.png")));
+    internal static readonly Bitmap ModPageThumbnailFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/mod-thumbnail-fallback.png")));
     internal static readonly Bitmap MarkdownFallback = new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/transparent.png")));
 
     public static Observable<Bitmap> CreateObservable(EntityId input, IResourceLoader<EntityId, Bitmap> pipeline)
@@ -214,10 +214,7 @@ public static class ImagePipelines
         var pipeline = new HttpLoader(new HttpClient())
             .ChangeIdentifier<ValueTuple<EntityId, Uri>, Uri, byte[]>(static tuple => tuple.Item2)
             .Decode(decoderType: DecoderType.Skia)
-            .Resize(newSize: new SKSizeI(
-                width: 90,
-                height: 56
-            ))
+            .Resize(newSize: new SKSizeI(90, 56))
             .Encode(encoderType: EncoderType.Qoi)
             .PersistInDb(
                 connection: connection,
@@ -228,10 +225,6 @@ public static class ImagePipelines
             )
             .Decode(decoderType: DecoderType.Qoi)
             .ToAvaloniaBitmap()
-            // Note(sewer): This is transparent, the actual fallback is provided on the
-            // UI end; which we show during the asynchronous load of the actual thumbnail
-            // from the pipeline. If the load fails, we show an all transparent fallback;
-            // meaning the underlying placeholder from before is still shown.
             .UseFallbackValue(ModPageThumbnailFallback)
             .EntityIdToOptionalIdentifier(
                 connection: connection,

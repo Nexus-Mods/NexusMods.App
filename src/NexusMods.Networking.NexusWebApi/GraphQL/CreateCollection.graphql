@@ -1,0 +1,27 @@
+query GetCollectionRevisionUploadUrl {
+    collectionRevisionUploadUrl {
+        url
+        uuid
+    }
+}
+
+mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
+    createCollection(collectionData: $payload, uuid: $uuid) {
+        success
+        collection {
+            ...CollectionFragment
+        }
+        revision {
+            ...CollectionRevisionFragment
+        }
+    }
+}
+
+mutation CreateOrUpdateRevision($payload: CollectionPayload!, $collectionId: Int!, $uuid: String!){
+    createOrUpdateRevision(collectionData: $payload, collectionId: $collectionId, uuid: $uuid) {
+        success
+        revision {
+            ...CollectionRevisionFragment
+        }
+    }
+}
