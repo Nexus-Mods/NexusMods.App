@@ -45,6 +45,7 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.ObservableInfo;
+using NexusMods.App.UI.Pages.RestoreLoadout;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
@@ -109,6 +110,7 @@ public static class Services
             .AddViewModel<FileTreeNodeViewModel, IFileTreeNodeViewModel>()
             .AddViewModel<ApplyDiffViewModel, IApplyDiffViewModel>()
             .AddViewModel<ManageGameWarningViewModel, IManageGameWarningViewModel>()
+            .AddViewModel<RestoreLoadoutViewModel, IRestoreLoadoutViewModel>()
 
             // Views
             .AddView<CollectionCardView, ICollectionCardViewModel>()
@@ -134,6 +136,7 @@ public static class Services
             .AddView<FileTreeNodeView, IFileTreeNodeViewModel>()
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
+            .AddView<RestoreLoadoutView, IRestoreLoadoutViewModel>()
             
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
             .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
@@ -243,6 +246,7 @@ public static class Services
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
             .AddSingleton<IPageFactory, DebugControlsPageFactory>()
             .AddSingleton<IPageFactory, ProtocolRegistrationTestPageFactory>()
+            .AddSingleton<IPageFactory, RestoreLoadoutPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()

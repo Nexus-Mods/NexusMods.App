@@ -22,6 +22,7 @@ using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.App.UI.Pages.RestoreLoadout;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
@@ -42,6 +43,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
+    
+    public ILeftMenuItemViewModel LeftMenuItemRestoreLoadout { get; }
     [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
     [Reactive] public bool HasSingleCollection { get; private set; } = true;
@@ -218,6 +221,23 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics),
             Icon = IconValues.Cardiology,
             ToolTip = new StringComponent(Language.LoadoutLeftMenuViewModel_Diagnostics_ToolTip),
+        };
+
+        LeftMenuItemRestoreLoadout = new RestoreLoadoutLeftMenuItemViewModel(
+            workspaceController,
+            settingsManager,
+            workspaceId,
+            new PageData
+            {
+                FactoryId = RestoreLoadoutPageFactory.StaticId,
+                Context = new RestoreLoadoutPageContext(loadoutContext.LoadoutId)
+            },
+            loadoutContext.LoadoutId
+        )
+        {
+            Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout),
+            Icon = IconValues.ArrowBack,
+            ToolTip = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout),
         };
         
         // Apply Control

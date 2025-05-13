@@ -1754,6 +1754,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restore Loadout.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All ({0}).
         /// </summary>
         public static string LoadoutView_Title_Installed_Mods {

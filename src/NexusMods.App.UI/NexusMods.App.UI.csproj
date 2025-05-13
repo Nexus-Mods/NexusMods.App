@@ -743,6 +743,9 @@
         <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\ViewLoadoutGroupFilesViewModel.cs">
           <DependentUpon>IViewLoadoutGroupFilesViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\RestoreLoadout\RestoreLoadoutViewModel.cs">
+          <DependentUpon>IRestoreLoadoutViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
