@@ -126,9 +126,10 @@ internal static class LoadoutFilesObservableExtensions
 
     internal static bool FilterEntityId(IConnection connection, ModFilesFilter modFilesFilter, EntityId eId)
     {
+        // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
         var segment = connection.Db.Get(eId);
 
-        // Note(sewer): Direct GET on LoadoutItem.ParentId to avoid unnecessary boxing or DB fetches.
+        // Note(Al12rs): This only checks the direct parent of the LoadoutItem, not higher anchestors
         var hasParent = LoadoutItem.Parent.TryGetValue(segment, out var parentId);
         if (!hasParent)
             return false;
