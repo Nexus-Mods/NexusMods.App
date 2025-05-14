@@ -104,4 +104,15 @@ internal static class DesignDataContexts
         DialogWindowSize.Medium,
         MarkdownRendererDesignViewModel
     );
+    
+    public static DialogViewModel DialogAllDesignViewModel { get; } = new(
+        "Title",
+        [DialogStandardButtons.Ok, DialogStandardButtons.Yes, DialogStandardButtons.Cancel],
+        "This is a design viewmodel with all options.",
+        "Heading",
+        IconValues.PictogramSettings,
+        DialogWindowSize.Medium,
+        MarkdownRendererDesignViewModel,
+        CustomContentDesignViewModel
+    );
 }
