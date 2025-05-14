@@ -198,8 +198,7 @@ public class SynchronizerService : ISynchronizerService
         var isBusy = loadoutState.ObservePropertyChanged(l => l.Busy);
 
         var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
-            .ToObservable()
-            .Where(last => last != default(LoadoutWithTxId));
+            .ToObservable();
 
         var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId)
             .ToObservable()
@@ -227,7 +226,7 @@ public class SynchronizerService : ISynchronizerService
                     if (busy)
                         return LoadoutSynchronizerState.Pending;
 
-                    if (last.Id != loadoutId)
+                    if (last.Id != loadoutId && last != default(LoadoutWithTxId))
                         return LoadoutSynchronizerState.OtherLoadoutSynced;
 
                     // Last DB revision is the same in the applied loadout
