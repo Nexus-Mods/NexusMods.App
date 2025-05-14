@@ -7,6 +7,8 @@
                                 xmlns:restoreLoadout="clr-namespace:NexusMods.App.UI.Pages.RestoreLoadout"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.RestoreLoadout.RestoreLoadoutView">
-    Welcome to Avalonia!
+    <ItemsControl x:Name="RevisionsControl">
+        
+    </ItemsControl>
 </reactiveUi:ReactiveUserControl>
 
