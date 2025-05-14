@@ -16,4 +16,4 @@
 Nexus Mods app is a mod installer, creator and manager for all your popular games.
 Easy to use, runs on your standard Windows PC and Linux alike. Don't waste time troubleshooting, play your games,
 fill those knees with arrows and most importantly, Have Fun!
-Learn more about the App on the Wiki
+Learn more about the App on the <a href="https://nexus-mods.github.io/NexusMods.App/" target="_blank">Wiki</a>
