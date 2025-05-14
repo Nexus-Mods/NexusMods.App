@@ -38,11 +38,9 @@ using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
-using NexusMods.App.UI.Pages.ItemContentsFileTree;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
+using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
@@ -206,8 +204,8 @@ public static class Services
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()
 
-            .AddView<ViewLoadoutGroupFilesView, IViewLoadoutGroupFilesViewModel>()
-            .AddViewModel<ViewLoadoutGroupFilesViewModel, IViewLoadoutGroupFilesViewModel>()
+            .AddView<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel>()
+            .AddViewModel<LoadoutGroupFilesViewModel, ILoadoutGroupFilesViewModel>()
 
             // workspace system
             .AddSingleton<IWindowManager, WindowManager>()
@@ -244,7 +242,7 @@ public static class Services
             .AddSingleton<IPageFactory, ObservableInfoPageFactory>()
             .AddSingleton<IPageFactory, DebugControlsPageFactory>()
             .AddSingleton<IPageFactory, ProtocolRegistrationTestPageFactory>()
-            .AddSingleton<IPageFactory, ViewLoadoutGroupFilesPageFactory>()
+            .AddSingleton<IPageFactory, LoadoutGroupFilesPageFactory>()
 
             // LeftMenu factories
             .AddSingleton<ILeftMenuFactory, HomeLeftMenuFactory>()

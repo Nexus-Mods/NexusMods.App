@@ -3,21 +3,16 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Controls.Trees;
-using NexusMods.App.UI.Pages.ItemContentsFileTree;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -148,8 +143,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var pageData = new PageData
                     {
-                        FactoryId = ViewLoadoutGroupFilesPageFactory.StaticId,
-                        Context = new ViewLoadoutGroupFilesPageContext
+                        FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+                        Context = new LoadoutGroupFilesPageContext
                         {
                             GroupIds = [ group.Value.Id ],
                             IsReadOnly = isReadonly,
@@ -228,7 +223,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .Select(connection, static (model, connection) =>
                 {
                     if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-                    return ViewLoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
+                    return LoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
                 })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)

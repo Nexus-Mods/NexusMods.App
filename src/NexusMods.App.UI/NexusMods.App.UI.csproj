@@ -734,11 +734,8 @@
         <Compile Update="Pages\ProtocolRegistration\ProtocolRegistrationTestPageViewModel.cs">
           <DependentUpon>IProtocolRegistrationTestPageViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\ViewModel\ViewLoadoutGroupFilesViewModel.cs">
-          <DependentUpon>IViewLoadoutGroupFilesViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\View\ViewLoadoutGroupFilesView.cs">
-          <DependentUpon>ViewLoadoutGroupFilesView.axaml</DependentUpon>
+        <Compile Update="Pages\LoadoutGroupFilesPage\LoadoutGroupFilesView.cs">
+          <DependentUpon>LoadoutGroupFilesView.axaml</DependentUpon>
         </Compile>
     </ItemGroup>
 

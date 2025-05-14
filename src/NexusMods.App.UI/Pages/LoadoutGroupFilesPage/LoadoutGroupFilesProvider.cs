@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using DynamicData;
+using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
@@ -13,11 +14,10 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.Paths;
 using ReactiveUI;
-using DynamicData.Aggregation;
 using ZLinq;
-using static NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel.PathHelpers;
+using static NexusMods.App.UI.Pages.LoadoutGroupFilesPage.PathHelpers;
 
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
+namespace NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 
 /// <summary>
 /// Provides files for multiple <see cref="Abstractions.Loadouts.LoadoutItemGroup"/>(s) specified by a <see cref="ModFilesFilter"/>.

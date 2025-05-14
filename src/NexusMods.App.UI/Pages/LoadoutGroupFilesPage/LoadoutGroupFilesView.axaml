@@ -1,17 +1,16 @@
 <reactive:ReactiveUserControl
-    x:TypeArguments="viewModel:IViewLoadoutGroupFilesViewModel"
+    x:TypeArguments="viewModel:ILoadoutGroupFilesViewModel"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:trees="clr-namespace:NexusMods.App.UI.Controls.Trees"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:reactive="http://reactiveui.net"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:viewModel="clr-namespace:NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel"
+    xmlns:viewModel="clr-namespace:NexusMods.App.UI.Pages.LoadoutGroupFilesPage"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View.ViewLoadoutGroupFilesView">
+    x:Class="NexusMods.App.UI.Pages.LoadoutGroupFilesPage.LoadoutGroupFilesView">
 
     <Grid RowDefinitions="Auto, *">
         <Border Grid.Row="0" Classes="Toolbar">

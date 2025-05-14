@@ -3,17 +3,17 @@ using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
 using ReactiveUI;
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
+
+namespace NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 
 [UsedImplicitly]
-public partial class ViewLoadoutGroupFilesView : ReactiveUserControl<IViewLoadoutGroupFilesViewModel>
+public partial class LoadoutGroupFilesView : ReactiveUserControl<ILoadoutGroupFilesViewModel>
 {
-    public ViewLoadoutGroupFilesView()
+    public LoadoutGroupFilesView()
     {
         InitializeComponent();
-        TreeDataGridViewHelper.SetupTreeDataGridAdapter<ViewLoadoutGroupFilesView, IViewLoadoutGroupFilesViewModel, CompositeItemModel<GamePath>, GamePath>(this, TreeDataGrid, vm => vm.FileTreeAdapter!);
+        TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel, CompositeItemModel<GamePath>, GamePath>(this, TreeDataGrid, vm => vm.FileTreeAdapter!);
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.FileTreeAdapter!.Source.Value, view => view.TreeDataGrid.Source)

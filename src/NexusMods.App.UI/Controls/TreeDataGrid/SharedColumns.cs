@@ -1,6 +1,5 @@
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New;
 
 namespace NexusMods.App.UI.Controls;
 

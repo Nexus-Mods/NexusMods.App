@@ -9,7 +9,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.View;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -24,20 +23,20 @@ using ReactiveUI.Fody.Helpers;
 using CompositeDisposable = System.Reactive.Disposables.CompositeDisposable;
 using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
 
-namespace NexusMods.App.UI.Pages.ItemContentsFileTree.New.ViewLoadoutGroupFiles.ViewModel;
+namespace NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 
 [UsedImplicitly]
-public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFilesViewModel>, IViewLoadoutGroupFilesViewModel
+public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewModel>, ILoadoutGroupFilesViewModel
 {
     // IViewLoadoutGroupFilesViewModel
-    [Reactive] public ViewLoadoutGroupFilesPageContext? Context { get; set; }
+    [Reactive] public LoadoutGroupFilesPageContext? Context { get; set; }
     [Reactive] public ReactiveCommand<NavigationInformation> OpenEditorCommand { get; [UsedImplicitly] set; } = null!;
     [Reactive] public ReactiveCommand<Unit> RemoveCommand { get; [UsedImplicitly] set; } = null!;
     [Reactive] public CompositeItemModel<GamePath>? SelectedItem { get; set; }
     [Reactive] public ViewLoadoutGroupFilesTreeDataGridAdapter? FileTreeAdapter { get; set; }
     
-    public ViewLoadoutGroupFilesViewModel(
-        ILogger<ViewLoadoutGroupFilesViewModel> logger,
+    public LoadoutGroupFilesViewModel(
+        ILogger<LoadoutGroupFilesViewModel> logger,
         IWindowManager windowManager,
         IServiceProvider provider,
         IConnection connection) : base(windowManager)
