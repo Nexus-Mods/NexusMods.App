@@ -227,7 +227,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .Select(connection, static (model, connection) =>
                 {
                     if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-                    return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
+                    return ItemContentsFileTreeViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
                 })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)

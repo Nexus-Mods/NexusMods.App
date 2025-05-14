@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using Avalonia.Controls.Selection;
+using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
@@ -12,6 +13,8 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Extensions.BCL;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -141,6 +144,48 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
                 .Subscribe(item => SelectedItem = item)
                 .DisposeWith(disposables);
         });
+    }
+    
+    /// <summary>
+    /// Returns the appropriate LoadoutItemGroup of files if the selection contains a LoadoutItemGroup containing files,
+    /// if the selection contains multiple LoadoutItemGroups of files, returns None.
+    /// </summary>
+    internal static Optional<LoadoutItemGroup.ReadOnly> GetViewModFilesLoadoutItemGroup(
+        IReadOnlyCollection<LoadoutItemId> loadoutItemIds, 
+        IConnection connection)
+    {
+        var db = connection.Db;
+        // Only allow when selecting a single item, or an item with a single child
+        if (loadoutItemIds.Count != 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
+        var currentGroupId = loadoutItemIds.First();
+        
+        var groupDatoms = db.Datoms(LoadoutItemGroup.Group, Null.Instance);
+
+        while (true)
+        {
+            var childDatoms = db.Datoms(LoadoutItem.ParentId, currentGroupId);
+            if (childDatoms.Count == 0) return Optional<LoadoutItemGroup.ReadOnly>.None;
+
+            var childGroups = groupDatoms.MergeByEntityId(childDatoms);
+
+            // We have no child groups, check if children are files
+            if (childGroups.Count == 0)
+            {
+                return LoadoutItemWithTargetPath.TryGet(db, childDatoms[0].E, out _) 
+                    ? LoadoutItemGroup.Load(db, currentGroupId)
+                    : Optional<LoadoutItemGroup.ReadOnly>.None;
+            }
+            
+            // Single child group, check if that group is valid
+            if (childGroups.Count == 1)
+            {
+                currentGroupId = childGroups.First();
+                continue;
+            }
+        
+            // We have multiple child groups, return None
+            if (childGroups.Count > 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
+        }
     }
     
     public void Dispose()
