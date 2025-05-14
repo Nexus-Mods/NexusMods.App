@@ -1,4 +1,7 @@
+using System.ComponentModel;
 using System.Reactive.Disposables;
+using Avalonia.Controls.Models.TreeDataGrid;
+using DynamicData;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -203,5 +206,27 @@ public class ViewLoadoutGroupFilesViewModel : APageViewModel<IViewLoadoutGroupFi
             // We have multiple child groups, return None
             if (childGroups.Count > 1) return Optional<LoadoutItemGroup.ReadOnly>.None;
         }
+    }
+}
+
+/// <summary>
+/// Implementation of <see cref="TreeDataGridAdapter{TModel,TKey}"/> 
+/// </summary>
+public class ViewLoadoutGroupFilesTreeDataGridAdapter(IServiceProvider serviceProvider, ModFilesFilter filesFilter) : TreeDataGridAdapter<CompositeItemModel<GamePath>, GamePath>
+{
+    private readonly LoadoutGroupFilesProvider _loadoutGroupFilesProvider = new(serviceProvider);
+    
+    protected override IObservable<IChangeSet<CompositeItemModel<GamePath>, GamePath>> GetRootsObservable(bool viewHierarchical) => _loadoutGroupFilesProvider.ObserveModFiles(filesFilter, useFullFilePaths: !viewHierarchical);
+
+    protected override IColumn<CompositeItemModel<GamePath>>[] CreateColumns(bool viewHierarchical)
+    {
+        var nameColumn = ColumnCreator.Create<GamePath, SharedColumns.NameWithFileIcon>();
+
+        return
+        [
+            viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<GamePath>, GamePath>.CreateExpanderColumn(nameColumn) : nameColumn,
+            ColumnCreator.Create<GamePath, SharedColumns.ItemSizeOverGamePath>(sortDirection: ListSortDirection.Descending),
+            ColumnCreator.Create<GamePath, SharedColumns.FileCount>(),
+        ];
     }
 }
