@@ -13,7 +13,7 @@ using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.Paths;
-using ReactiveUI;
+using R3;
 using ZLinq;
 using static NexusMods.App.UI.Pages.LoadoutGroupFilesPage.PathHelpers;
 
@@ -68,8 +68,8 @@ public class LoadoutGroupFilesProvider
         // We inject the relevant folders at the listener level, i.e. whatever calls `ObserveModFiles`
         var fileItemModel = new CompositeItemModel<GamePath>(FileToGamePath(modFile))
         {
-            HasChildrenObservable = Observable.Return(false),
-            ChildrenObservable = Observable.Empty<IChangeSet<CompositeItemModel<GamePath>, GamePath>>(),
+            HasChildrenObservable = System.Reactive.Linq.Observable.Return(false),
+            ChildrenObservable = System.Reactive.Linq.Observable.Empty<IChangeSet<CompositeItemModel<GamePath>, GamePath>>(),
         };
     
         // Observe changes. 
@@ -119,12 +119,11 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
         where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
     {
         model.Add(SharedColumns.NameWithFileIcon.StringComponentKey,
-            new StringComponent(initialValue: folder.FolderName.ToString(), valueObservable: Observable.Return(folder.FolderName.ToString()))
+            new StringComponent(initialValue: folder.FolderName.ToString(), valueObservable: R3.Observable.Return(folder.FolderName.ToString()))
         );
 
         // Add the icon for the folder, making it flip on 'IsExpanded'.
-        var iconStream = model
-            .WhenAnyValue(m => m.IsExpanded)
+        var iconStream = model.ObservePropertyChanged(m => m.IsExpanded)
             .Select(exp => exp
                 ? IconValues.FolderOpen
                 : IconValues.Folder);
