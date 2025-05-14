@@ -54,7 +54,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                         ButtonStyling.Primary
                     )
                 ],
-                customViewModel
+                customViewModel,
+                MessageBoxSize.Medium
             );
 
             // tell windowmanager to show it
@@ -92,8 +93,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     {
         ShowModal(
             DialogFactory.CreateOkCancelMessageBox(
-                "OKCancel",
-                "Deleting this mod will remove it from all collections. This action cannot be undone."
+                "OK Cancel",
+                "This is an OK Cancel message box."
             )
         );
     }
@@ -102,9 +103,109 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     {
         ShowModeless(
             DialogFactory.CreateOkCancelMessageBox(
-                "OKCancel",
-                "Deleting this mod will remove it from all collections. This action cannot be undone."
+                "OK Cancel",
+                "This is an OK Cancel message box."
             )
         );
+    }
+
+    private void ShowModalYesNo_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModal(
+            DialogFactory.CreateYesNoMessageBox(
+                "Yes No",
+                "This is a Yes No message box."
+            )
+        );
+    }
+
+    private void ShowModelessYesNo_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowModeless(
+            DialogFactory.CreateYesNoMessageBox(
+                "Yes No",
+                "This is a Yes No message box."
+            )
+        );
+    }
+
+    private void ShowModalExampleSmall_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var dialog = DialogFactory.CreateMessageBox("Delete this mod?",
+            "Deleting this mod will remove it from all collections. This action cannot be undone.",
+            [
+                MessageBoxStandardButtons.Cancel,
+                new MessageBoxButtonDefinition(
+                    "Yes, delete",
+                    ButtonDefinitionId.From("yes-delete"),
+                    ButtonAction.Accept,
+                    ButtonStyling.Destructive
+                ),
+            ]
+        );
+        
+        ShowModal(dialog);
+    }
+
+    private void ShowModalExampleMedium_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var dialog = DialogFactory.CreateMessageBox(
+            "Get Premium",
+            "Download entire collections at full speed with one click and without leaving the app.",
+            "Get Premium for one-click collection installs",
+            [
+                MessageBoxStandardButtons.Cancel,
+                new MessageBoxButtonDefinition(
+                    "Find out more",
+                    ButtonDefinitionId.From("find-out-more")
+                ),
+                new MessageBoxButtonDefinition(
+                    "Get Premium",
+                    ButtonDefinitionId.From("get-premium"),
+                    ButtonAction.Accept,
+                    ButtonStyling.Premium
+                )
+            ],
+            IconValues.Premium,
+            MessageBoxSize.Medium,
+            null
+        );
+        
+        ShowModal(dialog);
+    }
+
+    private void ShowModalExampleMarkdown_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        // markdownRendererViewModel.Contents = """
+        //     ## This is a markdown message box
+        //     
+        //     This is an example of a markdown message box.
+        //     
+        //     You can use **bold** and *italic* text.
+        //     
+        //     You can also use [links](https://www.nexusmods.com).
+        //     """;
+        markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
+        
+        var dialog = DialogFactory.CreateMessageBox(
+            "Markdown Message Box",
+            "This is an example of a markdown message box.",
+            "Lovely markdown just below",
+            [
+                MessageBoxStandardButtons.Cancel,
+                new MessageBoxButtonDefinition(
+                    "This is great",
+                    ButtonDefinitionId.From("read-markdown"),
+                    ButtonAction.Accept,
+                    ButtonStyling.Info
+                )
+            ],
+            IconValues.PictogramSettings,
+            MessageBoxSize.Medium,
+            markdownRendererViewModel
+        );
+        
+        ShowModal(dialog);
     }
 }
