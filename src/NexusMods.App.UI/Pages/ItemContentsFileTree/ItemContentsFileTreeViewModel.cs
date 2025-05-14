@@ -149,6 +149,7 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
     /// <summary>
     /// Returns the appropriate LoadoutItemGroup of files if the selection contains a LoadoutItemGroup containing files,
     /// if the selection contains multiple LoadoutItemGroups of files, returns None.
+    /// If the group is completely empty, then it is assumed to be an empty mod and it is returned.
     /// </summary>
     internal static Optional<LoadoutItemGroup.ReadOnly> GetViewModFilesLoadoutItemGroup(
         IReadOnlyCollection<LoadoutItemId> loadoutItemIds, 
@@ -164,7 +165,9 @@ public class ItemContentsFileTreeViewModel : APageViewModel<IItemContentsFileTre
         while (true)
         {
             var childDatoms = db.Datoms(LoadoutItem.ParentId, currentGroupId);
-            if (childDatoms.Count == 0) return Optional<LoadoutItemGroup.ReadOnly>.None;
+            
+            // If no children, assume it's an empty mod and return the group
+            if (childDatoms.Count == 0) return LoadoutItemGroup.Load(db, currentGroupId);
 
             var childGroups = groupDatoms.MergeByEntityId(childDatoms);
 
