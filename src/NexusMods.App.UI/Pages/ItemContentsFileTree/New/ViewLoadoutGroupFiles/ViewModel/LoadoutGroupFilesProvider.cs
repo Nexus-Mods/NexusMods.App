@@ -37,16 +37,6 @@ public class LoadoutGroupFilesProvider
             .ObserveAll(_connection)
             .Filter(x => LoadoutFilesObservableExtensions.FilterEntityId(_connection, filesFilter, x.Id))
             .ChangeKey(FileToGamePath);
-        /*
-            .FilterOnObservable((_, entityId) =>
-               _connection
-                   .ObserveDatoms(LoadoutItem.Parent, entityId)
-                   .AsEntityIds()
-                   .FilterInModFiles(_connection, filesFilter)
-                   .IsNotEmpty()
-           )
-           .ChangeKey(FileToGamePath);
-        */
     }
 
     /// <summary>
