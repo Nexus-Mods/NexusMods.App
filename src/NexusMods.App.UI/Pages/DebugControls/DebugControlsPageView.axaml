@@ -288,16 +288,16 @@
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
                     <StackPanel Spacing="16" Orientation="Vertical">
                         <StackPanel Spacing="8">
-                            <Grid RowDefinitions="Auto,40,40,40,40,40,40"
-                                  ColumnDefinitions="120,60,60">
+                            <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40"
+                                  ColumnDefinitions="160,60,60">
  
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
                                 <TextBlock Grid.Column="2" Grid.Row="0" Text="Modeless" />
 
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Ok" VerticalAlignment="Center"  />
-                                <controls:StandardButton x:Name="ShowModalOk"
+                                <controls:StandardButton x:Name="ShowModalOk" Click="ShowModalOk_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="1" />
-                                <controls:StandardButton x:Name="ShowModelessOk"
+                                <controls:StandardButton x:Name="ShowModelessOk" Click="ShowModelessOk_OnClick"
                                                          Text="Open" Grid.Column="2" Grid.Row="1" />
 
                                 <TextBlock Grid.Column="0" Grid.Row="2" Text="OkCancel" VerticalAlignment="Center"  />
@@ -325,6 +325,14 @@
                                 <TextBlock Grid.Column="0" Grid.Row="6" Text="Example Markdown"  VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalExampleMarkdown" Click="ShowModalExampleMarkdown_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="6" />
+                                    
+                                <TextBlock Grid.Column="0" Grid.Row="7" Text="Example Custom"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalExampleCustom" Click="ShowModalExampleCustom_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="7" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="8" Text="Unhandled Exception"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalUnhandledException" Click="ShowModalUnhandledException_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="8" />
                             </Grid>
                         </StackPanel>
                         <StackPanel Spacing="8">
