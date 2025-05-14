@@ -42,12 +42,12 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             // create wrapper dialog around the custom content 
             var dialog = DialogFactory.CreateMessageBox(
                 "Custom Dialog", [
-                    new MessageBoxButtonDefinition(
+                    new DialogButtonDefinition(
                         "Secondary",
                         ButtonDefinitionId.From("cancel"),
                         ButtonAction.Reject
                     ),
-                    new MessageBoxButtonDefinition(
+                    new DialogButtonDefinition(
                         "Primary",
                         ButtonDefinitionId.From("primary"),
                         ButtonAction.Accept,
@@ -55,7 +55,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     )
                 ],
                 customViewModel,
-                MessageBoxSize.Medium
+                DialogWindowSize.Medium
             );
 
             // tell windowmanager to show it
@@ -134,8 +134,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         var dialog = DialogFactory.CreateMessageBox("Delete this mod?",
             "Deleting this mod will remove it from all collections. This action cannot be undone.",
             [
-                MessageBoxStandardButtons.Cancel,
-                new MessageBoxButtonDefinition(
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition(
                     "Yes, delete",
                     ButtonDefinitionId.From("yes-delete"),
                     ButtonAction.Accept,
@@ -154,12 +154,12 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             "Download entire collections at full speed with one click and without leaving the app.",
             "Get Premium for one-click collection installs",
             [
-                MessageBoxStandardButtons.Cancel,
-                new MessageBoxButtonDefinition(
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition(
                     "Find out more",
                     ButtonDefinitionId.From("find-out-more")
                 ),
-                new MessageBoxButtonDefinition(
+                new DialogButtonDefinition(
                     "Get Premium",
                     ButtonDefinitionId.From("get-premium"),
                     ButtonAction.Accept,
@@ -167,7 +167,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 )
             ],
             IconValues.Premium,
-            MessageBoxSize.Medium,
+            DialogWindowSize.Medium,
             null
         );
         
@@ -193,8 +193,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             "This is an example of a markdown message box.",
             "Lovely markdown just below",
             [
-                MessageBoxStandardButtons.Cancel,
-                new MessageBoxButtonDefinition(
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition(
                     "This is great",
                     ButtonDefinitionId.From("read-markdown"),
                     ButtonAction.Accept,
@@ -202,7 +202,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 )
             ],
             IconValues.PictogramSettings,
-            MessageBoxSize.Medium,
+            DialogWindowSize.Medium,
             markdownRendererViewModel
         );
         
@@ -221,12 +221,12 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             // create wrapper dialog around the custom content 
             var dialog = DialogFactory.CreateMessageBox(
                 "Custom Dialog", [
-                    new MessageBoxButtonDefinition(
+                    new DialogButtonDefinition(
                         "Secondary",
                         ButtonDefinitionId.From("cancel"),
                         ButtonAction.Reject
                     ),
-                    new MessageBoxButtonDefinition(
+                    new DialogButtonDefinition(
                         "Primary",
                         ButtonDefinitionId.From("primary"),
                         ButtonAction.Accept,
@@ -234,7 +234,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     )
                 ],
                 customViewModel,
-                MessageBoxSize.Medium
+                DialogWindowSize.Medium
             );
 
             // tell windowmanager to show it
@@ -282,9 +282,9 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             "Unhandled Exception",
             "This is an example of a markdown message box.",
             "",
-            [MessageBoxStandardButtons.Ok],
+            [DialogStandardButtons.Ok],
             IconValues.Warning,
-            MessageBoxSize.Medium,
+            DialogWindowSize.Medium,
             markdownRendererViewModel
         );
         
@@ -296,7 +296,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         var dialog = DialogFactory.CreateMessageBox(
             "OK",
             "This is an OK Cancel message box.",
-            [MessageBoxStandardButtons.Ok]
+            [DialogStandardButtons.Ok]
         );
         
         ShowModal(dialog);
@@ -307,7 +307,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         var dialog = DialogFactory.CreateMessageBox(
             "OK",
             "This is an OK Cancel message box.",
-            [MessageBoxStandardButtons.Ok]
+            [DialogStandardButtons.Ok]
         );
         
         ShowModeless(dialog);

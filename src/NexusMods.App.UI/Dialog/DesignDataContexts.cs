@@ -30,11 +30,11 @@ internal static class DesignDataContexts
      * https://www.figma.com/design/RGRSmIC4KoVlIosQB5YmQY/%F0%9F%93%B1%F0%9F%A7%B1-App-components?m=auto&node-id=2-1912
      */
     
-    public static MessageBoxViewModel MessageBoxDesignViewModelExampleSmall { get; } = new(
+    public static DialogViewModel DialogDesignViewModelExampleSmall { get; } = new(
         "Delete this mod?",
         [
-            MessageBoxStandardButtons.Cancel,
-            new MessageBoxButtonDefinition(
+            DialogStandardButtons.Cancel,
+            new DialogButtonDefinition(
                 "Yes, delete",
                 ButtonDefinitionId.From("yes-delete"),
                 ButtonAction.Accept,
@@ -44,15 +44,15 @@ internal static class DesignDataContexts
         "Deleting this mod will remove it from all collections. This action cannot be undone."
     );
     
-    public static MessageBoxViewModel MessageBoxDesignViewModelExampleMedium { get; } = new(
+    public static DialogViewModel DialogDesignViewModelExampleMedium { get; } = new(
         "Delete this mod?",
         [
-            MessageBoxStandardButtons.Cancel,
-            new MessageBoxButtonDefinition(
+            DialogStandardButtons.Cancel,
+            new DialogButtonDefinition(
                 "Find out more",
                 ButtonDefinitionId.From("find-out-more")
             ),
-            new MessageBoxButtonDefinition(
+            new DialogButtonDefinition(
                 "Get Premium",
                 ButtonDefinitionId.From("get-premium"),
                 ButtonAction.Accept,
@@ -64,44 +64,44 @@ internal static class DesignDataContexts
         IconValues.Premium
     );
 
-    public static MessageBoxViewModel MessageBoxDesignWithIconViewModel { get; } = new(
+    public static DialogViewModel DialogDesignWithIconViewModel { get; } = new(
         "Delete this mod?",
-        [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+        [DialogStandardButtons.Ok, DialogStandardButtons.Cancel],
         "Deleting this mod will remove it from all collections. This action cannot be undone.",
         null,
         IconValues.PictogramSettings,
-        MessageBoxSize.Medium
+        DialogWindowSize.Medium
     );
 
-    public static MessageBoxViewModel MessageBoxCustomDesignViewModel { get; } = new(
+    public static DialogViewModel DialogCustomDesignViewModel { get; } = new(
         "Delete this mod?",
-        [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+        [DialogStandardButtons.Ok, DialogStandardButtons.Cancel],
         "Deleting this mod will remove it from all collections. This action cannot be undone.",
         null,
         IconValues.PictogramSettings,
-        MessageBoxSize.Medium,
+        DialogWindowSize.Medium,
         null,
         CustomContentDesignViewModel
     );
 
-    public static MessageBoxViewModel MessageBoxCustomNoButtonsDesignViewModel { get; } = new(
+    public static DialogViewModel DialogCustomNoButtonsDesignViewModel { get; } = new(
         "Delete this mod?",
         [],
         "Deleting this mod will remove it from all collections. This action cannot be undone.",
         "Heading",
         IconValues.PictogramSettings,
-        MessageBoxSize.Large,
+        DialogWindowSize.Large,
         null,
         CustomContentDesignViewModel
     );
 
-    public static MessageBoxViewModel MessageBoxMarkdownDesignViewModel { get; } = new(
+    public static DialogViewModel DialogMarkdownDesignViewModel { get; } = new(
         "Title",
-        [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Yes, MessageBoxStandardButtons.Cancel],
+        [DialogStandardButtons.Ok, DialogStandardButtons.Yes, DialogStandardButtons.Cancel],
         "",
         "  ",
         null,
-        MessageBoxSize.Medium,
+        DialogWindowSize.Medium,
         MarkdownRendererDesignViewModel
     );
 }

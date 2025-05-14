@@ -16,21 +16,23 @@ using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Dialog;
 
-public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, IMessageBoxView<ButtonDefinitionId>
+public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogView<ButtonDefinitionId>
 {
     // this is what is returned when the window close button is clicked
-    private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.From("none");
+    private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.From("DefaultClose");
 
-    public MessageBoxView()
+    public DialogView()
     {
         InitializeComponent();
-
 
         this.WhenActivated(disposables =>
             {
                 // COMMANDS
 
-                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () => { await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents); });
+                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () =>
+                {
+                    await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents);
+                });
 
                 CloseButton.CommandParameter = _closeButtonResult;
                 
@@ -81,12 +83,6 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
 
                 // HIDE CONTROLS IF NOT NEEDED
 
-                // only show the markdown container if markdown is not null
-                this.WhenAnyValue(view => view.ViewModel!.MarkdownRenderer)
-                    .Select(markdown => markdown is not null)
-                    .Subscribe(b => MarkdownContainer.IsVisible = b)
-                    .DisposeWith(disposables);
-
                 // only show the text if not null or empty
                 this.WhenAnyValue(view => view.ViewModel!.Text)
                     .Select(string.IsNullOrWhiteSpace)
@@ -104,17 +100,17 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
                     .Select(icon => icon is not null)
                     .Subscribe(b => Icon.IsVisible = b)
                     .DisposeWith(disposables);
-
-                // only show custom content if the content view model is not null
-                // and then hide the generic content
+                
+                // only show the markdown container if markdown is not null
+                this.WhenAnyValue(view => view.ViewModel!.MarkdownRenderer)
+                    .Select(markdown => markdown is not null)
+                    .Subscribe(b => MarkdownContainer.IsVisible = b)
+                    .DisposeWith(disposables);
+                
+                // only show the custom content container if custom content is not null
                 this.WhenAnyValue(view => view.ViewModel!.ContentViewModel)
-                    .Subscribe(customContent =>
-                        {
-                            var hasCustomContent = customContent is not null;
-                            CustomContentContainer.IsVisible = hasCustomContent;
-                            GenericContentContainer.IsVisible = !hasCustomContent;
-                        }
-                    )
+                    .Select(custom => custom is not null)
+                    .Subscribe(b => CustomContentContainer.IsVisible = b)
                     .DisposeWith(disposables);
             }
         );
@@ -139,7 +135,7 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
         buttonsFlexPanel.Children.Clear();
 
         // Access the ButtonDefinitions from the DataContext (assumes it's bound to MessageBoxViewModel)
-        if (DataContext is not MessageBoxViewModel viewModel || viewModel.ButtonDefinitions.Length == 0) return;
+        if (DataContext is not DialogViewModel viewModel || viewModel.ButtonDefinitions.Length == 0) return;
 
         // Loop through each button definition and create a StandardButton
         foreach (var buttonDefinition in viewModel.ButtonDefinitions)

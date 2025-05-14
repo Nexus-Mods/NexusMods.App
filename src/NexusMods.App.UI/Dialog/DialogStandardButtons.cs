@@ -6,14 +6,14 @@ namespace NexusMods.App.UI.Dialog;
 /// <summary>
 /// Provides standard button definitions for message boxes, such as "OK" and "Cancel".
 /// </summary>
-public static class MessageBoxStandardButtons
+public static class DialogStandardButtons
 {
     /// <summary>
     /// Represents an "OK" button with an accept action.
     /// </summary>
-    public static readonly MessageBoxButtonDefinition Ok = new(
+    public static readonly DialogButtonDefinition Ok = new(
         Text: "OK",
-        Id: ButtonDefinitionId.From("ok"),
+        Id: ButtonDefinitionId.From("Ok"),
         ButtonAction: ButtonAction.Accept,
         ButtonStyling: ButtonStyling.Primary
     );
@@ -21,9 +21,9 @@ public static class MessageBoxStandardButtons
     /// <summary>
     /// Represents an "Yes" button with an accept action.
     /// </summary>
-    public static readonly MessageBoxButtonDefinition Yes = new(
+    public static readonly DialogButtonDefinition Yes = new(
         Text: "Yes",
-        Id: ButtonDefinitionId.From("yes"),
+        Id: ButtonDefinitionId.From("Yes"),
         ButtonAction: ButtonAction.Accept,
         ButtonStyling: ButtonStyling.Primary
     );
@@ -31,18 +31,18 @@ public static class MessageBoxStandardButtons
     /// <summary>
     /// Represents a "No" button with an accept action.
     /// </summary>
-    public static readonly MessageBoxButtonDefinition No = new(
+    public static readonly DialogButtonDefinition No = new(
         Text: "No",
-        Id: ButtonDefinitionId.From("no"),
+        Id: ButtonDefinitionId.From("No"),
         ButtonAction: ButtonAction.Reject
     );
     
     /// <summary>
     /// Represents a "Cancel" button with a reject action.
     /// </summary>
-    public static readonly MessageBoxButtonDefinition Cancel = new(
+    public static readonly DialogButtonDefinition Cancel = new(
         Text: "Cancel",
-        Id: ButtonDefinitionId.From("cancel"),
+        Id: ButtonDefinitionId.From("Cancel"),
         ButtonAction: ButtonAction.Reject
     );
 }

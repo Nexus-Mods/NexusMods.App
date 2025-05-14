@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public class CustomContentViewModel : AViewModel<IDialogContentViewModel>, IDialogContentViewModel
+public class CustomContentViewModel : AViewModel<IViewModelInterface>, IViewModelInterface
 {
     public bool DontAskAgain { get; set; }
     public bool ShouldEndorseDownloadedMods { get; set; }

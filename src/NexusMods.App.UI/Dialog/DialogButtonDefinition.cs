@@ -22,7 +22,7 @@ public readonly partial struct ButtonDefinitionId
 /// <param name="RightIcon">An optional icon displayed to the right of the button text.</param>
 /// <param name="ButtonAction">The action associated with the button.</param>
 /// <param name="ButtonStyling">The styling applied to the button.</param>
-public record MessageBoxButtonDefinition(
+public record DialogButtonDefinition(
     string Text,
     ButtonDefinitionId Id,
     ButtonAction ButtonAction = ButtonAction.None,

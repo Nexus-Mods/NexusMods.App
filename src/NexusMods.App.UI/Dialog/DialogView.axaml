@@ -8,9 +8,9 @@
              xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
              xmlns:reactiveUi="http://reactiveui.net"
              mc:Ignorable="d"
-             x:Class="NexusMods.App.UI.Dialog.MessageBoxView"
-             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxDesignWithIconViewModel}"
-             x:DataType="vm:MessageBoxViewModel">
+             x:Class="NexusMods.App.UI.Dialog.DialogView"
+             d:DataContext="{x:Static vm:DesignDataContexts.DialogDesignViewModelExampleMedium}"
+             x:DataType="vm:DialogViewModel">
 
     <!-- Temporary styles to see modal button variations -->
     <UserControl.Styles>

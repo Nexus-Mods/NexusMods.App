@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -207,8 +208,8 @@ public static class Services
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
             
             // Dialogs
-            .AddView<CustomContentView, IDialogContentViewModel>()
-            .AddViewModel<CustomContentViewModel, IDialogContentViewModel>()
+            .AddView<CustomContentView, IViewModelInterface>()
+            .AddViewModel<CustomContentViewModel, IViewModelInterface>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()

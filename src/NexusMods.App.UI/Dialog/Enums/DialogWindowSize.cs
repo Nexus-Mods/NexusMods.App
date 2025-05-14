@@ -3,7 +3,7 @@ namespace NexusMods.App.UI.Dialog.Enums;
 /// <summary>
 /// Represents the size options for a message box.
 /// </summary>
-public enum MessageBoxSize
+public enum DialogWindowSize
 {
     /// <summary>
     /// A small-sized message box.

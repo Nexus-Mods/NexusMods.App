@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.Settings;
@@ -23,13 +24,13 @@ public static class DialogFactory
     /// <returns>
     /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
     /// </returns>
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateOkCancelMessageBox(string title, string text)
+    public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateOkCancelMessageBox(string title, string text)
     {
         return CreateMessageBoxInternal(
             title,
             [
-                MessageBoxStandardButtons.Ok,
-                MessageBoxStandardButtons.Cancel,
+                DialogStandardButtons.Ok,
+                DialogStandardButtons.Cancel,
             ],
             text
         );
@@ -43,13 +44,13 @@ public static class DialogFactory
     /// <returns>
     /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
     /// </returns>
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateYesNoMessageBox(string title, string text)
+    public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateYesNoMessageBox(string title, string text)
     {
         return CreateMessageBoxInternal(
             title,
             [
-                MessageBoxStandardButtons.Yes,
-                MessageBoxStandardButtons.No,
+                DialogStandardButtons.Yes,
+                DialogStandardButtons.No,
             ],
             text
         );
@@ -59,18 +60,18 @@ public static class DialogFactory
      * COMMON MESSAGE BOX OVERLOADS
      */
     
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+    public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
-        MessageBoxButtonDefinition[] buttonDefinitions)
+        DialogButtonDefinition[] buttonDefinitions)
     {
         return CreateMessageBoxInternal(title, buttonDefinitions, text);
     }
 
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+    public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
-        MessageBoxButtonDefinition[] buttonDefinitions,
+        DialogButtonDefinition[] buttonDefinitions,
         IconValue? icon)
     {
         return CreateMessageBoxInternal(title, buttonDefinitions, text,
@@ -78,32 +79,32 @@ public static class DialogFactory
         );
     }
 
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+    public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
-        MessageBoxButtonDefinition[] buttonDefinitions,
+        DialogButtonDefinition[] buttonDefinitions,
         IconValue? icon,
-        MessageBoxSize messageBoxSize)
+        DialogWindowSize dialogWindowSize)
     {
         return CreateMessageBoxInternal(title, buttonDefinitions, text,
-            icon, messageBoxSize
+            icon, dialogWindowSize
         );
     }
 
     /*
-     * Catch all overload for message boxes.
+     * Catch all overload for dialogs
      */
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+    public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
         string heading,
-        MessageBoxButtonDefinition[] buttonDefinitions,
+        DialogButtonDefinition[] buttonDefinitions,
         IconValue? icon,
-        MessageBoxSize messageBoxSize,
+        DialogWindowSize dialogWindowSize,
         IMarkdownRendererViewModel? markdownRenderer)
     {
         return CreateMessageBoxInternal(title, buttonDefinitions, text,
-            icon, messageBoxSize, heading,
+            icon, dialogWindowSize, heading,
             markdownRenderer
         );
     }
@@ -117,21 +118,21 @@ public static class DialogFactory
         /// Creates a message box with the specified title, button definitions, content view model, and size.
         /// </summary>
         /// <param name="title">The title of the message box.</param>
-        /// <param name="buttonDefinitions">An array of <see cref="MessageBoxButtonDefinition"/> specifying the buttons to include in the message box.</param>
+        /// <param name="buttonDefinitions">An array of <see cref="DialogButtonDefinition"/> specifying the buttons to include in the message box.</param>
         /// <param name="contentViewModel">A custom content ViewModel to display in the message box.</param>
-        /// <param name="messageBoxSize">The size of the message box (e.g., Small, Medium, or Large).</param>
+        /// <param name="dialogWindowSize">The size of the message box (e.g., Small, Medium, or Large).</param>
         /// <returns>
         /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
         /// </returns>
-        public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+        public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateMessageBox(
             string title,
-            MessageBoxButtonDefinition[] buttonDefinitions,
-            IDialogContentViewModel contentViewModel,
-            MessageBoxSize messageBoxSize
+            DialogButtonDefinition[] buttonDefinitions,
+            IViewModelInterface contentViewModel,
+            DialogWindowSize dialogWindowSize
         )
         {
             return CreateMessageBoxInternal(title, buttonDefinitions, null,
-                null, messageBoxSize, null,
+                null, dialogWindowSize, null,
                 null, contentViewModel
             );
         }
@@ -143,39 +144,39 @@ public static class DialogFactory
         /// markdown renderer, and content view model.
         /// </summary>
         /// <param name="title">The title of the message box.</param>
-        /// <param name="buttonDefinitions">An array of <see cref="MessageBoxButtonDefinition"/> specifying the buttons to include in the message box.</param>
+        /// <param name="buttonDefinitions">An array of <see cref="DialogButtonDefinition"/> specifying the buttons to include in the message box.</param>
         /// <param name="text">Optional. The main content or message displayed in the message box. Defaults to null.</param>
         /// <param name="icon">Optional. An icon to display in the message box. Defaults to null.</param>
-        /// <param name="messageBoxSize">Optional. The size of the message box (e.g., Small, Medium, or Large). Defaults to <see cref="MessageBoxSize.Small"/>.</param>
+        /// <param name="dialogWindowSize">Optional. The size of the message box (e.g., Small, Medium, or Large). Defaults to <see cref="DialogWindowSize.Small"/>.</param>
         /// <param name="heading">Optional. A heading to display in the message box. Defaults to null.</param>
         /// <param name="markdownRenderer">Optional. A markdown renderer ViewModel for rendering markdown content in the message box. Defaults to null.</param>
         /// <param name="contentViewModel">Optional. A custom content ViewModel to display in the message box. Defaults to null.</param>
         /// <returns>
         /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
         /// </returns>
-        private static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBoxInternal(
+        private static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateMessageBoxInternal(
             string title,
-            MessageBoxButtonDefinition[] buttonDefinitions,
+            DialogButtonDefinition[] buttonDefinitions,
             string? text = null,
             IconValue? icon = null,
-            MessageBoxSize messageBoxSize = MessageBoxSize.Small,
+            DialogWindowSize dialogWindowSize = DialogWindowSize.Small,
             string? heading = null,
             IMarkdownRendererViewModel? markdownRenderer = null,
-            IDialogContentViewModel? contentViewModel = null)
+            IViewModelInterface? contentViewModel = null)
         {
-            var viewModel = new MessageBoxViewModel(
+            var viewModel = new DialogViewModel(
                 title,
                 buttonDefinitions,
                 text,
                 heading,
                 icon,
-                messageBoxSize,
+                dialogWindowSize,
                 markdownRenderer,
                 contentViewModel
             );
         
-            var view = new MessageBoxView { DataContext = viewModel };
+            var view = new DialogView { DataContext = viewModel };
         
-            return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
+            return new Dialog<DialogView, DialogViewModel, ButtonDefinitionId>(view, viewModel);
         }
 }
