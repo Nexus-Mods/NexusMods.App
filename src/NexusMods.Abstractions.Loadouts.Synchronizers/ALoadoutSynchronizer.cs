@@ -47,6 +47,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly IOSInformation _os;
     private readonly ISorter _sorter;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
+    private readonly ISynchronizerService _synchronizerService;
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
@@ -71,7 +72,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IGarbageCollectorRunner garbageCollectorRunner)
     {
         _serviceProvider = serviceProvider;
+        _synchronizerService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        
         _fileHashService = fileHashService;
 
         Logger = logger;
@@ -1440,7 +1443,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 // If there is no currently synced loadout, then we can ingest the game folder
                 if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(remappedLoadout.Installation, out var lastSyncedLoadoutId))
                 {
-                    remappedLoadout = await Synchronize(remappedLoadout);
+                    await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
+                    remappedLoadout.Rebase();
                 }
                 else
                 {
@@ -1448,7 +1452,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     var lastSyncedLoadout = Loadout.Load(remappedLoadout.Db, lastSyncedLoadoutId);
                     if (!lastSyncedLoadout.IsValid())
                     {
-                        remappedLoadout = await Synchronize(lastSyncedLoadout);
+                        await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
+                        remappedLoadout.Rebase();
                     }
                 }
                 return remappedLoadout;
