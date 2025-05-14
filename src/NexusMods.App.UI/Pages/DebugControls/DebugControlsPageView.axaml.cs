@@ -30,48 +30,6 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         );
     }
 
-    private async void ShowModelessCustom_OnClick(object? sender, RoutedEventArgs e)
-    {
-        try
-        {
-            if (ViewModel is null) return;
-
-            // create custom content viewmodel
-            var customViewModel = new CustomContentViewModel("This is more lovely text");
-
-            // create wrapper dialog around the custom content 
-            var dialog = DialogFactory.CreateMessageBox(
-                "Custom Dialog", [
-                    new DialogButtonDefinition(
-                        "Secondary",
-                        ButtonDefinitionId.From("cancel"),
-                        ButtonAction.Reject
-                    ),
-                    new DialogButtonDefinition(
-                        "Primary",
-                        ButtonDefinitionId.From("primary"),
-                        ButtonAction.Accept,
-                        ButtonStyling.Primary
-                    )
-                ],
-                customViewModel,
-                DialogWindowSize.Medium
-            );
-
-            // tell windowmanager to show it
-            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
-
-            // check viewmodel properties when dialog has been closed
-            Console.WriteLine($@"result: {result}");
-            Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
-            Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
-        }
-        catch
-        {
-            throw; // TODO handle exception
-        }
-    }
-
     private async void ShowModal(IDialog<ButtonDefinitionId> dialog)
     {
         if (ViewModel is null) return;
@@ -203,7 +161,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ],
             IconValues.PictogramSettings,
             DialogWindowSize.Medium,
-            markdownRendererViewModel
+            markdownRendererViewModel,
+            null
         );
         
         ShowModal(dialog);
@@ -220,7 +179,10 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
 
             // create wrapper dialog around the custom content 
             var dialog = DialogFactory.CreateMessageBox(
-                "Custom Dialog", [
+                "Custom Dialog",
+                "Some text can be here",
+                "",
+                [
                     new DialogButtonDefinition(
                         "Secondary",
                         ButtonDefinitionId.From("cancel"),
@@ -233,8 +195,10 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                         ButtonStyling.Primary
                     )
                 ],
-                customViewModel,
-                DialogWindowSize.Medium
+                null,
+                DialogWindowSize.Medium,
+                null,
+                customViewModel
             );
 
             // tell windowmanager to show it

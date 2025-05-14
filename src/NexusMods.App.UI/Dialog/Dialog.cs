@@ -25,10 +25,6 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
             
             Title = _viewModel.WindowTitle,
             Width = _viewModel.WindowWidth,
-            // never want to be taller than the owner window
-            // TODO better calculations of widths and heights based on screen/owner window
-            // don't use max height, restrict size of the markdown somehow if it's particularly big
-            MaxHeight = owner.Height - 50,
             CanResize = true,
             SizeToContent = SizeToContent.Height,
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
