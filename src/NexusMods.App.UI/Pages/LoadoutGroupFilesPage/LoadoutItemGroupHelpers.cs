@@ -58,7 +58,7 @@ public static class LoadoutItemGroupHelpers
     /// <param name="requireAllGroups">If true, throws InvalidOperationException when any group is missing. If false, continues with available groups.</param>
     /// <returns>A task that completes with the operation status when the files are removed.</returns>
     /// <exception cref="InvalidOperationException">Thrown when requireAllGroups is true and any group is missing</exception>
-    public static async Task<GroupOperationStatus> RemoveFileOrFolders(IConnection connection, LoadoutItemGroupId[] groupIds, GamePath[] gamePaths, bool requireAllGroups = true)
+    public static async Task<GroupOperationStatus> RemoveFilesOrFolders(IConnection connection, LoadoutItemGroupId[] groupIds, GamePath[] gamePaths, bool requireAllGroups = true)
     {
         var (validGroups, missingGroups) = LoadAllGroups(connection, groupIds, requireAllGroups);
         
