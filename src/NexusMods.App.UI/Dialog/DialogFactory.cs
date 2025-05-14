@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.Settings;
 using NexusMods.Icons;
@@ -28,7 +29,9 @@ public static class DialogFactory
         MessageBoxButtonDefinition[] buttonDefinitions,
         MessageBoxSize messageBoxSize)
     {
-        var viewModel = new MessageBoxViewModel(title, text, icon, buttonDefinitions, messageBoxSize);
+        var viewModel = new MessageBoxViewModel(title, text,
+            buttonDefinitions, null, null, messageBoxSize
+        );
         var view = new MessageBoxView()
         {
             DataContext = viewModel,
@@ -36,7 +39,7 @@ public static class DialogFactory
 
         return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
     }
-    
+
     /// <summary>
     /// Creates a new message box with the specified title, custom content, button definitions, and size.
     /// </summary>
@@ -53,7 +56,66 @@ public static class DialogFactory
         MessageBoxButtonDefinition[] buttonDefinitions,
         MessageBoxSize messageBoxSize)
     {
-        var viewModel = new MessageBoxViewModel(title, "", null, buttonDefinitions, messageBoxSize, customContentViewModel);
+        var viewModel = new MessageBoxViewModel(title, "", 
+            buttonDefinitions, null, null, messageBoxSize, customContentViewModel
+        );
+        var view = new MessageBoxView()
+        {
+            DataContext = viewModel,
+        };
+
+        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
+    }
+
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMarkdownMessageBox(
+        string title,
+        string text,
+        IconValue? icon,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        MessageBoxSize messageBoxSize,
+        IMarkdownRendererViewModel markdownRendererViewModel)
+    {
+        var viewModel = new MessageBoxViewModel(title, text,
+            buttonDefinitions, null, icon, messageBoxSize, null,
+            markdownRendererViewModel
+        );
+
+        var view = new MessageBoxView()
+        {
+            DataContext = viewModel,
+        };
+
+        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
+    }
+
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> YesNoMessageBox(
+        string title,
+        string text)
+    {
+        var viewModel = new MessageBoxViewModel(
+            title,
+            text,
+            [MessageBoxStandardButtons.Yes, MessageBoxStandardButtons.No]
+        );
+
+        var view = new MessageBoxView()
+        {
+            DataContext = viewModel,
+        };
+
+        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
+    }
+
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> OkCancelMessageBox(
+        string title,
+        string text)
+    {
+        var viewModel = new MessageBoxViewModel(
+            title,
+            text,
+            [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel]
+        );
+
         var view = new MessageBoxView()
         {
             DataContext = viewModel,

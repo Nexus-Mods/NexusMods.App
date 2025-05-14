@@ -10,11 +10,6 @@ public partial class DialogWindow : Window
 {
     public DialogWindow()
     {
-        CanResize = true;
-        // ShowInTaskbar = false;
-        SizeToContent = SizeToContent.Height;
-        WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        //SystemDecorations = SystemDecorations.Full;
         ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
         ExtendClientAreaToDecorationsHint = true;
         ExtendClientAreaTitleBarHeightHint = -1;

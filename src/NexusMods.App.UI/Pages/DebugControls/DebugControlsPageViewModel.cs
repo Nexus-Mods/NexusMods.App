@@ -15,11 +15,15 @@ public interface IDebugControlsPageViewModel : IPageViewModelInterface
     
     public IWindowManager WindowManager { get; }
     
+    public IServiceProvider ServiceProvider { get; }
+    
     IMarkdownRendererViewModel MarkdownRenderer { get; }
 }
 
 public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewModel>, IDebugControlsPageViewModel
 {
+    public IServiceProvider ServiceProvider { get; }
+    
     public DebugControlsPageViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider) : base(windowManager)
@@ -31,13 +35,15 @@ public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewM
 
         GenerateUnhandledException = ReactiveCommand.Create(() => throw new Exception("Help me! This is an unhandled exception"));
         
-        var markdownRendererViewModel = serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        ServiceProvider = serviceProvider;
+        
+        var markdownRendererViewModel = ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
         markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
         MarkdownRenderer = markdownRendererViewModel;
     }
 
     public IWindowManager WindowManager { get; }
-    
+
     public ReactiveCommand<Unit, Unit> GenerateUnhandledException { get; }
 
     public IMarkdownRendererViewModel MarkdownRenderer { get; }
@@ -48,6 +54,7 @@ public class DebugControlsPageDesignViewModel : APageViewModel<IDebugControlsPag
     public DebugControlsPageDesignViewModel() : base(new DesignWindowManager()) { }
     public ReactiveCommand<Unit, Unit> GenerateUnhandledException { get; }= ReactiveCommand.Create(() => { });
     public IWindowManager WindowManager { get; } = new DesignWindowManager();
+    public IServiceProvider ServiceProvider { get; } = null!;
 
     public IMarkdownRendererViewModel MarkdownRenderer { get; } = new MarkdownRendererViewModel() 
     {

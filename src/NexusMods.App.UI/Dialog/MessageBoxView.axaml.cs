@@ -37,6 +37,11 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
 
         this.WhenActivated(disposables =>
             {
+                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () =>
+                {
+                    await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents);
+                });
+                
                 // Bind the CloseWindowCommand to the CloseButton's Command.
                 this.OneWayBind(ViewModel,
                         vm => vm.CloseWindowCommand,
@@ -50,10 +55,22 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
                         view => view.TitleTextBlock.Text
                     )
                     .DisposeWith(disposables);
-
+                
+                this.OneWayBind(ViewModel,
+                        vm => vm.Heading,
+                        view => view.ContentHeader.Text
+                    )
+                    .DisposeWith(disposables);
+                
+                // only show the heading if the heading is not null
+                this.WhenAnyValue(view => view.ViewModel!.Heading)
+                    .Select(heading => heading is not null)
+                    .Subscribe(b => ContentHeader.IsVisible = b)
+                    .DisposeWith(disposables);
+                
                 // Bind the message text block to the ViewModel's ContentMessage property.
                 this.OneWayBind(ViewModel,
-                        vm => vm.ContentMessage,
+                        vm => vm.Text,
                         view => view.ContentTextBlock.Text
                     )
                     .DisposeWith(disposables);
@@ -63,6 +80,16 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
                         vm => vm.Icon,
                         view => view.ContentIcon.Value
                     )
+                    .DisposeWith(disposables);
+                
+                // bind the markdown renderer to the markdown renderer view host
+                this.OneWayBind(ViewModel, vm => vm.MarkdownRenderer, v => v.MarkdownRendererViewModelViewHost.ViewModel)
+                    .DisposeWith(disposables);
+            
+                // only show the markdown container if markdown is not null
+                this.WhenAnyValue(view => view.ViewModel!.MarkdownRenderer)
+                    .Select(markdown => markdown is not null)
+                    .Subscribe(b => MarkdownContainer.IsVisible = b)
                     .DisposeWith(disposables);
 
                 // bind the content view model
@@ -75,7 +102,7 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
                 // only show the icon if the icon is not null
                 this.WhenAnyValue(view => view.ViewModel!.Icon)
                     .Select(icon => icon is not null)
-                    .Subscribe(b => { ContentIcon.IsVisible = b; })
+                    .Subscribe(b => ContentIcon.IsVisible = b)
                     .DisposeWith(disposables);
 
                 // only show custom content if the content view model is not null

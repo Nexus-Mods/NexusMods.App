@@ -16,7 +16,7 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
         _viewModel = viewModel;
     }
 
-    public Task<TResult?> ShowWindow(Window? owner = null, bool isModal = false)
+    public Task<TResult?> ShowWindow(Window owner, bool isModal = false)
     {
         var window = new DialogWindow()
         {
@@ -25,10 +25,16 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
             
             Title = _viewModel.WindowTitle,
             Width = _viewModel.WindowWidth,
+            // never want to be taller than the owner window
+            MaxHeight = owner.Height - 50,
+            CanResize = true,
+            SizeToContent = SizeToContent.Height,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            ShowInTaskbar = !isModal
         };
 
         var tcs = new TaskCompletionSource<TResult?>();
-
+        
         // when the window is closed, set the result and complete the task
         window.Closed += (o, args) =>
         {
@@ -36,16 +42,10 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
         };
 
         // show the window in the taskbar if it's not modal
-        if (isModal && owner != null)
-        {
-            window.ShowInTaskbar = false;
+        if (isModal)
             window.ShowDialog(owner);
-        }
         else
-        {
-            window.ShowInTaskbar = true;
             window.Show();
-        }
 
         return tcs.Task;
     }

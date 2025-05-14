@@ -1,7 +1,9 @@
 using System.Reactive.Disposables;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Windows;
@@ -170,6 +172,60 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         );
 
         ShowModal(dialog);
+    }
+
+    private async void ShowMarkdown_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel is null) return;
+
+            // get markdown service and create markdown renderer
+
+            var markdownRendererViewModel = ViewModel.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+            // markdownRendererViewModel.Contents = """
+            //     ## This is a markdown message box
+            //     
+            //     This is an example of a markdown message box.
+            //     
+            //     You can use **bold** and *italic* text.
+            //     
+            //     You can also use [links](https://www.nexusmods.com).
+            //     """;
+            markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
+
+            var dialog = DialogFactory.CreateMarkdownMessageBox("Something important",
+                "An example showing Primary and Secondary buttons",
+                IconValues.PictogramCelebrate, [
+                    new MessageBoxButtonDefinition(
+                        "Secondary",
+                        ButtonDefinitionId.From("cancel"),
+                        null,
+                        null,
+                        ButtonAction.Reject
+                    ),
+                    new MessageBoxButtonDefinition(
+                        "Primary",
+                        ButtonDefinitionId.From("primary"),
+                        null,
+                        null,
+                        ButtonAction.Accept,
+                        ButtonStyling.Primary
+                    )
+                ],
+                MessageBoxSize.Large,
+                markdownRendererViewModel
+            );
+            
+            // tell windowmanager to show it
+            // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        }
+        catch
+        {
+            throw; // TODO handle exception
+        }
+        
     }
 
     private void ShowModelessPrimary_OnClick(object? sender, RoutedEventArgs e)

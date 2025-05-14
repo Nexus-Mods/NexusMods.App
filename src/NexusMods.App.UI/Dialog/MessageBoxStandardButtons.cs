@@ -17,7 +17,26 @@ public static class MessageBoxStandardButtons
         ButtonAction: ButtonAction.Accept,
         ButtonStyling: ButtonStyling.Primary
     );
-
+    
+    /// <summary>
+    /// Represents an "Yes" button with an accept action.
+    /// </summary>
+    public static readonly MessageBoxButtonDefinition Yes = new(
+        Text: "Yes",
+        Id: ButtonDefinitionId.From("yes"),
+        ButtonAction: ButtonAction.Accept,
+        ButtonStyling: ButtonStyling.Primary
+    );
+    
+    /// <summary>
+    /// Represents a "No" button with an accept action.
+    /// </summary>
+    public static readonly MessageBoxButtonDefinition No = new(
+        Text: "No",
+        Id: ButtonDefinitionId.From("no"),
+        ButtonAction: ButtonAction.Reject
+    );
+    
     /// <summary>
     /// Represents a "Cancel" button with a reject action.
     /// </summary>

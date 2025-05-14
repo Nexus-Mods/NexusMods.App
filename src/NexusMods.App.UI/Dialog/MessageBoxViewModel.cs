@@ -2,6 +2,8 @@ using System.ComponentModel;
 using System.Reactive;
 using Avalonia.Threading;
 using ExCSS;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.Icons;
 using ReactiveUI;
@@ -12,9 +14,17 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
 {
     public MessageBoxButtonDefinition[] ButtonDefinitions { get; }
     public ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> CloseWindowCommand { get; }
+    
     public string WindowTitle { get; }
     public double WindowWidth { get; }
-    public string ContentMessage { get; set; }
+    public string Text { get; set; }
+    public string? Heading { get; set; }
+    
+    /// <summary>
+    /// If provided, this will be displayed in a markdown control below the description. Use this
+    /// for more descriptive information.
+    /// </summary>
+    public IMarkdownRendererViewModel? MarkdownRenderer { get; set; }
     public IconValue? Icon { get; }
     public MessageBoxSize MessageBoxSize { get; }
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -22,19 +32,21 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
 
     public IDialogView<ButtonDefinitionId>? View { get; set; }
     public ButtonDefinitionId Result { get; set; }
-
     public IDialogContentViewModel? ContentViewModel { get; set; }
 
     public MessageBoxViewModel(
         string title,
         string text,
-        IconValue? icon,
         MessageBoxButtonDefinition[] buttonDefinitions,
+        string? heading = null,
+        IconValue? icon = null,
         MessageBoxSize messageBoxSize = MessageBoxSize.Small,
-        IDialogContentViewModel? contentViewModel = null)
+        IDialogContentViewModel? contentViewModel = null,
+        IMarkdownRendererViewModel? markdownRendererViewModel = null)
     {
         WindowTitle = title;
-        ContentMessage = text;
+        Text = text;
+        Heading = heading;
         ButtonDefinitions = buttonDefinitions;
         MessageBoxSize = messageBoxSize;
         WindowWidth = messageBoxSize switch
@@ -47,6 +59,7 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
 
         Icon = icon;
         ContentViewModel = contentViewModel;
+        MarkdownRenderer = markdownRendererViewModel;
 
         CloseWindowCommand = ReactiveCommand.Create<ButtonDefinitionId, ButtonDefinitionId>((id) =>
             {
