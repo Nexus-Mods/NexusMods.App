@@ -6,12 +6,14 @@
                     xmlns:gameLocators="clr-namespace:NexusMods.Abstractions.GameLocators;assembly=NexusMods.Abstractions.GameLocators"
                     xmlns:converters="clr-namespace:NexusMods.App.UI.Converters">
 
+    <!-- Name with thumbnail column -->
     <DataTemplate x:Key="{x:Static controls:SharedColumns+Name.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
         <StackPanel Orientation="Horizontal">
+            <!-- Thumbnail -->
             <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
@@ -41,7 +43,8 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" x:Name="FallbackIcon" />
                 </controls:ComponentControl.Fallback>
             </controls:ComponentControl>
-
+            
+            <!-- Name -->
             <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
@@ -61,6 +64,7 @@
         </StackPanel>
     </DataTemplate>
 
+    <!-- Installed date column -->
     <DataTemplate x:Key="{x:Static controls:SharedColumns+InstalledDate.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
@@ -83,7 +87,8 @@
             </controls:ComponentControl.Fallback>
         </controls:ComponentControl>
     </DataTemplate>
-
+    
+    <!-- Name with file icon column -->
     <DataTemplate x:Key="{x:Static controls:SharedColumns+NameWithFileIcon.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="gameLocators:GamePath" />
@@ -128,6 +133,7 @@
         </Grid>
     </DataTemplate>
 
+    <!-- File count column -->
     <DataTemplate x:Key="{x:Static controls:SharedColumns+FileCount.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="gameLocators:GamePath" />
@@ -151,7 +157,7 @@
         </controls:ComponentControl>
     </DataTemplate>
 
-    <!-- Size (GamePath key) -->
+    <!-- Size (GamePath key) column -->
     <DataTemplate x:Key="{x:Static controls:SharedColumns+ItemSizeOverGamePath.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="gameLocators:GamePath" />
