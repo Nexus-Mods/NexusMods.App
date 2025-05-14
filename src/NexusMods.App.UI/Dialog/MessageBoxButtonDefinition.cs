@@ -9,7 +9,9 @@ namespace NexusMods.App.UI.Dialog;
 /// Represents a unique identifier for a button definition in a message box.
 /// </summary>
 [ValueObject<string>]
-public readonly partial struct ButtonDefinitionId { }
+public readonly partial struct ButtonDefinitionId
+{
+}
 
 /// <summary>
 /// Defines the properties of a button used in a message box.
@@ -23,8 +25,8 @@ public readonly partial struct ButtonDefinitionId { }
 public record MessageBoxButtonDefinition(
     string Text,
     ButtonDefinitionId Id,
-    IconValue? LeftIcon = null,
-    IconValue? RightIcon = null,
     ButtonAction ButtonAction = ButtonAction.None,
-    ButtonStyling ButtonStyling = ButtonStyling.None
+    ButtonStyling ButtonStyling = ButtonStyling.None,
+    IconValue? LeftIcon = null,
+    IconValue? RightIcon = null
 );

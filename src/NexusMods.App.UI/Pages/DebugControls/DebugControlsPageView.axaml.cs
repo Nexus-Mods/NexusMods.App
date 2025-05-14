@@ -102,8 +102,6 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 new MessageBoxButtonDefinition(
                     "Yes, delete",
                     ButtonDefinitionId.From("yes-delete"),
-                    null,
-                    null,
                     ButtonAction.Accept,
                     ButtonStyling.Destructive
                 )
@@ -123,15 +121,13 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 new MessageBoxButtonDefinition(
                     "Cancel with icon",
                     ButtonDefinitionId.From("cancel"),
-                    IconValues.Warning,
-                    null,
-                    ButtonAction.Reject
+                    ButtonAction.Reject,
+                    ButtonStyling.None,
+                    IconValues.Warning
                 ),
                 new MessageBoxButtonDefinition(
                     "Update in 2 collections",
                     ButtonDefinitionId.From("update"),
-                    null,
-                    null,
                     ButtonAction.Accept,
                     ButtonStyling.Info
                 )
@@ -151,8 +147,6 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 new MessageBoxButtonDefinition(
                     "Cancel",
                     ButtonDefinitionId.From("cancel"),
-                    null,
-                    null,
                     ButtonAction.Reject
                 ),
                 new MessageBoxButtonDefinition(
@@ -162,8 +156,6 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 new MessageBoxButtonDefinition(
                     "Get Premium",
                     ButtonDefinitionId.From("get-premium"),
-                    null,
-                    null,
                     ButtonAction.Accept,
                     ButtonStyling.Premium
                 )
@@ -200,15 +192,11 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     new MessageBoxButtonDefinition(
                         "Secondary",
                         ButtonDefinitionId.From("cancel"),
-                        null,
-                        null,
                         ButtonAction.Reject
                     ),
                     new MessageBoxButtonDefinition(
                         "Primary",
                         ButtonDefinitionId.From("primary"),
-                        null,
-                        null,
                         ButtonAction.Accept,
                         ButtonStyling.Primary
                     )
@@ -220,6 +208,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             // tell windowmanager to show it
             // result isn't used with custom dialog content as the viewmodel properties can be accessed directly 
             var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+            Console.WriteLine(result);
         }
         catch
         {
@@ -236,15 +225,11 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 new MessageBoxButtonDefinition(
                     "Secondary",
                     ButtonDefinitionId.From("cancel"),
-                    null,
-                    null,
                     ButtonAction.Reject
                 ),
                 new MessageBoxButtonDefinition(
                     "Primary",
                     ButtonDefinitionId.From("primary"),
-                    null,
-                    null,
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 )
@@ -272,15 +257,11 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     new MessageBoxButtonDefinition(
                         "Secondary",
                         ButtonDefinitionId.From("cancel"),
-                        null,
-                        null,
                         ButtonAction.Reject
                     ),
                     new MessageBoxButtonDefinition(
                         "Primary",
                         ButtonDefinitionId.From("primary"),
-                        null,
-                        null,
                         ButtonAction.Accept,
                         ButtonStyling.Primary
                     )
@@ -321,15 +302,11 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     new MessageBoxButtonDefinition(
                         "Secondary",
                         ButtonDefinitionId.From("cancel"),
-                        null,
-                        null,
                         ButtonAction.Reject
                     ),
                     new MessageBoxButtonDefinition(
                         "Primary",
                         ButtonDefinitionId.From("primary"),
-                        null,
-                        null,
                         ButtonAction.Accept,
                         ButtonStyling.Primary
                     )

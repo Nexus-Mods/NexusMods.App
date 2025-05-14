@@ -18,22 +18,14 @@ namespace NexusMods.App.UI.Dialog;
 
 public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, IMessageBoxView<ButtonDefinitionId>
 {
-    private ButtonDefinitionId _buttonResult = ButtonDefinitionId.From("none");
-    private Action? _closeAction;
-
-    private Button? _closeButton;
-    private UnifiedIcon? _icon;
+    // this is what is returned when the window close button is clicked
+    private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.From("none");
 
     public MessageBoxView()
     {
         InitializeComponent();
-
-        _closeButton = this.FindControl<Button>("CloseButton");
-
-        if (_closeButton != null)
-            _closeButton.Click += CloseButton_OnClick;
-
-        _icon = this.FindControl<UnifiedIcon>("ContentIcon");
+        
+        CloseButton.CommandParameter = _closeButtonResult;
 
         this.WhenActivated(disposables =>
             {
@@ -194,11 +186,4 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
 
         buttonsFlexPanel.IsVisible = true;
     }
-
-    public void CloseButton_OnClick(object? sender, EventArgs eventArgs)
-    {
-        _closeAction?.Invoke();
-    }
-
-    public ButtonDefinitionId Result { get; }
 }
