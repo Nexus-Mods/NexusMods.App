@@ -32,7 +32,6 @@ internal static class DesignDataContexts
     
     public static MessageBoxViewModel MessageBoxDesignViewModelExampleSmall { get; } = new(
         "Delete this mod?",
-        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         [
             MessageBoxStandardButtons.Cancel,
             new MessageBoxButtonDefinition(
@@ -41,12 +40,12 @@ internal static class DesignDataContexts
                 ButtonAction.Accept,
                 ButtonStyling.Destructive
             )
-        ]
+        ],
+        "Deleting this mod will remove it from all collections. This action cannot be undone."
     );
     
     public static MessageBoxViewModel MessageBoxDesignViewModelExampleMedium { get; } = new(
         "Delete this mod?",
-        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         [
             MessageBoxStandardButtons.Cancel,
             new MessageBoxButtonDefinition(
@@ -60,14 +59,15 @@ internal static class DesignDataContexts
                 ButtonStyling.Premium
             )
         ],
+        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         "Get Premium",
         IconValues.Premium
     );
 
     public static MessageBoxViewModel MessageBoxDesignWithIconViewModel { get; } = new(
         "Delete this mod?",
-        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         null,
         IconValues.PictogramSettings,
         MessageBoxSize.Medium
@@ -75,33 +75,33 @@ internal static class DesignDataContexts
 
     public static MessageBoxViewModel MessageBoxCustomDesignViewModel { get; } = new(
         "Delete this mod?",
-        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel],
+        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         null,
         IconValues.PictogramSettings,
         MessageBoxSize.Medium,
+        null,
         CustomContentDesignViewModel
     );
 
     public static MessageBoxViewModel MessageBoxCustomNoButtonsDesignViewModel { get; } = new(
         "Delete this mod?",
-        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         [],
-        null,
-        null,
+        "Deleting this mod will remove it from all collections. This action cannot be undone.",
+        "Heading",
+        IconValues.PictogramSettings,
         MessageBoxSize.Large,
+        null,
         CustomContentDesignViewModel
     );
 
     public static MessageBoxViewModel MessageBoxMarkdownDesignViewModel { get; } = new(
         "Title",
-        "Deleting this mod will remove it from all collections. This action cannot be undone.",
         [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Yes, MessageBoxStandardButtons.Cancel],
-        "Heading",
-        IconValues.PictogramSettings,
-        MessageBoxSize.Medium,
+        "",
+        "  ",
         null,
+        MessageBoxSize.Medium,
         MarkdownRendererDesignViewModel
-        
     );
 }

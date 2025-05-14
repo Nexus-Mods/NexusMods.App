@@ -9,7 +9,7 @@
              xmlns:reactiveUi="http://reactiveui.net"
              mc:Ignorable="d"
              x:Class="NexusMods.App.UI.Dialog.MessageBoxView"
-             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxMarkdownDesignViewModel}"
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageBoxDesignWithIconViewModel}"
              x:DataType="vm:MessageBoxViewModel">
 
     <!-- Temporary styles to see modal button variations -->
@@ -90,7 +90,7 @@
         <Border Name="ContentBorder" Grid.Row="1">
 
             <!-- simple text and buttons -->
-            <Grid RowDefinitions="*,Auto" IsVisible="True" Margin="16,16,16,16">
+            <Grid RowDefinitions="*,Auto" Margin="16,16,16,16">
 
                 <Panel Grid.Row="0">
 
@@ -99,16 +99,16 @@
                           RowDefinitions="Auto,*"
                           Margin="0">
                         <StackPanel Grid.Row="0" Spacing="4">
-                            <icons:UnifiedIcon Name="ContentIcon"
+                            <icons:UnifiedIcon Name="Icon"
                                                Value="{x:Static icons:IconValues.PictogramBox2}"
                                                HorizontalAlignment="Left"
                                                Size="48" />
-                            <TextBlock Name="ContentHeader"
+                            <TextBlock Name="HeaderTextBlock"
                                        Text="Header"
                                        Foreground="{StaticResource NeutralStrongBrush}"
                                        Theme="{StaticResource BodyMDSemiTheme}"
                                        TextWrapping="Wrap" />
-                            <TextBlock Name="ContentTextBlock"
+                            <TextBlock Name="TextTextBlock"
                                        Foreground="{StaticResource NeutralSubduedBrush}"
                                        TextWrapping="Wrap" />
                         </StackPanel>
@@ -138,27 +138,13 @@
 
                     <!-- custom content - show this if custom content is provided -->
                     <StackPanel Name="CustomContentContainer" Spacing="8" Margin="0">
-                        <reactiveUi:ViewModelViewHost Name="ViewModelHost" />
+                        <reactiveUi:ViewModelViewHost Name="ContentViewModelHost" />
                     </StackPanel>
                 </Panel>
 
                 <!-- buttons -->
                 <panels:FlexPanel Name="ButtonsFlexPanel" Grid.Row="1"
-                                  ColumnSpacing="8" Margin="0 16 0 0">
-                    <controls:StandardButton Name="CancelButton" Text="Cancel"
-                                             panels:Flex.Grow="1"
-                                             panels:Flex.Shrink="0"
-                                             panels:Flex.Basis="0%" />
-                    <controls:StandardButton Name="OkButton" Text="OK"
-                                             Command="{Binding ButtonClickCommand}"
-                                             CommandParameter="{Binding $self.Text}"
-                                             IsDefault="True"
-                                             IsVisible="{Binding IsOkShowed}"
-                                             panels:Flex.Grow="1"
-                                             panels:Flex.Shrink="0"
-                                             panels:Flex.Basis="0%"
-                                             Classes="Danger" />
-                </panels:FlexPanel>
+                                  ColumnSpacing="8" Margin="0 16 0 0"/>
 
             </Grid>
 

@@ -11,115 +11,155 @@ namespace NexusMods.App.UI.Dialog;
 /// </summary>
 public static class DialogFactory
 {
+
     /// <summary>
-    /// Creates a new message box with the specified title, text, button definitions, and size.
+    /// Creates a standard "Ok/Cancel" message box with the specified title and text.
     /// </summary>
     /// <param name="title">The title of the message box.</param>
     /// <param name="text">The main content or message displayed in the message box.</param>
-    /// <param name="icon">An optional icon to display in the message box.</param>
-    /// <param name="buttonDefinitions">An array of <see cref="MessageBoxButtonDefinition"/> specifying the buttons to include in the message box.</param>
-    /// <param name="messageBoxSize">The size of the message box (e.g., Small, Medium, or Large).</param>
     /// <returns>
     /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
     /// </returns>
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
-        string title,
-        string text,
-        IconValue? icon,
-        MessageBoxButtonDefinition[] buttonDefinitions,
-        MessageBoxSize messageBoxSize)
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateOkCancelMessageBox(string title, string text)
     {
-        var viewModel = new MessageBoxViewModel(title, text,
-            buttonDefinitions, null, null, messageBoxSize
+        return CreateMessageBoxInternal(
+            title,
+            [
+                MessageBoxStandardButtons.Ok,
+                MessageBoxStandardButtons.Cancel,
+            ],
+            text
         );
-        var view = new MessageBoxView()
-        {
-            DataContext = viewModel,
-        };
-
-        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
     }
-
+    
     /// <summary>
-    /// Creates a new message box with the specified title, custom content, button definitions, and size.
+    /// Creates a standard "Yes/No" message box with the specified title and text.
     /// </summary>
     /// <param name="title">The title of the message box.</param>
-    /// <param name="customContentViewModel">A custom content ViewModel to display in the message box.</param>
-    /// <param name="buttonDefinitions">An array of <see cref="MessageBoxButtonDefinition"/> specifying the buttons to include in the message box.</param>
-    /// <param name="messageBoxSize">The size of the message box (e.g., Small, Medium, or Large).</param>
+    /// <param name="text">The main content or message displayed in the message box.</param>
     /// <returns>
     /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
     /// </returns>
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateYesNoMessageBox(string title, string text)
+    {
+        return CreateMessageBoxInternal(
+            title,
+            [
+                MessageBoxStandardButtons.Yes,
+                MessageBoxStandardButtons.No,
+            ],
+            text
+        );
+    }
+
     public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
-        IDialogContentViewModel customContentViewModel,
-        MessageBoxButtonDefinition[] buttonDefinitions,
-        MessageBoxSize messageBoxSize)
+        string text,
+        MessageBoxButtonDefinition[] buttonDefinitions)
     {
-        var viewModel = new MessageBoxViewModel(title, "", 
-            buttonDefinitions, null, null, messageBoxSize, customContentViewModel
-        );
-        var view = new MessageBoxView()
-        {
-            DataContext = viewModel,
-        };
-
-        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
+        return CreateMessageBoxInternal(title, buttonDefinitions, text);
     }
 
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMarkdownMessageBox(
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
-        IconValue? icon,
         MessageBoxButtonDefinition[] buttonDefinitions,
+        IconValue? icon)
+    {
+        return CreateMessageBoxInternal(title, buttonDefinitions, text,
+            icon
+        );
+    }
+
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+        string title,
+        string text,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        IconValue? icon,
+        MessageBoxSize messageBoxSize)
+    {
+        return CreateMessageBoxInternal(title, buttonDefinitions, text,
+            icon, messageBoxSize
+        );
+    }
+
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+        string title,
+        string text,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        IconValue? icon,
         MessageBoxSize messageBoxSize,
-        IMarkdownRendererViewModel markdownRendererViewModel)
+        string heading)
     {
-        var viewModel = new MessageBoxViewModel(title, text,
-            buttonDefinitions, null, icon, messageBoxSize, null,
-            markdownRendererViewModel
+        return CreateMessageBoxInternal(title, buttonDefinitions, text,
+            icon, messageBoxSize, heading
         );
-
-        var view = new MessageBoxView()
-        {
-            DataContext = viewModel,
-        };
-
-        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
     }
 
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> YesNoMessageBox(
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
-        string text)
+        string text,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        IconValue? icon,
+        MessageBoxSize messageBoxSize,
+        string heading,
+        IMarkdownRendererViewModel? markdownRenderer)
+    {
+        return CreateMessageBoxInternal(title, buttonDefinitions, text,
+            icon, messageBoxSize, heading,
+            markdownRenderer
+        );
+    }
+
+    /*
+     * These overloads are used when a content view model is provided. In this case, only the title and button definitions are used.
+     * The content view model will be responsible for providing the content.
+     */
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+        string title,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        IDialogContentViewModel? contentViewModel)
+    {
+        return CreateMessageBoxInternal(title, buttonDefinitions, null,
+            null, MessageBoxSize.Small, null,
+            null, contentViewModel
+        );
+    }
+
+    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBox(
+        string title,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        IDialogContentViewModel? contentViewModel,
+        MessageBoxSize messageBoxSize)
+    {
+        return CreateMessageBoxInternal(title, buttonDefinitions, null,
+            null, messageBoxSize, null,
+            null, contentViewModel
+        );
+    }
+
+    private static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> CreateMessageBoxInternal(
+        string title,
+        MessageBoxButtonDefinition[] buttonDefinitions,
+        string? text = null,
+        IconValue? icon = null,
+        MessageBoxSize messageBoxSize = MessageBoxSize.Small,
+        string? heading = null,
+        IMarkdownRendererViewModel? markdownRenderer = null,
+        IDialogContentViewModel? contentViewModel = null)
     {
         var viewModel = new MessageBoxViewModel(
             title,
+            buttonDefinitions,
             text,
-            [MessageBoxStandardButtons.Yes, MessageBoxStandardButtons.No]
+            heading,
+            icon,
+            messageBoxSize,
+            markdownRenderer,
+            contentViewModel
         );
 
-        var view = new MessageBoxView()
-        {
-            DataContext = viewModel,
-        };
-
-        return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
-    }
-
-    public static Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId> OkCancelMessageBox(
-        string title,
-        string text)
-    {
-        var viewModel = new MessageBoxViewModel(
-            title,
-            text,
-            [MessageBoxStandardButtons.Ok, MessageBoxStandardButtons.Cancel]
-        );
-
-        var view = new MessageBoxView()
-        {
-            DataContext = viewModel,
-        };
+        var view = new MessageBoxView { DataContext = viewModel };
 
         return new Dialog<MessageBoxView, MessageBoxViewModel, ButtonDefinitionId>(view, viewModel);
     }

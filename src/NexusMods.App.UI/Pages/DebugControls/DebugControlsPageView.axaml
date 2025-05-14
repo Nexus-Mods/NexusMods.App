@@ -286,28 +286,33 @@
                     </StackPanel>
                 </TabItem.Header>
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
-                    <StackPanel Spacing="8" Orientation="Horizontal"><StackPanel Spacing="8">
-                        <TextBlock Text="Errors" />
-                        <controls:StandardButton x:Name="GenerateUnhandledException"
-                                                 Text="GenerateUnhandledException" />
-                        </StackPanel>
-                        <!-- modals -->
-                        <StackPanel Spacing="8">
-                            <TextBlock Text="Modals" />
-                            <controls:StandardButton x:Name="ShowModalOk" Text="OK" Click="ShowModalOk_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalOkCancel" Text="OkCancel" Click="ShowModalOkCancel_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalDeleteMod" Text="Destructive" Click="ShowModalShowModalDeleteMod_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalInfo" Text="Info" Click="ShowModalInfo_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalPremium" Text="Premium" Click="ShowModalPremium_OnClick" />
-                            <controls:StandardButton x:Name="ShowModalCustom" Text="Custom" Click="ShowModalCustom_OnClick" />
-                            <controls:StandardButton x:Name="ShowMarkdown" Text="Markdown" Click="ShowMarkdown_OnClick" />
-                        </StackPanel>
+                    <StackPanel Spacing="16" Orientation="Vertical">
 
-                        <!-- modeless -->
+
                         <StackPanel Spacing="8">
-                            <TextBlock Text="Modeless" />
-                            <controls:StandardButton x:Name="ShowModelessPrimary" Text="Primary" Click="ShowModelessPrimary_OnClick" />
-                            <controls:StandardButton x:Name="ShowModelessCustom" Text="Custom" Click="ShowModelessCustom_OnClick" />
+                            <Grid RowDefinitions="Auto,40,40,Auto,Auto,Auto,Auto"
+                                  ColumnDefinitions="80,60,60">
+
+                                <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Modeless" />
+
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Ok" VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalOk"
+                                                         Text="Open" Grid.Column="1" Grid.Row="1" />
+                                <controls:StandardButton x:Name="ShowModelessOk"
+                                                         Text="Open" Grid.Column="2" Grid.Row="1" />
+
+                                <TextBlock Grid.Column="0" Grid.Row="2" Text="OkCancel" VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalOkCancel" Click="ShowModalOkCancel_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="2" />
+                                <controls:StandardButton x:Name="ShowModelessOkCancel" Click="ShowModelessOkCancel_OnClick"
+                                                         Text="Open" Grid.Column="2" Grid.Row="2" />
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Errors" />
+                            <controls:StandardButton x:Name="GenerateUnhandledException"
+                                                     Text="GenerateUnhandledException" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

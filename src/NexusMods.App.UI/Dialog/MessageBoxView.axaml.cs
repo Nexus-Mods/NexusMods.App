@@ -24,15 +24,15 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
     public MessageBoxView()
     {
         InitializeComponent();
-        
-        CloseButton.CommandParameter = _closeButtonResult;
+
 
         this.WhenActivated(disposables =>
             {
-                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () =>
-                {
-                    await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents);
-                });
+                // COMMANDS
+
+                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () => { await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents); });
+
+                CloseButton.CommandParameter = _closeButtonResult;
                 
                 // Bind the CloseWindowCommand to the CloseButton's Command.
                 this.OneWayBind(ViewModel,
@@ -40,61 +40,69 @@ public partial class MessageBoxView : ReactiveUserControl<MessageBoxViewModel>, 
                         view => view.CloseButton.Command
                     )
                     .DisposeWith(disposables);
-                
-                // Bind the title text block to the ViewModel's WindowTitle property.
+
+                // BINDINGS
+
                 this.OneWayBind(ViewModel,
                         vm => vm.WindowTitle,
                         view => view.TitleTextBlock.Text
                     )
                     .DisposeWith(disposables);
-                
+
                 this.OneWayBind(ViewModel,
                         vm => vm.Heading,
-                        view => view.ContentHeader.Text
-                    )
-                    .DisposeWith(disposables);
-                
-                // only show the heading if the heading is not null
-                this.WhenAnyValue(view => view.ViewModel!.Heading)
-                    .Select(heading => heading is not null)
-                    .Subscribe(b => ContentHeader.IsVisible = b)
-                    .DisposeWith(disposables);
-                
-                // Bind the message text block to the ViewModel's ContentMessage property.
-                this.OneWayBind(ViewModel,
-                        vm => vm.Text,
-                        view => view.ContentTextBlock.Text
+                        view => view.HeaderTextBlock.Text
                     )
                     .DisposeWith(disposables);
 
-                // bind the icon to the icon property
                 this.OneWayBind(ViewModel,
-                        vm => vm.Icon,
-                        view => view.ContentIcon.Value
+                        vm => vm.Text,
+                        view => view.TextTextBlock.Text
                     )
                     .DisposeWith(disposables);
-                
-                // bind the markdown renderer to the markdown renderer view host
-                this.OneWayBind(ViewModel, vm => vm.MarkdownRenderer, v => v.MarkdownRendererViewModelViewHost.ViewModel)
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.Icon,
+                        view => view.Icon.Value
+                    )
                     .DisposeWith(disposables);
-            
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.MarkdownRenderer,
+                        v => v.MarkdownRendererViewModelViewHost.ViewModel
+                    )
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.ContentViewModel,
+                        view => view.ContentViewModelHost.ViewModel
+                    )
+                    .DisposeWith(disposables);
+
+                // HIDE CONTROLS IF NOT NEEDED
+
                 // only show the markdown container if markdown is not null
                 this.WhenAnyValue(view => view.ViewModel!.MarkdownRenderer)
                     .Select(markdown => markdown is not null)
                     .Subscribe(b => MarkdownContainer.IsVisible = b)
                     .DisposeWith(disposables);
 
-                // bind the content view model
-                this.OneWayBind(ViewModel,
-                        vm => vm.ContentViewModel,
-                        view => view.ViewModelHost.ViewModel
-                    )
+                // only show the text if not null or empty
+                this.WhenAnyValue(view => view.ViewModel!.Text)
+                    .Select(string.IsNullOrWhiteSpace)
+                    .Subscribe(b => TextTextBlock.IsVisible = !b)
+                    .DisposeWith(disposables);
+
+                // only show the heading if not null or empty
+                this.WhenAnyValue(view => view.ViewModel!.Heading)
+                    .Select(string.IsNullOrWhiteSpace)
+                    .Subscribe(b => HeaderTextBlock.IsVisible = !b)
                     .DisposeWith(disposables);
 
                 // only show the icon if the icon is not null
                 this.WhenAnyValue(view => view.ViewModel!.Icon)
                     .Select(icon => icon is not null)
-                    .Subscribe(b => ContentIcon.IsVisible = b)
+                    .Subscribe(b => Icon.IsVisible = b)
                     .DisposeWith(disposables);
 
                 // only show custom content if the content view model is not null

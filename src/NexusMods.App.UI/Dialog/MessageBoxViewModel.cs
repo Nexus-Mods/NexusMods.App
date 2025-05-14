@@ -17,7 +17,7 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
     
     public string WindowTitle { get; }
     public double WindowWidth { get; }
-    public string Text { get; set; }
+    public string? Text { get; set; }
     public string? Heading { get; set; }
     
     /// <summary>
@@ -34,15 +34,26 @@ public class MessageBoxViewModel : IDialogViewModel<ButtonDefinitionId>
     public ButtonDefinitionId Result { get; set; }
     public IDialogContentViewModel? ContentViewModel { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MessageBoxViewModel"/> class.
+    /// </summary>
+    /// <param name="title">The title of the message box window.</param>
+    /// <param name="text">The main text content of the message box.</param>
+    /// <param name="buttonDefinitions">An array of button definitions for the message box.</param>
+    /// <param name="heading">An optional heading for the message box.</param>
+    /// <param name="icon">An optional icon to display in the message box.</param>
+    /// <param name="messageBoxSize">The size of the message box (Small, Medium, or Large).</param>
+    /// <param name="markdownRendererViewModel">An optional markdown renderer for additional descriptive information.</param>
+    /// <param name="contentViewModel">An optional content view model for custom content. If this is set, only title and buttonDefinitions are additionally used.</param>
     public MessageBoxViewModel(
         string title,
-        string text,
         MessageBoxButtonDefinition[] buttonDefinitions,
+        string? text = null,
         string? heading = null,
         IconValue? icon = null,
         MessageBoxSize messageBoxSize = MessageBoxSize.Small,
-        IDialogContentViewModel? contentViewModel = null,
-        IMarkdownRendererViewModel? markdownRendererViewModel = null)
+        IMarkdownRendererViewModel? markdownRendererViewModel = null,
+        IDialogContentViewModel? contentViewModel = null)
     {
         WindowTitle = title;
         Text = text;
