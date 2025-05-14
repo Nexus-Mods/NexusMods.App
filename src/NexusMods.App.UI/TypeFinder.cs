@@ -36,7 +36,6 @@ internal class TypeFinder : ITypeFinder
         typeof(ChangelogPageContext),
         typeof(TextEditorPageContext),
         typeof(MyLoadoutsPageContext),
-        typeof(ItemContentsFileTreePageContext),
         typeof(ViewLoadoutGroupFilesPageContext),
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),

@@ -174,9 +174,6 @@ public static class Services
             .AddView<LibraryItemDeleteConfirmationView, ILibraryItemDeleteConfirmationViewModel>()
             .AddViewModel<LibraryItemDeleteConfirmationViewModel, ILibraryItemDeleteConfirmationViewModel>()
 
-            .AddView<ItemContentsFileTreeView, IItemContentsFileTreeViewModel>()
-            .AddViewModel<ItemContentsFileTreeViewModel, IItemContentsFileTreeViewModel>()
-
             .AddView<LibraryView, ILibraryViewModel>()
             .AddView<LoadoutView, ILoadoutViewModel>()
 
@@ -240,7 +237,6 @@ public static class Services
             .AddSingleton<IPageFactory, ChangelogPageFactory>()
             .AddSingleton<IPageFactory, TextEditorPageFactory>()
             .AddSingleton<IPageFactory, MyLoadoutsPageFactory>()
-            .AddSingleton<IPageFactory, ItemContentsFileTreePageFactory>()
             .AddSingleton<IPageFactory, LibraryPageFactory>()
             .AddSingleton<IPageFactory, LoadoutPageFactory>()
             .AddSingleton<IPageFactory, CollectionDownloadPageFactory>()

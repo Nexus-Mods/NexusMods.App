@@ -568,9 +568,6 @@
         <Compile Update="Controls\LoadoutBadge\LoadoutBadgeViewModel.cs">
           <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Trees\LoadoutItemGroupFileTreeViewModel.cs">
-          <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LoadoutGroupFiles\LoadoutGroupFilesViewModel.cs">
           <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
         </Compile>
@@ -588,12 +585,6 @@
         </Compile>
         <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeViewModel.cs">
-          <DependentUpon>IItemContentsFileTreeViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
-          <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
