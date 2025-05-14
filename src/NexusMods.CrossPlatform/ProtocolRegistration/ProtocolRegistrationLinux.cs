@@ -47,7 +47,10 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     /// <inheritdoc/>
     public async Task RegisterHandler(string uriScheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default)
     {
-        if (ApplicationConstants.InstallationMethod != InstallationMethod.PackageManager)
+        var canWriteDesktopFile = ApplicationConstants.InstallationMethod is InstallationMethod.AppImage or InstallationMethod.Manually;
+        var canRegisterAsDefault = ApplicationConstants.InstallationMethod is not InstallationMethod.Flatpak and not InstallationMethod.PackageManager;
+
+        if (canWriteDesktopFile)
         {
             var applicationsDirectory = _fileSystem.GetKnownPath(KnownPath.XDG_DATA_HOME).Combine("applications");
             _logger.LogInformation("Using applications directory `{Path}`", applicationsDirectory);
@@ -73,7 +76,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
             }
         }
 
-        if (setAsDefaultHandler)
+        if (setAsDefaultHandler && canRegisterAsDefault)
         {
             try
             {
