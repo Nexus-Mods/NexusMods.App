@@ -168,6 +168,11 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         {
             await response.Content.CopyToAsync(outputStream, context.CancellationToken);
         }
+        catch (HttpRequestException e)
+        {
+            Logger.LogError(e, "Http error while downloading from `{PageUri}`: Server=`{Server}`,Http Version=`{Version}`", DownloadPageUri, response.Headers.Server.ToString(), response.Version);
+            throw;
+        }
         finally
         {
             TotalBytesDownloaded = Size.FromLong(outputStream.Position);
@@ -256,18 +261,11 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
         HttpMessageHandler handler = new ResilienceHandler(pipeline)
         {
-            InnerHandler = new SocketsHttpHandler
-            {
-                ConnectTimeout = TimeSpan.FromSeconds(30),
-                KeepAlivePingPolicy = HttpKeepAlivePingPolicy.WithActiveRequests,
-                KeepAlivePingDelay = TimeSpan.FromSeconds(5),
-                KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
-            },
+            InnerHandler = new SocketsHttpHandler(),
         };
 
         var client = new HttpClient(handler)
         {
-            Timeout = TimeSpan.FromSeconds(20),
             DefaultRequestVersion = HttpVersion.Version11,
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
         };
