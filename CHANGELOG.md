@@ -19,7 +19,7 @@ You can read more about the available features in the [documentation](https://ne
 ## New Load Order Tab
 To make it easier to access your REDmod Load Order in Cyberpunk 2077, we've added a new tab to the "My Mods" and "All" sections in the left menu. 
 
-
+![An animation showing REDmod load order entries being dragged to new positions and bumped up and down using the arrow buttons.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1747234539-292870229.gif)
 
 When installing mods without using collection, the "My Mods" screen will allow you manage your load order via the "Rules" tab.
 
