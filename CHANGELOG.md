@@ -1,4 +1,4 @@
-# v0.11.0 - 2025-05-XX
+# v0.11.1 - 2025-05-XX
 
 ## Cyberpunk 2077 support
 In this build, we're confident that we've got all the basics in place for players to mod Cyberpunk 2077 with the app. We soft launched this support in the previous version and had some great feedback from the users who tried it out - thank you! 
@@ -7,12 +7,12 @@ In this build, we're confident that we've got all the basics in place for player
 
 The app offers the following features:
 
-* Compatibility with the Steam and GOG Galaxy releases on Windows and Linux.
-* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods (e.g. Cyber Engine Tweaks).
+* Compatibility with the Steam and GOG Galaxy releases on Windows and Linux
+* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods (e.g. Cyber Engine Tweaks)
 * Support for collections
-* Health Check diagnostics for missing dependencies.
-* Health Check diagnostics to help set up a Linux environment to mod the game.
-* REDmod Load Order management and deployment.
+* Health Check diagnostics for missing dependencies
+* Health Check diagnostics to help set up a Linux environment to mod the game
+* REDmod Load Order management and deployment
 
 You can read more about the available features in the [documentation](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/). 
 
@@ -21,22 +21,22 @@ To make it easier to access your REDmod Load Order in Cyberpunk 2077, we've adde
 
 ![An animation showing REDmod load order entries being dragged to new positions and bumped up and down using the arrow buttons.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1747234539-292870229.gif)
 
-When installing mods without using collection, the "My Mods" screen will allow you manage your load order via the "Rules" tab.
+When installing mods without using collections, the "My Mods" screen will allow you manage your load order via the "Rules" tab.
 
 When using multiple collections, the "All" section under "Installed Mods" will allow you to manage your load order via the "Rules" tab. 
 
-This will tab will be expanded in future to include other load-order or file-order rules related to the mods in your loadout or collection. 
+This tab will be expanded in future to include other load-order or file-order rules related to the mods in your loadout or collection. 
 
 ## More Features
 * Updated the Health Check messages for Cyberpunk 2077 to match the structure of other diagnostic messages
 * When hovering the cursor to resize panels, a solid line will now appear to better indicate which panel will be adjusted.
-* The app now has it's own minimise, maximise and close buttons, removing the operating system "chrome" and saving more vertical space. 
+* The app now has its own minimise, maximise and close buttons, removing the operating system "chrome" and saving more vertical space. 
 * The tab bar is now hidden until there are at least two tabs in a panel
 * Tabs can now be closed with a  middle click 
 * Added mod thumbnails to the load order page
 
 ## Technical Changes
-* Replaced the Stardew Valley preview UI elements with game agnostic versions
+* Replaced the Stardew Valley preview UI elements with game-agnostic versions
 * Added the core backend frameworks required for the "Undo" feature
 * Added the core backend frameworks to allow the app to create and share collections
 * Improved the stability of downloads by requesting the entire file rather than using range requests
@@ -44,7 +44,7 @@ This will tab will be expanded in future to include other load-order or file-ord
 * The app will now send headers with Nexus Mods requests to allow us to better track mod manager usage
 
 ## Bug Fixes
-* Games can be unmanaged via command line (thanks to Michael-Kowata on GitHub)
+* Games can be unmanaged via the command line (thanks to Michael-Kowata on GitHub)
 * Fixed missing colours to represent added, removed, or changed files on the Preview Changes page
 * Fixed a crash when snapping to full screen with multiple panels open
 * Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game
@@ -52,6 +52,7 @@ This will tab will be expanded in future to include other load-order or file-ord
 * Fixed a bug where copying a loadout could result in two loadouts with the same name
 
 ## Known Issues
+* Collection success ratings will sometimes not match what is shown on the website.
 * The Epic Games release of Cyberpunk 2077 is detected but not supported. 
 * The app will attempt to run the REDmod.exe even if it is not installed, resulting in an error message. 
 * The sort order for some columns does not work as expected.
