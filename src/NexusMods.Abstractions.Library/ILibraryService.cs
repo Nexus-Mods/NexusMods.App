@@ -88,7 +88,7 @@ public interface ILibraryService
     /// Unlinks a number of items added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
     /// <param name="itemIds">The items to remove from the loadout.</param>
-    Task RemoveLibraryItemFromLoadout(IEnumerable<LoadoutItemId> itemIds);
+    Task RemoveLibraryItemsFromLoadout(IEnumerable<LoadoutItemId> itemIds);
 
     /// <summary>
     /// Unlinks a single item added by <see cref="InstallItem"/> function call from a loadout.
@@ -102,7 +102,7 @@ public interface ILibraryService
     /// </summary>
     /// <param name="itemIds">The items to remove</param>
     /// <param name="tx">Existing transaction to use</param>
-    void RemoveLibraryItemFromLoadout(IEnumerable<LoadoutItemId> itemIds, ITransaction tx);
+    void RemoveLibraryItemsFromLoadout(IEnumerable<LoadoutItemId> itemIds, ITransaction tx);
 
     /// <summary>
     /// Removes library items (originally installed via <see cref="InstallItem"/>) from all
