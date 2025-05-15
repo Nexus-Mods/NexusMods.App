@@ -51,7 +51,6 @@
     </recommends>
 
     <supports>
-        <id version="1.0" compare="ge">com.valvesoftware.Steam</id>
         <id version="1.0" compare="ge">com.heroicgameslauncher.hgl</id>
 
         <control>gamepad</control>
