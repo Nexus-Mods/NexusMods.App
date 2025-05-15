@@ -49,7 +49,7 @@ public interface ILibraryService
 
     /// <summary>
     /// Installs a library item into a target loadout.
-    /// To remove an item, use <see cref="RemoveLibraryItemFromLoadout(LoadoutItemId)"/>.
+    /// To remove an item, use <see cref="RemoveLibraryItemFromLoadout(NexusMods.Abstractions.Loadouts.LibraryLinkedLoadoutItemId)"/>.
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
@@ -58,7 +58,7 @@ public interface ILibraryService
     /// <param name="fallbackInstaller">The installer to use if the default installer fails</param>
     /// <param name="transaction">The transaction to attach the installation to. Install is only completed when transaction is completed.</param>
     /// <remarks>
-    /// Job returns null <see cref="LoadoutItemGroup.ReadOnly"/> after
+    /// Job returns a result with null <see cref="LoadoutItemGroup.ReadOnly"/> after
     /// if supplied an external transaction via <paramref name="transaction"/>,
     /// since it is the caller's responsibility to complete that transaction.
     /// </remarks>
