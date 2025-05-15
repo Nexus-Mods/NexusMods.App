@@ -73,7 +73,7 @@ public class ActionMapping
             AAx_XXx_i => DeleteFromDisk,
             AAx_xxx_I => BackupFile | DeleteFromDisk,
             AAx_XXx_I => DeleteFromDisk,
-            AAA_xxx_i => BackupFile,
+            AAA_xxx_i => DoNothing,
             AAA_XXX_i => DoNothing,
             AAA_xxx_I => DoNothing,
             AAA_XXX_I => DoNothing,
