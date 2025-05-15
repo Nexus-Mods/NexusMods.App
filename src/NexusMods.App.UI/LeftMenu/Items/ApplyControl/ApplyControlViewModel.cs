@@ -31,6 +31,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly IServiceProvider _serviceProvider;
     private readonly GameInstallMetadataId _gameMetadataId;
     [Reactive] private bool CanApply { get; set; } = true;
+    [Reactive] public bool IsApplying { get; private set; }
 
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
     public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
@@ -115,6 +116,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                                                 && ldStatus == LoadoutSynchronizerState.Current;
                     })
                     .DisposeWith(disposables);
+
+                _jobMonitor.HasActiveJob<SynchronizeLoadoutJob>(job => job.LoadoutId.Value == loadoutId.Value)
+                    .OnUI()
+                    .Subscribe(isApplying => IsApplying = isApplying)
+                    .DisposeWith(disposables);
+                
             }
         );
     }
