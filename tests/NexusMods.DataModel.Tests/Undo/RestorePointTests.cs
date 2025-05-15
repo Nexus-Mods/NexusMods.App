@@ -20,7 +20,7 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
 
         var loadout = Loadout.All(tmpConn.Connection.Db).First();
 
-        var restorePoints = (await undoService.RevisionsFor(loadout))
+        var restorePoints = (await tmpConn.Connection.Topology.QueryAsync(undoService.Revisions))
             .OrderBy(row => row.TxId);
 
         // Get the restore points before hand
@@ -66,7 +66,7 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
 
         var loadout = Loadout.All(tmpConn.Connection.Db).First(l => l.Id == EntityId.From(0x200000000003755));
 
-        var restorePoints = (await undoService.RevisionsFor(loadout))
+        var restorePoints = (await tmpConn.Connection.Topology.QueryAsync(undoService.Revisions))
             .OrderBy(row => row.TxId);
 
         // This would cause a crash before the fix

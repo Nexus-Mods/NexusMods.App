@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
+using NexusMods.Cascade;
 using NexusMods.DataModel.Undo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
@@ -248,7 +249,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         
-        var revisions = await undoService.RevisionsFor(loadout);
+        var revisions = await connection.Topology.QueryAsync(undoService.Revisions.Where(r => r.LoadoutId == loadout.Id));
         
         await revisions.OrderBy(r => r.TxId)
             .Select((r, idx) => (idx, r.Timestamp, r.TxId, r.Added, r.Removed, r.Modified, r.MissingGameFiles))
@@ -266,7 +267,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         
-        var revisions = await undoService.RevisionsFor(loadout);
+        var revisions = await connection.Topology.QueryAsync(undoService.Revisions.Where(r => r.LoadoutId == loadout.Id));
         
         var revision = revisions.OrderBy(r => r.TxId)
             .Select((r, idx) => (Idx: idx, r.RowId, r.TxId))

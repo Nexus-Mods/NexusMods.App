@@ -24,7 +24,8 @@ public class UndoService
     private readonly IConnection _conn;
     private readonly IFileStore _fileStore;
     private static readonly Inlet<IDb> _gameDb = new();
-    
+
+    public readonly Flow<LoadoutRevisionWithStats> Revisions;
 
     /// <summary>
     /// DI constructor 
@@ -34,26 +35,9 @@ public class UndoService
     {
         _conn = connection;
         _fileStore = fileStore;
+        Revisions = Queries.LoadoutRevisionsWithMetadata.ParallelSelect(LoadoutStats);
     }
-
-    /// <summary>
-    /// Get a query of all the valid restore points (revisions) for the given loadout.
-    /// </summary>
-    public async Task<IQueryResult<LoadoutRevisionWithStats>> RevisionsFor(EntityId loadout)
-    { 
-        return await _conn.Topology.QueryAsync(Queries.LoadoutRevisionsWithMetadata
-            .Where(row => row.RowId == loadout)
-            .ParallelSelect(LoadoutStats));
-    }
-
-    private static readonly Flow<(EntityId Loadout, EntityId ModFile)> ModFiles =
-        Pattern.Create()
-            .Db(out var item, LoadoutItem.LoadoutId, out var loadoutId)
-            .Db(item, LibraryLinkedLoadoutItem.LibraryItemId, out _)
-            .Return(loadoutId, item);
     
-    
-
     /// <summary>
     /// This query isn't super efficient, but for every stat loadout we have to load one or (in the future) two
     /// databases. So it's O(n) for the number of revisions for now. We can optimize it in the future
@@ -69,7 +53,6 @@ public class UndoService
         var prevLoadout = Loadout.Load(prevDb, revision.EntityId);
 
         var synchronizer = currentLoadout.InstallationInstance.GetGame().Synchronizer;
-        var currentDiskState = currentLoadout.Rebase().Installation.Rebase().DiskStateEntries;
         
         var flattenedCurrent = synchronizer.Flatten(currentLoadout);
         Dictionary<GamePath, SyncNode> flattenedPrev = new();
