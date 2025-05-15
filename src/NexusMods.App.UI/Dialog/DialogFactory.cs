@@ -94,7 +94,7 @@ public static class DialogFactory
     public static Dialog<DialogView, DialogViewModel, ButtonDefinitionId> CreateMessageBox(
         string title,
         string text,
-        string heading,
+        string? heading,
         DialogButtonDefinition[] buttonDefinitions,
         IconValue? icon,
         DialogWindowSize dialogWindowSize,
