@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
@@ -98,7 +99,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 //     - This is done in 'Synchronize' method.
                 // - They're running a tool from within the App.
                 //     - Check running jobs.
-                loadoutStatuses.CombineLatest(isProcessingObservable, gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), (loadout, isProcessing, game, running) => (loadout, isProcessing, game, running))
+                loadoutStatuses.CombineLatest(isProcessingObservable, gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), 
+                        (loadout, isProcessing, game, running) => (loadout, isProcessing, game, running))
                     .OnUI()
                     .Subscribe(status =>
                     {
@@ -117,7 +119,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     })
                     .DisposeWith(disposables);
 
-                _jobMonitor.HasActiveJob<SynchronizeLoadoutJob>(job => job.LoadoutId.Value == loadoutId.Value)
+                _jobMonitor.HasActiveJob<SynchronizeLoadoutJob>(job => job.LoadoutId == loadoutId)
                     .OnUI()
                     .Subscribe(isApplying => IsApplying = isApplying)
                     .DisposeWith(disposables);
