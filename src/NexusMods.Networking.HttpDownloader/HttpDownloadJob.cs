@@ -1,6 +1,8 @@
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -184,7 +186,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         {
             await response.Content.CopyToAsync(outputStream, context.CancellationToken);
         }
-        catch (HttpIOException e)
+        catch (Exception e)
         {
             Logger.LogWarning(e, "Exception while downloading from `{PageUri}`, downloaded `{DownloadedBytes}` from `{TotalBytes}` bytes", DownloadPageUri, outputStream.Position, outputStream.Length);
             throw;
@@ -268,10 +270,17 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 
     private static ResiliencePipeline<AbsolutePath> BuildResiliencePipeline()
     {
+        ImmutableArray<Type> networkExceptions =
+        [
+            typeof(HttpIOException),
+            typeof(HttpRequestException),
+            typeof(SocketException),
+        ];
+
         var pipeline = new ResiliencePipelineBuilder<AbsolutePath>()
             .AddRetry(new RetryStrategyOptions<AbsolutePath>
             {
-                ShouldHandle = new PredicateBuilder<AbsolutePath>().Handle<HttpIOException>(),
+                ShouldHandle = args => ValueTask.FromResult(args.Outcome.Exception is not null && networkExceptions.Contains(args.Outcome.Exception.GetType())),
                 BackoffType = DelayBackoffType.Exponential,
                 UseJitter = true,
                 MaxRetryAttempts = 3,
