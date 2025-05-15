@@ -1,17 +1,14 @@
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.App.BuildInfo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using Polly;
@@ -25,11 +22,12 @@ namespace NexusMods.Networking.HttpDownloader;
 [PublicAPI]
 public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, AbsolutePath>, IHttpDownloadJob
 {
-#pragma warning disable EXTEXP0001
-    private static readonly HttpClient Client = BuildClient();
-#pragma warning restore EXTEXP0001
-
     private static readonly ResiliencePipeline<AbsolutePath> ResiliencePipeline = BuildResiliencePipeline();
+
+    /// <summary>
+    /// Client.
+    /// </summary>
+    public required HttpClient Client { get; init; }
 
     /// <summary>
     /// Logger.
@@ -81,6 +79,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             DownloadPageUri = downloadPage,
             Destination = destination,
             Logger = provider.GetRequiredService<ILogger<HttpDownloadJob>>(),
+            Client = provider.GetRequiredService<HttpClient>(),
         };
 
         return monitor.Begin<HttpDownloadJob, AbsolutePath>(job);
@@ -289,30 +288,5 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             .Build();
 
         return pipeline;
-    }
-
-    [Experimental("EXTEXP0001")]
-    private static HttpClient BuildClient()
-    {
-        // TODO: get values from settings, probably make this a singleton
-
-        var pipeline = new ResiliencePipelineBuilder<HttpResponseMessage>()
-            .AddRetry(new HttpRetryStrategyOptions())
-            .Build();
-
-        HttpMessageHandler handler = new ResilienceHandler(pipeline)
-        {
-            InnerHandler = new SocketsHttpHandler(),
-        };
-
-        var client = new HttpClient(handler)
-        {
-            DefaultRequestVersion = HttpVersion.Version11,
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
-        };
-
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
-
-        return client;
     }
 }
