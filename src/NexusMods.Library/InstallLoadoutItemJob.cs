@@ -39,8 +39,8 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         ILibraryItemInstaller? fallbackInstaller = null, 
         ITransaction? transaction = null)
     {
-        var group = LoadoutItemGroup.Load(libraryItem.Db, groupId);
         var connection = serviceProvider.GetRequiredService<IConnection>();
+        var group = LoadoutItemGroup.Load(connection.Db, groupId);
         var job = new InstallLoadoutItemJob
         {
             Logger = serviceProvider.GetRequiredService<ILogger<InstallLoadoutItemJob>>(),
