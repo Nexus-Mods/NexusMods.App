@@ -13,6 +13,7 @@ using NexusMods.App.BuildInfo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using Polly;
+using Polly.Retry;
 
 namespace NexusMods.Networking.HttpDownloader;
 
@@ -25,6 +26,8 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 #pragma warning disable EXTEXP0001
     private static readonly HttpClient Client = BuildClient();
 #pragma warning restore EXTEXP0001
+
+    private static readonly ResiliencePipeline<AbsolutePath> ResiliencePipeline = BuildResiliencePipeline();
 
     /// <summary>
     /// Logger.
@@ -81,10 +84,23 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         return monitor.Begin<HttpDownloadJob, AbsolutePath>(job);
     }
 
-    /// <summary>
-    /// Execute the job
-    /// </summary>
+    /// <inheritdoc/>
     public async ValueTask<AbsolutePath> StartAsync(IJobContext<HttpDownloadJob> context)
+    {
+        var result = await ResiliencePipeline.ExecuteAsync(
+            callback: static (tuple, _) =>
+            {
+                var (self, context) = tuple;
+                return self.StartAsyncImpl(context);
+            },
+            state: (this, context),
+            cancellationToken: context.CancellationToken
+        );
+
+        return result;
+    }
+
+    private async ValueTask<AbsolutePath> StartAsyncImpl(IJobContext<HttpDownloadJob> context)
     {
         await context.YieldAsync();
         await FetchMetadata(context);
@@ -168,9 +184,9 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         {
             await response.Content.CopyToAsync(outputStream, context.CancellationToken);
         }
-        catch (HttpRequestException e)
+        catch (HttpIOException e)
         {
-            Logger.LogError(e, "Http error while downloading from `{PageUri}`: Server=`{Server}`,Http Version=`{Version}`", DownloadPageUri, response.Headers.Server.ToString(), response.Version);
+            Logger.LogWarning(e, "Exception while downloading from `{PageUri}`, downloaded `{DownloadedBytes}` from `{TotalBytes}` bytes", DownloadPageUri, outputStream.Position, outputStream.Length);
             throw;
         }
         finally
@@ -249,7 +265,23 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         var contentLength = response.Content.Headers.ContentLength;
         ContentLength = contentLength is not null ? Size.FromLong(contentLength.Value) : Optional<Size>.None;
     }
-    
+
+    private static ResiliencePipeline<AbsolutePath> BuildResiliencePipeline()
+    {
+        var pipeline = new ResiliencePipelineBuilder<AbsolutePath>()
+            .AddRetry(new RetryStrategyOptions<AbsolutePath>
+            {
+                ShouldHandle = new PredicateBuilder<AbsolutePath>().Handle<HttpIOException>(),
+                BackoffType = DelayBackoffType.Exponential,
+                UseJitter = true,
+                MaxRetryAttempts = 3,
+                Delay = TimeSpan.FromSeconds(3),
+            })
+            .Build();
+
+        return pipeline;
+    }
+
     [Experimental("EXTEXP0001")]
     private static HttpClient BuildClient()
     {
