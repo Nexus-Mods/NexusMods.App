@@ -81,28 +81,28 @@ public interface ILibraryService
     /// <summary>
     /// Unlinks a single item added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
-    /// <param name="itemId">The item to remove from the loadout.</param>
-    Task RemoveLibraryItemFromLoadout(LoadoutItemId itemId);
+    /// <param name="itemId">The <see cref="LibraryLinkedLoadoutItem"/> to remove from the loadout.</param>
+    Task RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId);
 
     /// <summary>
     /// Unlinks a number of items added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
-    /// <param name="itemIds">The items to remove from the loadout.</param>
-    Task RemoveLibraryItemsFromLoadout(IEnumerable<LoadoutItemId> itemIds);
+    /// <param name="itemIds">The <see cref="LibraryLinkedLoadoutItem"/>s to remove from the loadout.</param>
+    Task RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds);
 
     /// <summary>
     /// Unlinks a single item added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
-    /// <param name="itemId">The item to remove from the loadout.</param>
+    /// <param name="itemId">The <see cref="LibraryLinkedLoadoutItem"/>s to remove from the loadout.</param>
     /// <param name="tx">Existing transaction to use</param>
-    void RemoveLibraryItemFromLoadout(LoadoutItemId itemId, ITransaction tx);
+    void RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx);
 
     /// <summary>
     /// Unlinks a number of items added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
-    /// <param name="itemIds">The items to remove</param>
+    /// <param name="itemIds">The <see cref="LibraryLinkedLoadoutItem"/>s to remove</param>
     /// <param name="tx">Existing transaction to use</param>
-    void RemoveLibraryItemsFromLoadout(IEnumerable<LoadoutItemId> itemIds, ITransaction tx);
+    void RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx);
 
     /// <summary>
     /// Removes library items (originally installed via <see cref="InstallItem"/>) from all

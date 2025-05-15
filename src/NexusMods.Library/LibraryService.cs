@@ -90,24 +90,24 @@ public sealed class LibraryService : ILibraryService
         await _gcRunner.RunWithMode(gcRunMode);
     }
 
-    public async Task RemoveLibraryItemFromLoadout(LoadoutItemId itemId)
+    public async Task RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId)
     {
         using var tx = _connection.BeginTransaction();
         RemoveLibraryItemFromLoadout(itemId, tx);
         await tx.Commit();
     }
 
-    public async Task RemoveLibraryItemsFromLoadout(IEnumerable<LoadoutItemId> itemIds)
+    public async Task RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds)
     {
         using var tx = _connection.BeginTransaction();
         RemoveLibraryItemsFromLoadout(itemIds, tx);
         await tx.Commit();
     }
 
-    public void RemoveLibraryItemFromLoadout(LoadoutItemId itemId, ITransaction tx)
+    public void RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx)
         => tx.Delete(itemId, recursive: true);
 
-    public void RemoveLibraryItemsFromLoadout(IEnumerable<LoadoutItemId> itemIds, ITransaction tx)
+    public void RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx)
     {
         foreach (var itemId in itemIds)
             tx.Delete(itemId, recursive: true);

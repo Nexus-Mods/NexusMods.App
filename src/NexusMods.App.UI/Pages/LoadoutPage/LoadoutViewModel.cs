@@ -180,6 +180,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
                     .ToHashSet()
                     .Where(id => !IsRequired(id, connection))
+                    .Select(x => (LibraryLinkedLoadoutItemId)x.Value)
                     .ToArray();
 
                 if (ids.Length == 0) return;
