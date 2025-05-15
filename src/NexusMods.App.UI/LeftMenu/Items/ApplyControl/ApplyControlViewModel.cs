@@ -116,10 +116,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                                                 && !running
                                                 && gameStatus != GameSynchronizerState.Busy
                                                 && ldStatus == LoadoutSynchronizerState.Current;
+                        
                     })
                     .DisposeWith(disposables);
 
                 _jobMonitor.HasActiveJob<SynchronizeLoadoutJob>(job => job.LoadoutId == loadoutId)
+                    .Prepend(_jobMonitor.Jobs.Any(job => job.Definition is SynchronizeLoadoutJob sJob && sJob.LoadoutId == loadoutId))
                     .OnUI()
                     .Subscribe(isApplying => IsApplying = isApplying)
                     .DisposeWith(disposables);
