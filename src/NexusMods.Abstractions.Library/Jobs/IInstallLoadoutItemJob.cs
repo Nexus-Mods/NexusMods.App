@@ -36,8 +36,10 @@ public interface IInstallLoadoutItemJob : IJobDefinition<InstallLoadoutItemJobRe
 /// The result of installing a loadout item via the <see cref="IInstallLoadoutItemJob"/>.
 /// This struct holds a <see cref="LoadoutItemGroup"/> for the item which was just installed.
 ///
-/// If the value is 'null' then the job was attached to an existing, external transaction,
-/// by passing a <see cref="ITransaction"/> transaction to the job then the value will be null
-/// (default) as the value remains unavailable until changes are externally committed.
+/// If the value is 'null' then the job was attached to an existing, external transaction
+/// to be part of a larger atomic operation.
+/// (Done by passing an <see cref="ITransaction"/> transaction to the job.)
+/// This is because the value is not yet available; as the transaction
+/// needs to be externally committed by the caller.
 /// </summary>
 public record struct InstallLoadoutItemJobResult(LoadoutItemGroup.ReadOnly? LoadoutItemGroup);
