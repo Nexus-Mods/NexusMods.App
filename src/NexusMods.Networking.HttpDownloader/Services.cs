@@ -23,7 +23,13 @@ public static class Services
     private static HttpClient BuildClient()
     {
         var pipeline = new ResiliencePipelineBuilder<HttpResponseMessage>()
-            .AddRetry(new HttpRetryStrategyOptions())
+            .AddRetry(new HttpRetryStrategyOptions
+            {
+                BackoffType = DelayBackoffType.Exponential,
+                MaxRetryAttempts = 3,
+                Delay = TimeSpan.FromSeconds(3),
+                UseJitter = true,
+            })
             .Build();
 
         HttpMessageHandler handler = new ResilienceHandler(pipeline)
