@@ -140,14 +140,9 @@ public sealed class LibraryService : ILibraryService
                 {
                     if (options.IgnoreReadOnlyCollections)
                     {
-                        // Note(sewer): O(N^3), very slow!!
-                        //              But N for `loadouts` and `collections` are thankfully generally small (1-3 and 1-5)
-                        //              in practice.
-                        //              
-                        //              Should this ever be slow, might be worth introducing some hashmaps passed into
-                        //              ReplaceLibraryItemInAllLoadouts with mapping of collections to their libraryItemId(s).
-                        return tuple.loadout.MutableCollections()
-                            .Any(y => y.AsLoadoutItemGroup().Children.Any(z => z.Id == oldItem.Id));
+                        var collection = tuple.linkedItem.AsLoadoutItem().Parent;
+                        var asCollectionGroup = collection.ToCollectionGroup();
+                        return !asCollectionGroup.IsReadOnly;
                     }
 
                     return true;
