@@ -124,7 +124,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
 
         // Add it to our new loadout.
         await _libraryService.InstallItem(libraryItem, loadout.LoadoutId, parent: collection.AsLoadoutItemGroup().LoadoutItemGroupId);
-        var loadouts = _libraryService.LoadoutsWithLibraryItem(libraryItem, _connection.Db);
+        var loadouts = _libraryService.LoadoutsWithLibraryItem(libraryItem);
 
         // Assert that we have a single item.
         loadouts.Should().ContainSingle()
@@ -178,15 +178,15 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         result.Should().Be(LibraryItemReplacementResult.Success);
 
         // Verify that the old items are no longer in any loadout
-        var loadoutsWithOldItem1 = _libraryService.LoadoutsWithLibraryItem(oldItem1, _connection.Db);
-        var loadoutsWithOldItem2 = _libraryService.LoadoutsWithLibraryItem(oldItem2, _connection.Db);
+        var loadoutsWithOldItem1 = _libraryService.LoadoutsWithLibraryItem(oldItem1);
+        var loadoutsWithOldItem2 = _libraryService.LoadoutsWithLibraryItem(oldItem2);
 
         loadoutsWithOldItem1.Should().BeEmpty();
         loadoutsWithOldItem2.Should().BeEmpty();
 
         // Verify that new items are now in the appropriate loadouts
-        var loadoutsWithNewItem1 = _libraryService.LoadoutsWithLibraryItem(newItem1, _connection.Db);
-        var loadoutsWithNewItem2 = _libraryService.LoadoutsWithLibraryItem(newItem2, _connection.Db);
+        var loadoutsWithNewItem1 = _libraryService.LoadoutsWithLibraryItem(newItem1);
+        var loadoutsWithNewItem2 = _libraryService.LoadoutsWithLibraryItem(newItem2);
 
         loadoutsWithNewItem1.Should().HaveCount(2)
             .And.Contain(l => l.loadout.LoadoutId == loadout1.LoadoutId)
@@ -245,21 +245,21 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         result.Should().Be(LibraryItemReplacementResult.Success);
 
         // Verify that the old item in mutable collection is no longer in any loadout
-        var loadoutsWithOldItem1 = _libraryService.LoadoutsWithLibraryItem(oldItem1, _connection.Db);
+        var loadoutsWithOldItem1 = _libraryService.LoadoutsWithLibraryItem(oldItem1);
         loadoutsWithOldItem1.Should().BeEmpty("because item in mutable collection should be replaced");
 
         // Verify that the old item in read-only collection is still there (was not replaced)
-        var loadoutsWithOldItem2 = _libraryService.LoadoutsWithLibraryItem(oldItem2, _connection.Db);
+        var loadoutsWithOldItem2 = _libraryService.LoadoutsWithLibraryItem(oldItem2);
         loadoutsWithOldItem2.Should().ContainSingle("because item in read-only collection should not be replaced")
             .Which.loadout.LoadoutId.Should().Be(loadout2.LoadoutId);
 
         // Verify that new item1 is now in mutable collection loadout
-        var loadoutsWithNewItem1 = _libraryService.LoadoutsWithLibraryItem(newItem1, _connection.Db);
+        var loadoutsWithNewItem1 = _libraryService.LoadoutsWithLibraryItem(newItem1);
         loadoutsWithNewItem1.Should().ContainSingle("because it should only replace the item in the mutable collection")
             .Which.loadout.LoadoutId.Should().Be(loadout1.LoadoutId);
 
         // Verify that new item2 is not in any loadout (because it wasn't installed due to read-only filter)
-        var loadoutsWithNewItem2 = _libraryService.LoadoutsWithLibraryItem(newItem2, _connection.Db);
+        var loadoutsWithNewItem2 = _libraryService.LoadoutsWithLibraryItem(newItem2);
         loadoutsWithNewItem2.Should().BeEmpty("because the item in read-only collection should not be replaced");
     }
 

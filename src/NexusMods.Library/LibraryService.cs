@@ -44,9 +44,9 @@ public sealed class LibraryService : ILibraryService
         return AddLocalFileJob.Create(_serviceProvider, absolutePath);
     }
 
-    public IEnumerable<(Loadout.ReadOnly loadout, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem, IDb? db = null)
+    public IEnumerable<(Loadout.ReadOnly loadout, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem)
     {
-        var dbToUse = db ?? libraryItem.Db;
+        var dbToUse = _connection.Db;
         // Start with a backref.
         // We're making a small assumption here that number of loadouts will be fairly small.
         // That may not always be true, but I believe

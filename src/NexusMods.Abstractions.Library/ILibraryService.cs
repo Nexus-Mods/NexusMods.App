@@ -28,19 +28,15 @@ public interface ILibraryService
     /// Adds a local file to the library.
     /// </summary>
     IJobTask<IAddLocalFile, LocalFile.ReadOnly> AddLocalFile(AbsolutePath absolutePath);
-    
+
     /// <summary>
     /// Returns all loadouts that contain the given library item.
     /// </summary>
     /// <param name="libraryItem">The item to search for.</param>
-    /// <param name="db">
-    ///     The database instance to use. If not specified, will inherit from <see cref="LibraryItem.ReadOnly"/>.
-    ///     Pass this parameter for latest snapshot, else pass null to use snapshot from <see cref="LibraryItem.ReadOnly"/>
-    /// </param>
     /// <remarks>
     ///     The loadout and linked item to the current item.
     /// </remarks>
-    IEnumerable<(Loadout.ReadOnly loadout, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem, IDb? db = null);
+    IEnumerable<(Loadout.ReadOnly loadout, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem);
 
     /// <summary>
     /// Adds a library file.
