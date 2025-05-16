@@ -17,6 +17,11 @@
         <p>The Nexus Mods App is a mod manager for your games and the successor to Vortex with native support for Linux.</p>
     </description>
 
+    <branding>
+        <color type="primary" scheme_preference="light">#fafafa</color>
+        <color type="primary" scheme_preference="dark">#1d1d21</color>
+    </branding>
+
     <launchable type="desktop-id">com.nexusmods.app.desktop</launchable>
 
     <url type="homepage">https://github.com/Nexus-Mods/NexusMods.App</url>
@@ -29,7 +34,7 @@
     <url type="contribute">https://nexus-mods.github.io/NexusMods.App/developers/Contributing/</url>
 
     <content_rating type="oars-1.0">
-        <content_attribute id="social-info">moderate</content_attribute>
+        <content_attribute id="social-info">intense</content_attribute>
     </content_rating>
 
     <categories>
@@ -46,7 +51,12 @@
     </recommends>
 
     <supports>
-        <id version="1.0" compare="ge">com.usebottles.bottles</id>
+        <id version="1.0" compare="ge">com.heroicgameslauncher.hgl</id>
+
+        <control>gamepad</control>
     </supports>
+
+    <!-- NOTE(erri120): we use a script to turn GitHub releases into a supported format -->
+    <releases type="external"/>
 
 </component>
