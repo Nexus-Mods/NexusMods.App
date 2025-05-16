@@ -17,5 +17,7 @@ public interface IApplyControlViewModel : IViewModelInterface
     
     bool IsProcessing { get; }
     
+    bool IsApplying { get; }
+    
     string ApplyButtonText { get; }
 }

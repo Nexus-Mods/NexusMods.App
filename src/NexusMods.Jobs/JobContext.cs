@@ -8,7 +8,7 @@ namespace NexusMods.Jobs;
 public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>, IJobContext<TJobDefinition> 
     where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
 {
-    private readonly Subject<JobStatus> _status;
+    private readonly BehaviorSubject<JobStatus> _status;
     private readonly Subject<Optional<Percent>> _progress;
     private readonly Subject<Optional<double>> _rateOfProgress;
     private readonly TJobDefinition _definition;
@@ -25,7 +25,7 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         _action = action;
         _definition = definition;
         Monitor = monitor;
-        _status = new Subject<JobStatus>();
+        _status = new BehaviorSubject<JobStatus>(JobStatus.Created);
         _progress = new Subject<Optional<Percent>>();
         _rateOfProgress = new Subject<Optional<double>>();
         

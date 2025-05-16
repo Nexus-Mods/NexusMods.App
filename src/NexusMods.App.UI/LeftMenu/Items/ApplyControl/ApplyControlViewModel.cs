@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.UI;
@@ -31,6 +32,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     private readonly IServiceProvider _serviceProvider;
     private readonly GameInstallMetadataId _gameMetadataId;
     [Reactive] private bool CanApply { get; set; } = true;
+    [Reactive] public bool IsApplying { get; private set; }
 
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
     public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
@@ -97,7 +99,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 //     - This is done in 'Synchronize' method.
                 // - They're running a tool from within the App.
                 //     - Check running jobs.
-                loadoutStatuses.CombineLatest(isProcessingObservable, gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), (loadout, isProcessing, game, running) => (loadout, isProcessing, game, running))
+                loadoutStatuses.CombineLatest(isProcessingObservable, gameStatuses, gameRunningTracker.GetWithCurrentStateAsStarting(), 
+                        (loadout, isProcessing, game, running) => (loadout, isProcessing, game, running))
                     .OnUI()
                     .Subscribe(status =>
                     {
@@ -113,8 +116,16 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                                                 && !running
                                                 && gameStatus != GameSynchronizerState.Busy
                                                 && ldStatus == LoadoutSynchronizerState.Current;
+                        
                     })
                     .DisposeWith(disposables);
+
+                _jobMonitor.HasActiveJob<SynchronizeLoadoutJob>(job => job.LoadoutId == loadoutId)
+                    .Prepend(_jobMonitor.Jobs.Any(job => job.Definition is SynchronizeLoadoutJob sJob && sJob.LoadoutId == loadoutId))
+                    .OnUI()
+                    .Subscribe(isApplying => IsApplying = isApplying)
+                    .DisposeWith(disposables);
+                
             }
         );
     }
