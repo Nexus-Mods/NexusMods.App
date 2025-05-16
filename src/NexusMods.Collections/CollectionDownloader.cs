@@ -15,6 +15,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Extensions.BCL;
@@ -256,7 +257,6 @@ public class CollectionDownloader
         CollectionRevisionMetadata.ReadOnly revisionMetadata,
         ItemType itemType,
         IDb db,
-        int maxDegreeOfParallelism = -1,
         CancellationToken cancellationToken = default)
     {
         var job = new DownloadCollectionJob
@@ -266,7 +266,7 @@ public class CollectionDownloader
             RevisionMetadata = revisionMetadata,
             Db = db,
             ItemType = itemType,
-            MaxDegreeOfParallelism = maxDegreeOfParallelism,
+            MaxDegreeOfParallelism = _serviceProvider.GetRequiredService<ISettingsManager>().Get<DownloadSettings>().MaxParallelDownloads,
         };
 
         await _jobMonitor.Begin<DownloadCollectionJob, R3.Unit>(job);

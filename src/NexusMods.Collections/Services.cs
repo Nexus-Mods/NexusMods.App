@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.Settings;
 
 namespace NexusMods.Collections;
 
@@ -16,6 +17,7 @@ public static class Services
             .AddNexusCollectionItemLoadoutGroupModel()
             .AddNexusCollectionReplicatedLoadoutGroupModel()
             .AddCollectionVerbs()
-            .AddSingleton<CollectionDownloader>();
+            .AddSingleton<CollectionDownloader>()
+            .AddSettings<DownloadSettings>();
     }
 }

@@ -51,6 +51,7 @@ public record ExternalDownloadJob : HttpDownloadJob
             DownloadPageUri = uri,
             Destination = tempFileManager.CreateFile(),
             Uri = uri,
+            Client = provider.GetRequiredService<HttpClient>(),
         };
 
         return monitor.Begin<ExternalDownloadJob, AbsolutePath>(job);

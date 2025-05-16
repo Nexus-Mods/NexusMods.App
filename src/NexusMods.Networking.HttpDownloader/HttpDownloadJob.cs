@@ -1,18 +1,18 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.HttpDownloads;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.App.BuildInfo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using Polly;
+using Polly.Retry;
 
 namespace NexusMods.Networking.HttpDownloader;
 
@@ -22,9 +22,12 @@ namespace NexusMods.Networking.HttpDownloader;
 [PublicAPI]
 public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, AbsolutePath>, IHttpDownloadJob
 {
-#pragma warning disable EXTEXP0001
-    private static readonly HttpClient Client = BuildClient();
-#pragma warning restore EXTEXP0001
+    private static readonly ResiliencePipeline<AbsolutePath> ResiliencePipeline = BuildResiliencePipeline();
+
+    /// <summary>
+    /// Client.
+    /// </summary>
+    public required HttpClient Client { get; init; }
 
     /// <summary>
     /// Logger.
@@ -76,15 +79,29 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
             DownloadPageUri = downloadPage,
             Destination = destination,
             Logger = provider.GetRequiredService<ILogger<HttpDownloadJob>>(),
+            Client = provider.GetRequiredService<HttpClient>(),
         };
 
         return monitor.Begin<HttpDownloadJob, AbsolutePath>(job);
     }
 
-    /// <summary>
-    /// Execute the job
-    /// </summary>
+    /// <inheritdoc/>
     public async ValueTask<AbsolutePath> StartAsync(IJobContext<HttpDownloadJob> context)
+    {
+        var result = await ResiliencePipeline.ExecuteAsync(
+            callback: static (tuple, _) =>
+            {
+                var (self, context) = tuple;
+                return self.StartAsyncImpl(context);
+            },
+            state: (this, context),
+            cancellationToken: context.CancellationToken
+        );
+
+        return result;
+    }
+
+    private async ValueTask<AbsolutePath> StartAsyncImpl(IJobContext<HttpDownloadJob> context)
     {
         await context.YieldAsync();
         await FetchMetadata(context);
@@ -168,6 +185,11 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         {
             await response.Content.CopyToAsync(outputStream, context.CancellationToken);
         }
+        catch (Exception e)
+        {
+            Logger.LogWarning(e, "Exception while downloading from `{PageUri}`, downloaded `{DownloadedBytes}` from `{TotalBytes}` bytes", DownloadPageUri, outputStream.Position, outputStream.Length);
+            throw;
+        }
         finally
         {
             TotalBytesDownloaded = Size.FromLong(outputStream.Position);
@@ -244,36 +266,27 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
         var contentLength = response.Content.Headers.ContentLength;
         ContentLength = contentLength is not null ? Size.FromLong(contentLength.Value) : Optional<Size>.None;
     }
-    
-    [Experimental("EXTEXP0001")]
-    private static HttpClient BuildClient()
-    {
-        // TODO: get values from settings, probably make this a singleton
 
-        var pipeline = new ResiliencePipelineBuilder<HttpResponseMessage>()
-            .AddRetry(new HttpRetryStrategyOptions())
+    private static ResiliencePipeline<AbsolutePath> BuildResiliencePipeline()
+    {
+        ImmutableArray<Type> networkExceptions =
+        [
+            typeof(HttpIOException),
+            typeof(HttpRequestException),
+            typeof(SocketException),
+        ];
+
+        var pipeline = new ResiliencePipelineBuilder<AbsolutePath>()
+            .AddRetry(new RetryStrategyOptions<AbsolutePath>
+            {
+                ShouldHandle = args => ValueTask.FromResult(args.Outcome.Exception is not null && networkExceptions.Contains(args.Outcome.Exception.GetType())),
+                BackoffType = DelayBackoffType.Exponential,
+                UseJitter = true,
+                MaxRetryAttempts = 3,
+                Delay = TimeSpan.FromSeconds(3),
+            })
             .Build();
 
-        HttpMessageHandler handler = new ResilienceHandler(pipeline)
-        {
-            InnerHandler = new SocketsHttpHandler
-            {
-                ConnectTimeout = TimeSpan.FromSeconds(30),
-                KeepAlivePingPolicy = HttpKeepAlivePingPolicy.WithActiveRequests,
-                KeepAlivePingDelay = TimeSpan.FromSeconds(5),
-                KeepAlivePingTimeout = TimeSpan.FromSeconds(20),
-            },
-        };
-
-        var client = new HttpClient(handler)
-        {
-            Timeout = TimeSpan.FromSeconds(20),
-            DefaultRequestVersion = HttpVersion.Version11,
-            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
-        };
-
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
-
-        return client;
+        return pipeline;
     }
 }
