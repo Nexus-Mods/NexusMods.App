@@ -182,7 +182,10 @@ public class CollectionDownloader
     /// </summary>
     public async ValueTask Download(CollectionDownloadNexusMods.ReadOnly download, CancellationToken cancellationToken)
     {
-        if (_loginManager.IsPremium)
+        var userInfo = await _loginManager.GetUserInfoAsync(cancellationToken);
+        if (userInfo is null) return;
+
+        if (userInfo.UserRole is UserRole.Premium)
         {
             await using var tempPath = _temporaryFileManager.CreateFile();
             var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, download.FileMetadata, cancellationToken: cancellationToken);

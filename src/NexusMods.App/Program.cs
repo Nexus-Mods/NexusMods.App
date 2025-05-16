@@ -139,7 +139,9 @@ public class Program
         }
         finally
         {
-            host.StopAsync().Wait(timeout: TimeSpan.FromSeconds(5));
+            // Wait for 15 seconds for the host to stop, otherwise kill the process
+            if (!host.StopAsync().Wait(timeout: TimeSpan.FromSeconds(15)))
+                Environment.Exit(0);
         }
     }
 

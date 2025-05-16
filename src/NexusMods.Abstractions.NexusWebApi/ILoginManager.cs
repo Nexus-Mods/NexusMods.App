@@ -59,7 +59,7 @@ public interface ILoginManager
     /// <summary>
     /// Returns the user's information
     /// </summary>
-    Task<UserInfo?> GetUserInfoAsync(CancellationToken token = default);
+    ValueTask<UserInfo?> GetUserInfoAsync(CancellationToken token = default);
 
     /// <summary>
     /// Verifies whether the user is logged in or not
