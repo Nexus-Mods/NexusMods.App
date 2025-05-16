@@ -182,7 +182,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         if (!loadoutId.HasValue) return Optional<(LoadoutId, WorkspaceId)>.None;
 
         var workspaceViewModel = workspaceController.ChangeOrCreateWorkspaceByContext(
-            predicate: loadoutContext => IsCorrectLoadoutForGame(loadoutContext.LoadoutId, gameId),
+            predicate: loadoutContext => loadoutContext.LoadoutId.Equals(loadoutId.Value),
             getPageData: () => Optional<PageData>.None,
             getWorkspaceContext: () => new LoadoutContext
             {
