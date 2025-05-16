@@ -5,14 +5,13 @@ using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
-using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.ObservableInfo;
 using NexusMods.App.UI.Pages.Settings;
-using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.WorkspaceSystem;
 
@@ -35,7 +34,7 @@ internal class TypeFinder : ITypeFinder
         typeof(ChangelogPageContext),
         typeof(TextEditorPageContext),
         typeof(MyLoadoutsPageContext),
-        typeof(ItemContentsFileTreePageContext),
+        typeof(LoadoutGroupFilesPageContext),
         typeof(LibraryPageContext),
         typeof(LoadoutPageContext),
         typeof(CollectionLoadoutPageContext),

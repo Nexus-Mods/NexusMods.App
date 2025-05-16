@@ -18,6 +18,6 @@ public class TestTreeItemWithPath : ITreeItemWithPath
     public GamePath GetPath() => new(LocationId, RelativePath);
 
     // Keep Key and Name for convenience in test setup, although not part of the interface
-    public required EntityId Key { get; init; }
+    public required GamePath Key { get; init; }
     public required string Name { get; init; }
 }

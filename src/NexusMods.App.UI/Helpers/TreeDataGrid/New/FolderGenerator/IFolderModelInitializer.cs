@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 
@@ -10,12 +11,12 @@ namespace NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
 public interface IFolderModelInitializer<TTreeItemWithPath> where TTreeItemWithPath : ITreeItemWithPath
 {
     /// <summary>
-    /// Initializes the <see cref="CompositeItemModel{EntityId}"/>.
+    /// Initializes the <see cref="CompositeItemModel{GamePath}"/>.
     /// </summary>
     /// <param name="model">The model to initialize.</param>
     /// <param name="folder">The folder containing this model.</param>
     static abstract void InitializeModel<TFolderModelInitializer>(
-        CompositeItemModel<EntityId> model, 
+        CompositeItemModel<GamePath> model, 
         GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> folder)
         where TFolderModelInitializer : IFolderModelInitializer<TTreeItemWithPath>;
 }
@@ -30,7 +31,7 @@ public class DefaultFolderModelInitializer<TTreeItemWithPath> : IFolderModelInit
 {
     /// <inheritdoc/>
     public static void InitializeModel<TFolderModelInitializer>(
-        CompositeItemModel<EntityId> model, 
+        CompositeItemModel<GamePath> model, 
         GeneratedFolder<TTreeItemWithPath, TFolderModelInitializer> folder)
         where TFolderModelInitializer : IFolderModelInitializer<TTreeItemWithPath>
     {
