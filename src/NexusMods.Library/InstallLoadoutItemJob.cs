@@ -12,7 +12,7 @@ using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Library;
 
-internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly>, IInstallLoadoutItemJob
+internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutItemJob, InstallLoadoutItemJobResult>, IInstallLoadoutItemJob
 {
     public required ILogger Logger { get; init; }
     public ILibraryItemInstaller? Installer { get; init; }
@@ -20,17 +20,27 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public LibraryItem.ReadOnly LibraryItem { get; init; }
     public LoadoutItemGroupId ParentGroupId { get; init; }
     public LoadoutId LoadoutId { get; init; }
-    internal required IConnection Connection { get; init; }
-    internal required IServiceProvider ServiceProvider { get; init; }
+    public required ITransaction Transaction { get; init; }
+    required internal IConnection Connection { get; init; }
+    required internal IServiceProvider ServiceProvider { get; init; }
+    required internal bool OwnsTransaction { get; init; }
 
-    public static IJobTask<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly> Create(
+    /// <remarks>
+    /// Returns null <see cref="LoadoutItemGroup.ReadOnly"/> after running job
+    /// if supplied an external transaction via <paramref name="transaction"/>.
+    ///
+    /// (i.e. if you are running this job as part of a larger transaction)
+    /// </remarks>
+    public static IJobTask<InstallLoadoutItemJob, InstallLoadoutItemJobResult> Create(
         IServiceProvider serviceProvider,
         LibraryItem.ReadOnly libraryItem,
         LoadoutItemGroupId groupId,
         ILibraryItemInstaller? installer = null,
-        ILibraryItemInstaller? fallbackInstaller = null)
+        ILibraryItemInstaller? fallbackInstaller = null, 
+        ITransaction? transaction = null)
     {
-        var group = LoadoutItemGroup.Load(libraryItem.Db, groupId);
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+        var group = LoadoutItemGroup.Load(connection.Db, groupId);
         var job = new InstallLoadoutItemJob
         {
             Logger = serviceProvider.GetRequiredService<ILogger<InstallLoadoutItemJob>>(),
@@ -39,13 +49,15 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             LibraryItem = libraryItem,
             ParentGroupId = groupId,
             LoadoutId = group.AsLoadoutItem().LoadoutId,
-            Connection = serviceProvider.GetRequiredService<IConnection>(),
+            Connection = connection,
             ServiceProvider = serviceProvider,
+            Transaction = transaction ?? connection.BeginTransaction(),
+            OwnsTransaction = transaction is null,
         };
-        return serviceProvider.GetRequiredService<IJobMonitor>().Begin<InstallLoadoutItemJob, LoadoutItemGroup.ReadOnly>(job);
+        return serviceProvider.GetRequiredService<IJobMonitor>().Begin<InstallLoadoutItemJob, InstallLoadoutItemJobResult>(job);
     }
 
-    public async ValueTask<LoadoutItemGroup.ReadOnly> StartAsync(IJobContext<InstallLoadoutItemJob> context)
+    public async ValueTask<InstallLoadoutItemJobResult> StartAsync(IJobContext<InstallLoadoutItemJob> context)
     {
         await context.YieldAsync();
         
@@ -57,7 +69,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
 
         var result = await ExecuteInstallersAsync(installers, loadout, context);
 
-        if (!result.HasValue)
+        if (result == null)
         {
             if (Installer is AdvancedManualInstaller)
                 throw new InvalidOperationException($"Advanced installer did not succeed for `{LibraryItem.Name}` (`{LibraryItem.Id}`)");
@@ -65,27 +77,30 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             var fallbackInstaller = FallbackInstaller ?? AdvancedManualInstaller.Create(ServiceProvider);
             result = await ExecuteInstallersAsync([fallbackInstaller], loadout, context);
 
-            if (!result.HasValue)
-            {
+            if (result == null)
                 throw new InvalidOperationException($"Found no installer that supports `{LibraryItem.Name}` (`{LibraryItem.Id}`), including the fallback installer!");
-            }
         }
 
-        var (loadoutGroup, transaction) = result.Value;
-        using var tx = transaction;
-
         // TODO(erri120): rename this entity to something unique, like "LoadoutItemInstalledFromLibrary"
-        _ = new LibraryLinkedLoadoutItem.New(tx, loadoutGroup.Id)
+        var loadoutGroup = result!;
+        _ = new LibraryLinkedLoadoutItem.New(Transaction, loadoutGroup.Id)
         {
             LoadoutItemGroup = loadoutGroup,
             LibraryItemId = LibraryItem,
         };
-
-        var transactionResult = await transaction.Commit();
-        return transactionResult.Remap(loadoutGroup);
+        
+        if (OwnsTransaction)
+        {
+            var transactionResult = await Transaction.Commit();
+            Transaction.Dispose();
+            return new InstallLoadoutItemJobResult(transactionResult.Remap(loadoutGroup));
+        }
+        
+        // Part of an external transaction, so we return null.
+        return new InstallLoadoutItemJobResult(null);
     }
 
-    private async ValueTask<(LoadoutItemGroup.New, ITransaction transaction)?> ExecuteInstallersAsync(
+    private async ValueTask<LoadoutItemGroup.New?> ExecuteInstallersAsync(
         ILibraryItemInstaller[] installers,
         Loadout.ReadOnly loadout,
         IJobContext<InstallLoadoutItemJob> context)
@@ -95,7 +110,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             var isSupported = installer.IsSupportedLibraryItem(LibraryItem);
             if (!isSupported) continue;
 
-            var transaction = Connection.BeginTransaction();
+            var transaction = context.Definition.Transaction;
             var loadoutGroup = new LoadoutItemGroup.New(transaction, out var groupId)
             {
                 IsGroup = true,
@@ -112,16 +127,13 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             if (result.IsNotSupported(out var reason))
             {
                 if (Logger.IsEnabled(LogLevel.Trace) && !string.IsNullOrEmpty(reason))
-                {
                     Logger.LogTrace("Installer doesn't support library item `{LibraryItem}` because \"{Reason}\"", LibraryItem.Name, reason);
-                }
 
-                transaction.Dispose();
                 continue;
             }
 
             Debug.Assert(result.IsSuccess);
-            return (loadoutGroup, transaction);
+            return loadoutGroup;
         }
 
         return null;

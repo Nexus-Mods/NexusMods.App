@@ -190,7 +190,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         
         var modFile = FileSystem.GetKnownPath(KnownPath.EntryDirectory) / "Resources" / "TestMod.zip";
         var libraryFile = await LibraryService.AddLocalFile(modFile);
-        var mod = await LibraryService.InstallItem(libraryFile.AsLibraryFile().AsLibraryItem(), loadoutA);
+        var mod = (await LibraryService.InstallItem(libraryFile.AsLibraryFile().AsLibraryItem(), loadoutA)).LoadoutItemGroup!.Value;
         loadoutA = loadoutA.Rebase();
         
         LogDiskState(sb, "## 2 - Loadout A Mod Added",
@@ -204,8 +204,6 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """
             Loadout A has been synchronized, and the game folder should match the loadout.
             """, [loadoutA, loadoutB]);
-
-
         
         var testFilePath = new GamePath(LocationId.Game, "bin/x64/ThisIsATestFile.txt");
         var otherTestFilePath = new GamePath(LocationId.Game, "bin/x64/And Another One.txt");

@@ -3,14 +3,13 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using DynamicData.Aggregation;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Controls.Trees;
@@ -23,7 +22,6 @@ using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -42,6 +40,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CollectionToggleCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
+    public ILibraryService _LibraryService;
     
     [Reactive] public bool IsCollection { get; private set; } 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
@@ -68,6 +67,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
+        _LibraryService = serviceProvider.GetRequiredService<ILibraryService>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
 
         if (collectionGroupId.HasValue)
@@ -180,17 +180,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
                     .ToHashSet()
                     .Where(id => !IsRequired(id, connection))
+                    .Select(x => (LibraryLinkedLoadoutItemId)x.Value)
                     .ToArray();
 
                 if (ids.Length == 0) return;
-                using var tx = connection.BeginTransaction();
-
-                foreach (var id in ids)
-                {
-                    tx.Delete(id, recursive: true);
-                }
-
-                await tx.Commit();
+                await _LibraryService.RemoveLibraryItemsFromLoadout(ids);
             },
             awaitOperation: AwaitOperation.Sequential,
             initialCanExecute: false,
