@@ -1444,7 +1444,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(remappedLoadout.Installation, out var lastSyncedLoadoutId))
                 {
                     await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
-                    remappedLoadout.Rebase();
+                    remappedLoadout = remappedLoadout.Rebase();
                 }
                 else
                 {
@@ -1453,7 +1453,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     if (!lastSyncedLoadout.IsValid())
                     {
                         await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
-                        remappedLoadout.Rebase();
+                        remappedLoadout = remappedLoadout.Rebase();
                     }
                 }
                 return remappedLoadout;
