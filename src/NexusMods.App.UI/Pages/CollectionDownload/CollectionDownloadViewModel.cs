@@ -442,7 +442,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     public ulong TotalDownloads => _collection.TotalDownloads.ValueOr(0ul);
     public string Category => _collection.Category.Name;
     public Size TotalSize => _revision.TotalSize.ValueOr(Size.Zero);
-    public Percent OverallRating => Percent.CreateClamped(_revision.Collection.RecentRating.ValueOr(0));
+    public Percent OverallRating => Percent.Create(_revision.Collection.RecentRating.ValueOr(0), maximum: 100);
 
     public string AuthorName => _collection.Author.Name;
     public bool IsAdult => _revision.IsAdult.ValueOr(false);
