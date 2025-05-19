@@ -7,12 +7,12 @@ In this build, we're confident that we've got all the basics in place for player
 
 The app offers the following features:
 
-* Compatibility with the Steam and GOG Galaxy releases on Windows and Linux
-* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods (e.g. Cyber Engine Tweaks)
-* Support for collections
-* Health Check diagnostics for missing dependencies
-* Health Check diagnostics to help set up a Linux environment to mod the game
-* REDmod Load Order management and deployment
+* Compatibility with the Steam and GOG Galaxy releases on Windows and Linux.
+* Support for the most common types of mod: REDmod, archives, REDscript, and framework mods (e.g. Cyber Engine Tweaks).
+* Support for collections.
+* Health Check diagnostics for missing dependencies.
+* Health Check diagnostics to help set up a Linux environment to mod the game.
+* REDmod Load Order management and deployment.
 
 You can read more about the available features in the [documentation](https://nexus-mods.github.io/NexusMods.App/users/games/Cyberpunk2077/). 
 
@@ -28,28 +28,30 @@ When using multiple collections, the "All" section under "Installed Mods" will a
 This tab will be expanded in future to include other load-order or file-order rules related to the mods in your loadout or collection. 
 
 ## More Features
-* Updated the Health Check messages for Cyberpunk 2077 to match the structure of other diagnostic messages
+* Updated the Health Check messages for Cyberpunk 2077 to match the structure of other diagnostic messages.
 * When hovering the cursor to resize panels, a solid line will now appear to better indicate which panel will be adjusted.
 * The app now has its own minimise, maximise and close buttons, removing the operating system "chrome" and saving more vertical space. 
-* The tab bar is now hidden until there are at least two tabs in a panel
-* Tabs can now be closed with a  middle click 
-* Added mod thumbnails to the load order page
+* The tab bar is now hidden until there are at least two tabs in a panel.
+* Tabs can now be closed with a middle click.
+* Added mod thumbnails to the load order page.
 
 ## Technical Changes
-* Replaced the Stardew Valley preview UI elements with game-agnostic versions
-* Added the core backend frameworks required for the "Undo" feature
-* Added the core backend frameworks to allow the app to create and share collections
-* Improved the stability of downloads by requesting the entire file rather than using range requests
-* Use the recent rating for collections instead of "All time"
-* The app will now send headers with Nexus Mods requests to allow us to better track mod manager usage
+* Replaced the Stardew Valley preview UI elements with game-agnostic versions.
+* Added the core backend frameworks required for the "Undo" feature.
+* Added the core backend frameworks to allow the app to create and share collections.
+* Improved the stability of downloads by requesting the entire file rather than using range requests.
+* Use the recent rating for collections instead of "All time".
+* The app will now send headers with Nexus Mods requests to allow us to better track mod manager usage.
 
 ## Bug Fixes
-* Games can be unmanaged via the command line (thanks to Michael-Kowata on GitHub)
-* Fixed missing colours to represent added, removed, or changed files on the Preview Changes page
-* Fixed a crash when snapping to full screen with multiple panels open
-* Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game
-* When un-managing a game, loadouts for that game will be hidden to prevent a crash when trying to access them
-* Fixed a bug where copying a loadout could result in two loadouts with the same name
+* Games can be unmanaged via the command line (thanks to Michael-Kowata on GitHub).
+* Fixed missing colours to represent added, removed, or changed files on the Preview Changes page.
+* Fixed a crash when snapping to full screen with multiple panels open.
+* Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game.
+* When un-managing a game, loadouts for that game will be hidden to prevent a crash when trying to access them.
+* Fixed a bug where copying a loadout could result in two loadouts with the same name.
+* Fixed a bug where the app may incorrectly treat Premium users as free users for collection downloads if their session expires right as the download starts.
+* The app will now correctly close all background processes when exiting. This was preventing the UI from re-opening and blocking users on Linux from shutting down their system without manually killing the process.
 
 ## Known Issues
 * Collection success ratings will sometimes not match what is shown on the website.
@@ -72,7 +74,7 @@ The app offers the following features:
 
 * Compatibility with the Steam and GOG Galaxy releases on Windows and Linux.
 * Support for the most common types of mod: REDmod, archives, REDscript, and framework mods (e.g. Cyber Engine Tweaks).
-* Support for collections
+* Support for collections.
 * Health Check diagnostics for missing dependencies.
 * Health Check diagnostics to help set up a Linux environment to mod the game.
 * REDmod Load Order management and deployment.
