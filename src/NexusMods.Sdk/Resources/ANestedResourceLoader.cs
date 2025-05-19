@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Abstractions.Resources;
+namespace NexusMods.Sdk.Resources;
 
 /// <summary>
 /// Nested resource loader.
