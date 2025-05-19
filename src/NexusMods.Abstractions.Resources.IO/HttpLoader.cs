@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using JetBrains.Annotations;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.Resources.IO;
 
