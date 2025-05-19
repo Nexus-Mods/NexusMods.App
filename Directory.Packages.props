@@ -9,11 +9,11 @@
     <PackageVersion Include="Bannerlord.ModuleManager" Version="6.0.246" />
     <PackageVersion Include="BsDiff" Version="1.1.0" />
     <PackageVersion Include="LinqGen" Version="0.3.1" />
-    <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.5" />
     <PackageVersion Include="LinuxDesktopUtils.XDGDesktopPortal" Version="1.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.4.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.5.0" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.5.0" />
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.79" />
     <PackageVersion Include="NexusMods.Cascade" Version="0.12.0" />
@@ -91,20 +91,20 @@
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.2.0" />
-    <PackageVersion Include="System.IO.Hashing" Version="9.0.4" />
+    <PackageVersion Include="System.IO.Hashing" Version="9.0.5" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.Reactive" Version="6.0.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="9.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="9.0.5" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.2" />
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
     <PackageVersion Include="AutoFixture.Xunit2" Version="4.18.1" />
