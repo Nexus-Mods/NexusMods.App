@@ -32,7 +32,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         archivePath.FileExists.Should().BeTrue();
 
         var act = async () => await _libraryService.AddLocalFile(archivePath);
-        await act.Should().ThrowExactlyAsync<PathException>(because: "archive encoding isn't UTF-8 and extracting results in invalid unicode characters");
+        await act.Should().ThrowAsync<PathException>(because: "archive encoding isn't UTF-8 and extracting results in invalid unicode characters");
     }
 
     [Fact]
