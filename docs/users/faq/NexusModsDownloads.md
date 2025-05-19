@@ -3,7 +3,7 @@
 These issues most often occur when your PC is not correctly handling Nexus Mods `nxm://` links. These links are used for communication between your web browser and the app. To reset the connection, follow the instructions below.
 
 ## :fontawesome-brands-windows: Windows
-On a Windows PC, you can re-register the app to handle `nxm://` links by simply logging out and back in again. If this isn't working it may be related to your browser configuration, please see [Browsers](#browsers) for more. 
+On a Windows PC, you can re-register the app to handle `nxm://` links by simply closing and reopening the app. If this isn't working it may be related to your browser configuration, please see [Browsers](#browsers) for more. 
 
 ## :fontawesome-brands-linux: Linux
 On a Linux PC, you can check the default app for `nxm://` downloads and reset it following the instructions below:
@@ -12,6 +12,23 @@ On a Linux PC, you can check the default app for `nxm://` downloads and reset it
 - If this doesn't return `nexusmods-app-nxm.desktop` run this command:`xdg-settings set default-url-scheme-handler nxm nexusmods-app-nxm.desktop`.
 - Restart any open web browser windows to ensure the change is applied.
 - In your browser, when selecting what application should be used to open the nxm link, select **NexusMods.App NXM Handler**.
+
+### Setting up Gear Lever on Linux
+For Linux users who have the AppImage version of the app and are unable to resolve the registration issue using the commands above, we recommend [Gear Lever](https://github.com/mijorus/gearlever).
+
+1. Download and install Gear Level, preferable via a package manager such as [Flathub](https://flathub.org/en/apps/it.mijorus.gearlever). 
+2. Launch Gear Lever, then drag and drop the AppImage file for the app into the window.
+3. If required, click "Unblock" in the top-right of the screen to verify the AppImage. 
+4. Now the app will appear in your system menus like any other application downloaded from Flathub.
+
+??? tip "Verify Gear Lever is set up correctly"
+    To make sure the app is now able to handle downloads from the Nexus Mods website, you can run the following tests:
+
+    1. In your browser, type `nxm://premium` into the address bar and press enter.
+    2. In your terminal, type `xdg-open "nxm://premium"` and press enter.
+
+    In both cases, the Nexus Mods app should open or come into focus. 
+
 
 ## Browsers
 Depending on your choice of browser, there may be additional considerations when troubleshooting this issue. 
