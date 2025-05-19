@@ -23,6 +23,7 @@
         <PackageReference Include="Markdown.Avalonia.Tight" />
         <PackageReference Include="ObservableCollections.R3" />
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
+        <PackageReference Include="QoiSharp" />
         <PackageReference Include="R3" />
         <PackageReference Include="R3Extensions.Avalonia" />
         <PackageReference Include="ReactiveUI.Fody" />

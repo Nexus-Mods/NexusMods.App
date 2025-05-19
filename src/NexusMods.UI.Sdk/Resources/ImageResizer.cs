@@ -1,7 +1,7 @@
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using SkiaSharp;
 
-namespace NexusMods.Media;
+namespace NexusMods.UI.Sdk.Resources;
 
 public sealed class ImageResizer<TResourceIdentifier> : ANestedResourceLoader<TResourceIdentifier, SKBitmap, SKBitmap>
     where TResourceIdentifier : notnull
