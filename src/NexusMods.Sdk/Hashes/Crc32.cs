@@ -3,10 +3,9 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NexusMods.Hashing.xxHash3;
 using TransparentValueObjects;
 
-namespace NexusMods.Abstractions.Hashes;
+namespace NexusMods.Sdk.Hashes;
 
 /// <summary>
 /// A value representing a 32-bit Cyclic Redundancy Check (CRC) hash.

@@ -1,12 +1,9 @@
-using System.Buffers;
-using System.Buffers.Binary;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NexusMods.Hashing.xxHash3;
 
-namespace NexusMods.Abstractions.Hashes;
+namespace NexusMods.Sdk.Hashes;
 
 /// <summary>
 /// Json Converter for <see cref="Hash"/>.

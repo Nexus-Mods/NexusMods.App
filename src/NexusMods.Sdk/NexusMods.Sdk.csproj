@@ -3,8 +3,11 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
     <ItemGroup>
         <PackageReference Include="DynamicData" />
+        <PackageReference Include="NexusMods.Hashing.xxHash3" />
+        <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="Polly.Core" />
         <PackageReference Include="R3" />
+        <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

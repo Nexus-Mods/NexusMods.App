@@ -1,7 +1,7 @@
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.Hashes;
+namespace NexusMods.Sdk.Hashes;
 
 /// <summary>
 /// A grouping of multiple hashes for a single piece of data.

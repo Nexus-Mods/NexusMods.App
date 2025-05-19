@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace NexusMods.Abstractions.Hashes;
+namespace NexusMods.Sdk.Hashes;
 
 /// <summary>
 /// A MD5 hash, 16 bytes long.

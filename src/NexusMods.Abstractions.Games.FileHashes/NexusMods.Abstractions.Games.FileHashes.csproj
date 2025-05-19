@@ -14,7 +14,6 @@
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Hashes\NexusMods.Abstractions.Hashes.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
     </ItemGroup>
 
