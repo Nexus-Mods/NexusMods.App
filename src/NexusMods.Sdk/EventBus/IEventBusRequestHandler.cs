@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Abstractions.EventBus;
+namespace NexusMods.Sdk.EventBus;
 
 /// <summary>
 /// Handles requests by responding with a result.

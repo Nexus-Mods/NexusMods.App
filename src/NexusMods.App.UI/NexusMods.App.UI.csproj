@@ -94,7 +94,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Abstractions.EventBus\NexusMods.Abstractions.EventBus.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />

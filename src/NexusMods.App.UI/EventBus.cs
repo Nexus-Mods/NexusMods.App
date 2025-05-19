@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.EventBus;
+using NexusMods.Sdk.EventBus;
 using R3;
 
 namespace NexusMods.App.UI;

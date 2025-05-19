@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Platform.Storage;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.EventBus;
+using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
