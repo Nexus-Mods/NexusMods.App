@@ -1,6 +1,7 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.Resources.DB;
 

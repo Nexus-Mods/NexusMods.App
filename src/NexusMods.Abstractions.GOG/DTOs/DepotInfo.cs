@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 
