@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using Polly;
 using Polly.Fallback;
 
-namespace NexusMods.Abstractions.Resources.Resilience;
+namespace NexusMods.Sdk.Resources.Resilience;
 
 /// <summary>
 /// Extension methods.

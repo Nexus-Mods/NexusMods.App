@@ -99,7 +99,6 @@
         <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Resources.Resilience\NexusMods.Abstractions.Resources.Resilience.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
