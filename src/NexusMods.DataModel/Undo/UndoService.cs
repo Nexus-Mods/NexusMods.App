@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Collections.Frozen;
+using System.Threading.Channels;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
@@ -133,47 +135,61 @@ public class UndoService
         var currentDb = _conn.Db;
         var revertDb = _conn.AsOf(TxId.From(asOfId.Value));
         var ignoreAttrs = IgnoreAttributes.Select(a => currentDb.AttributeCache.GetAttributeId(a.Id)).ToFrozenSet();
-        var toProcess = new HashSet<EntityId>();
+        var toProcess = new ConcurrentBag<EntityId>();
         toProcess.Add(loadout);
 
         var tx = _conn.BeginTransaction();
-        var processed = new HashSet<EntityId>();
-        
+        var processed = new ConcurrentDictionary<EntityId, EntityId>();
+        //var toProcess = Channel.CreateUnbounded<EntityId>();
+
+        int taskCount = Environment.ProcessorCount;
         while (toProcess.Count > 0)
         {
-            var current = toProcess.First();
-            toProcess.Remove(current);
+            var processList = toProcess.ToList();
+            toProcess.Clear();
 
-            // Skip if the entity has already been processed
-            if (!processed.Add(current))
-                continue;
-            
-            // Skip if the entity is a transaction entity
-            if (current.Partition == PartitionId.Transactions)
-                continue;
+            var tasks = new Task[taskCount];
+            for (int i = 0; i < taskCount; i++)
+            {
+                var i1 = i;
+                tasks[i] = Task.Run(() =>
+                    {
+                        for (var idx = i1; idx < processList.Count; idx += taskCount)
+                        {
+                            var current = processList[idx];
+                            // Skip if the entity has already been processed
+                            if (!processed.TryAdd(current, current))
+                                continue;
 
+                            // Skip if the entity is a transaction entity
+                            if (current.Partition == PartitionId.Transactions)
+                                continue;
 
-            var desiredState = revertDb.Datoms(current);
-            var currentState = currentDb.Datoms(current);
+                            var desiredState = revertDb.Datoms(current);
+                            var currentState = currentDb.Datoms(current);
 
-
-            CompareEntities(current, currentState, processed, toProcess, desiredState, tx, ignoreAttrs);
-            ExtractBackReferences(currentDb, current, ignoreAttrs, processed, toProcess, revertDb);
+                            CompareEntities(current, currentState, processed,
+                                toProcess, desiredState, tx,
+                                ignoreAttrs
+                            );
+                            ExtractBackReferences(currentDb, current, ignoreAttrs,
+                                processed, toProcess, revertDb
+                            );
+                        }
+                    }
+                );
+            }
+            await Task.WhenAll(tasks);
         }
-
-        // Mark the transaction as a snapshot
-        tx.Add(EntityId.From(TxId.Tmp.Value), LoadoutSnapshot.Snapshot, loadout);
-
-        await tx.Commit();
     }
 
-    private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, HashSet<EntityId> processed, HashSet<EntityId> toProcess, IDb revertDb)
+    private static void ExtractBackReferences(IDb currentDb, EntityId current, FrozenSet<AttributeId> ignoreAttrs, ConcurrentDictionary<EntityId, EntityId> processed, ConcurrentBag<EntityId> toProcess, IDb revertDb)
     {
         var backReferenceDatoms = currentDb.Datoms(SliceDescriptor.CreateReferenceTo(current));
         var resolver = currentDb.AttributeCache;
         foreach (var datom in backReferenceDatoms)
         {
-            if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E) || datom.E.Partition == PartitionId.Transactions)
+            if (ignoreAttrs.Contains(datom.A) || processed.ContainsKey(datom.E) || datom.E.Partition == PartitionId.Transactions)
                 continue;
             
             toProcess.Add(datom.E);
@@ -182,13 +198,13 @@ public class UndoService
         var backReferenceDesiredState = revertDb.Datoms(SliceDescriptor.CreateReferenceTo(current));
         foreach (var datom in backReferenceDesiredState)
         {
-            if (ignoreAttrs.Contains(datom.A) || processed.Contains(datom.E)  || datom.E.Partition == PartitionId.Transactions)
+            if (ignoreAttrs.Contains(datom.A) || processed.ContainsKey(datom.E)  || datom.E.Partition == PartitionId.Transactions)
                 continue;
             toProcess.Add(datom.E);
         }
     }
 
-    private static void CompareEntities(EntityId current, EntitySegment currentState, HashSet<EntityId> processed, HashSet<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, FrozenSet<AttributeId> ignoreAttrs)
+    private static void CompareEntities(EntityId current, EntitySegment currentState, ConcurrentDictionary<EntityId, EntityId> processed, ConcurrentBag<EntityId> toProcess, EntitySegment desiredState, ITransaction tx, FrozenSet<AttributeId> ignoreAttrs)
     {
         
         foreach (var avData in currentState.GetAVEnumerable())
@@ -199,7 +215,7 @@ public class UndoService
             if (avData.ValueType == ValueTag.Reference)
             {
                 var value = EntityIdSerializer.Read(avData.Value.Span);
-                if (!processed.Contains(value) && value.Partition != PartitionId.Transactions)
+                if (!processed.ContainsKey(value) && value.Partition != PartitionId.Transactions)
                     toProcess.Add(value);
             }
                 
@@ -215,7 +231,7 @@ public class UndoService
             if (datom.ValueType == ValueTag.Reference)
             {
                 var value = EntityIdSerializer.Read(datom.Value.Span);
-                if (!processed.Contains(value) && value.Partition != PartitionId.Transactions) 
+                if (!processed.ContainsKey(value) && value.Partition != PartitionId.Transactions) 
                     toProcess.Add(value);
             }
                 

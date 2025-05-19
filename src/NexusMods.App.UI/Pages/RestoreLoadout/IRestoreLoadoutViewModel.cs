@@ -10,5 +10,5 @@ public interface IRestoreLoadoutViewModel : IPageViewModelInterface
 {
     public LoadoutId LoadoutId { get; set; }
     
-    public ReadOnlyObservableCollection<LoadoutRevisionWithStats> Revisions { get; }
+    public ReadOnlyObservableCollection<IRevisionViewModel> Revisions { get; }
 }

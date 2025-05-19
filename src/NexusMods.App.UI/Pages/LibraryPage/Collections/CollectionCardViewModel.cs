@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
@@ -85,7 +85,7 @@ public class CollectionCardViewModel : AViewModel<ICollectionCardViewModel>, ICo
     public ulong EndorsementCount => _collection.Endorsements.ValueOr(0ul);
     public ulong TotalDownloads => _collection.TotalDownloads.ValueOr(0ul);
     public Size TotalSize => _revision.TotalSize.ValueOr(Size.Zero);
-    public Percent OverallRating => Percent.CreateClamped(_revision.Collection.RecentRating.ValueOr(0));
+    public Percent OverallRating => Percent.Create(_revision.Collection.RecentRating.ValueOr(0), maximum: 100);
 
     public bool IsAdult => _revision.IsAdult.ValueOr(false);
     public string AuthorName => _collection.Author.Name;

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.BuildInfo;
 using NexusMods.Games.RedEngine;
@@ -33,6 +34,7 @@ public static class Startup
             .Combine(baseDirectory);
 
         return container
+            .AddSortableEntryModel()
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.61"))
             .AddRedEngineGames()

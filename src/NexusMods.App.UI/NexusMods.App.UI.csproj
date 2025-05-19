@@ -94,26 +94,25 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NexusMods.Abstractions.EventBus\NexusMods.Abstractions.EventBus.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusModsLibrary\NexusMods.Abstractions.NexusModsLibrary.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.Resources.Resilience\NexusMods.Abstractions.Resources.Resilience.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Games.Diagnostics\NexusMods.Abstractions.Games.Diagnostics.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GuidedInstallers\NexusMods.Abstractions.GuidedInstallers.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
+        <ProjectReference Include="..\NexusMods.DataModel\NexusMods.DataModel.csproj" />
         <ProjectReference Include="..\NexusMods.Extensions.DynamicData\NexusMods.Extensions.DynamicData.csproj" />
         <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.App.BuildInfo\NexusMods.App.BuildInfo.csproj" />
         <ProjectReference Include="..\NexusMods.App.Cli\NexusMods.App.Cli.csproj" />
         <ProjectReference Include="..\NexusMods.Collections\NexusMods.Collections.csproj" />
         <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
-        <ProjectReference Include="..\NexusMods.Media\NexusMods.Media.csproj" />
         <ProjectReference Include="..\NexusMods.Networking.GitHub\NexusMods.Networking.GitHub.csproj" />
         <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
+        <ProjectReference Include="..\NexusMods.UI.Sdk\NexusMods.UI.Sdk.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -384,6 +383,9 @@
         <Compile Update="Controls\TreeDataGrid\ComponentKey.cs">
             <DependentUpon>CompositeItemModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Controls\TreeDataGrid\UInt32Component.cs">
+            <DependentUpon>CompositeItemModel.cs</DependentUpon>
+        </Compile>
         <Compile Update="Controls\Trees\Files\FileTreeNodeViewModel.cs">
           <DependentUpon>IFileTreeNodeViewModel.cs</DependentUpon>
         </Compile>
@@ -565,9 +567,6 @@
         <Compile Update="Controls\LoadoutBadge\LoadoutBadgeViewModel.cs">
           <DependentUpon>ILoadoutBadgeViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\Trees\LoadoutItemGroupFileTreeViewModel.cs">
-          <DependentUpon>IFileTreeViewModel.cs</DependentUpon>
-        </Compile>
         <Compile Update="Pages\LoadoutGroupFiles\LoadoutGroupFilesViewModel.cs">
           <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
         </Compile>
@@ -585,12 +584,6 @@
         </Compile>
         <Compile Update="Pages\LoadoutPage\LoadoutViewModel.cs">
           <DependentUpon>ILoadoutViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeViewModel.cs">
-          <DependentUpon>IItemContentsFileTreeViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\ItemContentsFileTreeView.cs">
-          <DependentUpon>ItemContentsFileTreeView.axaml</DependentUpon>
         </Compile>
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkView.axaml.cs">
           <DependentUpon>MessageBoxOkCancelView.axaml</DependentUpon>
@@ -740,8 +733,8 @@
         <Compile Update="Pages\ProtocolRegistration\ProtocolRegistrationTestPageViewModel.cs">
           <DependentUpon>IProtocolRegistrationTestPageViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Pages\ItemContentsFileTree\New\ViewLoadoutGroupFiles\ViewLoadoutGroupFilesViewModel.cs">
-          <DependentUpon>IViewLoadoutGroupFilesViewModel.cs</DependentUpon>
+        <Compile Update="Pages\LoadoutGroupFilesPage\LoadoutGroupFilesView.cs">
+          <DependentUpon>LoadoutGroupFilesView.axaml</DependentUpon>
         </Compile>
         <Compile Update="Pages\RestoreLoadout\RestoreLoadoutViewModel.cs">
           <DependentUpon>IRestoreLoadoutViewModel.cs</DependentUpon>

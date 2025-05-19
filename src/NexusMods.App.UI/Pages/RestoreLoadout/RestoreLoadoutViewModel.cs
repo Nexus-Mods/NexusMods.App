@@ -19,8 +19,8 @@ public class RestoreLoadoutViewModel : APageViewModel<IRestoreLoadoutViewModel>,
     private readonly IConnection _conn;
 
     
-    private ReadOnlyObservableCollection<LoadoutRevisionWithStats> _revisions = new(new ObservableCollection<LoadoutRevisionWithStats>());
-    public ReadOnlyObservableCollection<LoadoutRevisionWithStats> Revisions => _revisions;
+    private ReadOnlyObservableCollection<IRevisionViewModel> _revisions = new([]);
+    public ReadOnlyObservableCollection<IRevisionViewModel> Revisions => _revisions;
     
     public RestoreLoadoutViewModel(IWindowManager windowManager, UndoService undoService, IConnection connection) : base(windowManager)
     {
@@ -31,6 +31,8 @@ public class RestoreLoadoutViewModel : APageViewModel<IRestoreLoadoutViewModel>,
         {
             _conn.Topology
                 .Observe(_undoService.Revisions.Where(l => l.LoadoutId == LoadoutId.Value))
+                .OnUI()
+                .Transform(vm => (IRevisionViewModel)new RevisionViewModel(vm, _undoService))
                 .Bind(out _revisions)
                 .Subscribe()
                 .DisposeWith(d);

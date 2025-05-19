@@ -134,6 +134,11 @@ public readonly struct GamePath : IPath<GamePath>, IEquatable<GamePath>, ICompar
     /// is allowed to be a temporary id and will be replaced with the actual id the value is transacted
     /// </summary>
     public (EntityId, LocationId, RelativePath) ToGamePathParentTuple(EntityId id) => (id, LocationId, Path);
+
+    /// <summary>
+    /// Gives you an empty path.
+    /// </summary>
+    public static GamePath Empty(LocationId locationId) => new(locationId, RelativePath.Empty);
 }
 
 /// <summary>

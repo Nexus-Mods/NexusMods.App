@@ -10,7 +10,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
@@ -47,6 +47,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly IOSInformation _os;
     private readonly ISorter _sorter;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
+    private readonly ISynchronizerService _synchronizerService;
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
@@ -71,7 +72,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IGarbageCollectorRunner garbageCollectorRunner)
     {
         _serviceProvider = serviceProvider;
+        _synchronizerService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        
         _fileHashService = fileHashService;
 
         Logger = logger;
@@ -353,7 +356,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
-        var metadata = await ReindexState(loadout.InstallationInstance, Connection);
+        var metadata = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
         return BuildSyncTree(DiskStateToPathPartPair(metadata.DiskStateEntries), DiskStateToPathPartPair(previouslyApplied), loadout);
     }
@@ -538,7 +541,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Delete all the matching override files
         foreach (var file in toDelete)
         {
-            tx.Delete(file, false);
+            tx.Delete(file, recursive: false);
 
             // The backed up file is being 'promoted' to a game file, which needs
             // to be rooted explicitly in case the user uses a feature like 'undo'
@@ -697,7 +700,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         continue;
 
                     // If we found a match, we need to remove the entity itself
-                    tx.Delete(match, false);
+                    tx.Delete(match, recursive: false);
                     continue;
                 }
             }
@@ -916,11 +919,11 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         return await RunActions(tree, loadout);
     }
 
-    public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation)
+    public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDates)
     {
         // Make sure the file hashes are up to date
         await _fileHashService.GetFileHashesDb();
-        return await ReindexState(gameInstallation, Connection);
+        return await ReindexState(gameInstallation, ignoreModifiedDates, Connection);
     }
 
     /// <summary>
@@ -1209,14 +1212,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Reindex the state of the game, running a transaction if changes are found
     /// </summary>
-    private async Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation, IConnection connection)
+    private async Task<GameInstallMetadata.ReadOnly> ReindexState(GameInstallation installation, bool ignoreModifiedDates, IConnection connection)
     {        
         using var _ = await _lock.LockAsync();
         var originalMetadata = installation.GetMetadata(connection);
         using var tx = connection.BeginTransaction();
 
         // Index the state
-        var changed = await ReindexState(installation, connection, tx);
+        var changed = await ReindexState(installation, ignoreModifiedDates, connection, tx);
         
         if (!originalMetadata.Contains(GameInstallMetadata.InitialDiskStateTransaction))
         {
@@ -1227,6 +1230,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (changed)
         {
+            tx.Add(installation.GameMetadataId, GameInstallMetadata.LastScannedDiskStateTransactionId, EntityId.From(TxId.Tmp.Value));
             await tx.Commit();
         }
         
@@ -1236,7 +1240,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <summary>
     /// Reindex the state of the game
     /// </summary>
-    public async Task<bool> ReindexState(GameInstallation installation, IConnection connection, ITransaction tx)
+    public async Task<bool> ReindexState(GameInstallation installation, bool ignoreModifiedDates, IConnection connection, ITransaction tx)
     {
         var hashDb = await _fileHashService.GetFileHashesDb();
 
@@ -1270,50 +1274,61 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
             await Parallel.ForEachAsync(locationPath.EnumerateFiles(), async (file, token) =>
             {
-                var gamePath = installation.LocationsRegister.ToGamePath(file);
-                if (ShouldIgnorePathWhenIndexing(gamePath)) return;
-
-                bool isNewPath;
-                lock (seenPathsLock)
+                try
                 {
-                    isNewPath = seenPaths.Add(gamePath);
-                }
+                    var gamePath = installation.LocationsRegister.ToGamePath(file);
+                    if (ShouldIgnorePathWhenIndexing(gamePath)) return;
 
-                if (!isNewPath)
-                {
-                    Logger.LogDebug("Skipping already indexed file at `{Path}`", file);
-                    return;
-                }
-
-                if (previousDiskState.TryGetValue(gamePath, out var previousDiskStateEntry))
-                {
-                    var fileInfo = file.FileInfo;
-                    var writeTimeUtc = new DateTimeOffset(fileInfo.LastWriteTimeUtc);
-
-                    // If the files don't match, update the entry
-                    if (writeTimeUtc != previousDiskStateEntry.LastModified || fileInfo.Size != previousDiskStateEntry.Size)
+                    bool isNewPath;
+                    lock (seenPathsLock)
                     {
-                        var newHash = await MaybeHashFile(hashDb, gamePath, file, fileInfo, token);
-                        tx.Add(previousDiskStateEntry.Id, DiskStateEntry.Size, fileInfo.Size);
-                        tx.Add(previousDiskStateEntry.Id, DiskStateEntry.Hash, newHash);
-                        tx.Add(previousDiskStateEntry.Id, DiskStateEntry.LastModified, writeTimeUtc);
+                        isNewPath = seenPaths.Add(gamePath);
+                    }
+
+                    if (!isNewPath)
+                    {
+                        Logger.LogDebug("Skipping already indexed file at `{Path}`", file);
+                        return;
+                    }
+
+                    if (previousDiskState.TryGetValue(gamePath, out var previousDiskStateEntry))
+                    {
+                        var fileInfo = file.FileInfo;
+                        var writeTimeUtc = new DateTimeOffset(fileInfo.LastWriteTimeUtc);
+
+                        // If the files don't match, update the entry
+                        if (writeTimeUtc != previousDiskStateEntry.LastModified || fileInfo.Size != previousDiskStateEntry.Size || ignoreModifiedDates)
+                        {
+                            var newHash = await MaybeHashFile(hashDb, gamePath, file,
+                                fileInfo, token
+                            );
+                            tx.Add(previousDiskStateEntry.Id, DiskStateEntry.Size, fileInfo.Size);
+                            tx.Add(previousDiskStateEntry.Id, DiskStateEntry.Hash, newHash);
+                            tx.Add(previousDiskStateEntry.Id, DiskStateEntry.LastModified, writeTimeUtc);
+                            hasDiskStateChanged = true;
+                        }
+                    }
+                    else
+                    {
+                        var newHash = await MaybeHashFile(hashDb, gamePath, file,
+                            file.FileInfo, token
+                        );
+
+                        _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
+                        {
+                            Path = gamePath.ToGamePathParentTuple(gameInstallMetadata.Id),
+                            Hash = newHash,
+                            Size = file.FileInfo.Size,
+                            LastModified = file.FileInfo.LastWriteTimeUtc,
+                            GameId = gameInstallMetadata.Id,
+                        };
+
                         hasDiskStateChanged = true;
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    var newHash = await MaybeHashFile(hashDb, gamePath, file, file.FileInfo, token);
-
-                    _ = new DiskStateEntry.New(tx, tx.TempId(DiskStateEntry.EntryPartition))
-                    {
-                        Path = gamePath.ToGamePathParentTuple(gameInstallMetadata.Id),
-                        Hash = newHash,
-                        Size = file.FileInfo.Size,
-                        LastModified = file.FileInfo.LastWriteTimeUtc,
-                        GameId = gameInstallMetadata.Id,
-                    };
-
-                    hasDiskStateChanged = true;
+                    throw ex;
                 }
             });
         }
@@ -1333,6 +1348,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private async ValueTask<Hash> MaybeHashFile(IDb hashDb, GamePath gamePath, AbsolutePath file, IFileEntry fileInfo, CancellationToken token)
     {
         Hash? diskMinimalHash = null;
+
+        var foundHash = Hash.Zero;
+        var needFullHash = true;
         
         // Look for all known files that match the path
         foreach (var matchingPath in PathHashRelation.FindByPath(hashDb, gamePath.Path))
@@ -1346,10 +1364,26 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             diskMinimalHash ??= await MultiHasher.MinimalHash(file, token);
 
             if (hash.MinimalHash == diskMinimalHash)
-                return hash.XxHash3;
-        }
+            {
+                // We previously found a hash that matches the minimal hash, make sure the xxHash3 matches, otherwise we 
+                // have a hash collision
+                if (foundHash != Hash.Zero && foundHash != hash.XxHash3)
+                {
+                    // We have a hash collision, so we need to do a full hash
+                    needFullHash = true;
+                    break;
+                }
 
-        Logger.LogDebug("Didn't find matching hash data for file `{Path}`, falling back to doing a full hash", file);
+                // Store the hash
+                foundHash = hash.XxHash3;
+                needFullHash = false;
+            }
+        }
+        
+        if (!needFullHash)
+            return foundHash;
+
+        Logger.LogDebug("Didn't find matching hash data for file `{Path}` or found multiple matches, falling back to doing a full hash", file);
         return await file.XxHash3Async(token: token);
     }
 
@@ -1417,7 +1451,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 // If there is no currently synced loadout, then we can ingest the game folder
                 if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(remappedLoadout.Installation, out var lastSyncedLoadoutId))
                 {
-                    remappedLoadout = await Synchronize(remappedLoadout);
+                    await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
+                    remappedLoadout = remappedLoadout.Rebase();
                 }
                 else
                 {
@@ -1425,7 +1460,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     var lastSyncedLoadout = Loadout.Load(remappedLoadout.Db, lastSyncedLoadoutId);
                     if (!lastSyncedLoadout.IsValid())
                     {
-                        remappedLoadout = await Synchronize(lastSyncedLoadout);
+                        await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
+                        remappedLoadout = remappedLoadout.Rebase();
                     }
                 }
                 return remappedLoadout;
@@ -1468,7 +1504,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ActivateLoadout(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
-        var reindexed = await ReindexState(loadout.InstallationInstance, Connection);
+        var reindexed = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
         
         var tree = BuildSyncTree(DiskStateToPathPartPair(reindexed.DiskStateEntries), DiskStateToPathPartPair(reindexed.DiskStateEntries), loadout);
         ProcessSyncTree(tree);
@@ -1528,7 +1564,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 foreach (var file in GameBackedUpFile.All(Connection.Db))
                 {
                     if (file.GameInstallId.Value == installation.GameMetadataId)
-                        tx.Delete(file, false);
+                        tx.Delete(file, recursive: false);
                 }
 
                 await tx.Commit();
@@ -1599,7 +1635,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 datom.ValueSpan.CopyTo(buffer.Span);
                 
                 // Create the new datom and reference the copied value
-                var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, false, datom.Prefix.ValueTag);
+                var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, isRetract: false, datom.Prefix.ValueTag);
                 var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
                 
                 // Remap any entity ids in the value
@@ -1658,10 +1694,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         using var tx = Connection.BeginTransaction();
-        tx.Delete(loadoutId, false);
+        tx.Delete(loadoutId, recursive: false);
         foreach (var item in loadout.Items)
         {
-            tx.Delete(item.Id, false);
+            tx.Delete(item.Id, recursive: false);
         }
         await tx.Commit();
         
@@ -1672,7 +1708,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds)
     {
         var gameState = _fileHashService.GetGameFiles((installation.Store, locatorIds));
-        var metaData = await ReindexState(installation, Connection);
+        var metaData = await ReindexState(installation, ignoreModifiedDates: false, Connection);
 
         List<PathPartPair> diskState = [];
 

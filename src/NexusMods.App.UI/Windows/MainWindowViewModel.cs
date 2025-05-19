@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Platform.Storage;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.EventBus;
+using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
@@ -182,7 +182,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         if (!loadoutId.HasValue) return Optional<(LoadoutId, WorkspaceId)>.None;
 
         var workspaceViewModel = workspaceController.ChangeOrCreateWorkspaceByContext(
-            predicate: loadoutContext => IsCorrectLoadoutForGame(loadoutContext.LoadoutId, gameId),
+            predicate: loadoutContext => loadoutContext.LoadoutId.Equals(loadoutId.Value),
             getPageData: () => Optional<PageData>.None,
             getWorkspaceContext: () => new LoadoutContext
             {

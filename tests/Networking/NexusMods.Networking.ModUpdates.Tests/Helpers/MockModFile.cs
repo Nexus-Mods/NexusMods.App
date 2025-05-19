@@ -1,5 +1,7 @@
 using NexusMods.Networking.ModUpdates.Traits;
 
+namespace NexusMods.Networking.ModUpdates.Tests.Helpers;
+
 /// <summary>
 /// Represents a mock mod page for testing
 /// </summary>

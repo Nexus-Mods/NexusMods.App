@@ -19,8 +19,8 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
-using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.RestoreLoadout;
 using NexusMods.App.UI.Resources;
@@ -271,8 +271,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                             WorkspaceId,
                             new PageData
                             {
-                                FactoryId = ItemContentsFileTreePageFactory.StaticId,
-                                Context = new ItemContentsFileTreePageContext
+                                FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+                                Context = new LoadoutGroupFilesPageContext
                                 {
                                     GroupIds = [ group.LoadoutItemGroupId ],
                                     IsReadOnly = false,

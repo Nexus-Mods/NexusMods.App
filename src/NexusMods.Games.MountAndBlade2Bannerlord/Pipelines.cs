@@ -3,7 +3,7 @@ using System.Xml;
 using Bannerlord.ModuleManager;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;

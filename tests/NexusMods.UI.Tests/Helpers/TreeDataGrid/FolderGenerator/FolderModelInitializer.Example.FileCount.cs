@@ -1,9 +1,9 @@
+using System.Reactive.Linq;
 using FluentAssertions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
-using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Paths;
 using DynamicData.Aggregation;
+using NexusMods.Abstractions.GameLocators;
 
 namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 
@@ -13,8 +13,10 @@ namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 /// </summary>
 public class FileCountAggregationTests
 {
-    private readonly IncrementingNumberGenerator _generator = new();
-    
+#pragma warning disable CA2211
+    public static readonly ComponentKey ComponentKey = ComponentKey.From("FileCount"); 
+#pragma warning restore CA2211
+
     [Fact]
     public void FileCountInitializer_ShouldTrackRecursiveFileCount()
     {
@@ -31,20 +33,17 @@ public class FileCountAggregationTests
         // └── folder2
         //     └── file4.txt
         
-        var fileId1 = EntityId.From(1UL);
-        var fileId2 = EntityId.From(2UL);
-        var fileId3 = EntityId.From(3UL);
-        var fileId4 = EntityId.From(4UL);
+        var locationId = LocationId.From(1);
         
-        var file1Path = (RelativePath)"folder1/file1.txt";
-        var file2Path = (RelativePath)"folder1/file2.txt";
-        var file3Path = (RelativePath)"folder1/subfolder/file3.txt";
-        var file4Path = (RelativePath)"folder2/file4.txt";
+        var file1Path = new GamePath(locationId, "folder1/file1.txt");
+        var file2Path = new GamePath(locationId, "folder1/file2.txt");
+        var file3Path = new GamePath(locationId, "folder1/subfolder/file3.txt");
+        var file4Path = new GamePath(locationId, "folder2/file4.txt");
         
-        var file1Model = CreateFileModel(fileId1);
-        var file2Model = CreateFileModel(fileId2);
-        var file3Model = CreateFileModel(fileId3);
-        var file4Model = CreateFileModel(fileId4);
+        var file1Model = CreateFileModel(file1Path);
+        var file2Model = CreateFileModel(file2Path);
+        var file3Model = CreateFileModel(file3Path);
+        var file4Model = CreateFileModel(file4Path);
         
         // Add files to the tree
         generator.OnReceiveFile(file1Path, file1Model);
@@ -53,19 +52,19 @@ public class FileCountAggregationTests
         generator.OnReceiveFile(file4Path, file4Model);
         
         // Get folder models
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
-        var folder1 = generator.GetOrCreateFolder("folder1", _generator, out _, out _);
-        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", _generator, out _, out _);
-        var folder2 = generator.GetOrCreateFolder("folder2", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
+        var folder2 = generator.GetOrCreateFolder(new GamePath(locationId, "folder2"), out _);
         
         // Act - verify file counts
         
         // Assert
         // The FileCount component should be populated with the correct counts
-        rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(4); // All 4 files
-        folder1.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(3);    // file1, file2, file3
-        subfolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);  // file3
-        folder2.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);    // file4
+        rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(4); // All 4 files
+        folder1.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(3);    // file1, file2, file3
+        subfolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);  // file3
+        folder2.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);    // file4
     }
     
     [Fact]
@@ -75,33 +74,32 @@ public class FileCountAggregationTests
         var generator = CreateGenerator();
         
         // Create initial structure with one file
-        var fileId1 = EntityId.From(1UL);
-        var file1Path = (RelativePath)"folder1/file1.txt";
-        var file1Model = CreateFileModel(fileId1);
+        var locationId = LocationId.From(1);
+        var file1Path = new GamePath(locationId, "folder1/file1.txt");
+        var file1Model = CreateFileModel(file1Path);
         
         generator.OnReceiveFile(file1Path, file1Model);
         
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
-        var folder1 = generator.GetOrCreateFolder("folder1", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
         
         // Initial counts
-        rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);
-        folder1.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);
+        rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
+        folder1.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
         
         // Act - Add another file
-        var fileId2 = EntityId.From(2UL);
-        var file2Path = (RelativePath)"folder1/subfolder/file2.txt";
-        var file2Model = CreateFileModel(fileId2);
+        var file2Path = new GamePath(locationId, "folder1/subfolder/file2.txt");
+        var file2Model = CreateFileModel(file2Path);
         
         generator.OnReceiveFile(file2Path, file2Model);
         
         // Get reference to the new subfolder
-        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", _generator, out _, out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
         
         // Assert - Counts should be updated
-        rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(2);
-        folder1.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(2);
-        subfolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);
+        rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(2);
+        folder1.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(2);
+        subfolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
     }
     
     [Fact]
@@ -111,79 +109,72 @@ public class FileCountAggregationTests
         var generator = CreateGenerator();
         
         // Setup test structure
-        var fileId1 = EntityId.From(1UL);
-        var fileId2 = EntityId.From(2UL);
+        var locationId = LocationId.From(1);
         
-        var file1Path = (RelativePath)"folder1/file1.txt";
-        var file2Path = (RelativePath)"folder1/subfolder/file2.txt";
+        var file1Path = new GamePath(locationId, "folder1/file1.txt");
+        var file2Path = new GamePath(locationId, "folder1/subfolder/file2.txt");
         
-        var file1Model = CreateFileModel(fileId1);
-        var file2Model = CreateFileModel(fileId2);
+        var file1Model = CreateFileModel(file1Path);
+        var file2Model = CreateFileModel(file2Path);
         
         generator.OnReceiveFile(file1Path, file1Model);
         generator.OnReceiveFile(file2Path, file2Model);
         
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
-        var folder1 = generator.GetOrCreateFolder("folder1", _generator, out _, out _);
-        var subfolder = generator.GetOrCreateFolder("folder1/subfolder", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = generator.GetOrCreateFolder(new GamePath(locationId, "folder1"), out _);
+        var subfolder = generator.GetOrCreateFolder(new GamePath(locationId, "folder1/subfolder"), out _);
         
         // Verify initial counts
-        rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(2);
-        folder1.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(2);
-        subfolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);
+        rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(2);
+        folder1.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(2);
+        subfolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
         
         // Act - Remove a file
         generator.OnDeleteFile(file2Path, file2Model);
         
         // Assert - Counts should be updated
-        rootFolder.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);
-        folder1.Model.Get<ValueComponent<int>>(FileCountComponentKey.Key).Value.Value.Should().Be(1);
+        rootFolder.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
+        folder1.Model.Get<UInt32Component>(ComponentKey).Value.Value.Should().Be(1);
         
         // subfolder should have been removed since it's empty
-        var folderExists = folder1.Folders.Lookup("subfolder").HasValue;
+        var folderExists = folder1.Folders.Lookup(new GamePath(locationId, "folder1/subfolder")).HasValue;
         folderExists.Should().BeFalse();
     }
     
     // Helper methods
-    private TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer> CreateGenerator()
+    private TreeFolderGeneratorForLocationId<GamePathTreeItemWithPath, FileCountFolderModelInitializer> CreateGenerator()
     {
-        return new TreeFolderGeneratorForLocationId<ITreeItemWithPath, FileCountFolderModelInitializer>("", _generator);
+        return new TreeFolderGeneratorForLocationId<GamePathTreeItemWithPath, FileCountFolderModelInitializer>(GamePath.Empty(LocationId.From(1)));
     }
     
-    private static CompositeItemModel<EntityId> CreateFileModel(EntityId id)
+    private static CompositeItemModel<GamePath> CreateFileModel(GamePath gamePath)
     {
-        return new CompositeItemModel<EntityId>(id);
+        return new CompositeItemModel<GamePath>(gamePath);
     }
-}
-
-public static class FileCountComponentKey
-{
-    public static readonly ComponentKey Key = ComponentKey.From("FileCount");
 }
 
 /// <summary>
 /// A custom folder model initializer that adds a FileCount component to track the number of files
 /// recursively within a folder.
 /// </summary>
-public class FileCountFolderModelInitializer : IFolderModelInitializer<ITreeItemWithPath>
+public class FileCountFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
 {
     /// <inheritdoc/>
     public static void InitializeModel<TFolderModelInitializer>(
-        CompositeItemModel<EntityId> model,
-        GeneratedFolder<ITreeItemWithPath, TFolderModelInitializer> folder)
-        where TFolderModelInitializer : IFolderModelInitializer<ITreeItemWithPath>
+        CompositeItemModel<GamePath> model,
+        GeneratedFolder<GamePathTreeItemWithPath, TFolderModelInitializer> folder)
+        where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
     {
-        // Create an observable of file counts from the recursive file list
         var fileCountObservable = folder.GetAllFilesRecursiveObservable()
-            .Count(); // Note(sewer): This is DynamicData's Count. Not Reactive's !!
+            .Count() // Note(sewer): This is DynamicData's Count. Not Reactive's !!
+            .Select(x => (uint)x);
 
-        // Add a ValueComponent that will update automatically when the observed count changes
-        var component = new ValueComponent<int>(
+        var component = new UInt32Component(
             initialValue: 0,
             valueObservable: fileCountObservable,
             subscribeWhenCreated: true,
             observeOutsideUiThread: true
         );
-        model.Add(FileCountComponentKey.Key, component);
+        model.Add(FileCountAggregationTests.ComponentKey, component);
     }
 }
