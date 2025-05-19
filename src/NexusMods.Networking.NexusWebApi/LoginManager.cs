@@ -79,7 +79,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
     private readonly SemaphoreSlim _verifySemaphore = new(initialCount: 1, maxCount: 1);
     private readonly IConnection _conn;
 
-    private async Task<UserInfo?> Verify(CancellationToken cancellationToken)
+    private async ValueTask<UserInfo?> Verify(CancellationToken cancellationToken)
     {
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
@@ -98,10 +98,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
     }
 
     /// <inheritdoc />
-    public async Task<UserInfo?> GetUserInfoAsync(CancellationToken token)
-    {
-        return await Verify(token);
-    }
+    public ValueTask<UserInfo?> GetUserInfoAsync(CancellationToken token) => Verify(token);
 
     /// <inheritdoc />
     public async Task<bool> GetIsUserLoggedInAsync(CancellationToken token = default)
