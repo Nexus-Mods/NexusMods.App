@@ -55,7 +55,7 @@ This tab will be expanded in future to include other load-order or file-order ru
 * Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game.
 * When un-managing a game, loadouts for that game will be hidden to prevent a crash when trying to access them.
 * Fixed a bug where copying a loadout could result in two loadouts with the same name.
-* Fixed a bug where the app may incorrectly treat Premium users as free users for collection downloads if their session expires right as the download starts.
+* Fixed a bug where the app may incorrectly treat Premium users as free users if the app had been open for over an hour.
 * The app will now correctly close all background processes when exiting. This was preventing the UI from re-opening and blocking users on Linux from shutting down their system without manually killing the process.
 
 ## Known Issues
