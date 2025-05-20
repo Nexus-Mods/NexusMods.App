@@ -117,8 +117,12 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         using var sr = new StreamReader(stream, encoding: Encoding.UTF8);
 
         var text = await sr.ReadToEndAsync(cancellationToken);
-        text = text.Replace(ExecuteParameterPlaceholder, EscapeDesktopExecFilePath(_osInterop.GetOwnExe()));
-        text = text.Replace(TryExecuteParameterPlaceholder, EscapeDesktopFilePath(_osInterop.GetOwnExe()));
+        // Note(sewer): Temporarily using `_osInterop.GetOwnExe()` because paths library will replace backslashes
+        //              in path with forward slashes. And backslash is a valid character in file/folder names.
+        // <INSERT ISSUE LINK HERE>
+        var processPath = Environment.ProcessPath!;
+        text = text.Replace(ExecuteParameterPlaceholder, EscapeDesktopExecFilePath(processPath));
+        text = text.Replace(TryExecuteParameterPlaceholder, EscapeDesktopFilePath(processPath));
 
         await filePath.WriteAllTextAsync(text, cancellationToken);
     }
@@ -140,6 +144,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
     }
 
+    // Note(sewer)
     // For the exec field. Quoted relevant parts below.
     // https://specifications.freedesktop.org/desktop-entry-spec/latest/exec-variables.html
     //
@@ -150,22 +155,57 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     // Quoting must be done by enclosing the argument between double quotes and escaping the double quote
     // character, backtick character ("`"), dollar sign ("$") and backslash character ("\") by preceding
     // it with an additional backslash character.
-    private string EscapeDesktopExecFilePath(AbsolutePath path)
+    private string EscapeDesktopExecFilePath(string path)
     {
-        var nativePath = path.ToNativeSeparators(_fileSystem.OS);
+        // Note(sewer): Both the base rules for `EscapeDesktopFilePath` and
+        // those in `EscapeDesktopExecFilePath` (as documented above both functions) 
+        // apply here. At first I was unsure about this, so I've done rigorous testing
+        // with real DEs.
+
+        // First apply the base rules from `string` and `localstring`.
+        var escapedBasePath = EscapeDesktopFilePath(path);
+
+        // Note(sewer): 
+        //
+        // The docs say:
+        // > Arguments may be quoted in whole. If an argument contains a reserved character the argument must be quoted.
+        //
+        // > Reserved characters are space (" "), tab, newline, double quote, single quote ("'"), backslash character ("\"),
+        // > greater-than sign (">"), less-than sign ("<"), tilde ("~"), vertical bar ("|"), ampersand ("&"), semicolon (";"),
+        // > dollar sign ("$"), asterisk ("*"), question mark ("?"), hash mark ("#"), parenthesis ("(") and (")") and backtick character ("`"). 
         
         // 'by preceding it with an additional backslash character.'
-        var escapedPath = nativePath
+        var escapedPath = escapedBasePath
             .Replace("\"", @"\""") // 'and escaping the double quote character'
             .Replace("`", @"\`") // backtick character ("`")
             .Replace("$", @"\$") // dollar sign ("$")
-            .Replace(@"\", @"\\");  // and backslash character ("\")
-            
-            
+            .Replace(@"\", @"\\"); // and backslash character ("\")
+   
+        // Note(sewer): Quoting the spec
+        // 
+        // > Note that the general escape rule for values of type string states that the backslash
+        //   character can be escaped as ("\\") as well and that this escape rule is applied before
+        //   the quoting rule. As such, to unambiguously represent a literal backslash character in
+        //   a quoted argument in a desktop entry file requires the use of four successive backslash
+        //   characters ("\\\\").
+        // 
+        // So doing this escape twice, both in this and other function is by design.
+        
+        // Note(sewer): The spec says
+        //
+        // > Likewise, a literal dollar sign in a quoted argument in a desktop
+        //   entry file is unambiguously represented with ("\\$"). 
+        //
+        // So we go from `$` to `\$`.
+        // And then from `\$` to `\\$`.
+        // 
+        // As per the spec, this is not a bug, this is intended behaviour.
+        
         // Enclose the entire path in double quotes
         return $"\"{escapedPath}\"";
     }
 
+    // Note(sewer)
     // For other fields 'string' and 'localestring':
     //
     // https://specifications.freedesktop.org/desktop-entry-spec/1.0/value-types.html
@@ -173,10 +213,9 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     // meaning ASCII space, newline, tab, carriage return, and backslash, respectively. 
     //
     // Note that 'Exec' is a string https://specifications.freedesktop.org/desktop-entry-spec/1.0/recognized-keys.html
-    private string EscapeDesktopFilePath(AbsolutePath path)
+    private string EscapeDesktopFilePath(string path)
     {
-        var nativePath = path.ToNativeSeparators(_fileSystem.OS);
-        return nativePath
+        return path
             .Replace(@"\", @"\\") // Escape backslashes first to avoid double escaping
             .Replace(" ", @"\s")
             .Replace("\n", @"\n")
