@@ -34,8 +34,10 @@ This tab will be expanded in future to include other load-order or file-order ru
 * The tab bar is now hidden until there are at least two tabs in a panel.
 * Tabs can now be closed with a middle click.
 * Added mod thumbnails to the load order page.
+* Increased resilience to network errors during downloads.
 
 ## Technical Changes
+* On Linux, the app will only register itself as the default Nexus Mods download handler when not installed with a package manager.
 * Replaced the Stardew Valley preview UI elements with game-agnostic versions.
 * Added the core backend frameworks required for the "Undo" feature.
 * Added the core backend frameworks to allow the app to create and share collections.
@@ -46,6 +48,9 @@ This tab will be expanded in future to include other load-order or file-order ru
 ## Bug Fixes
 * Games can be unmanaged via the command line (thanks to Michael-Kowata on GitHub).
 * Fixed missing colours to represent added, removed, or changed files on the Preview Changes page.
+* Fixed an issue where the app could end up in a state where the Apply button was not visible but the Launch button was disabled.
+* Fixed an issue where the app would unnecessarily backup files during an Apply, leading to long processing times. 
+* Fixed a rare issue where the Apply action would not work correctly if two files have the same minimal hash.
 * Fixed a crash when snapping to full screen with multiple panels open.
 * Fixed "No game installed with active loadout" error that occurred when a loadout had not been applied since managing the game.
 * When un-managing a game, loadouts for that game will be hidden to prevent a crash when trying to access them.
