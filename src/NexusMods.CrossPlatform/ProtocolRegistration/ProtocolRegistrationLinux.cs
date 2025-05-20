@@ -157,30 +157,27 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     // it with an additional backslash character.
     private string EscapeDesktopExecFilePath(string path)
     {
-        // Note(sewer): Both the base rules for `EscapeDesktopFilePath` and
-        // those in `EscapeDesktopExecFilePath` (as documented above both functions) 
-        // apply here. At first I was unsure about this, so I've done rigorous testing
-        // with real DEs.
+        // Note(sewer)
+        //
+        // Spec says"
+        //
+        // > Note that the general escape rule for values of type string states that the backslash
+        // > character can be escaped as ("\\") as well and that this escape rule is applied before the quoting rule
+        // 
+        // BUT it wasn't clear if this was for decoding or encoding.
+        // Turns out it's for decoding.
+        //
+        // You can verify this by putting the App in a folder with a space in it.
+        // The correct output is '\s', not '\\s'. Former works, latter does not.
+        var escapedPath = path
+            .Replace(@"\", @"\\") // and backslash character ("\")                 \ -> \\
+            .Replace("\"", @"\""") // 'and escaping the double quote character'    " -> \" 
+            .Replace("`", @"\`") // backtick character ("`")                       ` -> \`
+            .Replace("$", @"\$"); // dollar sign ("$")                             $ -> \$
 
         // First apply the base rules from `string` and `localstring`.
-        var escapedBasePath = EscapeDesktopFilePath(path);
+        var escapedFinalPath = EscapeDesktopFilePath(escapedPath);
 
-        // Note(sewer): 
-        //
-        // The docs say:
-        // > Arguments may be quoted in whole. If an argument contains a reserved character the argument must be quoted.
-        //
-        // > Reserved characters are space (" "), tab, newline, double quote, single quote ("'"), backslash character ("\"),
-        // > greater-than sign (">"), less-than sign ("<"), tilde ("~"), vertical bar ("|"), ampersand ("&"), semicolon (";"),
-        // > dollar sign ("$"), asterisk ("*"), question mark ("?"), hash mark ("#"), parenthesis ("(") and (")") and backtick character ("`"). 
-        
-        // 'by preceding it with an additional backslash character.'
-        var escapedPath = escapedBasePath
-            .Replace("\"", @"\""") // 'and escaping the double quote character'
-            .Replace("`", @"\`") // backtick character ("`")
-            .Replace("$", @"\$") // dollar sign ("$")
-            .Replace(@"\", @"\\"); // and backslash character ("\")
-   
         // Note(sewer): Quoting the spec
         // 
         // > Note that the general escape rule for values of type string states that the backslash
@@ -189,9 +186,8 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         //   a quoted argument in a desktop entry file requires the use of four successive backslash
         //   characters ("\\\\").
         // 
-        // So escaping `\` twice, leading to 4 backslashes as a result of applying both functions is by design.
-        
-        // Note(sewer): The spec says
+        // So escaping `\` twice, leading to 4 backslashes as a result of applying both functions is by design,
+        // even if it may 'feel weird'.
         //
         // > Likewise, a literal dollar sign in a quoted argument in a desktop
         //   entry file is unambiguously represented with ("\\$"). 
@@ -199,10 +195,20 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         // So we go from `$` to `\$`.
         // And then from `\$` to `\\$`.
         // 
-        // As per the example in the spec, this is not a bug, this is intended behaviour.
-        
-        // Enclose the entire path in double quotes
-        return $"\"{escapedPath}\"";
+        // As per the example in the spec, this is not a bug, this is intended behaviour, even if weird.
+
+        // Note(sewer):
+        //
+        // The docs say:
+        // > Arguments may be quoted in whole. If an argument contains a reserved character the argument must be quoted.
+        //
+        // > Reserved characters are space (" "), tab, newline, double quote, single quote ("'"), backslash character ("\"),
+        // > greater-than sign (">"), less-than sign ("<"), tilde ("~"), vertical bar ("|"), ampersand ("&"), semicolon (";"),
+        // > dollar sign ("$"), asterisk ("*"), question mark ("?"), hash mark ("#"), parenthesis ("(") and (")") and backtick character ("`").
+        //
+        // In this case, we always quote. Quoting is optional if there are no 'reserved' characters,
+        // and mandatory if there are. By always quoting, risk is reduced.
+        return $"\"{escapedFinalPath}\""; // Enclose the entire path in double quotes
     }
 
     // Note(sewer)
