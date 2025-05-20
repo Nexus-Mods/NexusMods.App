@@ -45,7 +45,7 @@ public static class DiskStateExtensions
         // Get the attributes for the entries in the disk state
 
         var ret = DiskStateEntry.FindByGame(asOfDb, metadata.Id);
-        asOfDb.BulkCache(ret.EntityIds);
+        //asOfDb.BulkCache(ret.EntityIds);
         
         return ret;
     }
