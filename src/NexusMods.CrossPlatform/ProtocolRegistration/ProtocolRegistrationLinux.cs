@@ -189,7 +189,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         //   a quoted argument in a desktop entry file requires the use of four successive backslash
         //   characters ("\\\\").
         // 
-        // So doing this escape twice, both in this and other function is by design.
+        // So escaping `\` twice, leading to 4 backslashes as a result of applying both functions is by design.
         
         // Note(sewer): The spec says
         //
@@ -199,7 +199,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         // So we go from `$` to `\$`.
         // And then from `\$` to `\\$`.
         // 
-        // As per the spec, this is not a bug, this is intended behaviour.
+        // As per the example in the spec, this is not a bug, this is intended behaviour.
         
         // Enclose the entire path in double quotes
         return $"\"{escapedPath}\"";
