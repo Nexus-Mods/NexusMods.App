@@ -99,11 +99,11 @@ public class RunGameTool<T> : IRunGameTool
         if (UseShell)
         {
             _logger.LogInformation("Running {Program} through shell", program);
-            await RunWithShell(cancellationToken, program);
+            await RunWithShell(cancellationToken, program, commandLineArgs);
         }
         else
         {
-            _ = await RunCommand(cancellationToken, program);
+            _ = await RunCommand(cancellationToken, program, commandLineArgs);
         }
 
         // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
@@ -127,16 +127,17 @@ public class RunGameTool<T> : IRunGameTool
         
     }
 
-    private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)
+    private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program, string[] commandLineArgs)
     {
         var command = new Command(program.ToString())
-            .WithWorkingDirectory(program.Parent.ToString());
+            .WithWorkingDirectory(program.Parent.ToString())
+            .WithArguments(commandLineArgs);
 
         var result = await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
         return result;
     }
 
-    private async Task<Process> RunWithShell(CancellationToken cancellationToken, AbsolutePath program)
+    private async Task<Process> RunWithShell(CancellationToken cancellationToken, AbsolutePath program, string[] commandLineArgs)
     {
         var process = new Process
         {
@@ -144,6 +145,7 @@ public class RunGameTool<T> : IRunGameTool
             {
                 FileName = program.ToString(),
                 WorkingDirectory = program.Parent.ToString(),
+                Arguments = string.Join(" ", commandLineArgs),
                 UseShellExecute = true,
                 CreateNoWindow = false,
             },
