@@ -48,11 +48,14 @@ public class RedModDeployTool : ITool
         if (!deployFolder.DirectoryExists())
             deployFolder.CreateDirectory();
 
+        // Note (halgari): When we change the redmod order, we need to delete the cache file so that redmod will realize it needs
+        // to redeploy. This is due to a bug in redmod. If that bug ever gets fixed (does an order check) then  
+
         var fs = FileSystem.Shared;
         if (fs.OS.IsWindows)
         {
             var command = Cli.Wrap(exe.ToString())
-                .WithArguments(["deploy", "--modlist=" + loadorderFile.Path], true)
+                .WithArguments(["deploy", "-force", "-modlist=" + loadorderFile.Path], true)
                 .WithWorkingDirectory(exe.Parent.ToString());
             await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
         }
@@ -61,7 +64,9 @@ public class RedModDeployTool : ITool
             if (loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata)
             {
                 await using var batchPath = await ExtractTemporaryDeployScript();
-                await _toolRunner.ExecuteAsync(loadout, Cli.Wrap(batchPath.ToString()), true, cancellationToken);
+                var command = Cli.Wrap(batchPath.ToString())
+                    .WithArguments(["deploy", "-force", "-modlist=" + loadorderFile.Path], true);
+                await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
             }
             else
             {
@@ -75,7 +80,6 @@ public class RedModDeployTool : ITool
         var provider = (RedModSortableItemProvider)_sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadout);
         // Note: this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
         var order = provider.GetRedModOrder(db: loadout.Db);
-
         await loadorderFilePath.WriteAllLinesAsync(order);
     }
 
