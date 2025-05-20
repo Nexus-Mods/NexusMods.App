@@ -1,12 +1,12 @@
-# Transferring Existing Stardew Valley Mods to the App
+# Transferring Existing Mods to the App
 
-In this guide, we will cover the basics of importing existing mods from other mod managers into the app. This information is primarily intended for Stardew Valley players but may have applications in other games. 
+In this guide, we will cover the basics of importing existing mods from other mod managers into the app. 
 
 !!! danger "Clean Installation Recommended"
     We highly recommend that you start modding with the Nexus Mods app using a completely clean game installation. Mods added prior to use of the app may cause issues managing your content.
 
 ## Vortex
-[Vortex](https://www.nexusmods.com/site/mods/1) is the predecessor to the app and is a popular choice among Stardew Valley modders. With full Nexus Mods integration, there are two options for importing your mods to the app. 
+[Vortex](https://www.nexusmods.com/site/mods/1) is the predecessor to the app and is a popular choice among modders. With full Nexus Mods integration, there are two options for importing your mods to the app. 
 
 === "Option 1 - Making a Quick Collection"
     !!! warning "Quick Collections require Vortex 1.14.0 or later"
@@ -48,7 +48,7 @@ In this guide, we will cover the basics of importing existing mods from other mo
     2. Click "Deploy Mods" to ensure all Vortex-managed files are removed from the game folder. 
     3. Select on the "Downloads" option in the side menu, the click "Open Folder" on the toolbar. 
     4. Take note of the download folder location - you'll need this shortly. You may now close Vortex.
-    5. Open the Nexus Mods app and [add Stardew Valley](../gettingstarted/AddGames.md).
+    5. Open the Nexus Mods app and [your game](../gettingstarted/AddGames.md).
     6. In the Library, select "Get Mods: From Drive".
     7. Navigate to the download folder location found in Step 2.
     8. Press ++ctrl+"A"++ to select all mod archives in the folder.
@@ -57,7 +57,27 @@ In this guide, we will cover the basics of importing existing mods from other mo
     !!! tip "Select multiple mods from the library using ++ctrl+"Click"++ or ++shift+"click"++"
 
 
-## Stardrop
+## Mod Organizer 2
+[Mod Organizer 2](https://www.nexusmods.com/skyrimspecialedition/mods/6194) is an alternative community-created mod manager used primarily for Bethesda games. To add your mods downloaded into MO2 to the app, follow the steps below:
+
+??? note "Note - Mod Updates"
+    Importing mods using this method means they do not have any Nexus Mods data associated with them and cannot be checked for updates.
+
+1. In Mod Organizer 2, verify you are managing the correct game, then click the folder icon above the mod list and select "Open Downloads Folder".
+    ![The Mod Organizer 2 UI showing the button to open the download folder](../images/MO2DownloadFolder.webp)
+2. Take note of the download folder location - you'll need this shortly.
+3. Uninstall any additional mods from your game folder (e.g. [SMAPI for Stardew Valley](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Uninstall)).
+4. Open the Nexus Mods app and [your game](../gettingstarted/AddGames.md).
+5. In the Library, select "Get Mods: From Drive".
+6. Navigate to the download folder location found in Step 2.
+7. Press ++ctrl+"A"++ to select all mod archives in the folder.
+8. Click "Open" and wait for the app to import all the mods (this can take several minutes).
+9. You can now start adding these mods to your loadout.
+
+## Game-specific Advice
+This section includes tailored advice for game-specific modding tools. 
+
+### Stardrop (Stardew Valley)
 [Stardrop](https://www.nexusmods.com/stardewvalley/mods/10455) is a community-created cross-platform mod manager that is also a popular choice for Stardew Valley modders. 
 
 ??? note "Note - Mod Updates"
@@ -77,34 +97,10 @@ By default, Stardrop uses a subfolder of "Mods" in the game directory. To preser
 7. Uninstall SMAPI from your game folder (Uninstall instructions [:fontawesome-brands-windows:](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Uninstall) [:fontawesome-brands-linux:](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Linux#Uninstall)).
 8. For each folder in the new "Stardrop Installed Mods" folder, create a zipped folder containing it. These can then be [imported into the app](./DownloadAMod.md#adding-a-mod-to-the-library-manually).
 
-## Mod Organizer 2
-[Mod Organizer 2](https://www.nexusmods.com/skyrimspecialedition/mods/6194) is an alternative community-created mod manager used primarily for Bethesda games but also offers support for Stardew Valley. To add your mods downloaded into MO2 to the app, follow the steps below:
-
-??? note "Note - Mod Updates"
-    Importing mods using this method means they do not have any Nexus Mods data associated with them and cannot be checked for updates.
-
-1. In Mod Organizer 2, verify you are managing Stardew Valley, then click the folder icon above the mod list and select "Open Downloads Folder".
-    ![The Mod Organizer 2 UI showing the button to open the download folder](../images/MO2DownloadFolder.webp)
-2. Take note of the download folder location - you'll need this shortly.
-3. Uninstall SMAPI from your game folder ([Uninstall instructions](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Uninstall)).
-4. Open the Nexus Mods app and [add Stardew Valley](../gettingstarted/AddGames.md).
-5. In the Library, select "Get Mods: From Drive".
-6. Navigate to the download folder location found in Step 2.
-7. Press ++ctrl+"A"++ to select all mod archives in the folder.
-8. Click "Open" and wait for the app to import all the mods (this can take several minutes).
-9. You can now start adding these mods to your loadout.
-
 ## Manually Installed Mods
 !!! warning "Manual Mods will be deleted when uninstalling the app"
-    If you had manually installed mods when managing the game, they are added to the loadout as a special mod. Deleting the loadout of uninstalling the app will remove all of these files and revert your game folder back to game files only. 
+    If you had manually installed mods when managing the game, they are added to the loadout as [External Changes](../features/ExternalChanges.md). Deleting the loadout of uninstalling the app will remove all of these files and revert your game folder back to game files only. 
 
 Some users choose to install their mods by manually copying and pasting the downloaded mod files into their game folder. If you manage the game with mods already installed, the app will figure out which files are from the base game and which are from mods then adds all non-game files to [External Changes](../features/ExternalChanges.md) in the loadout. 
 
 It is recommended that you reinstall the mods as part of the loadout and then remove them from "External Changes". 
-
-If you'd rather start fresh with the app, here's how to clean up your game folder.
-
-1. Open your game installation folder.
-2. Move the "Mods" folder so that it is no longer inside the Stardew Valley game folder (you can also delete it, but that is not recommended).
-3. Uninstall SMAPI from your game folder (Uninstall instructions [:fontawesome-brands-windows:](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Windows#Uninstall) [:fontawesome-brands-linux:](https://stardewvalleywiki.com/Modding:Installing_SMAPI_on_Linux#Uninstall)).
-4. To start modding with the app, install your mods again by [importing the downloaded archives into the app](./DownloadAMod.md#adding-a-mod-to-the-library-manually).
