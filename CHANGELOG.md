@@ -1,4 +1,5 @@
-# v0.11.1 - 2025-05-XX
+# v0.11.1 - 2025-05-20
+This release includes Cyberpunk 2077 support, a new home for load orders, and lots of bug fixes. 
 
 ## Cyberpunk 2077 support
 In this build, we're confident that we've got all the basics in place for players to mod Cyberpunk 2077 with the app. We soft launched this support in the previous version and had some great feedback from the users who tried it out - thank you! 
