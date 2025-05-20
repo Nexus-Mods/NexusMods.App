@@ -49,6 +49,11 @@ public interface ILoadoutSynchronizer
     /// Rescan the files in the folders this game requires. This is used to bring the local cache up to date with the
     /// whatever is on disk.
     /// </summary>
+    /// <param name="gameInstallation">The game installation to rescan.</param>
+    /// <param name="ignoreModifiedDate">
+    /// If false, files that have unchanged modified date since the last scan will be skipped.
+    /// If true, all files will be rehashed.
+    /// </param>
     Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDate = false);
     
     #endregion

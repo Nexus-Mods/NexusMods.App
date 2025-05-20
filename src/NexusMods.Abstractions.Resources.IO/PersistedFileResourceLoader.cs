@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.Resources.IO;
 
