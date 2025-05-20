@@ -81,24 +81,31 @@ public class SynchronizerService : ISynchronizerService
     /// <inheritdoc />
     public async Task Synchronize(LoadoutId loadoutId)
     {
-        await _semaphore.WaitAsync();
-        try
-        {
-            var loadout = Loadout.Load(_conn.Db, loadoutId);
-            ThrowIfMainBinaryInUse(loadout);
+        await _jobMonitor.Begin(new SynchronizeLoadoutJob(loadoutId),
+            async ctx =>
+            {
+                await _semaphore.WaitAsync();
+                try
+                {
+                    var loadout = Loadout.Load(_conn.Db, loadoutId);
+                    ThrowIfMainBinaryInUse(loadout);
 
-            var loadoutState = GetOrAddLoadoutState(loadoutId);
-            using var _ = loadoutState.WithLock();
+                    var loadoutState = GetOrAddLoadoutState(loadoutId);
+                    using var _ = loadoutState.WithLock();
 
-            var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
-            using var _2 = gameState.WithLock();
+                    var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
+                    using var _2 = gameState.WithLock();
 
-            await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
+                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
+                
+                return Unit.Default;
+            }
+        );
     }
 
     private SynchronizerState GetOrAddLoadoutState(LoadoutId loadoutId)

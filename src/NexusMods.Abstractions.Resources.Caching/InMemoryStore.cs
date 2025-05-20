@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Extensions.BCL;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.Resources.Caching;
 

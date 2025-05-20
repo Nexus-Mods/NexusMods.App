@@ -3,14 +3,17 @@
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:gameLocators="clr-namespace:NexusMods.Abstractions.GameLocators;assembly=NexusMods.Abstractions.GameLocators"
                     xmlns:converters="clr-namespace:NexusMods.App.UI.Converters">
 
+    <!-- Name with thumbnail column -->
     <DataTemplate x:Key="{x:Static controls:SharedColumns+Name.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
         <StackPanel Orientation="Horizontal">
+            <!-- Thumbnail -->
             <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:ImageComponent"
@@ -40,7 +43,8 @@
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" x:Name="FallbackIcon" />
                 </controls:ComponentControl.Fallback>
             </controls:ComponentControl>
-
+            
+            <!-- Name -->
             <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
                     <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
@@ -60,6 +64,7 @@
         </StackPanel>
     </DataTemplate>
 
+    <!-- Installed date column -->
     <DataTemplate x:Key="{x:Static controls:SharedColumns+InstalledDate.ColumnTemplateResourceKey}">
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
@@ -82,6 +87,98 @@
             </controls:ComponentControl.Fallback>
         </controls:ComponentControl>
     </DataTemplate>
+    
+    <!-- Name with file icon column -->
+    <DataTemplate x:Key="{x:Static controls:SharedColumns+NameWithFileIcon.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="gameLocators:GamePath" />
+        </DataTemplate.DataType>
 
+        <Grid ColumnDefinitions="Auto,Auto" ClipToBounds="True">
+            <!-- File / Directory Icon -->
+            <controls:ComponentControl Grid.Column="0" x:TypeArguments="gameLocators:GamePath" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:UnifiedIconComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.IconComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:UnifiedIconComponent}">
+                                <icons:UnifiedIcon Value="{CompiledBinding Value.Value}" Classes="FileTypeIcon" />
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+
+                <controls:ComponentControl.Fallback>
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.File}" Classes="FileTypeIcon" />
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+
+            <!-- File Name -->
+            <controls:ComponentControl Grid.Column="1" x:TypeArguments="gameLocators:GamePath" Content="{CompiledBinding}">
+                <controls:ComponentControl.ComponentTemplate>
+                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.StringComponentKey}">
+                        <controls:ComponentTemplate.DataTemplate>
+                            <DataTemplate DataType="{x:Type controls:StringComponent}">
+                                <TextBlock Text="{CompiledBinding Value.Value}" Classes="FileNameTextBlock" />
+                            </DataTemplate>
+                        </controls:ComponentTemplate.DataTemplate>
+                    </controls:ComponentTemplate>
+                </controls:ComponentControl.ComponentTemplate>
+
+                <controls:ComponentControl.Fallback>
+                    <TextBlock Text="-" Classes="FileNameTextBlock" />
+                </controls:ComponentControl.Fallback>
+            </controls:ComponentControl>
+        </Grid>
+    </DataTemplate>
+
+    <!-- File count column -->
+    <DataTemplate x:Key="{x:Static controls:SharedColumns+FileCount.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="gameLocators:GamePath" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="gameLocators:GamePath" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:UInt32Component"
+                                            ComponentKey="{x:Static controls:SharedColumns+FileCount.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:UInt32Component}">
+                            <TextBlock Text="{CompiledBinding Value.Value}" />
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="" /> <!-- Files have no 'inner file count' so should be empty -->
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+
+    <!-- Size (GamePath key) column -->
+    <DataTemplate x:Key="{x:Static controls:SharedColumns+ItemSizeOverGamePath.ColumnTemplateResourceKey}">
+        <DataTemplate.DataType>
+            <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="gameLocators:GamePath" />
+        </DataTemplate.DataType>
+
+        <controls:ComponentControl x:TypeArguments="gameLocators:GamePath" Content="{CompiledBinding}">
+            <controls:ComponentControl.ComponentTemplate>
+                <controls:ComponentTemplate x:TypeArguments="controls:SizeComponent"
+                                            ComponentKey="{x:Static controls:SharedColumns+ItemSizeOverGamePath.ComponentKey}">
+                    <controls:ComponentTemplate.DataTemplate>
+                        <DataTemplate DataType="{x:Type controls:SizeComponent}">
+                            <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
+                        </DataTemplate>
+                    </controls:ComponentTemplate.DataTemplate>
+                </controls:ComponentTemplate>
+            </controls:ComponentControl.ComponentTemplate>
+
+            <controls:ComponentControl.Fallback>
+                <TextBlock Text="-"/>
+            </controls:ComponentControl.Fallback>
+        </controls:ComponentControl>
+    </DataTemplate>
+    
 </ResourceDictionary>
-

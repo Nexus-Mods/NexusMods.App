@@ -10,7 +10,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
@@ -47,6 +47,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly IOSInformation _os;
     private readonly ISorter _sorter;
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
+    private readonly ISynchronizerService _synchronizerService;
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
@@ -71,7 +72,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IGarbageCollectorRunner garbageCollectorRunner)
     {
         _serviceProvider = serviceProvider;
+        _synchronizerService = serviceProvider.GetRequiredService<ISynchronizerService>();
         _jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        
         _fileHashService = fileHashService;
 
         Logger = logger;
@@ -353,7 +356,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// <inheritdoc />
     public async Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
-        var metadata = await ReindexState(loadout.InstallationInstance, false, Connection);
+        var metadata = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
         return BuildSyncTree(DiskStateToPathPartPair(metadata.DiskStateEntries), DiskStateToPathPartPair(previouslyApplied), loadout);
     }
@@ -530,7 +533,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // Delete all the matching override files
         foreach (var file in toDelete)
         {
-            tx.Delete(file, false);
+            tx.Delete(file, recursive: false);
 
             // The backed up file is being 'promoted' to a game file, which needs
             // to be rooted explicitly in case the user uses a feature like 'undo'
@@ -689,7 +692,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                         continue;
 
                     // If we found a match, we need to remove the entity itself
-                    tx.Delete(match, false);
+                    tx.Delete(match, recursive: false);
                     continue;
                 }
             }
@@ -1440,7 +1443,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 // If there is no currently synced loadout, then we can ingest the game folder
                 if (!GameInstallMetadata.LastSyncedLoadout.TryGetValue(remappedLoadout.Installation, out var lastSyncedLoadoutId))
                 {
-                    remappedLoadout = await Synchronize(remappedLoadout);
+                    await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
+                    remappedLoadout = remappedLoadout.Rebase();
                 }
                 else
                 {
@@ -1448,7 +1452,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     var lastSyncedLoadout = Loadout.Load(remappedLoadout.Db, lastSyncedLoadoutId);
                     if (!lastSyncedLoadout.IsValid())
                     {
-                        remappedLoadout = await Synchronize(lastSyncedLoadout);
+                        await _synchronizerService.Synchronize(remappedLoadout.LoadoutId);
+                        remappedLoadout = remappedLoadout.Rebase();
                     }
                 }
                 return remappedLoadout;
@@ -1491,7 +1496,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ActivateLoadout(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
-        var reindexed = await ReindexState(loadout.InstallationInstance, false, Connection);
+        var reindexed = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
         
         var tree = BuildSyncTree(DiskStateToPathPartPair(reindexed.DiskStateEntries), DiskStateToPathPartPair(reindexed.DiskStateEntries), loadout);
         ProcessSyncTree(tree);
@@ -1551,7 +1556,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 foreach (var file in GameBackedUpFile.All(Connection.Db))
                 {
                     if (file.GameInstallId.Value == installation.GameMetadataId)
-                        tx.Delete(file, false);
+                        tx.Delete(file, recursive: false);
                 }
 
                 await tx.Commit();
@@ -1622,7 +1627,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 datom.ValueSpan.CopyTo(buffer.Span);
                 
                 // Create the new datom and reference the copied value
-                var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, false, datom.Prefix.ValueTag);
+                var prefix = new KeyPrefix(newId, datom.A, TxId.Tmp, isRetract: false, datom.Prefix.ValueTag);
                 var newDatom = new Datom(prefix, buffer[..datom.ValueSpan.Length]);
                 
                 // Remap any entity ids in the value
@@ -1681,10 +1686,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         using var tx = Connection.BeginTransaction();
-        tx.Delete(loadoutId, false);
+        tx.Delete(loadoutId, recursive: false);
         foreach (var item in loadout.Items)
         {
-            tx.Delete(item.Id, false);
+            tx.Delete(item.Id, recursive: false);
         }
         await tx.Commit();
         
@@ -1695,7 +1700,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task ResetToOriginalGameState(GameInstallation installation, LocatorId[] locatorIds)
     {
         var gameState = _fileHashService.GetGameFiles((installation.Store, locatorIds));
-        var metaData = await ReindexState(installation, false, Connection);
+        var metaData = await ReindexState(installation, ignoreModifiedDates: false, Connection);
 
         List<PathPartPair> diskState = [];
 

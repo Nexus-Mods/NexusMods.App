@@ -1,6 +1,7 @@
 using BitFaster.Caching;
 using BitFaster.Caching.Lru;
 using JetBrains.Annotations;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.Resources.Caching;
 

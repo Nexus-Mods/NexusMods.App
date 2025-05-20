@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.EventBus;
+using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.Library;

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.EventBus;
+using NexusMods.Sdk.EventBus;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
