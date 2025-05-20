@@ -33,6 +33,7 @@ public class RestoreLoadoutViewModel : APageViewModel<IRestoreLoadoutViewModel>,
                 .Observe(_undoService.Revisions.Where(l => l.LoadoutId == LoadoutId.Value))
                 .OnUI()
                 .Transform(vm => (IRevisionViewModel)new RevisionViewModel(vm, _undoService))
+                .Sort(Comparer<IRevisionViewModel>.Create((a, b) => a.Revision.TxId.CompareTo(b.Revision.TxId)))
                 .Bind(out _revisions)
                 .Subscribe()
                 .DisposeWith(d);
