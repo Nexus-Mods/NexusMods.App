@@ -16,7 +16,7 @@ On a Linux PC, you can check the default app for `nxm://` downloads and reset it
 ### Setting up Gear Lever on Linux
 For Linux users who have the AppImage version of the app and are unable to resolve the registration issue using the commands above, we recommend [Gear Lever](https://github.com/mijorus/gearlever).
 
-1. Download and install Gear Level, preferable via a package manager such as [Flathub](https://flathub.org/en/apps/it.mijorus.gearlever). 
+1. Download and install Gear Lever, preferable via a package manager such as [Flathub](https://flathub.org/en/apps/it.mijorus.gearlever). 
 2. Launch Gear Lever, then drag and drop the AppImage file for the app into the window.
 3. If required, click "Unblock" in the top-right of the screen to verify the AppImage. 
 4. Now the app will appear in your system menus like any other application downloaded from Flathub.

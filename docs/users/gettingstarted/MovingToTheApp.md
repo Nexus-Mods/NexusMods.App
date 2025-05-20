@@ -99,7 +99,7 @@ By default, Stardrop uses a subfolder of "Mods" in the game directory. To preser
 
 ## Manually Installed Mods
 !!! warning "Manual Mods will be deleted when uninstalling the app"
-    If you had manually installed mods when managing the game, they are added to the loadout as a special mod. Deleting the loadout of uninstalling the app will remove all of these files and revert your game folder back to game files only. 
+    If you had manually installed mods when managing the game, they are added to the loadout as [External Changes](../features/ExternalChanges.md). Deleting the loadout of uninstalling the app will remove all of these files and revert your game folder back to game files only. 
 
 Some users choose to install their mods by manually copying and pasting the downloaded mod files into their game folder. If you manage the game with mods already installed, the app will figure out which files are from the base game and which are from mods then adds all non-game files to [External Changes](../features/ExternalChanges.md) in the loadout. 
 
