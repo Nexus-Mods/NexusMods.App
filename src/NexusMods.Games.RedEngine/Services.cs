@@ -17,7 +17,7 @@ public static class Services
             .AddRedModSortOrderModel()
             .AddRedModLoadoutGroupModel()
             .AddRedModSortableEntryModel()
-            .AddSingleton<ITool, RunGameTool<Cyberpunk2077Game>>()
+            .AddSingleton<ITool, Cyberpunk2077RunGameTool>()
             .AddSingleton<ITool, RedModDeployTool>()
             .AddSingleton<RedModSortableItemProviderFactory>()
 
