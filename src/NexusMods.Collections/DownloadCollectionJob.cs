@@ -12,7 +12,7 @@ public class DownloadCollectionJob : IJobDefinitionWithStart<DownloadCollectionJ
     public required CollectionDownloader.ItemType ItemType { get; init; }
     public required CollectionDownloader Downloader { get; init; }
     public required IDb Db { get; init; }
-    public int MaxDegreeOfParallelism { get; init; } = -1;
+    public required int MaxDegreeOfParallelism { get; init; }
 
     public async ValueTask<R3.Unit> StartAsync(IJobContext<DownloadCollectionJob> context)
     {

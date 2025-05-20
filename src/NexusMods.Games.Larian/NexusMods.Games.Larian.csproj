@@ -5,7 +5,6 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Resources.Caching\NexusMods.Abstractions.Resources.Caching.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Resources.IO\NexusMods.Abstractions.Resources.IO.csproj" />
-      <ProjectReference Include="..\NexusMods.Abstractions.Resources\NexusMods.Abstractions.Resources.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Telemetry\NexusMods.Abstractions.Telemetry.csproj" />
       <ProjectReference Include="..\NexusMods.Games.Generic\NexusMods.Games.Generic.csproj" />

@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
-using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using System.Collections.ObjectModel;
 using DynamicData;
@@ -11,15 +11,13 @@ namespace NexusMods.UI.Tests.Helpers.TreeDataGrid.FolderGenerator;
 
 public class TreeFolderGeneratorForLocationIdTests
 {
-    private readonly IncrementingNumberGenerator _generator = new();
-    
     [Fact]
     public void OnReceiveFile_AddsFileToRoot_WhenPathHasNoParent()
     {
         // Arrange  
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "file.txt");
+        var fileModel = CreateFileModel(filePath);
 
         var generator = CreateGenerator();
 
@@ -27,9 +25,9 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
 
         // Assert
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
-        rootFolder.Files.Lookup(fileId).HasValue.Should().BeTrue();
-        rootFolder.Files.Lookup(fileId).Value.Should().Be(fileModel);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        rootFolder.Files.Lookup(filePath).HasValue.Should().BeTrue();
+        rootFolder.Files.Lookup(filePath).Value.Should().Be(fileModel);
         rootFolder.Files.Count.Should().Be(1);
         rootFolder.Folders.Count.Should().Be(0);
     }
@@ -38,30 +36,30 @@ public class TreeFolderGeneratorForLocationIdTests
     public void OnReceiveFile_AddsFileToNestedFolder_WhenPathHasParents()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"folder1/folder2/file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "folder1/folder2/file.txt");
+        var fileModel = CreateFileModel(filePath);
         
         // Act
         var generator = CreateGenerator();
         generator.OnReceiveFile(filePath, fileModel);
         
         // Assert
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Files.Count.Should().Be(0);
         rootFolder.Folders.Count.Should().Be(1);
 
         // Navigate to folder1
-        var folder1 = rootFolder.Folders.Lookup("folder1").Value;
+        var folder1 = rootFolder.Folders.Lookup(new GamePath(locationId, "folder1")).Value;
         folder1.Files.Count.Should().Be(0);
         folder1.Folders.Count.Should().Be(1);
         folder1.FolderName.Should().Be((RelativePath)"folder1");
         
         // Navigate to folder2
-        var folder2 = folder1.Folders.Lookup("folder2").Value;
+        var folder2 = folder1.Folders.Lookup(new GamePath(locationId, "folder1/folder2")).Value;
         folder2.Files.Count.Should().Be(1);
-        folder2.Files.Lookup(fileId).HasValue.Should().BeTrue();
-        folder2.Files.Lookup(fileId).Value.Should().Be(fileModel);
+        folder2.Files.Lookup(filePath).HasValue.Should().BeTrue();
+        folder2.Files.Lookup(filePath).Value.Should().Be(fileModel);
         folder2.FolderName.Should().Be((RelativePath)"folder2");
     }
     
@@ -69,16 +67,16 @@ public class TreeFolderGeneratorForLocationIdTests
     public void OnReceiveFile_IncrementsRefCount_OnlyForNewFiles()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"folder/file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "folder/file.txt");
+        var fileModel = CreateFileModel(filePath);
         
         // Act
         var generator = CreateGenerator();
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get folder and check initial refcount
-        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         folder.Files.Count.Should().Be(1);
 
         // Act again with same file - should not increment refcount
@@ -88,9 +86,9 @@ public class TreeFolderGeneratorForLocationIdTests
         folder.Files.Count.Should().Be(1);
         
         // Act again with different file - should increment refcount
-        var fileId2 = EntityId.From(1UL);
+        var fileId2 = new GamePath(locationId, "folder/file2.txt");
         var fileModel2 = CreateFileModel(fileId2);
-        generator.OnReceiveFile(filePath.Parent.Join("file2.txt"), fileModel2);
+        generator.OnReceiveFile(fileId2, fileModel2);
         
         // Assert
         folder.Files.Count.Should().Be(2);
@@ -100,9 +98,9 @@ public class TreeFolderGeneratorForLocationIdTests
     public void OnDeleteFile_RemovesFile_AndReturnsTrueWhenFolderEmpty()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"folder/file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "folder/file.txt");
+        var fileModel = CreateFileModel(filePath);
         
         // Setup
         var generator = CreateGenerator();
@@ -113,7 +111,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         result.Should().BeTrue(); // Folder should be empty now
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(0); // Folder should be removed
     }
     
@@ -121,12 +119,11 @@ public class TreeFolderGeneratorForLocationIdTests
     public void OnDeleteFile_RemovesFile_AndReturnsFalseWhenFolderNotEmpty()
     {
         // Arrange
-        var fileId1 = EntityId.From(0UL);
-        var fileId2 = EntityId.From(1UL);
-        var filePath1 = (RelativePath)"folder/file1.txt";
-        var filePath2 = (RelativePath)"folder/file2.txt";
-        var fileModel1 = CreateFileModel(fileId1);
-        var fileModel2 = CreateFileModel(fileId2);
+        var locationId = LocationId.From(1);
+        var filePath1 = new GamePath(locationId, "folder/file1.txt");
+        var filePath2 = new GamePath(locationId, "folder/file2.txt");
+        var fileModel1 = CreateFileModel(filePath1);
+        var fileModel2 = CreateFileModel(filePath2);
         
         // Setup
         var generator = CreateGenerator();
@@ -138,41 +135,42 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         result.Should().BeFalse(); // Folder should not be empty
-        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         folder.Files.Count.Should().Be(1);
-        folder.Files.Lookup(fileId1).HasValue.Should().BeFalse();
-        folder.Files.Lookup(fileId2).HasValue.Should().BeTrue();
+        folder.Files.Lookup(filePath1).HasValue.Should().BeFalse();
+        folder.Files.Lookup(filePath2).HasValue.Should().BeTrue();
     }
     
     [Fact]
     public void GetOrCreateFolder_CreatesNestedFolders_WhenTheyDontExist()
     {
         // Arrange
-        var path = (RelativePath)"folder1/folder2/folder3";
+        var locationId = LocationId.From(1);
+        var path = new GamePath(locationId, "folder1/folder2/folder3");
         
         // Act
         var generator = CreateGenerator();
-        var folder = generator.GetOrCreateFolder(path, _generator, out var parentFolder, out var parentFolderName);
+        var folder = generator.GetOrCreateFolder(path, out var parentFolder);
         
         // Assert
         folder.Should().NotBeNull();
         parentFolder.Should().NotBeNull();
-        parentFolderName.Should().Be("folder3");
+        folder.FullPath.Should().Be(path);
         folder.FolderName.Should().Be((RelativePath)"folder3");
 
         // Navigate from root to confirm structure
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(1);
         
-        var folder1 = rootFolder.Folders.Lookup("folder1").Value;
+        var folder1 = rootFolder.Folders.Lookup(new GamePath(locationId, "folder1")).Value;
         folder1.Folders.Count.Should().Be(1);
         folder1.FolderName.Should().Be((RelativePath)"folder1");
         
-        var folder2 = folder1.Folders.Lookup("folder2").Value;
+        var folder2 = folder1.Folders.Lookup(new GamePath(locationId, "folder1/folder2")).Value;
         folder2.Folders.Count.Should().Be(1);
         folder2.FolderName.Should().Be((RelativePath)"folder2");
         
-        var folder3 = folder2.Folders.Lookup("folder3").Value;
+        var folder3 = folder2.Folders.Lookup(new GamePath(locationId, "folder1/folder2/folder3")).Value;
         folder3.Should().BeSameAs(folder);
         folder3.FolderName.Should().Be((RelativePath)"folder3");
     }
@@ -181,19 +179,20 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetOrCreateFolder_ReturnsExistingFolder_WhenItExists()
     {
         // Arrange
-        var path = (RelativePath)"folder1/folder2";
+        var locationId = LocationId.From(1);
+        var path = new GamePath(locationId, "folder1/folder2");
         
         // Act - create folder first time
         var generator = CreateGenerator();
-        var initialFolder = generator.GetOrCreateFolder(path, _generator, out _, out _);
+        var initialFolder = generator.GetOrCreateFolder(path, out _);
         
         // Act - get the same folder again
-        var retrievedFolder = generator.GetOrCreateFolder(path, _generator, out var parentFolder, out var parentFolderName);
+        var retrievedFolder = generator.GetOrCreateFolder(path, out var parentFolder);
         
         // Assert
         retrievedFolder.Should().BeSameAs(initialFolder);
         parentFolder.Should().NotBeNull();
-        parentFolderName.Should().Be("folder2");
+        retrievedFolder.FullPath.Should().Be(new GamePath(locationId, "folder1/folder2"));
     }
     
     [Fact]
@@ -207,7 +206,7 @@ public class TreeFolderGeneratorForLocationIdTests
         
         // Assert
         model.Should().NotBeNull();
-        model.Should().BeSameAs(generator.GetOrCreateFolder("", _generator, out _, out _).Model);
+        model.Should().BeSameAs(generator.GetOrCreateFolder(new GamePath(LocationId.From(1), ""), out _).Model);
     }
     
     // Observable-specific tests
@@ -232,9 +231,9 @@ public class TreeFolderGeneratorForLocationIdTests
     public void RootObservables_UpdateCorrectly_WhenFileAddedToRoot()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "file.txt");
+        var fileModel = CreateFileModel(filePath);
         var generator = CreateGenerator();
         var hasChildren = false;
         
@@ -264,9 +263,9 @@ public class TreeFolderGeneratorForLocationIdTests
     public void RootObservables_UpdateCorrectly_WhenFileAddedToFolder()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"folder/file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "folder/file.txt");
+        var fileModel = CreateFileModel(filePath);
         var generator = CreateGenerator();
         var rootHasChildren = false;
         
@@ -285,7 +284,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Should contain the folder
         
         // Get folder and check its observables
-        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         var folderHasChildren = false;
         using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
         using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
@@ -305,12 +304,11 @@ public class TreeFolderGeneratorForLocationIdTests
     public void FolderObservables_UpdateCorrectly_WhenMultipleFilesAddedAndRemoved()
     {
         // Arrange
-        var fileId1 = EntityId.From(0UL);
-        var fileId2 = EntityId.From(1UL);
-        var filePath1 = (RelativePath)"folder/file1.txt";
-        var filePath2 = (RelativePath)"folder/file2.txt";
-        var fileModel1 = CreateFileModel(fileId1);
-        var fileModel2 = CreateFileModel(fileId2);
+        var locationId = LocationId.From(1);
+        var filePath1 = new GamePath(locationId, "folder/file1.txt");
+        var filePath2 = new GamePath(locationId, "folder/file2.txt");
+        var fileModel1 = CreateFileModel(filePath1);
+        var fileModel2 = CreateFileModel(filePath2);
         var generator = CreateGenerator();
         var rootHasChildren = false;
         
@@ -330,7 +328,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Contains folder
         
         // Get folder and bind observables
-        var folder = generator.GetOrCreateFolder("folder", _generator, out _, out _);
+        var folder = generator.GetOrCreateFolder(new GamePath(locationId, "folder"), out _);
         var folderHasChildren = false;
         using var folderHasChildrenSub = folder.Model.HasChildrenObservable.Subscribe(x => folderHasChildren = x);
         using var folderChildren = BindChildren(folder.Model.ChildrenObservable, out var folderChildrenCollection);
@@ -354,17 +352,17 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnDeleteFile(filePath2, fileModel2);
         
         // Assert observables after second deletion
-        rootHasChildren.Should().BeFalse(); // Root has no children
-        rootChildrenCollection.Should().BeEmpty(); // No folders left
+        rootHasChildren.Should().BeFalse(); // Root has no more folders
+        rootChildrenCollection.Should().BeEmpty(); // No folders in root
     }
     
     [Fact]
     public void NestedFolderObservables_UpdateCorrectly_WhenFileAddedAndRemoved()
     {
         // Arrange
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"folder1/folder2/folder3/file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "folder1/folder2/folder3/file.txt");
+        var fileModel = CreateFileModel(filePath);
         var generator = CreateGenerator();
         var rootHasChildren = false;
         
@@ -383,10 +381,10 @@ public class TreeFolderGeneratorForLocationIdTests
         rootChildrenCollection.Should().ContainSingle(); // Contains folder1
         
         // Get all folders
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
-        var folder1 = rootFolder.Folders.Lookup("folder1").Value;
-        var folder2 = folder1.Folders.Lookup("folder2").Value;
-        var folder3 = folder2.Folders.Lookup("folder3").Value;
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var folder1 = rootFolder.Folders.Lookup(new GamePath(locationId, "folder1")).Value;
+        var folder2 = folder1.Folders.Lookup(new GamePath(locationId, "folder1/folder2")).Value;
+        var folder3 = folder2.Folders.Lookup(new GamePath(locationId, "folder1/folder2/folder3")).Value;
         
         // Check folder1 observables
         var folder1HasChildren = false;
@@ -430,9 +428,9 @@ public class TreeFolderGeneratorForLocationIdTests
     public void OnDeleteFile_RemovesEmptyFolderChain_WhenFileDeletedFromNestedFolder()
     {
         // Arrange - Create a deeply nested folder structure with a single file
-        var fileId = EntityId.From(0UL);
-        var filePath = (RelativePath)"parent1/parent2/parent3/file.txt";
-        var fileModel = CreateFileModel(fileId);
+        var locationId = LocationId.From(1);
+        var filePath = new GamePath(locationId, "parent1/parent2/parent3/file.txt");
+        var fileModel = CreateFileModel(filePath);
         
         var generator = CreateGenerator();
         
@@ -440,22 +438,22 @@ public class TreeFolderGeneratorForLocationIdTests
         generator.OnReceiveFile(filePath, fileModel);
         
         // Verify initial structure
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(1);
         
-        var parent1 = rootFolder.Folders.Lookup("parent1").Value;
+        var parent1 = rootFolder.Folders.Lookup(new GamePath(locationId, "parent1")).Value;
         parent1.Folders.Count.Should().Be(1);
         parent1.Files.Count.Should().Be(0);
         parent1.FolderName.Should().Be((RelativePath)"parent1");
         
-        var parent2 = parent1.Folders.Lookup("parent2").Value;
+        var parent2 = parent1.Folders.Lookup(new GamePath(locationId, "parent1/parent2")).Value;
         parent2.Folders.Count.Should().Be(1);
         parent2.Files.Count.Should().Be(0);
         parent2.FolderName.Should().Be((RelativePath)"parent2");
         
-        var parent3 = parent2.Folders.Lookup("parent3").Value;
+        var parent3 = parent2.Folders.Lookup(new GamePath(locationId, "parent1/parent2/parent3")).Value;
         parent3.Files.Count.Should().Be(1);
-        parent3.Files.Lookup(fileId).HasValue.Should().BeTrue();
+        parent3.Files.Lookup(filePath).HasValue.Should().BeTrue();
         parent3.FolderName.Should().Be((RelativePath)"parent3");
         
         // Act - Delete the file
@@ -465,11 +463,11 @@ public class TreeFolderGeneratorForLocationIdTests
         result.Should().BeTrue(); // The folder should be empty and deleted
         
         // Verify that all parent folders were deleted
-        rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(0); // parent1 should be deleted
         
         // Try to get the folders that should no longer exist
-        var parent1Lookup = rootFolder.Folders.Lookup("parent1");
+        var parent1Lookup = rootFolder.Folders.Lookup(new GamePath(locationId, "parent1"));
         parent1Lookup.HasValue.Should().BeFalse(); // parent1 should not exist
     }
 
@@ -477,8 +475,9 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetAllFilesRecursiveObservable_ReturnsEmpty_WhenFolderHasNoFiles()
     {
         // Arrange
+        var locationId = LocationId.From(1);
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Act
         using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -493,18 +492,17 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetAllFilesRecursiveObservable_ReturnsDirectFiles_WhenFolderHasOnlyDirectFiles()
     {
         // Arrange
-        var fileId1 = EntityId.From(0UL);
-        var fileId2 = EntityId.From(1UL);
-        var filePath1 = (RelativePath)"file1.txt";
-        var filePath2 = (RelativePath)"file2.txt";
-        var fileModel1 = CreateFileModel(fileId1);
-        var fileModel2 = CreateFileModel(fileId2);
+        var locationId = LocationId.From(1);
+        var filePath1 = new GamePath(locationId, "file1.txt");
+        var filePath2 = new GamePath(locationId, "file2.txt");
+        var fileModel1 = CreateFileModel(filePath1);
+        var fileModel2 = CreateFileModel(filePath2);
         
         var generator = CreateGenerator();
         generator.OnReceiveFile(filePath1, fileModel1);
         generator.OnReceiveFile(filePath2, fileModel2);
         
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Act
         using var allFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -521,24 +519,21 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetAllFilesRecursiveObservable_ReturnsAllFiles_WhenFilesAreInSubfolders()
     {
         // Arrange
-        var fileId1 = EntityId.From(0UL);
-        var fileId2 = EntityId.From(1UL);
-        var fileId3 = EntityId.From(2UL);
+        var locationId = LocationId.From(1);
+        var filePath1 = new GamePath(locationId, "file1.txt");                // Root file
+        var filePath2 = new GamePath(locationId, "folder1/file2.txt");        // In subfolder
+        var filePath3 = new GamePath(locationId, "folder1/folder2/file3.txt"); // In nested subfolder
         
-        var filePath1 = (RelativePath)"file1.txt";                // Root file
-        var filePath2 = (RelativePath)"folder1/file2.txt";        // In subfolder
-        var filePath3 = (RelativePath)"folder1/folder2/file3.txt"; // In nested subfolder
-        
-        var fileModel1 = CreateFileModel(fileId1);
-        var fileModel2 = CreateFileModel(fileId2);
-        var fileModel3 = CreateFileModel(fileId3);
+        var fileModel1 = CreateFileModel(filePath1);
+        var fileModel2 = CreateFileModel(filePath2);
+        var fileModel3 = CreateFileModel(filePath3);
         
         var generator = CreateGenerator();
         generator.OnReceiveFile(filePath1, fileModel1);
         generator.OnReceiveFile(filePath2, fileModel2);
         generator.OnReceiveFile(filePath3, fileModel3);
         
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Act - Get recursive files from root
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -552,7 +547,7 @@ public class TreeFolderGeneratorForLocationIdTests
         rootFilesCollection.Should().Contain(fileModel3);
         
         // Act - Get recursive files from folder1
-        var folder1 = rootFolder.Folders.Lookup("folder1").Value;
+        var folder1 = rootFolder.Folders.Lookup(new GamePath(locationId, "folder1")).Value;
         using var folder1FilesSubscription = folder1.GetAllFilesRecursiveObservable()
             .Bind(out var folder1FilesCollection)
             .Subscribe();
@@ -563,7 +558,7 @@ public class TreeFolderGeneratorForLocationIdTests
         folder1FilesCollection.Should().Contain(fileModel3);
         
         // Act - Get recursive files from folder2
-        var folder2 = folder1.Folders.Lookup("folder2").Value;
+        var folder2 = folder1.Folders.Lookup(new GamePath(locationId, "folder1/folder2")).Value;
         using var folder2FilesSubscription = folder2.GetAllFilesRecursiveObservable()
             .Bind(out var folder2FilesCollection)
             .Subscribe();
@@ -577,20 +572,17 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetAllFilesRecursiveObservable_UpdatesCorrectly_WhenFilesAreAddedOrRemoved()
     {
         // Arrange
-        var fileId1 = EntityId.From(0UL);
-        var fileId2 = EntityId.From(1UL);
-        var fileId3 = EntityId.From(2UL);
+        var locationId = LocationId.From(1);
+        var filePath1 = new GamePath(locationId, "file1.txt");
+        var filePath2 = new GamePath(locationId, "folder1/file2.txt");
+        var filePath3 = new GamePath(locationId, "folder1/folder2/file3.txt");
         
-        var filePath1 = (RelativePath)"file1.txt";
-        var filePath2 = (RelativePath)"folder1/file2.txt";
-        var filePath3 = (RelativePath)"folder1/folder2/file3.txt";
-        
-        var fileModel1 = CreateFileModel(fileId1);
-        var fileModel2 = CreateFileModel(fileId2);
-        var fileModel3 = CreateFileModel(fileId3);
+        var fileModel1 = CreateFileModel(filePath1);
+        var fileModel2 = CreateFileModel(filePath2);
+        var fileModel3 = CreateFileModel(filePath3);
         
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Set up subscription to monitor changes
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -652,20 +644,17 @@ public class TreeFolderGeneratorForLocationIdTests
     public void GetAllFilesRecursiveObservable_HandlesNewlyAddedSubfoldersCorrectly()
     {
         // Arrange
-        var fileId1 = EntityId.From(0UL);
-        var fileId2 = EntityId.From(1UL);
-        var fileId3 = EntityId.From(2UL);
+        var locationId = LocationId.From(1);
+        var filePath1 = new GamePath(locationId, "file1.txt");
+        var filePath2 = new GamePath(locationId, "folder1/file2.txt");
+        var filePath3 = new GamePath(locationId, "folder1/folder2/file3.txt");
         
-        var filePath1 = (RelativePath)"file1.txt";
-        var filePath2 = (RelativePath)"folder1/file2.txt";
-        var filePath3 = (RelativePath)"folder1/folder2/file3.txt";
-        
-        var fileModel1 = CreateFileModel(fileId1);
-        var fileModel2 = CreateFileModel(fileId2);
-        var fileModel3 = CreateFileModel(fileId3);
+        var fileModel1 = CreateFileModel(filePath1);
+        var fileModel2 = CreateFileModel(filePath2);
+        var fileModel3 = CreateFileModel(filePath3);
         
         var generator = CreateGenerator();
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         
         // Set up subscription to monitor changes
         using var rootFilesSubscription = rootFolder.GetAllFilesRecursiveObservable()
@@ -702,29 +691,29 @@ public class TreeFolderGeneratorForLocationIdTests
     public void DeleteSubfolder_DisposesTheFolder_WhenRemoved_DebugOnly()
     {
         // Arrange
+        var locationId = LocationId.From(1);
         var generator = CreateGenerator();
         
         // Create a nested folder structure
-        var filePath = (RelativePath)"parent1/parent2/file.txt";
-        var fileId = EntityId.From(0UL);
-        var fileModel = CreateFileModel(fileId);
+        var filePath = new GamePath(locationId, "parent1/parent2/file.txt");
+        var fileModel = CreateFileModel(filePath);
         
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get the root folder and verify the structure
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
         rootFolder.Folders.Count.Should().Be(1);
         
         // Get parent1 folder
-        var parent1 = rootFolder.Folders.Lookup("parent1").Value;
+        var parent1 = rootFolder.Folders.Lookup(new GamePath(locationId, "parent1")).Value;
         parent1.Folders.Count.Should().Be(1);
         
         // Get parent2 folder
-        var parent2 = parent1.Folders.Lookup("parent2").Value;
+        var parent2 = parent1.Folders.Lookup(new GamePath(locationId, "parent1/parent2")).Value;
         parent2.Files.Count.Should().Be(1);
         
         // Act - Delete the parent2 folder
-        parent1.DeleteSubfolder("parent2");
+        parent1.DeleteSubfolder(new GamePath(locationId, "parent1/parent2"));
         
         // Assert
         parent1.Folders.Count.Should().Be(0);
@@ -735,20 +724,20 @@ public class TreeFolderGeneratorForLocationIdTests
     public void DeleteEmptyFolderChain_DisposesAllFolders_WhenRemoved_DebugOnly()
     {
         // Arrange
+        var locationId = LocationId.From(1);
         var generator = CreateGenerator();
         
         // Create a nested folder structure
-        var filePath = (RelativePath)"parent1/parent2/parent3/file.txt";
-        var fileId = EntityId.From(0UL);
-        var fileModel = CreateFileModel(fileId);
+        var filePath = new GamePath(locationId, "parent1/parent2/parent3/file.txt");
+        var fileModel = CreateFileModel(filePath);
         
         generator.OnReceiveFile(filePath, fileModel);
         
         // Get the root folder and verify the structure
-        var rootFolder = generator.GetOrCreateFolder("", _generator, out _, out _);
-        var parent1 = rootFolder.Folders.Lookup("parent1").Value;
-        var parent2 = parent1.Folders.Lookup("parent2").Value;
-        var parent3 = parent2.Folders.Lookup("parent3").Value;
+        var rootFolder = generator.GetOrCreateFolder(new GamePath(locationId, ""), out _);
+        var parent1 = rootFolder.Folders.Lookup(new GamePath(locationId, "parent1")).Value;
+        var parent2 = parent1.Folders.Lookup(new GamePath(locationId, "parent1/parent2")).Value;
+        var parent3 = parent2.Folders.Lookup(new GamePath(locationId, "parent1/parent2/parent3")).Value;
         
         // Store references for later assertions
         var parent1Ref = parent1;
@@ -768,11 +757,12 @@ public class TreeFolderGeneratorForLocationIdTests
     }
 #endif
 
-    private TreeFolderGeneratorForLocationId<TestTreeItemWithPath, DefaultFolderModelInitializer<TestTreeItemWithPath>> CreateGenerator() => new("", _generator);
+    private TreeFolderGeneratorForLocationId<GamePathTreeItemWithPath, DefaultFolderModelInitializer<GamePathTreeItemWithPath>> CreateGenerator() => 
+        new(GamePath.Empty(LocationId.From(1)));
 
-    private static CompositeItemModel<EntityId> CreateFileModel(EntityId id) => new(id);
-    
-    private static IDisposable BindChildren(IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> childrenObservable, out ReadOnlyObservableCollection<CompositeItemModel<EntityId>> collection)
+    private static CompositeItemModel<GamePath> CreateFileModel(GamePath gamePath) => new(gamePath);
+
+    private static IDisposable BindChildren(IObservable<IChangeSet<CompositeItemModel<GamePath>, GamePath>> childrenObservable, out ReadOnlyObservableCollection<CompositeItemModel<GamePath>> collection)
     {
         return childrenObservable
             .Bind(out collection)

@@ -2,13 +2,13 @@ using System.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using Polly;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.App.UI.Controls;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;

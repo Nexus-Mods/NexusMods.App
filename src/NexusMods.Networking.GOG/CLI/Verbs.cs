@@ -10,7 +10,7 @@ using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;

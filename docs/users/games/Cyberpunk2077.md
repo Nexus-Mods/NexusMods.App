@@ -9,7 +9,7 @@ In addition to basic mod management features, players also benefit from these de
 ### Loadout Health Check
 Get information on potential issues in your loadout(s). [Learn more about Health Checks.](../features/HealthCheck.md)
 
-![An example Health Check message prompting the installation of a missing mod.](../images/0.6.0/HealthCheckExampleCyberpunk.webp)
+![An example Health Check message prompting the installation of a missing mod.](../images/0.11.1/HealthCheckExampleCyberpunk.webp)
 
 Diagnostics are shown in the following situations: 
 
@@ -30,7 +30,7 @@ Diagnostics are shown in the following situations:
 ### REDmod Load Ordering
 Some mods for Cyberpunk 2077 make use of the official REDmod format for loading content. The Load Order page allows users to decide on the order in which the game will load content from REDmods. By default, the mods at the **top** of the list will win if they have conflicting changes with another REDmod lower down in the order. 
 
-![REDmod Load Order for Cyberpunk 2077.](../images/0.10.2/Cyberpunk2077LoadOrder.webp)
+![REDmod Load Order for Cyberpunk 2077.](../images/0.11.1/Cyberpunk2077LoadOrder.webp)
 
 You can learn more about the REDmod format on [community wiki](https://wiki.redmodding.org/cyberpunk-2077-modding/for-mod-users/users-modding-cyberpunk-2077/redmod/usage).
 
