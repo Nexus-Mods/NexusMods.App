@@ -155,7 +155,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     // Quoting must be done by enclosing the argument between double quotes and escaping the double quote
     // character, backtick character ("`"), dollar sign ("$") and backslash character ("\") by preceding
     // it with an additional backslash character.
-    private string EscapeDesktopExecFilePath(string path)
+    internal static string EscapeDesktopExecFilePath(string path)
     {
         // Note(sewer)
         //
@@ -219,7 +219,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     // meaning ASCII space, newline, tab, carriage return, and backslash, respectively. 
     //
     // Note that 'Exec' is a string https://specifications.freedesktop.org/desktop-entry-spec/1.0/recognized-keys.html
-    private string EscapeDesktopFilePath(string path)
+    internal static string EscapeDesktopFilePath(string path)
     {
         return path
             .Replace(@"\", @"\\") // Escape backslashes first to avoid double escaping
