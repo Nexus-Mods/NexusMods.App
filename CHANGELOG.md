@@ -1,3 +1,12 @@
+# v0.11.2 - 2025-05-21
+This bugfix release addresses bugs related to the REDmod load order which would prevent it from working as intended.
+
+## Bug Fixes
+* Fixed an issue where the game was not being launched with the `-modded` command line option, so REDmods were not being loaded. The game will now always start with this option. 
+* Fixed an issue where the load order was not being sent to `redmod.exe` after being set due to incorrect command line arguments. 
+* We've put in place a workaround to cater for a bug in `redmod.exe` where it will not recompile if the same mods are present as the previous run but they are in a different order. This has been reported to CD Projekt Red. 
+* Updated the REDmod batch script used with Protontricks on Linux to support the required command line arguments. 
+
 # v0.11.1 - 2025-05-20
 This release includes Cyberpunk 2077 support, a new home for load orders, and lots of bug fixes. 
 
