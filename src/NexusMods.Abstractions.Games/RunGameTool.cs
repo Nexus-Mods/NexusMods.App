@@ -103,7 +103,7 @@ public class RunGameTool<T> : IRunGameTool
         }
         else
         {
-            _ = await RunCommand(cancellationToken, program);
+            _ = await RunCommand(cancellationToken, commandLineArgs, program);
         }
 
         // Check if the process has spawned any new processes that we need to wait for (e.g. Launcher -> Game)
@@ -127,9 +127,10 @@ public class RunGameTool<T> : IRunGameTool
         
     }
 
-    private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, AbsolutePath program)
+    private async Task<CommandResult> RunCommand(CancellationToken cancellationToken, string[] arguments, AbsolutePath program)
     {
         var command = new Command(program.ToString())
+            .WithArguments(arguments)
             .WithWorkingDirectory(program.Parent.ToString());
 
         var result = await _processFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
