@@ -56,7 +56,7 @@ public class Program
 
         var startupMode = StartupMode.Parse(args);
         
-        using var host = BuildHost(
+        var host = BuildHost(
             startupMode,
             telemetrySettings,
             loggingSettings,
@@ -142,6 +142,12 @@ public class Program
             // Wait for 15 seconds for the host to stop, otherwise kill the process
             if (!host.StopAsync().Wait(timeout: TimeSpan.FromSeconds(15)))
                 Environment.Exit(0);
+
+            var disposeTask = Task.Run(() => host.Dispose());
+            if (!disposeTask.Wait(timeout: TimeSpan.FromSeconds(15)))
+            {
+                Environment.Exit(0);
+            }
         }
     }
 
