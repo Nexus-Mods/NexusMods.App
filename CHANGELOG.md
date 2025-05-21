@@ -1,4 +1,4 @@
-# v0.11.2 - 2025-05-21
+# v0.11.3 - 2025-05-21
 This bugfix release addresses issues related to the REDmod load order which prevent it from working as intended.
 
 ## Bug Fixes
