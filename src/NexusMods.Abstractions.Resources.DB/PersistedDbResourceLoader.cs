@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.Resources.DB;
 

@@ -11,6 +11,7 @@ using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Tests;
@@ -26,6 +27,17 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         _libraryService = ServiceProvider.GetRequiredService<ILibraryService>();
         _fileStore = ServiceProvider.GetRequiredService<IFileStore>();
         _connection = ServiceProvider.GetRequiredService<IConnection>();
+    }
+
+    [Fact]
+    public async Task Test_Issue3156()
+    {
+        const string fileName = "zip-with-encoding.zip";
+        var archivePath = FileSystem.GetKnownPath(KnownPath.CurrentDirectory).Combine("Resources").Combine(fileName);
+        archivePath.FileExists.Should().BeTrue();
+
+        var act = async () => await _libraryService.AddLocalFile(archivePath);
+        await act.Should().ThrowAsync<PathException>(because: "archive encoding isn't UTF-8 and extracting results in invalid unicode characters");
     }
 
     [Fact]

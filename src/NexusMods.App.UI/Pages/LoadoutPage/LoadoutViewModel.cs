@@ -12,9 +12,8 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Controls.Trees;
-using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -146,8 +145,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var pageData = new PageData
                     {
-                        FactoryId = ItemContentsFileTreePageFactory.StaticId,
-                        Context = new ItemContentsFileTreePageContext
+                        FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+                        Context = new LoadoutGroupFilesPageContext
                         {
                             GroupIds = [ group.Value.Id ],
                             IsReadOnly = isReadonly,
@@ -220,7 +219,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .Select(connection, static (model, connection) =>
                 {
                     if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-                    return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
+                    return LoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
                 })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)

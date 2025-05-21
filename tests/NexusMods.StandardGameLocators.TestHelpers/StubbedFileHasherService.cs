@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;

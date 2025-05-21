@@ -16,6 +16,7 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.Games.Larian.BaldursGate3.Utils.PakParsing;
 using NexusMods.Paths;
 using Polly;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Games.Larian.BaldursGate3.Emitters;
 

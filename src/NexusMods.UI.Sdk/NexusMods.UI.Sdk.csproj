@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <!-- NuGet Package Shared Details -->
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+    <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)' == 'Debug'" />
+        <PackageReference Include="Avalonia.ReactiveUI" />
+        <PackageReference Include="Avalonia.Skia" />
+        <PackageReference Include="Avalonia.Svg.Skia" />
+        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="AvaloniaEdit.TextMate" />
+        <PackageReference Include="DynamicData" />
+        <PackageReference Include="Humanizer" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" />
+        <PackageReference Include="Markdown.Avalonia.Tight" />
+        <PackageReference Include="ObservableCollections.R3" />
+        <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
+        <PackageReference Include="QoiSharp" />
+        <PackageReference Include="R3" />
+        <PackageReference Include="R3Extensions.Avalonia" />
+        <PackageReference Include="ReactiveUI.Fody" />
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.HarfBuzz" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+        <PackageReference Include="SkiaSharp.NativeAssets.macOS" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Win32" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="TextMateSharp.Grammars" />
+    </ItemGroup>
+
+</Project>

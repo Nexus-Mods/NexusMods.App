@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.NexusWebApi.Types;
