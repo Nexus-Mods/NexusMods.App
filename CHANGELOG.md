@@ -6,6 +6,16 @@ This bugfix release addresses issues related to the REDmod load order which prev
 * Fixed an issue where the load order was not being sent to `redmod.exe` after being set due to incorrect command line arguments. 
 * We've put in place a workaround to cater for a bug in `redmod.exe` where it will not recompile if the same mods are present as the previous run but they are in a different order. This has been reported to CD Projekt Red. 
 * Updated the REDmod batch script used with Protontricks on Linux to support the required command line arguments. 
+* Fixed an issue on Linux where the REDmod load order was not being applied due to incorrect linebreaks (CRLF vs LF).
+* Fixed an issue on Linux where the REDmod load order file was being posted in a location not accessible to the WINE prefix that RedMod.exe was running in. 
+* Cyberpunk 2077 on Epic Games is no longer detected as it's currently not supported (this change was made in 0.11.1 but was missed from the changelog).
+
+## Known Issues
+* Collection success ratings will sometimes not match what is shown on the website.
+* The app will attempt to run the REDmod.exe even if it is not installed, resulting in an error message. 
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
 
 # v0.11.1 - 2025-05-20
 This release includes Cyberpunk 2077 support, a new home for load orders, and lots of bug fixes. 
