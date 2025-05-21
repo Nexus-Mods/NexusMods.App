@@ -135,7 +135,7 @@ public sealed class LibraryService : ILibraryService
         try
         {
             // 1. Find affected loadouts using existing method
-            var items = LoadoutsWithLibraryItem(oldItem, _connection.Db)
+            var items = LoadoutsWithLibraryItem(oldItem)
                 .Where(tuple =>
                 {
                     if (options.IgnoreReadOnlyCollections)
