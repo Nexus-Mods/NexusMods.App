@@ -121,6 +121,13 @@ $
       // -> [carriage return] ('Exec' escape, no change)
       // -> \r (string escape, [carriage return] -> \r )
       // -> "\r" (added double quotes)
+    
+    // % is not tested because spec says:
+    //
+    // > Field codes must not be used inside a quoted argument, the result of
+    // > field code expansion inside a quoted argument is undefined
+    //
+    // All of the arguments we generate are quoted, so % does not need escaping.
     public void EscapeDesktopExecFilePath_ShouldEscapeCorrectly(string input, string expected)
     {
         // Act
