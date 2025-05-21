@@ -23,7 +23,8 @@ public class ProtocolRegistrationLinuxTests
     //       I have verified, at least against KDE and GNOME, in practice that
     //       leaving UTF-8 in file paths (`TryExec`) is the correct behaviour here.
     [InlineData("UTF-8 characters: ñáéíóú", @"UTF-8\scharacters:\sñáéíóú")] 
-    // Note: The method doesn't currently escape semicolons as per the spec
+    // Note: The method doesn't currently escape semicolons as none of the fields
+    //       we use support multiple values, delimited by semicolons.
     public void EscapeDesktopFilePath_ShouldEscapeCorrectly(string input, string expected)
     {
         // Act
