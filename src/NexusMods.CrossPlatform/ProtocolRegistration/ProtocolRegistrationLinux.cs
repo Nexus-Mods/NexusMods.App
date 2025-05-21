@@ -119,7 +119,7 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         var text = await sr.ReadToEndAsync(cancellationToken);
         // Note(sewer): Temporarily using `_osInterop.GetOwnExe()` because paths library will replace backslashes
         //              in path with forward slashes. And backslash is a valid character in file/folder names.
-        // <INSERT ISSUE LINK HERE>
+        // https://github.com/Nexus-Mods/NexusMods.Paths/issues/71
         var processPath = Environment.ProcessPath!;
         text = text.Replace(ExecuteParameterPlaceholder, EscapeDesktopExecFilePath(processPath));
         text = text.Replace(TryExecuteParameterPlaceholder, EscapeDesktopFilePath(processPath));
