@@ -4,6 +4,7 @@
 
     <ItemGroup>
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+      <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
