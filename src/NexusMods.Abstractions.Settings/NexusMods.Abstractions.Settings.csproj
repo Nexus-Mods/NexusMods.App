@@ -11,6 +11,7 @@
         <PackageReference Include="DynamicData" />
 
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="TransparentValueObjects.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
