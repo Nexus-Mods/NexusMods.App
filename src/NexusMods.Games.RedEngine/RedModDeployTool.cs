@@ -48,9 +48,9 @@ public class RedModDeployTool : ITool
         if (!deployFolder.DirectoryExists())
             deployFolder.CreateDirectory();
 
-        // Note (halgari): When we change the redmod order, we need to delete the cache file so that redmod will realize it needs
-        // to redeploy. This is due to a bug in redmod. If that bug ever gets fixed (does an order check) then  
-
+        // Note (halgari): When we change the redmod order, we need to force redmod to re-run. This is due to a bug in redmod
+        // not recognizing order as a change in the mod configuration. If that bug ever gets fixed (does an order check) then  
+        // we can resolve this by removing the -force flag.
         var fs = FileSystem.Shared;
         if (fs.OS.IsWindows)
         {
@@ -61,13 +61,24 @@ public class RedModDeployTool : ITool
         }
         else
         {
-            if (loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata)
+            if (loadout.InstallationInstance.LocatorResultMetadata is SteamLocatorResultMetadata steamLocatorResultMetadata)
             {
+                if (steamLocatorResultMetadata.LinuxCompatibilityDataProvider is null) return;
+                var wineDirectory = steamLocatorResultMetadata.LinuxCompatibilityDataProvider.WinePrefixDirectoryPath;
+                var cDriveDirectory = wineDirectory.Combine("drive_c");
+
+                if (!cDriveDirectory.DirectoryExists()) cDriveDirectory.CreateDirectory();
+                var tmpFile = cDriveDirectory.Combine("modlist.txt");
+                await using (var input = loadorderFile.Path.Read())
+                await using (var output = tmpFile.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+                {
+                    await input.CopyToAsync(output, cancellationToken: cancellationToken);
+                }
+
                 await using var batchPath = await ExtractTemporaryDeployScript();
-                var command = Cli.Wrap(batchPath.ToString())
-                    .WithArguments(["deploy", "-force", "-modlist=" + loadorderFile.Path], true);
+                var command = Cli.Wrap(batchPath.ToString()).WithArguments(["deploy", "-force", "-modlist=C:\\modlist.txt"], escape: true);
                 await _toolRunner.ExecuteAsync(loadout, command, true, cancellationToken);
-            }
+            }            
             else
             {
                 _logger.LogWarning("Skip running redmod, it's only supported for Steam on Linux at the moment");
@@ -80,9 +91,12 @@ public class RedModDeployTool : ITool
         var provider = (RedModSortableItemProvider)_sortableItemProviderFactory.GetLoadoutSortableItemProvider(loadout);
         // Note: this will get the Load Order for the specific revision of the DB of loadout, which might not be the latest
         var order = provider.GetRedModOrder(db: loadout.Db);
-        await loadorderFilePath.WriteAllLinesAsync(order);
-    }
 
+        // NOTE(erri120): redmod only accepts CRLR line breaks, everything else breaks the program
+        // and results in getting errors like `Non-existant mod selected`
+        var output = order.Aggregate((a, b) => $"{a}\r\n{b}");
+        await loadorderFilePath.WriteAllTextAsync(output);
+    }
     public string Name => "RedMod Deploy";
 
     public IJobTask<ITool, Unit> StartJob(Loadout.ReadOnly loadout, IJobMonitor monitor, CancellationToken cancellationToken)
