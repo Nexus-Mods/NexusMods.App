@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Application
-Version=1.5
+# Version=1.5
+# Commented out because PupNet needs updating to recognise 1.5, so letting it default to latest is ideal.
 Name=Nexus Mods App
 GenericName=Mod Manager
 Comment=Mod Manager for your games
