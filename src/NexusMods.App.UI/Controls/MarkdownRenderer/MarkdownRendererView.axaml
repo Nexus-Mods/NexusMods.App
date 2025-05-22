@@ -37,7 +37,7 @@
             <Style Selector="StackPanel.Markdown_Avalonia_MarkdownViewer">
 
                 <!-- will center the content but keep a fixed width column -->
-                <Setter Property="MaxWidth" Value="1000" />
+                <!-- <Setter Property="MaxWidth" Value="1000" /> -->
                 <Setter Property="Spacing" Value="4" />
 
                 <Style Selector="^ ctxt|CImage">
