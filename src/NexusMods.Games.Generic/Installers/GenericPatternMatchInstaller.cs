@@ -150,7 +150,7 @@ public class GenericPatternMatchInstaller : ALibraryArchiveInstaller
         LoadoutItemGroup.New loadoutGroup,
         KeyedBox<RelativePath, LibraryArchiveTree> fileNode)
     {
-        var _ = new LoadoutFile.New(transaction, out var id)
+        _ = new LoadoutFile.New(transaction, out var id)
         {
             LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
             {

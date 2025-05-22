@@ -127,7 +127,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null)
     {
         var libraryFile = await DownloadModFromNexusMods(modId, fileId);
-        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+        var result = await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+        return result.LoadoutItemGroup!.Value; // You can't attach external transaction in this context, so this is always valid.
     }
 
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)

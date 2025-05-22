@@ -113,7 +113,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         }
 
         var libraryFile = GetLibraryFile(Item, Connection.Db);
-        return await LibraryService.InstallItem(
+        var result = await LibraryService.InstallItem(
             libraryFile.AsLibraryItem(),
             TargetLoadout,
             parent: Group.AsLoadoutItemGroup().LoadoutItemGroupId,
@@ -123,6 +123,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             // which installs unknown stuff into a "default folder"
             fallbackInstaller: FallbackInstaller
         );
+        return result.LoadoutItemGroup!.Value; // You can't attach external transaction in this context, so this is always valid.
     }
 
     private async Task<LoadoutItemGroup.ReadOnly> InstallBundledMod(CollectionDownloadBundled.ReadOnly download)

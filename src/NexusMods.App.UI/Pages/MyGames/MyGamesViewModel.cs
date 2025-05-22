@@ -236,7 +236,7 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
         await installation.GetGame().Synchronizer.UnManage(installation);
 
         if (!shouldDeleteDownloads) return;
-        await _libraryService.RemoveItems(filesToDelete.Select(file => file.AsLibraryItem()));
+        await _libraryService.RemoveLibraryItems(filesToDelete.Select(file => file.AsLibraryItem()));
 
         foreach (var collection in collections)
         {
