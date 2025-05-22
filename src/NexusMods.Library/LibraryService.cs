@@ -81,7 +81,7 @@ public sealed class LibraryService : ILibraryService
     {
         using var tx = _connection.BeginTransaction();
         var items = libraryItems.ToArray();
-        RemoveLibraryItemsFromAllLoadouts(items, tx);
+        RemoveLinkedItemsFromAllLoadouts(items, tx);
 
         foreach (var item in items)
             tx.Delete(item.Id, recursive: true);
@@ -90,30 +90,30 @@ public sealed class LibraryService : ILibraryService
         await _gcRunner.RunWithMode(gcRunMode);
     }
 
-    public async Task RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId)
+    public async Task RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId)
     {
         using var tx = _connection.BeginTransaction();
-        RemoveLibraryItemFromLoadout(itemId, tx);
+        RemoveLinkedItemFromLoadout(itemId, tx);
         await tx.Commit();
     }
 
-    public async Task RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds)
+    public async Task RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds)
     {
         using var tx = _connection.BeginTransaction();
-        RemoveLibraryItemsFromLoadout(itemIds, tx);
+        RemoveLinkedItemsFromLoadout(itemIds, tx);
         await tx.Commit();
     }
 
-    public void RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx)
+    public void RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx)
         => tx.Delete(itemId, recursive: true);
 
-    public void RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx)
+    public void RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx)
     {
         foreach (var itemId in itemIds)
             tx.Delete(itemId, recursive: true);
     }
 
-    public void RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx)
+    public void RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx)
     {
         foreach (var item in libraryItems)
         {
@@ -124,13 +124,13 @@ public sealed class LibraryService : ILibraryService
         }
     }
 
-    public async Task RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems)
+    public async Task RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems)
     {
         using var tx = _connection.BeginTransaction();
-        RemoveLibraryItemsFromAllLoadouts(libraryItems, tx);
+        RemoveLinkedItemsFromAllLoadouts(libraryItems, tx);
         await tx.Commit();
     }
-    public async ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx)
+    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx)
     {
         try
         {
@@ -151,7 +151,7 @@ public sealed class LibraryService : ILibraryService
 
             // 2. Unlink old mod using bulk removal
             foreach (var (_, libraryLinkedItem) in items)
-                RemoveLibraryItemFromLoadout(libraryLinkedItem.Id, tx);
+                RemoveLinkedItemFromLoadout(libraryLinkedItem.Id, tx);
 
             // 3. Reinstall new mod in original loadouts
             foreach (var (loadout, _) in items)
@@ -165,14 +165,14 @@ public sealed class LibraryService : ILibraryService
         return LibraryItemReplacementResult.Success;
     }
     
-    public async ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options, ITransaction tx)
+    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options, ITransaction tx)
     {
         var replacementsArr = replacements.ToArray();
         try
         {
             foreach (var (oldItem, newItem) in replacementsArr)
             {
-                var result = await ReplaceLibraryItemInAllLoadouts(oldItem, newItem, options.ToReplaceLibraryItemOptions(), tx);
+                var result = await ReplaceLinkedItemInAllLoadouts(oldItem, newItem, options.ToReplaceLibraryItemOptions(), tx);
                 if (result != LibraryItemReplacementResult.Success)
                     return result; // failed due to some reason.
             }
@@ -185,10 +185,10 @@ public sealed class LibraryService : ILibraryService
         return LibraryItemReplacementResult.Success;
     }
     
-    public async ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options)
+    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options)
     {
         using var tx = _connection.BeginTransaction();
-        var result = await ReplaceLibraryItemsInAllLoadouts(replacements, options, tx);
+        var result = await ReplaceLinkedItemsInAllLoadouts(replacements, options, tx);
         await tx.Commit();
         return result;
     }

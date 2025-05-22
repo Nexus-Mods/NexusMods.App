@@ -183,7 +183,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .ToArray();
 
                 if (ids.Length == 0) return;
-                await _LibraryService.RemoveLibraryItemsFromLoadout(ids);
+                await _LibraryService.RemoveLinkedItemsFromLoadout(ids);
             },
             awaitOperation: AwaitOperation.Sequential,
             initialCanExecute: false,

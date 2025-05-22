@@ -184,7 +184,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         {
             IgnoreReadOnlyCollections = false,
         };
-        var result = await _libraryService.ReplaceLibraryItemsInAllLoadouts(replacements, options);
+        var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(replacements, options);
 
         // Assert
         result.Should().Be(LibraryItemReplacementResult.Success);
@@ -251,7 +251,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
         {
             IgnoreReadOnlyCollections = true,
         };
-        var result = await _libraryService.ReplaceLibraryItemsInAllLoadouts(replacements, options);
+        var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(replacements, options);
 
         // Assert
         result.Should().Be(LibraryItemReplacementResult.Success);

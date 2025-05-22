@@ -45,7 +45,7 @@ public interface ILibraryService
 
     /// <summary>
     /// Installs a library item into a target loadout.
-    /// To remove an item, use <see cref="RemoveLibraryItemFromLoadout(NexusMods.Abstractions.Loadouts.LibraryLinkedLoadoutItemId)"/>.
+    /// To remove an item, use <see cref="RemoveLinkedItemFromLoadout"/>.
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
@@ -78,27 +78,27 @@ public interface ILibraryService
     /// Unlinks a single item added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
     /// <param name="itemId">The <see cref="LibraryLinkedLoadoutItem"/> to remove from the loadout.</param>
-    Task RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId);
+    Task RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId);
 
     /// <summary>
     /// Unlinks a number of items added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
     /// <param name="itemIds">The <see cref="LibraryLinkedLoadoutItem"/>s to remove from the loadout.</param>
-    Task RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds);
+    Task RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds);
 
     /// <summary>
     /// Unlinks a single item added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
     /// <param name="itemId">The <see cref="LibraryLinkedLoadoutItem"/>s to remove from the loadout.</param>
     /// <param name="tx">Existing transaction to use</param>
-    void RemoveLibraryItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx);
+    void RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId itemId, ITransaction tx);
 
     /// <summary>
     /// Unlinks a number of items added by <see cref="InstallItem"/> function call from a loadout.
     /// </summary>
     /// <param name="itemIds">The <see cref="LibraryLinkedLoadoutItem"/>s to remove</param>
     /// <param name="tx">Existing transaction to use</param>
-    void RemoveLibraryItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx);
+    void RemoveLinkedItemsFromLoadout(IEnumerable<LibraryLinkedLoadoutItemId> itemIds, ITransaction tx);
 
     /// <summary>
     /// Removes library items (originally installed via <see cref="InstallItem"/>) from all
@@ -106,14 +106,14 @@ public interface ILibraryService
     /// </summary>
     /// <param name="libraryItems">The library items to remove from the loadouts</param>
     /// <param name="tx">Existing transaction to use</param>
-    void RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx);
+    void RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems, ITransaction tx);
 
     /// <summary>
     /// Removes library items (originally installed via <see cref="InstallItem"/>) from all
     /// loadouts with automatic transaction
     /// </summary>
     /// <param name="libraryItems">The library items to remove from the loadouts</param>
-    Task RemoveLibraryItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems);
+    Task RemoveLinkedItemsFromAllLoadouts(IEnumerable<LibraryItem.ReadOnly> libraryItems);
 
     /// <summary>
     /// Replaces all occurrences of a library item with a new version in all loadouts
@@ -125,7 +125,7 @@ public interface ILibraryService
     /// <returns>
     ///     If an error occurs at any step of the way, this returns a 'fail' enum.
     /// </returns>
-    ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx);
+    ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx);
 
     /// <summary>
     /// Replaces all occurrences of a library item with a new version in all loadouts
@@ -136,7 +136,7 @@ public interface ILibraryService
     /// <returns>
     ///     If an error occurs at any step of the way, this returns a 'fail' enum.
     /// </returns>
-    ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options, ITransaction tx);
+    ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options, ITransaction tx);
     
     /// <summary>
     /// Replaces all occurrences of a library item with a new version in all loadouts
@@ -146,11 +146,11 @@ public interface ILibraryService
     /// <returns>
     ///     If an error occurs at any step of the way, this returns a 'fail' enum.
     /// </returns>
-    ValueTask<LibraryItemReplacementResult> ReplaceLibraryItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options);
+    ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> replacements, ReplaceLibraryItemsOptions options);
 }
 
 /// <summary>
-/// Represents the result of a <see cref="ILibraryService.ReplaceLibraryItemInAllLoadouts"/> operation.
+/// Represents the result of a <see cref="ILibraryService.ReplaceLinkedItemInAllLoadouts"/> operation.
 /// </summary>
 public enum LibraryItemReplacementResult
 {
@@ -166,7 +166,7 @@ public enum LibraryItemReplacementResult
 }
 
 /// <summary>
-/// Options for the <see cref="ILibraryService.ReplaceLibraryItemInAllLoadouts(NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,NexusMods.Abstractions.Library.Models.LibraryItem.ReadOnly,ReplaceLibraryItemOptions,NexusMods.MnemonicDB.Abstractions.ITransaction)"/>
+/// Options for the <see cref="ILibraryService.ReplaceLinkedItemInAllLoadouts"/>
 /// API.
 /// </summary>
 public struct ReplaceLibraryItemOptions
