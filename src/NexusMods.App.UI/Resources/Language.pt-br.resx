@@ -203,13 +203,13 @@
         <value> permanecendo </value>
     </data>
     <data name= "homeview__we_found_games" xml:space="preserve">
-        <Value> Encontramos jogos prontos para mod! </Value>
+        <value> Encontramos jogos prontos para mod! </value>
     </data>
     <data name= "homeview__cant_see_your_game" xml:space="preserve">
-        <Value> Não consigo ver seu jogo </Value>
+        <value> Não consigo ver seu jogo </value>
     </data>
     <data name= "homeview__browse_all_games" xml:space="preserve">
-        <Value> Navegue por todos os jogos </Value>
+        <value> Navegue por todos os jogos </value>
     </data>
     <data name="FileOriginPage_DeleteMod" xml:space="preserve">
         <value>Excluir</value>
