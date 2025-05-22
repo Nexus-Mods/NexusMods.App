@@ -1,3 +1,7 @@
+using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
+using NexusMods.MnemonicDB.Abstractions;
+
 namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 
 /// <summary>
@@ -5,6 +9,17 @@ namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 /// </summary>
 public class IgnoreModUpdateFilter
 {
+    private readonly IConnection _connection;
+    
+    /// <summary/>
+    public IgnoreModUpdateFilter(IConnection connection) => _connection = connection;
+
+    /// <summary>Returns true if a file should be excluded from update results.</summary>
+    internal bool ShouldIgnoreFile(NexusModsFileMetadata.ReadOnly file) => ShouldIgnoreFile(file.Uid);
+
+    /// <summary>Returns true if a file should be excluded from update results.</summary>
+    internal bool ShouldIgnoreFile(UidForFile file) => IgnoreFileUpdateModel.FindByUid(_connection.Db, file).Count > 0;
+
     /// <summary>
     /// Plugs into <see cref="ModUpdateService.GetNewestFileVersionObservable"/>
     /// </summary>
@@ -15,7 +30,10 @@ public class IgnoreModUpdateFilter
     /// <returns>The modified update data, or 'null' to discard the update data entirely</returns>
     public ModUpdateOnPage? SelectMod(ModUpdateOnPage modPage)
     {
-        return null;
+        return modPage with
+        {
+            NewerFiles = modPage.NewerFiles.Where(f => !ShouldIgnoreFile(f)).ToArray(),
+        };
     }
     
     /// <summary>
