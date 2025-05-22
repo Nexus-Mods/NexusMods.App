@@ -1,12 +1,10 @@
-namespace NexusMods.Networking.NexusWebApi;
+namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 
 /// <summary>
 /// A class whose purpose is to hide updates for <see cref="ModUpdateService"/>.
 /// </summary>
 public class IgnoreModUpdateFilter
 {
-    
-    
     /// <summary>
     /// Plugs into <see cref="ModUpdateService.GetNewestFileVersionObservable"/>
     /// </summary>
