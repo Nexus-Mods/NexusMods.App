@@ -176,12 +176,18 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         if (string.IsNullOrEmpty(input)) return string.Empty;
 
         var path = RelativePath.FromUnsanitizedInput(input);
-        _logger.LogInformation("Fix paths: `{Original}` -> `{New}` (HashCode={HashCode},IsDirectory={IsDirectory})", input, path, path.GetHashCode(), isDirectory);
-
         if (isDirectory || fomodArchiveFiles.ContainsKey(path)) return path.ToString();
+        _logger.LogError("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
 
-        _logger.LogInformation("Archive length `{Count}`", fomodArchiveFiles.Count);
-        _logger.LogWarning("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
+        if (fomodArchiveFiles.TryGetFirst(kv => kv.Key.Equals(path), out var item))
+        {
+            _logger.LogError("ContainsKey is broken for `{Path}`", path);
+        }
+        else
+        {
+            _logger.LogError("Both ContainsKey and Key equality failed for `{Path}`", path);
+        }
+
         return input;
     }
 
