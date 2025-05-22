@@ -6,7 +6,6 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
-using System;
 using System.Reactive.Linq;
 
 namespace NexusMods.Networking.NexusWebApi;
@@ -210,7 +209,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, bool>? select = null)
+    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, ModUpdateOnPage?>? select = null)
     {
         var observable = _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
@@ -220,13 +219,18 @@ public class ModUpdateService : IModUpdateService, IDisposable
             return observable;
         
         return observable
-            .Select(optional => optional.HasValue && select(optional.Value) 
-                ? optional 
-                : Optional<ModUpdateOnPage>.None);
+            .Select(optional => 
+            {
+                if (!optional.HasValue)
+                    return Optional<ModUpdateOnPage>.None;
+                
+                var result = select(optional.Value);
+                return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdateOnPage>.None;
+            });
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, bool>? select = null)
+    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
     {
         var observable = _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
@@ -236,9 +240,14 @@ public class ModUpdateService : IModUpdateService, IDisposable
             return observable;
         
         return observable
-            .Select(optional => optional.HasValue && select(optional.Value) 
-                ? optional 
-                : Optional<ModUpdatesOnModPage>.None);
+            .Select(optional => 
+            {
+                if (!optional.HasValue)
+                    return Optional<ModUpdatesOnModPage>.None;
+                
+                var result = select(optional.Value);
+                return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdatesOnModPage>.None;
+            });
     }
 
     /// <inheritdoc />
