@@ -130,7 +130,7 @@ public sealed class LibraryService : ILibraryService
         RemoveLinkedItemsFromAllLoadouts(libraryItems, tx);
         await tx.Commit();
     }
-    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx)
+    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx)
     {
         try
         {
@@ -172,7 +172,7 @@ public sealed class LibraryService : ILibraryService
         {
             foreach (var (oldItem, newItem) in replacementsArr)
             {
-                var result = await ReplaceLinkedItemInAllLoadouts(oldItem, newItem, options.ToReplaceLibraryItemOptions(), tx);
+                var result = await ReplaceLinkedItemsInAllLoadouts(oldItem, newItem, options.ToReplaceLibraryItemOptions(), tx);
                 if (result != LibraryItemReplacementResult.Success)
                     return result; // failed due to some reason.
             }
