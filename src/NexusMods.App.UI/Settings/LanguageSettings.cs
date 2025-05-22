@@ -23,6 +23,7 @@ public record LanguageSettings : ISettings
             new("de"),
             new("it"),
             new("pt-br"),
+            new("uk"),
         ];
 
         Array.Sort(supportedLanguages, (a, b) => string.Compare(a.NativeName, b.NativeName, StringComparison.InvariantCulture));
