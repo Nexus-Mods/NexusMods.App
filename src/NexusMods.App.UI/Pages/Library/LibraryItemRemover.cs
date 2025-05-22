@@ -26,6 +26,6 @@ public static class LibraryItemRemover
         alphaWarningViewModel.Controller = overlayController;
         var result = await overlayController.EnqueueAndWait(alphaWarningViewModel);
         if (result)
-            await libraryService.RemoveItems(toRemove);
+            await libraryService.RemoveLibraryItems(toRemove);
     }
 }
