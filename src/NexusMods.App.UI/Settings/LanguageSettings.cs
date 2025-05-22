@@ -16,14 +16,17 @@ public record LanguageSettings : ISettings
     static LanguageSettings()
     {
         // TODO: dynamically get allowed values
+
+        // check language tags from https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/a9eac961-e77d-41a6-90a5-ce1a8b0cdb9c
         CultureInfo[] supportedLanguages =
         [
-            new("en"),
-            new("pl"),
-            new("de"),
-            new("it"),
-            new("pt-br"),
-            new("uk"),
+            new("en"),      // English
+            new("pl"),      // Polish
+            new("de"),      // German
+            new("it"),      // Italian
+            new("pt-br"),   // Portuguese (Brazil)
+            new("uk"),      // Ukrainian
+            new("ru"),      // Russian
         ];
 
         Array.Sort(supportedLanguages, (a, b) => string.Compare(a.NativeName, b.NativeName, StringComparison.InvariantCulture));
