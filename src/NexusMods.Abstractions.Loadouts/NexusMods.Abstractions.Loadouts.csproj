@@ -12,6 +12,7 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Serialization\NexusMods.Abstractions.Serialization.csproj" />
       <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
       <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="TransparentValueObjects.Abstractions" />
       <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <PackageReference Include="NexusMods.Cascade.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>

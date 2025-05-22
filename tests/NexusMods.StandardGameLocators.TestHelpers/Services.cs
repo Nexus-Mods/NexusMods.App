@@ -43,7 +43,7 @@ public static class Services
     {
         coll.AddSingleton<AHandler<GOGGame, GOGGameId>>(s =>
             new StubbedGameLocator<GOGGame, GOGGameId>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new GOGGame(GOGGameId.From(gogGameId), name, tfm.CreateFolder("gog_game").Path, buildId.ToString()),
+                tfm => new GOGGame(GOGGameId.From(gogGameId), name, tfm.CreateFolder("gog_game").Path, buildId),
                 game => game.Id));
         return coll;
     }
@@ -112,7 +112,7 @@ public static class Services
 
         coll.AddSingleton<AHandler<GOGGame, GOGGameId>>(s =>
             new StubbedGameLocator<GOGGame, GOGGameId>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new GOGGame(GOGGameId.From(42), "Stubbed Game", tfm.CreateFolder("gog_game").Path, "4242"),
+                tfm => new GOGGame(GOGGameId.From(42), "Stubbed Game", tfm.CreateFolder("gog_game").Path, 4242),
                 game => game.Id));
 
         var steamId = "StubbedGameState.zip".xxHash3AsUtf8().Value;
