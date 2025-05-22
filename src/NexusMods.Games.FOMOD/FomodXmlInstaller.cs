@@ -85,6 +85,12 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
             .Select(x => new KeyValuePair<RelativePath, LibraryArchiveFileEntry.ReadOnly>(x.Path.DropFirst(pathPrefixDropCount), x))
             .DistinctBy(kv => kv.Key)
             .ToDictionary(kv => kv.Key, kv => kv.Value);
+        
+        _logger.LogInformation("Found {Count} archive files", fomodArchiveFiles.Count);
+        foreach (var kv in fomodArchiveFiles)
+        {
+            _logger.LogInformation("File in archive: `{Path}`", kv.Key);
+        }
 
         var mod = new FomodMod(
             listModFiles: fomodArchiveFiles.Keys.Select(static x => x.ToString()).ToList(),
@@ -170,6 +176,8 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         if (string.IsNullOrEmpty(input)) return string.Empty;
 
         var path = RelativePath.FromUnsanitizedInput(input);
+        _logger.LogInformation("Fix paths: `{Original}` -> `{New}` (IsDirectory={IsDirectory})", input, path, isDirectory);
+
         if (isDirectory || fomodArchiveFiles.ContainsKey(path)) return path.ToString();
 
         _logger.LogWarning("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
