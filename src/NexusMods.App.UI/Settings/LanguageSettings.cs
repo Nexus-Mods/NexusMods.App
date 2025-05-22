@@ -18,10 +18,11 @@ public record LanguageSettings : ISettings
         // TODO: dynamically get allowed values
         CultureInfo[] supportedLanguages =
         [
-            new CultureInfo("en"),
-            new CultureInfo("pl"),
-            new CultureInfo("de"),
-            new CultureInfo("it"),
+            new("en"),
+            new("pl"),
+            new("de"),
+            new("it"),
+            new("pt-br"),
         ];
 
         Array.Sort(supportedLanguages, (a, b) => string.Compare(a.NativeName, b.NativeName, StringComparison.InvariantCulture));
