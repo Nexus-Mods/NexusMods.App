@@ -7,6 +7,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 using System;
+using System.Reactive.Linq;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -209,19 +210,35 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, bool>? filter = null)
     {
-        return _newestModVersionCache.Connect()
+        var observable = _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
+        
+        if (filter == null) 
+            return observable;
+        
+        return observable
+            .Select(optional => optional.HasValue && filter(optional.Value) 
+                ? optional 
+                : Optional<ModUpdateOnPage>.None);
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, bool>? filter = null)
     {
-        return _newestModOnAnyPageCache.Connect()
+        var observable = _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
+        
+        if (filter == null) 
+            return observable;
+        
+        return observable
+            .Select(optional => optional.HasValue && filter(optional.Value) 
+                ? optional 
+                : Optional<ModUpdatesOnModPage>.None);
     }
 
     /// <inheritdoc />
