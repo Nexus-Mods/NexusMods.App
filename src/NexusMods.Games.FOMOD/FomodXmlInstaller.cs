@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using FomodInstaller.Interface;
 using FomodInstaller.Scripting;
@@ -84,7 +85,13 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
             .Where(x => x.Path.InFolder(fomodPathPrefix))
             .Select(x => new KeyValuePair<RelativePath, LibraryArchiveFileEntry.ReadOnly>(x.Path.DropFirst(pathPrefixDropCount), x))
             .DistinctBy(kv => kv.Key)
-            .ToDictionary(kv => kv.Key, kv => kv.Value);
+            .ToFrozenDictionary(kv => kv.Key, kv => kv.Value, comparer: EqualityComparer<RelativePath>.Default);
+
+        _logger.LogInformation("Found {Count} archive files", fomodArchiveFiles.Count);
+        foreach (var kv in fomodArchiveFiles)
+        {
+            _logger.LogInformation("File in archive: `{Path}` ({HashCode})", kv.Key, kv.Key.GetHashCode());
+        }
 
         var mod = new FomodMod(
             listModFiles: fomodArchiveFiles.Keys.Select(static x => x.ToString()).ToList(),
@@ -141,7 +148,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         return await streamReader.ReadToEndAsync(cancellationToken);
     }
 
-    private void FixScript(IScript script, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles)
+    private void FixScript(IScript script, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles)
     {
         Debug.Assert(script is XmlScript);
         if (script is not XmlScript xmlScript) return;
@@ -156,7 +163,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         }
     }
 
-    private void FixPaths(Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, IEnumerable<InstallableFile> installableFiles)
+    private void FixPaths(FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, IEnumerable<InstallableFile> installableFiles)
     {
         foreach (var installableFile in installableFiles)
         {
@@ -165,16 +172,24 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         }
     }
 
-    private string FixPath(string? input, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, bool isDirectory = false)
+    private string FixPath(string? input, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, bool isDirectory = false)
     {
         if (string.IsNullOrEmpty(input)) return string.Empty;
 
         var path = RelativePath.FromUnsanitizedInput(input);
         if (isDirectory || fomodArchiveFiles.ContainsKey(path)) return path.ToString();
+        _logger.LogError("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
 
-        _logger.LogWarning("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
+        if (fomodArchiveFiles.TryGetFirst(kv => kv.Key.Equals(path), out var item))
+        {
+            _logger.LogError("ContainsKey is broken for `{Path}`", path);
+        }
+        else
+        {
+            _logger.LogError("Both ContainsKey and Key equality failed for `{Path}`", path);
+        }
+
         return input;
-
     }
 
     private void InstructionsToLoadoutItems(
@@ -182,7 +197,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         LoadoutId loadoutId,
         LoadoutItemGroup.New loadoutGroup,
         IList<Instruction> instructions,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         foreach (var instruction in instructions)
@@ -208,7 +223,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         Instruction instruction,
         LoadoutItemGroup.New loadoutGroup,
         LoadoutId loadoutId,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
