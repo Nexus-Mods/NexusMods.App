@@ -210,33 +210,33 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, bool>? filter = null)
+    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, bool>? select = null)
     {
         var observable = _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
         
-        if (filter == null) 
+        if (select == null) 
             return observable;
         
         return observable
-            .Select(optional => optional.HasValue && filter(optional.Value) 
+            .Select(optional => optional.HasValue && select(optional.Value) 
                 ? optional 
                 : Optional<ModUpdateOnPage>.None);
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, bool>? filter = null)
+    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, bool>? select = null)
     {
         var observable = _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
         
-        if (filter == null) 
+        if (select == null) 
             return observable;
         
         return observable
-            .Select(optional => optional.HasValue && filter(optional.Value) 
+            .Select(optional => optional.HasValue && select(optional.Value) 
                 ? optional 
                 : Optional<ModUpdatesOnModPage>.None);
     }
