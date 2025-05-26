@@ -144,7 +144,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
     }
 
     [Fact]
-    public async Task ReplaceLibraryItemsInAllLoadouts_ShouldReplaceItemsAcrossLoadouts()
+    public async Task ReplaceLinkedItemsInAllLoadouts_ShouldReplaceItemsAcrossLoadouts()
     {
         // Arrange
         // Create two loadouts
@@ -209,7 +209,7 @@ public class LibraryServiceTests : ACyberpunkIsolatedGameTest<LibraryServiceTest
     }
 
     [Fact]
-    public async Task ReplaceLibraryItemsInAllLoadouts_ShouldRespectReadOnlyCollectionFilter()
+    public async Task ReplaceLinkedItemsInAllLoadouts_ShouldRespectReadOnlyCollectionFilter()
     {
         // Arrange
         // Create two loadouts
