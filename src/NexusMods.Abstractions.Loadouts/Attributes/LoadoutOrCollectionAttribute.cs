@@ -1,10 +1,9 @@
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 using OneOf;
 
-namespace NexusMods.Abstractions.Games.Attributes;
+namespace NexusMods.Abstractions.Loadouts.Attributes;
 
 
 /// <summary>

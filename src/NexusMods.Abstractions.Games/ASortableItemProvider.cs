@@ -222,6 +222,8 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
         _ = new SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
+            // TODO: Update to use the collection group if dealing with a collection sort order
+            ParentEntity = loadoutId,
             SortOrderTypeId = factory.SortOrderTypeId,
         };
 

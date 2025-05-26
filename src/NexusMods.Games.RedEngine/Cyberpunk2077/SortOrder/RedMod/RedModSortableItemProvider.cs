@@ -340,6 +340,8 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
         var newSortOrder = new Abstractions.Loadouts.SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
+            // TODO: update to use the collection group id if dealing with a collection sort order
+            ParentEntity = loadoutId,
             SortOrderTypeId = parentFactory.SortOrderTypeId,
         };
 
