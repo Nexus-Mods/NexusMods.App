@@ -1,13 +1,10 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees;
-using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk;
 using GroupId = NexusMods.Abstractions.GuidedInstallers.ValueObjects.GroupId;
 using Option = NexusMods.Abstractions.GuidedInstallers.Option;
 using OptionGroup = NexusMods.Abstractions.GuidedInstallers.OptionGroup;

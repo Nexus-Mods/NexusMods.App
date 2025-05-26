@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Sdk.Extensions;
+using NexusMods.Sdk;
 
 namespace NexusMods.Abstractions.Games;
 

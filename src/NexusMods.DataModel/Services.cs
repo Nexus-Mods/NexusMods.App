@@ -23,7 +23,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
-using NexusMods.Sdk.Extensions;
+using NexusMods.Sdk;
 
 namespace NexusMods.DataModel;
 

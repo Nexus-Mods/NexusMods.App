@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NexusMods.Sdk.Extensions;
+namespace NexusMods.Sdk;
 
 /// <summary>
 /// Extension methods for <see cref="IServiceCollection"/>.

@@ -4,7 +4,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.BuildInfo;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Networking.NexusWebApi.V1Interop;
-using NexusMods.Sdk.Extensions;
+using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi;
 

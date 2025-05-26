@@ -17,8 +17,8 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
-using NexusMods.Sdk.Extensions;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 
