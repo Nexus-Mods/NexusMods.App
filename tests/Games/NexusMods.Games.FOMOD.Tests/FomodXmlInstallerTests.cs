@@ -3,6 +3,7 @@ using FluentAssertions;
 using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -25,7 +26,42 @@ public class FomodXmlInstallerTests(ITestOutputHelper outputHelper) : ALibraryAr
             .AddRedEngineGames()
             .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.6.1"));
     }
-    
+
+    [Theory]
+    [InlineData(null, "")]
+    [InlineData("", "")]
+    [InlineData("/", "")]
+    [InlineData("/foo", "foo")]
+    [InlineData("\\", "")]
+    [InlineData("\\foo", "foo")]
+    [InlineData("foo", "foo")]
+    [InlineData("foo/bar", "foo/bar")]
+    public void Test_RemoveRoot(string? input, string expected)
+    {
+        var actual = FomodXmlInstaller.RemoveRoot(input).ToString();
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(TestData_FixPath))]
+    public void Test_FixPath(string? input, string expected, bool isDirectory, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> archiveFiles)
+    {
+        var actual = FomodXmlInstaller.FixPath(input, archiveFiles, isDirectory: isDirectory, logger: Logger);
+        actual.Should().Be(expected);
+    }
+
+    public static TheoryData<string?, string, bool, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>> TestData_FixPath()
+    {
+        return new TheoryData<string?, string, bool, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>>
+        {
+            { "", "", false, [] },
+            { "/", "", false, [] },
+            { "/foo\\bar.txt", "foo/bar.txt", false, new Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>
+            {
+                { "foo/bar.txt", default },
+            } },
+        };
+    }
 
     private async Task<LoadoutItemGroup.ReadOnly> GetResultsFromDirectory(string testCase)
     {
