@@ -9,6 +9,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Extensions.Hashing\NexusMods.Extensions.Hashing.csproj" />
+        <PackageReference Include="NexusMods.Hashing.xxHash3"/>
     </ItemGroup>
 </Project>

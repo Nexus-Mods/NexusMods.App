@@ -11,10 +11,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Extensions.BCL;
-using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
@@ -199,13 +196,14 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
             }
         }
     }
-    
+
     public async Task<(bool isMatch, string matchingSegment, int startingLineNumber)> SearchContents(LoadoutFile.ReadOnly file, Regex regex)
     {
         try
         {
-            var data = await _fileStore.GetFileStream(file.Hash);
-            var content = await data.ReadAllTextAsync();
+            await using var stream = await _fileStore.GetFileStream(file.Hash);
+            using var reader = new StreamReader(stream, leaveOpen: true);
+            var content = await reader.ReadToEndAsync();
         
             var match = regex.Match(content);
             if (!match.Success)
@@ -225,7 +223,7 @@ public class PatternBasedDependencyEmitter : ILoadoutDiagnosticEmitter
 
             return (true, matchingSegment, startingLineNumber);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return (false, "", 0);
         }

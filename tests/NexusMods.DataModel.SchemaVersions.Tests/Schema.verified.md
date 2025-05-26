@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xD654D05310A9C461
-   - Total attributes: 202
+   - Fingerprint: 0x5F7165E760F9FD4E
+   - Total attributes: 203
    - Total namespaces: 70
    
 ## Attributes
@@ -111,6 +111,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.LoadoutOverridesGroup/OverridesFor                              | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutSnapshot/Snapshot                                        | Reference               | False   | True  | False     | 
 | NexusMods.Loadouts.SortOrder/Loadout                                               | Reference               | True    | False | False     | 
+| NexusMods.Loadouts.SortOrder/ParentEntity                                          | UInt128                 | True    | False | False     | 
 | NexusMods.Loadouts.SortOrder/SortOrderTypeId                                       | UInt128                 | False   | False | False     | 
 | NexusMods.Loadouts.SortableEntry/ParentSortOrder                                   | Reference               | True    | False | False     | 
 | NexusMods.Loadouts.SortableEntry/SortIndex                                         | Int32                   | False   | False | False     | 
