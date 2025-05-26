@@ -1,11 +1,9 @@
 using FluentAssertions;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Extensions.BCL;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.FileExtractor.Tests;
@@ -105,18 +103,17 @@ public class SevenZipExtractionTests
 
         await act.Should().NotThrowAsync();
 
+        var actual = await tempFolder.Path.EnumerateFiles()
+            .ToAsyncEnumerable()
+            .SelectAwait(async f => (f.RelativeTo(dest), await f.XxHash3Async()))
+            .ToArrayAsync();
 
-        (await tempFolder.Path.EnumerateFiles()
-                .SelectAsync(async f => (f.RelativeTo(dest), await f.XxHash3Async()))
-                .ToArrayAsync())
-            .Should()
-            .BeEquivalentTo(new[]
-            {
-                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0x3F0AB4D495E35A9A),
-                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0x8520436F06348939),
-                ("rootFile.txt".ToRelativePath(), (Hash)0x818A82701BC1CC30),
-            });
+        (RelativePath, Hash)[] expected = [
+            ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt", (Hash)0x3F0AB4D495E35A9A),
+            ("folder1/folder1file.txt", (Hash)0x8520436F06348939),
+            ("rootFile.txt", (Hash)0x818A82701BC1CC30),
+        ];
 
-
+        actual.Should().BeEquivalentTo(expected);
     }
 }
