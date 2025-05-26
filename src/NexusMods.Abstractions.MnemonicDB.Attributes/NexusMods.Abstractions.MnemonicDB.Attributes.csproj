@@ -9,8 +9,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="NexusMods.Hashing.xxHash3">
-        <HintPath>..\..\..\..\..\..\..\..\home\florian\.nuget\packages\nexusmods.hashing.xxhash3\3.0.4\lib\net9.0\NexusMods.Hashing.xxHash3.dll</HintPath>
-      </Reference>
+        <PackageReference Include="NexusMods.Hashing.xxHash3"/>
     </ItemGroup>
 </Project>
