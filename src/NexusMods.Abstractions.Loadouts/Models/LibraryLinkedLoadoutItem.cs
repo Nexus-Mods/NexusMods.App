@@ -21,4 +21,13 @@ public partial class LibraryLinkedLoadoutItem : IModelDefinition
     /// The linked library item.
     /// </summary>
     public static readonly ReferenceAttribute<LibraryItem> LibraryItem = new(Namespace, nameof(LibraryItem)) { IsIndexed = true };
+
+    public readonly partial struct ReadOnly
+    {
+        /// <summary>
+        /// Tries converting this entity to a <see cref="LoadoutItem"/> entity,
+        /// if the entity is not a <see cref="LoadoutItem"/> entity, it returns false.
+        /// </summary>
+        public LoadoutItem.ReadOnly AsLoadoutItem() => new(Db, Id);
+    }
 }
