@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
@@ -61,7 +62,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     private const long Ready = 0;
     private const long WaitingForCallback = 1;
 
-    public Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>? CurrentFomodArchiveFiles;
+    public FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> CurrentFomodArchiveFiles;
 
     public UiDelegates(
         ILogger<UiDelegates> logger,

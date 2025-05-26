@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using FomodInstaller.Interface;
 using FomodInstaller.Scripting;
@@ -84,7 +85,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
             .Where(x => x.Path.InFolder(fomodPathPrefix))
             .Select(x => new KeyValuePair<RelativePath, LibraryArchiveFileEntry.ReadOnly>(x.Path.DropFirst(pathPrefixDropCount), x))
             .DistinctBy(kv => kv.Key)
-            .ToDictionary(kv => kv.Key, kv => kv.Value);
+            .ToFrozenDictionary(kv => kv.Key, kv => kv.Value);
 
         var mod = new FomodMod(
             listModFiles: fomodArchiveFiles.Keys.Select(static x => x.ToString()).ToList(),
@@ -143,7 +144,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
 
     private static void FixScript(
         IScript script,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         ILogger? logger = null)
     {
         Debug.Assert(script is XmlScript);
@@ -160,7 +161,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
     }
 
     private static void FixPaths(
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         IEnumerable<InstallableFile> installableFiles,
         ILogger? logger = null)
     {
@@ -181,7 +182,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
 
     internal static string FixPath(
         string? input,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         bool isDirectory = false,
         ILogger? logger = null)
     {
@@ -200,7 +201,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         LoadoutId loadoutId,
         LoadoutItemGroup.New loadoutGroup,
         IList<Instruction> instructions,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         foreach (var instruction in instructions)
@@ -226,7 +227,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         Instruction instruction,
         LoadoutItemGroup.New loadoutGroup,
         LoadoutId loadoutId,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         var src = RelativePath.FromUnsanitizedInput(instruction.source);
