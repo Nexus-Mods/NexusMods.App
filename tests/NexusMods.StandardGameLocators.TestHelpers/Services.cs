@@ -14,11 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.StardewValley;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
+using NexusMods.Sdk.Extensions;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
 

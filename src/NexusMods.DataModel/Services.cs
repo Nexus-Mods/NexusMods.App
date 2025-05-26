@@ -18,13 +18,12 @@ using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
 using NexusMods.DataModel.Undo;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk.Extensions;
 
 namespace NexusMods.DataModel;
 
