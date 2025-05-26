@@ -25,7 +25,7 @@ public static class Extensions
     public static IServiceCollection AddGame<TGame>(this IServiceCollection collection) where TGame : class, IGame
     {
         collection.AddAllSingleton<IGame, TGame>();
-        collection.AddAllSingleton<ILocatableGame, TGame>();
+        collection.AddSingleton<ILocatableGame, TGame>(s => s.GetRequiredService<TGame>());
         return collection;
     }
 }
