@@ -23,6 +23,14 @@ public partial class SortOrder : IModelDefinition
     };
     
     /// <summary>
+    /// The parent Loadout or Collection entity that this SortOrder belongs to.
+    /// </summary>
+    public static readonly LoadoutOrCollectionAttribute ParentEntity = new(Namespace, nameof(ParentEntity))
+    {
+        IsIndexed = true,
+    };
+    
+    /// <summary>
     /// Static Guid id of this sort order type, to distinguish it from other sort orders types used by the game.
     /// E.g. RedMod Load Order and .archive load order will have two different SortOrderTypeIds. 
     /// </summary>
