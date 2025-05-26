@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Xml;
 using FluentAssertions;
 using FomodInstaller.Interface;
@@ -11,7 +12,6 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -44,22 +44,22 @@ public class FomodXmlInstallerTests(ITestOutputHelper outputHelper) : ALibraryAr
 
     [Theory]
     [MemberData(nameof(TestData_FixPath))]
-    public void Test_FixPath(string? input, string expected, bool isDirectory, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> archiveFiles)
+    public void Test_FixPath(string? input, string expected, bool isDirectory, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> archiveFiles)
     {
         var actual = FomodXmlInstaller.FixPath(input, archiveFiles, isDirectory: isDirectory, logger: Logger);
         actual.Should().Be(expected);
     }
 
-    public static TheoryData<string?, string, bool, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>> TestData_FixPath()
+    public static TheoryData<string?, string, bool, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>> TestData_FixPath()
     {
-        return new TheoryData<string?, string, bool, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>>
+        return new TheoryData<string?, string, bool, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>>
         {
-            { "", "", false, [] },
-            { "/", "", false, [] },
+            { "", "", false, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>.Empty },
+            { "/", "", false, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>.Empty },
             { "/foo\\bar.txt", "foo/bar.txt", false, new Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>
             {
                 { "foo/bar.txt", default },
-            } },
+            }.ToFrozenDictionary() },
         };
     }
 
