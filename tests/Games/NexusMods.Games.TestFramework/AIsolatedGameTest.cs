@@ -547,7 +547,10 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     public async Task DisposeAsync()
     {
+        _helper.WriteLine($"Stopping the host of {GetType()}");
         await _host.StopAsync();
+        _helper.WriteLine($"Disposing the host of {GetType()}");
         _host.Dispose();
+        _helper.WriteLine($"Finished cleanup of {GetType()}");
     }
 }
