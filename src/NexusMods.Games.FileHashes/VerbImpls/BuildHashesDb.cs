@@ -10,9 +10,9 @@ using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
-using NexusMods.Extensions.Hashing;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
@@ -93,7 +93,7 @@ public class BuildHashesDb : IAsyncDisposable
         var manifestPath = output / "manifest.json";
         ZipFile.CreateFromDirectory(_tempFolder.Path.ToString(), hashesDbPath.ToString(), CompressionLevel.SmallestSize, false);
 
-        var zipHash = await hashesDbPath.XxHash64Async();
+        var zipHash = await hashesDbPath.XxHash3Async();
 
         var manifest = new DTOs.Manifest()
         {
