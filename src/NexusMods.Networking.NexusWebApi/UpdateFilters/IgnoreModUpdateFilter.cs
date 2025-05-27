@@ -31,9 +31,14 @@ public class IgnoreModUpdateFilter<TShouldIgnoreFile> where TShouldIgnoreFile : 
     /// <returns>The modified update data, or 'null' to discard the update data entirely</returns>
     public ModUpdateOnPage? SelectMod(ModUpdateOnPage modUpdateOnPage)
     {
+        var filteredFiles = modUpdateOnPage.NewerFiles.Where(f => !ShouldIgnoreFile(f)).ToArray();
+        
+        if (filteredFiles.Length == 0)
+            return null;
+            
         return modUpdateOnPage with
         {
-            NewerFiles = modUpdateOnPage.NewerFiles.Where(f => !ShouldIgnoreFile(f)).ToArray(),
+            NewerFiles = filteredFiles,
         };
     }
     
@@ -47,7 +52,21 @@ public class IgnoreModUpdateFilter<TShouldIgnoreFile> where TShouldIgnoreFile : 
     /// <returns>The modified update data, or 'null' to discard the update data entirely</returns>
     public ModUpdatesOnModPage? SelectModPage(ModUpdatesOnModPage modPage)
     {
-        return null;
+        // Filter each file mapping using the SelectMod method
+        var filteredMappings = new List<ModUpdateOnPage>();
+        
+        foreach (var fileMapping in modPage.FileMappings)
+        {
+            var filteredMapping = SelectMod(fileMapping);
+            if (filteredMapping != null)
+                filteredMappings.Add(filteredMapping.Value);
+        }
+        
+        // If no file mappings remain after filtering, return null to discard the entire update
+        if (filteredMappings.Count == 0)
+            return null;
+        
+        return new ModUpdatesOnModPage(filteredMappings.ToArray());
     }
 }
 
