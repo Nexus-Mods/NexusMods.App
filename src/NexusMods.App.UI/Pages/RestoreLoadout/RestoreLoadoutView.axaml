@@ -9,6 +9,7 @@
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                xmlns:converters="clr-namespace:NexusMods.App.UI.Converters"
                                 mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.RestoreLoadout.RestoreLoadoutView">
 
@@ -28,17 +29,23 @@
                 <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
             </Style>
         </Style>
-        
+
         <Style Selector="ItemsControl#RevisionsControl">
             <Style Selector="^ > ContentPresenter:nth-child(1) > Border">
-                <Setter Property="CornerRadius" Value="4 4 0 0"/>
+                <Setter Property="CornerRadius" Value="4 4 0 0" />
             </Style>
             <Style Selector="^ > ContentPresenter:nth-last-child(1) > Border">
-                <Setter Property="CornerRadius" Value="0 0 4 4"/>
+                <Setter Property="CornerRadius" Value="0 0 4 4" />
             </Style>
         </Style>
-        
+
     </reactiveUi:ReactiveUserControl.Styles>
+
+
+    <reactiveUi:ReactiveUserControl.Resources>
+        <converters:DateTimeOffsetToStringConverter x:Key="dateTimeOffsetToStringConverter" />
+    </reactiveUi:ReactiveUserControl.Resources>
+
 
     <ScrollViewer>
 
@@ -88,13 +95,13 @@
                                     <panels:FlexPanel Direction="Row" Wrap="Wrap">
                                         <TextBlock Text="Backup your game files"
                                                    Theme="{StaticResource BodySMSemiTheme}" />
-                                            <controls:StandardButton 
-                                                                     ShowIcon="Left"
-                                                                     LeftIcon="{x:Static icons:IconValues.HardDrive}"
-                                                                     Text="Select backup location (60GB)"
-                                                                     Type="Secondary"
-                                                                     Size="Small" 
-                                                                     HorizontalAlignment="Right" />
+                                        <controls:StandardButton
+                                            ShowIcon="Left"
+                                            LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                            Text="Select backup location (60GB)"
+                                            Type="Secondary"
+                                            Size="Small"
+                                            HorizontalAlignment="Right" />
                                     </panels:FlexPanel>
 
                                     <!-- bullet list with different icons -->
@@ -150,13 +157,13 @@
                                     <panels:FlexPanel Direction="Row" Wrap="Wrap">
                                         <TextBlock Text="Connect Steam"
                                                    Theme="{StaticResource BodySMSemiTheme}" />
-                                        <controls:StandardButton 
-                                                                 ShowIcon="Left"
-                                                                 LeftIcon="{x:Static icons:IconValues.HardDrive}"
-                                                                 Text="Sign in to Steam"
-                                                                 Type="Secondary"
-                                                                 Size="Small"
-                                                                 HorizontalAlignment="Right" />
+                                        <controls:StandardButton
+                                            ShowIcon="Left"
+                                            LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                            Text="Sign in to Steam"
+                                            Type="Secondary"
+                                            Size="Small"
+                                            HorizontalAlignment="Right" />
                                     </panels:FlexPanel>
 
                                     <!-- bullet list with different icons -->
@@ -268,11 +275,22 @@
                                     <!-- details -->
                                     <StackPanel Grid.Column="0" Orientation="Horizontal"
                                                 Spacing="8">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.BackupRestore}"
+                                                           Size="20"
+                                                           Foreground="{StaticResource NeutralSubdued}" />
+                                        <Border
+                                            ToolTip.Tip="{Binding Revision.Timestamp}">
+                                            <TextBlock Name="RevisionNameTextBlock"
+                                                       Text="{Binding Revision.Timestamp, Converter={StaticResource dateTimeOffsetToStringConverter}}"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+                                        
+                                        <Border />
+                                        
                                         <TextBlock Text="{Binding Revision.LoadoutId}"
                                                    VerticalAlignment="Center" />
+                                        
                                         <TextBlock Text="{Binding Revision.TxId}"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Revision.Timestamp}"
                                                    VerticalAlignment="Center" />
                                         <TextBlock Text="{Binding Revision.Added}"
                                                    VerticalAlignment="Center" />
