@@ -269,38 +269,95 @@
                                 <Grid ColumnDefinitions="*,Auto">
 
                                     <!-- details -->
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal"
-                                                Spacing="8">
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.BackupRestore}"
-                                                           Size="20"
-                                                           Foreground="{StaticResource NeutralSubdued}" />
-                                        <Border
-                                            ToolTip.Tip="{Binding Revision.Timestamp}">
-                                            <TextBlock Name="RevisionNameTextBlock"
-                                                       Text="{Binding Revision.Timestamp, Converter={StaticResource DateTimeOffsetToStringConverter}}"
-                                                       VerticalAlignment="Center"/>
-                                        </Border>
-                                        
-                                        <Border />
-                                        
-                                        <TextBlock Text="{Binding Revision.LoadoutId}"
-                                                   VerticalAlignment="Center" />
-                                        
-                                        <TextBlock Text="{Binding Revision.TxId}"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Revision.Added}"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Revision.Removed}"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Revision.Modified}"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Revision.MissingGameFiles}"
-                                                   VerticalAlignment="Center" />
-                                    </StackPanel>
+                                    <Grid Grid.Column="0" ColumnDefinitions="150,Auto,Auto">
+
+                                        <!-- icon and revision timestamp -->
+                                        <Grid Grid.Column="0" ColumnDefinitions="Auto,Auto"
+                                              ToolTip.Tip="{Binding Revision.Timestamp}">
+                                            <icons:UnifiedIcon Grid.Column="0"
+                                                               Value="{x:Static icons:IconValues.BackupRestore}"
+                                                               Size="20"
+                                                               Foreground="{StaticResource NeutralSubdued}"
+                                                               HorizontalAlignment="Left"
+                                                               Margin="0 0 8 0" />
+                                            <Border Grid.Column="1">
+                                                <TextBlock Name="RevisionNameTextBlock"
+                                                           Text="{Binding Revision.Timestamp, Converter={StaticResource DateTimeOffsetToStringConverter}}"
+                                                           VerticalAlignment="Center" />
+                                            </Border>
+                                        </Grid>
+
+                                        <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="8">
+
+                                            <!-- first icon block -->
+                                            <Border
+                                                BorderBrush="{StaticResource SurfaceHighBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="{StaticResource Rounded}"
+                                                Padding="12 8">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}"
+                                                                       Foreground="{StaticResource NeutralSubdued}"
+                                                                       Size="20" />
+                                                    <Border Width="1" Background="{StaticResource SurfaceHighBrush}" />
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}"
+                                                                       Foreground="{StaticResource SuccessStrongBrush}"
+                                                                       Size="16" />
+                                                </StackPanel>
+                                            </Border>
+
+                                            <!-- second icon block -->
+                                            <Border
+                                                BorderBrush="{StaticResource SurfaceHighBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="{StaticResource Rounded}"
+                                                Padding="12 8">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <icons:UnifiedIcon
+                                                        Value="{x:Static icons:IconValues.GamepadOutline}"
+                                                        Foreground="{StaticResource NeutralSubdued}"
+                                                        Size="20" />
+                                                    <Border Width="1" Background="{StaticResource SurfaceHighBrush}" />
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}"
+                                                                       Foreground="{StaticResource SuccessStrongBrush}"
+                                                                       Size="16" />
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Steam}"
+                                                                       Foreground="{StaticResource SuccessStrongBrush}"
+                                                                       Size="16" />
+
+                                                </StackPanel>
+                                            </Border>
+
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"  Spacing="8">
+                                                <TextBlock Text="{Binding Revision.Added}"
+                                                           Foreground="{StaticResource NeutralWeakBrush}"/>
+                                                <TextBlock Text="{Binding Revision.Removed}" 
+                                                           Foreground="{StaticResource NeutralWeakBrush}"/>
+                                                <TextBlock Text="{Binding Revision.Modified}" 
+                                                           Foreground="{StaticResource NeutralWeakBrush}"/>
+                                                <TextBlock Text="{Binding Revision.MissingGameFiles}" 
+                                                           Foreground="{StaticResource NeutralWeakBrush}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+
+                                    </Grid>
 
                                     <!-- buttons -->
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                        <Button Content="Rollback" Command="{Binding RestoreToCommand}" />
+
+                                        <!-- debug block  -->
+                                        <Border>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8"
+                                                        Margin="0 0 8 0">
+                                                <TextBlock Text="{Binding Revision.LoadoutId}"
+                                                           Foreground="{StaticResource NeutralWeakBrush}" />
+                                                <TextBlock Text="{Binding Revision.TxId}"
+                                                           Foreground="{StaticResource NeutralWeakBrush}" />
+                                            </StackPanel>
+                                        </Border>
+
+                                        <controls:StandardButton Text="Restore" Command="{Binding RestoreToCommand}" />
                                     </StackPanel>
                                 </Grid>
 
