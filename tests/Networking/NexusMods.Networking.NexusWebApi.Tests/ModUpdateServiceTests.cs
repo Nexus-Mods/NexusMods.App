@@ -445,38 +445,38 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
             ignoreFilter.SelectMod); // Apply the filter
         
         // Create collection for results
-        var results = new List<ModUpdateOnPage>();
+        ModUpdateOnPage? updateOnPage = null;
         using var subscription = observable.Subscribe(val => 
         {
             if (val.HasValue)
-                results.Add(val.Value);
+                updateOnPage = val.Value;
+            else
+                updateOnPage = null; // We're watching only for 1 item.
         });
         
         // Add the mod to the library - should initially see updates
-        var libraryFile = await _libraryService.AddDownload(downloadJob);
+        _ = await _libraryService.AddDownload(downloadJob);
         
         // Verify we initially receive update notifications
-        results.Should().HaveCount(1, "Before adding the ignore filter, updates should be visible");
-        results.Clear();
+        updateOnPage!.Should().NotBeNull("Before adding the ignore filter, updates should be visible");
         
         // Create an ignore entry for the newest file (the one we would update to)
         var newestFile = spaceCoreData.Updates[^1]; // Get the latest update
+        var newestFileUid = new UidForFile(
+            (FileId)newestFile.FileId,
+            (GameId)newestFile.GameId
+        );
         var connection = ServiceProvider.GetRequiredService<IConnection>();
         using (var tx = connection.BeginTransaction())
         {
             // Create an IgnoreFileUpdateModel for the latest update file ID
-            _ = new IgnoreFileUpdate.New(tx)
-            {
-                Uid = new UidForFile((FileId)newestFile.FileId, (GameId)newestFile.GameId)
-            };
-            await tx.Commit();
+            _ = new IgnoreFileUpdate.New(tx) { Uid = newestFileUid };
+            await tx.Commit(); // This auto updates the ignore filter in `ModUpdateService`.
+            // And updates the `updateOnPage` variable via previous observable.
         }
-        
-        // Call NotifyForUpdates explicitly
-        _modUpdateService.NotifyForUpdates();
-        
-        // Verify no updates are reported now that we have an ignore filter
-        results.Should().BeEmpty("After adding the ignore filter, updates should not be visible");
+
+        // We should no longer have the ignored file.
+        updateOnPage!.Value.NewerFiles.Should().NotContain(x => x.Uid == newestFileUid,"After adding the ignore filter, updates should not be visible");
     }
     
     private static void AssertUpdatesContainAllResults(StaticTestData.TestModData[] updates, ModUpdateOnPage modUpdate)
