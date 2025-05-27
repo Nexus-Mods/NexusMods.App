@@ -9,9 +9,30 @@ A load order is usually an artifact of some kind to be provided to the game (usu
 ## Sorting:
 The order is usually used to ensure that dependencies between mods are resolved correctly and to determine which items win in case of conflicts.
 
+Depending on the game, load order can have different impact on the modded experience. In some games incorrect load order can lead to instability or crashes, in other cases it can lead to mods not working correctly, in other cases it mostly has cosmetic impact.
+
+### Sorting for dependency purposes:
+Some items need to be loaded after other to ensure that they work correctly. 
+These dependencies can be explicit (e.g., list of masters for Skyrim plugins) or implicit (e.g., a mod that modifies all spells needs to be loaded after the mod that adds new spells, or the new spells won't be modified correctly).
+
+Displaying detected dependencies can help users during the sorting process.
+
+
+
+### Sorting for conflict resolution purposes:
+If two mod items modify the same thing, the order in which they are loaded can determine which change "wins" and is used by the game.
 Different games can have different semantics for what the winner is going to be (smallest index winner vs. greatest index winner).
 
-Depending on the game, load order can have different impact on the modded experience. In some games incorrect load order can lead to instability or crashes, in other cases it can lead to mods not working correctly, in other cases it mostly has cosmetic impact.
+The granularity of conflicts can also vary between games. Some games only conflict at the value level (e.g., two mods changing the damage value of the same sword, only one can win), while other may conflict at higher levels (e.g., mod A changing HP and mod B changing armor rating of the same NPC would still conflict).
+
+Displaying conflicts between items can help users during the sorting process.
+
+### Sorting of relevant items:
+The relative order of two items that don't conflict and don't have direct or indirect dependencies on each other has no importance. A different order would have no impact on the game.
+
+The display of dependencies and conflicts can help users identify which items are relevant for sorting and which ones are not.
+
+The position of mod item A that is currently not in conflict or in dependency relationships can become relevant as soon as new items are added. The new items might have dependencies or conflicts with both item A and other items that already had dependencies or conflicts with each other.
 
 ## Load Order enable/disable of items:
 Load Orders of some games also allow definition of which items should be loaded.
