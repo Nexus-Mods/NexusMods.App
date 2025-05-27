@@ -385,3 +385,26 @@ The main use case for editing non-active load orders would be for collection cre
 In the case of an undo operation to reset a Loadout to a previous state, all the load orders of that loadout also need to be reset to that state.
 
 This would include UI states that would need to be notified of the reset operation, as well as reverting which load order set is "applied" to the previous state.
+
+
+## Operations that impact load orders:
+A reference for the operations that have an impact on load orders.
+
+- Loadout creation
+- Loadout deletion
+- Collection creation
+- Collection deletion
+- Item is added to loadout/collection
+- Item is removed from loadout/collection
+- Item is enabled/disabled in loadout/collection
+- User changes order
+- Undo reverts loadout and sort order to an earlier state
+- Synchronize ingests external changes to the load order
+- Switch of "active" load order set (e.g., switching to a collection-specific load order)
+
+The relevant load orders need to be updated in response to these operations. Each operation should update the load order only once. We wouldn't want item additions to happen twice, for example.
+
+Operations should be serialized to avoid loss of updates due to race conditions. E.g., item addition while the user is changing the order of items.
+
+
+
