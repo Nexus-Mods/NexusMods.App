@@ -1754,7 +1754,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restore Loadout.
+        ///   Looks up a localized string similar to Restore Points.
         /// </summary>
         public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout {
             get {

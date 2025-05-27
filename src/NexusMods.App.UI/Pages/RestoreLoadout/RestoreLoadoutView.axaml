@@ -7,6 +7,11 @@
                                 xmlns:restoreLoadout="clr-namespace:NexusMods.App.UI.Pages.RestoreLoadout"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.RestoreLoadout.RestoreLoadoutView">
+
+    <Design.DataContext>
+        <restoreLoadout:RestoreLoadoutDesignViewModel />
+    </Design.DataContext>
+    
     <ItemsControl x:Name="RevisionsControl">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
@@ -14,16 +19,16 @@
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
-            <DataTemplate>
+            <DataTemplate DataType="restoreLoadout:IRevisionViewModel">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="{Binding Revision.LoadoutId}" />
                     <TextBlock Text="{Binding Revision.TxId}" />
-                    <TextBlock Text="{Binding Revision.Timestamp}"></TextBlock>
-                    <TextBlock Text="{Binding Revision.Added}"></TextBlock>
-                    <TextBlock Text="{Binding Revision.Removed}"></TextBlock>
-                    <TextBlock Text="{Binding Revision.Modified}"></TextBlock>
-                    <TextBlock Text="{Binding Revision.MissingGameFiles}"></TextBlock>
-                    <Button Content="Rollback" Command="{Binding RestoreToCommand}"></Button>
+                    <TextBlock Text="{Binding Revision.Timestamp}"/>
+                    <TextBlock Text="{Binding Revision.Added}"/>
+                    <TextBlock Text="{Binding Revision.Removed}"/>
+                    <TextBlock Text="{Binding Revision.Modified}"/>
+                    <TextBlock Text="{Binding Revision.MissingGameFiles}"/>
+                    <Button Content="Rollback" Command="{Binding RestoreToCommand}"/>
                 </StackPanel>
             </DataTemplate>
         </ItemsControl.ItemTemplate>

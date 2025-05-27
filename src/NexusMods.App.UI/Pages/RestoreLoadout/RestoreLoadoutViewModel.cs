@@ -3,10 +3,12 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Cascade;
 using NexusMods.DataModel.Undo;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -38,6 +40,9 @@ public class RestoreLoadoutViewModel : APageViewModel<IRestoreLoadoutViewModel>,
                 .Subscribe()
                 .DisposeWith(d);
         });
+        
+        TabIcon = IconValues.BackupRestore;
+        TabTitle = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout;
     }
     
     [Reactive]

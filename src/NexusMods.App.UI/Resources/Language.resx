@@ -392,7 +392,7 @@
         <value>There are no diagnostics</value>
     </data>
     <data name="LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout" xml:space="preserve">
-        <value>Restore Loadout</value>
+        <value>Restore Points</value>
     </data>
     <data name="IngestButtonTextBlock_Text" xml:space="preserve">
         <value>Ingest</value>

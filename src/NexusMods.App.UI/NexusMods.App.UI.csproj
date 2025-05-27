@@ -739,6 +739,12 @@
         <Compile Update="Pages\RestoreLoadout\RestoreLoadoutViewModel.cs">
           <DependentUpon>IRestoreLoadoutViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\RestoreLoadout\RestoreLoadoutDesignViewModel.cs">
+          <DependentUpon>IRestoreLoadoutViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Pages\RestoreLoadout\RevisionViewModel.cs">
+          <DependentUpon>IRevisionViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

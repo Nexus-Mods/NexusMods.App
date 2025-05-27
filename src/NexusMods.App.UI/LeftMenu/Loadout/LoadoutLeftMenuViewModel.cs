@@ -230,13 +230,13 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             new PageData
             {
                 FactoryId = RestoreLoadoutPageFactory.StaticId,
-                Context = new RestoreLoadoutPageContext(loadoutContext.LoadoutId)
+                Context = new RestoreLoadoutPageContext(loadoutContext.LoadoutId),
             },
             loadoutContext.LoadoutId
         )
         {
             Text = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout),
-            Icon = IconValues.ArrowBack,
+            Icon = IconValues.BackupRestore,
             ToolTip = new StringComponent(Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout),
         };
         
