@@ -20,9 +20,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
 using NexusMods.Sdk;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Collections;
 

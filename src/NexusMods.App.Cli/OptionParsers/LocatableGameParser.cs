@@ -1,5 +1,5 @@
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI.OptionParsers;
 

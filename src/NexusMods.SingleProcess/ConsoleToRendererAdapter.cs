@@ -1,8 +1,6 @@
 using System.CommandLine;
 using System.CommandLine.IO;
-using System.Threading;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.SingleProcess;
 

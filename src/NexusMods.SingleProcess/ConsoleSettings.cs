@@ -1,7 +1,4 @@
-using System.IO;
-using System.Text;
-using NexusMods.ProxyConsole.Abstractions;
-using Spectre.Console;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.SingleProcess;
 

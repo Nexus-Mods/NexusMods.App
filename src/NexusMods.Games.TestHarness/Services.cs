@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Games.TestHarness.Verbs;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Games.TestHarness;
 

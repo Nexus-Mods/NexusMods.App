@@ -1,14 +1,14 @@
-﻿using System;
+﻿using JetBrains.Annotations;
 using MemoryPack;
-using NexusMods.ProxyConsole.Abstractions;
 
-namespace NexusMods.ProxyConsole.Abstractions.Implementations;
+namespace NexusMods.Sdk.ProxyConsole;
 
 /// <summary>
 /// A text renderable.
 /// </summary>
 [MemoryPackable]
-public partial class Text : IRenderable
+[PublicAPI]
+public partial class Text : IRenderable<Text>
 {
     /// <summary>
     /// Formatting template, for the text

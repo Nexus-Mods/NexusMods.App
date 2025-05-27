@@ -1,12 +1,14 @@
+using JetBrains.Annotations;
 using MemoryPack;
 
-namespace NexusMods.ProxyConsole.Abstractions.Implementations;
+namespace NexusMods.Sdk.ProxyConsole;
 
 /// <summary>
 /// A message to create a progress task
 /// </summary>
 [MemoryPackable]
-public partial class CreateProgressTask : IRenderable
+[PublicAPI]
+public partial class CreateProgressTask : IRenderable<CreateProgressTask>
 {
     /// <summary>
     /// The text to display
