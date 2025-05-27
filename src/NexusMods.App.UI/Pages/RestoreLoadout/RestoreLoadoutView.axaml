@@ -10,7 +10,7 @@
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
                                 xmlns:converters="clr-namespace:NexusMods.App.UI.Converters"
-                                mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.RestoreLoadout.RestoreLoadoutView">
 
     <Design.DataContext>
@@ -18,9 +18,6 @@
     </Design.DataContext>
 
     <reactiveUi:ReactiveUserControl.Styles>
-
-        <!-- select the buttons inside of the mod file sources and select the left icon so we can change foreground -->
-
         <Style Selector="StackPanel#ModFileSourcesStack">
             <Style Selector="^ controls|StandardButton.Active /template/ icons|UnifiedIcon#PART_LeftIcon">
                 <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
@@ -38,12 +35,11 @@
                 <Setter Property="CornerRadius" Value="0 0 4 4" />
             </Style>
         </Style>
-
     </reactiveUi:ReactiveUserControl.Styles>
 
 
     <reactiveUi:ReactiveUserControl.Resources>
-        <converters:DateTimeOffsetToStringConverter x:Key="dateTimeOffsetToStringConverter" />
+        <converters:DateTimeOffsetToStringConverter x:Key="DateTimeOffsetToStringConverter" />
     </reactiveUi:ReactiveUserControl.Resources>
 
 
@@ -281,7 +277,7 @@
                                         <Border
                                             ToolTip.Tip="{Binding Revision.Timestamp}">
                                             <TextBlock Name="RevisionNameTextBlock"
-                                                       Text="{Binding Revision.Timestamp, Converter={StaticResource dateTimeOffsetToStringConverter}}"
+                                                       Text="{Binding Revision.Timestamp, Converter={StaticResource DateTimeOffsetToStringConverter}}"
                                                        VerticalAlignment="Center"/>
                                         </Border>
                                         
