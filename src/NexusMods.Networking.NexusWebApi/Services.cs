@@ -59,6 +59,9 @@ public static class Services
                 httpClient.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql");
                 httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
 
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationName, ApplicationConstants.UserAgentApplicationName);
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationVersion, ApplicationConstants.UserAgentApplicationVersion);
+
                 var authenticationHeaderValue = serviceProvider.GetRequiredService<IHttpMessageFactory>().GetAuthenticationHeaderValue();
                 if (authenticationHeaderValue is null) return;
 
