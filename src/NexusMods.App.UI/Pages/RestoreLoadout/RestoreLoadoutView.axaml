@@ -5,34 +5,300 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:restoreLoadout="clr-namespace:NexusMods.App.UI.Pages.RestoreLoadout"
-                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+                                mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.RestoreLoadout.RestoreLoadoutView">
 
     <Design.DataContext>
         <restoreLoadout:RestoreLoadoutDesignViewModel />
     </Design.DataContext>
-    
-    <ItemsControl x:Name="RevisionsControl">
-        <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-                <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-2}" />
-            </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
-        <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="restoreLoadout:IRevisionViewModel">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="{Binding Revision.LoadoutId}" />
-                    <TextBlock Text="{Binding Revision.TxId}" />
-                    <TextBlock Text="{Binding Revision.Timestamp}"/>
-                    <TextBlock Text="{Binding Revision.Added}"/>
-                    <TextBlock Text="{Binding Revision.Removed}"/>
-                    <TextBlock Text="{Binding Revision.Modified}"/>
-                    <TextBlock Text="{Binding Revision.MissingGameFiles}"/>
-                    <Button Content="Rollback" Command="{Binding RestoreToCommand}"/>
-                </StackPanel>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-        
-    </ItemsControl>
-</reactiveUi:ReactiveUserControl>
 
+    <reactiveUi:ReactiveUserControl.Styles>
+
+        <!-- select the buttons inside of the mod file sources and select the left icon so we can change foreground -->
+
+        <Style Selector="StackPanel#ModFileSourcesStack">
+            <Style Selector="^ controls|StandardButton.Active /template/ icons|UnifiedIcon#PART_LeftIcon">
+                <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
+            </Style>
+            <Style Selector="^ controls|StandardButton.Inactive /template/ icons|UnifiedIcon#PART_LeftIcon">
+                <Setter Property="Foreground" Value="{StaticResource WarningStrongBrush}" />
+            </Style>
+        </Style>
+        
+        <Style Selector="ItemsControl#RevisionsControl">
+            <Style Selector="^ > ContentPresenter:nth-child(1) > Border">
+                <Setter Property="CornerRadius" Value="4 4 0 0"/>
+            </Style>
+            <Style Selector="^ > ContentPresenter:nth-last-child(1) > Border">
+                <Setter Property="CornerRadius" Value="0 0 4 4"/>
+            </Style>
+        </Style>
+        
+    </reactiveUi:ReactiveUserControl.Styles>
+
+    <ScrollViewer>
+
+        <StackPanel Margin="24"
+                    Orientation="Vertical"
+                    Spacing="24">
+
+            <!-- page header -->
+            <pageHeader:PageHeader
+                Title="Restore Points"
+                Description="Each time you apply changes, a restore point is created. You can review versions and return to a previous one anytime."
+                Icon="{x:Static icons:IconValues.PictogramRestorePoints}" />
+
+            <StackPanel Spacing="8">
+
+                <!-- game updates and backup -->
+                <Border BorderBrush="{StaticResource SurfaceMidBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource Rounded}"
+                        Padding="24">
+
+                    <StackPanel Spacing="24">
+
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <icons:UnifiedIcon Grid.Column="0"
+                                                   Value="{x:Static icons:IconValues.GamepadOutline}"
+                                                   Margin="0 0 6 0" />
+                                <TextBlock Grid.Column="1"
+                                           Text="Stay protected from game updates"
+                                           Theme="{StaticResource BodyMDSemiTheme}"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                            <TextBlock TextWrapping="Wrap"
+                                       Foreground="{StaticResource NeutralSubduedBrush}"
+                                       Text="Game updates can sometimes change or remove files that mods rely on. To make sure you can restore a previous setup, link your Steam account or create a local backup of your game files, or both." />
+                        </StackPanel>
+
+                        <Grid ColumnDefinitions="*,30,*">
+
+                            <Border Grid.Column="0"
+                                    Background="{StaticResource SurfaceMidBrush}"
+                                    Padding="24"
+                                    CornerRadius="{StaticResource Rounded}">
+                                <StackPanel>
+
+                                    <panels:FlexPanel Direction="Row" Wrap="Wrap">
+                                        <TextBlock Text="Backup your game files"
+                                                   Theme="{StaticResource BodySMSemiTheme}" />
+                                            <controls:StandardButton 
+                                                                     ShowIcon="Left"
+                                                                     LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                                                     Text="Select backup location (60GB)"
+                                                                     Type="Secondary"
+                                                                     Size="Small" 
+                                                                     HorizontalAlignment="Right" />
+                                    </panels:FlexPanel>
+
+                                    <!-- bullet list with different icons -->
+                                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto">
+
+                                        <icons:UnifiedIcon Grid.Column="0" Grid.Row="0"
+                                                           Value="{x:Static icons:IconValues.Check}"
+                                                           Margin="0 2 6 0"
+                                                           Size="14"
+                                                           VerticalAlignment="Top" />
+                                        <TextBlock Grid.Column="1" Grid.Row="0"
+                                                   Text="Internet not required"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                                   Theme="{StaticResource BodySMNormalTheme}" />
+
+                                        <icons:UnifiedIcon Grid.Column="0" Grid.Row="1"
+                                                           Value="{x:Static icons:IconValues.Check}"
+                                                           Margin="0 2 6 0"
+                                                           Size="14"
+                                                           VerticalAlignment="Top" />
+                                        <TextBlock Grid.Column="1" Grid.Row="1"
+                                                   Text="Files are always available"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                                   Theme="{StaticResource BodySMNormalTheme}" />
+
+                                        <icons:UnifiedIcon Grid.Column="0" Grid.Row="2"
+                                                           Value="{x:Static icons:IconValues.HardDrive}"
+                                                           Margin="0 2 6 0"
+                                                           Size="14"
+                                                           VerticalAlignment="Top" />
+                                        <TextBlock Grid.Column="1" Grid.Row="2"
+                                                   Text="60GB disk space required"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                                   Theme="{StaticResource BodySMNormalTheme}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1">
+                                <TextBlock Text="or"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+
+                            <Border Grid.Column="2"
+                                    Background="{StaticResource SurfaceMidBrush}"
+                                    Padding="24"
+                                    CornerRadius="{StaticResource Rounded}">
+                                <StackPanel>
+                                    <panels:FlexPanel Direction="Row" Wrap="Wrap">
+                                        <TextBlock Text="Connect Steam"
+                                                   Theme="{StaticResource BodySMSemiTheme}" />
+                                        <controls:StandardButton 
+                                                                 ShowIcon="Left"
+                                                                 LeftIcon="{x:Static icons:IconValues.HardDrive}"
+                                                                 Text="Sign in to Steam"
+                                                                 Type="Secondary"
+                                                                 Size="Small"
+                                                                 HorizontalAlignment="Right" />
+                                    </panels:FlexPanel>
+
+                                    <!-- bullet list with different icons -->
+                                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto">
+
+                                        <icons:UnifiedIcon Grid.Column="0" Grid.Row="0"
+                                                           Value="{x:Static icons:IconValues.Check}"
+                                                           Margin="0 2 6 0"
+                                                           Size="14"
+                                                           VerticalAlignment="Top" />
+                                        <TextBlock Grid.Column="1" Grid.Row="0"
+                                                   Text="Internet connection required"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                                   Theme="{StaticResource BodySMNormalTheme}" />
+
+                                        <icons:UnifiedIcon Grid.Column="0" Grid.Row="1"
+                                                           Value="{x:Static icons:IconValues.Check}"
+                                                           Margin="0 2 6 0"
+                                                           Size="14"
+                                                           VerticalAlignment="Top" />
+                                        <TextBlock Grid.Column="1" Grid.Row="1"
+                                                   Text="Relies on Steam keeping the previous game versions available"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                                   Theme="{StaticResource BodySMNormalTheme}" />
+
+                                        <icons:UnifiedIcon Grid.Column="0" Grid.Row="2"
+                                                           Value="{x:Static icons:IconValues.HardDrive}"
+                                                           Margin="0 2 6 0"
+                                                           Size="14"
+                                                           VerticalAlignment="Top" />
+                                        <TextBlock Grid.Column="1" Grid.Row="2"
+                                                   Text="60GB disk space required"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                                   Theme="{StaticResource BodySMNormalTheme}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- mod file sources -->
+                <Border BorderBrush="{StaticResource SurfaceMidBrush}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource Rounded}"
+                        Padding="8" HorizontalAlignment="Left">
+
+                    <StackPanel Spacing="8" HorizontalAlignment="Left">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <icons:UnifiedIcon Grid.Column="0"
+                                               Value="{x:Static icons:IconValues.ModsOutline}"
+                                               Size="20"
+                                               Margin="0 0 6 0" />
+                            <TextBlock Grid.Column="1"
+                                       Text="Mod file sources"
+                                       Theme="{StaticResource BodySMNormalTheme}"
+                                       VerticalAlignment="Center" />
+                            <controls:StandardButton Grid.Column="2"
+                                                     ShowLabel="False"
+                                                     ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Info}"
+                                                     Type="Tertiary"
+                                                     Fill="None" />
+                        </Grid>
+                        <StackPanel x:Name="ModFileSourcesStack" Orientation="Horizontal" Spacing="4">
+                            <controls:StandardButton Name="ModFileSourceLibrary"
+                                                     Text="Library"
+                                                     LeftIcon="{x:Static icons:IconValues.ModLibrary}"
+                                                     ShowIcon="Left"
+                                                     Type="Tertiary"
+                                                     Fill="None"
+                                                     Classes="Active" />
+                            <controls:StandardButton Name="ModFileSourceNexusMods" Text="Nexus Mods"
+                                                     LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                                     ShowIcon="Left"
+                                                     Type="Tertiary"
+                                                     Fill="None"
+                                                     Classes="Active" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- restore points -->
+            <StackPanel>
+                <Border Padding="0 0 0 12">
+                    <TextBlock
+                        Text="Restore points"
+                        Theme="{StaticResource BodyLGBoldTheme}" />
+                </Border>
+
+                <ItemsControl x:Name="RevisionsControl">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-0.5}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="restoreLoadout:IRevisionViewModel">
+                            <Border Background="{StaticResource SurfaceMidBrush}"
+                                    Padding="16 12">
+
+                                <!-- 2 columns - left fill remaining space, right whatever is necessary -->
+                                <Grid ColumnDefinitions="*,Auto">
+
+                                    <!-- details -->
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal"
+                                                Spacing="8">
+                                        <TextBlock Text="{Binding Revision.LoadoutId}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Revision.TxId}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Revision.Timestamp}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Revision.Added}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Revision.Removed}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Revision.Modified}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Revision.MissingGameFiles}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <!-- buttons -->
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <Button Content="Rollback" Command="{Binding RestoreToCommand}" />
+                                    </StackPanel>
+                                </Grid>
+
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+
+        </StackPanel>
+    </ScrollViewer>
+
+
+</reactiveUi:ReactiveUserControl>
