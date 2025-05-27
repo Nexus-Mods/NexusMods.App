@@ -32,16 +32,16 @@ public class IgnoreModUpdateFilter<TShouldIgnoreFile> where TShouldIgnoreFile : 
     public ModUpdateOnPage? SelectMod(ModUpdateOnPage modUpdateOnPage)
     {
         var filteredFiles = modUpdateOnPage.NewerFiles.Where(f => !ShouldIgnoreFile(f)).ToArray();
-        
+
         if (filteredFiles.Length == 0)
             return null;
-            
+
         return modUpdateOnPage with
         {
             NewerFiles = filteredFiles,
         };
     }
-    
+
     /// <summary>
     /// Plugs into <see cref="ModUpdateService.GetNewestModPageVersionObservable"/>
     /// </summary>
@@ -54,18 +54,18 @@ public class IgnoreModUpdateFilter<TShouldIgnoreFile> where TShouldIgnoreFile : 
     {
         // Filter each file mapping using the SelectMod method
         var filteredMappings = new List<ModUpdateOnPage>();
-        
+
         foreach (var fileMapping in modPage.FileMappings)
         {
             var filteredMapping = SelectMod(fileMapping);
             if (filteredMapping != null)
                 filteredMappings.Add(filteredMapping.Value);
         }
-        
+
         // If no file mappings remain after filtering, return null to discard the entire update
         if (filteredMappings.Count == 0)
             return null;
-        
+
         return new ModUpdatesOnModPage(filteredMappings.ToArray());
     }
 }
@@ -79,7 +79,7 @@ public class IgnoreModUpdateFilter : IgnoreModUpdateFilter<DefaultFileUpdateFilt
     /// <summary>
     /// Creates a new instance of the update filter using the default file filter implementation.
     /// </summary>
-    public IgnoreModUpdateFilter(IConnection connection) 
+    public IgnoreModUpdateFilter(IConnection connection)
         : base(new DefaultFileUpdateFilter(connection))
     {
     }
@@ -96,17 +96,17 @@ public interface IShouldIgnoreFile
 }
 
 /// <summary>
-/// The default implementation of the file update filter, ignoring files based on <see cref="IgnoreFileUpdateModel"/>(s)
+/// The default implementation of the file update filter, ignoring files based on <see cref="IgnoreFileUpdate"/>(s)
 /// stored in the DataStore.
 /// </summary>
 public class DefaultFileUpdateFilter : IShouldIgnoreFile
 {
     private readonly IConnection _connection;
-    
+
     /// <summary>Creates a new instance of the file update filter.</summary>
     /// <param name="connection">The database connection.</param>
     public DefaultFileUpdateFilter(IConnection connection) => _connection = connection;
 
     /// <inheritdoc />
-    public bool ShouldIgnoreFile(UidForFile file) => IgnoreFileUpdateModel.FindByUid(_connection.Db, file).Count > 0;
+    public bool ShouldIgnoreFile(UidForFile file) => IgnoreFileUpdate.FindByUid(_connection.Db, file).Count > 0;
 }

@@ -8,7 +8,7 @@ namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 /// Represents a remote file on Nexus Mods which is currently ignored from update checks.
 /// </summary>
 [PublicAPI]
-public partial class IgnoreFileUpdateModel : IModelDefinition
+public partial class IgnoreFileUpdate : IModelDefinition
 {
     private const string Namespace = "NexusMods.NexusWebApi.Filters.IgnoreFileUpdateModel";
 

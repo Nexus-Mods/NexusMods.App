@@ -5,6 +5,11 @@ using NSubstitute;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
+using System.Reactive.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Time.Testing;
+using NexusMods.Abstractions.NexusWebApi;
+using DynamicData.Kernel;
 
 namespace NexusMods.Networking.NexusWebApi.Tests.Filters;
 
@@ -264,7 +269,7 @@ public class IgnoreModUpdateFilterTests(IConnection connection)
             Uid = UidForFile.FromUlong(fileId),
             ModPageId = NexusModsModPageMetadataId.From(fileId),
         };
-        
+
         var result = await tx.Commit();
         return result.Remap(metadata);
     }
