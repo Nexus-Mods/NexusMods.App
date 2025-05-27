@@ -24,16 +24,16 @@ public class IgnoreModUpdateFilter<TShouldIgnoreFile> where TShouldIgnoreFile : 
     /// <summary>
     /// Plugs into <see cref="ModUpdateService.GetNewestFileVersionObservable"/>
     /// </summary>
-    /// <param name="modPage">
+    /// <param name="modUpdateOnPage">
     ///     The update info for the mod on a mod page.
     ///     We can either mutate the update info, or return 'null' to discard the update data.
     /// </param>
     /// <returns>The modified update data, or 'null' to discard the update data entirely</returns>
-    public ModUpdateOnPage? SelectMod(ModUpdateOnPage modPage)
+    public ModUpdateOnPage? SelectMod(ModUpdateOnPage modUpdateOnPage)
     {
-        return modPage with
+        return modUpdateOnPage with
         {
-            NewerFiles = modPage.NewerFiles.Where(f => !ShouldIgnoreFile(f)).ToArray(),
+            NewerFiles = modUpdateOnPage.NewerFiles.Where(f => !ShouldIgnoreFile(f)).ToArray(),
         };
     }
     
