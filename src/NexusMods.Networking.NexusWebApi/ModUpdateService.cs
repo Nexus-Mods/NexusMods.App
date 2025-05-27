@@ -6,7 +6,10 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
-using System;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -28,7 +31,12 @@ public class ModUpdateService : IModUpdateService, IDisposable
     // Use SourceCache to maintain latest values per key
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
+    
+    // Trigger for forcing filter re-evaluation
+    private readonly Subject<Unit> _filterTrigger = new();
+    
     private readonly IDisposable _updateObserver;
+    private readonly IDisposable _ignoreFilterObserver;
     private DateTimeOffset _lastUpdateCheckTime = DateTimeOffset.MinValue;
 
     /// <summary/>
@@ -49,6 +57,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
         // Note(sewer): This is a singleton, so we don't actually need to dispose, that said
         // I'm opting to for the sake of following good practices.
         _updateObserver = ObserveUpdates();
+        _ignoreFilterObserver = ObserveIgnoreFilterChanges();
     }
 
     private IDisposable ObserveUpdates()
@@ -97,6 +106,28 @@ public class ModUpdateService : IModUpdateService, IDisposable
                     affectedModPage.Add(change.Current.ModPageMetadataId);
                 
                 NotifyForUpdatesOfSpecificModPages(affectedModPage);
+            });
+    }
+
+    private IDisposable ObserveIgnoreFilterChanges()
+    {
+        return IgnoreFileUpdate.ObserveAll(_connection)
+            .Subscribe(changes =>
+            {
+                // Note(sewer):
+                // When ignored mods change, we need to refresh all filtered views
+                // so that observables with custom select functions can re-evaluate
+                // whether files should be shown or hidden based on the new ignore state.
+                _filterTrigger.OnNext(Unit.Default);
+
+                // Technically speaking, since the user can supply a custom filter that is not attached
+                // to `IgnoreFileUpdate`, having this here is not the 'correct' thing to do. Instead,
+                // an external caller should activate this. But, in practice, in the actual App, as of
+                // now, this is the only filter that is used.
+
+                // Should there be a need to add another filter, we can have an API like 
+                // `AddFilterTrigger` that allows external callers to add their own mechanisms
+                // for specifying when filtered viewes should be re-evaluated.
             });
     }
 
@@ -209,19 +240,61 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, ModUpdateOnPage?>? select = null)
     {
-        return _newestModVersionCache.Connect()
+        var observable = _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
+        
+        if (select == null) 
+            return observable;
+        
+        // When a custom selector is provided, also trigger on the filter trigger
+        var triggerObservable = _filterTrigger
+            .Select(_ => _newestModVersionCache.Lookup(current.Id))
+            .Select(kv => kv.HasValue ? Optional.Some(kv.Value.Value) : Optional<ModUpdateOnPage>.None);
+        
+        // Merge the observables, apply the filter, THEN apply distinct
+        return observable
+            .Merge(triggerObservable)
+            .Select(optional => 
+            {
+                if (!optional.HasValue)
+                    return Optional<ModUpdateOnPage>.None;
+                
+                var result = select(optional.Value);
+                return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdateOnPage>.None;
+            })
+            .DistinctUntilChanged();
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
     {
-        return _newestModOnAnyPageCache.Connect()
+        var observable = _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
+        
+        if (select == null) 
+            return observable;
+        
+        // When a custom selector is provided, also trigger on the filter trigger
+        var triggerObservable = _filterTrigger
+            .Select(_ => _newestModOnAnyPageCache.Lookup(current.Id))
+            .Select(kv => kv.HasValue ? Optional.Some(kv.Value.Value) : Optional<ModUpdatesOnModPage>.None);
+        
+        // Merge the observables, apply the filter, THEN apply distinct
+        return observable
+            .Merge(triggerObservable)
+            .Select(optional => 
+            {
+                if (!optional.HasValue)
+                    return Optional<ModUpdatesOnModPage>.None;
+                
+                var result = select(optional.Value);
+                return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdatesOnModPage>.None;
+            })
+            .DistinctUntilChanged();
     }
 
     /// <inheritdoc />
@@ -229,7 +302,9 @@ public class ModUpdateService : IModUpdateService, IDisposable
     {
         _newestModVersionCache.Dispose();
         _newestModOnAnyPageCache.Dispose();
+        _filterTrigger.Dispose();
         _updateObserver.Dispose();
+        _ignoreFilterObserver.Dispose();
     }
     
     /// <summary>
