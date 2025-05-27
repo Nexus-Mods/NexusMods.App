@@ -82,7 +82,8 @@ public static class Services
         // File Store
         coll.AddAttributeCollection(typeof(ArchivedFileContainer));
         coll.AddAttributeCollection(typeof(ArchivedFile));
-        coll.AddAllSingleton<IFileStore, NxFileStore>();
+        coll.AddSingleton<IFileStore, AggregateFileStore>();
+        coll.AddAllSingleton<IWriteableFileStoreBackend, NxFileStore>();
         
         coll.AddAllSingleton<IToolManager, ToolManager>();
 

@@ -56,20 +56,7 @@ public class ArchiveManagerTests
         // Extract some of the files
         var extractionCount = Random.Shared.Next(fileCount);
         var extractionIdxs = Enumerable.Range(1, extractionCount).Select(_ => Random.Shared.Next(fileCount)).Distinct().ToArray();
-
-        // Extract the files via the in-memory method
-        var extracted = await _manager.ExtractFiles(extractionIdxs.Select(idx => hashes[idx]));
-
-        // Verify the extracted files are correct
-        foreach (var idx in extractionIdxs)
-        {
-            extracted[hashes[idx]].Length.Should().Be(datas[idx].Length,
-                "the extracted file should have the same length as the original file");
-            extracted[hashes[idx]].Should().BeEquivalentTo(datas[idx],
-                "the extracted file should be the same as the original file");
-        }
-
-
+        
         // Extract the files via the file method
         await using var tempFolder = _temporaryFileManager.CreateFolder();
 

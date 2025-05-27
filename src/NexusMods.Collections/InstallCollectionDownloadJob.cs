@@ -335,7 +335,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
                 throw new InvalidOperationException("The file to patch was not found in the archive.");
 
             // Load the source file and check the CRC32 hash
-            var srcData = (await FileStore.Load(file.Hash, token)).ToArray();
+            var srcData = await FileStore.Load(file.Hash, token);
 
             // Calculate the CRC32 hash of the source file
             var srcCrc32 = Crc32.HashToUInt32(srcData.AsSpan());
@@ -348,7 +348,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
                 throw new InvalidOperationException("The patch file was not found in the archive.");
 
             var patchedFile = new MemoryStream();
-            var patchData = (await FileStore.Load(patchFile.Hash, token)).ToArray();
+            var patchData = await FileStore.Load(patchFile.Hash, token);
 
             // Generate the patched file
             BsDiff.BinaryPatch.Apply(new MemoryStream(srcData), () => new MemoryStream(patchData), patchedFile);

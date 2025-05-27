@@ -15,7 +15,15 @@ public interface IFileStore
     /// <param name="hash"></param>
     /// <returns></returns>
     public ValueTask<bool> HaveFile(Hash hash);
-
+    
+    /// <summary>
+    /// Gets a read-only seekable stream for the given file.
+    /// </summary>
+    /// <param name="hash"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
+    
     /// <summary>
     /// Backup the given set of files.
     ///
@@ -43,13 +51,7 @@ public interface IFileStore
     /// to instead maximize performance. The Garbage Collector will remove any duplicates down the road.
     /// </remarks>
     Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default);
-
-    /// <summary>
-    /// Similar to <see cref="BackupFiles(System.Collections.Generic.IEnumerable{NexusMods.Abstractions.IO.ArchivedFileEntry},bool,System.Threading.CancellationToken)"/>
-    /// except the same archive is used.
-    /// </summary>
-    Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default);
-
+    
     /// <summary>
     /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
     /// the extractor needs more direct access (such as memory mapping).
@@ -60,30 +62,9 @@ public interface IFileStore
     Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default);
 
     /// <summary>
-    /// Extract the given files from archives.
-    /// </summary>
-    /// <param name="files"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default);
-
-    /// <summary>
-    /// Gets a read-only seekable stream for the given file.
-    /// </summary>
-    /// <param name="hash"></param>
-    /// <param name="token"></param>
-    /// <returns></returns>
-    Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
-
-    /// <summary>
     /// Load the given file into memory, 
     /// </summary>
     Task<byte[]> Load(Hash hash, CancellationToken token = default);
-
-    /// <summary>
-    /// Retrieves hashes of all files associated with this FileStore.
-    /// </summary>
-    HashSet<ulong> GetFileHashes();
 
     /// <summary>
     /// Locks the file store, preventing it from being used until the returned

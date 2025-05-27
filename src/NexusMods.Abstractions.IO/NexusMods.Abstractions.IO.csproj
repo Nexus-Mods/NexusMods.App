@@ -4,6 +4,7 @@
 
     <ItemGroup>
         <!-- TODO: This library needs stabilized -->
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
         <PackageReference Include="NexusMods.Hashing.xxHash3" />
         <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>

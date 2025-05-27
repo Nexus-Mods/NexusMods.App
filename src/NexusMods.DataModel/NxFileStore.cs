@@ -29,7 +29,7 @@ namespace NexusMods.DataModel;
 /// <summary>
 /// A IFileStore implementation that uses the Nx format for storage.
 /// </summary>
-public class NxFileStore : IFileStore
+public class NxFileStore : IWriteableFileStoreBackend
 {
     private readonly AsyncFriendlyReaderWriterLock _lock = new(); // See details on struct.
     private readonly AbsolutePath[] _archiveLocations;
