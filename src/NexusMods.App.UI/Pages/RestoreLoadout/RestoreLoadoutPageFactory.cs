@@ -1,6 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
+using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Pages.DebugControls;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.RestoreLoadout;
@@ -22,5 +26,22 @@ public class RestoreLoadoutPageFactory : APageFactory<IRestoreLoadoutViewModel, 
         var vm = ServiceProvider.GetRequiredService<IRestoreLoadoutViewModel>();
         vm.LoadoutId = context.LoadoutId;
         return vm;
+    }
+    
+    public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
+    {
+        var vm = ServiceProvider.GetRequiredService<IRestoreLoadoutViewModel>();
+        
+        yield return new PageDiscoveryDetails
+        {
+            SectionName = "Utilities",
+            ItemName = Language.LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_RestoreLoadout,
+            Icon = IconValues.BackupRestore,
+            PageData = new PageData
+            {
+                FactoryId = StaticId,
+                Context = new RestoreLoadoutPageContext(vm.LoadoutId),
+            },
+        };
     }
 }

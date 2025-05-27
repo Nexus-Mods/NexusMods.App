@@ -139,6 +139,7 @@
                     <icons:UnifiedIcon Classes="WindowMaximize" />
                     <icons:UnifiedIcon Classes="WindowMinimize" />
                     <icons:UnifiedIcon Classes="WindowRestore" />
+                    <icons:UnifiedIcon Classes="BackupRestore" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -175,6 +176,9 @@
                     <icons:UnifiedIcon Classes="PictogramCelebrate" />
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramRestorePoints" />
+                    <icons:UnifiedIcon Classes="PictogramRestorePoints" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramRestorePoints" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
@@ -717,5 +721,11 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.WindowRestore">
         <Setter Property="Value" Value="{x:Static icons:IconValues.WindowRestore}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.BackupRestore">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.BackupRestore}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramRestorePoints">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramRestorePoints}" />
     </Style>
 </Styles>

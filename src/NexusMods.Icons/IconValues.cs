@@ -406,6 +406,8 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/dots-vertical/
     public static readonly IconValue MoreVertical = new ProjektankerIcon("mdi-dots-vertical");
     
+    // https://pictogrammers.com/library/mdi/icon/backup-restore/
+    public static readonly IconValue BackupRestore = new ProjektankerIcon("mdi-backup-restore");
 
 #endregion
     
@@ -673,6 +675,10 @@ public static class IconValues
     /// </summary>
     public static readonly IconValue PictogramCelebrate = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg"));
     
+    /// <summary>
+    /// Brand pictogram for Restore Points
+    /// </summary>
+    public static readonly IconValue PictogramRestorePoints = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/restore-points.svg"));
 #endregion
     
 }
