@@ -1,0 +1,90 @@
+name: Update AppStream release file
+
+on:
+  release:
+    types: [published, released, deleted]
+  workflow_dispatch:
+
+jobs:
+  update-assets:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          # Disable automatic token usage to allow `create-pull-request` to handle authentication
+          persist-credentials: false
+          fetch-depth: 0  # Fetch all history for accurate diff detection
+
+      # 2. Set up Python environment
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Specify the Python version you need
+
+      # 3. Install dependencies
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/python/requirements.txt
+
+      # 4. Run the Python script
+      - name: Run Script
+        run: |
+          python scripts/python/releases-to-appstream.py
+
+      # 5. Configure Git for committing changes
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # 6. Check for changes
+      - name: Check for Changes
+        id: changes
+        run: |
+          # Add all changes to staging
+          git add .
+          
+          # Check if there are any staged changes
+          if git diff --cached --quiet; then
+            echo "no_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "no_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 7. Create Pull Request if changes exist
+      - name: Create Pull Request
+        if: steps.changes.outputs.no_changes == 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          # Use the default GITHUB_TOKEN provided by GitHub Actions
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Commit message for the changes
+          commit-message: Update AppStream release
+
+          # Branch name for the PR (includes run ID for uniqueness)
+          branch: update-appstream-release-${{ github.run_id }}
+
+          # Title of the Pull Request
+          title: "Update AppStream release"
+
+          # Body of the Pull Request
+          body: |
+            This PR updates AppStream metadata files on release.
+
+          # Labels to apply to the Pull Request (optional)
+          labels: automated-update
+
+          # Target branch for the PR (default is the repository's default branch)
+          # You can specify a different base branch if needed
+          # base: main
+
+          # Automatically delete the branch after the PR is merged (optional)
+          delete-branch: true
+
+          # If a PR already exists for the same changes, the action will add new commits to it
+          # To prevent duplicate PRs, ensure unique branch names or handle accordingly
