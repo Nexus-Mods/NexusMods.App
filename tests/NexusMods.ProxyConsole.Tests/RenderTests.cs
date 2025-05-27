@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.Sdk.ProxyConsole;
 using Spectre.Console.Testing;
 
 namespace NexusMods.ProxyConsole.Tests;

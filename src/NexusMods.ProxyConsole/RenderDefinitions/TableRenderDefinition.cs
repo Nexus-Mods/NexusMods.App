@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.Sdk.ProxyConsole;
 using Rendering = Spectre.Console.Rendering;
 using Console = Spectre.Console;
+using Table = NexusMods.Sdk.ProxyConsole.Table;
 
 namespace NexusMods.ProxyConsole.RenderDefinitions;
 
 /// <summary>
-/// A definition for rendering <see cref="Table"/>s to the console using Spectre.Console.
+/// A definition for rendering <see cref="Abstractions.Implementations.Table"/>s to the console using Spectre.Console.
 /// </summary>
 public class TableRenderDefinition() : ARenderableDefinition<Table>("2148B17A-D6EE-4ECF-9BB4-E70997DA2365")
 {

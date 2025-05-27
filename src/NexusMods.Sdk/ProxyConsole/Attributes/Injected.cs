@@ -1,12 +1,10 @@
-using System;
+using JetBrains.Annotations;
 
-namespace NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+namespace NexusMods.Sdk.ProxyConsole;
 
 /// <summary>
 /// Marks a parameter as an injected dependency.
 /// </summary>
 [AttributeUsage(AttributeTargets.Parameter)]
-public class InjectedAttribute : Attribute
-{
-
-}
+[PublicAPI]
+public class InjectedAttribute : Attribute;

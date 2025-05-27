@@ -3,6 +3,7 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
     <ItemGroup>
         <PackageReference Include="DynamicData" />
+        <PackageReference Include="MemoryPack" />
         <PackageReference Include="NexusMods.Hashing.xxHash3" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="Polly.Core" />
@@ -10,5 +11,9 @@
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="TransparentValueObjects.Abstractions" />
     </ItemGroup>
-
+    <ItemGroup>
+        <Compile Update="ProxyConsole\DelegateParser.cs">
+            <DependentUpon>IOptionParser.cs</DependentUpon>
+        </Compile>
+    </ItemGroup>
 </Project>

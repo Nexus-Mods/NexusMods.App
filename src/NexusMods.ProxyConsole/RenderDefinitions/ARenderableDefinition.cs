@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 
 using Ansi = Spectre.Console.Rendering;
-using IRenderable = NexusMods.ProxyConsole.Abstractions.IRenderable;
+using IRenderable = NexusMods.Sdk.ProxyConsole.IRenderable;
 
 namespace NexusMods.ProxyConsole.RenderDefinitions;
 

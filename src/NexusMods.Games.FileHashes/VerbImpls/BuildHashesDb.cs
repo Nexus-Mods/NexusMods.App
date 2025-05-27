@@ -19,7 +19,7 @@ using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
-using NexusMods.ProxyConsole.Abstractions;
+using NexusMods.Sdk.ProxyConsole;
 using YamlDotNet.Serialization;
 using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
