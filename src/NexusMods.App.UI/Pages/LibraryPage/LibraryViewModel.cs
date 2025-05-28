@@ -49,6 +49,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
 
     public ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
+    
+    public ReactiveCommand<Unit> DeselectItemsCommand { get; }
 
     public ReactiveCommand<Unit> OpenFilePickerCommand { get; }
 
@@ -104,6 +106,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
 
+        DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
+        {
+            Console.WriteLine("Deselect items");
+            Adapter.SelectedModels.Clear();
+        });
+
+
         SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
         {
             Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value;
@@ -113,12 +122,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             executeAsync: (_, token) => RefreshUpdates(token),
             awaitOperation: AwaitOperation.Switch
         );
+        
         UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException("[Update All] This feature is not yet implemented, please wait for the next release."));
 
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
             .Select(count => count > 0);
-
+        
         InstallSelectedItemsCommand = hasSelection.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: false, cancellationToken),
             awaitOperation: AwaitOperation.Parallel,

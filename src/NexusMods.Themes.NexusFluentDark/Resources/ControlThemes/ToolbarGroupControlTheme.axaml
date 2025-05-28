@@ -1,0 +1,79 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources;assembly=NexusMods.App.UI">
+
+    <Design.PreviewWith>
+        <Border Width="800">
+            <StackPanel>
+                <controls:ToolbarControlGroup>
+                    <controls:StandardButton Text="Button 1" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                    <controls:StandardButton Text="Button 2" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                    <Separator />
+                    <controls:StandardButton Text="Button 3" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                </controls:ToolbarControlGroup>
+                
+                <controls:Toolbar>
+                    
+                    <controls:StandardButton Text="Button 0" Fill="WeakAlt"
+                                             Size="ExtraSmall" />
+                    
+                    <controls:ToolbarControlGroup>
+                        <controls:StandardButton Text="Button 1" Fill="WeakAlt"
+                                                 Size="ExtraSmall" />
+                        <controls:StandardButton Text="Button 2" Fill="WeakAlt"
+                                                 Size="ExtraSmall" />
+                        <Separator />
+                        <controls:StandardButton Text="Button 3" Fill="WeakAlt"
+                                                 Size="ExtraSmall" />
+                    </controls:ToolbarControlGroup>
+                    
+                    <controls:ToolbarControlGroup>
+                        <controls:StandardButton Text="Button 1" Fill="WeakAlt"
+                                                 Size="ExtraSmall" />
+                        <controls:StandardButton Text="Button 2" Fill="WeakAlt"
+                                                 Size="ExtraSmall" />
+                        <Separator />
+                        <controls:StandardButton Text="Button 3" Fill="WeakAlt"
+                                                 Size="ExtraSmall" />
+                    </controls:ToolbarControlGroup>
+                </controls:Toolbar>
+            </StackPanel>
+            
+
+        </Border>
+    </Design.PreviewWith>
+
+    <ControlTheme x:Key="{x:Type controls:ToolbarControlGroup}" TargetType="controls:ToolbarControlGroup">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    MinHeight="{TemplateBinding MinHeight}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}">
+                    <StackPanel Orientation="Horizontal">
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Styles for expected child controls are in src/Themes/NexusMods.Themes.NexusFluentDark/Styles/UserControls/Toolbar/ToolbarGroupStyles.axaml -->
+
+</ResourceDictionary>

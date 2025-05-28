@@ -32,71 +32,93 @@
 
                 <!-- toolbar component -->
                 <controls:Toolbar Margin="24,12, 24, 0">
-                    <!-- fixed height until we have our StandardSplitComponent -->
-                    <SplitButton x:Name="InstallModSplitButton"
-                                 IsVisible="False"
-                                 Height="24"
-                                 Classes="StandardSplitButton"
-                                 Content="{x:Static resources:Language.FileOriginPage_AddMod}"
-                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
-                        <SplitButton.Flyout>
-                            <MenuFlyout>
-                                <MenuItem x:Name="InstallModMenuItem"
-                                          Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
-                                <MenuItem x:Name="AdvancedInstallModMenuItem"
-                                          Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
-                            </MenuFlyout>
-                        </SplitButton.Flyout>
-                    </SplitButton>
 
-                    <controls:StandardButton x:Name="RemoveModButton"
-                                             IsVisible="False"
-                                             Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
-                                             Type="Tertiary"
-                                             Size="ExtraSmall"
-                                             Fill="WeakAlt"
-                                             ShowIcon="Left"
-                                             LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
-                                             ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
+                    <!-- search button group -->
+                    <controls:ToolbarControlGroup>
+                        <controls:StandardButton x:Name="SearchButton"
+                                                 Text="x selected"
+                                                 Type="Tertiary"
+                                                 Size="ExtraSmall"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 ShowLabel="False"
+                                                 LeftIcon="{x:Static icons:IconValues.Search}"
+                                                 ToolTip.Tip="Deselect mods" />
+                    </controls:ToolbarControlGroup>
 
-                    <Separator
-                        IsVisible="False" />
+                    <!-- context button group -->
+                    <controls:ToolbarControlGroup x:Name="ContextControlGroup">
+                        
+                        <controls:StandardButton x:Name="DeselectItemsButton"
+                                                 Text="123 selected"
+                                                 Type="Tertiary"
+                                                 Size="ExtraSmall"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 Click="DeselectItemsButton_OnClick"
+                                                 LeftIcon="{x:Static icons:IconValues.Close}"
+                                                 ToolTip.Tip="Deselect mods" />
+                        
+                        <!-- fixed height until we have our StandardSplitComponent -->
+                        <SplitButton x:Name="InstallModSplitButton"
+                                     Height="24"
+                                     Classes="StandardSplitButton"
+                                     Content="{x:Static resources:Language.FileOriginPage_AddMod}"
+                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
+                            <SplitButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem x:Name="InstallModMenuItem"
+                                              Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
+                                    <MenuItem x:Name="AdvancedInstallModMenuItem"
+                                              Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
+                                </MenuFlyout>
+                            </SplitButton.Flyout>
+                        </SplitButton>
 
-                    <controls:StandardButton
-                        Text="Add"
-                        Type="Tertiary"
-                        Size="ExtraSmall"
-                        Fill="WeakAlt"
-                        ShowIcon="Both"
-                        LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
-                        RightIcon="{x:Static icons:IconValues.ChevronDown}">
-                        <controls:StandardButton.Flyout>
-                            <MenuFlyout>
-                                <MenuItem x:Name="GetModsFromDriveButton"
-                                          Header="{x:Static resources:Language.FileOriginsPage_FromDrive}">
-                                    <MenuItem.Icon>
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem x:Name="GetModsFromNexusButton"
-                                          Header="{x:Static resources:Language.FileOriginsPage_FromNexusMods}">
-                                    <MenuItem.Icon>
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </MenuFlyout>
-                        </controls:StandardButton.Flyout>
+                        <controls:StandardButton x:Name="RemoveModButton"
+                                                 Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
+                                                 Type="Tertiary"
+                                                 Size="ExtraSmall"
+                                                 Fill="WeakAlt"
+                                                 ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
 
-                    </controls:StandardButton>
-
-                    <!-- Updates Section -->
-                    <Separator />
+                        
+                    </controls:ToolbarControlGroup>
 
                     <!-- 'Updates' button. -->
-                    <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="ExtraSmall"
-                                             Type="Tertiary" Fill="WeakAlt"
-                                             LeftIcon="{x:Static icons:IconValues.Refresh}"
-                                             ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
+                    <controls:ToolbarControlGroup>
+                        <controls:StandardButton
+                            Text="Add"
+                            Type="Tertiary"
+                            Size="ExtraSmall"
+                            Fill="WeakAlt"
+                            ShowIcon="Both"
+                            LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
+                            RightIcon="{x:Static icons:IconValues.ChevronDown}">
+                            <controls:StandardButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem x:Name="GetModsFromDriveButton"
+                                              Header="{x:Static resources:Language.FileOriginsPage_FromDrive}">
+                                        <MenuItem.Icon>
+                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                    <MenuItem x:Name="GetModsFromNexusButton"
+                                              Header="{x:Static resources:Language.FileOriginsPage_FromNexusMods}">
+                                        <MenuItem.Icon>
+                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </controls:StandardButton.Flyout>
+                        </controls:StandardButton>
+                        <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="ExtraSmall"
+                                                 Type="Tertiary" Fill="WeakAlt"
+                                                 LeftIcon="{x:Static icons:IconValues.Refresh}"
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
+                    </controls:ToolbarControlGroup>
                 </controls:Toolbar>
 
 
