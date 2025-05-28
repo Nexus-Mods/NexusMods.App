@@ -1,6 +1,5 @@
 using System.Diagnostics;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Abstractions.Cli;
 

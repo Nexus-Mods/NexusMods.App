@@ -40,10 +40,7 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
                 .BindTo(this, x => x.MenuItemsControl.ItemsSource)
                 .DisposeWith(disposables);
             
-            // Only show Loadout entry if number of collections is greater than 1
-            this.WhenAnyValue(view => view.ViewModel!.LeftMenuCollectionItems.Count)
-                .Select(count => count > 1)
-                .BindTo(this, view => view.LoadoutItem.IsVisible)
+            this.OneWayBind(ViewModel, vm => vm.HasSingleCollection, view => view.LoadoutItem.IsVisible, input => !input)
                 .DisposeWith(disposables);
             
             InstalledModsSectionText.Text = Language.LeftMenu_Label_Installed_Mods.ToUpperInvariant();

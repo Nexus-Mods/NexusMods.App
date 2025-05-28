@@ -29,7 +29,7 @@
             <TextBlock
                 Text="{Binding AppName, RelativeSource={RelativeSource AncestorType={x:Type developmentBuildBanner:DevelopmentBuildBannerView}}}"
                 Theme="{StaticResource BodyMDSemiTheme}"
-                Foreground="{StaticResource StardewLinearGradientBrush}"
+                Foreground="{StaticResource AppLinearGradientBrush}"
                 VerticalAlignment="Center"/>
             
             <TextBlock

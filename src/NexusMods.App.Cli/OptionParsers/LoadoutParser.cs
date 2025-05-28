@@ -2,9 +2,9 @@ using System.Globalization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI.OptionParsers;
 

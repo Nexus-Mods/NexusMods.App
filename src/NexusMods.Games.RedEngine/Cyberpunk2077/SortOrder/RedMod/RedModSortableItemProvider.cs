@@ -4,12 +4,12 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using R3;
 
 
@@ -340,6 +340,8 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
         var newSortOrder = new Abstractions.Loadouts.SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
+            // TODO: update to use the collection group id if dealing with a collection sort order
+            ParentEntity = loadoutId,
             SortOrderTypeId = parentFactory.SortOrderTypeId,
         };
 

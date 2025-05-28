@@ -11,7 +11,6 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Steam.Values;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
@@ -19,6 +18,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.Games.FileHashes;
 

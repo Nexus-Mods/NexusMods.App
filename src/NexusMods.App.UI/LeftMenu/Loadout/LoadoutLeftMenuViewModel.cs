@@ -19,8 +19,8 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Pages.Diagnostics;
-using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -28,8 +28,10 @@ using NexusMods.Collections;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
 
@@ -42,6 +44,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
     [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
+    [Reactive] public bool HasSingleCollection { get; private set; } = true;
     public IApplyControlViewModel ApplyControlViewModel { get; }
 
     private ReadOnlyObservableCollection<ILeftMenuItemViewModel> _leftMenuCollectionItems = new([]);
@@ -248,8 +251,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                             WorkspaceId,
                             new PageData
                             {
-                                FactoryId = ItemContentsFileTreePageFactory.StaticId,
-                                Context = new ItemContentsFileTreePageContext
+                                FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+                                Context = new LoadoutGroupFilesPageContext
                                 {
                                     GroupIds = [ group.LoadoutItemGroupId ],
                                     IsReadOnly = false,
@@ -299,6 +302,15 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 LeftMenuItemLibrary
                     .WhenAnyValue(item => item.IsActive, item => item.IsSelected, (isActive, isSelected) => isActive || isSelected)
                     .Subscribe(isActive => NewDownloadModelCount = isActive ? 0 : NewDownloadModelCount)
+                    .DisposeWith(disposable);
+
+                CollectionGroup.ObserveAll(conn)
+                    .Filter(collection => collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutContext.LoadoutId)
+                    .Transform(collection => collection.Id)
+                    .QueryWhenChanged(collections => collections.Count == 1)
+                    .ToObservable()
+                    .ObserveOnUIThreadDispatcher()
+                    .Subscribe(hasSingleCollection => HasSingleCollection = hasSingleCollection)
                     .DisposeWith(disposable);
             }
         );

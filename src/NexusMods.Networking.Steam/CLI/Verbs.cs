@@ -2,16 +2,13 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.Steam.CLI;
 
@@ -91,10 +88,19 @@ public static class Verbs
                         var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
                         {
                             manifestPath.Parent.CreateDirectory();
-                            await using var outputStream = manifestPath.Create();
-                            await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions,
-                                token
-                            );
+                            while (true)
+                            {
+                                try
+                                {
+                                    await using var outputStream = manifestPath.Create();
+                                    await JsonSerializer.SerializeAsync(outputStream, manifest, indentedOptions, token);
+                                    break;
+                                }
+                                catch (IOException)
+                                {
+                                    await Task.Delay(1000, token);
+                                }
+                            }
                         }
 
                         await IndexManifest(steamSession, renderer, steamAppId,

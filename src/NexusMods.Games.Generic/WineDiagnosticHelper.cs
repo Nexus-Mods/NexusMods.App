@@ -3,7 +3,7 @@ using System.Text;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
-using NexusMods.Extensions.BCL;
+using NexusMods.Sdk;
 
 namespace NexusMods.Games.Generic;
 

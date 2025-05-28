@@ -4,7 +4,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.CrossPlatform;
-using NexusMods.Extensions.Hashing;
 using NexusMods.Games.Generic;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -123,7 +122,7 @@ public class AGCStubbedGameTest<TTest> : AIsolatedGameTest<TTest, StubbedGame>
         file.Seek(0, SeekOrigin.Begin);
 
         // Get the hash of the item we expect after first synchronize.
-        ExpectedHash = await file.XxHash3Async(CancellationToken.None);
+        ExpectedHash = await file.HashingCopyAsync(Stream.Null, CancellationToken.None);
     }
     
     protected override IServiceCollection AddServices(IServiceCollection services)

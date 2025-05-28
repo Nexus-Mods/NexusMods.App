@@ -11,20 +11,17 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
-using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Extensions.BCL;
-using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Collections;
 
@@ -123,11 +120,11 @@ internal static class Verbs
     [Verb("create-collection", "Creates a collection")]
     private static async Task<int> CreateCollection(
         [Option("l", "loadout", "Loadout")] Loadout.ReadOnly loadout,
-        [Option("s", "slug", "Slug")] string slug,
         [Injected] IConnection connection,
         [Injected] IGameDomainToGameIdMappingCache mappingCache,
         [Injected] ILoginManager loginManager,
         [Injected] ILibraryService libraryService,
+        [Injected] NexusModsLibrary nexusModsLibrary,
         [Injected] TemporaryFileManager temporaryFileManager,
         [Injected] JsonSerializerOptions jsonSerializerOptions,
         [Injected] CancellationToken cancellationToken)
@@ -163,15 +160,13 @@ internal static class Verbs
 
         using var tx = connection.BeginTransaction();
 
-        var (collectionManifest, collectionMetadata, collectionRevisionManifest) = CollectionCreator.CreateCollection(
-            tx: tx,
+        var collectionManifest = CollectionCreator.LoadoutItemGroupToCollectionManifest(
             group: collectionGroup.AsLoadoutItemGroup(),
             mappingCache: mappingCache,
-            author: user,
-            collectionSlug: CollectionSlug.From(slug)
+            author: user
         );
 
-        await AddManifest(libraryService, temporaryFileManager, jsonSerializerOptions, tx, collectionManifest, collectionMetadata, collectionRevisionManifest, cancellationToken);
+        await AddManifest(libraryService, nexusModsLibrary, temporaryFileManager, jsonSerializerOptions, tx, collectionManifest, cancellationToken);
 
         await tx.Commit();
         return 0;
@@ -179,12 +174,11 @@ internal static class Verbs
 
     private static async ValueTask AddManifest(
         ILibraryService libraryService,
+        NexusModsLibrary nexusModsLibrary,
         TemporaryFileManager temporaryFileManager,
         JsonSerializerOptions jsonSerializerOptions,
         ITransaction tx,
         CollectionRoot collectionManifest,
-        CollectionMetadata.New collectionMetadata,
-        CollectionRevisionMetadata.New collectionRevisionMetadata,
         CancellationToken cancellationToken)
     {
         await using var archiveFile = temporaryFileManager.CreateFile(ext: Extension.FromPath(".zip"));
@@ -197,12 +191,15 @@ internal static class Verbs
             await JsonSerializer.SerializeAsync(entryStream, collectionManifest, jsonSerializerOptions, cancellationToken: cancellationToken);
         }
 
+        var streamFactory = new NativeFileStreamFactory(archiveFile.Path);
+        var revision = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
+
         var libraryFile = await libraryService.AddLibraryFile(tx, archiveFile);
 
         _ = new NexusModsCollectionLibraryFile.New(tx, libraryFile.Id)
         {
-            CollectionSlug = collectionMetadata.Slug,
-            CollectionRevisionNumber = collectionRevisionMetadata.RevisionNumber,
+            CollectionSlug = revision.Collection.Slug,
+            CollectionRevisionNumber = revision.RevisionNumber,
             LibraryFile = libraryFile,
         };
     }

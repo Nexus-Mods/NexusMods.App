@@ -6,7 +6,7 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.StardewValley.WebAPI;
 using NexusMods.Paths;

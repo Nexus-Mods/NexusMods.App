@@ -8,7 +8,6 @@ using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
-using NexusMods.Abstractions.MnemonicDB.Analyzers;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
@@ -18,13 +17,13 @@ using NexusMods.DataModel.SchemaVersions;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
 using NexusMods.DataModel.Synchronizer;
-using NexusMods.Extensions.DependencyInjection;
+using NexusMods.DataModel.Undo;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk;
 
 namespace NexusMods.DataModel;
 
@@ -38,7 +37,6 @@ public static class Services
     public static IServiceCollection AddDataModel(this IServiceCollection coll)
     {
         coll.AddMnemonicDB();
-        coll.AddAnalyzers();
         coll.AddMigrations();
 
         // Settings
@@ -102,6 +100,9 @@ public static class Services
         
         
         coll.AddPersistedDbResourceModel();
+        
+        // Undo
+        coll.AddSingleton<UndoService>();
 
         // Verbs
         coll.AddLoadoutManagementVerbs()

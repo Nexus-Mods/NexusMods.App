@@ -22,6 +22,11 @@ public record LoadoutPageContext : IPageFactoryContext
     /// If provided, will limit the scope of items shown to the group with the given ID.
     /// </summary>
     public required Optional<LoadoutItemGroupId> GroupScope { get; init; }
+
+    /// <summary>
+    /// If provided, will create the page with the given sub-tab selected.
+    /// </summary>
+    public Optional<LoadoutPageSubTabs> SelectedSubTab { get; init; } = LoadoutPageSubTabs.Mods;
 }
 
 [UsedImplicitly]
@@ -41,7 +46,13 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
 
     public override ILoadoutViewModel CreateViewModel(LoadoutPageContext context)
     {
-        var vm = new LoadoutViewModel(ServiceProvider.GetRequiredService<IWindowManager>(), ServiceProvider, context.LoadoutId, context.GroupScope);
+        var vm = new LoadoutViewModel(
+            ServiceProvider.GetRequiredService<IWindowManager>(),
+            ServiceProvider,
+            context.LoadoutId,
+            context.GroupScope,
+            context.SelectedSubTab
+        );
         return vm;
     }
 
@@ -65,4 +76,10 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
             },
         };
     }
+}
+
+public enum LoadoutPageSubTabs
+{
+    Mods = 0,
+    Rules = 1,
 }

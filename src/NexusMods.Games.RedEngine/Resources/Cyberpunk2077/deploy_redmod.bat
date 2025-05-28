@@ -31,4 +31,4 @@ if not exist "redMod.exe" (
 )
 
 echo Launching redMod.exe with deploy parameter...
-redMod.exe deploy
+redMod.exe %*

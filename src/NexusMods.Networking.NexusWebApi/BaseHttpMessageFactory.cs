@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.BuildInfo;
 
@@ -7,8 +8,8 @@ namespace NexusMods.Networking.NexusWebApi;
 public class BaseHttpMessageFactory : IHttpMessageFactory
 {
     // https://help.nexusmods.com/article/114-api-acceptable-use-policy
-    private const string HeaderApplicationVersion = "Application-Version";
-    private const string HeaderApplicationName = "Application-Name";
+    internal const string HeaderApplicationVersion = "Application-Version";
+    internal const string HeaderApplicationName = "Application-Name";
 
     /// <inheritdoc/>
     public virtual ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
@@ -21,8 +22,8 @@ public class BaseHttpMessageFactory : IHttpMessageFactory
     }
 
     /// <inheritdoc/>
-    public virtual ValueTask<bool> IsAuthenticated() => ValueTask.FromResult(false);
+    public virtual AuthenticationHeaderValue? GetAuthenticationHeaderValue() => null;
 
     /// <inheritdoc/>
-    public virtual ValueTask<HttpRequestMessage?> HandleError(HttpRequestMessage original, HttpRequestException exception, CancellationToken cancellationToken) => ValueTask.FromResult<HttpRequestMessage?>(null);
+    public virtual ValueTask<bool> IsAuthenticated() => ValueTask.FromResult(false);
 }

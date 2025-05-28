@@ -49,7 +49,7 @@ public class FileStoreTests : ACyberpunkIsolatedGameTest<FileStoreTests>
         var dataFileBHashBefore = dataFileBBefore.Value.Hash;
         
         // Act
-        await _libraryService.RemoveItems([libraryItemA.AsLibraryFile().AsLibraryItem()], GarbageCollectorRunMode.RunSynchronously);
+        await _libraryService.RemoveLibraryItems([libraryItemA.AsLibraryFile().AsLibraryItem()], GarbageCollectorRunMode.RunSynchronously);
         
         // Assert
         // Changing A should not affect B

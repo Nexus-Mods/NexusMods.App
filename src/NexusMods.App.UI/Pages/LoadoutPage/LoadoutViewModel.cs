@@ -1,24 +1,26 @@
 using System.ComponentModel;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
+using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.App.UI.Controls.Trees;
-using NexusMods.App.UI.Pages.ItemContentsFileTree;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
+using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -37,11 +39,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CollectionToggleCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
+    public ILibraryService _LibraryService;
     
     [Reactive] public bool IsCollection { get; private set; } 
     [Reactive] public bool IsCollectionEnabled { get; private set; }
+    
+    [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
 
-    public LoadoutViewModel(IWindowManager windowManager, IServiceProvider serviceProvider, LoadoutId loadoutId, Optional<LoadoutItemGroupId> collectionGroupId = default) : base(windowManager)
+    [Reactive] public int ItemCount { get; private set; }
+
+    [Reactive] public bool HasRulesSection { get; private set; } = false;
+    [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
+
+    public LoadoutViewModel(
+        IWindowManager windowManager,
+        IServiceProvider serviceProvider,
+        LoadoutId loadoutId,
+        Optional<LoadoutItemGroupId> collectionGroupId = default,
+        Optional<LoadoutPageSubTabs> selectedSubTab = default) : base(windowManager)
     {
         var loadoutFilter = new LoadoutFilter
         {
@@ -51,6 +66,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
+        _LibraryService = serviceProvider.GetRequiredService<ILibraryService>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
 
         if (collectionGroupId.HasValue)
@@ -63,21 +79,26 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 async (_, _) => await ToggleCollectionGroup(collectionGroupId, !IsCollectionEnabled, connection), 
                 configureAwait: false
             );
+            
+            // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
+            // so we show the `sorting views here` view here instead
+            var isSingleCollectionObservable = CollectionGroup.ObserveAll(connection)
+                .Filter(collection => collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId)
+                .Transform(collection => collection.Id)
+                .QueryWhenChanged(collections => collections.Count == 1)
+                .ToObservable();
+            
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, canEditObservable:isSingleCollectionObservable);
         }
         else
         {
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
         }
-
-        SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
-
-        var hasSelection = Adapter.SelectedModels
-            .ObserveCountChanged()
-            .Select(count => count > 0);
-            
         
+        SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None); 
         
@@ -98,6 +119,18 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
             }
         );
+        
+        var numSortableItemProviders = loadout
+            .InstallationInstance
+            .GetGame()
+            .SortableItemProviderFactories.Length;
+        HasRulesSection = numSortableItemProviders > 0;
+
+        SelectedSubTab = selectedSubTab switch
+        {
+            { HasValue: true, Value: LoadoutPageSubTabs.Rules } => HasRulesSection ? LoadoutPageSubTabs.Rules : LoadoutPageSubTabs.Mods,
+            _ => LoadoutPageSubTabs.Mods,
+        };
 
         ViewFilesCommand = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)
@@ -112,8 +145,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var pageData = new PageData
                     {
-                        FactoryId = ItemContentsFileTreePageFactory.StaticId,
-                        Context = new ItemContentsFileTreePageContext
+                        FactoryId = LoadoutGroupFilesPageFactory.StaticId,
+                        Context = new LoadoutGroupFilesPageContext
                         {
                             GroupIds = [ group.Value.Id ],
                             IsReadOnly = isReadonly,
@@ -146,17 +179,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
                     .ToHashSet()
                     .Where(id => !IsRequired(id, connection))
+                    .Select(x => (LibraryLinkedLoadoutItemId)x.Value)
                     .ToArray();
 
                 if (ids.Length == 0) return;
-                using var tx = connection.BeginTransaction();
-
-                foreach (var id in ids)
-                {
-                    tx.Delete(id, recursive: true);
-                }
-
-                await tx.Commit();
+                await _LibraryService.RemoveLinkedItemsFromLoadout(ids);
             },
             awaitOperation: AwaitOperation.Sequential,
             initialCanExecute: false,
@@ -192,7 +219,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .Select(connection, static (model, connection) =>
                 {
                     if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-                    return LoadoutItemGroupFileTreeViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
+                    return LoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
                 })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)
@@ -206,6 +233,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .Subscribe(isEnabled => IsCollectionEnabled = isEnabled)
                     .AddTo(disposables);
             }
+
+            LoadoutDataProviderHelper.CountAllLoadoutItems(serviceProvider, loadoutFilter)
+                .OnUI()
+                .Subscribe(count => ItemCount = count)
+                .DisposeWith(disposables);
+
         });
     }
 

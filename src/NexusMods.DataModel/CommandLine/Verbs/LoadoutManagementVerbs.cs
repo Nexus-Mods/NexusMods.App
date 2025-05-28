@@ -10,11 +10,11 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
+using NexusMods.DataModel.Undo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 
@@ -39,12 +39,15 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => SetVersion)
             .AddVerb(() => Synchronize)
             .AddVerb(() => InstallMod)
+            .AddVerb(() => Reindex)
             .AddVerb(() => ListLoadouts)
             .AddVerb(() => BackupFiles)
             .AddVerb(() => ListGroupContents)
             .AddVerb(() => ListGroups)
             .AddVerb(() => DeleteGroupItems)
-            .AddVerb(() => CreateLoadout);
+            .AddVerb(() => CreateLoadout)
+            .AddVerb(() => ListRevisions)
+            .AddVerb(() => Revert);
     
     [Verb("loadout version set", "Sets the game version for a loadout")]
     private static async Task<int> SetVersion([Injected] IRenderer renderer,
@@ -133,6 +136,17 @@ public static class LoadoutManagementVerbs
             await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
             return 0;
         });
+    }
+    
+    [Verb("loadout reindex", "Re-indexes the on-disk state of the loadout")]
+    private static async Task<int> Reindex([Injected] IRenderer renderer,
+        [Option("l", "loadout", "loadout to add the mod to")] Loadout.ReadOnly loadout,
+        [Injected] CancellationToken token)
+    {
+        await renderer.Text("Reindexing {0}", loadout.Name);
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        await synchronizer.RescanFiles(loadout.InstallationInstance, true);
+        return 0;
     }
 
 
@@ -236,7 +250,45 @@ public static class LoadoutManagementVerbs
 
         return 0;
     }
+    
+    [Verb("loadout revisions", "Lists revisions for a loadout")]
+    private static async Task<int> ListRevisions([Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
+        [Injected] IConnection connection,
+        [Injected] UndoService undoService,
+        [Injected] CancellationToken token)
+    {
+        
+        var revisions = await undoService.RevisionsFor(loadout);
+        
+        await revisions.OrderBy(r => r.Revision.Timestamp)
+            .Select((r, idx) => (idx, r.Revision.Timestamp, r.Revision.TxEntity, r.ModCount))
+            .RenderTable(renderer, "Rev #", "Timestamp", "Tx", "ModCount");
 
+        return 0;
+    }
+
+    [Verb("loadout revert", "Reverts a loadout to a specific revision")]
+    private static async Task<int> Revert([Injected] IRenderer renderer,
+        [Option("l", "loadout", "Loadout to load")] Loadout.ReadOnly loadout,
+        [Option("r", "revisionNumber", "Revision number to revert to")] int revisionNumber,
+        [Injected] IConnection connection,
+        [Injected] UndoService undoService,
+        [Injected] CancellationToken token)
+    {
+        
+        var revisions = await undoService.RevisionsFor(loadout);
+        
+        var revision = revisions.OrderBy(r => r.Revision.Timestamp)
+            .Select((r, idx) => (Idx: idx, r.Revision))
+            .FirstOrDefault(row => row.Idx == revisionNumber);
+        
+        await undoService.RevertTo(revision.Revision);
+        
+        return 0;
+    }
+
+    
     [Verb("loadout create", "Create a Loadout for a given game")]
     private static async Task<int> CreateLoadout([Injected] IRenderer renderer,
         [Option("g", "game", "Game to create a loadout for")] IGame game,

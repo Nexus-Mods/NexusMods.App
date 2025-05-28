@@ -2,6 +2,7 @@ using System.Text.Json;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -12,11 +13,11 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using StrawberryShake;
 using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
@@ -28,6 +29,7 @@ namespace NexusMods.Networking.NexusWebApi;
 [PublicAPI]
 public partial class NexusModsLibrary
 {
+    private readonly ILogger _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
@@ -44,6 +46,7 @@ public partial class NexusModsLibrary
     public NexusModsLibrary(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _logger = serviceProvider.GetRequiredService<ILogger<NexusModsLibrary>>();
         _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();

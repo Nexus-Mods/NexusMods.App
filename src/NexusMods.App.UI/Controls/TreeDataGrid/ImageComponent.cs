@@ -1,7 +1,6 @@
 using Avalonia.Media.Imaging;
-using BitFaster.Caching;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
@@ -19,13 +18,15 @@ public sealed class ImageComponent : AValueComponent<Bitmap>, IItemModelComponen
     public ImageComponent(
         Bitmap initialValue,
         IObservable<Bitmap> valueObservable,
-        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+        bool subscribeWhenCreated = false,
+        bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread) { }
 
     /// <inheritdoc/>
     public ImageComponent(
         Bitmap initialValue,
         Observable<Bitmap> valueObservable,
-        bool subscribeWhenCreated = false) : base(initialValue, valueObservable, subscribeWhenCreated) { }
+        bool subscribeWhenCreated = false,
+        bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread) { }
 
     /// <inheritdoc/>
     public ImageComponent(Bitmap value) : base(value) { }

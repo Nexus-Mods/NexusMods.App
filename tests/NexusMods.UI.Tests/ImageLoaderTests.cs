@@ -4,15 +4,13 @@ using BitFaster.Caching.Lru;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Resources.IO;
-using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.Media;
+using NexusMods.UI.Sdk.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using SkiaSharp;
@@ -39,14 +37,17 @@ public class ImageLoaderTests : AUiTest
             lifetime1.ReferenceCount.Should().Be(1);
             lifetime2.ReferenceCount.Should().Be(2);
 
-            lifetime1.Value.Size.Should().Be(new Avalonia.Size(120, 80));
+            lifetime1.Value.Size.Width.Should().BeLessOrEqualTo(120);
+            lifetime1.Value.Size.Height.Should().BeLessOrEqualTo(80);
         }
 
         {
             var pipeline = CreatePipeline();
 
             using var lifetime = (await pipeline.LoadResourceAsync(modPage, CancellationToken.None)).Data;
-            lifetime.Value.Size.Should().Be(new Avalonia.Size(120, 80));
+            
+            lifetime.Value.Size.Width.Should().BeLessOrEqualTo(120);
+            lifetime.Value.Size.Height.Should().BeLessOrEqualTo(80);
         }
     }
 

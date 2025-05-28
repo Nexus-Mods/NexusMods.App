@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using NexusMods.Abstractions.GOG.DTOs;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Paths;
 using SmartFormat;

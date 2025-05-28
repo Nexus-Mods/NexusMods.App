@@ -1,6 +1,5 @@
-
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
+using NexusMods.Sdk.ProxyConsole;
+using Table = NexusMods.Sdk.ProxyConsole.Table;
 
 namespace NexusMods.CLI.Tests;
 

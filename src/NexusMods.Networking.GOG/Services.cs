@@ -3,7 +3,7 @@ using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Networking.GOG.CLI;
 using NexusMods.Networking.GOG.Models;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.GOG;
 

@@ -7,6 +7,16 @@ namespace NexusMods.StandardGameLocators.Tests;
 public class WineParserTests
 {
     [Theory]
+    [InlineData("foo bar baz", "")]
+    [InlineData("WINEDLLOVERRIDES=\"foo,bar,baz\" foo bar baz", "foo,bar,baz")]
+    [InlineData("FOO BAR BAZ WINEDLLOVERRIDES=\"foo,bar,baz\" foo bar baz", "foo,bar,baz")]
+    public void Test_GetWineDllOverridesSection(string input, string expected)
+    {
+        var actual = WineParser.GetWineDllOverridesSection(input).ToString();
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
     [MemberData(nameof(TestData_ParseEnvironmentVariable))]
     public void Test_ParseEnvironmentVariable(string input, List<WineDllOverride> expected)
     {
@@ -82,21 +92,21 @@ public class WineParserTests
         return new TheoryData<string, List<WineDllOverride>>
         {
             {
-                "WINEDLLOVERRIDES=\"comdlg32,shell32=n,b\" wine program_name",
+                "comdlg32,shell32=n,b",
                 [
                     new WineDllOverride("comdlg32", [WineDllOverrideType.Native, WineDllOverrideType.BuiltIn]),
                     new WineDllOverride("shell32", [WineDllOverrideType.Native, WineDllOverrideType.BuiltIn]),
                 ]
             },
             {
-                "WINEDLLOVERRIDES=\"comdlg32,shell32=n\" wine program_name",
+                "comdlg32,shell32=n",
                 [
                     new WineDllOverride("comdlg32", [WineDllOverrideType.Native]),
                     new WineDllOverride("shell32", [WineDllOverrideType.Native]),
                 ]
             },
             {
-                "WINEDLLOVERRIDES=\"comdlg32=b,n;shell32=b;comctl32=n;oleaut32=\" wine program_name",
+                "comdlg32=b,n;shell32=b;comctl32=n;oleaut32=",
                 [
                     new WineDllOverride("comdlg32", [WineDllOverrideType.BuiltIn, WineDllOverrideType.Native]),
                     new WineDllOverride("shell32", [WineDllOverrideType.BuiltIn]),

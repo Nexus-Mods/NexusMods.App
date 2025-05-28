@@ -1,4 +1,4 @@
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Paths;
 

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -314,8 +314,15 @@ internal class Client : IClient
                 await using var depotStream = await depotResult.Content.ReadAsStreamAsync(token);
                 await using var depotDeflateStream = new ZLibStream(depotStream, CompressionMode.Decompress);
 
-                var depot = await JsonSerializer.DeserializeAsync<DepotResponse>(depotDeflateStream, _jsonSerializerOptions, token);
-                return depot!.Depot;
+                try
+                {
+                    var depot = await JsonSerializer.DeserializeAsync<DepotResponse>(depotDeflateStream, _jsonSerializerOptions, token);
+                    return depot!.Depot;
+                }
+                catch (JsonException ex)
+                {
+                    throw new Exception($"Failed to deserialize the depot response. {ex.Message}");
+                }
             }
         );
     }

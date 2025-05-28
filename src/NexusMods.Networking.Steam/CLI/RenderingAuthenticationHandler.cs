@@ -1,7 +1,6 @@
-using System.Diagnostics;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Steam;
-using NexusMods.ProxyConsole.Abstractions;
+using NexusMods.Sdk.ProxyConsole;
 using QRCoder;
 
 namespace NexusMods.Networking.Steam.CLI;

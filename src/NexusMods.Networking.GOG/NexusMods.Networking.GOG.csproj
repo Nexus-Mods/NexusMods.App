@@ -23,7 +23,6 @@
       <ProjectReference Include="..\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
       <ProjectReference Include="..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
-      <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

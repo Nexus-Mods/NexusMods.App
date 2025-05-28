@@ -1,13 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.Extensions.DependencyInjection;
-using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.App.BuildInfo;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Networking.NexusWebApi.V1Interop;
+using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -55,8 +52,22 @@ public static class Services
             .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
 
-        collection.AddNexusGraphQLClient()
-            .ConfigureHttpClient(http => http.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql"));
+        collection
+            .AddNexusGraphQLClient()
+            .ConfigureHttpClient((serviceProvider, httpClient) =>
+            {
+                httpClient.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql");
+                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
+
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationName, ApplicationConstants.UserAgentApplicationName);
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationVersion, ApplicationConstants.UserAgentApplicationVersion);
+
+                var authenticationHeaderValue = serviceProvider.GetRequiredService<IHttpMessageFactory>().GetAuthenticationHeaderValue();
+                if (authenticationHeaderValue is null) return;
+
+                httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
+            });
+
         return collection;
     }
 }

@@ -1,6 +1,4 @@
-using System;
-using System.Threading.Tasks;
-using NexusMods.ProxyConsole.Abstractions;
+using NexusMods.Sdk.ProxyConsole;
 using Spectre.Console;
 
 namespace NexusMods.ProxyConsole;
