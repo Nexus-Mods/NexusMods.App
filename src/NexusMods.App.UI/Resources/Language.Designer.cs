@@ -1556,6 +1556,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manage your downloaded mods and collections. Install, update or add more..
+        /// </summary>
+        public static string LibraryPageDescription {
+            get {
+                return ResourceManager.GetString("LibraryPageDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Library.
         /// </summary>
         public static string LibraryPageTitle {
