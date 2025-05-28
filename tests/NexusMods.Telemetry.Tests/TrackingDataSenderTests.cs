@@ -28,6 +28,8 @@ public class TrackingDataSenderTests
 
         var expectedUserAgent = Encoding.UTF8.GetString(TrackingDataSender.CreateUserAgent());
 
+        var tsc = new TaskCompletionSource();
+
         var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();
         messageHandler
             .SendMock(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
@@ -45,7 +47,15 @@ public class TrackingDataSenderTests
                 using var stream = content!.ReadAsStream();
                 using var textReader = new StreamReader(stream, Encoding.UTF8);
                 var res = textReader.ReadToEnd();
-                ExpectJson($$"""{ "requests": ["?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add+Game&e_n=Mount+%26+Blade&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Mount+%26+Blade&h=0&m=0&s=1","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=Foo&cra_tp=System.NotSupportedException","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=bar&cra_tp=System.Diagnostics.UnreachableException"] }""", res);
+                try
+                {
+                    ExpectJson($$"""{ "requests": ["?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add+Game&e_n=Mount+%26+Blade&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Mount+%26+Blade&h=0&m=0&s=1","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=Foo&cra_tp=System.NotSupportedException&cra_ct=v0.0.1","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=bar&cra_tp=System.Diagnostics.UnreachableException&cra_ct=v0.0.1"] }""", res);
+                    tsc.SetResult();
+                }
+                catch (Exception e)
+                {
+                    tsc.SetException(e);
+                }
             });
 
         var sender = new TrackingDataSender(logger: NullLogger<TrackingDataSender>.Instance, loginManager, new HttpClient(messageHandler));
@@ -67,6 +77,7 @@ public class TrackingDataSenderTests
         sender.AddException(aggregateException);
 
         await sender.Run();
+        await tsc.Task;
     }
 
     [Fact]

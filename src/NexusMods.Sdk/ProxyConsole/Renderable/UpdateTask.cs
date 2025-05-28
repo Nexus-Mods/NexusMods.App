@@ -1,12 +1,14 @@
+using JetBrains.Annotations;
 using MemoryPack;
 
-namespace NexusMods.ProxyConsole.Abstractions.Implementations;
+namespace NexusMods.Sdk.ProxyConsole;
 
 /// <summary>
 /// Update the state of a task
 /// </summary>
 [MemoryPackable]
-public partial class UpdateTask : IRenderable
+[PublicAPI]
+public partial class UpdateTask : IRenderable<UpdateTask>
 {
     /// <summary>
     /// The unique identifier for the task

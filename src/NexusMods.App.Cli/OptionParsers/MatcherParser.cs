@@ -1,5 +1,5 @@
 using Microsoft.Extensions.FileSystemGlobbing;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI.OptionParsers;
 

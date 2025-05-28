@@ -1,9 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 

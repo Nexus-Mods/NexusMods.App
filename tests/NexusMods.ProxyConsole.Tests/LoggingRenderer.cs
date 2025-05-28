@@ -1,4 +1,4 @@
-﻿using NexusMods.ProxyConsole.Abstractions;
+﻿using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.ProxyConsole.Tests;
 

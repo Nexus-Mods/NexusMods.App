@@ -1,33 +1,38 @@
-using System;
+using JetBrains.Annotations;
 
-namespace NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+namespace NexusMods.Sdk.ProxyConsole;
 
 /// <summary>
 /// Marks a Parameter as a CLI option.
 /// </summary>
-/// <param name="shortName"></param>
-/// <param name="longName"></param>
-/// <param name="helpText"></param>
 [AttributeUsage(AttributeTargets.Parameter)]
+[PublicAPI]
 public class OptionAttribute(string shortName, string longName, string helpText, bool isOptional = false) : Attribute
 {
     /// <summary>
-    /// The short name of the option. For example `h`
+    /// The short name of the option.
     /// </summary>
+    /// <example>
+    /// h
+    /// </example>
     public string ShortName { get; } = shortName;
 
     /// <summary>
-    /// The long name of the option. For example `help`
+    /// The long name of the option.
     /// </summary>
+    /// <example>
+    /// help
+    /// </example>
     public string LongName { get; } = longName;
 
     /// <summary>
     /// The help text for the option.
     /// </summary>
     public string HelpText { get; } = helpText;
-    
+
     /// <summary>
     /// True if the option is optional, false otherwise.
     /// </summary>
     public bool IsOptional { get; } = isOptional;
 }
+

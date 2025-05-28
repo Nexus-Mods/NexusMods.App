@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.CLI.Types;
 using NexusMods.CrossPlatform.ProtocolRegistration;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI;
 

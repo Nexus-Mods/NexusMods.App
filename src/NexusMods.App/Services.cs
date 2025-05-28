@@ -29,7 +29,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.Steam;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;

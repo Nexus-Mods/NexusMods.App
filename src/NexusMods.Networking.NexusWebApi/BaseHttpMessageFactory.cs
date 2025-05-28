@@ -8,8 +8,8 @@ namespace NexusMods.Networking.NexusWebApi;
 public class BaseHttpMessageFactory : IHttpMessageFactory
 {
     // https://help.nexusmods.com/article/114-api-acceptable-use-policy
-    private const string HeaderApplicationVersion = "Application-Version";
-    private const string HeaderApplicationName = "Application-Name";
+    internal const string HeaderApplicationVersion = "Application-Version";
+    internal const string HeaderApplicationName = "Application-Name";
 
     /// <inheritdoc/>
     public virtual ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)

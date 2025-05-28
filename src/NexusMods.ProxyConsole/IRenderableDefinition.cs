@@ -1,10 +1,5 @@
-using System;
-using System.Threading.Tasks;
-using NexusMods.ProxyConsole.Abstractions;
-using Spectre.Console;
-
+using NexusMods.Sdk.ProxyConsole;
 using Ansi = Spectre.Console.Rendering;
-
 
 namespace NexusMods.ProxyConsole;
 

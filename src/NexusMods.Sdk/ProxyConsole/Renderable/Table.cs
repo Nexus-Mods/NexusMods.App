@@ -1,13 +1,14 @@
-﻿using MemoryPack;
-using NexusMods.ProxyConsole.Abstractions;
+using JetBrains.Annotations;
+using MemoryPack;
 
-namespace NexusMods.ProxyConsole.Abstractions.Implementations;
+namespace NexusMods.Sdk.ProxyConsole;
 
 /// <summary>
 /// A table rendered as an ascii grid.
 /// </summary>
 [MemoryPackable]
-public partial class Table : IRenderable
+[PublicAPI]
+public partial class Table : IRenderable<Table>
 {
     /// <summary>
     /// The columns of the table.

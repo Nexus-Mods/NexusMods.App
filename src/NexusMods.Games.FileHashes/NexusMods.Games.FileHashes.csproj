@@ -16,7 +16,6 @@
       <ProjectReference Include="..\NexusMods.Abstractions.Games\NexusMods.Abstractions.Games.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
       <ProjectReference Include="..\NexusMods.App.Generators.Diagnostics\NexusMods.App.Generators.Diagnostics.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"  />
-      <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>

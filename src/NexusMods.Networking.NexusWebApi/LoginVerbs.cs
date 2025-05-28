@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Networking.NexusWebApi.Auth;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.NexusWebApi;
 

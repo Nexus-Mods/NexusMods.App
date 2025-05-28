@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using NexusMods.ProxyConsole.Abstractions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NexusMods.ProxyConsole.Messages;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.ProxyConsole;
 
