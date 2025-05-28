@@ -101,9 +101,9 @@
                             <StackPanel Orientation="Vertical" Spacing="16">
                                 <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
                                 <navigation:NavigationControl x:Name="ViewLibraryButton"
-                                                              Text="Library"
+                                                              Text="{x:Static resources:Language.LibraryPageTitle}"
                                                               ShowIcon="Left"
-                                                              LeftIcon="{x:Static icons:IconValues.ModLibrary}"
+                                                              LeftIcon="{x:Static icons:IconValues.LibraryOutline}"
                                                               HorizontalAlignment="Center" />
                             </StackPanel>
                         </controls:EmptyState.Subtitle>

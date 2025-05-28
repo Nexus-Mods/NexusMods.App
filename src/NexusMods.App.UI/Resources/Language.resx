@@ -488,6 +488,9 @@
     <data name="LibraryPageTitleToolTip" xml:space="preserve">
         <value>Manage downloaded mods and collections</value>
     </data>
+    <data name="LibraryPageDescription" xml:space="preserve">
+        <value>Manage your downloaded mods and collections. Install, update or add more.</value>
+    </data>
     <data name="FileOriginsPageView_NameHeader" xml:space="preserve">
         <value>Mod name</value>
     </data>

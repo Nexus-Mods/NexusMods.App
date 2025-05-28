@@ -175,6 +175,9 @@
                     <icons:UnifiedIcon Classes="PictogramCelebrate" />
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramLibrary" />
+                    <icons:UnifiedIcon Classes="PictogramLibrary" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramLibrary" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
@@ -717,5 +720,9 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.WindowRestore">
         <Setter Property="Value" Value="{x:Static icons:IconValues.WindowRestore}" />
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.PictogramLibrary">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramLibrary}" />
     </Style>
 </Styles>
