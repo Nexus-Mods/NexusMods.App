@@ -89,9 +89,9 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             LibraryItemId = LibraryItem,
         };
         
-        if (OwnsTransaction)
+        if (OwnsTransaction && Transaction is IMainTransaction mainTransaction)
         {
-            var transactionResult = await Transaction.Commit();
+            var transactionResult = await mainTransaction.Commit();
             Transaction.Dispose();
             return new InstallLoadoutItemJobResult(transactionResult.Remap(loadoutGroup));
         }

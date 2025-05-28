@@ -323,11 +323,11 @@ public class Session : ISteamSession
         var requestCodeResult = await _steamContent.GetManifestRequestCode(depotId.Value, appId.Value, manifestId.Value, branch);
         if (requestCodeResult == 0)
         {
-            _logger.LogWarning("Failed to get request code for depot {0} manifest {1}", depotId.Value, manifestId.Value);
+            _logger.LogWarning("Failed to get request code for depot {DepotId} manifest {ManifestId}", depotId.Value, manifestId.Value);
             throw new Exception("Failed to get request code for depot " + depotId.Value + " manifest " + manifestId.Value);
         }
 
-        _logger.LogInformation("Got request code depot {1} manifest {2}", depotId.Value, manifestId.Value);
+        _logger.LogInformation("Got request code depot {DepotId} manifest {ManifestId}", depotId.Value, manifestId.Value);
 
         _manifestRequestCodes.TryAdd((appId, depotId, manifestId, branch), requestCodeResult);
         return requestCodeResult;

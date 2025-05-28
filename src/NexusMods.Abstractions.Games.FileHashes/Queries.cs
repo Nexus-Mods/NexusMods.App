@@ -27,7 +27,6 @@ public static class Queries
             .Db(Db, file, PathHashRelation.Hash, out var hashRelation)
             .Db(Db, hashRelation, HashRelation.XxHash3, out var xxHash3)
             .DbOrDefault(Db, hashRelation, HashRelation.Md5, out var md5)
-            .N
             .Return(appId, manifest, xxHash3);
         
 }

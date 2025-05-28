@@ -16,22 +16,16 @@ public class ReadOnlyFileStore : IReadOnlyFileStore
 {
     private readonly ISteamSession _session;
     private readonly IFileHashesService _hashesService;
-    private IQueryResult<Hash> _knownHashes;
-    private IQueryResult<(AppId, EntityId, Hash)> _availableFiles;
+    private readonly IQueryResult<Hash> _knownHashes;
+    private readonly IQueryResult<(AppId, EntityId, Hash)> _availableFiles;
     
     public ReadOnlyFileStore(ISteamSession session, IFileHashesService fileHashesService, IConnection connection)
     {
         _session = session;
         _hashesService = fileHashesService;
         _ = _session.Connect(CancellationToken.None);
-        _knownHashes = null!;
-        _availableFiles = null!;
-        Task.Run(() =>
-            {
-                _knownHashes = connection.Topology.Query(Queries.AvailableHashes);
-                _availableFiles = connection.Topology.Query(Queries.AvailableFiles);
-            }
-        );
+        _knownHashes = connection.Topology.QueryNoWait(Queries.AvailableHashes);
+        _availableFiles = connection.Topology.QueryNoWait(Queries.AvailableFiles);
     }
     
     public async ValueTask<bool> HaveFile(Hash hash)
