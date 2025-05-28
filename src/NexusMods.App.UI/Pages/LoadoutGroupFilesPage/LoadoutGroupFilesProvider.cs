@@ -33,9 +33,9 @@ public class LoadoutGroupFilesProvider
         _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
-    private IObservable<IChangeSet<LoadoutFile.ReadOnly, GamePath>> FilteredModFiles(ModFilesFilter filesFilter)
+    private IObservable<IChangeSet<LoadoutItemWithTargetPath.ReadOnly, GamePath>> FilteredModFiles(ModFilesFilter filesFilter)
     {
-        return LoadoutFile
+        return LoadoutItemWithTargetPath
             .ObserveAll(_connection)
             .Filter(x => LoadoutFilesObservableExtensions.FilterEntityId(_connection, filesFilter, x.Id))
             .ChangeKey(FileToGamePath);
@@ -66,7 +66,7 @@ public class LoadoutGroupFilesProvider
     {
         // Files don't have children.
         // We inject the relevant folders at the listener level, i.e. whatever calls `ObserveModFiles`
-        var fileItemModel = new CompositeItemModel<GamePath>(FileToGamePath(modFile))
+        var fileItemModel = new CompositeItemModel<GamePath>(FileToGamePath(modFile.AsLoadoutItemWithTargetPath()))
         {
             HasChildrenObservable = System.Reactive.Linq.Observable.Return(false),
             ChildrenObservable = System.Reactive.Linq.Observable.Empty<IChangeSet<CompositeItemModel<GamePath>, GamePath>>(),
@@ -81,11 +81,11 @@ public class LoadoutGroupFilesProvider
         var itemUpdates = LoadoutFile.Observe(_connection, modFile.Id);
         var nameUpdates = itemUpdates.Select(x => useFullFilePaths ? FileToFilePath(x) : FileToFileName(x));
         var iconUpdates = itemUpdates.Select(FileToIconValue);
-        var sizeUpdates = itemUpdates.Select(x => x.Size);
+        var sizeUpdates = itemUpdates.Select(x => LoadoutFile.Size.TryGetValue(x, out var size) ? size : Size.Zero);
         
         fileItemModel.Add(SharedColumns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: FileToFileName(modFile), valueObservable: nameUpdates));
         fileItemModel.Add(SharedColumns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(initialValue: FileToIconValue(modFile), valueObservable: iconUpdates));
-        fileItemModel.Add(SharedColumns.ItemSizeOverGamePath.ComponentKey, new SizeComponent(initialValue: modFile.Size, valueObservable: sizeUpdates));
+        fileItemModel.Add(SharedColumns.ItemSizeOverGamePath.ComponentKey, new SizeComponent(initialValue: LoadoutFile.Size.TryGetValue(modFile, out var size) ? size : Size.Zero, valueObservable: sizeUpdates));
         // Note(sewer): File Count omitted to avoid rendering a '1' for every file for cleanliness.
         //              Will see how this goes once the columns are actually there.
 
@@ -176,9 +176,9 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
 
 internal static class PathHelpers
 {
-    internal static GamePath FileToGamePath(LoadoutFile.ReadOnly modFile)
+    internal static GamePath FileToGamePath(LoadoutItemWithTargetPath.ReadOnly modFile)
     {
-        var path = modFile.AsLoadoutItemWithTargetPath().TargetPath;
+        var path = modFile.TargetPath;
         return new GamePath(path.Item2, path.Item3);
     }
     internal static string FileToFilePath(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3;
@@ -193,7 +193,7 @@ internal static class LoadoutFilesObservableExtensions
         IConnection connection,
         ModFilesFilter modFilesFilter)
     {
-        return source.ChangeKey(x => FileToGamePath(new LoadoutFile.ReadOnly(connection.Db, x.E)))
+        return source.ChangeKey(x => FileToGamePath(new LoadoutItemWithTargetPath.ReadOnly(connection.Db, x.E)))
               .Filter(datom => FilterEntityId(connection, modFilesFilter, datom.E));
     }
 
