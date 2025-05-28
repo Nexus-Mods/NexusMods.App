@@ -108,8 +108,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
         {
-            Console.WriteLine("Deselect items");
-            Adapter.SelectedModels.Clear();
+            Adapter.ClearSelection();
         });
 
 

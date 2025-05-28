@@ -5,8 +5,8 @@
                     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Width="800">
-            <StackPanel>
+        <Border Width="1000">
+            <StackPanel Spacing="2">
                 <controls:Toolbar>
                     <controls:StandardButton Text="Button 1" Fill="Weak"
                                              Size="ExtraSmall" />
@@ -28,13 +28,32 @@
                 <controls:Toolbar>
                     <controls:StandardButton Text="Button 3" Fill="Weak"
                                              Size="ExtraSmall" />
+                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                        <controls:StandardButton Text="Button 4" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                        <controls:StandardButton Text="Button 5" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                    </ItemsControl>
+                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                        <controls:StandardButton Text="Button 4" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                        <controls:StandardButton Text="Button 5" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                        <controls:StandardButton Text="Button 5" Fill="Weak"
+                                                 Size="ExtraSmall" />
+                    </ItemsControl>
                 </controls:Toolbar>
 
                 <!-- toolbar component -->
                 <controls:Toolbar>
 
+                    <controls:StandardButton Text="Button 1" Fill="Weak"
+                                             Size="ExtraSmall" />
+                    <controls:StandardButton Text="Button 2" Fill="Weak"
+                                             Size="ExtraSmall" />
+
                     <!-- search button group -->
-                    <controls:ToolbarControlGroup>
+                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
                         <controls:StandardButton x:Name="SearchButton"
                                                  Text="x selected"
                                                  Type="Tertiary"
@@ -44,10 +63,16 @@
                                                  ShowLabel="False"
                                                  LeftIcon="{x:Static icons:IconValues.Search}"
                                                  ToolTip.Tip="Deselect mods" />
-                    </controls:ToolbarControlGroup>
+                    </ItemsControl>
+
+                    <SplitButton Height="24">SplitButton</SplitButton>
+                    <ComboBox Height="24" PlaceholderText="Select an item" VerticalAlignment="Center">
+                        <ComboBoxItem>Item 1</ComboBoxItem>
+                        <ComboBoxItem>Item 2</ComboBoxItem>
+                    </ComboBox>
 
                     <!-- context button group -->
-                    <controls:ToolbarControlGroup>
+                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
 
                         <!-- fixed height until we have our StandardSplitComponent -->
                         <SplitButton x:Name="InstallModSplitButton"
@@ -110,7 +135,7 @@
                             </controls:StandardButton.Flyout>
 
                         </controls:StandardButton>
-                    </controls:ToolbarControlGroup>
+                    </ItemsControl>
 
                     <!-- update button group -->
                     <Separator />
@@ -132,7 +157,7 @@
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
         <Setter Property="Margin" Value="0 12 0 0" />
-        <Setter Property="Padding" Value="0" />
+        <Setter Property="Padding" Value="0 0 0 0" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
         <Setter Property="Template">
             <ControlTemplate>
@@ -141,6 +166,34 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="{TemplateBinding VerticalAlignment}"
                     Background="{TemplateBinding Background}"
+                    Padding="{TemplateBinding Padding}">
+                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="ToolbarControlGroup" TargetType="ItemsControl">
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="4" />
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    MinHeight="{TemplateBinding MinHeight}"
+                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
                     Padding="{TemplateBinding Padding}">
                     <ItemsPresenter Name="PART_ItemsPresenter"
                                     ItemsPanel="{TemplateBinding ItemsPanel}" />

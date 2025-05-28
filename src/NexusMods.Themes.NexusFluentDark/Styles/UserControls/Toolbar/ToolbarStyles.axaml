@@ -50,7 +50,7 @@
                 <controls:Toolbar>
 
                     <!-- search button group -->
-                    <StackPanel>
+                    <ItemsControl Theme="{StaticResource ToolbarControlsGroup}">
                         <controls:StandardButton x:Name="SearchButton"
                                                  Text="x selected"
                                                  Type="Tertiary"
@@ -60,10 +60,10 @@
                                                  ShowLabel="False"
                                                  LeftIcon="{x:Static icons:IconValues.Search}"
                                                  ToolTip.Tip="Deselect mods" />
-                    </StackPanel>
+                    </ItemsControl>
 
                     <!-- context button group -->
-                    <StackPanel x:Name="SelectedButtonStack">
+                    <ItemsControl Theme="{StaticResource ToolbarControlsGroup}" x:Name="SelectedButtonStack">
 
                         <!-- fixed height until we have our StandardSplitComponent -->
                         <SplitButton x:Name="InstallModSplitButton"
@@ -126,7 +126,7 @@
                             </controls:StandardButton.Flyout>
 
                         </controls:StandardButton>
-                    </StackPanel>
+                    </ItemsControl>
 
                     <!-- update button group -->
                     <Separator />
@@ -146,11 +146,14 @@
     <!-- Add Styles Here -->
     <Style Selector="controls|Toolbar">
 
-        <Style Selector="^ > Separator">
+        <Style Selector="^ Separator">
             <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             <Setter Property="Margin" Value="2,-4" />
             <Setter Property="Height" Value="{CompiledBinding $parent[controls:Toolbar].Height}" />
             <Setter Property="Width" Value="1" />
         </Style>
+        
     </Style>
+    
+    
 </Styles>

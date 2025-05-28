@@ -34,31 +34,50 @@
                 <controls:Toolbar Margin="24,12, 24, 0">
 
                     <!-- search button group -->
-                    <controls:ToolbarControlGroup>
-                        <controls:StandardButton x:Name="SearchButton"
-                                                 Text="x selected"
-                                                 Type="Tertiary"
-                                                 Size="ExtraSmall"
-                                                 Fill="WeakAlt"
-                                                 ShowIcon="Left"
-                                                 ShowLabel="False"
-                                                 LeftIcon="{x:Static icons:IconValues.Search}"
-                                                 ToolTip.Tip="Deselect mods" />
-                    </controls:ToolbarControlGroup>
+                    <!-- <ItemsControl Template="{StaticResource ToolbarControlGroup}"> -->
+                    <!--     <DockPanel> -->
+                    <!--         <controls:StandardButton x:Name="SearchButton" -->
+                    <!--                                  Text="x selected" -->
+                    <!--                                  Type="Tertiary" -->
+                    <!--                                  Size="ExtraSmall" -->
+                    <!--                                  Fill="WeakAlt" -->
+                    <!--                                  ShowIcon="Left" -->
+                    <!--                                  ShowLabel="False" -->
+                    <!--                                  LeftIcon="{x:Static icons:IconValues.Search}" -->
+                    <!--                                  DockPanel.Dock="Left"/> -->
+                    <!--         <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188"> -->
+                    <!--             <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="Search..." Padding="4 2 24 2" -->
+                    <!--                      Margin="4 0 0 0"/> -->
+                    <!--             <controls:StandardButton x:Name="SearchClearButton" -->
+                    <!--                                      Margin="0 0 4 0" -->
+                    <!--                                      HorizontalAlignment="Right" -->
+                    <!--                                      Type="Tertiary" -->
+                    <!--                                      Size="ExtraSmall" -->
+                    <!--                                      Fill="None" -->
+                    <!--                                      ShowIcon="IconOnly" -->
+                    <!--                                      ShowLabel="False" -->
+                    <!--                                      LeftIcon="{x:Static icons:IconValues.Close}"/> -->
+                    <!--             <Panel.Transitions> -->
+                    <!--                 <Transitions> -->
+                    <!--                     <DoubleTransition Property="Width" Duration="0:0:0.1"/> -->
+                    <!--                 </Transitions> -->
+                    <!--             </Panel.Transitions> -->
+                    <!--         </Panel> -->
+                    <!--     </DockPanel> -->
+                    <!-- </ItemsControl> -->
 
                     <!-- context button group -->
-                    <controls:ToolbarControlGroup x:Name="ContextControlGroup">
-                        
+                    <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+
                         <controls:StandardButton x:Name="DeselectItemsButton"
                                                  Text="123 selected"
                                                  Type="Tertiary"
                                                  Size="ExtraSmall"
                                                  Fill="WeakAlt"
                                                  ShowIcon="Left"
-                                                 Click="DeselectItemsButton_OnClick"
                                                  LeftIcon="{x:Static icons:IconValues.Close}"
                                                  ToolTip.Tip="Deselect mods" />
-                        
+
                         <!-- fixed height until we have our StandardSplitComponent -->
                         <SplitButton x:Name="InstallModSplitButton"
                                      Height="24"
@@ -83,12 +102,10 @@
                                                  ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
                                                  ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
-
-                        
-                    </controls:ToolbarControlGroup>
+                    </ItemsControl>
 
                     <!-- 'Updates' button. -->
-                    <controls:ToolbarControlGroup>
+                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
                         <controls:StandardButton
                             Text="Add"
                             Type="Tertiary"
@@ -118,9 +135,8 @@
                                                  Type="Tertiary" Fill="WeakAlt"
                                                  LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                  ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
-                    </controls:ToolbarControlGroup>
+                    </ItemsControl>
                 </controls:Toolbar>
-
 
                 <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
                                      Header="{x:Static resources:Language.EmptyLibraryTitleText}">

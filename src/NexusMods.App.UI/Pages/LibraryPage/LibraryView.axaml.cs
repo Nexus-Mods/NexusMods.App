@@ -24,9 +24,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
         this.WhenActivated(disposables =>
             {
-                // initially hidden ?
+                // initially hidden
                 ContextControlGroup.IsVisible = false;
-                
                 
                 var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
                 if (storageProvider is not null)
@@ -111,10 +110,5 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     }).AddTo(disposables);
             }
         );
-    }
-
-    private void DeselectItemsButton_OnClick(object? sender, RoutedEventArgs e)
-    {
-        TreeDataGridLibrary?.RowSelection?.Clear();
     }
 }
