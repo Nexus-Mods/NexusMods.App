@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Steam.Values;
+using NexusMods.Cascade;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
@@ -38,6 +39,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     private ConnectedDb? _currentDb;
 
     private readonly ILogger<FileHashesService> _logger;
+    private readonly InletNode<IDb> _globalInlet;
 
     private record ConnectedDb(IDb Db, Connection Connection, DatomStore Store, Backend Backend, DateTimeOffset Timestamp, AbsolutePath Path);
 
@@ -50,6 +52,9 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         _settings = settingsManager.Get<FileHashesServiceSettings>();
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();
         _provider = provider;
+        
+        var globalConnection = _provider.GetRequiredService<IConnection>(); 
+        _globalInlet = globalConnection.Topology.Intern(Queries.Db);
         
         _settings.HashDatabaseLocation.ToPath(_fileSystem).CreateDirectory();
  
@@ -66,6 +71,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         if (latest.Path != default(AbsolutePath))
         {
             _currentDb = OpenDb(latest.PublishTime, latest.Path);
+            _globalInlet.Values = [_currentDb.Db];
         }
         
         // Trigger an update
@@ -161,6 +167,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 if (latest.Path != default(AbsolutePath))
                 {
                     _currentDb = OpenDb(latest.PublishTime, latest.Path);
+                    _globalInlet.Values = [_currentDb.Db];
                     return;
                 }
             }
@@ -209,6 +216,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         
         // open the new database
         _currentDb = OpenDb(release.CreatedAt, finalDir);
+        _globalInlet.Values = [_currentDb.Db];
     }
 
     private AbsolutePath GameHashesReleaseFileName => _settings.HashDatabaseLocation.ToPath(_fileSystem) / _settings.ReleaseFilePath;

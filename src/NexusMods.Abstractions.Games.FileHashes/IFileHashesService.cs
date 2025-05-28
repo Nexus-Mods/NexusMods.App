@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Cascade;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 

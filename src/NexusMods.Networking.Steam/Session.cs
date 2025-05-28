@@ -1,9 +1,13 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
+using NexusMods.Abstractions.Steam.Models;
 using NexusMods.Abstractions.Steam.Values;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.Steam.DTOs;
 using NexusMods.Paths;
 using Polly;
@@ -60,17 +64,30 @@ public class Session : ISteamSession
     private ConcurrentDictionary<(AppId, DepotId), byte[]> _depotKeys = new();
     private ConcurrentDictionary<(AppId, DepotId, ManifestId, string Branch), ulong> _manifestRequestCodes = new();
     internal readonly ResiliencePipeline _pipeline;
+    private readonly IConnection _connection;
+    private readonly ISteamGame[] _steamGames;
 
-    public Session(ILogger<Session> logger, IAuthInterventionHandler handler, IAuthStorage storage)
+    public Session(ILogger<Session> logger, IAuthInterventionHandler handler, IAuthStorage storage, IConnection connection, IEnumerable<ILocatableGame> games)
     {
         _logger = logger;
+        _connection = connection;
         _handler = handler;
         _authStorage = storage;
+        _steamGames = games.OfType<ISteamGame>().ToArray();
+
 
         var steamConfiguration = SteamConfiguration.Create(configurator =>
         {
             // The client will dispose of these on its own
-            configurator.WithHttpClientFactory(() => new HttpClient());
+            configurator.WithHttpClientFactory(() =>
+                {
+                    var client = new HttpClient();
+                    client.DefaultRequestHeaders.UserAgent.Add(
+                        new System.Net.Http.Headers.ProductInfoHeaderValue("NexusMods.Networking.Steam", "1.0")
+                    );
+                    return client;
+                }
+            );
         });
         _steamClient = new SteamClient(steamConfiguration);
         _steamUser = _steamClient.GetHandler<SteamUser>()!;
@@ -108,15 +125,69 @@ public class Session : ISteamSession
     /// </summary>
     internal CDNPool CDNPool => _cdnPool;
 
-    private Task LicenseListCallback(SteamApps.LicenseListCallback arg)
+    private async Task LicenseListCallback(SteamApps.LicenseListCallback arg)
     {
-        return Task.CompletedTask;
+        _logger.LogInformation("Got {LicenseCount} licenses from Steam", arg.LicenseList.Count);
+        var appInfos = await GetAppIdsForPackages(arg.LicenseList.Select(r => r.PackageID));
+
+        var licenses = (from info in appInfos
+            from package in info.Packages.Values
+            from keyvalue in package.KeyValues.Children
+            where keyvalue.Name == "appids"
+            from appId in keyvalue.Children
+            let parsedAppId = AppId.From(uint.Parse(appId.Value ?? "0"))
+            group parsedAppId by PackageId.From(package.ID)
+            into grouped
+            select grouped)
+            .ToArray();
+        
+        _logger.LogInformation("Got details {LicenseCount} licenses from Steam, caching the data", licenses.Length);
+        
+        var db = _connection.Db;
+        using var tx = _connection.BeginTransaction();
+        foreach (var grouping in licenses)
+        {
+            var existing = SteamLicenses.FindByPackageId(db, grouping.Key).FirstOrDefault();
+            if (existing.IsValid())
+            {
+                foreach (var appId in grouping)
+                {
+                    if (!existing.AppIds.Contains(appId)) 
+                        tx.Add(existing.Id, SteamLicenses.AppIds, appId);
+                }
+                foreach (var appId in existing.AppIds)
+                {
+                    if (!grouping.Contains(appId)) 
+                        tx.Retract(existing.Id, SteamLicenses.AppIds, appId);
+                }
+            }
+            else
+            {
+                _ = new SteamLicenses.New(tx)
+                {
+                    PackageId = grouping.Key,
+                    AppIds = grouping.ToList(),
+                };
+            }
+        }
+
+        await tx.Commit();
     }
     
     private async Task LoggedOnCallback(SteamUser.LoggedOnCallback callback)
     {
+        if (callback.Result != EResult.OK)
+        {
+            _logger.LogError("Failed to log on to Steam network: {Result}", callback.Result);
+            _isLoggedOn = false;
+            return;
+        }
+        
         _isLoggedOn = true;
         _logger.LogInformation("Logged on to Steam network.");
+        
+        return;
+
     }
 
     private async Task DisconnectedCallback(SteamClient.DisconnectedCallback callback)
@@ -213,6 +284,18 @@ public class Session : ISteamSession
         if (results is null || results.Count == 0) throw new Exception($"Found no product info for app `{appId}`");
 
         return ProductInfoParser.Parse(results[0]);
+    }
+
+    private async Task<SteamApps.PICSProductInfoCallback[]> GetAppIdsForPackages(IEnumerable<uint> packageIds, CancellationToken cancellationToken = default)
+    {
+        await ConnectedAsync(cancellationToken);
+
+        var jobs = await _steamApps.PICSGetProductInfo([], packageIds.Select(id => new SteamApps.PICSRequest(id)));
+        
+        if (jobs.Failed) 
+            throw new Exception("Failed to get app ids for packages");
+
+        return jobs.Results!.ToArray();
     }
 
     /// <summary>

@@ -2,11 +2,16 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Models\" />
     </ItemGroup>
 </Project>

@@ -35,6 +35,7 @@ public class NxFileStore : IFileStore
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IConnection _conn;
     private readonly ILogger<NxFileStore> _logger;
+    private readonly IReadOnlyFileStore[] _alternativeStores;
 
     /// <summary>
     /// Constructor
@@ -43,9 +44,12 @@ public class NxFileStore : IFileStore
         ILogger<NxFileStore> logger,
         IConnection conn,
         ISettingsManager settingsManager,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        IEnumerable<IReadOnlyFileStore>? alternativeFileStore = null)
     {
         var settings = settingsManager.Get<DataModelSettings>();
+        
+        _alternativeStores = alternativeFileStore?.ToArray() ?? [];
         
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToPath(fileSystem)).ToArray();
         foreach (var location in _archiveLocations)
@@ -59,12 +63,21 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public ValueTask<bool> HaveFile(Hash hash)
+    public async ValueTask<bool> HaveFile(Hash hash)
     {
         using var lck = _lock.ReadLock();
         var db = _conn.Db;
         var archivedFiles = ArchivedFile.FindByHash(db, hash).Any(x => x.IsValid());
-        return ValueTask.FromResult(archivedFiles);
+        if (archivedFiles)
+            return archivedFiles;
+        
+        foreach (var alternativeStore in _alternativeStores)
+        {
+            if (await alternativeStore.HaveFile(hash))
+                return true;
+        }
+
+        return false;
     }
 
     /// <inheritdoc />
@@ -152,7 +165,7 @@ public class NxFileStore : IFileStore
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
-        var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(Environment.ProcessorCount, 1);
+        var groupedFiles = new ConcurrentDictionary<(AbsolutePath? Path, IReadOnlyFileStore? Store), List<(Hash Hash, FileEntry FileEntry, AbsolutePath Dest)>>(Environment.ProcessorCount, 1);
         var createdDirectories = new ConcurrentDictionary<AbsolutePath, byte>();
 
 #if DEBUG
@@ -161,30 +174,37 @@ public class NxFileStore : IFileStore
 
         // Capacity is set to 'expected archive count' + 1.
         var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, 2);
-        Parallel.ForEach(files, file =>
+        await Parallel.ForEachAsync(files, token, async (file, _) =>
         {
             if (TryGetLocation(_conn.Db, file.Hash, fileExistsCache,
                     out var archivePath, out var fileEntry))
             {
-                var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry, AbsolutePath)>());
+                var group = groupedFiles.GetOrAdd((archivePath, null), _ => []);
                 lock (group)
                 {
                     group.Add((file.Hash, fileEntry, file.Dest));
                 }
 
-                // Create the directory, this will speed up extraction in Nx
-                // down the road. Usually the difference is negligible, but in
-                // extra special with 100s of directories scenarios, it can
-                // save a second or two.
-                var containingDir = file.Dest.Parent;
-                if (createdDirectories.TryAdd(containingDir, 0))
-                    containingDir.CreateDirectory();
+                CreateDirectoryIfNeeded(file);
 #if DEBUG
                 Debug.Assert(destPaths.TryAdd(file.Dest, 0), $"Duplicate destination path: {file.Dest}. Should not happen.");
 #endif
             }
             else
             {
+                foreach (var alternativeStore in _alternativeStores)
+                {
+                    if (await alternativeStore.HaveFile(file.Hash))
+                    {
+                        var group = groupedFiles.GetOrAdd((null, alternativeStore), _ => []);
+                        lock (group)
+                        {
+                            group.Add((file.Hash, fileEntry, file.Dest));
+                        }
+                        CreateDirectoryIfNeeded(file);
+                        return;
+                    }
+                }
                 throw new FileNotFoundException($"Missing archive for {file.Hash.ToHex()}");
             }
         });
@@ -192,32 +212,79 @@ public class NxFileStore : IFileStore
         // Extract from all source archives.
         foreach (var group in groupedFiles)
         {
-            await using var file = group.Key.Read();
-            var provider = new FromStreamProvider(file);
-            var unpacker = new NxUnpacker(provider);
+            if (group.Key.Store == null)
+            {
+                await using var file = group.Key.Path!.Value.Read();
+                var provider = new FromStreamProvider(file);
+                var unpacker = new NxUnpacker(provider);
 
-            // Make all output providers.
-            var toExtract = GC.AllocateUninitializedArray<IOutputDataProvider>(group.Value.Count);
-            Parallel.For(0, group.Value.Count, x =>
-            {
-                var entry = group.Value[x];
-                toExtract[x] = new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry);
-            });
+                // Make all output providers.
+                var toExtract = GC.AllocateUninitializedArray<IOutputDataProvider>(group.Value.Count);
+                Parallel.For(0, group.Value.Count, x =>
+                    {
+                        var entry = group.Value[x];
+                        toExtract[x] = new OutputFileProvider(entry.Dest.Parent.GetFullPath(), entry.Dest.FileName, entry.FileEntry);
+                    }
+                );
 
-            try
-            {
-                unpacker.ExtractFiles(toExtract, new UnpackerSettings());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+                try
+                {
+                    unpacker.ExtractFiles(toExtract, new UnpackerSettings());
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Failed to extract files from {Path}", group.Key.Path);
+                    foreach (var entry in group.Value)
+                    {
+                        if (entry.Dest.FileExists)
+                            entry.Dest.Delete();
+                    }
+                    throw;
+                }
 
-            foreach (var toDispose in toExtract)
-            {
-                toDispose.Dispose();
+                foreach (var toDispose in toExtract)
+                {
+                    toDispose.Dispose();
+                }
             }
+            else
+            {
+                var store = group.Key.Store;
+                await Parallel.ForEachAsync(group.Value, token, async (entry, _) =>
+                    {
+                        try
+                        {
+                            // If we have an alternative store, use it.
+                            var stream = await store.GetFileStream(entry.Hash, token);
+                            if (stream == null)
+                                throw new FileNotFoundException($"Missing file {entry.Hash.ToHex()} in alternative store");
+
+                            // Write the file to disk.
+                            await using var fs = entry.Dest.Create();
+                            await stream.CopyToAsync(fs, token);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Failed to extract file {Hash} to {Dest}", entry.Hash.ToHex(), entry.Dest);
+                            // Delete the destination file if it exists, to avoid leaving a partial file.
+                            if (entry.Dest.FileExists) 
+                                entry.Dest.Delete();
+                            throw;
+                        }
+                    }
+                );
+            }
+        }
+
+        void CreateDirectoryIfNeeded((Hash Hash, AbsolutePath Dest) file)
+        {
+            // Create the directory, this will speed up extraction in Nx
+            // down the road. Usually the difference is negligible, but in
+            // extra special with 100s of directories scenarios, it can
+            // save a second or two.
+            var containingDir = file.Dest.Parent;
+            if (createdDirectories.TryAdd(containingDir, 0))
+                containingDir.CreateDirectory();
         }
     }
 
@@ -287,23 +354,34 @@ public class NxFileStore : IFileStore
     }
 
     /// <inheritdoc />
-    public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
+    public async Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
         
         using var lck = _lock.ReadLock();
         if (!TryGetLocation(_conn.Db, hash, null,
-                out var archivePath, out var entry))
+                out var archivePath, out var entry
+            ))
+        {
+            foreach (var alternativeStore in _alternativeStores)
+            {
+                var stream = await alternativeStore.GetFileStream(hash, token);
+                if (stream != null)
+                {
+                    // If we found a stream in an alternative store, return it.
+                    return stream;
+                }
+            }
             throw new Exception($"Missing archive for {hash.ToHex()}");
+        }
 
         var file = archivePath.Read();
 
         var provider = new FromStreamProvider(file);
         var header = HeaderParser.ParseHeader(provider);
 
-        return Task.FromResult<Stream>(
-            new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file)));
+        return new ChunkedStream<ChunkedArchiveStream>(new ChunkedArchiveStream(entry, header, file));
     }
 
     public Task<byte[]> Load(Hash hash, CancellationToken token = default)
