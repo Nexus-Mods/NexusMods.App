@@ -52,7 +52,7 @@
                     <ToggleSwitch x:Name="CollectionToggle" Classes="Compact"
                                   OnContent="{x:Null}"
                                   OffContent="{x:Null}"
-                                  ToolTip.Tip="Toggle on adds this collection to the game and loads it. Toggle off leaves it out."/>
+                                  ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_Toggle_ToolTip}"/>
                 </StackPanel>
             </Grid>
         </Border>
