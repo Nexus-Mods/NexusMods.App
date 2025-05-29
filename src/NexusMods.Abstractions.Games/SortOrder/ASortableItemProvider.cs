@@ -55,6 +55,8 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     /// <inheritdoc />
     public IObservable<IChangeSet<TItem, TKey>> SortableItemsChangeSet { get; }
 
+    public abstract IObservable<IChangeSet<ISortableItem, ISortItemKey>> GetSortableItemsChangeSet();
+    
     /// <inheritdoc />
     public IReadOnlyList<TItem> GetCurrentSorting()
     {

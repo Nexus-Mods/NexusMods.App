@@ -29,3 +29,26 @@ public class RedModSortableItem : ISortableItem<RedModSortableItem, SortItemKey<
     public Optional<LoadoutItemGroupId> ModGroupId { get; set; }
     public bool IsActive { get; set; }
 }
+
+
+public class NewRedModSortableItem : ISortableItem<NewRedModSortableItem, SortItemKey<string>>
+{
+    public NewRedModSortableItem(RelativePath redModFolderName, int sortIndex, string modName, bool isActive)
+    {
+        RedModFolderName = redModFolderName;
+        DisplayName = redModFolderName.ToString();
+        SortIndex = sortIndex;
+        ModName = modName;
+        IsActive = isActive;
+        Key = new SortItemKey<string>(redModFolderName);
+    }
+    public RelativePath RedModFolderName { get; set; }
+
+    public SortItemKey<string> Key { get; }
+
+    public int SortIndex { get; set; }
+    public string DisplayName { get; }
+    public string ModName { get; set; }
+    public Optional<LoadoutItemGroupId> ModGroupId { get; set; }
+    public bool IsActive { get; set; }
+}

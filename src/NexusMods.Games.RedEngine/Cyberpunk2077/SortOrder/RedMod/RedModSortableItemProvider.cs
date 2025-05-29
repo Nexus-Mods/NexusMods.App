@@ -4,6 +4,7 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Cascade;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
@@ -21,6 +22,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
 {
     private readonly IConnection _connection;
     private bool _isDisposed;
+    private readonly SortOrderId _sortOrderId;
 
     private readonly CompositeDisposable _disposables = new();
 
@@ -45,7 +47,8 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
         base(parentFactory, loadoutId, sortOrderModel.AsSortOrder().SortOrderId)
     {
         _connection = connection;
-
+        _sortOrderId = sortOrderModel.AsSortOrder().SortOrderId;
+        
         // load the previously saved order
         var order = RetrieveSortOrder(SortOrderEntityId);
         OrderCache.AddOrUpdate(order);
@@ -114,6 +117,18 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
             .Where(si => enabledRedMods.Any(m => m == si.RedModFolderName))
             .Select(si => si.RedModFolderName.ToString())
             .ToList();
+    }
+
+    public override IObservable<IChangeSet<ISortableItem, ISortItemKey>> GetSortableItemsChangeSet()
+    {
+        return _connection.Topology.Observe(Queries.RedModSortableItemsForSortOrder.Where(row => row.ParentSortOrderId.Equals(_sortOrderId.Value)))
+            .Transform(ISortableItem (tuple) => new NewRedModSortableItem(tuple.Key, tuple.SortIndex, tuple.ParentModName, tuple.IsEnabled))
+            .AddKey(item => item.Key);
+        
+        // safe version
+        return _connection.Topology.Observe(Queries.RedModSortableEntries.Where(row => row.ParentSortOrderId.Equals(_sortOrderId.Value)))
+            .Transform(ISortableItem (tuple) => new NewRedModSortableItem(tuple.Key, tuple.SortIndex, string.Empty, true))
+            .AddKey(item => item.Key);;
     }
 
     public override async Task<IReadOnlyList<RedModSortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)

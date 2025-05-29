@@ -32,7 +32,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         ILoadoutSortableItemProvider sortableItemProvider,
         Observable<ListSortDirection> sortDirectionObservable)
     {
-        var lastIndexObservable = sortableItemProvider.SortableItemsChangeSet
+        var lastIndexObservable = sortableItemProvider.GetSortableItemsChangeSet()
             .QueryWhenChanged(query => GetLastIndex(query.Items.ToList()))
             .ToObservable()
             .Prepend(GetLastIndex(sortableItemProvider.GetCurrentSorting()));
@@ -53,7 +53,7 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
             .Replay(1)
             .RefCount();;
 
-        return sortableItemProvider.SortableItemsChangeSet
+        return sortableItemProvider.GetSortableItemsChangeSet()
             .Transform(item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable, _connection, _thumbnailLoader));
 
         static int GetLastIndex(IReadOnlyList<ISortableItem> items)

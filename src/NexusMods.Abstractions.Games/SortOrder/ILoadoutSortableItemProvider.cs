@@ -27,6 +27,8 @@ public interface ILoadoutSortableItemProvider : IDisposable
     /// </summary>
     public IObservable<IChangeSet<ISortableItem, ISortItemKey>> SortableItemsChangeSet { get; }
 
+    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> GetSortableItemsChangeSet();
+
     /// <summary>
     /// Returns the current sort order of the sortable items in the loadout.
     /// </summary>
