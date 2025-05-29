@@ -1,4 +1,5 @@
 using NexusMods.Abstractions.Games.FileHashes.Models;
+using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Cascade;
 using NexusMods.Cascade.Patterns;
@@ -26,7 +27,17 @@ public static class Queries
             .Db(Db, manifest, SteamManifest.Files, out var file)
             .Db(Db, file, PathHashRelation.Hash, out var hashRelation)
             .Db(Db, hashRelation, HashRelation.XxHash3, out var xxHash3)
-            .DbOrDefault(Db, hashRelation, HashRelation.Md5, out var md5)
             .Return(appId, manifest, xxHash3);
+    
+    /// <summary>
+    /// A flow of all the hashes for a given gog product ID.
+    /// </summary>
+    public static readonly Flow<(ProductId ProductId, Hash Hash)> HashesForProductId =
+        Pattern.Create()
+            .Db(Db, out var manifest, GogBuild.ProductId, out var productId)
+            .Db(Db, manifest, GogBuild.Files, out var file)
+            .Db(Db, file, PathHashRelation.Hash, out var hashRelation)
+            .Db(Db, hashRelation, HashRelation.XxHash3, out var xxHash3)
+            .Return(productId, xxHash3);
         
 }

@@ -145,6 +145,7 @@ public class Session : ISteamSession
         
         var db = _connection.Db;
         using var tx = _connection.BeginTransaction();
+        bool changes = false;
         foreach (var grouping in licenses)
         {
             var existing = SteamLicenses.FindByPackageId(db, grouping.Key).FirstOrDefault();
@@ -152,13 +153,19 @@ public class Session : ISteamSession
             {
                 foreach (var appId in grouping)
                 {
-                    if (!existing.AppIds.Contains(appId)) 
+                    if (!existing.AppIds.Contains(appId))
+                    {
                         tx.Add(existing.Id, SteamLicenses.AppIds, appId);
+                        changes = true;
+                    }
                 }
                 foreach (var appId in existing.AppIds)
                 {
-                    if (!grouping.Contains(appId)) 
+                    if (!grouping.Contains(appId))
+                    {
                         tx.Retract(existing.Id, SteamLicenses.AppIds, appId);
+                        changes = true;
+                    }
                 }
             }
             else
@@ -168,10 +175,12 @@ public class Session : ISteamSession
                     PackageId = grouping.Key,
                     AppIds = grouping.ToList(),
                 };
+                changes = true;
             }
         }
 
-        await tx.Commit();
+        if (changes) 
+            await tx.Commit();
     }
     
     private async Task LoggedOnCallback(SteamUser.LoggedOnCallback callback)

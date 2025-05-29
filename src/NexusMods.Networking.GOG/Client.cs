@@ -155,8 +155,70 @@ internal class Client : IClient
         tx.Add(e, AuthInfo.UserId, ulong.Parse(tokenResponse.UserId));
         await tx.Commit();
         _logger.LogInformation("Logged in successfully to GOG.");
+        _ = RefreshLicenses();
     }
-    
+
+    private async Task RefreshLicenses()
+    {
+        _logger.LogInformation("Refreshing GOG licenses.");
+        var ownedGames = await GetOwnedGames(CancellationToken.None);
+        if (ownedGames == null)
+        {
+            return;
+        }
+
+        var existingLicenses = GOGLicense.All(_connection.Db).ToDictionary(l => l.ProductId, l => l.Id);
+        var changes = false;
+        using var tx = _connection.BeginTransaction();
+        
+        foreach (var license in ownedGames.Owned)
+        {
+            if (existingLicenses.ContainsKey(license))
+                continue;
+
+            var e = tx.TempId();
+            tx.Add(e, GOGLicense.ProductId, license);
+            changes = true;
+        }
+        
+        foreach (var (existing, eid) in existingLicenses)
+        {
+            if (ownedGames.Owned.Contains(existing))
+                continue;
+
+            // If the license is not in the owned games, we can remove it
+            tx.Delete(eid, false);
+            changes = true;
+        }
+        
+        if (changes) 
+            await tx.Commit();
+    }
+
+    private async Task<OwnedGamesList?> GetOwnedGames(CancellationToken token)
+    {
+        return await _pipeline.ExecuteAsync(async token =>
+        {
+            var msg = await CreateMessage(new Uri($"https://embed.gog.com/user/data/games"), CancellationToken.None);
+            using var response = await _client.SendAsync(msg, token);
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return null;
+                else
+                    throw new Exception($"Failed to get license list");
+            }
+
+
+            await using var responseStream = await response.Content.ReadAsStreamAsync(token);
+            var content = await JsonSerializer.DeserializeAsync<OwnedGamesList>(responseStream, _jsonSerializerOptions, token);
+
+            if (content == null)
+                throw new Exception("Failed to deserialize the builds response.");
+
+            return content;
+        }, token);
+    }
 
     /// <summary>
     /// Create a new HttpRequestMessage with the OAuth token.
