@@ -18,3 +18,4 @@ public class Toolbar : ItemsControl
         ItemsPanelProperty.OverrideDefaultValue<Toolbar>(DefaultPanel);
     }
 }
+

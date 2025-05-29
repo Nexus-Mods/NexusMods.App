@@ -49,10 +49,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
 
     public ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
+    
+    public ReactiveCommand<Unit> DeselectItemsCommand { get; }
 
     public ReactiveCommand<Unit> OpenFilePickerCommand { get; }
 
     public ReactiveCommand<Unit> OpenNexusModsCommand { get; }
+    public ReactiveCommand<Unit> OpenNexusModsCollectionsCommand { get; }
 
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
@@ -103,6 +106,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
 
+        DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
+        {
+            Adapter.ClearSelection();
+        });
+
+
         SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
         {
             Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value;
@@ -112,12 +121,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             executeAsync: (_, token) => RefreshUpdates(token),
             awaitOperation: AwaitOperation.Switch
         );
+        
         UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException("[Update All] This feature is not yet implemented, please wait for the next release."));
 
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
             .Select(count => count > 0);
-
+        
         InstallSelectedItemsCommand = hasSelection.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: false, cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
@@ -157,6 +167,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             {
                 var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
                 var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain.Value);
+                await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
+            },
+            awaitOperation: AwaitOperation.Parallel,
+            configureAwait: false
+        );
+        OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(
+            executeAsync: async (_, cancellationToken) =>
+            {
+                var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
+                var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain.Value);
                 await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Parallel,

@@ -26,6 +26,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDragOverSubject { get; } = new();
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDropSubject { get; } = new();
 
+    private TreeDataGridRowSelectionModel<TModel>? _selectionModel;
     public BindableReactiveProperty<ITreeDataGridSource<TModel>> Source { get; } = new();
     public BindableReactiveProperty<bool> ViewHierarchical { get; } = new(value: true);
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
@@ -82,7 +83,8 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                     // NOTE(erri120): we have to do this manually, the TreeDataGrid doesn't deselect when changing source
                     self.SelectedModels.Clear();
 
-                    var (source, selectionObservable) = self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical);
+                    var (source, selection, selectionObservable) = self.CreateSource(self.RootsCollectionChangedView, createHierarchicalSource: viewHierarchical);
+                    self._selectionModel = selection;
 
                     self._selectionModelsSerialDisposable.Disposable = selectionObservable.Subscribe(self, static (eventArgs, self) =>
                     {
@@ -163,6 +165,8 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         });
     }
 
+    public void ClearSelection() => _selectionModel?.Clear();
+
     /// <summary>
     /// Called when a row drag operation is started.
     /// This is only called if <see cref="TreeDataGridViewHelper.SetupTreeDataGridAdapter"/> enableDragAndDrop parameter is set to true.
@@ -235,7 +239,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
 
-    private static (ITreeDataGridSelection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>>) CreateSelection(ITreeDataGridSource<TModel> source)
+    private static (TreeDataGridRowSelectionModel<TModel>, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>>) CreateSelection(ITreeDataGridSource<TModel> source)
     {
         var selection = new TreeDataGridRowSelectionModel<TModel>(source)
         {
@@ -250,7 +254,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         return (selection, selectionObservable);
     }
 
-    private (ITreeDataGridSource<TModel> source, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable) CreateSource(IEnumerable<TModel> models, bool createHierarchicalSource)
+    private (ITreeDataGridSource<TModel> source, TreeDataGridRowSelectionModel<TModel> selection, Observable<TreeSelectionModelSelectionChangedEventArgs<TModel>> selectionObservable) CreateSource(IEnumerable<TModel> models, bool createHierarchicalSource)
     {
         if (createHierarchicalSource)
         {
@@ -259,7 +263,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
             source.Selection = selection;
 
             source.Columns.AddRange(CreateColumns(viewHierarchical: createHierarchicalSource));
-            return (source, selectionObservable);
+            return (source, selection, selectionObservable);
         }
         else
         {
@@ -268,7 +272,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
             source.Selection = selection;
 
             source.Columns.AddRange(CreateColumns(viewHierarchical: createHierarchicalSource));
-            return (source, selectionObservable);
+            return (source, selection, selectionObservable);
         }
     }
 

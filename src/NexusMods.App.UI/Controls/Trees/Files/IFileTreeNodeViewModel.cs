@@ -65,7 +65,7 @@ public interface IFileTreeNodeViewModel : IViewModelInterface, IExpandableItem, 
     /// <returns></returns>
     string ToFormattedFileCount()
     {
-        return FileCount > 0 ? FileCount.ToString() : string.Empty;
+        return FileCount > 0 ? FileCount.ToString("N0") : string.Empty;
     }
 
     string FormattedChangeState => ToFormattedChangeState();

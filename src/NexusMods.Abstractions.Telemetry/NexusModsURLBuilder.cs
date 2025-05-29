@@ -117,6 +117,17 @@ public static class NexusModsUrlBuilder
     }
 
     /// <summary>
+    /// Returns a URI for a game's browse collections page.
+    /// </summary>
+    public static Uri GetBrowseCollectionsUri(GameDomain gameDomain, string? source = ParameterValueSource, string? campaign = null)
+    {
+        // https://www.nexusmods.com/games/stardewvalley/collections
+        // https://www.nexusmods.com/games/cyberpunk2077/collections
+        var url = $"{BaseUrl}/games/{gameDomain}/collections";
+        return CreateUri(url, source: source, campaign: campaign);
+    }
+    
+    /// <summary>
     /// Returns a URI for a collection page.
     /// </summary>
     public static Uri GetCollectionUri(GameDomain gameDomain, CollectionSlug collectionSlug, Optional<RevisionNumber> revisionNumber, string? source = ParameterValueSource, string? campaign = null)
