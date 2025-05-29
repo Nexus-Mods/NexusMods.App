@@ -24,7 +24,7 @@ public interface ILoadOrderManager
 
 /// <summary>
 /// Represents a specific variety of sort order for a specific game.
-/// Handles updating all the SortOrder entities of this variety.
+/// Handles updating SortOrder entities of this variety.
 /// One instance for each variety per game.
 /// </summary>
 /// <examples>

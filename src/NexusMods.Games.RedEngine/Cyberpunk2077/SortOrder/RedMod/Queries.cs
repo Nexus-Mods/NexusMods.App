@@ -53,14 +53,24 @@ public static class Queries
     /// Query to retrieve RedModSortableEntries for a sort order.
     /// Includes the EntityId, Key (RedMod folder name), SortIndex, ParentSortOrderId, and FolderGamePath.
     /// </summary>
-    public static readonly Flow<(EntityId SortablEntityId, RelativePath Key, int SortIndex, EntityId ParentSortOrderId, GamePath FolderGamePath)> RedModSortableEntries =
+    public static readonly Flow<(EntityId SortablEntityId, RelativePath Key, int SortIndex, EntityId ParentSortOrderId)> RedModSortableEntries =
         Pattern.Create()
             .Db(out var sortableEntry, SortableEntry.ParentSortOrder, out var sortOrderId)
             .Db(sortableEntry, RedModSortableEntry.RedModFolderName, out var key)
             .Db(sortableEntry, SortableEntry.SortIndex, out var sortIndex)
+            .Return(sortableEntry, key, sortIndex, sortOrderId);
+    
+    /// <summary>
+    /// Query to retrieve RedModSortableEntries for a sort order.
+    /// Includes the EntityId, Key (RedMod folder name), SortIndex, ParentSortOrderId, and FolderGamePath.
+    /// </summary>
+    public static readonly Flow<(EntityId SortablEntityId, RelativePath Key, int SortIndex, EntityId ParentSortOrderId, GamePath FolderGamePath)> RedModSortableEntriesWithGamePath =
+        Pattern.Create()
+            .Match(RedModSortableEntries, out var sortableEntry, out var key, out var sortIndex, out var sortOrderId)
             // TODO: Fix path for Redmod folders
-            .Project(key, fileName => new GamePath(LocationId.Game, fileName), out var gamePath)
+            .Project(key, fileName => new GamePath(Constants.RedModInstallFolder.LocationId, Constants.RedModInstallFolder.Path / fileName), out var gamePath)
             .Return(sortableEntry, key, sortIndex, sortOrderId, gamePath);
+    
     
     
     /// <summary>
@@ -76,8 +86,8 @@ public static class Queries
             .Match(IsLoadoutItemEnabledFlow, loadoutFile, out var isEnabled)
             .Db(loadoutFile, LoadoutItem.Parent, out var parentItemGroup)
             .Db(parentItemGroup, LoadoutItem.Name, out var parentModName)
-            // Group by targetPath
-            .Return(gamePath, parentItemGroup,parentModName, isEnabled)
+            // Group by targetPath, does this actually work?
+            .Return(gamePath, parentItemGroup, parentModName, isEnabled)
             .Rekey(row=> row.Item1)
             // do a select to return 1 if enabled 0 if disabled, max by that value
             .MaxBy(row => row.Item4 ? 1 : 0)
@@ -87,7 +97,7 @@ public static class Queries
     /// Query to retrieve RedMod SortableItem data for a sort order.
     /// </summary>
     public static readonly Flow<(RelativePath Key, EntityId SortableEntryId, int SortIndex, EntityId ParentSortOrderId, GamePath TargetPath, EntityId ParentItemGroupId, string ParentModName, bool IsEnabled)> RedModSortableItemsForSortOrder =
-        RedModSortableEntries.Rekey(row => row.FolderGamePath)
+        RedModSortableEntriesWithGamePath.Rekey(row => row.FolderGamePath)
             .LeftOuterJoin(RedModLoadoutItems.Rekey(row => row.TargetPath))
             .Select(row => (
                 row.Value.Item1.Key, row.Value.Item1.SortablEntityId, row.Value.Item1.SortIndex, row.Value.Item1.ParentSortOrderId,

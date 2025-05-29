@@ -1,7 +1,9 @@
 using DynamicData;
 using DynamicData.Alias;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Cascade;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -25,15 +27,13 @@ public class RedModSortOrderVariety : ISortOrderVariety
 
     public IObservable<IChangeSet<ISortableItem, ISortItemKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId)
     {
-        // _ = _connection.ObserveDatoms(SortableEntry.ParentSortOrderId, sortOrderId)
-        //     .Transform(datom => RedModSortableEntry.Load(_connection.Db, datom.E))
-        //     .TransformOnObservable(sortableEntry =>
-        //         {
-        //             RedModLoadoutGroup.
-        //         }
-        //     );
+        return _connection.Topology.Observe(Queries.RedModSortableItemsForSortOrder.Where(row => row.ParentSortOrderId.Equals(sortOrderId.Value)))
+            .Transform(ISortableItem (tuple) => new NewRedModSortableItem(tuple.Key, tuple.SortIndex, tuple.ParentModName, tuple.IsEnabled))
+            .AddKey(item => item.Key);
         
-        throw new NotImplementedException();
+        return _connection.Topology.Observe(Queries.RedModSortableItemsForSortOrder.Where(row => row.ParentSortOrderId.Equals(sortOrderId.Value)))
+            .Transform(ISortableItem (tuple) => new NewRedModSortableItem(tuple.Key, tuple.SortIndex, tuple.ParentModName, tuple.IsEnabled))
+            .AddKey(item => item.Key);
     }
 
     public IReadOnlyList<ISortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null)
