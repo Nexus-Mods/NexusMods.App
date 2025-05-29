@@ -1083,6 +1083,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 };
                 diffs.Add(KeyValuePair.Create(path, entry));
             }
+            else if (actions.HasFlag(Actions.WarnOfUnableToExtract))
+            {
+                entry = new DiskDiffEntry
+                {
+                    Hash = node.Loadout.Hash,
+                    Size = node.Loadout.Size,
+                    ChangeType = FileChangeType.Added,
+                    GamePath = path,
+                };
+            }
             else if (actions.HasFlag(Actions.ExtractToDisk))
             {
                 entry = new DiskDiffEntry
