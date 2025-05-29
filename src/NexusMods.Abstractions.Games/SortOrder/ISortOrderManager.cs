@@ -1,12 +1,7 @@
-using System.Diagnostics.Contracts;
-using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.MnemonicDB.Abstractions;
-using OneOf;
 
 namespace NexusMods.Abstractions.Games;
-
 
 /// <summary>
 /// Represents the single central manager for load order related updates.
@@ -14,47 +9,24 @@ namespace NexusMods.Abstractions.Games;
 /// </summary>
 public interface ILoadOrderManager
 {
+    /// <summary>
+    /// Should be acquired when changes to the sort order are being made.
+    /// Sort order update operations often need to read the previous state to modify it.
+    /// This lock should be used to ensure that no other operation is modifying the sort order in between reads and writes.
+    /// </summary>
     internal ValueTask<IDisposable> Lock(CancellationToken token = default);
     
+    /// <summary>
+    /// Will update all the sort order for the given loadout and optionally for the given collection group.
+    /// A game can have multiple sort order varieties, so this will update all of them.
+    /// </summary>
+    /// <returns></returns>
     public ValueTask UpdateLoadOrders(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId = default, CancellationToken token = default);
     
-    public ISortOrderVariety[] GetSortOrderVarieties();
-}
-
-
-/// <summary>
-/// Represents a specific variety of sort order for a specific game.
-/// Handles updating all the SortOrder entities of this variety.
-/// One instance for each variety per game.
-/// </summary>
-/// <examples>
-/// Cyberpunk RedMod load order;
-/// Cyberpunk Archive load order;
-/// Skyrim SE plugin load order;
-/// </examples>
-public interface ISortOrderVariety
-{
-    [Pure]
-    public SortOrderId GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity);
-    
-    [Pure]
-    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
-    
-    [Pure]
-    public IReadOnlyList<ISortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
-    
-    [Pure]
-    public ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<ISortableItem> items, IDb? db = null, CancellationToken token = default);
-    
-    [Pure]
-    public ValueTask MoveItems(SortOrderId sortOrderId, ISortItemKey[] itemsToMove, ISortItemKey dropTargetItem, TargetRelativePosition relativePosition, IDb? db = null, CancellationToken token = default);
-
-    [Pure]
-    public ValueTask MoveItemDelta(SortOrderId sortOrderId, ISortItemKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
-    
     /// <summary>
-    /// Reconcile the SortOrder with the latest data from the Db, adding or removing items as necessary.
+    /// Returns all the sort oder varieties for the game.
+    /// One instance of ISortOrderVariety for each variety.
     /// </summary>
-    [Pure]
-    public ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
+    /// <returns></returns>
+    public ISortOrderVariety[] GetSortOrderVarieties();
 }
