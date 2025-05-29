@@ -81,10 +81,9 @@
 
                         <!-- fixed height until we have our StandardSplitComponent -->
                         <SplitButton x:Name="InstallModSplitButton"
-                                     Height="24"
-                                     Classes="StandardSplitButton"
-                                     Content="{x:Static resources:Language.FileOriginPage_AddMod}"
+                                     Classes="StandardSplitButton ExtraSmall"
                                      ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
+                            <TextBlock Text="{x:Static resources:Language.FileOriginPage_AddMod}"/>
                             <SplitButton.Flyout>
                                 <MenuFlyout>
                                     <MenuItem x:Name="InstallModMenuItem"

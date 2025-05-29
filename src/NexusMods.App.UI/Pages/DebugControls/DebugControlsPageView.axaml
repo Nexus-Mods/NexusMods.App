@@ -11,9 +11,9 @@
     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
     xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer"
     xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
-    mc:Ignorable="d" d:DesignHeight="400"
+    mc:Ignorable="d" d:DesignHeight="700"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
-    
+
     <Design.DataContext>
         <local:DebugControlsPageDesignViewModel />
     </Design.DataContext>
@@ -261,18 +261,49 @@
 
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="StandardSplitButton" Theme="{StaticResource BodyMDSemiTheme}" />
-                                    <SplitButton Classes="StandardSplitButton">
-                                        <TextBlock Text="Enabled" />
-                                        <SplitButton.Flyout>
-                                            <MenuFlyout>
-                                                <MenuItem Header="Install" />
-                                                <MenuItem Header="Advanced Install" />
-                                            </MenuFlyout>
-                                        </SplitButton.Flyout>
-                                    </SplitButton>
-                                    <SplitButton Classes="StandardSplitButton" IsEnabled="False">
-                                        <TextBlock Text="Disabled" />
-                                    </SplitButton>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <SplitButton Classes="StandardSplitButton">
+                                            <TextBlock Text="Extra Small (Toolbar) 24px" />
+                                            <SplitButton.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Option 1" />
+                                                    <MenuItem Header="Option 2" />
+                                                </MenuFlyout>
+                                            </SplitButton.Flyout>
+                                        </SplitButton>
+                                        <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                                            <TextBlock Text="Disabled" />
+                                        </SplitButton>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <SplitButton Classes="StandardSplitButton">
+                                            <TextBlock Text="Small (Default) 28px" />
+                                            <SplitButton.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Option 1" />
+                                                    <MenuItem Header="Option 2" />
+                                                </MenuFlyout>
+                                            </SplitButton.Flyout>
+                                        </SplitButton>
+                                        <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                                            <TextBlock Text="Disabled" />
+                                        </SplitButton>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <SplitButton Classes="StandardSplitButton Medium">
+                                            <TextBlock Text="Medium 36px" />
+                                            <SplitButton.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Option 1" />
+                                                    <MenuItem Header="Option 2" />
+                                                </MenuFlyout>
+                                            </SplitButton.Flyout>
+                                        </SplitButton>
+                                        <SplitButton Classes="StandardSplitButton Medium" IsEnabled="False">
+                                            <TextBlock Text="Disabled" />
+                                        </SplitButton>
+                                    </StackPanel>
+
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -298,13 +329,13 @@
                         <TextBlock Text="Markdown" />
                     </StackPanel>
                 </TabItem.Header>
-                
+
                 <Border
                     x:Name="MarkdownWrapperBorder"
                     VerticalAlignment="Top"
                     Margin="24,12"
                     Padding="8">
-                    <reactive:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost"  />
+                    <reactive:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
                 </Border>
             </TabItem>
 
