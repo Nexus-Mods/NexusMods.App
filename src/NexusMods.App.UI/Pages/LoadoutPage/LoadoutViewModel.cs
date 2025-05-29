@@ -37,6 +37,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     public ReactiveCommand<Unit> RemoveItemCommand { get; }
     public ReactiveCommand<Unit> CollectionToggleCommand { get; }
+    public ReactiveCommand<Unit> DeselectItemsCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
     public ILibraryService _LibraryService;
@@ -97,6 +98,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
         }
+        
+        DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
+        {
+            Adapter.ClearSelection();
+        });
         
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
 

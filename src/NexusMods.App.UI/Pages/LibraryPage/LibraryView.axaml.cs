@@ -55,11 +55,6 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     )
                     .AddTo(disposables);
 
-                this.OneWayBind(ViewModel, vm => vm.Adapter.SelectedModels.Count, view => view.DeselectItemsButton.Text, count =>
-                        string.Format(Language.Library_DeselectItemsButton_Text, count)
-                    )
-                    .AddTo(disposables);
-
                 this.BindCommand(ViewModel, vm => vm.RemoveSelectedItemsCommand, view => view.RemoveModButton)
                     .AddTo(disposables);
 
@@ -106,7 +101,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 
                         if (count != 0)
                         {
-                            DeselectItemsButton.Text = $"{count} selected";
+                            DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
                         }
                     }).AddTo(disposables);
             }
