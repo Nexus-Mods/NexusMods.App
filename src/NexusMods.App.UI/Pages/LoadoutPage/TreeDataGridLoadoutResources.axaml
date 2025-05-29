@@ -110,7 +110,8 @@
                                               IsChecked="{CompiledBinding Value.Value, Mode=OneWay}"
                                               OnContent="{x:Null}"
                                               OffContent="{x:Null}"
-                                              IsVisible="{CompiledBinding Value.Value, Converter={x:Static converters:IsNotNullConverter.Instance}}"/>
+                                              IsVisible="{CompiledBinding Value.Value, Converter={x:Static converters:IsNotNullConverter.Instance}}"
+                                              ToolTip.Tip="Toggle on adds this mod to the game and loads it. Toggle off leaves it out."/>
                             </Panel>
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
