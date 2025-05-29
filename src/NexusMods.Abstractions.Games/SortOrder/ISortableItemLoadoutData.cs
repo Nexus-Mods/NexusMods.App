@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.Games;
 /// While <see cref="SortableEntry"/> represents an item in a sort order, it doesn't include information regarding the associated loadoutItem or mod.
 /// This encapsulates the loadout-specific parts of data, like active state, without the sort index.
 /// </summary>
-public interface ILoadoutSortItem
+public interface ISortableItemLoadoutData
 {
     /// <summary>
     /// Represents a game-specific id for the item, ideally what the game uses to identify the items, often a path
