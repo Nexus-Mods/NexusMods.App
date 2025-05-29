@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using DynamicData;
 using NexusMods.Abstractions.Loadouts;
@@ -18,6 +19,29 @@ namespace NexusMods.Abstractions.Games;
 /// </examples>
 public interface ISortOrderVariety
 {
+    /// <summary>
+    /// Returns an id identifying the variety of the sort order.
+    /// </summary>
+    Guid SortOrderVarietyId { get; }
+    
+    /// <summary>
+    /// Default direction (ascending/descending) in which sortIndexes should be sorted and displayed
+    /// </summary>
+    /// <remarks>
+    /// Usually ascending, but could be different depending on what the community prefers and is used to
+    /// </remarks>
+    ListSortDirection SortDirectionDefault { get; }
+    
+    /// <summary>
+    /// Defines whether smaller or greater index numbers win in case of conflicts between items in sorting order
+    /// </summary>
+    IndexOverrideBehavior IndexOverrideBehavior { get; }
+    
+    /// <summary>
+    /// Contains UI strings and metadata for the sort order type
+    /// </summary>
+    SortOrderUiMetadata SortOrderUiMetadata { get; }
+    
     /// <summary>
     /// Returns the SortOrderId for this variety for the given parent entity.
     /// </summary>
