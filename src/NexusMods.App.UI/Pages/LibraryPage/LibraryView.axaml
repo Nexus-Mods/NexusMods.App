@@ -34,6 +34,8 @@
                 <controls:Toolbar Margin="24,12, 24, 0">
 
                     <!-- search button group -->
+                    <!-- leave in for now, it won't be long before we have a search component -->
+                    
                     <!-- <ItemsControl Template="{StaticResource ToolbarControlGroup}"> -->
                     <!--     <DockPanel> -->
                     <!--         <controls:StandardButton x:Name="SearchButton" -->
@@ -66,17 +68,16 @@
                     <!--     </DockPanel> -->
                     <!-- </ItemsControl> -->
 
-                    <!-- context button group -->
+                    <!-- selection related button group -->
                     <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
 
                         <controls:StandardButton x:Name="DeselectItemsButton"
-                                                 Text="123 selected"
                                                  Type="Tertiary"
                                                  Size="ExtraSmall"
                                                  Fill="WeakAlt"
                                                  ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.Close}"
-                                                 ToolTip.Tip="Deselect mods" />
+                                                 ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
 
                         <!-- fixed height until we have our StandardSplitComponent -->
                         <SplitButton x:Name="InstallModSplitButton"
@@ -104,7 +105,7 @@
                                                  ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
                     </ItemsControl>
 
-                    <!-- 'Updates' button. -->
+                    <!-- static button group -->
                     <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
                         <controls:StandardButton
                             Text="Add"

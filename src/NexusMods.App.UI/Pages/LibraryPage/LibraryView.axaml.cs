@@ -6,6 +6,7 @@ using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
@@ -54,8 +55,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     )
                     .AddTo(disposables);
 
-                this.OneWayBind(ViewModel, vm => vm.Adapter.SelectedModels.Count, view => view.DeselectItemsButton.Text,
-                        static i => $"{i} selected"
+                this.OneWayBind(ViewModel, vm => vm.Adapter.SelectedModels.Count, view => view.DeselectItemsButton.Text, count =>
+                        string.Format(Language.Library_DeselectItemsButton_Text, count)
                     )
                     .AddTo(disposables);
 

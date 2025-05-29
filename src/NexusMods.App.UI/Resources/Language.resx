@@ -594,6 +594,12 @@
     <data name="TopBar_Help_ToolTip" xml:space="preserve">
         <value>Help and feedback</value>
     </data>
+    <data name="Library_DeselectItemsButton_Text" xml:space="preserve">
+        <value>{0} selected</value>
+    </data>
+    <data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
+        <value>Clears the selection. Ctrl+Click selects/deselects items. Shift+Click selects a range.</value>
+    </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
         <value>Install the selected mod(s) to this loadout</value>
     </data>

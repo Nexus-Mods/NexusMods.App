@@ -1493,6 +1493,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} selected.
+        /// </summary>
+        public static string Library_DeselectItemsButton_Text {
+            get {
+                return ResourceManager.GetString("Library_DeselectItemsButton_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clears the selection. Ctrl+Click selects/deselects items. Shift+Click selects a range..
+        /// </summary>
+        public static string Library_DeselectItemsButton_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_DeselectItemsButton_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download all.
         /// </summary>
         public static string LibraryItemButtonUpdate_All {
