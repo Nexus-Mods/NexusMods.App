@@ -174,28 +174,30 @@
 
             <!-- toolbar (coming soon), rest of space for collection car wrap panel -->
             <Grid RowDefinitions="Auto, *">
+                
                 <!-- toolbar component -->
                 <controls:Toolbar Margin="24,12, 24, 0">
-                    <controls:StandardButton
-                        Text="Add"
-                        Type="Tertiary"
-                        Size="ExtraSmall"
-                        Fill="WeakAlt"
-                        ShowIcon="Both"
-                        LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
-                        RightIcon="{x:Static icons:IconValues.ChevronDown}">
-                        <controls:StandardButton.Flyout>
-                            <MenuFlyout>
-                                <MenuItem x:Name="GetCollectionFromNexusButton"
-                                          Header="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}">
-                                    <MenuItem.Icon>
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </MenuFlyout>
-                        </controls:StandardButton.Flyout>
-
-                    </controls:StandardButton>
+                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                        <controls:StandardButton
+                            Text="Add"
+                            Type="Tertiary"
+                            Size="ExtraSmall"
+                            Fill="WeakAlt"
+                            ShowIcon="Both"
+                            LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
+                            RightIcon="{x:Static icons:IconValues.ChevronDown}">
+                            <controls:StandardButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem x:Name="GetCollectionFromNexusButton"
+                                              Header="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}">
+                                        <MenuItem.Icon>
+                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
+                                        </MenuItem.Icon>
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </controls:StandardButton.Flyout>
+                        </controls:StandardButton>
+                    </ItemsControl>
                 </controls:Toolbar>
 
                 <ScrollViewer Grid.Row="1">
