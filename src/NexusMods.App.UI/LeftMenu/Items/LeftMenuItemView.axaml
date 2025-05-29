@@ -26,7 +26,8 @@
                                       OffContent="{x:Null}"
                                       IsVisible="{CompiledBinding IsToggleVisible}"
                                       IsChecked="{CompiledBinding IsEnabled}"
-                                      Command="{CompiledBinding ToggleIsEnabledCommand}" />
+                                      Command="{CompiledBinding ToggleIsEnabledCommand}"
+                                      ToolTip.Tip="Toggle on adds this collection to the game and loads it. Toggle off leaves it out."/>
                     </DataTemplate>
 
                     <!-- HealthCheck item -->

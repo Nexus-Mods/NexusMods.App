@@ -51,7 +51,8 @@
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="0 0 16 0">
                     <ToggleSwitch x:Name="CollectionToggle" Classes="Compact"
                                   OnContent="{x:Null}"
-                                  OffContent="{x:Null}" />
+                                  OffContent="{x:Null}"
+                                  ToolTip.Tip="Toggle on adds this collection to the game and loads it. Toggle off leaves it out."/>
                 </StackPanel>
             </Grid>
         </Border>

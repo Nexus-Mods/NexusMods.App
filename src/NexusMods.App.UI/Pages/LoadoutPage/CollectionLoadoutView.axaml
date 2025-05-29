@@ -175,7 +175,8 @@
                                                 ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsMods_ToolTip}">
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
                                         <TextBlock x:Name="NumDownloads" />
-                                        <ToggleSwitch x:Name="CollectionToggle" Classes="ExtraSmall" />
+                                        <ToggleSwitch x:Name="CollectionToggle" Classes="ExtraSmall"
+                                                      ToolTip.Tip="Toggle on adds this collection to the game and loads it. Toggle off leaves it out." />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
