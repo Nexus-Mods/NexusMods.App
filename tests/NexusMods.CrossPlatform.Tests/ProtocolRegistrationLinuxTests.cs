@@ -122,6 +122,11 @@ $
       // -> \r (string escape, [carriage return] -> \r )
       // -> "\r" (added double quotes)
     
+      [InlineData( // carriage return
+          "thispathdoesnotneedescapequotes",
+          "thispathdoesnotneedescapequotes")]
+    // no " wrapping, because the string has not changed.
+
     // % is not tested because spec says:
     //
     // > Field codes must not be used inside a quoted argument, the result of

@@ -1,5 +1,6 @@
 using System.Runtime.Versioning;
 using System.Text;
+using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform.Process;
@@ -117,14 +118,76 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         using var sr = new StreamReader(stream, encoding: Encoding.UTF8);
 
         var text = await sr.ReadToEndAsync(cancellationToken);
-        // Note(sewer): Temporarily using `_osInterop.GetOwnExe()` because paths library will replace backslashes
-        //              in path with forward slashes. And backslash is a valid character in file/folder names.
+
+        // Note(sewer): For `processPath` we're temporarily using `_osInterop.GetOwnExe()` because
+        //              paths library will replace backslashes in folder names with forward slashes.
+        //              Backslashes are valid on Linux (& macOS), so we're avoiding 
+        //              breaking the App here.
         // https://github.com/Nexus-Mods/NexusMods.Paths/issues/71
+
+        // Note(sewer): xdg-utils has issues with the 'generic' fallback for `.desktop` files
+        //              which will be used in non-mainstream DEs like Hyprland, Sway, i3, etc.
+        //              We'll use a hack to work around this.
+        //
+        // See: https://gitlab.freedesktop.org/xdg/xdg-utils/-/issues/279
+        //      https://github.com/Nexus-Mods/NexusMods.App/issues/3293
+        //
+        // So, here we're creating a wrapper script that will be used to execute the App.
+        //
+        // The idea here is that usernames in Linux distros are compliant with POSIX standards,
+        // which allow for only alphanumeric characters, underscores, dots, and hyphens.
+        // None of these characters require escaping in `.desktop` files, so quotes are not needed.
+        //
+        // See: https://systemd.io/USER_NAMES.
+        //
+        // If our username cannot contain an escape character and `XDG_DATA_HOME` is usually in
+        // /home/<username>/.local/share ; then we've got a path that does not need escaping, which
+        // will work around the issue with xdg-utils for the time being.
+        //
+        // I also added an extra 'safety' rule: 
+        //  - The wrapper will only be used if the path requires escaping.
+        //  - IF Path requires escaping AND `XDG_DATA_HOME` needs escaping, we log a warning.
         var processPath = Environment.ProcessPath!;
-        text = text.Replace(ExecuteParameterPlaceholder, EscapeDesktopExecFilePath(processPath));
+        var wrapperScriptPath = await CreateWrapperScriptIfNeeded(applicationsDirectory, processPath, cancellationToken);
+
+        text = text.Replace(ExecuteParameterPlaceholder, wrapperScriptPath.ToString());
         text = text.Replace(TryExecuteParameterPlaceholder, EscapeDesktopFilePath(processPath));
 
         await filePath.WriteAllTextAsync(text, cancellationToken);
+    }
+
+    private async Task<string> CreateWrapperScriptIfNeeded(AbsolutePath applicationsDirectory, string executablePath, CancellationToken cancellationToken = default)
+    {
+        // If our escaped path is same as original path, we don't need the wrapper script.
+        // Since that will just work.
+        var escapedExecutablePath = EscapeDesktopExecFilePath(executablePath);
+        if (escapedExecutablePath == executablePath)
+            return escapedExecutablePath;
+        
+        var originalApplicationsDirectory = applicationsDirectory.ToString();
+        var escapedApplicationsDirectory = EscapeDesktopExecFilePath(originalApplicationsDirectory);
+        if (escapedApplicationsDirectory != originalApplicationsDirectory)
+            _logger.LogWarning("XDG_DATA_HOME is in a folder that needs escaping. If login does not work, see https://gitlab.freedesktop.org/xdg/xdg-utils/-/issues/279 , https://github.com/Nexus-Mods/NexusMods.App/issues/3293 . It's out of our hands.");
+
+        var scriptName = $"{ApplicationId}.sh";
+        var scriptPath = applicationsDirectory.Combine(scriptName);
+        
+        _logger.LogInformation("Creating wrapper script at `{Path}`", scriptPath);
+
+        // Create shell script content that passes all arguments to the actual executable
+        var scriptContent = $"""
+            #!/bin/sh
+            exec "{executablePath}" "$@"
+            """;
+        await scriptPath.WriteAllTextAsync(scriptContent, cancellationToken);
+
+        // Make the script executable
+        var mode755 = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute | // 7
+           UnixFileMode.GroupRead | UnixFileMode.GroupExecute | // 5
+           UnixFileMode.OtherRead | UnixFileMode.OtherExecute; // 5
+        scriptPath.SetUnixFileMode(mode755);
+
+        return scriptPath.ToString();
     }
 
     private async Task UpdateMIMECacheDatabase(AbsolutePath applicationsDirectory, CancellationToken cancellationToken = default)
@@ -157,6 +220,8 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
     // it with an additional backslash character.
     internal static string EscapeDesktopExecFilePath(string path)
     {
+        var originalPath = path;
+
         // Note(sewer)
         //
         // Spec says"
@@ -206,9 +271,11 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         // > greater-than sign (">"), less-than sign ("<"), tilde ("~"), vertical bar ("|"), ampersand ("&"), semicolon (";"),
         // > dollar sign ("$"), asterisk ("*"), question mark ("?"), hash mark ("#"), parenthesis ("(") and (")") and backtick character ("`").
         //
-        // In this case, we always quote. Quoting is optional if there are no 'reserved' characters,
-        // and mandatory if there are. By always quoting, risk is reduced.
-        return $"\"{escapedFinalPath}\""; // Enclose the entire path in double quotes
+        // In this case, we will quote if our path has changed, else we'll leave it unquoted.
+        if (escapedFinalPath == originalPath)
+            return originalPath; // No need to quote if the path hasn't changed
+        else
+            return $"\"{escapedFinalPath}\""; // Enclose the entire path in double quotes
     }
 
     // Note(sewer)
