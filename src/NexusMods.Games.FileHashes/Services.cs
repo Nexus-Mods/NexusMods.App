@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Games.FileHashes.VerbImpls;
 
 namespace NexusMods.Games.FileHashes;
 

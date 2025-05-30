@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.Commandline;
 using NexusMods.App.UI;
+using NexusMods.Backend;
 using NexusMods.CLI;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
@@ -58,6 +59,7 @@ public static class Services
         if (startupMode.RunAsMain)
         {
             services
+                .AddBackendServices()
                 .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                 .AddDataModel()
                 .AddLibrary()
