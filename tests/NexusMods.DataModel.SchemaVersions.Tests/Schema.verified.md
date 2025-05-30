@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x5F7165E760F9FD4E
-   - Total attributes: 203
-   - Total namespaces: 70
+   - Fingerprint: 0x8220DBC3E5C20958
+   - Total attributes: 211
+   - Total namespaces: 71
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -213,3 +213,11 @@ models in the app, then validate the tests to update this file.
 | NexusMods.StardewValley.SMAPIManifestLoadoutFile/ManifestFile                      | Null                    | True    | False | False     | 
 | NexusMods.StardewValley.SMAPIModDatabaseLoadoutFile/ModDatabaseFile                | Null                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPIModLoadoutItem/Manifest                               | Reference               | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/AppName                          | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildId                          | Utf8Insensitive         | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildVersion                     | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/CreatedAt                        | Int64                   | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/Files                            | Reference               | False   | True  | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/ItemId                           | Utf8Insensitive         | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/LabelName                        | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/UpdatedAt                        | Int64                   | False   | False | False     | 
