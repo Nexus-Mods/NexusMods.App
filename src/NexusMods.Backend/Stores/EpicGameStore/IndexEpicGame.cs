@@ -29,7 +29,6 @@ public static class IndexEpicGame
         [Injected] IRenderer renderer,
         [Option("o", "output", "Path to the cloned GitHub hashes repo (with the `json` postfix)")] AbsolutePath output,
         [Option("g", "game", "Game to index")] ILocatableGame game,
-        string appId,
         [Injected] JsonSerializerOptions jsonSerializerOptions,
         [Injected] TemporaryFileManager temporaryFileManager,
         [Injected] IGameRegistry gameRegistry,
@@ -40,7 +39,7 @@ public static class IndexEpicGame
         var indentedOptions = new JsonSerializerOptions(jsonSerializerOptions)
         {
             WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         };
         
         var castedGame = (IGame)game;
@@ -87,9 +86,6 @@ public static class IndexEpicGame
             var path = hashPathRoot / $"{hashStr[..2]}" / (hashStr.ToRelativePath() + ".json");
             path.Parent.CreateDirectory();
 
-            if (path.FileExists) 
-                continue;
-            
             await using var outputStream = path.Create();
             await JsonSerializer.SerializeAsync(outputStream, multiHash, indentedOptions, token);
         }
