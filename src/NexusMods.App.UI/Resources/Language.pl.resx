@@ -30,11 +30,8 @@
 	<data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
 		<value>Diagnostyka i dane</value>
 	</data>
-	<data name="MetricsOptIn_MoreInfoAboutTheDataWeTrack" xml:space="preserve">
-		<value>Więcej informacji o zbieranych przez nas danych</value>
-	</data>
 	<data name="MetricsOptIn_MainMessage" xml:space="preserve">
-		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
+		<value>Chcielibyśmy zbierać dane diagnostyczne oraz dane dotyczące użytkowania, aby poprawić wydajność i zwiększyć komfort korzystania z aplikacji. Dane te pomagają nam identyfikować problemy, optymalizować funkcje i zapewniać, że aplikacja Nexus Mods działa lepiej dla wszystkich.&#x0a;&#x0a;Twoje dane będą przetwarzane zgodnie z naszą Polityką prywatności. Możesz zmienić swoje preferencje w dowolnym momencie w ustawieniach.&#x0a;&#x0a;Czy chcesz włączyć zbieranie danych?</value>
 	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
 		<value>Zobacz aktualizację</value>
@@ -384,7 +381,7 @@
 		<comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
 	</data>
 	<data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
-		<value>PLIKI</value>
+		<value>Pliki</value>
 	</data>
 	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
 		<value>Załaduj</value>
@@ -476,6 +473,9 @@
 	<data name="LibraryPageTitleToolTip" xml:space="preserve">
 		<value>Zarządzaj pobranymi modami i kolekcjami</value>
 	</data>
+	<data name="LibraryPageDescription" xml:space="preserve">
+		<value>Zarządzaj pobranymi modami i kolekcjami. Instaluj, aktualizuj lub dodawaj kolejne.</value>
+	</data>
 	<data name="FileOriginsPageView_NameHeader" xml:space="preserve">
 		<value>Nazwa moda</value>
 	</data>
@@ -519,10 +519,13 @@
 		<value>Uzyskaj mody:</value>
 	</data>
 	<data name="FileOriginsPage_FromDrive" xml:space="preserve">
-		<value>Z dysku</value>
+		<value>Przeglądaj dysk</value>
 	</data>
 	<data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
-		<value>Z Nexus Mods</value>
+		<value>Przeglądaj Nexus Mods</value>
+	</data>
+	<data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
+		<value>Przeglądaj Nexus Mods</value>
 	</data>
 	<data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
 		<value>Pokaż</value>
@@ -577,6 +580,12 @@
 	</data>
 	<data name="TopBar_Help_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby sprawdzić pomoc i opinie</value>
+	</data>
+	<data name="Library_DeselectItemsButton_Text" xml:space="preserve">
+		<value>Wybrane: {0}</value>
+	</data>
+	<data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
+		<value>Usuwa zaznaczenie. Ctrl + Kliknięcie zaznacza lub odznacza pojedyncze elementy. Shift + Kliknięcie zaznacza zakres elementów.</value>
 	</data>
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby zainstalować wybrany mod do tego zestawu</value>
@@ -793,7 +802,7 @@
 		<value>Przejrzyj, usuń lub przywróć zmiany wprowadzone poza aplikacją</value>
 	</data>
 	<data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
-		<value>Pobierz wszystkie wymagane mody</value>
+		<value>Autopobranie wszystkiego</value>
 	</data>
 	<data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
 		<value>Zainstaluj kolekcję</value>
@@ -872,6 +881,9 @@
 	</data>
 	<data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
 		<value>Automatyczne pobieranie jest niedostępne. Kliknij, aby otworzyć stronę zewnętrzną, skąd możesz pobrać i dodać mod ręcznie.</value>
+	</data>
+	<data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
+		<value>Włączenie dodaje tę kolekcję do gry i ładuje ją. Wyłączenie pozostawia ją wyłączoną.</value>
 	</data>
 	<data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
 		<value>Mody</value>
