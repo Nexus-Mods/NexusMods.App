@@ -27,7 +27,7 @@
                 <controls:StandardButton LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                          ShowLabel="False"
                                          ShowIcon="Left"
-                                         Size="ExtraSmall"
+                                         Size="Toolbar"
                                          ToolTip.Tip="More">
 
                     <controls:StandardButton.Flyout>

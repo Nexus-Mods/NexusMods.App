@@ -73,35 +73,43 @@
 
                         <controls:StandardButton x:Name="DeselectItemsButton"
                                                  Type="Tertiary"
-                                                 Size="ExtraSmall"
-                                                 Fill="WeakAlt"
+                                                 Size="Toolbar"
+                                                 Fill="Weak"
                                                  ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.Close}"
-                                                 ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
-
-                        <!-- fixed height until we have our StandardSplitComponent -->
-                        <SplitButton x:Name="InstallModSplitButton"
-                                     Classes="StandardSplitButton ExtraSmall"
-                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_AddMod_ToolTip}">
-                            <TextBlock Text="{x:Static resources:Language.FileOriginPage_AddMod}"/>
-                            <SplitButton.Flyout>
+                                                 ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}"/>
+                        
+                        <controls:StandardButton Type="Primary"
+                                                 Size="Toolbar"
+                                                 Fill="StrongAlt"
+                                                 ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Add}"
+                                                 RightIcon="{x:Static icons:IconValues.ChevronDown}"
+                                                 Text="Install">
+                            
+                            <controls:StandardButton.Flyout>
                                 <MenuFlyout>
                                     <MenuItem x:Name="InstallModMenuItem"
-                                              Header="{x:Static resources:Language.FileOriginPage_AddMod}" />
+                                              Header="Install">
+                                    </MenuItem>
                                     <MenuItem x:Name="AdvancedInstallModMenuItem"
-                                              Header="{x:Static resources:Language.FileOriginPage_AddModAdvanced}" />
+                                              Header="Advanced Install">
+                                    </MenuItem>
                                 </MenuFlyout>
-                            </SplitButton.Flyout>
-                        </SplitButton>
+                            </controls:StandardButton.Flyout>
+                            
+                        </controls:StandardButton>
 
                         <controls:StandardButton x:Name="RemoveModButton"
                                                  Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
                                                  Type="Tertiary"
-                                                 Size="ExtraSmall"
-                                                 Fill="WeakAlt"
+                                                 Size="Toolbar"
+                                                 ShowLabel="False"
+                                                 Fill="Weak"
                                                  ShowIcon="Left"
                                                  LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}" />
+                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}"
+                                                 Classes="Danger"/>
                     </ItemsControl>
 
                     <!-- static button group -->
@@ -109,8 +117,8 @@
                         <controls:StandardButton
                             Text="Add"
                             Type="Tertiary"
-                            Size="ExtraSmall"
-                            Fill="WeakAlt"
+                            Size="Toolbar"
+                            Fill="Weak"
                             ShowIcon="Both"
                             LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
                             RightIcon="{x:Static icons:IconValues.ChevronDown}">
@@ -131,8 +139,12 @@
                                 </MenuFlyout>
                             </controls:StandardButton.Flyout>
                         </controls:StandardButton>
-                        <controls:StandardButton x:Name="Refresh" ShowIcon="Left" ShowLabel="False" Size="ExtraSmall"
-                                                 Type="Tertiary" Fill="WeakAlt"
+                        <controls:StandardButton x:Name="Refresh" 
+                                                 ShowIcon="Left" 
+                                                 ShowLabel="False" 
+                                                 Size="Toolbar"
+                                                 Type="Tertiary" 
+                                                 Fill="Weak"
                                                  LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                  ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
                     </ItemsControl>
@@ -181,7 +193,7 @@
                         <controls:StandardButton
                             Text="Add"
                             Type="Tertiary"
-                            Size="ExtraSmall"
+                            Size="Toolbar"
                             Fill="WeakAlt"
                             ShowIcon="Both"
                             LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"

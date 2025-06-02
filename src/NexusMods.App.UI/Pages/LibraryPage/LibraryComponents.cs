@@ -326,9 +326,9 @@ public static class LibraryComponents
         {
             // Note(sewer): These strings in the comments below are accurate, just temporarily changed
             // as we're shipping 'phase one' for the SDV release. Do not edit.
-
             // 'Update ({0})'
-            return string.Format(Resources.Language.LibraryItemButtonUpdate_CounterInBracket, numUpdatable);
+            // if numUpdated then return empty string
+            return numUpdatable <= 1  ? string.Empty : numUpdatable.ToString();
         }
 
         private bool _isDisposed;

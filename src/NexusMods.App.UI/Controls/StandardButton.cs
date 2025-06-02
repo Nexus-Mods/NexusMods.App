@@ -65,9 +65,9 @@ public class StandardButton : Button
         Medium,
 
         /// <summary>
-        /// Extra Small size.
+        /// Toolbar size.
         /// </summary>
-        ExtraSmall,
+        Toolbar,
     }
 
     /// <summary>

@@ -133,22 +133,22 @@
                                     <StackPanel Spacing="8" Orientation="Horizontal">
                                         <StackPanel Spacing="8">
                                             <StackPanel Orientation="Horizontal" Spacing="4">
-                                                <controls:StandardButton Text="Extra Small 24px" Size="ExtraSmall"
+                                                <controls:StandardButton Text="Extra Small 24px" Size="Toolbar"
                                                                          ShowIcon="None" />
-                                                <controls:StandardButton Text="Left" Size="ExtraSmall" ShowIcon="Left"
+                                                <controls:StandardButton Text="Left" Size="Toolbar" ShowIcon="Left"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Text="Right" Size="ExtraSmall"
+                                                <controls:StandardButton Text="Right" Size="Toolbar"
                                                                          ShowIcon="Right"
                                                                          RightIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Text="Both" Size="ExtraSmall" ShowIcon="Both"
+                                                <controls:StandardButton Text="Both" Size="Toolbar" ShowIcon="Both"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Size="ExtraSmall" ShowLabel="False"
+                                                <controls:StandardButton Size="Toolbar" ShowLabel="False"
                                                                          ShowIcon="Left"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Size="ExtraSmall" ShowLabel="False"
+                                                <controls:StandardButton Size="Toolbar" ShowLabel="False"
                                                                          ShowIcon="Both"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Size="ExtraSmall" ShowLabel="False"
+                                                <controls:StandardButton Size="Toolbar" ShowLabel="False"
                                                                          ShowIcon="IconOnly"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
                                             </StackPanel>
@@ -188,7 +188,7 @@
                                                                          ShowIcon="IconOnly"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
                                             </StackPanel>
-                                            <controls:StandardButton Text="Open Menu" Size="ExtraSmall"
+                                            <controls:StandardButton Text="Open Menu" Size="Toolbar"
                                                                      ShowIcon="Right" Type="Primary"
                                                                      Fill="Weak">
                                                 <controls:StandardButton.Flyout>

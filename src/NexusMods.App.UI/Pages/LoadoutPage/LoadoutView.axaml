@@ -80,7 +80,7 @@
 
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"
-                                                     Size="ExtraSmall"
+                                                     Size="Toolbar"
                                                      Fill="WeakAlt"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Close}"
