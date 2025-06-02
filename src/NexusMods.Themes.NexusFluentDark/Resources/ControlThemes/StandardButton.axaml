@@ -349,7 +349,7 @@
                             Padding="{TemplateBinding Padding}">
                         <Grid ColumnDefinitions="Auto,*,Auto"
                                     VerticalAlignment="Center"
-                                    HorizontalAlignment="Center" ShowGridLines="True">
+                                    HorizontalAlignment="Center">
                             <icons:UnifiedIcon Grid.Column="0" Name="PART_LeftIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"

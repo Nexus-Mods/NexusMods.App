@@ -112,12 +112,12 @@ public class StandardButton : Button
         Strong,
 
         /// <summary>
-        /// Weak fill (alternative, less full on).
+        /// Weak fill (alternative).
         /// </summary>
         WeakAlt,
 
         /// <summary>
-        /// Strong fill (alternative, less full on).
+        /// Strong fill (alternative).
         /// </summary>
         StrongAlt,
     }
