@@ -184,7 +184,7 @@
 
             <!-- collections go here -->
 
-            <!-- toolbar (coming soon), rest of space for collection car wrap panel -->
+            <!-- toolbar, rest of space for collection car wrap panel -->
             <Grid RowDefinitions="Auto, *">
                 
                 <!-- toolbar component -->
@@ -194,7 +194,7 @@
                             Text="Add"
                             Type="Tertiary"
                             Size="Toolbar"
-                            Fill="WeakAlt"
+                            Fill="Weak"
                             ShowIcon="Both"
                             LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
                             RightIcon="{x:Static icons:IconValues.ChevronDown}">
