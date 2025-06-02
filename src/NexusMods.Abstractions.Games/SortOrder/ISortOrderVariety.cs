@@ -22,7 +22,7 @@ public interface ISortOrderVariety
     /// <summary>
     /// Returns an id identifying the variety of the sort order.
     /// </summary>
-    Guid SortOrderVarietyId { get; }
+    SortOrderVarietyId SortOrderVarietyId { get; }
     
     /// <summary>
     /// Default direction (ascending/descending) in which sortIndexes should be sorted and displayed
