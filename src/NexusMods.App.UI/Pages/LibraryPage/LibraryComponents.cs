@@ -324,10 +324,7 @@ public static class LibraryComponents
 
         private static string GetButtonText(int numUpdatable)
         {
-            // Note(sewer): These strings in the comments below are accurate, just temporarily changed
-            // as we're shipping 'phase one' for the SDV release. Do not edit.
-            // 'Update ({0})'
-            // if numUpdated then return empty string
+            // empty string will turn off the buttons label, if more than 1 update then display it
             return numUpdatable <= 1  ? string.Empty : numUpdatable.ToString();
         }
 
