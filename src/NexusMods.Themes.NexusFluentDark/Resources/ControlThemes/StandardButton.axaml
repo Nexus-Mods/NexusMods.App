@@ -78,6 +78,7 @@
                     <controls:StandardButton Content="StandardButton Content" />
                     <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
                     <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
+                    <controls:StandardButton Text="  " ShowIcon="Both" Size="Medium" />
                 </StackPanel>
 
                 <StackPanel Spacing="8">
@@ -86,6 +87,12 @@
                                              IsEnabled="False" />
                     <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary" Fill="Weak" />
                     <controls:StandardButton Text="Primary-Weak" ShowIcon="Right" Type="Primary" Fill="Weak"
+                                             IsEnabled="False" />
+                    <controls:StandardButton Text="Primary-StrongAlt" ShowIcon="Right" Type="Primary" Fill="StrongAlt" />
+                    <controls:StandardButton Text="Primary-StrongAlt" ShowIcon="Right" Type="Primary" Fill="StrongAlt"
+                                             IsEnabled="False" />
+                    <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Primary" Fill="WeakAlt" />
+                    <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Primary" Fill="WeakAlt"
                                              IsEnabled="False" />
                 </StackPanel>
 
@@ -105,8 +112,8 @@
                     <controls:StandardButton Text="Tertiary-Weak" ShowIcon="Right" Type="Tertiary" Fill="Weak" />
                     <controls:StandardButton Text="Tertiary-Weak" ShowIcon="Right" Type="Tertiary" Fill="Weak"
                                              IsEnabled="False" />
-                    <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Tertiary" Fill="WeakAlt" />
-                    <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Tertiary" Fill="WeakAlt"
+                    <controls:StandardButton Text="Tertiary-WeakAlt" ShowIcon="Right" Type="Tertiary" Fill="WeakAlt" />
+                    <controls:StandardButton Text="Tertiary-WeakAlt" ShowIcon="Right" Type="Tertiary" Fill="WeakAlt"
                                              IsEnabled="False" />
                     <controls:StandardButton Text="Tertiary-None" ShowIcon="Right" Type="Tertiary" Fill="None" />
                     <controls:StandardButton Text="Tertiary-None" ShowIcon="Right" Type="Tertiary" Fill="None"
@@ -166,6 +173,23 @@
     <StaticResource x:Key="ButtonPrimaryWeakForegroundDisabled" ResourceKey="NeutralInvertedBrush" />
     <StaticResource x:Key="ButtonPrimaryWeakBorderBrushDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
 
+    
+    <!-- Primary/StrongAlt -->
+    <StaticResource x:Key="ButtonPrimaryStrongAltForeground" ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongAltForegroundPointerOver" ResourceKey="PrimaryStrongBrush" />
+    <StaticResource x:Key="ButtonPrimaryStrongAltForegroundPressed" ResourceKey="PrimaryModerateBrush" />
+    <SolidColorBrush x:Key="ButtonPrimaryStrongAltForegroundDisabled"
+                     Color="{StaticResource PrimaryModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    
+    <!-- Primary/WeakAlt -->
+    <StaticResource x:Key="ButtonPrimaryWeakAltForeground" ResourceKey="InfoModerateBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakAltForegroundPointerOver" ResourceKey="InfoStrongBrush" />
+    <StaticResource x:Key="ButtonPrimaryWeakAltForegroundPressed" ResourceKey="InfoModerateBrush" />
+    <SolidColorBrush x:Key="ButtonPrimaryWeakAltForegroundDisabled"
+                     Color="{StaticResource InfoModerate}"
+                     Opacity="{StaticResource OpacityDisabledElement}" />
+    
     <!-- Secondary/Strong -->
     <Thickness x:Key="ButtonSecondaryStrongBorderThickness">0</Thickness>
     <StaticResource x:Key="ButtonSecondaryStrongBackground" ResourceKey="NeutralStrongBrush" />
@@ -323,24 +347,23 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}">
-                        <StackPanel Orientation="Horizontal"
+                        <Grid ColumnDefinitions="Auto,*,Auto"
                                     VerticalAlignment="Center"
-                                    HorizontalAlignment="Center"
-                                    Spacing="{StaticResource Spacing-0.5}">
-                            <icons:UnifiedIcon Name="PART_LeftIcon"
+                                    HorizontalAlignment="Center" ShowGridLines="True">
+                            <icons:UnifiedIcon Grid.Column="0" Name="PART_LeftIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"
                                                Margin="0,2,0,3" />
-                            <TextBlock Name="PART_Label"
+                            <TextBlock Grid.Column="1" Name="PART_Label"
                                        Text="{TemplateBinding Text}"
                                        Foreground="{TemplateBinding Foreground}"
                                        Margin="2,2"
                                        VerticalAlignment="Center"/>
-                            <icons:UnifiedIcon Name="PART_RightIcon"
+                            <icons:UnifiedIcon Grid.Column="2" Name="PART_RightIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"
                                                Margin="0,2,0,3"/>
-                        </StackPanel>
+                        </Grid>
                     </Border>
                 </Panel>
             </ControlTemplate>
@@ -468,6 +491,38 @@
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
                 </Style>
             </Style>
+            
+            <!-- PRIMARY/STRONGALT -->
+            <Style Selector="^[Fill=StrongAlt]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonTertiaryWeakAltBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongAltForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongAltForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongAltForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongAltForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPressed}" />
+                </Style>
+            </Style>
 
             <!-- PRIMARY/WEAK -->
             <Style Selector="^[Fill=Weak]">
@@ -498,6 +553,38 @@
                     <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundPressed}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushPressed}" />
+                </Style>
+            </Style>
+            
+            <!-- PRIMARY/WEAKALT -->
+            <Style Selector="^[Fill=WeakAlt]">
+                <Setter Property="BorderThickness" Value="{StaticResource ButtonTertiaryWeakAltBorderThickness}" />
+                <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackground}" />
+                <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakAltForeground}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPointerOver}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakAltForegroundPointerOver}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPointerOver}" />
+                </Style>
+
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakAltForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPressed}" />
+                </Style>
+
+                <Style Selector="^:disabled">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundDisabled}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakAltForegroundDisabled}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushDisabled}" />
+                </Style>
+                
+                <Style Selector="^:flyout-open">
+                    <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
+                    <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundPressed}" />
+                    <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushPressed}" />
                 </Style>
             </Style>
         </Style>
