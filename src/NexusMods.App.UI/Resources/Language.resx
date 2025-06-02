@@ -910,6 +910,10 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     
     
+    <data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
+        <value>Toggle on adds this collection to the game and loads it. Toggle off leaves it out.</value>
+    </data>
+    
     
 
     <data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">

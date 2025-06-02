@@ -358,6 +358,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Toggle on adds this collection to the game and loads it. Toggle off leaves it out..
+        /// </summary>
+        public static string CollectionDownloadViewModel_Toggle_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_Toggle_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update to Revision {0}.
         /// </summary>
         public static string CollectionDownloadViewModel_UpdateCollection {
