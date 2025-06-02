@@ -28,5 +28,5 @@ public interface ILoadOrderManager
     /// One instance of ISortOrderVariety for each variety.
     /// </summary>
     /// <returns></returns>
-    public ISortOrderVariety[] GetSortOrderVarieties();
+    public ReadOnlySpan<ISortOrderVariety> GetSortOrderVarieties();
 }
