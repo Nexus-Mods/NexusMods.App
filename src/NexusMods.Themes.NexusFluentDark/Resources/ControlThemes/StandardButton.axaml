@@ -347,9 +347,7 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}">
-                        <Grid ColumnDefinitions="Auto,*,Auto"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Center">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
                             <icons:UnifiedIcon Grid.Column="0" Name="PART_LeftIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"
@@ -357,7 +355,7 @@
                             <TextBlock Grid.Column="1" Name="PART_Label"
                                        Text="{TemplateBinding Text}"
                                        Foreground="{TemplateBinding Foreground}"
-                                       Margin="2,2"
+                                       Margin="4,2"
                                        VerticalAlignment="Center"/>
                             <icons:UnifiedIcon Grid.Column="2" Name="PART_RightIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
@@ -422,7 +420,6 @@
             
             <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeExtraSmall}" />
-                <Setter Property="Margin" Value="-2,2,-2,3" />
             </Style>
         </Style>
 
@@ -430,17 +427,13 @@
         <Style Selector="^[Size=Medium]">
             <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingMedium}" />
 
-            <Style Selector="^ StackPanel">
-                <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-            </Style>
-
             <Style Selector="^ icons|UnifiedIcon">
                 <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeMedium}" />
                 <Setter Property="Margin" Value="2,2,2,3" />
             </Style>
 
             <Style Selector="^ TextBlock#PART_Label">
-                <Setter Property="Margin" Value="2,0,2,1" />
+                <Setter Property="Margin" Value="4,0,4,1" />
                 <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
             </Style>
             
