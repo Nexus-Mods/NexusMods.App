@@ -296,7 +296,7 @@ public static class LibraryComponents
             Observable<ModUpdateOnPage> valueObservable)
         {
             _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: (ModUpdatesOnModPage)initialValue);
-            _buttonText = new BindableReactiveProperty<string>(value: Resources.Language.LibraryItemButtonUpdate_Single);
+            _buttonText = new BindableReactiveProperty<string>();
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, observable, disposables) =>
             {

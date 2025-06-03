@@ -11,231 +11,243 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
-    <TabControl Margin="0,16,0,0">
-        <TabItem x:Name="ModsTabItem">
-            <TabItem.Header>
-                <StackPanel>
-                    <TextBlock Text="Mods" />
-                    <Border>
-                        <TextBlock x:Name="TextNumMods" Text="123" />
-                    </Border>
-                </StackPanel>
-            </TabItem.Header>
+    <Grid RowDefinitions="Auto, *">
 
-            <!-- mods go here -->
+        <pageHeader:PageHeader Grid.Row="0"
+                               Title="{x:Static resources:Language.LibraryPageTitle}"
+                               Description="{x:Static resources:Language.LibraryPageDescription}"
+                               Icon="{x:Static icons:IconValues.PictogramLibrary}"
+                               Margin="24 24 24 0" />
 
-            <!-- toolbar, rest of space for tree data grid -->
-            <Grid RowDefinitions="Auto, *">
+        <TabControl Grid.Row="1" Margin="0,16,0,0">
+            <TabItem x:Name="ModsTabItem">
+                <TabItem.Header>
+                    <StackPanel>
+                        <TextBlock Text="Mods" />
+                        <Border>
+                            <TextBlock x:Name="TextNumMods" Text="123" />
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
 
-                <!-- toolbar component -->
-                <controls:Toolbar Margin="24,12, 24, 0">
+                <!-- mods go here -->
 
-                    <!-- search button group -->
-                    <!-- leave in for now, it won't be long before we have a search component -->
-                    
-                    <!-- <ItemsControl Template="{StaticResource ToolbarControlGroup}"> -->
-                    <!--     <DockPanel> -->
-                    <!--         <controls:StandardButton x:Name="SearchButton" -->
-                    <!--                                  Text="x selected" -->
-                    <!--                                  Type="Tertiary" -->
-                    <!--                                  Size="ExtraSmall" -->
-                    <!--                                  Fill="WeakAlt" -->
-                    <!--                                  ShowIcon="Left" -->
-                    <!--                                  ShowLabel="False" -->
-                    <!--                                  LeftIcon="{x:Static icons:IconValues.Search}" -->
-                    <!--                                  DockPanel.Dock="Left"/> -->
-                    <!--         <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188"> -->
-                    <!--             <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="Search..." Padding="4 2 24 2" -->
-                    <!--                      Margin="4 0 0 0"/> -->
-                    <!--             <controls:StandardButton x:Name="SearchClearButton" -->
-                    <!--                                      Margin="0 0 4 0" -->
-                    <!--                                      HorizontalAlignment="Right" -->
-                    <!--                                      Type="Tertiary" -->
-                    <!--                                      Size="ExtraSmall" -->
-                    <!--                                      Fill="None" -->
-                    <!--                                      ShowIcon="IconOnly" -->
-                    <!--                                      ShowLabel="False" -->
-                    <!--                                      LeftIcon="{x:Static icons:IconValues.Close}"/> -->
-                    <!--             <Panel.Transitions> -->
-                    <!--                 <Transitions> -->
-                    <!--                     <DoubleTransition Property="Width" Duration="0:0:0.1"/> -->
-                    <!--                 </Transitions> -->
-                    <!--             </Panel.Transitions> -->
-                    <!--         </Panel> -->
-                    <!--     </DockPanel> -->
-                    <!-- </ItemsControl> -->
+                <!-- toolbar, rest of space for tree data grid -->
+                <Grid RowDefinitions="Auto, *">
 
-                    <!-- selection related button group -->
-                    <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+                    <!-- toolbar component -->
+                    <controls:Toolbar Margin="24,12, 24, 0">
 
-                        <controls:StandardButton x:Name="DeselectItemsButton"
-                                                 Type="Tertiary"
-                                                 Size="Toolbar"
-                                                 Fill="Weak"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.Close}"
-                                                 ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}"/>
-                        
-                        <controls:StandardButton Type="Primary"
-                                                 Size="Toolbar"
-                                                 Fill="StrongAlt"
-                                                 ShowIcon="Both"
-                                                 LeftIcon="{x:Static icons:IconValues.Add}"
-                                                 RightIcon="{x:Static icons:IconValues.ChevronDown}"
-                                                 Text="Install">
-                            
-                            <controls:StandardButton.Flyout>
-                                <MenuFlyout>
-                                    <MenuItem x:Name="InstallModMenuItem"
-                                              Header="Install">
-                                    </MenuItem>
-                                    <MenuItem x:Name="AdvancedInstallModMenuItem"
-                                              Header="Advanced Install">
-                                    </MenuItem>
-                                </MenuFlyout>
-                            </controls:StandardButton.Flyout>
-                            
-                        </controls:StandardButton>
+                        <!-- search button group -->
+                        <!-- leave in for now, it won't be long before we have a search component -->
 
-                        <controls:StandardButton x:Name="RemoveModButton"
-                                                 Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
-                                                 Type="Tertiary"
-                                                 Size="Toolbar"
-                                                 ShowLabel="False"
-                                                 Fill="Weak"
-                                                 ShowIcon="Left"
-                                                 LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}"
-                                                 Classes="Danger"/>
-                    </ItemsControl>
+                        <!-- <ItemsControl Template="{StaticResource ToolbarControlGroup}"> -->
+                        <!--     <DockPanel> -->
+                        <!--         <controls:StandardButton x:Name="SearchButton" -->
+                        <!--                                  Text="x selected" -->
+                        <!--                                  Type="Tertiary" -->
+                        <!--                                  Size="ExtraSmall" -->
+                        <!--                                  Fill="WeakAlt" -->
+                        <!--                                  ShowIcon="Left" -->
+                        <!--                                  ShowLabel="False" -->
+                        <!--                                  LeftIcon="{x:Static icons:IconValues.Search}" -->
+                        <!--                                  DockPanel.Dock="Left"/> -->
+                        <!--         <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188"> -->
+                        <!--             <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="Search..." Padding="4 2 24 2" -->
+                        <!--                      Margin="4 0 0 0"/> -->
+                        <!--             <controls:StandardButton x:Name="SearchClearButton" -->
+                        <!--                                      Margin="0 0 4 0" -->
+                        <!--                                      HorizontalAlignment="Right" -->
+                        <!--                                      Type="Tertiary" -->
+                        <!--                                      Size="ExtraSmall" -->
+                        <!--                                      Fill="None" -->
+                        <!--                                      ShowIcon="IconOnly" -->
+                        <!--                                      ShowLabel="False" -->
+                        <!--                                      LeftIcon="{x:Static icons:IconValues.Close}"/> -->
+                        <!--             <Panel.Transitions> -->
+                        <!--                 <Transitions> -->
+                        <!--                     <DoubleTransition Property="Width" Duration="0:0:0.1"/> -->
+                        <!--                 </Transitions> -->
+                        <!--             </Panel.Transitions> -->
+                        <!--         </Panel> -->
+                        <!--     </DockPanel> -->
+                        <!-- </ItemsControl> -->
 
-                    <!-- static button group -->
-                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
-                        <controls:StandardButton
-                            Text="Add"
-                            Type="Tertiary"
-                            Size="Toolbar"
-                            Fill="Weak"
-                            ShowIcon="Both"
-                            LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
-                            RightIcon="{x:Static icons:IconValues.ChevronDown}">
-                            <controls:StandardButton.Flyout>
-                                <MenuFlyout>
-                                    <MenuItem x:Name="GetModsFromDriveButton"
-                                              Header="{x:Static resources:Language.FileOriginsPage_FromDrive}">
-                                        <MenuItem.Icon>
-                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem x:Name="GetModsFromNexusButton"
-                                              Header="{x:Static resources:Language.FileOriginsPage_FromNexusMods}">
-                                        <MenuItem.Icon>
-                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </MenuFlyout>
-                            </controls:StandardButton.Flyout>
-                        </controls:StandardButton>
-                        <controls:StandardButton x:Name="Refresh" 
-                                                 ShowIcon="Left" 
-                                                 ShowLabel="False" 
-                                                 Size="Toolbar"
-                                                 Type="Tertiary" 
-                                                 Fill="Weak"
-                                                 LeftIcon="{x:Static icons:IconValues.Refresh}"
-                                                 ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
-                    </ItemsControl>
-                </controls:Toolbar>
+                        <!-- selection related button group -->
+                        <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
 
-                <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
-                                     Header="{x:Static resources:Language.EmptyLibraryTitleText}">
-                    <controls:EmptyState.Subtitle>
-                        <StackPanel Orientation="Vertical" Spacing="16">
-                            <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
-                            <controls:StandardButton x:Name="EmptyLibraryLinkButton"
-                                                     Text="Open Nexus Mods"
+                            <controls:StandardButton x:Name="DeselectItemsButton"
+                                                     Type="Tertiary"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
                                                      ShowIcon="Left"
-                                                     LeftIcon="{x:Static icons:IconValues.Nexus}"
-                                                     HorizontalAlignment="Center" />
-                        </StackPanel>
-                    </controls:EmptyState.Subtitle>
+                                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                                     ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
 
-                    <TreeDataGrid x:Name="TreeDataGridLibrary"
-                                  ShowColumnHeaders="True"
-                                  CanUserResizeColumns="True"
-                                  CanUserSortColumns="True"
-                                  HorizontalAlignment="Stretch"
-                                  Margin="0,12,0,0" />
-                </controls:EmptyState>
-            </Grid>
-        </TabItem>
-        <TabItem x:Name="CollectionsTabItem">
-            <TabItem.Header>
-                <StackPanel>
-                    <TextBlock Text="Collections" />
-                    <Border>
-                        <TextBlock x:Name="TextNumCollections" Text="123" />
-                    </Border>
-                </StackPanel>
-            </TabItem.Header>
+                            <controls:StandardButton Type="Primary"
+                                                     Size="Toolbar"
+                                                     Fill="StrongAlt"
+                                                     ShowIcon="Both"
+                                                     LeftIcon="{x:Static icons:IconValues.Add}"
+                                                     RightIcon="{x:Static icons:IconValues.ChevronDown}"
+                                                     Text="Install">
 
-            <!-- collections go here -->
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="InstallModMenuItem"
+                                                  Header="Install">
+                                        </MenuItem>
+                                        <MenuItem x:Name="AdvancedInstallModMenuItem"
+                                                  Header="Advanced Install">
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
 
-            <!-- toolbar, rest of space for collection car wrap panel -->
-            <Grid RowDefinitions="Auto, *">
-                
-                <!-- toolbar component -->
-                <controls:Toolbar Margin="24,12, 24, 0">
-                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
-                        <controls:StandardButton
-                            Text="Add"
-                            Type="Tertiary"
-                            Size="Toolbar"
-                            Fill="Weak"
-                            ShowIcon="Both"
-                            LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
-                            RightIcon="{x:Static icons:IconValues.ChevronDown}">
-                            <controls:StandardButton.Flyout>
-                                <MenuFlyout>
-                                    <MenuItem x:Name="GetCollectionFromNexusButton"
-                                              Header="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}">
-                                        <MenuItem.Icon>
-                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </MenuFlyout>
-                            </controls:StandardButton.Flyout>
-                        </controls:StandardButton>
-                    </ItemsControl>
-                </controls:Toolbar>
+                            </controls:StandardButton>
 
-                <ScrollViewer Grid.Row="1">
-                    <ItemsControl x:Name="Collections" Padding="24,12,24,12">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <panels:FlexPanel
-                                    AlignContent="FlexStart"
-                                    RowSpacing="{StaticResource Spacing-3}"
-                                    ColumnSpacing="{StaticResource Spacing-3}"
-                                    Wrap="Wrap" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
-                                <reactive:ViewModelViewHost
-                                    ViewModel="{CompiledBinding .}"
-                                    ClipToBounds="False" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                            <controls:StandardButton x:Name="RemoveModButton"
+                                                     Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
+                                                     Type="Tertiary"
+                                                     Size="Toolbar"
+                                                     ShowLabel="False"
+                                                     Fill="Weak"
+                                                     ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
+                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}"
+                                                     Classes="Danger" />
+                        </ItemsControl>
 
-            </Grid>
+                        <!-- static button group -->
+                        <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                            <controls:StandardButton
+                                Text="Add"
+                                Type="Tertiary"
+                                Size="Toolbar"
+                                Fill="Weak"
+                                ShowIcon="Both"
+                                LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
+                                RightIcon="{x:Static icons:IconValues.ChevronDown}">
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="GetModsFromDriveButton"
+                                                  Header="{x:Static resources:Language.FileOriginsPage_FromDrive}">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem x:Name="GetModsFromNexusButton"
+                                                  Header="{x:Static resources:Language.FileOriginsPage_FromNexusMods}">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+                            </controls:StandardButton>
+                            <controls:StandardButton x:Name="Refresh"
+                                                     ShowIcon="Left"
+                                                     ShowLabel="False"
+                                                     Size="Toolbar"
+                                                     Type="Tertiary"
+                                                     Fill="Weak"
+                                                     LeftIcon="{x:Static icons:IconValues.Refresh}"
+                                                     ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
+                        </ItemsControl>
+                    </controls:Toolbar>
+
+                    <controls:EmptyState x:Name="EmptyState" Grid.Row="1"
+                                         Header="{x:Static resources:Language.EmptyLibraryTitleText}">
+                        <controls:EmptyState.Subtitle>
+                            <StackPanel Orientation="Vertical" Spacing="16">
+                                <TextBlock x:Name="EmptyLibraryTextBlock" Text="Subtitle" />
+                                <controls:StandardButton x:Name="EmptyLibraryLinkButton"
+                                                         Text="Open Nexus Mods"
+                                                         ShowIcon="Left"
+                                                         LeftIcon="{x:Static icons:IconValues.Nexus}"
+                                                         HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </controls:EmptyState.Subtitle>
+
+                        <TreeDataGrid x:Name="TreeDataGridLibrary"
+                                      ShowColumnHeaders="True"
+                                      CanUserResizeColumns="True"
+                                      CanUserSortColumns="True"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="0,12,0,0" />
+                    </controls:EmptyState>
+                </Grid>
+            </TabItem>
+            <TabItem x:Name="CollectionsTabItem">
+                <TabItem.Header>
+                    <StackPanel>
+                        <TextBlock Text="Collections" />
+                        <Border>
+                            <TextBlock x:Name="TextNumCollections" Text="123" />
+                        </Border>
+                    </StackPanel>
+                </TabItem.Header>
+
+                <!-- collections go here -->
+
+                <!-- toolbar, rest of space for collection car wrap panel -->
+                <Grid RowDefinitions="Auto, *">
+
+                    <!-- toolbar component -->
+                    <controls:Toolbar Margin="24,12, 24, 0">
+                        <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                            <controls:StandardButton
+                                Text="Add"
+                                Type="Tertiary"
+                                Size="Toolbar"
+                                Fill="Weak"
+                                ShowIcon="Both"
+                                LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
+                                RightIcon="{x:Static icons:IconValues.ChevronDown}">
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="GetCollectionFromNexusButton"
+                                                  Header="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+                            </controls:StandardButton>
+                        </ItemsControl>
+                    </controls:Toolbar>
+
+                    <ScrollViewer Grid.Row="1">
+                        <ItemsControl x:Name="Collections" Padding="24,12,24,12">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <panels:FlexPanel
+                                        AlignContent="FlexStart"
+                                        RowSpacing="{StaticResource Spacing-3}"
+                                        ColumnSpacing="{StaticResource Spacing-3}"
+                                        Wrap="Wrap" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type collections:ICollectionCardViewModel}">
+                                    <reactive:ViewModelViewHost
+                                        ViewModel="{CompiledBinding .}"
+                                        ClipToBounds="False" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                </Grid>
 
 
-        </TabItem>
-    </TabControl>
+            </TabItem>
+        </TabControl>
+
+
+    </Grid>
 </reactive:ReactiveUserControl>
