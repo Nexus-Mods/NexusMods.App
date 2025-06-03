@@ -84,6 +84,9 @@
         <None Update="icon.svg">
             <DependentUpon>app.pupnet.conf</DependentUpon>
         </None>
+        <None Update="com.nexusmods.app.releases.xml">
+          <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
     </ItemGroup>
 
     <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish"

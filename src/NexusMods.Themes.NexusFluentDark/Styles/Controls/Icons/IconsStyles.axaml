@@ -175,6 +175,9 @@
                     <icons:UnifiedIcon Classes="PictogramCelebrate" />
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramCelebrate" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramLibrary" />
+                    <icons:UnifiedIcon Classes="PictogramLibrary" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramLibrary" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="PictogramPlaylistAdd" />
@@ -731,5 +734,9 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramPlaylistAdd">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramPlaylistAdd}" />
+    </Style>
+    
+    <Style Selector="icons|UnifiedIcon.PictogramLibrary">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramLibrary}" />
     </Style>
 </Styles>
