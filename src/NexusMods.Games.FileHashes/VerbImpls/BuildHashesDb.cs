@@ -23,7 +23,6 @@ using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.ProxyConsole;
 using YamlDotNet.Serialization;
-using Build = NexusMods.Abstractions.GOG.DTOs.Build;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
@@ -386,7 +385,7 @@ public class BuildHashesDb : IAsyncDisposable
 
                 _ = new EpicGameStoreBuild.New(tx)
                 {
-                    BuildId = BuildId.FromUnsanitized(build.Id),
+                    BuildId = NexusMods.Networking.EpicGameStore.Values.BuildId.FromUnsanitized(build.Id),
                     ItemId = ItemId.FromUnsanitized(id),
                     AppName = build.AppName,
                     BuildVersion = build.BuildVersion,
