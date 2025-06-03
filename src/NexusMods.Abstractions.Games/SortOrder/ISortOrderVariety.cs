@@ -66,14 +66,20 @@ public interface ISortOrderVariety
     /// </summary>
     [Pure]
     public ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<ISortItemKey> items, IDb? db = null, CancellationToken token = default);
-    
+
     /// <summary>
     /// Moves the given items to be before or after the target item in ascending index sort order.
     /// The relative index order of the moved items is preserved.
     /// Validity and outcome of the move may depend on game-specific logic, so only some or none of the items may be moved.
     /// </summary>
     [Pure]
-    public ValueTask MoveItems(SortOrderId sortOrderId, ISortItemKey[] itemsToMove, ISortItemKey dropTargetItem, TargetRelativePosition relativePosition, IDb? db = null, CancellationToken token = default);
+    public ValueTask MoveItems(
+        SortOrderId sortOrderId,
+        ISortItemKey[] itemsToMove,
+        ISortItemKey dropTargetItem,
+        TargetRelativePosition relativePosition,
+        IDb? db = null,
+        CancellationToken token = default);
 
     /// <summary>
     /// Sets the relative position of a sortable item in the sort order
@@ -90,3 +96,70 @@ public interface ISortOrderVariety
     public ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
 }
 
+/// <summary>
+/// Genric version of <inheritdoc cref="ISortOrderVariety"/>, with implementation of non-generic methods.
+/// To allow for type-safe access to the items in the implementations.
+/// </summary>
+/// <typeparam name="TItem"></typeparam>
+/// <typeparam name="TKey"></typeparam>
+public interface ISortOrderVariety<TItem, TKey> : ISortOrderVariety
+    where TItem : ISortableItem<TItem, TKey>
+    where TKey : IEquatable<TKey>, ISortItemKey
+{
+    /// <inheritdoc/>
+    [Pure]
+    IObservable<IChangeSet<ISortableItem, ISortItemKey>> ISortOrderVariety.GetSortableItemsChangeSet(SortOrderId sortOrderId) => 
+        GetSortableItemsChangeSet(sortOrderId).ChangeKey((key,_) => (ISortItemKey)key).Transform(item => (ISortableItem)item);
+    
+    /// <inheritdoc cref="ISortOrderVariety.GetSortableItemsChangeSet"/>
+    [Pure]
+    new IObservable<IChangeSet<TItem, TKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
+    
+    /// <inheritdoc/>
+    [Pure]
+    IReadOnlyList<ISortableItem> ISortOrderVariety.GetSortableItems(SortOrderId sortOrderId, IDb? db) => 
+        GetSortableItems(sortOrderId, db).Cast<ISortableItem>().ToList();
+    
+    /// <inheritdoc cref="ISortOrderVariety.GetSortableItems"/>
+    [Pure]
+    new IReadOnlyList<TItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
+    
+    /// <inheritdoc/>
+    [Pure]
+    ValueTask ISortOrderVariety.SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<ISortItemKey> items, IDb? db, CancellationToken token) =>
+        SetSortOrder(sortOrderId, items.Cast<TKey>().ToList(), db, token);
+
+    /// <inheritdoc cref="ISortOrderVariety.SetSortOrder"/>
+    [Pure]
+    ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<TKey> items, IDb? db = null, CancellationToken token = default);
+    
+    /// <inheritdoc/>
+    [Pure]
+    ValueTask ISortOrderVariety.MoveItems(
+        SortOrderId sortOrderId,
+        ISortItemKey[] itemsToMove,
+        ISortItemKey dropTargetItem,
+        TargetRelativePosition relativePosition,
+        IDb? db,
+        CancellationToken token) =>
+        MoveItems(sortOrderId, itemsToMove.Cast<TKey>().ToArray(), (TKey)dropTargetItem, relativePosition, db, token);
+    
+    /// <inheritdoc cref="ISortOrderVariety.MoveItems"/>
+    [Pure]
+    ValueTask MoveItems(
+        SortOrderId sortOrderId,
+        TKey[] itemsToMove,
+        TKey dropTargetItem,
+        TargetRelativePosition relativePosition,
+        IDb? db = null,
+        CancellationToken token = default);
+    
+    /// <inheritdoc/>
+    [Pure]
+    ValueTask ISortOrderVariety.MoveItemDelta(SortOrderId sortOrderId, ISortItemKey sourceItem, int delta, IDb? db, CancellationToken token) =>
+        MoveItemDelta(sortOrderId, (TKey)sourceItem, delta, db, token);
+
+    /// <inheritdoc cref="ISortOrderVariety.MoveItemDelta"/>
+    [Pure]
+    ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
+}
