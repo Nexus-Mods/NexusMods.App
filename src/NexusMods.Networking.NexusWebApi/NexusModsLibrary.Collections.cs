@@ -540,9 +540,12 @@ public partial class NexusModsLibrary
         ITransaction tx,
         ICollectionFragment collectionInfo)
     {
+        var id = CollectionId.From((ulong)collectionInfo.Id);
         var slug = CollectionSlug.From(collectionInfo.Slug);
-        var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
+        var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.CollectionId, id);
 
+        resolver.Add(CollectionMetadata.CollectionId, id);
+        resolver.Add(CollectionMetadata.Slug, slug);
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
