@@ -47,7 +47,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             
             this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.ViewModel)
                 .AddTo(disposables);
-            
+
             this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.DataContext)
                 .AddTo(disposables);
             
@@ -88,16 +88,19 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 })
                 .AddTo(disposables);
             
-            ViewModel?.Adapter.SelectedModels?.ObserveCountChanged()
-                .Subscribe(count =>
-                {
-                    ContextControlGroup.IsVisible = count != 0;
-
-                    if (count != 0)
+            this.WhenAnyValue(view => view.ViewModel!.SelectionCount)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(count =>
                     {
-                        DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
+                        ContextControlGroup.IsVisible = count != 0;
+
+                        if (count != 0)
+                        {
+                            DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
+                        }
                     }
-                }).AddTo(disposables);
+                )
+                .AddTo(disposables);
         });
     }
 }

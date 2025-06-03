@@ -27,7 +27,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             {
                 // initially hidden
                 ContextControlGroup.IsVisible = false;
-                
+
                 var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
                 if (storageProvider is not null)
                 {
@@ -91,16 +91,19 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 this.BindCommand(ViewModel, vm => vm.RefreshUpdatesCommand, view => view.Refresh)
                     .AddTo(disposables);
 
-                ViewModel?.Adapter.SelectedModels?.ObserveCountChanged()
-                    .Subscribe(count =>
-                    {
-                        ContextControlGroup.IsVisible = count != 0;
-
-                        if (count != 0)
+                this.WhenAnyValue(view => view.ViewModel!.SelectionCount)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(count =>
                         {
-                            DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
+                            ContextControlGroup.IsVisible = count != 0;
+
+                            if (count != 0)
+                            {
+                                DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
+                            }
                         }
-                    }).AddTo(disposables);
+                    )
+                    .AddTo(disposables);
             }
         );
     }

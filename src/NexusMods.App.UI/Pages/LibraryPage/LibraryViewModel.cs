@@ -57,6 +57,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public ReactiveCommand<Unit> OpenNexusModsCommand { get; }
     public ReactiveCommand<Unit> OpenNexusModsCollectionsCommand { get; }
 
+    [Reactive] public int SelectionCount { get; private set; }
+    
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
     private readonly IServiceProvider _serviceProvider;
@@ -224,6 +226,13 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 .Bind(out _collections)
                 .Subscribe()
                 .AddTo(disposables);
+            
+            // Update the selection count based on the selected models
+            Adapter.SelectedModels
+                .ObserveChanged()
+                .Select(_ => GetSelectedIds().Length)
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(count => SelectionCount = count);
 
             // Auto check updates on entering library.
             RefreshUpdatesCommand.Execute(Unit.Default);
