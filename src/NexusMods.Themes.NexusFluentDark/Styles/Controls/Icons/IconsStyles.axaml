@@ -180,6 +180,14 @@
                     <icons:UnifiedIcon Classes="PictogramLibrary" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramPlaylistAdd" />
+                    <icons:UnifiedIcon Classes="PictogramPlaylistAdd" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramPlaylistAdd" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramCollection3D" />
+                    <icons:UnifiedIcon Classes="PictogramCollection3D" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramCollection3D" Size="48" />
+                </WrapPanel>
+                <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical" />
@@ -720,6 +728,12 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.WindowRestore">
         <Setter Property="Value" Value="{x:Static icons:IconValues.WindowRestore}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramCollection3D">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramCollection3D}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramPlaylistAdd">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramPlaylistAdd}" />
     </Style>
     
     <Style Selector="icons|UnifiedIcon.PictogramLibrary">
