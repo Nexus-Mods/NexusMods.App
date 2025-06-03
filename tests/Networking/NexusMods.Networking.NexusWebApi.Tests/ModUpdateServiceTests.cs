@@ -205,7 +205,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         receivedRemove.Should().BeFalse();
 
         // Now remove it from the library.
-        await _libraryService.RemoveItems([libraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
+        await _libraryService.RemoveLibraryItems([libraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
         receivedRemove.Should().BeTrue();
     }
 
@@ -294,7 +294,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         receivedRemove.Should().BeFalse();
 
         // Now remove it from the library.
-        await _libraryService.RemoveItems([libraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
+        await _libraryService.RemoveLibraryItems([libraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
         receivedRemove.Should().BeTrue();
     }
 
@@ -411,7 +411,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         updateResults.Should().BeEmpty("Installing latest version should remove the update.");
         
         // Now remove the current version from the library
-        await _libraryService.RemoveItems([currentLibraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
+        await _libraryService.RemoveLibraryItems([currentLibraryFile.AsLibraryItem()], GarbageCollectorRunMode.DoNotRun);
         
         // Assert that the old version now has update notifications
         updateResults.Should().NotBeEmpty("Old version should receive updates after newer version is removed");

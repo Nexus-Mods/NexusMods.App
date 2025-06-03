@@ -14,8 +14,6 @@ using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using static Bannerlord.LauncherManager.Constants;
 using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 using GameStore = Bannerlord.LauncherManager.Models.GameStore;
 

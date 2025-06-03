@@ -12,7 +12,7 @@ using NexusMods.Icons;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
-using NexusMods.Extensions.BCL;
+using NexusMods.Sdk;
 using NexusMods.Telemetry;
 using ReactiveUI;
 

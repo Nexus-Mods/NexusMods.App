@@ -358,6 +358,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Toggle on adds this collection to the game and loads it. Toggle off leaves it out..
+        /// </summary>
+        public static string CollectionDownloadViewModel_Toggle_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_Toggle_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update to Revision {0}.
         /// </summary>
         public static string CollectionDownloadViewModel_UpdateCollection {
@@ -1552,6 +1561,15 @@ namespace NexusMods.App.UI.Resources {
         public static string LibraryItemDeleteConfirmation_UsedByWithLoadout {
             get {
                 return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedByWithLoadout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage your downloaded mods and collections. Install, update or add more..
+        /// </summary>
+        public static string LibraryPageDescription {
+            get {
+                return ResourceManager.GetString("LibraryPageDescription", resourceCulture);
             }
         }
         

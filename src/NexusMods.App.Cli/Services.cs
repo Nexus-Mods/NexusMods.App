@@ -7,7 +7,7 @@ using NexusMods.CLI.OptionParsers;
 using NexusMods.CLI.Types;
 using NexusMods.CLI.Types.IpcHandlers;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI;
 

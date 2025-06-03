@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
-using NexusMods.Extensions.BCL;
+using NexusMods.Sdk;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

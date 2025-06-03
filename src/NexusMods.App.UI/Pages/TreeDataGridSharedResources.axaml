@@ -116,11 +116,12 @@
             <!-- File Name -->
             <controls:ComponentControl Grid.Column="1" x:TypeArguments="gameLocators:GamePath" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
-                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                                ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.StringComponentKey}">
+                    <controls:ComponentTemplate x:TypeArguments="controls:FileEntryComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+NameWithFileIcon.FileEntryComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:StringComponent}">
-                                <TextBlock Text="{CompiledBinding Value.Value}" Classes="FileNameTextBlock" />
+                            <DataTemplate DataType="{x:Type controls:FileEntryComponent}">
+                                <TextBlock Text="{CompiledBinding Name.Value.Value}" Classes="FileNameTextBlock"
+                                           Classes.StrikeThrough="{CompiledBinding IsDeleted.Value.Value}"/>
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>

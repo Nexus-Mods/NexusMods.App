@@ -12,17 +12,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="Resources\Language.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Language.resx</DependentUpon>
-        </Compile>
-
         <EmbeddedResource Update="Resources\Language.resx">
             <Generator>PublicResXFileCodeGenerator</Generator>
             <LastGenOutput>Language.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+    </ItemGroup>
 
+    <ItemGroup>
         <Compile Update="Content\Left\ModContent\ModContentViewModel.cs">
             <DependentUpon>IModContentViewModel.cs</DependentUpon>
         </Compile>

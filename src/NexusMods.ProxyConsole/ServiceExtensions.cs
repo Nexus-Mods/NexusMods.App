@@ -1,13 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.ProxyConsole.Abstractions;
 using NexusMods.ProxyConsole.RenderDefinitions;
-using Spectre.Console;
-using Abstractions = NexusMods.ProxyConsole.Abstractions;
-using Impl = NexusMods.ProxyConsole.Abstractions.Implementations;
-using Render = Spectre.Console.Rendering;
 
 namespace NexusMods.ProxyConsole;
 

@@ -1,8 +1,10 @@
+using System.Collections.Frozen;
 using System.Xml;
 using FluentAssertions;
 using FomodInstaller.Interface;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
@@ -10,7 +12,6 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace NexusMods.Games.FOMOD.Tests;
 
@@ -25,7 +26,42 @@ public class FomodXmlInstallerTests(ITestOutputHelper outputHelper) : ALibraryAr
             .AddRedEngineGames()
             .AddUniversalGameLocator<Cyberpunk2077Game>(new Version("1.6.1"));
     }
-    
+
+    [Theory]
+    [InlineData(null, "")]
+    [InlineData("", "")]
+    [InlineData("/", "")]
+    [InlineData("/foo", "foo")]
+    [InlineData("\\", "")]
+    [InlineData("\\foo", "foo")]
+    [InlineData("foo", "foo")]
+    [InlineData("foo/bar", "foo/bar")]
+    public void Test_RemoveRoot(string? input, string expected)
+    {
+        var actual = FomodXmlInstaller.RemoveRoot(input).ToString();
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [MemberData(nameof(TestData_FixPath))]
+    public void Test_FixPath(string? input, string expected, bool isDirectory, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> archiveFiles)
+    {
+        var actual = FomodXmlInstaller.FixPath(input, archiveFiles, isDirectory: isDirectory, logger: Logger);
+        actual.Should().Be(expected);
+    }
+
+    public static TheoryData<string?, string, bool, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>> TestData_FixPath()
+    {
+        return new TheoryData<string?, string, bool, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>>
+        {
+            { "", "", false, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>.Empty },
+            { "/", "", false, FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>.Empty },
+            { "/foo\\bar.txt", "foo/bar.txt", false, new Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>
+            {
+                { "foo/bar.txt", default },
+            }.ToFrozenDictionary() },
+        };
+    }
 
     private async Task<LoadoutItemGroup.ReadOnly> GetResultsFromDirectory(string testCase)
     {

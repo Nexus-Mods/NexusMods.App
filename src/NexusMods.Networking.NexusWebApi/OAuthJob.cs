@@ -1,12 +1,12 @@
 using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
+using Microsoft.AspNetCore.WebUtilities;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Extensions.BCL;
 using NexusMods.Networking.NexusWebApi.Auth;
 using R3;
 
@@ -47,11 +47,11 @@ internal sealed class OAuthJob : IOAuthJob, IJobDefinitionWithStart<OAuthJob, Op
     public async ValueTask<Optional<JwtTokenReply>> StartAsync(IJobContext<OAuthJob> context)
     {
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.1
-        var codeVerifier = _idGenerator.UUIDv4().ToBase64();
+        var codeVerifier = Convert.ToBase64String(Encoding.UTF8.GetBytes(_idGenerator.UUIDv4()));
 
         // see https://www.rfc-editor.org/rfc/rfc7636#section-4.2
         var codeChallengeBytes = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
-        var codeChallenge = StringBase64Extensions.Base64UrlEncode(codeChallengeBytes);
+        var codeChallenge = WebEncoders.Base64UrlEncode(codeChallengeBytes);
 
         var state = _idGenerator.UUIDv4();
         var uri = OAuth.GenerateAuthorizeUrl(codeChallenge, state);

@@ -1,5 +1,5 @@
 ﻿using Nerdbank.Streams;
-using NexusMods.ProxyConsole.Abstractions;
+using NexusMods.Sdk.ProxyConsole;
 using Xunit.Sdk;
 
 namespace NexusMods.ProxyConsole.Tests;

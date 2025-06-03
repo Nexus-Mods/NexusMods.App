@@ -33,5 +33,10 @@
         <Style Selector="^.Success">
             <Setter Property="Foreground" Value="{StaticResource SuccessStrongBrush}" />
         </Style>
+        
+        <!-- Decoration TextBlock styles -->
+        <Style Selector="^.StrikeThrough">
+            <Setter Property="TextDecorations" Value="StrikeThrough" />
+        </Style>
     </Style>
 </Styles>

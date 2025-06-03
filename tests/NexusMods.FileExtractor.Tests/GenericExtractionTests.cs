@@ -1,10 +1,8 @@
 using FluentAssertions;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 
 namespace NexusMods.FileExtractor.Tests;
 
@@ -25,16 +23,19 @@ public class GenericExtractionTests
     {
         await using var tempFolder = _temporaryFileManager.CreateFolder();
         await _extractor.ExtractAllAsync(path, tempFolder, CancellationToken.None);
-        (await tempFolder.Path.EnumerateFiles()
-            .SelectAsync(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash3Async()))
-            .ToArrayAsync())
-            .Should()
-            .BeEquivalentTo([
-                ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt".ToRelativePath(), (Hash)0x3F0AB4D495E35A9A),
-                ("folder1/folder1file.txt".ToRelativePath(), (Hash)0x8520436F06348939),
-                ("rootFile.txt".ToRelativePath(), (Hash)0x818A82701BC1CC30),
-                ]
-            );
+
+        var actual = await tempFolder.Path.EnumerateFiles()
+            .ToAsyncEnumerable()
+            .SelectAwait(async f => (f.RelativeTo(tempFolder.Path), await f.XxHash3Async()))
+            .ToArrayAsync();
+
+        (RelativePath, Hash)[] expected = [
+            ("deepFolder/deepFolder2/deepFolder3/deepFolder4/deepFile.txt", (Hash)0x3F0AB4D495E35A9A),
+            ("folder1/folder1file.txt", (Hash)0x8520436F06348939),
+            ("rootFile.txt", (Hash)0x818A82701BC1CC30),
+        ];
+
+        actual.Should().BeEquivalentTo(expected);
     }
 
     public static IEnumerable<object[]> Archives => FileSystem.Shared.GetKnownPath(KnownPath.CurrentDirectory)

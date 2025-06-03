@@ -19,7 +19,6 @@ using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
@@ -28,6 +27,7 @@ using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -1082,6 +1082,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     GamePath = path,
                 };
                 diffs.Add(KeyValuePair.Create(path, entry));
+            }
+            else if (actions.HasFlag(Actions.WarnOfUnableToExtract))
+            {
+                entry = new DiskDiffEntry
+                {
+                    Hash = node.Loadout.Hash,
+                    Size = node.Loadout.Size,
+                    ChangeType = FileChangeType.Added,
+                    GamePath = path,
+                };
             }
             else if (actions.HasFlag(Actions.ExtractToDisk))
             {

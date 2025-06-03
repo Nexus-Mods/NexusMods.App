@@ -6,6 +6,7 @@
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.LeftMenuItemView">
     <Design.DataContext>
@@ -26,7 +27,8 @@
                                       OffContent="{x:Null}"
                                       IsVisible="{CompiledBinding IsToggleVisible}"
                                       IsChecked="{CompiledBinding IsEnabled}"
-                                      Command="{CompiledBinding ToggleIsEnabledCommand}" />
+                                      Command="{CompiledBinding ToggleIsEnabledCommand}"
+                                      ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_Toggle_ToolTip}"/>
                     </DataTemplate>
 
                     <!-- HealthCheck item -->
