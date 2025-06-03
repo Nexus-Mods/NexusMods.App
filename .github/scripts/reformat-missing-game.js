@@ -32,7 +32,7 @@ async function run() {
   }
 
   // Example: Extract fields using RegExp (adjust as needed)
-  const game = body.match(/### Game Name\s*\n([^\n]+)/i)?.[1]?.trim() || "N/A";
+  const game = body.match(/### Game\s*\n([^\n]+)/i)?.[1]?.trim() || "N/A";
   const os = body.match(/### Operating System\s*\n([^\n]+)/i)?.[1]?.trim() || "N/A";
   const linuxDistro = body.match(/### Linux Distribution\s*\n([^\n]+)/i)?.[1]?.trim() || "";
   const store = body.match(/### Game Launcher\s*\n([^\n]+)/i)?.[1]?.trim() || "N/A";
