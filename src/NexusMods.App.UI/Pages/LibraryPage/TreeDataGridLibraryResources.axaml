@@ -173,6 +173,8 @@
                                 </controls:ComponentTemplate>
                             </controls:ComponentControl.ComponentTemplate>
                         </controls:ComponentControl>
+                        
+                        <Separator/>
 
                         <!-- View Mod Page -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
