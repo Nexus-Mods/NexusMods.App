@@ -193,19 +193,20 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Adapter.MessageSubject.SubscribeAwait(
                 onNextAsync: async (message, cancellationToken) =>
                 {
-                    if (message.TryPickT0(out var installMessage, out var updateMessage))
-                    {
-                        foreach (var id in installMessage.Ids)
+                    await message.Match(
+                        async installMessage =>
                         {
-                            var libraryItem = LibraryItem.Load(_connection.Db, id);
-                            if (!libraryItem.IsValid()) continue;
-                            await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
-                        }
-                    }
-                    else
-                    {
-                        await HandleUpdateMessage(updateMessage, cancellationToken);
-                    }
+                            foreach (var id in installMessage.Ids)
+                            {
+                                var libraryItem = LibraryItem.Load(_connection.Db, id);
+                                if (!libraryItem.IsValid()) continue;
+                                await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                            }
+                        },
+                        async updateMessage => await HandleUpdateMessage(updateMessage, cancellationToken),
+                        async viewChangelogMessage => await HandleViewChangelogMessage(viewChangelogMessage, cancellationToken),
+                        async viewModPageMessage => await HandleViewModPageMessage(viewModPageMessage, cancellationToken)
+                    );
                 },
                 awaitOperation: AwaitOperation.Parallel,
                 configureAwait: false
@@ -290,6 +291,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 await _libraryService.AddDownload(job);
             }
         }
+    }
+    
+    private async ValueTask HandleViewChangelogMessage(ViewChangelogMessage viewChangelogMessage, CancellationToken cancellationToken)
+    {
+        throw new Exception("TODO: Implement actual changelog viewing logic");
+    }
+    
+    private async ValueTask HandleViewModPageMessage(ViewModPageMessage viewModPageMessage, CancellationToken cancellationToken)
+    {
+        throw new Exception("TODO: Implement actual view mod page logic");
     }
 
     // Note(sewer): ValueTask because of R3 constraints with ReactiveCommand API
@@ -385,15 +396,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
 public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
+public readonly record struct ViewChangelogMessage(EntityId LibraryItemId);
+public readonly record struct ViewModPageMessage(EntityId LibraryItemId);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage>>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
 
-    public Subject<OneOf<InstallMessage, UpdateMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage>> MessageSubject { get; } = new();
 
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
@@ -432,6 +445,26 @@ public class LibraryTreeDataGridAdapter :
                 var (self, model, component) = state;
                 var newFile = component.NewFiles.Value;
                 self.MessageSubject.OnNext(new UpdateMessage(newFile, model));
+            })
+        );
+
+        model.SubscribeToComponentAndTrack<LibraryComponents.ViewChangelogAction, LibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.ViewChangelogComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandViewChangelog.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, _) = state;
+                self.MessageSubject.OnNext(new ViewChangelogMessage(model.Key));
+            })
+        );
+
+        model.SubscribeToComponentAndTrack<LibraryComponents.ViewModPageAction, LibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.ViewModPageComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandViewModPage.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, _) = state;
+                self.MessageSubject.OnNext(new ViewModPageMessage(model.Key));
             })
         );
     }
