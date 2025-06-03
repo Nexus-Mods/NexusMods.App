@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
@@ -396,8 +397,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
 public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
-public readonly record struct ViewChangelogMessage(EntityId LibraryItemId);
-public readonly record struct ViewModPageMessage(EntityId LibraryItemId);
+public readonly record struct ViewChangelogMessage(NexusModsLibraryItemId LibraryItemId);
+public readonly record struct ViewModPageMessage(NexusModsLibraryItemId LibraryItemId);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
