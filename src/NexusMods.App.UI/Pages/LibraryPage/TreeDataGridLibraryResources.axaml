@@ -149,6 +149,53 @@
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
+
+            <Button Classes="IconButton Tertiary"
+                    ToolTip.Tip="More Options"
+                    x:Name="HamburgerMenuButton">
+                <icons:UnifiedIcon Value="{x:Static icons:IconValues.MoreVertical}" Width="24" Height="24"/>
+                <Button.Flyout>
+                    <MenuFlyout>
+                        <!-- View Changelog -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
+                                            <MenuItem Header="View Changelog" Command="{CompiledBinding CommandViewChangelog}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" Width="24" Height="24"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+
+                        <!-- View Mod Page -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+ViewModPageAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
+                                            <MenuItem Header="View Mod Page" Command="{CompiledBinding CommandViewModPage}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" Width="24" Height="24"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+
+
         </StackPanel>
     </DataTemplate>
 
