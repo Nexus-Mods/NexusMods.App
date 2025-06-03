@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="16">
-            <StackPanel>
+            <StackPanel Spacing="8">
                 <SplitButton>
                     <TextBlock Text="Enabled" />
                     <SplitButton.Flyout>
@@ -21,24 +21,48 @@
                         </MenuFlyout>
                     </SplitButton.Flyout>
                 </SplitButton>
-                <SplitButton Classes="StandardSplitButton">
-                    <TextBlock Text="Enabled" />
-                    <SplitButton.Flyout>
-                        <MenuFlyout>
-                            <MenuItem Header="Install" />
-                            <MenuItem Header="Advanced Install" />
-                        </MenuFlyout>
-                    </SplitButton.Flyout>
-                </SplitButton>
-                <SplitButton Classes="StandardSplitButton" IsEnabled="False">
-                    <TextBlock Text="Enabled" />
-                    <SplitButton.Flyout>
-                        <MenuFlyout>
-                            <MenuItem Header="Install" />
-                            <MenuItem Header="Advanced Install" />
-                        </MenuFlyout>
-                    </SplitButton.Flyout>
-                </SplitButton>
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SplitButton Classes="StandardSplitButton ExtraSmall">
+                        <TextBlock Text="Extra Small (Toolbar) 24px" />
+                        <SplitButton.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Option 1" />
+                                <MenuItem Header="Option 2" />
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+                    <SplitButton Classes="StandardSplitButton ExtraSmall" IsEnabled="False">
+                        <TextBlock Text="Disabled" />
+                    </SplitButton>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SplitButton Classes="StandardSplitButton">
+                        <TextBlock Text="Small (Default) 28px" />
+                        <SplitButton.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Option 1" />
+                                <MenuItem Header="Option 2" />
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+                    <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                        <TextBlock Text="Disabled" />
+                    </SplitButton>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <SplitButton Classes="StandardSplitButton Medium">
+                        <TextBlock Text="Medium 36px" />
+                        <SplitButton.Flyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Option 1" />
+                                <MenuItem Header="Option 2" />
+                            </MenuFlyout>
+                        </SplitButton.Flyout>
+                    </SplitButton>
+                    <SplitButton Classes="StandardSplitButton Medium" IsEnabled="False">
+                        <TextBlock Text="Disabled" />
+                    </SplitButton>
+                </StackPanel>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -52,10 +76,11 @@
         <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackground}" />
         <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForeground}" />
         <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrush}" />
-        
-        
+
+
         <!-- templated buttons -->
         <Style Selector="^ /template/ Button">
+            
 
             <Style Selector="^:pointerover /template/ ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPointerOver}" />
@@ -74,11 +99,35 @@
                 <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundDisabled}" />
                 <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushDisabled}" />
             </Style>
-            
+
             <Style Selector="^[Tag=flyout-open] /template/ ContentPresenter">
                 <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
                 <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
                 <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
+            </Style>
+            
+            <Style Selector="^>TextBlock">
+                <Setter Property="Margin" Value="0 0 0 5" />
+            </Style>
+        </Style>
+
+        <Style Selector="^.ExtraSmall">
+            <Setter Property="MinHeight" Value="24" />
+            <Setter Property="Height" Value="24" />
+            
+            <Style Selector="^>TextBlock">
+                <Setter Property="Margin" Value="0 -1 0 0" />
+                <Setter Property="MinHeight" Value="16" />
+            </Style>
+        </Style>
+        
+        <Style Selector="^.Medium">
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="Height" Value="36" />
+            
+            <Style Selector="^>TextBlock">
+                <Setter Property="Margin" Value="2,0,2,0" />
+                <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}"></Setter>
             </Style>
         </Style>
     </Style>

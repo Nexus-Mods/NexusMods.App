@@ -296,7 +296,7 @@ public static class LibraryComponents
             Observable<ModUpdateOnPage> valueObservable)
         {
             _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: (ModUpdatesOnModPage)initialValue);
-            _buttonText = new BindableReactiveProperty<string>(value: Resources.Language.LibraryItemButtonUpdate_Single);
+            _buttonText = new BindableReactiveProperty<string>();
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, observable, disposables) =>
             {
@@ -324,11 +324,8 @@ public static class LibraryComponents
 
         private static string GetButtonText(int numUpdatable)
         {
-            // Note(sewer): These strings in the comments below are accurate, just temporarily changed
-            // as we're shipping 'phase one' for the SDV release. Do not edit.
-
-            // 'Update ({0})'
-            return string.Format(Resources.Language.LibraryItemButtonUpdate_CounterInBracket, numUpdatable);
+            // empty string will turn off the buttons label, if more than 1 update then display it
+            return numUpdatable <= 1  ? string.Empty : numUpdatable.ToString();
         }
 
         private bool _isDisposed;

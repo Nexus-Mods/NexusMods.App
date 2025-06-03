@@ -2,7 +2,9 @@ using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using ObservableCollections;
 using R3;
 using ReactiveUI;
 
@@ -19,6 +21,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
         this.WhenActivated(disposables =>
         {
+            // initially hidden
+            ContextControlGroup.IsVisible = false;
+            
             this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
                 .AddTo(disposables);
             
@@ -42,7 +47,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             
             this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.ViewModel)
                 .AddTo(disposables);
-            
+
             this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.DataContext)
                 .AddTo(disposables);
             
@@ -50,6 +55,13 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .AddTo(disposables);
             
             this.OneWayBind(ViewModel, vm => vm.HasRulesSection, view => view.RulesTabItem.IsVisible)
+                .AddTo(disposables);
+            
+            this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
+                .AddTo(disposables);
+            
+            
+            this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
                 .AddTo(disposables);
             
             this.WhenAnyValue(view => view.ViewModel!.IsCollection)
@@ -72,6 +84,20 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                         _ => throw new ArgumentOutOfRangeException(nameof(selectedSubTab), selectedSubTab, null)
                     };
                 })
+                .AddTo(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.SelectionCount)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(count =>
+                    {
+                        ContextControlGroup.IsVisible = count != 0;
+
+                        if (count != 0)
+                        {
+                            DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
+                        }
+                    }
+                )
                 .AddTo(disposables);
         });
     }
