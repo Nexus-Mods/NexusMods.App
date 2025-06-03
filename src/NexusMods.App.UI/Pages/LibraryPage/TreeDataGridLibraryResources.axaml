@@ -3,7 +3,8 @@
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
                     xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <!-- Downloaded Date -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+DownloadedDate.ColumnTemplateResourceKey}">
@@ -163,7 +164,7 @@
                                                             ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
                                     <controls:ComponentTemplate.DataTemplate>
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
-                                            <MenuItem Header="View Changelog" Command="{CompiledBinding CommandViewChangelog}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}" Command="{CompiledBinding CommandViewChangelog}">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" Width="24" Height="24"/>
                                                 </MenuItem.Icon>
@@ -183,7 +184,7 @@
                                                             ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
                                     <controls:ComponentTemplate.DataTemplate>
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
-                                            <MenuItem Header="View Mod Page" Command="{CompiledBinding CommandViewModPage}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}" Command="{CompiledBinding CommandViewModPage}">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" Width="24" Height="24"/>
                                                 </MenuItem.Icon>
