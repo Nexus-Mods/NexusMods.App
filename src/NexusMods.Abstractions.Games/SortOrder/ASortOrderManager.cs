@@ -9,7 +9,10 @@ using OneOf;
 
 namespace NexusMods.Abstractions.Games;
 
-public class ALoadOrderManager : ILoadOrderManager
+/// <summary>
+/// Abstract implementation for ISortOrderManager meant as the starting point for implementations.
+/// </summary>
+public class ASortOrderManager : ISortOrderManager
 {
     private readonly IServiceProvider _serviceProvider; 
     private readonly IConnection _connection;
@@ -20,7 +23,7 @@ public class ALoadOrderManager : ILoadOrderManager
     
     private readonly FrozenDictionary<SortOrderVarietyId, ISortOrderVariety> _sortOrderVarieties;
 
-    public ALoadOrderManager(IServiceProvider serviceProvider, ISortOrderVariety[] sortOrderVarieties)
+    public ASortOrderManager(IServiceProvider serviceProvider, ISortOrderVariety[] sortOrderVarieties)
     {
         _serviceProvider = serviceProvider;
         _connection = _serviceProvider.GetRequiredService<IConnection>();

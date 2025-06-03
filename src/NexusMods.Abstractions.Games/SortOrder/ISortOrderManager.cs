@@ -7,7 +7,7 @@ namespace NexusMods.Abstractions.Games;
 /// Represents the single central manager for load order related updates.
 /// One instance per game.
 /// </summary>
-public interface ILoadOrderManager
+public interface ISortOrderManager
 {
     /// <summary>
     /// Should be acquired when changes to the sort order are being made.
