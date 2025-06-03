@@ -11,50 +11,23 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
     <Grid RowDefinitions="Auto, *">
-        <!-- toolbar -->
-        <Border Grid.Row="0" x:Name="CollectionToolbar"
-                Classes="Toolbar">
-
-            <Grid ColumnDefinitions="*,*">
-
-                <!-- left side -->
-                <StackPanel Grid.Column="0" HorizontalAlignment="Left">
-                    <StackPanel
-                        x:Name="ToolbarEnabled"
-                        Orientation="Horizontal"
-                        Spacing="4">
-                        <TextBlock Text="Collection is enabled"
-                                   Theme="{StaticResource BodyMDNormalTheme}"
-                                   Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
-                    </StackPanel>
-                    <StackPanel
-                        x:Name="ToolbarDisabled"
-                        Orientation="Horizontal"
-                        Spacing="4">
-                        <icons:UnifiedIcon Size="20"
-                                           Value="{x:Static icons:IconValues.Info}"
-                                           Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
-                        <TextBlock Text="Collection disabled"
-                                   Theme="{StaticResource BodyMDSemiTheme}"
-                                   Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
-                        <TextBlock Text="- Mods will not be loaded"
-                                   Theme="{StaticResource BodyMDNormalTheme}"
-                                   Foreground="{StaticResource NeutralTranslucentModerateBrush}" />
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- right side -->
-                <StackPanel Grid.Column="1" HorizontalAlignment="Right" Margin="0 0 16 0">
-                    <ToggleSwitch x:Name="CollectionToggle" Classes="Compact"
-                                  OnContent="{x:Null}"
-                                  OffContent="{x:Null}" />
-                </StackPanel>
-            </Grid>
-        </Border>
+        
+        <!-- different page header if it's a collection (i.e. My Mods) or if it's just All mods -->
+        <Panel Grid.Row="0" Margin="24 24 24 0" >
+            <pageHeader:PageHeader x:Name="WritableCollectionPageHeader"
+                                   Icon="{x:Static icons:IconValues.PictogramCollection3D}"
+                                   Description="Your private collection of installed mods." />
+        
+            <pageHeader:PageHeader x:Name="AllPageHeader"
+                                   Icon="{x:Static icons:IconValues.PictogramPlaylistAdd}"
+                                   Title="All"
+                                   Description="A combined view of all your installed mods from all collections." />
+        </Panel>
         
         <!-- tabs -->
         
@@ -72,8 +45,19 @@
                 </TabItem.Header>
 
                 <Grid RowDefinitions="Auto, *">
-                    <Border Grid.Row="0" Classes="Toolbar">
-                        <StackPanel>
+                    
+                    <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
+                        <!-- selection related button group -->
+                        <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+
+                            <controls:StandardButton x:Name="DeselectItemsButton"
+                                                     Type="Tertiary"
+                                                     Size="Toolbar"
+                                                     Fill="WeakAlt"
+                                                     ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                                     ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
+                            
                             <navigation:NavigationControl x:Name="ViewFilesButton"
                                                           Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
                                                           Type="Tertiary"
@@ -91,19 +75,18 @@
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.PlaylistRemove}"
                                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />
-                        </StackPanel>
-                    </Border>
-
-
+                        </ItemsControl>
+                    </controls:Toolbar>
+                    
                     <controls:EmptyState Grid.Row="1" x:Name="EmptyState" Header="Header">
 
                         <controls:EmptyState.Subtitle>
                             <StackPanel Orientation="Vertical" Spacing="16">
                                 <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
                                 <navigation:NavigationControl x:Name="ViewLibraryButton"
-                                                              Text="Library"
+                                                              Text="{x:Static resources:Language.LibraryPageTitle}"
                                                               ShowIcon="Left"
-                                                              LeftIcon="{x:Static icons:IconValues.ModLibrary}"
+                                                              LeftIcon="{x:Static icons:IconValues.LibraryOutline}"
                                                               HorizontalAlignment="Center" />
                             </StackPanel>
                         </controls:EmptyState.Subtitle>

@@ -6,7 +6,7 @@ namespace NexusMods.Abstractions.Games;
 
 /// <summary>
 /// An abstraction for a sortable item that can be moved around in a list relative to its siblings.
-/// All items in the list will have a non-gaming sort index. If a item is moved the other items will
+/// All items in the list will have a non-gaming sort index. If an item is moved the other items will
 /// adjust to compensate for the positional change.
 ///
 /// Non-generic interface for the UI.
