@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Backend.Stores.EpicGameStore.Models;
+using NexusMods.Networking.EpicGameStore.Models;
 
-namespace NexusMods.Backend.Stores.EpicGameStore;
+namespace NexusMods.Networking.EpicGameStore;
 
 public static class Services
 {
@@ -12,5 +12,4 @@ public static class Services
         s.AddEGSVerbs();
         return s;
     }
-    
 }

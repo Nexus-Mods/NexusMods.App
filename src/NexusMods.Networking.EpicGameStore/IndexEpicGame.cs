@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +12,7 @@ using NexusMods.Paths.Extensions;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.ProxyConsole;
 
-namespace NexusMods.Backend.Stores.EpicGameStore;
+namespace NexusMods.Networking.EpicGameStore;
 
 public static class IndexEpicGame
 {

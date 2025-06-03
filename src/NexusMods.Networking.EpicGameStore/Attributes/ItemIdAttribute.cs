@@ -1,9 +1,9 @@
-using NexusMods.Backend.Stores.EpicGameStore.Values;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Networking.EpicGameStore.Values;
 
-namespace NexusMods.Backend.Stores.EpicGameStore.Attributes;
+namespace NexusMods.Networking.EpicGameStore.Attributes;
 
 public sealed class ItemIdAttribute(string ns, string name) : ScalarAttribute<ItemId, string, Utf8InsensitiveSerializer>(ns, name)
 {

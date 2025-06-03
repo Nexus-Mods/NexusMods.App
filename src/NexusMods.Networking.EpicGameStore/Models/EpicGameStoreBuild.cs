@@ -1,8 +1,9 @@
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Backend.Stores.EpicGameStore.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
-namespace NexusMods.Backend.Stores.EpicGameStore.Models;
+using NexusMods.Networking.EpicGameStore.Attributes;
+
+namespace NexusMods.Networking.EpicGameStore.Models;
 
 public partial class EpicGameStoreBuild : IModelDefinition
 {

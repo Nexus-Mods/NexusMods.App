@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace NexusMods.Backend.Stores.EpicGameStore.DTOs.EgData;
+namespace NexusMods.Networking.EpicGameStore.DTOs.EgData;
 
 public class Build
 {

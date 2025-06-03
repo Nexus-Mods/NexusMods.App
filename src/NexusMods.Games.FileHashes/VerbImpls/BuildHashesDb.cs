@@ -10,20 +10,20 @@ using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
-using NexusMods.Backend.Stores.EpicGameStore.DTOs.EgData;
-using NexusMods.Backend.Stores.EpicGameStore.Models;
-using NexusMods.Backend.Stores.EpicGameStore.Values;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
-using NexusMods.MnemonicDB.Storage.RocksDbBackend;
+using NexusMods.Networking.EpicGameStore.DTOs.EgData;
+using NexusMods.Networking.EpicGameStore.Models;
+using NexusMods.Networking.EpicGameStore.Values;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.ProxyConsole;
 using YamlDotNet.Serialization;
+using Build = NexusMods.Abstractions.GOG.DTOs.Build;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
@@ -386,7 +386,7 @@ public class BuildHashesDb : IAsyncDisposable
 
                 _ = new EpicGameStoreBuild.New(tx)
                 {
-                    BuildId = Backend.Stores.EpicGameStore.Values.BuildId.FromUnsanitized(build.Id),
+                    BuildId = BuildId.FromUnsanitized(build.Id),
                     ItemId = ItemId.FromUnsanitized(id),
                     AppName = build.AppName,
                     BuildVersion = build.BuildVersion,
