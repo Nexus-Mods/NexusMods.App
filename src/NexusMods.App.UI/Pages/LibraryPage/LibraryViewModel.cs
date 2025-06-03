@@ -313,10 +313,19 @@ A summarised quote/explanation from myself below:
 
 After asking design, we're choosing to simply open the mod page for now.
 */
-        return OpenModPage(viewChangelogMessage.ModPageMetadataId, cancellationToken);
+        return viewChangelogMessage.Id.Match(
+            modPageMetadataId => OpenModPage(modPageMetadataId, cancellationToken),
+            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId, cancellationToken)
+        );
     }
     
-    private ValueTask HandleViewModPageMessage(ViewModPageMessage viewModPageMessage, CancellationToken cancellationToken) => OpenModPage(viewModPageMessage.ModPageMetadataId, cancellationToken);
+    private ValueTask HandleViewModPageMessage(ViewModPageMessage viewModPageMessage, CancellationToken cancellationToken)
+    {
+        return viewModPageMessage.Id.Match(
+            modPageMetadataId => OpenModPage(modPageMetadataId, cancellationToken),
+            libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId, cancellationToken)
+        );
+    }
 
     private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId, CancellationToken cancellationToken)
     {
@@ -421,8 +430,8 @@ After asking design, we're choosing to simply open the mod page for now.
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
 public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
-public readonly record struct ViewChangelogMessage(NexusModsModPageMetadataId ModPageMetadataId);
-public readonly record struct ViewModPageMessage(NexusModsModPageMetadataId ModPageMetadataId);
+public readonly record struct ViewChangelogMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
+public readonly record struct ViewModPageMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
@@ -430,6 +439,7 @@ public class LibraryTreeDataGridAdapter :
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
+    private readonly IConnection _connection;
 
     public Subject<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage>> MessageSubject { get; } = new();
 
@@ -437,6 +447,7 @@ public class LibraryTreeDataGridAdapter :
     {
         _libraryFilter = libraryFilter;
         _libraryDataProviders = serviceProvider.GetServices<ILibraryDataProvider>().ToArray();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
     }
 
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
@@ -473,13 +484,29 @@ public class LibraryTreeDataGridAdapter :
             })
         );
 
+        static OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> GetModPageIdOneOfType(IDb db, EntityId entityId)
+        {
+            var modPageMetadata = NexusModsModPageMetadata.Load(db, entityId);
+            if (modPageMetadata.IsValid())
+                return OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId>.FromT0(modPageMetadata.Id);
+                
+            // Try to load as NexusModsLibraryItem
+            var libraryItem = NexusModsLibraryItem.Load(db, entityId);
+            if (libraryItem.IsValid())
+                return OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId>.FromT1(libraryItem.Id);
+            
+            throw new Exception("Unknown type of entity for ViewChangelogAction: " + entityId);
+        }
+
         model.SubscribeToComponentAndTrack<LibraryComponents.ViewChangelogAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.ViewChangelogComponentKey,
             state: this,
             factory: static (self, itemModel, component) => component.CommandViewChangelog.Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, model, _) = state;
-                self.MessageSubject.OnNext(new ViewChangelogMessage(model.Key));
+                var entityId = model.Key;
+                
+                self.MessageSubject.OnNext(new ViewChangelogMessage(GetModPageIdOneOfType(self._connection.Db, entityId)));
             })
         );
 
@@ -489,7 +516,9 @@ public class LibraryTreeDataGridAdapter :
             factory: static (self, itemModel, component) => component.CommandViewModPage.Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, model, _) = state;
-                self.MessageSubject.OnNext(new ViewModPageMessage(model.Key));
+                var entityId = model.Key;
+
+                self.MessageSubject.OnNext(new ViewModPageMessage(GetModPageIdOneOfType(self._connection.Db, entityId)));
             })
         );
     }
