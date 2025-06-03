@@ -542,7 +542,7 @@ public partial class NexusModsLibrary
     {
         var id = CollectionId.From((ulong)collectionInfo.Id);
         var slug = CollectionSlug.From(collectionInfo.Slug);
-        var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.CollectionId, id);
+        var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
         resolver.Add(CollectionMetadata.CollectionId, id);
         resolver.Add(CollectionMetadata.Slug, slug);
