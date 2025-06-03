@@ -64,6 +64,7 @@ fragment CategoryFragment on Category {
 }
 
 fragment CollectionFragment on Collection {
+    id
     slug
     name
     summary
