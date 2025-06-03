@@ -43,6 +43,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
     public ILibraryService _LibraryService;
+    
+    [Reactive] public string CollectionName { get; private set; } 
 
     [Reactive] public int SelectionCount { get; private set; }
     [Reactive] public bool IsCollection { get; private set; }
@@ -76,6 +78,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         if (collectionGroupId.HasValue)
         {
             var collectionGroup = LoadoutItem.Load(connection.Db, collectionGroupId.Value);
+            CollectionName = collectionGroup.Name;
             TabTitle = collectionGroup.Name;
             TabIcon = IconValues.CollectionsOutline;
             IsCollection = true;
@@ -98,6 +101,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         }
         else
         {
+            CollectionName = string.Empty;
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });

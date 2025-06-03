@@ -42,7 +42,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.OneWayBind(ViewModel, vm => vm.EmptyStateTitleText, view => view.EmptyState.Header)
                 .AddTo(disposables);
             
-            this.OneWayBind(ViewModel, vm => vm.IsCollection, view => view.CollectionToolbar.IsVisible)
+            this.OneWayBind(ViewModel, vm => vm.CollectionName, view => view.WritableCollectionPageHeader.Title)
                 .AddTo(disposables);
             
             this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.ViewModel)
@@ -57,21 +57,19 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.OneWayBind(ViewModel, vm => vm.HasRulesSection, view => view.RulesTabItem.IsVisible)
                 .AddTo(disposables);
             
-            this.BindCommand(ViewModel, vm => vm.CollectionToggleCommand, view => view.CollectionToggle)
+            this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
                 .AddTo(disposables);
+            
             
             this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
                 .AddTo(disposables);
             
-            this.WhenAnyValue(view => view.ViewModel!.IsCollectionEnabled)
+            this.WhenAnyValue(view => view.ViewModel!.IsCollection)
                 .WhereNotNull()
-                .SubscribeWithErrorLogging(isEnabled =>
+                .SubscribeWithErrorLogging(isCollection =>
                 {
-                    CollectionToggle.IsChecked = isEnabled;
-                    ToolbarEnabled.IsVisible = isEnabled;
-                    ToolbarDisabled.IsVisible = !isEnabled;
-                    
-                    CollectionToolbar.Classes.ToggleIf("Warning", !isEnabled);
+                    WritableCollectionPageHeader.IsVisible = isCollection;
+                    AllPageHeader.IsVisible = !isCollection;
                 })
                 .AddTo(disposables);
             
