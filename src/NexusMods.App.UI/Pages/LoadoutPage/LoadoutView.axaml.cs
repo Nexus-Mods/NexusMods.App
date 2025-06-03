@@ -37,6 +37,9 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.OneWayBind(ViewModel, vm => vm.EmptyStateTitleText, view => view.EmptyState.Header)
                 .AddTo(disposables);
             
+            this.OneWayBind(ViewModel, vm => vm.CollectionName, view => view.WritableCollectionPageHeader.Title)
+                .AddTo(disposables);
+            
             this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.ViewModel)
                 .AddTo(disposables);
             
@@ -53,7 +56,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(isCollection =>
                 {
-                    MyModsPageHeader.IsVisible = isCollection;
+                    WritableCollectionPageHeader.IsVisible = isCollection;
                     AllPageHeader.IsVisible = !isCollection;
                 })
                 .AddTo(disposables);

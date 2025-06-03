@@ -19,9 +19,8 @@
         
         <!-- different page header if it's a collection (i.e. My Mods) or if it's just All mods -->
         <Panel Grid.Row="0" Margin="24 24 24 0" >
-            <pageHeader:PageHeader x:Name="MyModsPageHeader"
+            <pageHeader:PageHeader x:Name="WritableCollectionPageHeader"
                                    Icon="{x:Static icons:IconValues.PictogramCollection3D}"
-                                   Title="My Mods"
                                    Description="Your private collection of installed mods." />
         
             <pageHeader:PageHeader x:Name="AllPageHeader"
