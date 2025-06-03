@@ -8,7 +8,7 @@
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.DebugControls"
     xmlns:r3="clr-namespace:R3;assembly=R3"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer"
     xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
     mc:Ignorable="d" d:DesignHeight="400"

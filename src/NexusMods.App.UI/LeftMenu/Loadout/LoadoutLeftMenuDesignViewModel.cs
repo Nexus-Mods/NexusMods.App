@@ -4,7 +4,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using R3;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
