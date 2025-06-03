@@ -1,0 +1,23 @@
+name: Reformat Issue From Form
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  reformat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install @octokit/rest
+      - name: Run reformat script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node .github/scripts/reformat-missing-game.js
