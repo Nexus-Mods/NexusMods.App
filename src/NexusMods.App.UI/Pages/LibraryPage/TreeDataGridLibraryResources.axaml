@@ -151,22 +151,30 @@
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
 
-            <Button Classes="IconButton Tertiary"
-                    ToolTip.Tip="More Options"
-                    x:Name="HamburgerMenuButton">
-                <icons:UnifiedIcon Value="{x:Static icons:IconValues.MoreVertical}" Width="24" Height="24"/>
-                <Button.Flyout>
+            <controls:StandardButton
+                ToolTip.Tip="More options"
+                x:Name="HamburgerMenuButton"
+                LeftIcon="{x:Static icons:IconValues.MoreVertical}"
+                ShowIcon="Left"
+                ShowLabel="False"
+                Fill="None">
+                <controls:StandardButton.Flyout>
+
                     <MenuFlyout>
+
                         <!-- View Changelog -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                             <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
-                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
+                                <controls:ComponentTemplate
+                                    x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
+                                    ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
                                     <controls:ComponentTemplate.DataTemplate>
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
-                                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}" Command="{CompiledBinding CommandViewChangelog}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}"
+                                                      Command="{CompiledBinding CommandViewChangelog}">
                                                 <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}" Width="24" Height="24"/>
+                                                    <icons:UnifiedIcon
+                                                        Value="{x:Static icons:IconValues.FileDocumentOutline}" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                         </DataTemplate>
@@ -174,8 +182,8 @@
                                 </controls:ComponentTemplate>
                             </controls:ComponentControl.ComponentTemplate>
                         </controls:ComponentControl>
-                        
-                        <Separator/>
+
+                        <MenuItem Header="-" />
 
                         <!-- View Mod Page -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
@@ -184,9 +192,10 @@
                                                             ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
                                     <controls:ComponentTemplate.DataTemplate>
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
-                                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}" Command="{CompiledBinding CommandViewModPage}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
+                                                      Command="{CompiledBinding CommandViewModPage}">
                                                 <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" Width="24" Height="24"/>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                         </DataTemplate>
@@ -195,8 +204,8 @@
                             </controls:ComponentControl.ComponentTemplate>
                         </controls:ComponentControl>
                     </MenuFlyout>
-                </Button.Flyout>
-            </Button>
+                </controls:StandardButton.Flyout>
+            </controls:StandardButton>
 
 
         </StackPanel>
