@@ -19,6 +19,9 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     R3.ReactiveCommand<R3.Unit> RemoveItemCommand { get; }
     
     R3.ReactiveCommand<R3.Unit> CollectionToggleCommand { get; }
+    R3.ReactiveCommand<R3.Unit> DeselectItemsCommand { get; }
+    
+    public int SelectionCount { get; } 
     
     bool IsCollection { get; }
     

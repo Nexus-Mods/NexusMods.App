@@ -44,8 +44,19 @@
                 </TabItem.Header>
 
                 <Grid RowDefinitions="Auto, *">
-                    <Border Grid.Row="0" Classes="Toolbar">
-                        <StackPanel>
+                    
+                    <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
+                        <!-- selection related button group -->
+                        <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+
+                            <controls:StandardButton x:Name="DeselectItemsButton"
+                                                     Type="Tertiary"
+                                                     Size="Toolbar"
+                                                     Fill="WeakAlt"
+                                                     ShowIcon="Left"
+                                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                                     ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
+                            
                             <navigation:NavigationControl x:Name="ViewFilesButton"
                                                           Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
                                                           Type="Tertiary"
@@ -63,10 +74,9 @@
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.PlaylistRemove}"
                                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />
-                        </StackPanel>
-                    </Border>
-
-
+                        </ItemsControl>
+                    </controls:Toolbar>
+                    
                     <controls:EmptyState Grid.Row="1" x:Name="EmptyState" Header="Header">
 
                         <controls:EmptyState.Subtitle>

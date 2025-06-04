@@ -70,12 +70,12 @@
 
                         <Style Selector="^ > icons|UnifiedIcon">
                             <Setter Property="Size" Value="16" />
-                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                         </Style>
 
                         <Style Selector="^ > TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+                            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
                         </Style>
                     </Style>
 

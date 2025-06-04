@@ -433,16 +433,6 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/account
     public static readonly IconValue Account = new ProjektankerIcon("mdi-account");
     
-    /// <summary>
-    /// Brand pictogram for Playlist Add
-    /// </summary>
-    public static readonly IconValue PictogramPlaylistAdd = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/playlist-add.svg"));
-    
-    /// <summary>
-    /// Brand pictogram for Collection in 3D
-    /// </summary>
-    public static readonly IconValue PictogramCollection3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/collection-3d.svg"));
-    
 #endregion
 
 #region Toggle

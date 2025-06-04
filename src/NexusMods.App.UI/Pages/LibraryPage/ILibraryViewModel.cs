@@ -20,9 +20,12 @@ public interface ILibraryViewModel : IPageViewModelInterface
     ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
     ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
     ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
+    ReactiveCommand<Unit> DeselectItemsCommand { get; }
 
+    public int SelectionCount { get; } 
     ReactiveCommand<Unit> OpenFilePickerCommand { get; }
     ReactiveCommand<Unit> OpenNexusModsCommand { get; }
-
+    ReactiveCommand<Unit> OpenNexusModsCollectionsCommand { get; }
+    
     IStorageProvider? StorageProvider { get; set; }
 }
