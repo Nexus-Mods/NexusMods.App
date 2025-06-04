@@ -92,6 +92,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     .AddTo(disposables);
 
                 this.WhenAnyValue(view => view.ViewModel!.InstallationTargets.Count)
+                    .OnUI()
                     .SubscribeWithErrorLogging(count =>
                     {
                         InstallationTargetControlGroup.IsVisible = count > 1;
