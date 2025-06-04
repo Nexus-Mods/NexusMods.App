@@ -20,7 +20,6 @@ public partial class SettingPathsControl : ReactiveUserControl<ISettingPathsView
             {
                 this.OneWayBind(ViewModel, vm => vm.ConfigurablePathsContainer.CurrentValue, v => v.PathsList.ItemsSource)
                     .DisposeWith(d);
-
             }
         );
     }
@@ -56,6 +55,17 @@ public partial class SettingPathsControl : ReactiveUserControl<ISettingPathsView
                 }
             }
         );
+    }
+
+    private void Remove_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var button = (Button)sender!;
+        if (button.DataContext is not ConfigurablePath path)
+        {
+            return;
+        }
+        var newPaths = ViewModel!.ConfigurablePathsContainer.CurrentValue.Except([path]).ToArray();
+        ViewModel.ConfigurablePathsContainer.CurrentValue = newPaths;
     }
 }
 

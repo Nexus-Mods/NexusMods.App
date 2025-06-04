@@ -39,7 +39,8 @@ public record DataModelSettings : ISettings
                     .AddToSection(Sections.General)
                     .WithDisplayName("Downloaded Mods Location")
                     .WithDescription("The location where downloaded mods and archived files are stored.")
-                    .UseConfigurablePathsContainer()));
+                    .UseConfigurablePathsContainer()
+                    .RequiresRestart()));
     }
 
     /// <summary>

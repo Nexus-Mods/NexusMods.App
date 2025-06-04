@@ -20,7 +20,7 @@
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding .}"></TextBlock>
-                        <Button Content="X"></Button>
+                        <Button Content="X" Click="Remove_OnClick"></Button>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

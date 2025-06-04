@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.Settings;
 /// </summary>
 [PublicAPI]
 [JsonConverter(typeof(JsonConverter))]
-public readonly struct ConfigurablePath
+public readonly struct ConfigurablePath : IEquatable<ConfigurablePath>
 {
     /// <summary>
     /// The base directory part.
@@ -48,6 +48,8 @@ public readonly struct ConfigurablePath
     /// <inheritdoc/>
     public override string ToString()
     {
+        if (BaseDirectory == null)
+            return FileSystem.Shared.FromUnsanitizedFullPath(File).ToString();
         return $"{BaseDirectory}/{File}";
     }
 
@@ -81,5 +83,20 @@ public readonly struct ConfigurablePath
             
             JsonSerializer.Serialize(writer, obj, options);
         }
+    }
+
+    public bool Equals(ConfigurablePath other)
+    {
+        return BaseDirectory == other.BaseDirectory && File == other.File;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ConfigurablePath other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(BaseDirectory, File);
     }
 }
