@@ -44,7 +44,7 @@ namespace NexusMods.App.UI.Pages.MyGames;
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
     private const string TrelloPublicRoadmapUrl = "https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap";
-    private const string MissingGamesUrl = "https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=04-reportmissinggame.md";
+    private const string MissingGamesUrl = "https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=GameNotFound.yaml";
 
     private readonly ILibraryService _libraryService;
     private readonly CollectionDownloader _collectionDownloader;
