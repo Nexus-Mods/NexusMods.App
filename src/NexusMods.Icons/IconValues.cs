@@ -684,6 +684,16 @@ public static class IconValues
     public static readonly IconValue PictogramCelebrate = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg"));
     
     /// <summary>
+    /// Brand pictogram for Playlist Add
+    /// </summary>
+    public static readonly IconValue PictogramPlaylistAdd = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/playlist-add.svg"));
+    
+    /// <summary>
+    /// Brand pictogram for Collection in 3D
+    /// </summary>
+    public static readonly IconValue PictogramCollection3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/collection-3d.svg"));
+    
+    /// <summary>
     /// Brand pictogram for Library
     /// </summary>
     public static readonly IconValue PictogramLibrary = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/library.svg"));

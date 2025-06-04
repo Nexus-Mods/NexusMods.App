@@ -729,6 +729,12 @@
     <Style Selector="icons|UnifiedIcon.WindowRestore">
         <Setter Property="Value" Value="{x:Static icons:IconValues.WindowRestore}" />
     </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramCollection3D">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramCollection3D}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramPlaylistAdd">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramPlaylistAdd}" />
+    </Style>
     
     <Style Selector="icons|UnifiedIcon.PictogramLibrary">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramLibrary}" />

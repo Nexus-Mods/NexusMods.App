@@ -31,7 +31,6 @@
         
         <!-- tabs -->
         
-        <!-- Temp top margin as we don't have a proper PageHeader on this view yet -->
         <TabControl Grid.Row="1" x:Name="RulesTabControl" Margin="0 12 0 0">
             <!-- mods tab -->
             <TabItem x:Name="ModsTabItem">
