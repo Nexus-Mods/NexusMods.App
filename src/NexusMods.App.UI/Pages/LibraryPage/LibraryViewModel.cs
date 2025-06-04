@@ -123,7 +123,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 return new InstallationTarget(group.CollectionGroupId, group.AsLoadoutItemGroup().AsLoadoutItem().Name);
             })
             .AddKey(x => x.Id)
-            .Bind(out _installationTargets);
+            .SortAndBind(out _installationTargets, Comparer<InstallationTarget>.Create((a,b) => a.Id.Value.CompareTo(b.Id.Value)));
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
         {

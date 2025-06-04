@@ -30,9 +30,14 @@ public static partial class CollectionGroupLoaderExtensions
     public static IEnumerable<CollectionGroup.ReadOnly> MutableCollections(this Loadout.ReadOnly loadout)
     {
         var db = loadout.Db;
-        return db.Topology
-            .Query(Loadout.MutableCollections)
+        using var query = db.Topology.Query(Loadout.MutableCollections);
+
+        var result = query
             .Where(x => x.Loadout == loadout)
-            .Select(x => CollectionGroup.Load(db, x.CollectionGroup));
+            .Select(x => CollectionGroup.Load(db, x.CollectionGroup))
+            .OrderBy(x => x.Id)
+            .ToArray();
+
+        return result;
     }
 }
