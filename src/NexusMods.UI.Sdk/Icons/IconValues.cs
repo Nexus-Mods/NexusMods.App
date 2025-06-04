@@ -1,11 +1,9 @@
 using Avalonia;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.Icons.SimpleVector;
-using Projektanker.Icons.Avalonia;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-namespace NexusMods.Icons;
+namespace NexusMods.UI.Sdk.Icons;
 
 // https://www.figma.com/file/8pjtQeNggvVi7RWoLNGV80/%F0%9F%A7%B0-Nexus-Mods-Design-System?type=design&node-id=130-463
 
@@ -576,8 +574,8 @@ public static class IconValues
     // new library icon 
     // https://fonts.google.com/icons?selected=Material+Symbols+Outlined:sports_esports:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=gamepad&icon.size=24&icon.color=%23e8eaed
     public static readonly IconValue LibraryOutline = new SimpleVectorIcon(new SimpleVectorIconImage(
-        "M4 22C3.45 22 2.97917 21.8042 2.5875 21.4125C2.19583 21.0208 2 20.55 2 20V10C2 9.45 2.19583 8.97917 2.5875 8.5875C2.97917 8.19583 3.45 8 4 8H20C20.55 8 21.0208 8.19583 21.4125 8.5875C21.8042 8.97917 22 9.45 22 10V20C22 20.55 21.8042 21.0208 21.4125 21.4125C21.0208 21.8042 20.55 22 20 22H4ZM4 20H20V10H4V20ZM12 18L16 15L12 12L8 15L12 18ZM4 7V5H20V7H4ZM7 4V2H17V4H7Z",
-        new Rect(0, 0, 24, 24 )
+        "M5.53149 14C6.18913 14 6.8292 14.0833 7.4517 14.25C8.07434 14.4167 8.68427 14.625 9.28149 14.875V5.41667C8.69816 5.11111 8.09399 4.88194 7.46899 4.72917C6.84399 4.57639 6.19663 4.5 5.52691 4.5C5.01386 4.5 4.50441 4.54514 3.99858 4.63542C3.49274 4.72569 3.00372 4.875 2.53149 5.08333V14.5C3.01761 14.3194 3.50934 14.191 4.0067 14.1146C4.5042 14.0382 5.01247 14 5.53149 14ZM10.7815 14.875C11.3787 14.5972 11.9886 14.3819 12.6113 14.2292C13.2338 14.0764 13.8739 14 14.5315 14C15.0454 14 15.5558 14.0312 16.0627 14.0938C16.5697 14.1562 17.0593 14.2917 17.5315 14.5V5.08333C17.0454 4.90278 16.551 4.76042 16.0484 4.65625C15.5457 4.55208 15.0395 4.5 14.5298 4.5C13.8643 4.5 13.219 4.57639 12.594 4.72917C11.969 4.88194 11.3648 5.11111 10.7815 5.41667V14.875ZM10.0315 17C9.35094 16.5556 8.63566 16.1944 7.88566 15.9167C7.13566 15.6389 6.35094 15.5 5.53149 15.5C5.00372 15.5 4.47594 15.5521 3.94816 15.6562C3.42038 15.7604 2.91344 15.9167 2.42733 16.125C2.09399 16.2639 1.77802 16.2394 1.47941 16.0515C1.1808 15.8635 1.03149 15.5894 1.03149 15.2292V4.75C1.03149 4.55556 1.08358 4.375 1.18774 4.20833C1.29191 4.04167 1.43427 3.91667 1.61483 3.83333C2.23983 3.55556 2.87899 3.34722 3.53233 3.20833C4.18566 3.06944 4.85205 3 5.53149 3C6.32247 3 7.09636 3.09375 7.85316 3.28125C8.60997 3.46875 9.33608 3.75 10.0315 4.125C10.7398 3.76389 11.4703 3.48611 12.223 3.29167C12.9755 3.09722 13.745 3 14.5315 3C15.2109 3 15.8773 3.06944 16.5307 3.20833C17.184 3.34722 17.8232 3.55556 18.4482 3.83333C18.6287 3.91667 18.7745 4.04167 18.8857 4.20833C18.9968 4.375 19.0523 4.55556 19.0523 4.75V15.2292C19.0523 15.5764 18.9447 15.8542 18.7294 16.0625C18.5141 16.2708 18.2884 16.3194 18.0523 16.2083C17.4968 15.9583 16.924 15.7778 16.334 15.6667C15.7441 15.5556 15.1433 15.5 14.5315 15.5C13.7121 15.5 12.9273 15.6389 12.1773 15.9167C11.4273 16.1944 10.7121 16.5556 10.0315 17Z",
+        new Rect(0, 0, 21, 20 )
     ));
     
     // new collections icon 
@@ -629,7 +627,7 @@ public static class IconValues
         new Rect(0, 0, 6, 10 )
     ));
     
-    public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
+    public static readonly IconValue AvatarTest = new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"))));
 
 #endregion
 
@@ -646,33 +644,47 @@ public static class IconValues
     /// <summary>
     /// Brand pictogram for Health
     /// </summary>
-    public static readonly IconValue NexusColor = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo.svg"));
+    public static readonly IconValue NexusColor = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo.svg");
     
     /// <summary>
     /// Brand pictogram for Health
     /// </summary>
-    public static readonly IconValue PictogramHealth = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/health.svg"));
+    public static readonly IconValue PictogramHealth = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/health.svg");
     
     /// <summary>
     /// Brand pictogram for Games in 3D
     /// </summary>
-    public static readonly IconValue PictogramGame3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg"));
+    public static readonly IconValue PictogramGame3D = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg");
     
     /// <summary>
     /// Brand pictogram for Loadouts
     /// </summary>
-    public static readonly IconValue PictogramBox2 = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/box2.svg"));
+    public static readonly IconValue PictogramBox2 = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/box2.svg");
     
     /// <summary>
     /// Brand pictogram for Settings
     /// </summary>
-    public static readonly IconValue PictogramSettings = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/settings.svg"));
+    public static readonly IconValue PictogramSettings = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/settings.svg");
 
     /// <summary>
     /// Brand pictogram for Celebrate
     /// </summary>
-    public static readonly IconValue PictogramCelebrate = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg"));
+    public static readonly IconValue PictogramCelebrate = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg");
     
+    /// <summary>
+    /// Brand pictogram for Playlist Add
+    /// </summary>
+    public static readonly IconValue PictogramPlaylistAdd = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/playlist-add.svg");
+    
+    /// <summary>
+    /// Brand pictogram for Collection in 3D
+    /// </summary>
+    public static readonly IconValue PictogramCollection3D = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/collection-3d.svg");
+    
+    /// <summary>
+    /// Brand pictogram for Library
+    /// </summary>
+    public static readonly IconValue PictogramLibrary = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/library.svg");
 #endregion
     
 }

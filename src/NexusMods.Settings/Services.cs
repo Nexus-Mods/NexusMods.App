@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.Settings;
 

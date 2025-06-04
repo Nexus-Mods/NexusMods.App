@@ -12,7 +12,7 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.TextEdit;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
@@ -60,25 +60,29 @@ public class LoadoutGroupFilesViewModel : APageViewModel<ILoadoutGroupFilesViewM
                         return false;
 
                     var gamePath = item.Key;
-                    var file = LoadoutItemGroupHelpers.FindMatchingFile
+                    var itemWithPath = LoadoutItemGroupHelpers.FindMatchingFile
                         (state.connection, state.Item1.Context!.GroupIds, gamePath, false);
-
-                    // If we can't find a file, then it's a directory, which we can't open an editor for.
-                    return file.HasValue;
+                    
+                    // Don't open the editor if no file is found (it's a directory),
+                    // or if it is not a LoadoutFile (it's a DeletedFile).
+                    return itemWithPath.HasValue && itemWithPath.Value.IsLoadoutFile();
                 }
             )
             .ToReactiveCommand<NavigationInformation>(info =>
             {
                 // Note(sewer): Is it possible to avoid a double entity load here?
                 var gamePath = SelectedItem!.Key;
-                var file = LoadoutItemGroupHelpers.FindMatchingFile(connection, Context!.GroupIds, gamePath);
-                
+                var itemWithPath = LoadoutItemGroupHelpers.FindMatchingFile(connection, Context!.GroupIds, gamePath);
+
+                if (!itemWithPath.HasValue || !itemWithPath.Value.TryGetAsLoadoutFile(out var loadoutItem)) 
+                    return;
+
                 var pageData = new PageData
                 {
                     FactoryId = TextEditorPageFactory.StaticId,
                     Context = new TextEditorPageContext
                     {
-                        FileId = (LoadoutFileId) file!.Value.Id, // not null because command was executable
+                        FileId = loadoutItem.LoadoutFileId, // not null because command was executable
                         FilePath = gamePath.Path,
                         IsReadOnly = Context!.IsReadOnly,
                     },

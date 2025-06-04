@@ -3,7 +3,7 @@
         xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts;assembly=NexusMods.App.UI"
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
         >
     <Design.PreviewWith>
         <Border Padding="16" Classes="Low" Width="800" Height="600">

@@ -7,7 +7,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
@@ -55,10 +55,10 @@
                                          ShowLabel="False"
                                          LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                          ShowIcon="Left"
-                                         Size="ExtraSmall" />
+                                         Size="Toolbar" />
                 <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
-                                         Size="ExtraSmall"
+                                         Size="Toolbar"
                                          Type="Primary"
                                          Fill="Weak"
                                          LeftIcon="{x:Static icons:IconValues.Update}"
@@ -66,25 +66,25 @@
                 <spinner:Spinner IsVisible="False" Height="20" Width="20" x:Name="Spinner" />
                 <controls:StandardButton x:Name="ButtonDownloadRequiredItems"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadRequired}"
-                                         Size="ExtraSmall"
+                                         Size="Toolbar"
                                          Type="Secondary"
                                          Fill="Strong" />
                 <controls:StandardButton x:Name="ButtonInstallRequiredItems"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallCollection}"
-                                         Size="ExtraSmall"
+                                         Size="Toolbar"
                                          Type="Primary"
                                          Fill="Strong" />
                 <navigation:NavigationControl x:Name="ButtonViewCollection"
                                               Text="{x:Static resources:Language.CollectionDownloadViewModel_ViewCollection}"
-                                              Size="ExtraSmall" />
+                                              Size="Toolbar" />
                 <controls:StandardButton x:Name="ButtonDownloadOptionalItems"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_DownloadOptional}"
-                                         Size="ExtraSmall"
+                                         Size="Toolbar"
                                          Type="Secondary"
                                          Fill="Strong" />
                 <controls:StandardButton x:Name="ButtonInstallOptionalItems"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_InstallOptional}"
-                                         Size="ExtraSmall" />
+                                         Size="Toolbar" />
                 <TextBlock x:Name="TextCollectionStatus" />
             </controls:Statusbar>
 

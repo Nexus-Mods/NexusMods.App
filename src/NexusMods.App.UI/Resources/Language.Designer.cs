@@ -358,6 +358,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Toggle on adds this collection to the game and loads it. Toggle off leaves it out..
+        /// </summary>
+        public static string CollectionDownloadViewModel_Toggle_ToolTip {
+            get {
+                return ResourceManager.GetString("CollectionDownloadViewModel_Toggle_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update to Revision {0}.
         /// </summary>
         public static string CollectionDownloadViewModel_UpdateCollection {
@@ -989,6 +998,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Browse Nexus Mods.
+        /// </summary>
+        public static string FileOriginsPage_BrowseCollectionsNexusMods {
+            get {
+                return ResourceManager.GetString("FileOriginsPage_BrowseCollectionsNexusMods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Check Nexus Mods for available mod file updates.
         /// </summary>
         public static string FileOriginsPage_CheckForUpdates_ToolTip {
@@ -998,7 +1016,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From drive.
+        ///   Looks up a localized string similar to Browse drive.
         /// </summary>
         public static string FileOriginsPage_FromDrive {
             get {
@@ -1025,7 +1043,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From Nexus Mods.
+        ///   Looks up a localized string similar to Browse Nexus Mods.
         /// </summary>
         public static string FileOriginsPage_FromNexusMods {
             get {
@@ -1178,7 +1196,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CATEGORY.
+        ///   Looks up a localized string similar to Category.
         /// </summary>
         public static string Helpers_GenerateHeader_CATEGORY {
             get {
@@ -1187,7 +1205,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FILE COUNT.
+        ///   Looks up a localized string similar to File count.
         /// </summary>
         public static string Helpers_GenerateHeader_File_Count {
             get {
@@ -1196,7 +1214,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to GAME.
+        ///   Looks up a localized string similar to Game.
         /// </summary>
         public static string Helpers_GenerateHeader_GAME {
             get {
@@ -1205,7 +1223,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to INSTALLED.
+        ///   Looks up a localized string similar to Installed.
         /// </summary>
         public static string Helpers_GenerateHeader_INSTALLED {
             get {
@@ -1214,7 +1232,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MOD NAME.
+        ///   Looks up a localized string similar to Mod name.
         /// </summary>
         public static string Helpers_GenerateHeader_MOD_NAME {
             get {
@@ -1223,7 +1241,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to NAME.
+        ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Helpers_GenerateHeader_NAME {
             get {
@@ -1232,7 +1250,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SIZE.
+        ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string Helpers_GenerateHeader_SIZE {
             get {
@@ -1250,7 +1268,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to STATUS.
+        ///   Looks up a localized string similar to Status.
         /// </summary>
         public static string Helpers_GenerateHeader_STATUS {
             get {
@@ -1259,7 +1277,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VERSION.
+        ///   Looks up a localized string similar to Version.
         /// </summary>
         public static string Helpers_GenerateHeader_VERSION {
             get {
@@ -1484,6 +1502,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} selected.
+        /// </summary>
+        public static string Library_DeselectItemsButton_Text {
+            get {
+                return ResourceManager.GetString("Library_DeselectItemsButton_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clears the selection. Ctrl+Click selects/deselects items. Shift+Click selects a range..
+        /// </summary>
+        public static string Library_DeselectItemsButton_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_DeselectItemsButton_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download all.
         /// </summary>
         public static string LibraryItemButtonUpdate_All {
@@ -1552,6 +1588,15 @@ namespace NexusMods.App.UI.Resources {
         public static string LibraryItemDeleteConfirmation_UsedByWithLoadout {
             get {
                 return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedByWithLoadout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage your downloaded mods and collections. Install, update or add more..
+        /// </summary>
+        public static string LibraryPageDescription {
+            get {
+                return ResourceManager.GetString("LibraryPageDescription", resourceCulture);
             }
         }
         
