@@ -123,9 +123,49 @@ public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, 
         // persist the new sorting
         await PersistSortOrder(stagingList, sortOrderId, token);
     }
-    
+
     /// <inheritdoc />
-    public abstract ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
+    public async ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default)
+    {
+        // acquire the lock
+        using var _ = await _manager.Lock(token);
+        
+        // retrieve the sorting from the db
+        var startingOrder = RetrieveSortOrder(sortOrderId, db);
+        var stagingList = startingOrder.ToList();
+        
+        // get the index of the source item
+        var foundItem = stagingList.FirstOrOptional(item => item.Key.Equals(sourceItem));
+        if (!foundItem.HasValue)
+        {
+            _logger.LogWarning("Source item {SourceItem} not found in sort order {SortOrderId}", sourceItem, sortOrderId);
+            return;
+        }
+        var sortableItem = foundItem.Value;
+        var currentIndex = sortableItem.SortIndex;
+        
+        var newIndex = currentIndex + delta;
+        
+        // Ensure the new index is within bounds
+        newIndex = Math.Clamp(newIndex, 0, stagingList.Count - 1);
+        if (newIndex == currentIndex) return;
+        
+        
+        // Move the item in the list
+        stagingList.RemoveAt(currentIndex);
+        stagingList.Insert(newIndex, sortableItem);
+            
+        // Update the sort index of all items
+        for (var i = 0; i < stagingList.Count; i++)
+        {
+            var item = stagingList[i]
+            item.SortIndex = i;
+        }
+            
+        if (token.IsCancellationRequested) return;
+            
+        await PersistSortOrder(stagingList, sortOrderId, token);
+    }
 
     /// <inheritdoc />
     public abstract ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
