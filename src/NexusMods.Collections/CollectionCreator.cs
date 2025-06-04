@@ -1,4 +1,5 @@
 using DynamicData.Kernel;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -7,6 +8,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 
@@ -14,6 +16,31 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
+    /// <summary>
+    /// Creates a new collection group in the loadout.
+    /// </summary>
+    public static async ValueTask<CollectionGroup.ReadOnly> CreateNewCollectionGroup(IConnection connection, LoadoutId loadoutId)
+    {
+        using var tx = connection.BeginTransaction();
+
+        var group = new CollectionGroup.New(tx, out var id)
+        {
+            IsReadOnly = false,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    Name = "My new collection",
+                    LoadoutId = loadoutId,
+                },
+            },
+        };
+
+        var result = await tx.Commit();
+        return result.Remap(group);
+    }
+
     /// <summary>
     /// Creates a collection JSON manifest from a loadout item group.
     /// </summary>

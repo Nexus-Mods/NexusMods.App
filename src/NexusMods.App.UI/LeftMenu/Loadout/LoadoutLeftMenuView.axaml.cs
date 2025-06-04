@@ -24,7 +24,10 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
             
             this.OneWayBind(ViewModel, vm => vm.LeftMenuItemLoadout, view => view.LoadoutItem.ViewModel)
                 .DisposeWith(disposables);
-            
+
+            this.OneWayBind(ViewModel, vm => vm.LeftMenuItemNewCollection, view => view.NewCollection.ViewModel)
+                .DisposeWith(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.LeftMenuItemHealthCheck, view => view.HealthCheckItem.ViewModel)
                 .DisposeWith(disposables);
             
@@ -37,7 +40,7 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(x => x.ViewModel!.LeftMenuCollectionItems)
-                .BindTo(this, x => x.MenuItemsControl.ItemsSource)
+                .BindTo(this, x => x.CollectionItems.ItemsSource)
                 .DisposeWith(disposables);
             
             this.OneWayBind(ViewModel, vm => vm.HasSingleCollection, view => view.LoadoutItem.IsVisible, input => !input)

@@ -91,3 +91,8 @@ fragment CollectionFragment on Collection {
         domainName
     }
 }
+
+fragment PresignedUrl on PresignedUrl {
+    url,
+    uuid
+}
