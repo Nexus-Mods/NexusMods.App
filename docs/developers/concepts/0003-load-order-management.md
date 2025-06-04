@@ -17,8 +17,6 @@ These dependencies can be explicit (e.g., list of masters for Skyrim plugins) or
 
 Displaying detected dependencies can help users during the sorting process.
 
-
-
 ### Sorting for conflict resolution purposes:
 If two mod items modify the same thing, the order in which they are loaded can determine which change "wins" and is used by the game.
 Different games can have different semantics for what the winner is going to be (smallest index winner vs. greatest index winner).
@@ -59,6 +57,53 @@ Pros and cons of including disabled items in the load order:
 - The load order users see is a superset of the load order the game will actually see/use.
 - Users may have a large number of disabled items.
 - Users have to sort and maintain the sorting even for items that they don't want to load.
+
+## Format of Load Orders:
+Different games use different methods and formats to determine in which order items should be loaded in. 
+
+Some examples to follow:
+
+### Dedicated Load Order files:
+The game expects a specific file to contain the load order, and the file format is usually well defined.
+It can be a simple text file with a list of file names, or something more elaborate like an XML or JSON file with additional metadata.
+
+E.g.:
+- Skyrim `plugins.txt` file containing a list of plugin names.
+- BG3 `modsettings.lsx` file containing a list of pak files and their load order.
+
+### Command line parameter:
+Some games allow specifying the load order through a command line parameter, which can be a list of file names or a path to a file containing the load order.
+
+E.g.:
+- Cyberpunk 2077 RedMod takes `-mod` command line parameter to specify the load order of RedMod mods.
+
+### Implicit from Dependency information:
+The order of mods or items in some games can be determined by the dependency information provided with the mods or items themselves.
+
+E.g.:
+- Stardew Valley SMAPI modding framework uses mod manifest dependency information to determine the order in which to load the mods.
+- Skyrim uses plugin header metadata (masters) in conjunction with a flat load order file to determine the final order.
+
+### Implicit from "last modified" file time:
+Some games use the unfortunate method of using the "modified" or "created" file time of the mod files to determine the load order.
+
+Applications wishing to support changing the order have to edit the file times of the files to change the order.
+
+They may also have to monitor the file times to ensure that the order hasn't changed.
+
+E.g.:
+- Older bethesda games like Morrowind and Oblivion use the file time of the plugin files to determine the load order.
+
+### Implicit from alphabetical order:
+Some games load mod items in alphabetical order, either by file name or by folder name if loading entire modules.
+
+Management in this case requires the renaming of files or even entire folders to change the order.
+
+Keeping track of renamed files and folders can introduce additional complexity to mod management solutions.
+
+E.g.:
+- Unreal Engine 4 and 5 games load pak files in alphabetical order. Often leading to pak files starting with `aaaa_` or `zzzz_` to ensure they are loaded first or last, respectively.
+- The Witcher 3 loads mods in alphabetical order of the directories containing the mod files.
 
 ## Size of Load Orders:
 Load orders can be of a handful of items or hundreds or even thousands of items.
