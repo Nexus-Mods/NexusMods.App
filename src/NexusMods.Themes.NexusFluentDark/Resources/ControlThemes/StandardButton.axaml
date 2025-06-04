@@ -79,7 +79,7 @@
                     <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
                     <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
                     <controls:StandardButton Text="  " ShowIcon="Both" Size="Medium" />
-                    <controls:StandardButton Text="Danger" ShowIcon="Both" Classes="Danger" />
+                    <controls:StandardButton Text="Danger" ShowIcon="Both" Classes="Danger" HorizontalAlignment="Stretch" />
                 </StackPanel>
 
                 <StackPanel Spacing="8">
@@ -350,7 +350,7 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}">
-                        <Grid ColumnDefinitions="Auto,*,Auto">
+                        <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Center">
                             <icons:UnifiedIcon Grid.Column="0" Name="PART_LeftIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"
@@ -359,7 +359,8 @@
                                        Text="{TemplateBinding Text}"
                                        Foreground="{TemplateBinding Foreground}"
                                        Margin="4,2"
-                                       VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
                             <icons:UnifiedIcon Grid.Column="2" Name="PART_RightIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"
