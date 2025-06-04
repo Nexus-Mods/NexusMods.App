@@ -94,6 +94,22 @@ public interface ISortOrderVariety
     /// </summary>
     [Pure]
     public ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
+    
+    /// <summary>
+    /// Static metadata for the sort order type that can be accessed by derived classes for reuse
+    /// </summary>
+    protected static SortOrderUiMetadata StaticSortOrderUiMetadata { get; } = new()
+    {
+        SortOrderName = "Load Order",
+        OverrideInfoTitle = string.Empty,
+        OverrideInfoMessage = string.Empty,
+        WinnerIndexToolTip = "Last Loaded Mod Wins: Items that load last will overwrite changes from items loaded before them.",
+        IndexColumnHeader = "LOAD ORDER",
+        DisplayNameColumnHeader = "NAME",
+        EmptyStateMessageTitle = "No Sortable Mods detected",
+        EmptyStateMessageContents = "Some mods may modify the same game assets. When detected, they will be sortable via this interface.",
+        LearnMoreUrl = string.Empty,
+    };
 }
 
 /// <summary>

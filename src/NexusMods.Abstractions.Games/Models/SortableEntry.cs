@@ -50,4 +50,10 @@ public partial class SortableEntry : IModelDefinition
     {
         Loadout.LoadoutAssociatedEntities.With(Queries.LoadoutSortOrderSubFlow);
     }
+
+    public partial struct ReadOnly : ISomeInterface
+    {
+    }
 }
+
+public interface ISomeInterface;
