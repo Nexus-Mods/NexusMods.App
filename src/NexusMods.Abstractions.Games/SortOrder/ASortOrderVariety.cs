@@ -158,7 +158,7 @@ public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, 
         // Update the sort index of all items
         for (var i = 0; i < stagingList.Count; i++)
         {
-            var item = stagingList[i]
+            var item = stagingList[i];
             item.SortIndex = i;
         }
             
