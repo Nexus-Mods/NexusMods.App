@@ -7,7 +7,7 @@ using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LibraryPage.Collections;

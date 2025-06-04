@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using JetBrains.Annotations;
 
-namespace NexusMods.Icons;
+namespace NexusMods.UI.Sdk.Icons;
 
 /// <summary>
 /// Unified icon class that supports <see cref="Projektanker.Icons.Avalonia.Icon"/>,
@@ -14,14 +14,16 @@ namespace NexusMods.Icons;
 [PublicAPI]
 public sealed class UnifiedIcon : ContentControl
 {
-    public static readonly StyledProperty<IconValue?> ValueProperty = AvaloniaProperty
-        .Register<UnifiedIcon, IconValue?>(nameof(Value));
+    private const double DefaultSize = 24;
+    
+    /// <inheritdoc cref="Value"/>
+    public static readonly StyledProperty<IconValue?> ValueProperty = AvaloniaProperty.Register<UnifiedIcon, IconValue?>(nameof(Value));
 
-    public static readonly StyledProperty<double> SizeProperty = AvaloniaProperty
-        .Register<UnifiedIcon, double>(nameof(Size), defaultValue: 24);
+    /// <inheritdoc cref="Size"/>
+    public static readonly StyledProperty<double> SizeProperty = AvaloniaProperty.Register<UnifiedIcon, double>(nameof(Size), defaultValue: DefaultSize);
 
-    public static readonly StyledProperty<double> MaxSizeProperty = AvaloniaProperty
-        .Register<UnifiedIcon, double>(nameof(MaxSize));
+    /// <inheritdoc cref="MaxSize"/>
+    public static readonly StyledProperty<double> MaxSizeProperty = AvaloniaProperty.Register<UnifiedIcon, double>(nameof(MaxSize));
 
     // NOTE(erri120): The Svg control needs a "baseUri", however, I don't think this does anything.
     private static readonly Uri Default = new("https://example.org");
@@ -59,6 +61,7 @@ public sealed class UnifiedIcon : ContentControl
         set => SetValue(MaxSizeProperty, value);
     }
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -123,7 +126,7 @@ public sealed class UnifiedIcon : ContentControl
                 [MaxWidthProperty] = this[MaxWidthProperty],
                 [ForegroundProperty] = this[ForegroundProperty],
             },
-            f5: simpleVectorIcon => new NexusMods.Icons.SimpleVector.Control.SimpleVectorIcon(simpleVectorIcon.Image.Clone())
+            f5: simpleVectorIcon => new SimpleVectorIconControl(simpleVectorIcon.Image.Clone())
         );
 
         if (innerControl is null) return;
