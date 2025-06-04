@@ -75,10 +75,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
-    private readonly ReadOnlyObservableCollection<CollectionGroup.ReadOnly> _installationTargets;
-    public ReadOnlyObservableCollection<CollectionGroup.ReadOnly> InstallationTargets => _installationTargets;
+    private readonly ReadOnlyObservableCollection<InstallationTarget> _installationTargets;
+    public ReadOnlyObservableCollection<InstallationTarget> InstallationTargets => _installationTargets;
 
-    [Reactive] public CollectionGroupId SelectedInstallationTarget { get; set; }
+    [Reactive] public InstallationTarget? SelectedInstallationTarget { get; set; }
 
     public LibraryViewModel(
         IWindowManager windowManager,
@@ -117,7 +117,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var installationTargetsObservable = _connection.Topology
             .Observe(Loadout.MutableCollections)
             .Filter(tuple => tuple.Loadout == loadoutId.Value)
-            .Transform(tuple => CollectionGroup.Load(_connection.Db, tuple.CollectionGroup))
+            .Transform(tuple =>
+            {
+                var group = CollectionGroup.Load(_connection.Db, tuple.CollectionGroup);
+                return new InstallationTarget(group.CollectionGroupId, group.AsLoadoutItemGroup().AsLoadoutItem().Name);
+            })
             .AddKey(x => x.Id)
             .Bind(out _installationTargets);
 
@@ -335,7 +339,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         return ids;
     }
 
-    private LoadoutItemGroupId GetInstallationTarget() => (SelectedInstallationTarget == default ? _installationTargets[0].CollectionGroupId : SelectedInstallationTarget).Value;
+    private LoadoutItemGroupId GetInstallationTarget() => (SelectedInstallationTarget?.Id ?? _installationTargets[0].Id).Value;
 
     private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
     {

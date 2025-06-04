@@ -7,13 +7,15 @@ using R3;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
+public record InstallationTarget(CollectionGroupId Id, string Name);
+
 public interface ILibraryViewModel : IPageViewModelInterface
 {
     LibraryTreeDataGridAdapter Adapter { get; }
     ReadOnlyObservableCollection<ICollectionCardViewModel> Collections { get; }
 
-    ReadOnlyObservableCollection<CollectionGroup.ReadOnly> InstallationTargets { get; }
-    CollectionGroupId SelectedInstallationTarget { get; set; }
+    ReadOnlyObservableCollection<InstallationTarget> InstallationTargets { get; }
+    InstallationTarget? SelectedInstallationTarget { get; set; }
 
     string EmptyLibrarySubtitleText { get; }
 
