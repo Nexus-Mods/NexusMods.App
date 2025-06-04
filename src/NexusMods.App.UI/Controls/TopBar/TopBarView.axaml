@@ -4,7 +4,7 @@
     x:Class="NexusMods.App.UI.Controls.TopBar.TopBarView"
     x:TypeArguments="topBar:ITopBarViewModel"
     xmlns="https://github.com/avaloniaui"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
