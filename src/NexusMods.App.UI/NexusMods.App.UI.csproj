@@ -734,6 +734,9 @@
         <Compile Update="Pages\LoadoutGroupFilesPage\LoadoutGroupFilesView.cs">
           <DependentUpon>LoadoutGroupFilesView.axaml</DependentUpon>
         </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsViewModel.cs">
+          <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

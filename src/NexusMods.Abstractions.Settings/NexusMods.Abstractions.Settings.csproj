@@ -32,6 +32,9 @@
       <Compile Update="IValueContainer.cs">
         <DependentUpon>SettingsPropertyValueContainer.cs</DependentUpon>
       </Compile>
+      <Compile Update="ConfigurablePathsContainer.cs">
+        <DependentUpon>SettingsPropertyValueContainer.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 
     <ItemGroup>

@@ -33,7 +33,13 @@ public record DataModelSettings : ISettings
     {
         return settingsBuilder
             .ConfigureDefault(CreateDefault)
-            .ConfigureStorageBackend<DataModelSettings>(builder => builder.UseJson());
+            .ConfigureStorageBackend<DataModelSettings>(builder => builder.UseJson())
+            .AddToUI<DataModelSettings>(builder => builder
+                .AddPropertyToUI(x => x.ArchiveLocations, propertyBuilder => propertyBuilder
+                    .AddToSection(Sections.General)
+                    .WithDisplayName("Downloaded Mods Location")
+                    .WithDescription("The location where downloaded mods and archived files are stored.")
+                    .UseConfigurablePathsContainer()));
     }
 
     /// <summary>

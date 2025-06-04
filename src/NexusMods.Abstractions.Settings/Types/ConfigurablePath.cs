@@ -16,17 +16,17 @@ public readonly struct ConfigurablePath
     /// <summary>
     /// The base directory part.
     /// </summary>
-    public readonly KnownPath BaseDirectory;
+    public readonly KnownPath? BaseDirectory;
 
     /// <summary>
     /// The file part.
     /// </summary>
-    public readonly RelativePath File;
+    public readonly string File;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public ConfigurablePath(KnownPath baseDirectory, RelativePath file)
+    public ConfigurablePath(KnownPath? baseDirectory, string file)
     {
         BaseDirectory = baseDirectory;
         File = file;
@@ -40,7 +40,9 @@ public readonly struct ConfigurablePath
         if (BaseDirectory == default(KnownPath) && File == default(RelativePath))
             throw new InvalidOperationException($"This {nameof(ConfigurablePath)} contains only default values!");
 
-        return fileSystem.GetKnownPath(BaseDirectory).Combine(File);
+        if (BaseDirectory == null)
+            return fileSystem.FromUnsanitizedFullPath(File);
+        return fileSystem.GetKnownPath(BaseDirectory!.Value).Combine(File);
     }
 
     /// <inheritdoc/>
@@ -52,44 +54,32 @@ public readonly struct ConfigurablePath
     /// <inheritdoc/>
     public class JsonConverter : JsonConverter<ConfigurablePath>
     {
+        private record ConfigurablePathJson(string? BaseDirectory, string File);
+        
         /// <inheritdoc/>
         public override ConfigurablePath Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException();
-            reader.Read();
-
-            if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-            reader.Read();
-
-            if (reader.TokenType != JsonTokenType.String) throw new JsonException();
-            var baseDirectoryString = reader.GetString();
-            reader.Read();
-
-            if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException();
-            reader.Read();
-
-            if (reader.TokenType != JsonTokenType.String) throw new JsonException();
-            var fileString = reader.GetString();
-            reader.Read();
-
-            if (reader.TokenType != JsonTokenType.EndObject) throw new JsonException();
-
-            if (!Enum.TryParse<KnownPath>(baseDirectoryString, ignoreCase: true, out var baseDirectory))
-                throw new JsonException($"Unknown: {baseDirectoryString}");
-
-            if (fileString is null) throw new JsonException("File can't be null");
-            return new ConfigurablePath(baseDirectory, fileString);
+            var obj = JsonSerializer.Deserialize<ConfigurablePathJson>(ref reader, options);
+            if (obj == null)
+                throw new JsonException("Failed to deserialize ConfigurablePathJson");
+            if (!string.IsNullOrWhiteSpace(obj.BaseDirectory))
+                return new ConfigurablePath(
+                    Enum.Parse<KnownPath>(obj.BaseDirectory),
+                    obj.File
+                );
+            
+            return new ConfigurablePath(null, obj.File);
         }
 
         /// <inheritdoc/>
         public override void Write(Utf8JsonWriter writer, ConfigurablePath value, JsonSerializerOptions options)
         {
-            writer.WriteStartObject();
-
-            writer.WriteString($"{nameof(BaseDirectory)}", value.BaseDirectory.ToString());
-            writer.WriteString($"{nameof(File)}", value.File.ToString());
-
-            writer.WriteEndObject();
+            var obj = new ConfigurablePathJson(
+                value.BaseDirectory?.ToString(),
+                value.File
+            );
+            
+            JsonSerializer.Serialize(writer, obj, options);
         }
     }
 }
