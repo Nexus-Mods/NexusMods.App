@@ -547,7 +547,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     public async Task DisposeAsync()
     {
-        await _host.StopAsync();
-        _host.Dispose();
+        await _host.StopAsync(cancellationToken: new CancellationToken(canceled: true));
+        if (_host is IAsyncDisposable asyncDisposable) await asyncDisposable.DisposeAsync();
+        else _host.Dispose();
     }
 }
