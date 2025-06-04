@@ -587,6 +587,12 @@
 	<data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
 		<value>Usuwa zaznaczenie. Ctrl + Kliknięcie zaznacza lub odznacza pojedyncze elementy. Shift + Kliknięcie zaznacza zakres elementów.</value>
 	</data>
+	<data name="Library_ViewChangelog_Text" xml:space="preserve">
+		<value>Pokaż dziennik zmian</value>
+	</data>
+	<data name="Library_ViewModPage_Text" xml:space="preserve">
+		<value>Przejdź na stronę moda</value>
+	</data>
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby zainstalować wybrany mod do tego zestawu</value>
 	</data>
