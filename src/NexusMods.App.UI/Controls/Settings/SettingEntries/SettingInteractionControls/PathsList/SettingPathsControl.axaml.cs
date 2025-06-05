@@ -16,12 +16,6 @@ public partial class SettingPathsControl : ReactiveUserControl<ISettingPathsView
     public SettingPathsControl()
     {
         InitializeComponent();
-        this.WhenActivated(d =>
-            {
-                this.OneWayBind(ViewModel, vm => vm.ConfigurablePathsContainer.CurrentValue, v => v.PathsList.ItemsSource)
-                    .DisposeWith(d);
-            }
-        );
     }
 
     private void Add_OnClick(object? sender, RoutedEventArgs e)
@@ -39,7 +33,6 @@ public partial class SettingPathsControl : ReactiveUserControl<ISettingPathsView
 
                 if (path.Count == 1)
                 {
-
                     var localPath = path[0].TryGetLocalPath();
                     if (localPath is null)
                     {
@@ -48,24 +41,12 @@ public partial class SettingPathsControl : ReactiveUserControl<ISettingPathsView
 
                     Dispatcher.UIThread.Invoke(() =>
                         {
-                            var newPaths = ViewModel!.ConfigurablePathsContainer.CurrentValue.Prepend(new ConfigurablePath(null, localPath)).Distinct();
-                            ViewModel.ConfigurablePathsContainer.CurrentValue = newPaths.ToArray();
+                            // we only ever have one path in the list, so we can just replace it
+                            ViewModel!.ConfigurablePathsContainer.CurrentValue = [new ConfigurablePath(null, localPath)];
                         }
                     );
                 }
             }
         );
     }
-
-    private void Remove_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var button = (Button)sender!;
-        if (button.DataContext is not ConfigurablePath path)
-        {
-            return;
-        }
-        var newPaths = ViewModel!.ConfigurablePathsContainer.CurrentValue.Except([path]).ToArray();
-        ViewModel.ConfigurablePathsContainer.CurrentValue = newPaths;
-    }
 }
-

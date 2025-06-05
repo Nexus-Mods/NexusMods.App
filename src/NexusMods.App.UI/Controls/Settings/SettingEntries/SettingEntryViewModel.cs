@@ -1,6 +1,9 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
+using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Settings.SettingEntries;
 
@@ -31,7 +34,13 @@ public class SettingEntryViewModel : AViewModel<ISettingEntryViewModel>, ISettin
             linkRenderer.Contents = string.Format(markdown, link.ToString());
         }
         
-        // set the description markdown contents to the property description.
-        descriptionMarkdownRenderer.Contents = propertyUIDescriptor.Description;
+        // when the current value changes of the interaction, update the description markdown renderer with the new description
+        this.WhenActivated(disposables =>
+        {
+            this.WhenAnyValue(x => x.InteractionControlViewModel.ValueContainer.CurrentValue)
+                .Select(value => PropertyUIDescriptor.DescriptionFactory.Invoke(value))
+                .SubscribeWithErrorLogging(description => DescriptionMarkdownRenderer!.Contents = description)
+                .DisposeWith(disposables);
+        });
     }
 }

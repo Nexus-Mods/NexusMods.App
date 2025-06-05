@@ -38,9 +38,9 @@ public record DataModelSettings : ISettings
                 .AddPropertyToUI(x => x.ArchiveLocations, propertyBuilder => propertyBuilder
                     .AddToSection(Sections.General)
                     .WithDisplayName("Storage Location")
-                    .WithDescription("""
+                    .WithDescription(currentPath => $"""
                           Mods and backups are stored in:  
-                          **C:\userdata\nexusmods\library**
+                          **{currentPath[0].ToPath(FileSystem.Shared)}**
                           
                           *Important: Existing files won’t move automatically when you change storage location, you’ll need to move them manually.*
                           """)

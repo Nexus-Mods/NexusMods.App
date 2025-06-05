@@ -9,22 +9,13 @@ public class SettingPathsDesignViewModel : AViewModel<ISettingPathsViewModel>, I
 {
     public IValueContainer ValueContainer => ConfigurablePathsContainer;
     public ConfigurablePathsContainer ConfigurablePathsContainer { get; }
-    
-    [Reactive] public bool HasChanged { get; private set;  }
 
     public SettingPathsDesignViewModel()
     {
         ConfigurablePathsContainer = new ConfigurablePathsContainer(
-            [
-                new ConfigurablePath(KnownPath.ApplicationDataDirectory, "Path/To/Somewhere"),
-                new ConfigurablePath(KnownPath.HomeDirectory, "Path/To/Somewhere/Else"),
-            ],
-            [
-                new ConfigurablePath(KnownPath.ApplicationDataDirectory, "DefaultPath"),
-            ],
+            [new ConfigurablePath(KnownPath.LocalApplicationDataDirectory, "DefaultPath")],
+            [],
             null!
         );
-
-
     }
 }

@@ -23,8 +23,7 @@ public class SettingEntryDesignViewModel : AViewModel<ISettingEntryViewModel>, I
         LinkRenderer = new MarkdownRendererViewModel { Contents = $"[Find out more]({PropertyUIDescriptor.Link!.ToString()})" };
         
         // Set the description markdown contents to the property description.
-        DescriptionMarkdownRenderer = new MarkdownRendererViewModel { Contents = PropertyUIDescriptor.Description };
-        
+        DescriptionMarkdownRenderer = new MarkdownRendererViewModel { Contents = "Send **anonymous analytics information** and usage data to Nexus Mods." };
     }
 
     private static ISettingsPropertyUIDescriptor CreateDesignValues()
