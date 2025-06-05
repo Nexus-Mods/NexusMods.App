@@ -2,8 +2,9 @@ using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.EpicGameStore.Attributes;
+using BuildIdAttribute = NexusMods.Abstractions.Games.FileHashes.Attributes.Gog.BuildIdAttribute;
 
-namespace NexusMods.Networking.EpicGameStore.Models;
+namespace NexusMods.Abstractions.EpicGameStore.Models;
 
 public partial class EpicGameStoreBuild : IModelDefinition
 {
@@ -12,7 +13,7 @@ public partial class EpicGameStoreBuild : IModelDefinition
     /// <summary>
     /// The build ID of the Epic Game Store build.
     /// </summary>
-    public static readonly BuildIdAttribute BuildId = new(Namespace, nameof(BuildId));
+    public static readonly NexusMods.Abstractions.EpicGameStore.Attributes.BuildIdAttribute BuildId = new(Namespace, nameof(BuildId)) { IsIndexed = true };
     
     /// <summary>
     /// The Item ID of the Epic Game Store build.

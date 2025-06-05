@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.EpicGameStore.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -39,6 +40,11 @@ public partial class VersionDefinition : IModelDefinition
     public static readonly StringsAttribute Steam = new(Namespace, nameof(Steam)) { IsIndexed = true };
     
     /// <summary>
+    /// The associated Steam ManifestIDs for this version
+    /// </summary>
+    public static readonly StringsAttribute EpicBuildIds = new(Namespace, nameof(EpicBuildIds)) { IsIndexed = true };
+    
+    /// <summary>
     /// The resolved gog builds for this version (if they exist)
     /// </summary>
     public static readonly ReferencesAttribute<GogBuild> GogBuilds = new(Namespace, nameof(GogBuilds));
@@ -47,4 +53,9 @@ public partial class VersionDefinition : IModelDefinition
     /// The resolved steam manfiests builds for this version (if they exist)
     /// </summary>
     public static readonly ReferencesAttribute<SteamManifest> SteamManifests = new(Namespace, nameof(SteamManifests));
+    
+    /// <summary>
+    /// The resolved steam manfiests builds for this version (if they exist)
+    /// </summary>
+    public static readonly ReferencesAttribute<EpicGameStoreBuild> EpicGameStoreBuilds = new(Namespace, nameof(EpicGameStoreBuilds));
 }
