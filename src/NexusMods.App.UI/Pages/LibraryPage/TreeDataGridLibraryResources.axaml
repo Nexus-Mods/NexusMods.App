@@ -3,7 +3,8 @@
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
                     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <!-- Downloaded Date -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+DownloadedDate.ColumnTemplateResourceKey}">
@@ -149,6 +150,64 @@
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
+
+            <controls:StandardButton
+                ToolTip.Tip="More options"
+                x:Name="HamburgerMenuButton"
+                LeftIcon="{x:Static icons:IconValues.MoreVertical}"
+                ShowIcon="Left"
+                ShowLabel="False"
+                Fill="None">
+                <controls:StandardButton.Flyout>
+
+                    <MenuFlyout>
+
+                        <!-- View Changelog -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate
+                                    x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
+                                    ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}"
+                                                      Command="{CompiledBinding CommandViewChangelog}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon
+                                                        Value="{x:Static icons:IconValues.FileDocumentOutline}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+
+                        <MenuItem Header="-" />
+
+                        <!-- View Mod Page -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+ViewModPageAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
+                                                      Command="{CompiledBinding CommandViewModPage}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+                    </MenuFlyout>
+                </controls:StandardButton.Flyout>
+            </controls:StandardButton>
+
+
         </StackPanel>
     </DataTemplate>
 
