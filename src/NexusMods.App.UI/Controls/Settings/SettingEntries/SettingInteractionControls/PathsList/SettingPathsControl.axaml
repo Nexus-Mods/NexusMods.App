@@ -16,9 +16,9 @@
     </reactiveUi:ReactiveUserControl.DataContext>
 
     <controls:StandardButton
+        x:Name="ButtonChangeLocation"
         Text="Change location"
         LeftIcon="{x:Static icons:IconValues.Folder}"
-        ShowIcon="Left"
-        Click="Add_OnClick" />
+        ShowIcon="Left" />
 
 </reactiveUi:ReactiveUserControl>

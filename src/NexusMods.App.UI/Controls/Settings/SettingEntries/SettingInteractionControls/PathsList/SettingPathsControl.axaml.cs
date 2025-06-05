@@ -1,12 +1,6 @@
-using System.Reactive.Disposables;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
-using Avalonia.Threading;
-using NexusMods.Abstractions.Settings;
+using R3;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
@@ -16,37 +10,20 @@ public partial class SettingPathsControl : ReactiveUserControl<ISettingPathsView
     public SettingPathsControl()
     {
         InitializeComponent();
-    }
 
-    private void Add_OnClick(object? sender, RoutedEventArgs e)
-    {
-        Task.Run(async () =>
+        this.WhenActivated(disposables =>
+        {
+            var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
+            if (storageProvider is not null)
             {
-                var topLevel = TopLevel.GetTopLevel(this);
-
-                var path = await topLevel!.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions()
-                    {
-                        AllowMultiple = false,
-                        Title = "Select a folder",
-                    }
-                );
-
-                if (path.Count == 1)
-                {
-                    var localPath = path[0].TryGetLocalPath();
-                    if (localPath is null)
-                    {
-                        return;
-                    }
-
-                    Dispatcher.UIThread.Invoke(() =>
-                        {
-                            // we only ever have one path in the list, so we can just replace it
-                            ViewModel!.ConfigurablePathsContainer.CurrentValue = [new ConfigurablePath(null, localPath)];
-                        }
-                    );
-                }
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(vm => vm.StorageProvider = storageProvider)
+                    .AddTo(disposables);
             }
-        );
+
+            this.BindCommand(ViewModel, vm => vm.CommandChangeLocation, view => view.ButtonChangeLocation)
+                .AddTo(disposables);
+        });
     }
 }

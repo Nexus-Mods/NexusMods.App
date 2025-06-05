@@ -33,23 +33,14 @@ public class SettingEntryViewModel : AViewModel<ISettingEntryViewModel>, ISettin
             const string markdown = "[Find out more]({0})";
             linkRenderer.Contents = string.Format(markdown, link.ToString());
         }
-        
-        // when the current value changes of the interaction, update the description markdown renderer with the new description
+
         this.WhenActivated(disposables =>
         {
             this.WhenAnyValue(x => x.InteractionControlViewModel.ValueContainer.CurrentValue)
+                .Prepend(InteractionControlViewModel.ValueContainer.CurrentValue)
                 .Select(value => PropertyUIDescriptor.DescriptionFactory.Invoke(value))
                 .SubscribeWithErrorLogging(description => DescriptionMarkdownRenderer!.Contents = description)
                 .DisposeWith(disposables);
-            
-            /*  Leaving this here as Florian wants to change the HasChanged equality comparator. Above was changed just to check it was all working.              
-            this.WhenAnyValue(x => x.InteractionControlViewModel.ValueContainer.HasChanged)
-                .Select(_ => InteractionControlViewModel.ValueContainer.CurrentValue)
-                .Prepend(InteractionControlViewModel.ValueContainer.CurrentValue)
-                .Select(value => PropertyUIDescriptor.DescriptionFactory.Invoke(value) ?? string.Empty)
-                .SubscribeWithErrorLogging(description => DescriptionMarkdownRenderer!.Contents = description)
-                .DisposeWith(disposables);
-             */
         });
     }
 }

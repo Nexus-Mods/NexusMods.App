@@ -12,6 +12,7 @@ using NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -96,7 +97,7 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
         var interactionControl = valueContainer.Match<ISettingInteractionControl>(
             f0: booleanContainer => new SettingToggleViewModel(booleanContainer),
             f1: singleValueMultipleChoiceContainer => new SettingComboBoxViewModel(singleValueMultipleChoiceContainer),
-            f2: configPathContainer => new SettingPathsViewModel(configPathContainer)
+            f2: configPathContainer => new SettingPathsViewModel(_serviceProvider.GetRequiredService<IOSInterop>(), configPathContainer)
         );
 
         var markdownRenderer = _serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
