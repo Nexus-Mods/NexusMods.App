@@ -5,6 +5,7 @@ using NexusMods.Cascade.Flows;
 using NexusMods.Cascade.Patterns;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Cascade;
+using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -68,5 +69,57 @@ public partial class Loadout
         return connection.Topology
             .Observe(MostRecentTxForLoadoutFlow.Where(row => row.LoadoutId == id.Value))
             .Select(_ => Loadout.Load(connection.Db, id));
+    }
+    
+    /// <summary>
+    /// Returns collection ids and their enabled state
+    /// </summary>
+    public static readonly Flow<(EntityId CollectionId, bool IsCollectionEnabled)> IsCollectionEnabledFlow =
+        Pattern.Create().Db(out var collectionId, CollectionGroup.IsReadOnly, out _)
+            .DbOrDefault(Query.Db, collectionId, LoadoutItem.Disabled, out var collectionDisabled, default(Null))
+            // Collection is enabled if the Disabled attribute is missing, so if it is default.
+            .Project(collectionDisabled, disabled => disabled.IsDefault, out var isCollectionEnabled)
+            .Return(collectionId, isCollectionEnabled);
+    
+    public static bool IsCollectionEnabled(IDb db, EntityId collectionId)
+    {
+        var isEnabled = db.Topology.Query(IsCollectionEnabledFlow.Where(row => row.CollectionId == collectionId));
+        return isEnabled.Count == 1 && isEnabled.First().IsCollectionEnabled;
+    }
+    
+    /// <summary>
+    /// Returns loadoutItemGroup ids and their enabled state, also considering the parent collection's enabled state.
+    /// </summary>
+    public static readonly Flow<(EntityId GroupId, bool IsModEnabled)> IsLoadoutItemGroupEnabledFlow =
+        Pattern.Create().Db(out var groupId, LoadoutItem.Parent, out var collectionId)
+            .Match(IsCollectionEnabledFlow, collectionId, out var collectionIsEnabled)
+            .DbOrDefault(Query.Db, groupId, LoadoutItem.Disabled, out var modDisabled, default(Null))
+            // Group is enabled if the Disabled attribute is missing, so if it is default.
+            .Project(modDisabled, disabled => disabled.IsDefault, out var isModEnabled)
+            .Return(groupId, collectionIsEnabled ,isModEnabled)
+            .Select(row => (row.Item1, row.Item2 && row.Item3)); 
+    
+    public static bool IsLoadoutItemGroupEnabled(IDb db, EntityId loadoutItemGroupId)
+    {
+        var isEnabled = db.Topology.Query(IsLoadoutItemGroupEnabledFlow.Where(row => row.GroupId == loadoutItemGroupId));
+        return isEnabled.Count == 1 && isEnabled.First().IsModEnabled;
+    }
+    
+    /// <summary>
+    /// Returns loadoutItem ids and their enabled state, also considering the enabled states of the parent group and collection.
+    /// </summary>
+    public static readonly Flow<(EntityId LoaodutItemId, bool IsLoadoutItemEnabled)> IsLoadoutItemEnabledFlow =
+        Pattern.Create().Db(out var itemId, LoadoutItem.Parent, out var groupId)
+            .Match(IsLoadoutItemGroupEnabledFlow, groupId, out var parentGroupIsEnabled)
+            .DbOrDefault(Query.Db,groupId, LoadoutItem.Disabled, out var itemDisabled, default(Null))
+            // Item is enabled if the Disabled attribute is missing, so if it is default.
+            .Project(itemDisabled, disabled => disabled.IsDefault, out var isItemEnabled)
+            .Return(itemId, parentGroupIsEnabled ,isItemEnabled)
+            .Select(row => (row.Item1, row.Item2 && row.Item3)); 
+    
+    public static bool IsLoadoutItemEnabled(IDb db, EntityId loadoutItemId)
+    {
+        var isEnabled = db.Topology.Query(IsLoadoutItemEnabledFlow.Where(row => row.LoaodutItemId == loadoutItemId));
+        return isEnabled.Count == 1 && isEnabled.First().IsLoadoutItemEnabled;
     }
 }
