@@ -20,6 +20,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public LibraryItem.ReadOnly LibraryItem { get; init; }
     public LoadoutItemGroupId ParentGroupId { get; init; }
     public LoadoutId LoadoutId { get; init; }
+    
     public required ITransaction Transaction { get; init; }
     required internal IConnection Connection { get; init; }
     required internal IServiceProvider ServiceProvider { get; init; }
@@ -89,9 +90,9 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             LibraryItemId = LibraryItem,
         };
         
-        if (OwnsTransaction)
+        if (OwnsTransaction && Transaction is IMainTransaction mainTransaction)
         {
-            var transactionResult = await Transaction.Commit();
+            var transactionResult = await mainTransaction.Commit();
             Transaction.Dispose();
             return new InstallLoadoutItemJobResult(transactionResult.Remap(loadoutGroup));
         }
