@@ -7,11 +7,11 @@ namespace NexusMods.Sdk.Hashes;
 /// <summary>
 /// Attribute for <see cref="Md5Value"/>.
 /// </summary>
-public class Md5Attribute(string ns, string name) : ScalarAttribute<Md5Value, Memory<byte>, BlobSerializer>(ns, name)
+public class Md5Attribute(string ns, string name) : ScalarAttribute<Md5Value, UInt128, UInt128Serializer>(ns, name)
 {
     /// <inheritdoc/>
-    protected override Memory<byte> ToLowLevel(Md5Value value) => value.AsSpan().ToArray();
+    protected override UInt128 ToLowLevel(Md5Value value) => value.AsUInt128();
 
     /// <inheritdoc/>
-    protected override Md5Value FromLowLevel(Memory<byte> value, AttributeResolver resolver) => Md5Value.From(value.Span);
+    protected override Md5Value FromLowLevel(UInt128 value, AttributeResolver resolver) => Md5Value.From(value);
 }
