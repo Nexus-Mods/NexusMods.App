@@ -21,15 +21,14 @@ public class ASortOrderManager : ISortOrderManager
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly TimeSpan _lockTimeout = TimeSpan.FromSeconds(30);
     
-    private readonly FrozenDictionary<SortOrderVarietyId, ISortOrderVariety> _sortOrderVarieties;
+    private FrozenDictionary<SortOrderVarietyId, ISortOrderVariety> _sortOrderVarieties;
 
-    public ASortOrderManager(IServiceProvider serviceProvider, ISortOrderVariety[] sortOrderVarieties)
+    public ASortOrderManager(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _connection = _serviceProvider.GetRequiredService<IConnection>();
         _logger = _serviceProvider.GetRequiredService<ILogger>();
-        _sortOrderVarieties = sortOrderVarieties.ToDictionary(variety => variety.SortOrderVarietyId)
-            .ToFrozenDictionary();
+        _sortOrderVarieties = FrozenDictionary<SortOrderVarietyId, ISortOrderVariety>.Empty;
     }
 
     /// <inheritdoc />
@@ -54,21 +53,11 @@ public class ASortOrderManager : ISortOrderManager
         // Acquire the lock before proceeding with the reconciliation
         using var _ = await Lock(token);
         
-        var entities = SortOrder.FindByParentEntity(_connection.Db, parentEntity);
-        
-        foreach (var entity in entities)
+        foreach (var sortOrderVariety in _sortOrderVarieties.Values)
         {
-            var sortOrderVarietyId = SortOrderVarietyId.From(entity.SortOrderTypeId);
-            
-            if (_sortOrderVarieties.TryGetValue(sortOrderVarietyId, out var sortOrderVariety))
-            {
-                await sortOrderVariety.ReconcileSortOrder(entity.SortOrderId, token: token);
-            }
-            else
-            {
-                _logger.LogWarning("Found a sort order entity {SortOrderId} with unknown SortOrderVarietyId {SortOrderVarietyId}", entity.SortOrderId, sortOrderVarietyId);
-                continue;
-            }
+            // Reconcile the sort order for each variety
+            var sortOrderId = await sortOrderVariety.GetOrCreateSortOrderFor(loadoutId, parentEntity, token);
+            await sortOrderVariety.ReconcileSortOrder(sortOrderId, token: token);
         }
     }
 
@@ -76,5 +65,12 @@ public class ASortOrderManager : ISortOrderManager
     public ReadOnlySpan<ISortOrderVariety> GetSortOrderVarieties()
     {
         return _sortOrderVarieties.Values.AsSpan();
+    }
+
+    /// <inheritdoc />
+    public void SetSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties)
+    {
+        _sortOrderVarieties = sortOrderVarieties.ToDictionary(variety => variety.SortOrderVarietyId)
+            .ToFrozenDictionary();
     }
 }

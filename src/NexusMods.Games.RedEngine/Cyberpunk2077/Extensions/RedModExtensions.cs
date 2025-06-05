@@ -6,7 +6,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 
 public static class RedModExtensions
 {
-    public static RedModSortableEntry.ReadOnly[] RetrieveRedModSortOrder(this IDb db, SortOrderId sortOrderId)
+    public static RedModSortableEntry.ReadOnly[] RetrieveRedModSortableEntries(this IDb db, SortOrderId sortOrderId)
     {
         return RedModSortableEntry.All(db)
             .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == sortOrderId)

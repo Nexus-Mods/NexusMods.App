@@ -17,15 +17,23 @@ public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, 
     where TItem : ISortableItem<TItem, TKey>
     where TKey : IEquatable<TKey>, ISortItemKey
 {
-    private readonly IConnection _connection;
     private readonly ILogger _logger;
-    private readonly ISortOrderManager _manager;
-
+    
+    /// <summary>
+    /// Database connection
+    /// </summary>
+    protected readonly IConnection Connection;
+    
+    /// <summary>
+    /// The game sort order manager that this variety belongs to.
+    /// </summary>
+    protected readonly ISortOrderManager Manager;
+    
     protected ASortOrderVariety(IServiceProvider serviceProvider, ISortOrderManager manager)
     {
-        _connection = serviceProvider.GetRequiredService<IConnection>();
+        Connection = serviceProvider.GetRequiredService<IConnection>();
         _logger = serviceProvider.GetRequiredService<ILogger>();
-        _manager = manager;
+        Manager = manager;
     }
         
     #region public members
@@ -43,11 +51,29 @@ public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, 
     public virtual IndexOverrideBehavior IndexOverrideBehavior => IndexOverrideBehavior.GreaterIndexWins;
 
     /// <inheritdoc />
-    public SortOrderId GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity)
+    public Optional<SortOrderId> GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity)
     {
-        throw new NotImplementedException();
-        // TODO: Implement query to get SortOrder that has matching parent entity and matching SortOrderVarietyId
+        var entities = SortOrder.FindByParentEntity(Connection.Db, parentEntity)
+            .Where(e => e.SortOrderTypeId == SortOrderVarietyId.Value)
+            .ToArray();
+        
+        switch (entities.Length)
+        {
+            case 0:
+                return Optional<SortOrderId>.None;
+            case > 1:
+                _logger.LogWarning("Multiple SortOrder entities found for parent entity {ParentEntity} and variety {VarietyId}", parentEntity, SortOrderVarietyId);
+                break;
+        }
+
+        return entities[0].SortOrderId;
     }
+
+    /// <inheritdoc />
+    public abstract ValueTask<SortOrderId> GetOrCreateSortOrderFor(
+        LoadoutId loadoutId,
+        OneOf<LoadoutId, CollectionGroupId> parentEntity,
+        CancellationToken token = default);
 
     /// <inheritdoc />
     public abstract IObservable<IChangeSet<TItem, TKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
@@ -68,7 +94,7 @@ public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, 
         CancellationToken token = default)
     {
         // acquire the lock
-        using var _ = await _manager.Lock(token);
+        using var _ = await Manager.Lock(token);
         
         // retrieve the sorting from the db
         var startingOrder = RetrieveSortOrder(sortOrderId, db);
@@ -128,7 +154,7 @@ public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, 
     public async ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default)
     {
         // acquire the lock
-        using var _ = await _manager.Lock(token);
+        using var _ = await Manager.Lock(token);
         
         // retrieve the sorting from the db
         var startingOrder = RetrieveSortOrder(sortOrderId, db);
@@ -169,13 +195,15 @@ public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, 
 
     /// <inheritdoc />
     public abstract ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
-    
-    #endregion public members
+
+
+
+#endregion public members
     
     #region protected members
     
     /// <summary>
-    /// Retrieves the sortable entries for the sortOrderId, and returns them as a list of sortable items.
+    /// Retrieves the sortable entries for the sortOrderId, and returns them as a sorted list of sortable items, without the loadout data.
     /// </summary>
     /// <remarks>
     /// The items in the returned list can have temporary values for properties such as `ModName` and `IsActive`.

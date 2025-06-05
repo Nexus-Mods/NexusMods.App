@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using OneOf;
@@ -46,7 +47,17 @@ public interface ISortOrderVariety
     /// Returns the SortOrderId for this variety for the given parent entity.
     /// </summary>
     [Pure]
-    public SortOrderId GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity);
+    public Optional<SortOrderId> GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity);
+    
+    /// <summary>
+    /// Returns the SortOrderId for the given loadout, parent entity and variety.
+    /// If it does not exist, it will first be created.
+    /// </summary>
+    [Pure]
+    public ValueTask<SortOrderId> GetOrCreateSortOrderFor(
+        LoadoutId loadoutId,
+        OneOf<LoadoutId, CollectionGroupId> parentEntity,
+        CancellationToken token = default);
     
     /// <summary>
     /// Returns an observable change set of ISortableItems for the given SortOrderId.
@@ -94,6 +105,8 @@ public interface ISortOrderVariety
     /// </summary>
     [Pure]
     public ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
+
+
     
     /// <summary>
     /// Static metadata for the sort order type that can be accessed by derived classes for reuse

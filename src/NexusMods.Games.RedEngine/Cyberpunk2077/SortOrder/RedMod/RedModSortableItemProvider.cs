@@ -251,7 +251,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
     {
         var redModOrderList = orderList.ToList();
         
-        var persistentSortableItems = _connection.Db.RetrieveRedModSortOrder(sortOrderEntityId);
+        var persistentSortableItems = _connection.Db.RetrieveRedModSortableEntries(sortOrderEntityId);
 
         if (token.IsCancellationRequested) return;
         
@@ -308,7 +308,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
     {
         var dbToUse = db ?? _connection.Db;
 
-        return dbToUse.RetrieveRedModSortOrder(sortOrderEntityId)
+        return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
             .Select(redModSortableItem =>
                 {
                     var sortableItem = redModSortableItem.AsSortableEntry();

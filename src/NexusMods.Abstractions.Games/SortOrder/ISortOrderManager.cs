@@ -29,4 +29,11 @@ public interface ISortOrderManager
     /// </summary>
     /// <returns></returns>
     public ReadOnlySpan<ISortOrderVariety> GetSortOrderVarieties();
+    
+    /// <summary>
+    /// Sets the sort order varieties for the current game.
+    /// Should only be called once during initialization of the game.
+    /// </summary>
+    /// <param name="sortOrderVarieties"></param>
+    public void SetSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties);
 }
