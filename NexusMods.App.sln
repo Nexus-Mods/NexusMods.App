@@ -281,6 +281,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Backend", "src\NexusMods.Backend\NexusMods.Backend.csproj", "{EDB7DA36-1F53-4778-B2F0-93575979AEBD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Networking.EpicGameStore", "src\NexusMods.Networking.EpicGameStore\NexusMods.Networking.EpicGameStore.csproj", "{2600BE4B-C362-4E77-90B4-4803E4DB280B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusMods.Sdk.Tests", "tests\NexusMods.Sdk.Tests\NexusMods.Sdk.Tests.csproj", "{6ED9EB47-6F13-43EB-80EF-E8BF9E40EA34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -744,6 +745,10 @@ Global
 		{2600BE4B-C362-4E77-90B4-4803E4DB280B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2600BE4B-C362-4E77-90B4-4803E4DB280B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2600BE4B-C362-4E77-90B4-4803E4DB280B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ED9EB47-6F13-43EB-80EF-E8BF9E40EA34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ED9EB47-6F13-43EB-80EF-E8BF9E40EA34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ED9EB47-6F13-43EB-80EF-E8BF9E40EA34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ED9EB47-6F13-43EB-80EF-E8BF9E40EA34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -875,6 +880,7 @@ Global
 		{F93C4296-F441-4514-A78F-2EEC3DDFCF8A} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{EDB7DA36-1F53-4778-B2F0-93575979AEBD} = {E7BAE287-D505-4D6D-A090-665A64309B2D}
 		{2600BE4B-C362-4E77-90B4-4803E4DB280B} = {D7E9D8F5-8AC8-4ADA-B219-C549084AD84C}
+		{6ED9EB47-6F13-43EB-80EF-E8BF9E40EA34} = {52AF9D62-7D5B-4AD0-BA12-86F2AA67428B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F9F8352-34DD-42C0-8564-EE9AF34A3501}
