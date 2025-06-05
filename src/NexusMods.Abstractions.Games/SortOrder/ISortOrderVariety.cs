@@ -73,7 +73,7 @@ public interface ISortOrderVariety
     public IReadOnlyList<ISortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
     
     /// <summary>
-    /// Sets the sort order to match the one of the passed keys.
+    /// Sets the sort order to match the one of the passed keys, regardless of the current loadout state.
     /// </summary>
     [Pure]
     public ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<ISortItemKey> items, IDb? db = null, CancellationToken token = default);

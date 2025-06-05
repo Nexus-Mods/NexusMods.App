@@ -79,9 +79,62 @@ public class RedModSortOrderVariety : ASortOrderVariety<RedModSortableItem, Sort
         throw new NotImplementedException();
     }
 
-    public override ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<SortItemKey<string>> items, IDb? db = null, CancellationToken token = default)
+    public override async ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<SortItemKey<string>> items, IDb? db = null, CancellationToken token = default)
     {
-        throw new NotImplementedException();
+        var dbToUse = db ?? Connection.Db;
+
+        var keyOrderList = items.ToArray();
+        
+        var persistentSortableItems = dbToUse.RetrieveRedModSortableEntries(sortOrderId);
+        
+        if (token.IsCancellationRequested) return;
+        
+        using var tx = Connection.BeginTransaction();
+
+        // Remove outdated persistent items
+        foreach (var dbItem in persistentSortableItems)
+        {
+            var liveItem = keyOrderList.FirstOrOptional(
+                i => i.Key == dbItem.RedModFolderName
+            );
+
+            if (!liveItem.HasValue)
+            {
+                tx.Delete(dbItem, recursive: false);
+                continue;
+            }
+
+            var liveIdx = keyOrderList.IndexOf(liveItem.Value);
+
+            if (dbItem.AsSortableEntry().SortIndex != liveIdx)
+            {
+                tx.Add(dbItem, SortableEntry.SortIndex, liveIdx);
+            }
+        }
+
+        // Add new items
+        for (var i = 0; i < keyOrderList.Length; i++)
+        {
+            var liveItem = keyOrderList[i];
+            if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.Key))
+                continue;
+
+            var newDbItem = new SortableEntry.New(tx)
+            {
+                ParentSortOrderId = sortOrderId,
+                SortIndex = i,
+            };
+
+            _ = new RedModSortableEntry.New(tx, newDbItem)
+            {
+                SortableEntry = newDbItem,
+                RedModFolderName = liveItem.Key,
+            };
+        }
+
+        if (token.IsCancellationRequested) return;
+
+        await tx.Commit();
     }
 
     public override ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
@@ -101,57 +154,8 @@ public class RedModSortOrderVariety : ASortOrderVariety<RedModSortableItem, Sort
     /// <inheritdoc />
     protected override async Task PersistSortOrder(IReadOnlyList<RedModSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token)
     {
-        var redModOrderList = items.ToList();
-        
-        var persistentSortableItems = Connection.Db.RetrieveRedModSortableEntries(sortOrderEntityId);
+        var redModOrderList = items.Select(item => item.Key).ToList();
 
-        if (token.IsCancellationRequested) return;
-        
-        using var tx = Connection.BeginTransaction();
-
-        // Remove outdated persistent items
-        foreach (var dbItem in persistentSortableItems)
-        {
-            var liveItem = redModOrderList.FirstOrOptional(
-                i => i.RedModFolderName == dbItem.RedModFolderName
-            );
-
-            if (!liveItem.HasValue)
-            {
-                tx.Delete(dbItem, recursive: false);
-                continue;
-            }
-
-            var liveIdx = redModOrderList.IndexOf(liveItem.Value);
-
-            if (dbItem.AsSortableEntry().SortIndex != liveIdx)
-            {
-                tx.Add(dbItem, SortableEntry.SortIndex, liveIdx);
-            }
-        }
-
-        // Add new items
-        for (var i = 0; i < redModOrderList.Count; i++)
-        {
-            var liveItem = redModOrderList[i];
-            if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.RedModFolderName))
-                continue;
-
-            var newDbItem = new SortableEntry.New(tx)
-            {
-                ParentSortOrderId = sortOrderEntityId,
-                SortIndex = i,
-            };
-
-            _ = new RedModSortableEntry.New(tx, newDbItem)
-            {
-                SortableEntry = newDbItem,
-                RedModFolderName = liveItem.RedModFolderName,
-            };
-        }
-
-        if (token.IsCancellationRequested) return;
-
-        await tx.Commit();
+        await SetSortOrder(sortOrderEntityId, redModOrderList, token: token);
     }
 }
