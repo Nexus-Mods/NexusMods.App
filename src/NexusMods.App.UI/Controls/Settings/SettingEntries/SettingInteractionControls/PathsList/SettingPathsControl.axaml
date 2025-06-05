@@ -8,6 +8,11 @@
              xmlns:pathsList="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList.SettingPathsControl">
+    
+    <reactiveUi:ReactiveUserControl.DataContext>
+        <pathsList:SettingPathsDesignViewModel/>
+    </reactiveUi:ReactiveUserControl.DataContext>
+    
     <StackPanel Orientation="Vertical">
         <Button Content="+" Click="Add_OnClick"></Button>
         <ItemsControl x:Name="PathsList">
