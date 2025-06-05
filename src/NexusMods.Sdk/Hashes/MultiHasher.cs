@@ -82,7 +82,7 @@ public class MultiHasher
             Sha1 = Sha1Value.From(_sha1.Hash),
             Md5 = Md5Value.From(_md5.Hash),
             Size = Size.FromLong(stream.Length),
-            Crc32 = Crc32.From(_crc32.GetCurrentHashAsUInt32()),
+            Crc32 = Crc32Value.From(_crc32.GetCurrentHashAsUInt32()),
         };
 
         return result;

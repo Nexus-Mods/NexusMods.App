@@ -36,7 +36,7 @@ public record MultiHash
     /// <summary>
     /// The Crc32 hash of the data.
     /// </summary>
-    public required Crc32 Crc32 { get; init; }
+    public required Crc32Value Crc32 { get; init; }
     
     /// <summary>
     /// The size of the data in bytes.

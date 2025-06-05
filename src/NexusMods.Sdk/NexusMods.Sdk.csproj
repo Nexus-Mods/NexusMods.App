@@ -29,5 +29,11 @@
         <Compile Update="Hashes\Sha1JsonConverter.cs">
           <DependentUpon>Sha1Value.cs</DependentUpon>
         </Compile>
+        <Compile Update="Hashes\Crc32JsonConverter.cs">
+          <DependentUpon>Crc32Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Crc32Attribute.cs">
+          <DependentUpon>Crc32Value.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>
