@@ -115,7 +115,7 @@ public static class IndexEpicGame
         
         await renderer.TextLine($"Getting build information", token);
         
-        var requiredHashes = new Dictionary<Sha1, RelativePath>();
+        var requiredHashes = new Dictionary<Sha1Value, RelativePath>();
 
         var builds = await egDataClient.GetBuilds(appId, token);
         foreach (var build in builds)
@@ -136,9 +136,9 @@ public static class IndexEpicGame
 
             foreach (var file in files)
             {
-                requiredHashes.TryAdd(Sha1.ParseFromHex(file.FileHash), RelativePath.FromUnsanitizedInput(file.FileName)); 
+                requiredHashes.TryAdd(Sha1Value.FromHex(file.FileHash), RelativePath.FromUnsanitizedInput(file.FileName)); 
             }
-            
+
             await renderer.TextLine($"Build {build.Id} has {files.Length} files", token);
         }
         
