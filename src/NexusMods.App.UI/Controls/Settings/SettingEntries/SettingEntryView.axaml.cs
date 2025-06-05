@@ -21,17 +21,8 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
                 .Do(PopulateFromViewModel)
                 .Subscribe()
                 .DisposeWith(disposables);
+            
 
-            this.WhenAnyValue(x => x.ViewModel!.InteractionControlViewModel.ValueContainer.HasChanged)
-                .Select(_ => ViewModel?.InteractionControlViewModel.ValueContainer.CurrentValue)
-                .Prepend(ViewModel?.InteractionControlViewModel.ValueContainer.CurrentValue)
-                .Select(value =>
-                {
-                    if (value is null) return string.Empty;
-                    return ViewModel?.PropertyUIDescriptor.DescriptionFactory.Invoke(value) ?? string.Empty;
-                })
-                .SubscribeWithErrorLogging(description => EntryDescription.Text = description)
-                .DisposeWith(disposables);
 
             this.WhenAnyValue(x =>
                     x.ViewModel!.InteractionControlViewModel.ValueContainer.HasChanged,
@@ -39,6 +30,9 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
                     (hasChanged, requiresRestart) => requiresRestart && hasChanged
                 )
                 .BindToView(this, view => view.RequiresRestartBanner.IsVisible)
+                .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.DescriptionMarkdownRenderer, v => v.DescriptionMarkdownRendererViewModelViewHost.ViewModel)
                 .DisposeWith(disposables);
         });
     }

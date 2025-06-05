@@ -62,6 +62,8 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
             TProperty[] allowedValues,
             Func<TProperty, string> valueToDisplayString
         );
+
+        IRequiresRestartStep UseConfigurablePathsContainer();
     }
 
     /// <summary>

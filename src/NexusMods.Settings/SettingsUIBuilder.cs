@@ -150,6 +150,23 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
         return this;
     }
+    
+    private class ConfigurablePathsContainerFactory : ISettingsPropertyValueContainerFactory
+    {
+        public SettingsPropertyValueContainer Create(object currentValue, object defaultValue, IPropertyBuilderOutput propertyBuilderOutput)
+        {
+            Debug.Assert(currentValue is ConfigurablePath[]);
+
+            return new SettingsPropertyValueContainer(new ConfigurablePathsContainer((ConfigurablePath[])currentValue, (ConfigurablePath[])defaultValue, Update));
+            void Update(ISettingsManager settingsManager, ConfigurablePath[] value) => propertyBuilderOutput.Update(settingsManager, value);
+        }
+    }
+
+    public IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep UseConfigurablePathsContainer()
+    {
+        _factory = new ConfigurablePathsContainerFactory();
+        return this;
+    }
 
     private class SingleValueMultipleChoiceContainerFactory : ISettingsPropertyValueContainerFactory
     {

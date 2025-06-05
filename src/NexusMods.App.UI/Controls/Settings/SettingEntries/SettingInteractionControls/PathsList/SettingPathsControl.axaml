@@ -1,0 +1,24 @@
+<reactiveUi:ReactiveUserControl
+    x:TypeArguments="pathsList:ISettingPathsViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:pathsList="clr-namespace:NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList.SettingPathsControl">
+
+    <reactiveUi:ReactiveUserControl.DataContext>
+        <pathsList:SettingPathsDesignViewModel />
+    </reactiveUi:ReactiveUserControl.DataContext>
+
+    <controls:StandardButton
+        x:Name="ButtonChangeLocation"
+        Text="Change location"
+        LeftIcon="{x:Static icons:IconValues.Folder}"
+        ShowIcon="Left" />
+
+</reactiveUi:ReactiveUserControl>
