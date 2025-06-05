@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Avalonia.Platform.Storage;
+using NexusMods.Abstractions.Loadouts;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.WorkspaceSystem;
 using R3;
@@ -11,11 +12,13 @@ public interface ILibraryViewModel : IPageViewModelInterface
     LibraryTreeDataGridAdapter Adapter { get; }
     ReadOnlyObservableCollection<ICollectionCardViewModel> Collections { get; }
 
+    ReadOnlyObservableCollection<CollectionGroup.ReadOnly> InstallationTargets { get; }
+    CollectionGroupId SelectedInstallationTarget { get; set; }
+
     string EmptyLibrarySubtitleText { get; }
 
     public ReactiveCommand<Unit> UpdateAllCommand { get; }
     public ReactiveCommand<Unit> RefreshUpdatesCommand { get; }
-    ReactiveCommand<Unit> SwitchViewCommand { get; }
 
     ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
     ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }

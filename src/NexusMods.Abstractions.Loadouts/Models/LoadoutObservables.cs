@@ -14,13 +14,11 @@ public partial class Loadout
     /// <summary>
     ///  Returns all items in a loadout
     /// </summary>
-    private static readonly Flow<(EntityId Loadout, EntityId Entity)> LoadoutItemsSubFlow =
+    public static readonly Flow<(EntityId Loadout, EntityId Entity)> LoadoutItemsSubFlow =
         Pattern.Create()
             .Db(out var loadoutItem, LoadoutItem.LoadoutId, out var loadoutId)
             .Return(loadoutId, loadoutItem);
 
-
-    
     /// <summary>
     /// Include the loadout itself
     /// </summary>
@@ -50,8 +48,17 @@ public partial class Loadout
             // Track the count as well, so that we know when items are removed. Removing an item
             // may not change the max TxId, but removal will change the count of items being tracked
             .ReturnMostRecentTxForLoadoutRow(loadout, maxTx.Max(), entity.Count());
-    
-    
+
+    /// <summary>
+    /// Returns all mutable collection groups in a loadout.
+    /// </summary>
+    public static readonly Flow<(EntityId CollectionGroup, EntityId Loadout)> MutableCollections = Pattern.Create()
+        .Db(out var collectionEntityId, CollectionGroup.IsReadOnly, out var isReadOnly)
+        .Db(collectionEntityId, LoadoutItem.LoadoutId, out var loadoutEntityId)
+        .Return(collectionEntityId, loadoutEntityId, isReadOnly)
+        .Where(tuple => !tuple.Item3)
+        .Select(tuple => (tuple.Item1, tuple.Item2));
+
     /// <summary>
     /// Returns an IObservable of a loadout with the given id, refreshing it whenever a child entity is updated.
     /// </summary>

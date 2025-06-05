@@ -19,10 +19,13 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Cascade;
+using NexusMods.Cascade.Patterns;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using ObservableCollections;
@@ -42,8 +45,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public ReactiveCommand<Unit> UpdateAllCommand { get; }
     public ReactiveCommand<Unit> RefreshUpdatesCommand { get; }
-    public ReactiveCommand<Unit> SwitchViewCommand { get; }
-
     public ReactiveCommand<Unit> InstallSelectedItemsCommand { get; }
 
     public ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
@@ -73,6 +74,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public LibraryTreeDataGridAdapter Adapter { get; }
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
+
+    private readonly ReadOnlyObservableCollection<CollectionGroup.ReadOnly> _installationTargets;
+    public ReadOnlyObservableCollection<CollectionGroup.ReadOnly> InstallationTargets => _installationTargets;
+
+    [Reactive] public CollectionGroupId SelectedInstallationTarget { get; set; }
 
     public LibraryViewModel(
         IWindowManager windowManager,
@@ -108,15 +114,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
 
+        var installationTargetsObservable = _connection.Topology
+            .Observe(Loadout.MutableCollections)
+            .Filter(tuple => tuple.Loadout == loadoutId.Value)
+            .Transform(tuple => CollectionGroup.Load(_connection.Db, tuple.CollectionGroup))
+            .AddKey(x => x.Id)
+            .Bind(out _installationTargets);
+
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
         {
             Adapter.ClearSelection();
-        });
-
-
-        SwitchViewCommand = new ReactiveCommand<Unit>(_ =>
-        {
-            Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value;
         });
 
         RefreshUpdatesCommand = new ReactiveCommand<Unit>(
@@ -199,7 +206,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                         {
                             var libraryItem = LibraryItem.Load(_connection.Db, id);
                             if (!libraryItem.IsValid()) continue;
-                            await InstallLibraryItem(libraryItem, _loadout, cancellationToken);
+                            await InstallLibraryItem(libraryItem, _loadout, GetInstallationTarget(), cancellationToken);
                         }
                     }
                     else
@@ -210,6 +217,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 awaitOperation: AwaitOperation.Parallel,
                 configureAwait: false
             ).AddTo(disposables);
+
+            installationTargetsObservable.Subscribe().AddTo(disposables);
 
             CollectionRevisionMetadata.ObserveAll(_connection)
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
@@ -298,7 +307,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         await _modUpdateService.CheckAndUpdateModPages(token, notify: true);
     }
 
-    private async ValueTask InstallItems(LibraryItemId[] ids, bool useAdvancedInstaller, CancellationToken cancellationToken)
+    private async ValueTask InstallItems(LibraryItemId[] ids, LoadoutItemGroupId targetLoadoutGroup, bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
         var db = _connection.Db;
         var items = ids
@@ -309,7 +318,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         await Parallel.ForAsync(
             fromInclusive: 0,
             toExclusive: items.Length,
-            body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, innerCancellationToken, useAdvancedInstaller),
+            body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, targetLoadoutGroup, innerCancellationToken, useAdvancedInstaller),
             cancellationToken: cancellationToken
         );
     }
@@ -326,18 +335,21 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         return ids;
     }
 
+    private LoadoutItemGroupId GetInstallationTarget() => (SelectedInstallationTarget == default ? _installationTargets[0].CollectionGroupId : SelectedInstallationTarget).Value;
+
     private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
     {
-        return InstallItems(GetSelectedIds(), useAdvancedInstaller, cancellationToken);
+        return InstallItems(GetSelectedIds(), GetInstallationTarget(), useAdvancedInstaller, cancellationToken);
     }
 
     private async ValueTask InstallLibraryItem(
         LibraryItem.ReadOnly libraryItem,
-        Loadout.ReadOnly loadout,
+        LoadoutId loadout,
+        LoadoutItemGroupId targetLoadoutGroup,
         CancellationToken cancellationToken,
         bool useAdvancedInstaller = false)
     {
-        await _libraryService.InstallItem(libraryItem, loadout, installer: useAdvancedInstaller ? _advancedInstaller : null);
+        await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
     }
 
     private async ValueTask RemoveSelectedItems(CancellationToken cancellationToken)
