@@ -99,8 +99,9 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
             f2: configPathContainer => new SettingPathsViewModel(configPathContainer)
         );
 
+        var markdownRenderer = _serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
         var linkRenderer = descriptor.Link is null ? null : _serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-        var res = new SettingEntryViewModel(descriptor, interactionControl, linkRenderer);
+        var res = new SettingEntryViewModel(descriptor, interactionControl, markdownRenderer, linkRenderer);
         return res;
     }
 }

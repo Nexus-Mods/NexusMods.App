@@ -29,6 +29,9 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
                 )
                 .BindToView(this, view => view.RequiresRestartBanner.IsVisible)
                 .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.DescriptionMarkdownRenderer, v => v.DescriptionMarkdownRendererViewModelViewHost.ViewModel)
+                .DisposeWith(disposables);
         });
     }
 
@@ -39,7 +42,7 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
         InteractionControl.ViewModel = viewModel.InteractionControlViewModel;
 
         EntryName.Text = descriptor.DisplayName;
-        EntryDescription.Text = descriptor.Description;
+        //EntryDescription.Text = descriptor.Description;
 
         LinkViewModel.ViewModel = viewModel.LinkRenderer;
         LinkViewModel.IsVisible = viewModel.LinkRenderer is not null;

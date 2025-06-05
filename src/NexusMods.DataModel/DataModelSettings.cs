@@ -37,8 +37,13 @@ public record DataModelSettings : ISettings
             .AddToUI<DataModelSettings>(builder => builder
                 .AddPropertyToUI(x => x.ArchiveLocations, propertyBuilder => propertyBuilder
                     .AddToSection(Sections.General)
-                    .WithDisplayName("Downloaded Mods Location")
-                    .WithDescription("The location where downloaded mods and archived files are stored.")
+                    .WithDisplayName("Storage Location")
+                    .WithDescription("""
+                          Mods and backups are stored in:  
+                          **C:\userdata\nexusmods\library**
+                          
+                          *Important: Existing files won’t move automatically when you change storage location, you’ll need to move them manually.*
+                          """)
                     .UseConfigurablePathsContainer()
                     .RequiresRestart()));
     }
