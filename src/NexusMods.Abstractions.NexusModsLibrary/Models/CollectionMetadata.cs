@@ -12,12 +12,17 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 public partial class CollectionMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.NexusModsLibrary.CollectionMetadata";
-    
+
+    /// <summary>
+    /// The collection ID.
+    /// </summary>
+    public static readonly CollectionIdAttribute CollectionId = new(Namespace, nameof(CollectionId)) { IsIndexed = true, IsUnique = true };
+
     /// <summary>
     /// The collection slug.
     /// </summary>
     public static readonly CollectionsSlugAttribute Slug = new(Namespace, nameof(Slug)) { IsIndexed = true };
-    
+
     /// <summary>
     /// The name of the collection.
     /// </summary>
