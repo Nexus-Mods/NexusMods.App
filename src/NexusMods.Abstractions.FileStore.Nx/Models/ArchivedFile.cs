@@ -1,7 +1,8 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Hashes;
+
 // ReSharper disable MemberHidesStaticFromOuterClass
 
 namespace NexusMods.Abstractions.FileStore.Nx.Models;

@@ -3,26 +3,16 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TransparentValueObjects;
 
 namespace NexusMods.Sdk.Hashes;
 
 /// <summary>
-/// A value representing a 32-bit Cyclic Redundancy Check (CRC) hash.
-/// </summary>
-[JsonConverter(typeof(Crc32JsonConverter))]
-[ValueObject<uint>]
-public readonly partial struct Crc32
-{
-}
-
-/// <summary>
-/// Custom JSON converter for <see cref="Crc32"/>. We're not using augments here as we want hex strings not
+/// Custom JSON converter for <see cref="Crc32Value"/>. We're not using augments here as we want hex strings not
 /// the raw base 10 value.
 /// </summary>
-internal class Crc32JsonConverter : JsonConverter<Crc32>
+internal class Crc32JsonConverter : JsonConverter<Crc32Value>
 {
-    public override Crc32 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override Crc32Value Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var input = reader.GetString();
         if (input is null) throw new JsonException();
@@ -33,10 +23,10 @@ internal class Crc32JsonConverter : JsonConverter<Crc32>
         Debug.Assert(status == OperationStatus.Done);
 
         var value = MemoryMarshal.Read<uint>(bytes);
-        return Crc32.From(value);
+        return Crc32Value.From(value);
     }
 
-    public override void Write(Utf8JsonWriter writer, Crc32 value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, Crc32Value value, JsonSerializerOptions options)
     {
         Span<char> span = stackalloc char[sizeof(uint) * 2];
         Span<byte> bytes = stackalloc byte[sizeof(uint)];

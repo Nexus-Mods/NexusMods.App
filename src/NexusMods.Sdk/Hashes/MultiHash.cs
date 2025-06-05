@@ -26,17 +26,17 @@ public record MultiHash
     /// <summary>
     /// The Sha1 hash of the data.
     /// </summary>
-    public required Sha1 Sha1 { get; init; }
+    public required Sha1Value Sha1 { get; init; }
     
     /// <summary>
     /// The Md5 hash of the data.
     /// </summary>
-    public required Md5 Md5 { get; init; }
-    
+    public required Md5Value Md5 { get; init; }
+
     /// <summary>
     /// The Crc32 hash of the data.
     /// </summary>
-    public required Crc32 Crc32 { get; init; }
+    public required Crc32Value Crc32 { get; init; }
     
     /// <summary>
     /// The size of the data in bytes.
