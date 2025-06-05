@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.IO.ChunkedStreams;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
@@ -20,6 +19,7 @@ using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.Hashes;
 #if DEBUG
 using System.Diagnostics;
 #endif

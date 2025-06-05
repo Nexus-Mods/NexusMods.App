@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using NexusMods.Abstractions.Collections.Types;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Paths;
 using NexusMods.Sdk.Hashes;
 

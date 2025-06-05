@@ -1,10 +1,10 @@
 ﻿using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Paths;
+using NexusMods.Sdk.Hashes;
 
 namespace NexusMods.Abstractions.Loadouts;
 
