@@ -313,13 +313,68 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
-                        <TextBlock Text="Overlays" />
+                        <TextBlock Text="Dialogs" />
                     </StackPanel>
                 </TabItem.Header>
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
-                    <StackPanel Spacing="8">
-                        <controls:StandardButton x:Name="GenerateUnhandledException"
-                                                 Text="GenerateUnhandledException" />
+                    <StackPanel Spacing="16" Orientation="Vertical">
+                        <StackPanel Spacing="8">
+                            <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40,40"
+                                  ColumnDefinitions="160,60,60">
+ 
+                                <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Modeless" />
+
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Ok" VerticalAlignment="Center"  />
+                                <controls:StandardButton x:Name="ShowModalOk" Click="ShowModalOk_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="1" />
+                                <controls:StandardButton x:Name="ShowModelessOk" Click="ShowModelessOk_OnClick"
+                                                         Text="Open" Grid.Column="2" Grid.Row="1" />
+
+                                <TextBlock Grid.Column="0" Grid.Row="2" Text="OkCancel" VerticalAlignment="Center"  />
+                                <controls:StandardButton x:Name="ShowModalOkCancel" Click="ShowModalOkCancel_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="2" />
+                                <controls:StandardButton x:Name="ShowModelessOkCancel"
+                                                         Click="ShowModelessOkCancel_OnClick"
+                                                         Text="Open" Grid.Column="2" Grid.Row="2" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="3" Text="YesNo" VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalYesNo" Click="ShowModalYesNo_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="3" />
+                                <controls:StandardButton x:Name="ShowModelessYesNo"
+                                                         Click="ShowModelessYesNo_OnClick"
+                                                         Text="Open" Grid.Column="2" Grid.Row="3" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="4" Text="Example Small" VerticalAlignment="Center"  />
+                                <controls:StandardButton x:Name="ShowModalExampleSmall" Click="ShowModalExampleSmall_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="4" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="5" Text="Example Medium"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalExampleMedium" Click="ShowModalExampleMedium_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="5" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="6" Text="Example Markdown"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalExampleMarkdown" Click="ShowModalExampleMarkdown_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="6" />
+                                    
+                                <TextBlock Grid.Column="0" Grid.Row="7" Text="Example Custom"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalExampleCustom" Click="ShowModalExampleCustom_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="7" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="8" Text="Unhandled Exception"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalUnhandledException" Click="ShowModalUnhandledException_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="8" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="9" Text="All possible controls"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalAllControls" Click="ShowModalAllControls_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="9" />
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Errors" />
+                            <controls:StandardButton x:Name="GenerateUnhandledException"
+                                                     Text="GenerateUnhandledException" />
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </TabItem>
