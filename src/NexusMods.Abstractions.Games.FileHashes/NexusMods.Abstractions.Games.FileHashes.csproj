@@ -16,4 +16,12 @@
         <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Attributes\EpicGameStore\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Models\EpicGameStoreBuild.cs" />
+    </ItemGroup>
+
 </Project>
