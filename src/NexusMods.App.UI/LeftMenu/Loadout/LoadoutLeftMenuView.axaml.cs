@@ -16,7 +16,7 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
         InitializeComponent();
 
         // TODO: remove for GA
-        NewCollection.IsVisible = !CompileConstants.IsDebug;
+        NewCollection.IsVisible = CompileConstants.IsDebug;
 
         this.WhenActivated(disposables =>
         {
