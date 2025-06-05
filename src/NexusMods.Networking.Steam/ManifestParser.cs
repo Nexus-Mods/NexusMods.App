@@ -14,10 +14,10 @@ public static class ManifestParser
         {
             Path = file.FileName,
             Size = Size.From(file.TotalSize),
-            Hash = Sha1.From(file.FileHash),
+            Hash = Sha1Value.From(file.FileHash),
             Chunks = file.Chunks.Select(chunk => new Manifest.Chunk
             {
-                ChunkId = Sha1.From(chunk.ChunkID),
+                ChunkId = Sha1Value.From(chunk.ChunkID),
                 Offset = chunk.Offset,
                 CompressedSize = Size.From(chunk.CompressedLength),
                 UncompressedSize = Size.From(chunk.UncompressedLength),

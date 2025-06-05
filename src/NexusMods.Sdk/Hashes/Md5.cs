@@ -18,7 +18,7 @@ public unsafe struct Md5 : IEquatable<Md5>
 
     public override bool Equals(object? obj)
     {
-        return obj is Sha1 other && Equals(other);
+        return obj is Sha1Value other && Equals(other);
     }
 
     public override int GetHashCode()

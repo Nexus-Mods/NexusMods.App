@@ -26,7 +26,7 @@ public record MultiHash
     /// <summary>
     /// The Sha1 hash of the data.
     /// </summary>
-    public required Sha1 Sha1 { get; init; }
+    public required Sha1Value Sha1 { get; init; }
     
     /// <summary>
     /// The Md5 hash of the data.
