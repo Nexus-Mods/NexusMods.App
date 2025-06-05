@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x5F7165E760F9FD4E
-   - Total attributes: 203
-   - Total namespaces: 70
+   - Fingerprint: 0xFA8F73EDA76F085E
+   - Total attributes: 204
+   - Total namespaces: 71
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -199,6 +199,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.User/AvatarUri                                          | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.User/Name                                               | Utf8                    | True    | False | False     | 
 | NexusMods.NexusModsLibrary.User/NexusId                                            | UInt64                  | True    | False | False     | 
+| NexusMods.NexusWebApi.Filters.IgnoreFileUpdateModel/Uid                            | UInt64                  | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/Domain                             | Ascii                   | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/GameId                             | UInt32                  | True    | False | False     | 
 | NexusMods.RedEngine.Cyberpunk2077.RedModLoadoutGroup/RedModInfoFile                | Reference               | False   | False | False     | 
