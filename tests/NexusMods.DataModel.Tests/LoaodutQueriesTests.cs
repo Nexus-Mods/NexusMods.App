@@ -10,7 +10,7 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.DataModel.Tests;
 
-public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyberpunk2077Game>(provider)
+public class LoaodutQueriesTests(IServiceProvider provider) : AGameTest<Cyberpunk2077Game>(provider)
 {
     [Fact]
     public async Task DeletingAModShouldUpdateTheLoadout()
