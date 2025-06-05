@@ -28,7 +28,7 @@ public static partial class CollectionGroupLoaderExtensions
     public static async ValueTask<CollectionGroup.ReadOnly[]> MutableCollections(this Loadout.ReadOnly loadout)
     {
         var db = loadout.Db;
-        using var query = await db.Topology.QueryAsync(Loadout.MutableCollections);
+        using var query = await db.Topology.QueryAsync(Loadout.MutableCollectionsFlow);
 
         var result = query
             .Where(x => x.Loadout == loadout)

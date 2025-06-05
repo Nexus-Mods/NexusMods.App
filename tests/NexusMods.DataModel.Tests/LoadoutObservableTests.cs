@@ -15,7 +15,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
     [Fact]
     public async Task DeletingAModShouldUpdateTheLoadout()
     {
-        using var loadouts = await Connection.Topology.QueryAsync(Loadout.MostRecentTxForLoadout);
+        using var loadouts = await Connection.Topology.QueryAsync(Loadout.MostRecentTxForLoadoutFlow);
         using var tx = Connection.BeginTransaction();
         var loadoutId = tx.TempId();
 

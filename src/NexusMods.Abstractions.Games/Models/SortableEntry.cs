@@ -48,6 +48,6 @@ public partial class SortableEntry : IModelDefinition
 
     static SortableEntry()
     {
-        Loadout.LoadoutAssociatedEntities.With(Queries.LoadoutSortOrderSubFlow);
+        Loadout.LoadoutAssociatedEntitiesFlow.With(Queries.LoadoutSortOrderSubFlow);
     }
 }

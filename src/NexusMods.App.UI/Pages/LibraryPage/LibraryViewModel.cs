@@ -115,7 +115,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
 
         var installationTargetsObservable = _connection.Topology
-            .Observe(Loadout.MutableCollections)
+            .Observe(Loadout.MutableCollectionsFlow)
             .Filter(tuple => tuple.Loadout == loadoutId.Value)
             .Transform(tuple =>
             {

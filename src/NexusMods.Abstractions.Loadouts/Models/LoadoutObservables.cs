@@ -14,7 +14,7 @@ public partial class Loadout
     /// <summary>
     ///  Returns all items in a loadout
     /// </summary>
-    public static readonly Flow<(EntityId Loadout, EntityId Entity)> LoadoutItemsSubFlow =
+    public static readonly Flow<(EntityId Loadout, EntityId Entity)> LoadoutItemsFlow =
         Pattern.Create()
             .Db(out var loadoutItem, LoadoutItem.LoadoutId, out var loadoutId)
             .Return(loadoutId, loadoutItem);
@@ -22,7 +22,7 @@ public partial class Loadout
     /// <summary>
     /// Include the loadout itself
     /// </summary>
-    private static readonly Flow<(EntityId Loadout, EntityId LoadoutEntity)> LoadoutEntitySubFlow =
+    private static readonly Flow<(EntityId Loadout, EntityId LoadoutEntity)> LoadoutEntityFlow =
         Pattern.Create()
             .Db(out var loadoutEntity, Loadout.Name, out _)
             .Return(loadoutEntity, loadoutEntity);
@@ -31,9 +31,9 @@ public partial class Loadout
     /// A union of all the entities associated with a loadout. The result of this query is a tuple of the loadout id and the entity id of the
     /// most recent transaction for that entity. If more entities need to be tracked, add another .With() call to this flow.
     /// </summary>
-    public static readonly UnionFlow<(EntityId Loadout, EntityId Entity)> LoadoutAssociatedEntities =
-        new UnionFlow<(EntityId Loadout, EntityId Entity)>(LoadoutEntitySubFlow)
-            .With(LoadoutItemsSubFlow);
+    public static readonly UnionFlow<(EntityId Loadout, EntityId Entity)> LoadoutAssociatedEntitiesFlow =
+        new UnionFlow<(EntityId Loadout, EntityId Entity)>(LoadoutEntityFlow)
+            .With(LoadoutItemsFlow);
 
 
     /// <summary>
@@ -41,9 +41,9 @@ public partial class Loadout
     /// But this means that the row updates whenever any of the tracked entities are updated, meaning we can simply watch this row or the specific
     /// cell on the row to know whenever something modifies the loadout.
     /// </summary>
-    public static readonly Flow<MostRecentTxForLoadoutRow> MostRecentTxForLoadout =
+    public static readonly Flow<MostRecentTxForLoadoutRow> MostRecentTxForLoadoutFlow =
         Pattern.Create()
-            .Match(LoadoutAssociatedEntities, out var loadout, out var entity)
+            .Match(LoadoutAssociatedEntitiesFlow, out var loadout, out var entity)
             .DbLatestTx(entity, out var maxTx)
             // Track the count as well, so that we know when items are removed. Removing an item
             // may not change the max TxId, but removal will change the count of items being tracked
@@ -52,7 +52,7 @@ public partial class Loadout
     /// <summary>
     /// Returns all mutable collection groups in a loadout.
     /// </summary>
-    public static readonly Flow<(EntityId CollectionGroup, EntityId Loadout)> MutableCollections = Pattern.Create()
+    public static readonly Flow<(EntityId CollectionGroup, EntityId Loadout)> MutableCollectionsFlow = Pattern.Create()
         .Db(out var collectionEntityId, CollectionGroup.IsReadOnly, out var isReadOnly)
         .Db(collectionEntityId, LoadoutItem.LoadoutId, out var loadoutEntityId)
         .Return(collectionEntityId, loadoutEntityId, isReadOnly)
@@ -66,7 +66,7 @@ public partial class Loadout
     {
         // A bit wordy, to have to specify all the generic types here, eventually we'll add a simpler method via Cascade to do this. 
         return connection.Topology
-            .Observe(MostRecentTxForLoadout.Where(row => row.LoadoutId == id.Value))
+            .Observe(MostRecentTxForLoadoutFlow.Where(row => row.LoadoutId == id.Value))
             .Select(_ => Loadout.Load(connection.Db, id));
     }
 }
