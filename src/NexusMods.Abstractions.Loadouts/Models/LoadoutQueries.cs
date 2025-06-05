@@ -111,7 +111,7 @@ public partial class Loadout
     public static readonly Flow<(EntityId LoaodutItemId, bool IsLoadoutItemEnabled)> IsLoadoutItemEnabledFlow =
         Pattern.Create().Db(out var itemId, LoadoutItem.Parent, out var groupId)
             .Match(IsLoadoutItemGroupEnabledFlow, groupId, out var parentGroupIsEnabled)
-            .DbOrDefault(Query.Db,groupId, LoadoutItem.Disabled, out var itemDisabled, default(Null))
+            .DbOrDefault(Query.Db, itemId, LoadoutItem.Disabled, out var itemDisabled, default(Null))
             // Item is enabled if the Disabled attribute is missing, so if it is default.
             .Project(itemDisabled, disabled => disabled.IsDefault, out var isItemEnabled)
             .Return(itemId, parentGroupIsEnabled ,isItemEnabled)
