@@ -134,11 +134,29 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
         await tx.Commit();
     }
 
-    public override ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
+    /// <inheritdoc />
+    public override async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
     {
-        throw new NotImplementedException();
-    }
+        var dbToUse = db ?? Connection.Db;
 
+        var sortOrder = NexusMods.Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
+        
+        var collectionGroupId = sortOrder.ParentEntity.IsT1 ? 
+            sortOrder.ParentEntity.AsT1 : 
+            Optional<CollectionGroupId>.None;
+        
+        // Retrieve the loadout data
+        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, dbToUse);
+        
+        // Retrieve the sort oder
+        var currentSortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
+        
+        var reconciledItems = Reconcile(currentSortOrder, loadoutData);
+        
+        await PersistSortOrder(reconciledItems, sortOrderId, token);
+    }
+    
+    /// <inheritdoc />
     protected override IReadOnlyList<RedModSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
     {
         var dbToUse = db ?? Connection.Db;
@@ -160,10 +178,73 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
     }
     
     /// <inheritdoc />
-    protected override async Task PersistSortOrder(IReadOnlyList<RedModSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token)
+    protected override async ValueTask PersistSortOrder(IReadOnlyList<RedModSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token)
     {
         var redModOrderList = items.Select(item => item.Key).ToList();
 
         await SetSortOrder(sortOrderEntityId, redModOrderList, token: token);
+    }
+
+    /// <inheritdoc />
+    protected override IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId, IDb? db)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    protected override IReadOnlyList<RedModSortableItem> Reconcile(IReadOnlyList<RedModSortableItem> sourceSortableItems, IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
+    {
+        var loadoutItemsDict = loadoutDataItems.ToDictionary(item => item.Key);
+    
+        // Start with a copy of source items
+        var sortableItems = sourceSortableItems.ToList();
+        var itemsToAdd = new List<RedModSortableItem>();
+    
+        // Update existing items and identify new ones
+        foreach (var loadoutItemData in loadoutDataItems)
+        {
+            var index = sortableItems.FindIndex(item => item.Key == loadoutItemData.Key);
+        
+            if (index == -1)
+            {
+                // If the sortable item is not found, create a new one to add later
+                itemsToAdd.Add(new RedModSortableItem(
+                    sortIndex: 0, // Sort index will be set later
+                    redModFolderName: loadoutItemData.Key.Key,
+                    modName: loadoutItemData.ModName,
+                    isActive: loadoutItemData.IsEnabled
+                )
+                {
+                    LoadoutData = loadoutItemData,
+                    ModGroupId = loadoutItemData.ModGroupId
+                });
+            }
+            else
+            {
+                // Update existing item
+                var sortableItem = sortableItems[index];
+                sortableItem.LoadoutData = loadoutItemData;
+                sortableItem.IsActive = loadoutItemData.IsEnabled;
+                sortableItem.ModGroupId = loadoutItemData.ModGroupId;
+                sortableItem.ModName = loadoutItemData.ModName;
+            }
+        }
+    
+        // Remove items that don't exist in loadout data
+        sortableItems.RemoveAll(item => !loadoutItemsDict.ContainsKey(item.Key));
+    
+        // Add new items at the end, sorted by creation order (ModGroupId)
+        if (itemsToAdd.Count > 0)
+        {
+            sortableItems.AddRange(itemsToAdd.OrderBy(item => item.ModGroupId));
+        }
+    
+        // Update sort indices
+        for (var i = 0; i < sortableItems.Count; i++)
+        {
+            sortableItems[i].SortIndex = i;
+        }
+    
+        return sortableItems;
     }
 }

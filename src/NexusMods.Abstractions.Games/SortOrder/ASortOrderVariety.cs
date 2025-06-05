@@ -12,10 +12,13 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// Abstract base class for a variety of sort order for a specific game.
 /// </summary>
-public abstract class ASortOrderVariety<TKey, TItem, TItemData> : ISortOrderVariety<TKey, TItem>
+/// <typeparam name="TKey">The type of the key used by the game to identify sortable items</typeparam>
+/// <typeparam name="TSortableItem">The type of the SortableItem implementation used for this variety</typeparam>
+/// <typeparam name="TItemLoadoutData">Represents an item in the loadout that can be sorted but without the sorting information</typeparam>
+public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> : ISortOrderVariety<TKey, TSortableItem>
     where TKey : IEquatable<TKey>, ISortItemKey
-    where TItem : ISortableItem<TItem, TKey>
-    where TItemData : ISortableItemLoadoutData<TKey>
+    where TSortableItem : ISortableItem<TSortableItem, TKey>
+    where TItemLoadoutData : ISortableItemLoadoutData<TKey>
 {
     private readonly ILogger _logger;
     
@@ -76,10 +79,10 @@ public abstract class ASortOrderVariety<TKey, TItem, TItemData> : ISortOrderVari
         CancellationToken token = default);
 
     /// <inheritdoc />
-    public abstract IObservable<IChangeSet<TItem, TKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
+    public abstract IObservable<IChangeSet<TSortableItem, TKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
 
     /// <inheritdoc />
-    public abstract IReadOnlyList<TItem> GetSortableItems(SortOrderId sortOrderId, IDb? db);
+    public abstract IReadOnlyList<TSortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db);
 
     /// <inheritdoc />
     public abstract ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<TKey> items, IDb? db = null, CancellationToken token = default);
@@ -209,12 +212,28 @@ public abstract class ASortOrderVariety<TKey, TItem, TItemData> : ISortOrderVari
     /// The items in the returned list can have temporary values for properties such as `ModName` and `IsActive`.
     /// Those will need to be updated after the sortableItems are matched to items in the loadout. 
     /// </remarks>
-    protected abstract IReadOnlyList<TItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null);
+    protected abstract IReadOnlyList<TSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null);
     
     /// <summary>
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
-    protected abstract Task PersistSortOrder(IReadOnlyList<TItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
-    
-    #endregion protected members
+    protected abstract ValueTask PersistSortOrder(IReadOnlyList<TSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
+
+    /// <summary>
+    /// Returns a collection of loadout-specific TItemLoadoutData for each relevant item found in the provided loadout/collection.
+    /// These loadout data items are unsorted and do not have a sort index.
+    /// </summary>
+    protected abstract IReadOnlyList<TItemLoadoutData> RetrieveLoadoutData(
+        LoadoutId loadoutId,
+        Optional<CollectionGroupId> collectionGroupId,
+        IDb? db);
+
+    /// <summary>
+    /// Reconciles the provided sortable items with the loadout data items returning a list of sortable items that include loadout data.
+    /// </summary>
+    protected abstract IReadOnlyList<TSortableItem> Reconcile(
+        IReadOnlyList<TSortableItem> sourceSortableItems,
+        IReadOnlyList<TItemLoadoutData> loadoutDataItems);
+
+#endregion protected members
 }
