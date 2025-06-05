@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Paths;
+using NexusMods.Sdk.Hashes;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
@@ -45,7 +46,7 @@ public class VortexModReference
 #region Vortex IReference
 
     [JsonPropertyName("fileMD5")]
-    public Md5HashValue FileMD5 { get; init; }
+    public Md5Value FileMD5 { get; init; }
 
     [JsonPropertyName("fileSize")]
     public Size FileSize { get; init; }
@@ -87,7 +88,7 @@ public class VortexModReference
     /// Vortex also does some really questionable stuff: https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/dependencies.ts#L37-L47
     /// This is likely never included in any JSON files.
     /// </summary>
-    public Md5HashValue MD5Hint { get; init; }
+    public Md5Value MD5Hint { get; init; }
 
     /// <summary>
     /// Corresponds to <see cref="ModSource.Tag"/>.

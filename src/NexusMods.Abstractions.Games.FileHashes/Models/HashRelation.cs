@@ -3,7 +3,6 @@ using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Sdk.Hashes;
-using Md5Attribute = NexusMods.Abstractions.Games.FileHashes.Attributes.Md5Attribute;
 
 namespace NexusMods.Abstractions.Games.FileHashes.Models;
 
