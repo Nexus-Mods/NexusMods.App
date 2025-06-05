@@ -41,6 +41,15 @@ public class SettingEntryViewModel : AViewModel<ISettingEntryViewModel>, ISettin
                 .Select(value => PropertyUIDescriptor.DescriptionFactory.Invoke(value))
                 .SubscribeWithErrorLogging(description => DescriptionMarkdownRenderer!.Contents = description)
                 .DisposeWith(disposables);
+            
+            /*  Leaving this here as Florian wants to change the HasChanged equality comparator. Above was changed just to check it was all working.              
+            this.WhenAnyValue(x => x.InteractionControlViewModel.ValueContainer.HasChanged)
+                .Select(_ => InteractionControlViewModel.ValueContainer.CurrentValue)
+                .Prepend(InteractionControlViewModel.ValueContainer.CurrentValue)
+                .Select(value => PropertyUIDescriptor.DescriptionFactory.Invoke(value) ?? string.Empty)
+                .SubscribeWithErrorLogging(description => DescriptionMarkdownRenderer!.Contents = description)
+                .DisposeWith(disposables);
+             */
         });
     }
 }
