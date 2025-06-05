@@ -43,12 +43,13 @@ public partial class Loadout
     /// But this means that the row updates whenever any of the tracked entities are updated, meaning we can simply watch this row or the specific
     /// cell on the row to know whenever something modifies the loadout.
     /// </summary>
-    public static readonly Flow<MostRecentTxForLoadoutRow.Active> MostRecentTxForLoadout =
+    public static readonly Flow<MostRecentTxForLoadoutRow> MostRecentTxForLoadout =
         Pattern.Create()
             .Match(LoadoutAssociatedEntities, out var loadout, out var entity)
             .DbLatestTx(entity, out var maxTx)
-            .ReturnMostRecentTxForLoadoutRow(loadout, maxTx.Max())
-            .ToActive();
+            // Track the count as well, so that we know when items are removed. Removing an item
+            // may not change the max TxId, but removal will change the count of items being tracked
+            .ReturnMostRecentTxForLoadoutRow(loadout, maxTx.Max(), entity.Count());
     
     
     /// <summary>
@@ -58,7 +59,7 @@ public partial class Loadout
     {
         // A bit wordy, to have to specify all the generic types here, eventually we'll add a simpler method via Cascade to do this. 
         return connection.Topology
-            .ObserveCell<MostRecentTxForLoadoutRow.Active, MostRecentTxForLoadoutRow, EntityId, EntityId>(MostRecentTxForLoadout, id, x => x.TxId)
+            .Observe(MostRecentTxForLoadout.Where(row => row.LoadoutId == id.Value))
             .Select(_ => Loadout.Load(connection.Db, id));
     }
 }
