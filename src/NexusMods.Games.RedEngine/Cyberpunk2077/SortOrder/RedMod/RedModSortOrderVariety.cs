@@ -10,16 +10,13 @@ using OneOf;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
-public class RedModSortOrderVariety : ASortOrderVariety<RedModSortableItem, SortItemKey<string>>
+public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, RedModSortableItem, SortableItemLoadoutData<SortItemKey<string>>>
 {
     private static readonly SortOrderVarietyId StaticVarietyId = SortOrderVarietyId.From(new Guid("9120C6F5-E0DD-4AD2-A99E-836F56796950"));
     
     public override SortOrderVarietyId SortOrderVarietyId => StaticVarietyId;
 
-    public RedModSortOrderVariety(IServiceProvider serviceProvider, ISortOrderManager manager) : base(serviceProvider, manager)
-    {
-        
-    }
+    public RedModSortOrderVariety(IServiceProvider serviceProvider, ISortOrderManager manager) : base(serviceProvider, manager) { }
     
     public override SortOrderUiMetadata SortOrderUiMetadata { get; } = new()
     {
@@ -52,8 +49,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<RedModSortableItem, Sort
         var newSortOrder = new Abstractions.Loadouts.SortOrder.New(ts)
         {
             LoadoutId = loadoutId,
-            // TODO: update to use the collection group id if dealing with a collection sort order
-            ParentEntity = loadoutId,
+            ParentEntity = parentEntity,
             SortOrderTypeId = SortOrderVarietyId.Value,
         };
 
@@ -77,6 +73,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<RedModSortableItem, Sort
     public override IReadOnlyList<RedModSortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
     {
         throw new NotImplementedException();
+        // Make sure to use the correct db for the query
     }
 
     public override async ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<SortItemKey<string>> items, IDb? db = null, CancellationToken token = default)
@@ -144,11 +141,22 @@ public class RedModSortOrderVariety : ASortOrderVariety<RedModSortableItem, Sort
 
     protected override IReadOnlyList<RedModSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
     {
-        throw new NotImplementedException();
-        
         var dbToUse = db ?? Connection.Db;
-        
-        // TODO: This should also retrieve the data from the loadout and attach it to the sortableItems
+
+        return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
+            .Select(redModSortableItem =>
+                {
+                    var sortableItem = redModSortableItem.AsSortableEntry();
+                    return new RedModSortableItem(
+                        sortableItem.SortIndex,
+                        redModSortableItem.RedModFolderName,
+                        // Temp values, will get updated when we load the RedMods
+                        modName: redModSortableItem.RedModFolderName,
+                        isActive: false
+                    );
+                }
+            )
+            .ToList();
     }
     
     /// <inheritdoc />

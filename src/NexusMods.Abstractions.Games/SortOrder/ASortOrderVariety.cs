@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +12,10 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// Abstract base class for a variety of sort order for a specific game.
 /// </summary>
-public abstract class ASortOrderVariety<TItem, TKey> : ISortOrderVariety<TItem, TKey>
-    where TItem : ISortableItem<TItem, TKey>
+public abstract class ASortOrderVariety<TKey, TItem, TItemData> : ISortOrderVariety<TKey, TItem>
     where TKey : IEquatable<TKey>, ISortItemKey
+    where TItem : ISortableItem<TItem, TKey>
+    where TItemData : ISortableItemLoadoutData<TKey>
 {
     private readonly ILogger _logger;
     

@@ -7,9 +7,8 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 public class RedModSortableItem : ISortableItem<RedModSortableItem, SortItemKey<string>>
 {
-    public RedModSortableItem(RedModSortableItemProvider provider, int sortIndex, RelativePath redModFolderName, string modName, bool isActive)
+    public RedModSortableItem(int sortIndex, RelativePath redModFolderName, string modName, bool isActive)
     {
-        SortableItemProvider = provider;
         SortIndex = sortIndex;
         RedModFolderName = redModFolderName;
         DisplayName = redModFolderName.ToString();
@@ -22,10 +21,10 @@ public class RedModSortableItem : ISortableItem<RedModSortableItem, SortItemKey<
 
     public SortItemKey<string> Key { get; }
 
-    public ILoadoutSortableItemProvider<RedModSortableItem, SortItemKey<string>> SortableItemProvider { get; }
     public int SortIndex { get; set; }
     public string DisplayName { get; }
     public string ModName { get; set; }
     public Optional<LoadoutItemGroupId> ModGroupId { get; set; }
     public bool IsActive { get; set; }
+    public ISortableItemLoadoutData? LoadoutData { get; set; }
 }

@@ -16,7 +16,7 @@ public interface ISortableItemLoadoutData
     public ISortItemKey Key { get; }
     
     /// <summary>
-    /// Represents whether the item is enabled in the loadout or not.
+    /// Represents whether the item and its parents are enabled in the loadout or not.
     /// An item might be enabled in the loadout but not active in the sort order.
     /// </summary>
     public bool IsEnabled { get; set; }
@@ -31,4 +31,22 @@ public interface ISortableItemLoadoutData
     /// Optional since some items my not be part of a loadout group.
     /// </summary>
     public Optional<LoadoutItemGroupId> ModGroupId { get; set; }
+}
+
+
+/// <summary>
+/// <inheritdoc cref="ISortableItemLoadoutData"/>
+/// Generic version of the sortable item interface for use in implementations.
+/// </summary>
+public interface ISortableItemLoadoutData<out TKey> : ISortableItemLoadoutData
+    where TKey : IEquatable<TKey>, ISortItemKey
+{
+    /// <inheritdoc />
+    ISortItemKey ISortableItemLoadoutData.Key => Key;
+    
+    /// <summary>
+    /// <inheritdoc cref="ISortableItemLoadoutData.Key"/>
+    /// Generic version of the key property
+    /// </summary>
+    new TKey Key { get; }
 }

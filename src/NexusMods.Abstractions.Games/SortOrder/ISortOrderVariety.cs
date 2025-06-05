@@ -129,11 +129,9 @@ public interface ISortOrderVariety
 /// Genric version of <inheritdoc cref="ISortOrderVariety"/>, with implementation of non-generic methods.
 /// To allow for type-safe access to the items in the implementations.
 /// </summary>
-/// <typeparam name="TItem"></typeparam>
-/// <typeparam name="TKey"></typeparam>
-public interface ISortOrderVariety<TItem, TKey> : ISortOrderVariety
-    where TItem : ISortableItem<TItem, TKey>
+public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
     where TKey : IEquatable<TKey>, ISortItemKey
+    where TItem : ISortableItem<TItem, TKey>
 {
     /// <inheritdoc/>
     [Pure]

@@ -46,6 +46,11 @@ public interface ISortableItem
     /// e.g. it is disabled in the sort order, or parent mod is disabled.
     /// </summary>
     public bool IsActive { get; set; }
+    
+    /// <summary>
+    /// Contains the loadout-specific data for the item, such as parent mod or enabled state.
+    /// </summary>
+    public ISortableItemLoadoutData? LoadoutData { get; set; }
 }
 
 /// <summary>

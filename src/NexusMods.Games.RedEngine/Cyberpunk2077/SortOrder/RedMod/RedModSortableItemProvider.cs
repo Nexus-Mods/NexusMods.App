@@ -216,8 +216,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
         // for RedMods this means they should be added at the beginning of the order.
         stagingList.InsertRange(0,
             redModsToAdd.Select((redMod, idx) =>
-                new RedModSortableItem(provider,
-                    idx,
+                new RedModSortableItem(idx,
                     redMod.RedModFolder.ToString(),
                     redMod.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Parent.AsLoadoutItem().Name,
                     isActive: redMod.IsEnabled
@@ -312,7 +311,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
             .Select(redModSortableItem =>
                 {
                     var sortableItem = redModSortableItem.AsSortableEntry();
-                    return new RedModSortableItem(this,
+                    return new RedModSortableItem(
                         sortableItem.SortIndex,
                         redModSortableItem.RedModFolderName,
                         // Temp values, will get updated when we load the RedMods
