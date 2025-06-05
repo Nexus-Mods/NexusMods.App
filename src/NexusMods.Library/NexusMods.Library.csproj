@@ -6,4 +6,7 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj" />
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+    </ItemGroup>
 </Project>
