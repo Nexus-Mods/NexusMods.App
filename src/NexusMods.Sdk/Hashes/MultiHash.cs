@@ -31,8 +31,8 @@ public record MultiHash
     /// <summary>
     /// The Md5 hash of the data.
     /// </summary>
-    public required Md5 Md5 { get; init; }
-    
+    public required Md5Value Md5 { get; init; }
+
     /// <summary>
     /// The Crc32 hash of the data.
     /// </summary>

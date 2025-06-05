@@ -9,6 +9,7 @@ using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
+using NexusMods.Sdk.Hashes;
 
 namespace NexusMods.DataModel.SchemaVersions.Migrations;
 
@@ -58,8 +59,8 @@ internal class _0005_MD5Hashes : ITransactionalMigration
         foreach (var datom in _datoms)
         {
             tx.Add(datom.Retract());
-            var md5 = Md5HashValue.From(UInt128Serializer.Read(datom.ValueSpan));
-            if (md5 != default(Md5HashValue))
+            var md5 = Md5Value.From(UInt128Serializer.Read(datom.ValueSpan));
+            if (md5 != default(Md5Value))
             {
                 tx.Add(datom.E, LibraryFile.Md5, md5);
             }
