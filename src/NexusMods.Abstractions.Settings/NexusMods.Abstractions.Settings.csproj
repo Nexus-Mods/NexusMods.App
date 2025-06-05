@@ -38,6 +38,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
+      <ProjectReference Include="..\NexusMods.UI.Sdk\NexusMods.UI.Sdk.csproj" />
     </ItemGroup>
 </Project>

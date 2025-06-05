@@ -5,7 +5,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.ReactiveUI;
 using DynamicData.Binding;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.Paths;
 using ReactiveUI;
 

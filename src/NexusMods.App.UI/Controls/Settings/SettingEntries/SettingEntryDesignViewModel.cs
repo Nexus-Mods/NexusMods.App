@@ -32,13 +32,8 @@ public class SettingEntryDesignViewModel : AViewModel<ISettingEntryViewModel>, I
         return new SettingsPropertyUIDescriptor
         {
             SectionId = SectionId.NewId(),
-            DisplayName = "Storage Location",
-            Description = """
-                          Mods and backups are stored in:  
-                          **C:\userdata\nexusmods\library**
-                          
-                          *Important: Existing files won’t move automatically when you change storage location, you’ll need to move them manually.*
-                          """,
+            DisplayName = "Enable Telemetry",
+            DescriptionFactory = _ => "Send anonymous analytics information and usage data to Nexus Mods.",
             Link = new Uri("https://www.example.org"),
             RequiresRestart = true,
             RestartMessage = null,
@@ -54,7 +49,7 @@ public class SettingEntryDesignViewModel : AViewModel<ISettingEntryViewModel>, I
     {
         public required SectionId SectionId { get; init; }
         public required string DisplayName { get; init; }
-        public required string Description { get; init; }
+        public required Func<object, string> DescriptionFactory { get; init; }
         public required Uri? Link { get; init; }
         public required bool RequiresRestart { get; init; }
         public required string? RestartMessage { get; init; }

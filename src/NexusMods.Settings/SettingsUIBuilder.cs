@@ -49,7 +49,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 {
     private SectionId _sectionId = SectionId.DefaultValue;
     private string _displayName = string.Empty;
-    private string _description = string.Empty;
+    private Func<TProperty, string> _descriptionFactory = _ => string.Empty;
     private Uri? _link = null;
     private bool _requiresRestart;
     private string? _restartMessage;
@@ -61,7 +61,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         Func<TSettings, TProperty> selectorFunc) => new PropertyBuilderOutput<TSettings, TProperty>(
         _sectionId,
         _displayName,
-        _description,
+        _descriptionFactory,
         _link,
         _requiresRestart,
         _restartMessage,
@@ -84,7 +84,13 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
     public IPropertyUIBuilder<TSettings, TProperty>.IWithLinkStep WithDescription(string description)
     {
-        _description = description;
+        _descriptionFactory = _ => description;
+        return this;
+    }
+
+    public IPropertyUIBuilder<TSettings, TProperty>.IWithLinkStep WithDescription(Func<TProperty, string> descriptionFactory)
+    {
+        _descriptionFactory = descriptionFactory;
         return this;
     }
 
