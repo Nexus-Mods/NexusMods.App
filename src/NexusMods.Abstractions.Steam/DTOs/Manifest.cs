@@ -72,7 +72,7 @@ public class Manifest
         /// <summary>
         /// The crc32 checksum of the chunk
         /// </summary>
-        public required Crc32 Checksum { get; init; }
+        public required Crc32Value Checksum { get; init; }
         
         /// <summary>
         /// The offset of the chunk in the resulting file

@@ -21,7 +21,7 @@ public static class ManifestParser
                 Offset = chunk.Offset,
                 CompressedSize = Size.From(chunk.CompressedLength),
                 UncompressedSize = Size.From(chunk.UncompressedLength),
-                Checksum = Crc32.From(chunk.Checksum),
+                Checksum = Crc32Value.From(chunk.Checksum),
             }).ToArray(),
         }).ToArray();
 
