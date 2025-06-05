@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Paths;
 using NexusMods.Sdk.Hashes;
 
