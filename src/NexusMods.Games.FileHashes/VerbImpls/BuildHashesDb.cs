@@ -473,7 +473,7 @@ public class BuildHashesDb : IAsyncDisposable
     /// <summary>
     /// Find or insert a hash path relation
     /// </summary>
-    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1 hash)
+    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1Value hash)
     {
         var hashRelation = HashRelation.FindBySha1(referenceDb, hash).FirstOrDefault();
         

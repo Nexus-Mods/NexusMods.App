@@ -79,7 +79,7 @@ public class MultiHasher
             XxHash3 = Hash.From(_xxHash3.GetCurrentHashAsUInt64()),
             XxHash64 = Hash.From(_xxHash64.GetCurrentHashAsUInt64()),
             MinimalHash = Hash.From(_minimalHash.GetCurrentHashAsUInt64()),
-            Sha1 = Sha1.From(_sha1.Hash),
+            Sha1 = Sha1Value.From(_sha1.Hash),
             Md5 = Md5.From(_md5.Hash),
             Size = Size.FromLong(stream.Length),
             Crc32 = Crc32.From(_crc32.GetCurrentHashAsUInt32()),

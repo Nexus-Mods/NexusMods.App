@@ -54,7 +54,7 @@ public class Manifest
         /// <summary>
         /// The Sha1 hash of the file
         /// </summary>
-        public required Sha1 Hash { get; init; }
+        public required Sha1Value Hash { get; init; }
         
         /// <summary>
         /// The chunks of the file
@@ -67,7 +67,7 @@ public class Manifest
         /// <summary>
         /// The id of the chunk
         /// </summary>
-        public required Sha1 ChunkId { get; init; }
+        public required Sha1Value ChunkId { get; init; }
 
         /// <summary>
         /// The crc32 checksum of the chunk

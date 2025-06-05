@@ -2,6 +2,7 @@ using NexusMods.Abstractions.Games.FileHashes.Attributes;
 using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Hashes;
 using Md5Attribute = NexusMods.Abstractions.Games.FileHashes.Attributes.Md5Attribute;
 
 namespace NexusMods.Abstractions.Games.FileHashes.Models;
@@ -37,7 +38,7 @@ public partial class HashRelation : IModelDefinition
     /// The SHA1 hash of the file
     /// </summary>
     public static readonly Sha1Attribute Sha1 = new(Namespace, nameof(Sha1)) { IsIndexed = true };
-    
+
     /// <summary>
     /// The CRC32 hash of the file
     /// </summary>
