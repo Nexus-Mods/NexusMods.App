@@ -36,8 +36,7 @@ public static class CollectionCreator
     /// </summary>
     public static async ValueTask<CollectionGroup.ReadOnly> CreateNewCollectionGroup(IConnection connection, LoadoutId loadoutId)
     {
-        // NOTE(erri120): Task.Run hack because synchronous queries deadlock the UI thread
-        var names = await Task.Run(() => Loadout.Load(connection.Db, loadoutId).MutableCollections().Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray());
+        var names = (await Loadout.Load(connection.Db, loadoutId).MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
         var newName = GenerateNewCollectionName(names);
 
         using var tx = connection.BeginTransaction();

@@ -25,12 +25,10 @@ public static partial class CollectionGroupLoaderExtensions
     /// <summary>
     /// Find the user collection for a given loadout
     /// </summary>
-    /// <param name="loadout"></param>
-    /// <returns></returns>
-    public static IEnumerable<CollectionGroup.ReadOnly> MutableCollections(this Loadout.ReadOnly loadout)
+    public static async ValueTask<CollectionGroup.ReadOnly[]> MutableCollections(this Loadout.ReadOnly loadout)
     {
         var db = loadout.Db;
-        using var query = db.Topology.Query(Loadout.MutableCollections);
+        using var query = await db.Topology.QueryAsync(Loadout.MutableCollections);
 
         var result = query
             .Where(x => x.Loadout == loadout)
