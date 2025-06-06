@@ -38,7 +38,7 @@ public class StubbedFileHasherService : IFileHashesService
 
     private async Task SetupDb()
     {
-        var backend = new Backend();
+        var backend = new MnemonicDB.Storage.RocksDbBackend.Backend();
         var settings = DatomStoreSettings.InMemory;
         _datomStore = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
         _connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), _datomStore, _provider, []);
