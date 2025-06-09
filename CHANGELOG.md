@@ -13,7 +13,7 @@ The toolbars just got smarter, too! Now they are context-aware and will only sho
 ![An example the toolbar reacting to the selection of multiple rows.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1749470649-1422442403.gif)
 
 ## More Features
-* Reworked file trees in the app to be more performant. This includes the "View Mods Files", "External Changes" and "Preview Changes" pages. 
+* Reworked file trees in the app to be more performant. This includes the "View Mods Files" and "External Changes" pages. 
 
 ## Technical Changes
 * Added translations submitted by the community: Russian, Ukrainian, Portuguese (Brazil).
