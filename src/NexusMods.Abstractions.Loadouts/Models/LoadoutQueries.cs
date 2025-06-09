@@ -94,11 +94,17 @@ public partial class Loadout
     /// Returns loadoutItemGroup ids and their enabled state, also considering the parent collection's enabled state.
     /// </summary>
     public static readonly Flow<(EntityId GroupId, bool IsModEnabled)> IsLoadoutItemGroupEnabledFlow =
-        Pattern.Create().Db(out var groupId, LoadoutItem.Parent, out var collectionId)
-            .Match(IsCollectionEnabledFlow, collectionId, out var collectionIsEnabled)
+        Pattern.Create()
+            .Db(out var groupId, LoadoutItemGroup.Group, out _)
             .DbOrDefault(Query.Db, groupId, LoadoutItem.Disabled, out var modDisabled, default(Null))
             // Group is enabled if the Disabled attribute is missing, so if it is default.
             .Project(modDisabled, disabled => disabled.IsDefault, out var isModEnabled)
+            // Some groups my not have a parent collection, so in that case we take true as collectionIsEnabled value.
+            .DbOrDefault(groupId, LoadoutItem.Parent, out var collectionId, default(EntityId))
+            .MatchDefault(IsCollectionEnabledFlow.Rekey(row => row.CollectionId), 
+                collectionId, out var collectionIsEnabledData, 
+                default(EntityId), (CollectionId: default(EntityId), IsCollectionEnabled: true))
+            .Project(collectionIsEnabledData, row => row.Item2, out var collectionIsEnabled)
             .Return(groupId, collectionIsEnabled ,isModEnabled)
             .Select(row => (row.Item1, row.Item2 && row.Item3)); 
     
@@ -113,6 +119,7 @@ public partial class Loadout
     
     /// <summary>
     /// Returns loadoutItem ids and their enabled state, also considering the enabled states of the parent group and collection.
+    /// <remarks>This only works for children of LoaodutGroups, such as mod files, and not for direct children to a loadout such as the groups</remarks>
     /// </summary>
     public static readonly Flow<(EntityId LoaodutItemId, bool IsLoadoutItemEnabled)> IsLoadoutItemEnabledFlow =
         Pattern.Create().Db(out var itemId, LoadoutItem.Parent, out var groupId)

@@ -111,7 +111,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         group.AsLoadoutItem().IsDisabled.Should().BeFalse();
         
         group.AsLoadoutItem().IsEnabled().Should().BeTrue();
-
+        
         // Check if the group is enabled
         var isEnabled = Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
         isEnabled.Should().BeTrue();
@@ -216,6 +216,51 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         // Should now be disabled due to group being disabled
         isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeFalse();
+    }
+    
+    [Fact]
+    public async Task IsLoadoutItemEnabledFlow_ShouldWorkForItemsOutsideCollections()
+    {
+        var loadout = await CreateLoadout();
+        var modFiles = new List<RelativePath> { "Data/textureA.dds" };
+        
+        using var tx = Connection.BeginTransaction();
+        
+        var modA = await AddModAsync(tx, modFiles, loadout.LoadoutId, "Mod A");
+        modA.hashes.Should().ContainSingle();
+        
+        await tx.Commit();
+
+        var loadoutFiles = LoadoutFile.FindByHash(Connection.Db, modA.hashes.First());
+        loadoutFiles.Should().ContainSingle();
+
+        var item = loadoutFiles.First().AsLoadoutItemWithTargetPath().AsLoadoutItem();
+        
+        item.IsDisabled.Should().BeFalse();
+        
+        item.IsEnabled().Should().BeTrue();
+
+        // Check if the item is enabled
+        var isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled.Should().BeTrue();
+
+        // Disable the item
+        using var tx2 = Connection.BeginTransaction();
+        tx2.Add(item.Id, LoadoutItem.Disabled, Null.Instance, isRetract: false);
+        await tx2.Commit();
+        
+        // Should now be disabled
+        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled.Should().BeFalse();
+        
+        // Re-enable the item
+        using var tx3 = Connection.BeginTransaction();
+        tx3.Add(item.Id, LoadoutItem.Disabled, Null.Instance, isRetract: true);
+        await tx3.Commit();
+        
+        // Should now be enabled
+        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled.Should().BeTrue();
     }
     
 }
