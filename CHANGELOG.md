@@ -3,7 +3,7 @@ This release includes UI improvements, performance optimisations, and bug fixes.
 
 We've had a lot of great feedback in the last few releases. Based on your most common requests we're currently looking at adding Epic Games support for Cyberpunk 2077, allowing users to set the storage location for downloads, and better searching in the Mods/Library sections for future releases. Stay tuned!
 
-## Headers, Toolbars, and Mutli-select Improvements
+## Headers, Toolbars, and Multi-select Improvements
 We've just completed another pass of UI improvements to make using the app even easier. Each page in the app now has a header, distinct icon and a little bit of flavour text to help you easily know which area of the app you are in and what you can do there. 
 
 ![The headers for the My Mods and Library sections of the app.](./docs/changelog-assets/02d019794dbe6decd940d9059b3d3f7f.webp)
