@@ -6,7 +6,7 @@ We've had a lot of great feedback in the last few releases. Based on your most c
 ## Headers, Toolbars, and Mutli-select Improvements
 We've just completed another pass of UI improvements to make using the app even easier. Each page in the app now has a header, distinct icon and a little bit of flavour text to help you easily know which area of the app you are in. 
 
-![The headers for the My Mods and Library sections of the app.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1749470649-282660551.png)
+![The headers for the My Mods and Library sections of the app.](./docs/changelog-assets/02d019794dbe6decd940d9059b3d3f7f.webp)
 
 The toolbars just got smarter too! Now the toolbars are context-aware and will only show options that are relevant to the row(s) you have selected. We've paired this with a new selection indicator which shows how many mods you have selected (using Ctrl + Click or Shift + Click) and lets you quickly clear the selection.
 
