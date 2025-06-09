@@ -13,19 +13,19 @@ The toolbars just got smarter, too! Now they are context-aware and will only sho
 ![An example the toolbar reacting to the selection of multiple rows.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1749470649-1422442403.gif)
 
 ## More Features
-- Reworked file trees in the app to be more performant. This includes the "View Mods Files", "External Changes" and "Preview Changes" pages. 
+* Reworked file trees in the app to be more performant. This includes the "View Mods Files", "External Changes" and "Preview Changes" pages. 
 
 ## Technical Changes
-- Added translations submitted by the community: Russian, Ukrainian, Portuguese (Brazil).
-- Updated the "Missing Game" flow to try and prevent duplicate reports of missing, unsupported games.
-- Added the correct headers to API requests for Nexus Mods.
-- Further developed the backend systems required to create and export collections.
-- Further developed the backend system to make a game-agnostic load order system.
-- General performance optimisations.
+* Added translations submitted by the community: Russian, Ukrainian, Portuguese (Brazil).
+* Updated the "Missing Game" flow to try and prevent duplicate reports of missing, unsupported games.
+* Added the correct headers to API requests for Nexus Mods.
+* Further developed the backend systems required to create and export collections.
+* Further developed the backend system to make a game-agnostic load order system.
+* General performance optimisations.
 
 ## Bug Fixes
-- Improved the way the app registers to handle Nexus Mods downloads on Linux.
-- Fixed a bug where FOMODs would incorrectly report issues with some asset paths.
+* Improved the way the app registers to handle Nexus Mods downloads on Linux.
+* Fixed a bug where FOMODs would incorrectly report issues with some asset paths.
 
 ## Known Issues
 * Collection success ratings will sometimes not match what is shown on the website.
