@@ -4,11 +4,11 @@ This release includes UI improvements, performance optimisations, and bug fixes.
 We've had a lot of great feedback in the last few releases. Based on your most common requests we're currently looking at adding Epic Games support for Cyberpunk 2077, allowing users to set the storage location for downloads, and better searching in the Mods/Library sections for future releases. Stay tuned!
 
 ## Headers, Toolbars, and Mutli-select Improvements
-We've just completed another pass of UI improvements to make using the app even easier. Each page in the app now has a header, distinct icon and a little bit of flavour text to help you easily know which area of the app you are in. 
+We've just completed another pass of UI improvements to make using the app even easier. Each page in the app now has a header, distinct icon and a little bit of flavour text to help you easily know which area of the app you are in and what you can do there. 
 
 ![The headers for the My Mods and Library sections of the app.](./docs/changelog-assets/02d019794dbe6decd940d9059b3d3f7f.webp)
 
-The toolbars just got smarter too! Now the toolbars are context-aware and will only show options that are relevant to the row(s) you have selected. We've paired this with a new selection indicator which shows how many mods you have selected (using Ctrl + Click or Shift + Click) and lets you quickly clear the selection.
+The toolbars just got smarter, too! Now they are context-aware and will only show options that are relevant to the row(s) you have selected. We've paired this with a new selection indicator which shows how many mods you have selected (using Ctrl + Click or Shift + Click) and lets you quickly clear the selection.
 
 ![An example the toolbar reacting to the selection of multiple rows.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1749470649-1422442403.gif)
 
@@ -19,13 +19,13 @@ The toolbars just got smarter too! Now the toolbars are context-aware and will o
 - Added translations submitted by the community: Russian, Ukrainian, Portuguese (Brazil).
 - Updated the "Missing Game" flow to try and prevent duplicate reports of missing, unsupported games.
 - Added the correct headers to API requests for Nexus Mods.
-- Further developed the backend systems required to create an export collections.
+- Further developed the backend systems required to create and export collections.
 - Further developed the backend system to make a game-agnostic load order system.
 - General performance optimisations.
 
 ## Bug Fixes
 - Improved the way the app registers to handle Nexus Mods downloads on Linux.
-- Fixed a bug where FOMODs would incorrectly report issues with some assets paths.
+- Fixed a bug where FOMODs would incorrectly report issues with some asset paths.
 
 ## Known Issues
 * Collection success ratings will sometimes not match what is shown on the website.
