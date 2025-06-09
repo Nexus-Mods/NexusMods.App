@@ -81,6 +81,9 @@ public partial class Loadout
             .Project(collectionDisabled, disabled => disabled.IsDefault, out var isCollectionEnabled)
             .Return(collectionId, isCollectionEnabled);
     
+    /// <summary>
+    /// Returns whether a collection is enabled or not
+    /// </summary>
     public static bool IsCollectionEnabled(IDb db, EntityId collectionId)
     {
         var isEnabled = db.Topology.Query(IsCollectionEnabledFlow.Where(row => row.CollectionId == collectionId));
@@ -99,6 +102,9 @@ public partial class Loadout
             .Return(groupId, collectionIsEnabled ,isModEnabled)
             .Select(row => (row.Item1, row.Item2 && row.Item3)); 
     
+    /// <summary>
+    /// Returns whether a loadoutItemGroup is enabled or not, also considering the parent collection's enabled state.
+    /// </summary>
     public static bool IsLoadoutItemGroupEnabled(IDb db, EntityId loadoutItemGroupId)
     {
         var isEnabled = db.Topology.Query(IsLoadoutItemGroupEnabledFlow.Where(row => row.GroupId == loadoutItemGroupId));
@@ -117,6 +123,9 @@ public partial class Loadout
             .Return(itemId, parentGroupIsEnabled ,isItemEnabled)
             .Select(row => (row.Item1, row.Item2 && row.Item3)); 
     
+    /// <summary>
+    /// Returns whether a loadoutItem is enabled or not, also considering the enabled states of the parent group and collection.
+    /// </summary>
     public static bool IsLoadoutItemEnabled(IDb db, EntityId loadoutItemId)
     {
         var isEnabled = db.Topology.Query(IsLoadoutItemEnabledFlow.Where(row => row.LoaodutItemId == loadoutItemId));
