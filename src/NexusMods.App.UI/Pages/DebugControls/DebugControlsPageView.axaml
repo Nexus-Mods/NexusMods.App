@@ -8,10 +8,10 @@
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.DebugControls"
     xmlns:r3="clr-namespace:R3;assembly=R3"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:markdownRenderer="clr-namespace:NexusMods.App.UI.Controls.MarkdownRenderer"
     xmlns:mdxaml="https://github.com/whistyun/Markdown.Avalonia.Tight"
-    mc:Ignorable="d" d:DesignHeight="400"
+    mc:Ignorable="d" d:DesignHeight="700"
     x:Class="NexusMods.App.UI.Pages.DebugControls.DebugControlsPageView">
 
     <Design.DataContext>
@@ -133,22 +133,22 @@
                                     <StackPanel Spacing="8" Orientation="Horizontal">
                                         <StackPanel Spacing="8">
                                             <StackPanel Orientation="Horizontal" Spacing="4">
-                                                <controls:StandardButton Text="Extra Small 24px" Size="ExtraSmall"
+                                                <controls:StandardButton Text="Extra Small 24px" Size="Toolbar"
                                                                          ShowIcon="None" />
-                                                <controls:StandardButton Text="Left" Size="ExtraSmall" ShowIcon="Left"
+                                                <controls:StandardButton Text="Left" Size="Toolbar" ShowIcon="Left"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Text="Right" Size="ExtraSmall"
+                                                <controls:StandardButton Text="Right" Size="Toolbar"
                                                                          ShowIcon="Right"
                                                                          RightIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Text="Both" Size="ExtraSmall" ShowIcon="Both"
+                                                <controls:StandardButton Text="Both" Size="Toolbar" ShowIcon="Both"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Size="ExtraSmall" ShowLabel="False"
+                                                <controls:StandardButton Size="Toolbar" ShowLabel="False"
                                                                          ShowIcon="Left"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Size="ExtraSmall" ShowLabel="False"
+                                                <controls:StandardButton Size="Toolbar" ShowLabel="False"
                                                                          ShowIcon="Both"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
-                                                <controls:StandardButton Size="ExtraSmall" ShowLabel="False"
+                                                <controls:StandardButton Size="Toolbar" ShowLabel="False"
                                                                          ShowIcon="IconOnly"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
                                             </StackPanel>
@@ -188,7 +188,7 @@
                                                                          ShowIcon="IconOnly"
                                                                          LeftIcon="{x:Static icons:IconValues.Code}" />
                                             </StackPanel>
-                                            <controls:StandardButton Text="Open Menu" Size="ExtraSmall"
+                                            <controls:StandardButton Text="Open Menu" Size="Toolbar"
                                                                      ShowIcon="Right" Type="Primary"
                                                                      Fill="Weak">
                                                 <controls:StandardButton.Flyout>
@@ -261,18 +261,49 @@
 
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="StandardSplitButton" Theme="{StaticResource BodyMDSemiTheme}" />
-                                    <SplitButton Classes="StandardSplitButton">
-                                        <TextBlock Text="Enabled" />
-                                        <SplitButton.Flyout>
-                                            <MenuFlyout>
-                                                <MenuItem Header="Install" />
-                                                <MenuItem Header="Advanced Install" />
-                                            </MenuFlyout>
-                                        </SplitButton.Flyout>
-                                    </SplitButton>
-                                    <SplitButton Classes="StandardSplitButton" IsEnabled="False">
-                                        <TextBlock Text="Disabled" />
-                                    </SplitButton>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <SplitButton Classes="StandardSplitButton">
+                                            <TextBlock Text="Extra Small (Toolbar) 24px" />
+                                            <SplitButton.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Option 1" />
+                                                    <MenuItem Header="Option 2" />
+                                                </MenuFlyout>
+                                            </SplitButton.Flyout>
+                                        </SplitButton>
+                                        <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                                            <TextBlock Text="Disabled" />
+                                        </SplitButton>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <SplitButton Classes="StandardSplitButton">
+                                            <TextBlock Text="Small (Default) 28px" />
+                                            <SplitButton.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Option 1" />
+                                                    <MenuItem Header="Option 2" />
+                                                </MenuFlyout>
+                                            </SplitButton.Flyout>
+                                        </SplitButton>
+                                        <SplitButton Classes="StandardSplitButton" IsEnabled="False">
+                                            <TextBlock Text="Disabled" />
+                                        </SplitButton>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <SplitButton Classes="StandardSplitButton Medium">
+                                            <TextBlock Text="Medium 36px" />
+                                            <SplitButton.Flyout>
+                                                <MenuFlyout>
+                                                    <MenuItem Header="Option 1" />
+                                                    <MenuItem Header="Option 2" />
+                                                </MenuFlyout>
+                                            </SplitButton.Flyout>
+                                        </SplitButton>
+                                        <SplitButton Classes="StandardSplitButton Medium" IsEnabled="False">
+                                            <TextBlock Text="Disabled" />
+                                        </SplitButton>
+                                    </StackPanel>
+
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -1001,38 +1032,213 @@
                     </Border.Styles>
                     <StackPanel Spacing="8">
                         <WrapPanel VerticalAlignment="Top">
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" ToolTip.Tip="Account" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" ToolTip.Tip="Add" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Alert}" ToolTip.Tip="Alert" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Code}" ToolTip.Tip="Code" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" ToolTip.Tip="Check" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircle}"
+                                               ToolTip.Tip="CheckCircle" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckCircleOutline}"
+                                               ToolTip.Tip="CheckCircleOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteOutline}"
+                                               ToolTip.Tip="DeleteOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteForever}"
+                                               ToolTip.Tip="DeleteForever" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Description}"
+                                               ToolTip.Tip="Description" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Help}" ToolTip.Tip="Help" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.HelpOutline}"
+                                               ToolTip.Tip="HelpOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.History}" ToolTip.Tip="History" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Home}" ToolTip.Tip="Home" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lock}" ToolTip.Tip="Lock" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" ToolTip.Tip="OpenInNew" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FormatListBullet}"
+                                               ToolTip.Tip="FormatListBullet" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ListBoxOutline}"
+                                               ToolTip.Tip="ListBoxOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FormatListCheckbox}"
+                                               ToolTip.Tip="FormatListCheckbox" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FormatListNumbered}"
+                                               ToolTip.Tip="FormatListNumbered" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DotsGrid}" ToolTip.Tip="DotsGrid" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FormatAlignJustify}"
+                                               ToolTip.Tip="FormatAlignJustify" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PlaylistAdd}"
+                                               ToolTip.Tip="PlaylistAdd" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PlaylistRemove}"
+                                               ToolTip.Tip="PlaylistRemove" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Tab}" ToolTip.Tip="Tab" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUp}" ToolTip.Tip="ThumbUp" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbUpOutline}"
+                                               ToolTip.Tip="ThumbUpOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbsUpDown}"
+                                               ToolTip.Tip="ThumbsUpDown" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ThumbsUpDownOutline}"
+                                               ToolTip.Tip="ThumbsUpDownOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Search}" ToolTip.Tip="Search" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" ToolTip.Tip="Cog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.CogOutline}" ToolTip.Tip="CogOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Visibility}" ToolTip.Tip="Visibility" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ViewCarousel}"
+                                               ToolTip.Tip="ViewCarousel" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Sort}" ToolTip.Tip="Sort" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.SortAscending}"
+                                               ToolTip.Tip="SortAscending" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.SortDescending}"
+                                               ToolTip.Tip="SortDescending" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.AccountCog}" ToolTip.Tip="AccountCog" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Logout}" ToolTip.Tip="Logout" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Error}" ToolTip.Tip="Error" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Warning}" ToolTip.Tip="Warning" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.WarningAmber}"
+                                               ToolTip.Tip="WarningAmber" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NotificationImportant}"
+                                               ToolTip.Tip="NotificationImportant" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Info}" ToolTip.Tip="Info" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.InfoFilled}" ToolTip.Tip="InfoFilled" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PauseCircleFilled}"
+                                               ToolTip.Tip="PauseCircleFilled" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PauseCircleOutline}"
+                                               ToolTip.Tip="PauseCircleOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PlayArrow}" ToolTip.Tip="PlayArrow" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PlayCircleFilled}"
+                                               ToolTip.Tip="PlayCircleFilled" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PlayCircleOutline}"
+                                               ToolTip.Tip="PlayCircleOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ClearAll}" ToolTip.Tip="ClearAll" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.LiveHelp}" ToolTip.Tip="LiveHelp" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PartyPopper}"
+                                               ToolTip.Tip="PartyPopper" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Broadcast}" ToolTip.Tip="Broadcast" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Add}" ToolTip.Tip="Add" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircle}" ToolTip.Tip="AddCircle" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircleOutline}"
+                                               ToolTip.Tip="AddCircleOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Copy}" ToolTip.Tip="Copy" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Paste}" ToolTip.Tip="Paste" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Redo}" ToolTip.Tip="Redo" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.RemoveCircleOutline}"
+                                               ToolTip.Tip="RemoveCircleOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Save}" ToolTip.Tip="Save" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Undo}" ToolTip.Tip="Undo" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.TrayArrowDown}"
+                                               ToolTip.Tip="TrayArrowDown" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.BarChart}" ToolTip.Tip="BarChart" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragHandleHorizontal}"
+                                               ToolTip.Tip="DragHandleHorizontal" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragHandleVertical}"
+                                               ToolTip.Tip="DragHandleVertical" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.File}" ToolTip.Tip="File" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" ToolTip.Tip="Download" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DownloadDone}"
+                                               ToolTip.Tip="DownloadDone" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Folder}" ToolTip.Tip="Folder" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FolderEyeOutline}"
+                                               ToolTip.Tip="FolderEyeOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FolderOpen}" ToolTip.Tip="FolderOpen" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FolderEditOutline}"
+                                               ToolTip.Tip="FolderEditOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" ToolTip.Tip="FileEdit" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Video}" ToolTip.Tip="Video" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.MusicNote}" ToolTip.Tip="MusicNote" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileDocumentOutline}"
+                                               ToolTip.Tip="FileDocumentOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FolderUploadOutline}"
+                                               ToolTip.Tip="FolderUploadOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Update}" ToolTip.Tip="Update" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Desktop}" ToolTip.Tip="Desktop" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Game}" ToolTip.Tip="Game" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Database}" ToolTip.Tip="Database" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Package}" ToolTip.Tip="Package" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Image}" ToolTip.Tip="Image" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Tune}" ToolTip.Tip="Tune" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ColorLens}" ToolTip.Tip="ColorLens" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowBack}" ToolTip.Tip="ArrowBack" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDown}" ToolTip.Tip="ArrowDown" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"
                                                ToolTip.Tip="ArrowForward" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUp}" ToolTip.Tip="ArrowUp" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.AddCircleOutline}"
-                                               ToolTip.Tip="AddCircleOutline" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDownThick}"
-                                               ToolTip.Tip="ArrowDownThick" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUpThick}"
-                                               ToolTip.Tip="ArrowUpThick" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDown}" ToolTip.Tip="ArrowDown" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropDown}"
                                                ToolTip.Tip="ArrowDropDown" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDropUp}"
                                                ToolTip.Tip="ArrowDropUp" />
-                        </WrapPanel>
-                        <WrapPanel>
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowUpThick}"
+                                               ToolTip.Tip="ArrowUpThick" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowDownThick}"
+                                               ToolTip.Tip="ArrowDownThick" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronLeft}"
+                                               ToolTip.Tip="ChevronLeft" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronRight}"
+                                               ToolTip.Tip="ChevronRight" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronDown}"
+                                               ToolTip.Tip="ChevronDown" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ChevronUp}" ToolTip.Tip="ChevronUp" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" ToolTip.Tip="Close" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.WindowMinimize}"
+                                               ToolTip.Tip="WindowMinimize" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.WindowMaximize}"
+                                               ToolTip.Tip="WindowMaximize" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.WindowRestore}"
+                                               ToolTip.Tip="WindowRestore" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Refresh}" ToolTip.Tip="Refresh" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Swap}" ToolTip.Tip="Swap" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.MoreVertical}"
+                                               ToolTip.Tip="MoreVertical" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Sync}" ToolTip.Tip="Sync" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Lightbulb}" ToolTip.Tip="Lightbulb" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Trophy}" ToolTip.Tip="Trophy" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.TrophyOutline}"
+                                               ToolTip.Tip="TrophyOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.School}" ToolTip.Tip="School" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Account}" ToolTip.Tip="Account" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.CheckBox}" ToolTip.Tip="CheckBox" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Star}" ToolTip.Tip="Star" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Alert}" ToolTip.Tip="Alert" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Mods}" ToolTip.Tip="Mods" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Collections}"
+                                               ToolTip.Tip="Collections" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ListFilled}" ToolTip.Tip="ListFilled" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Downloading}"
+                                               ToolTip.Tip="Downloading" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModLibrary}" ToolTip.Tip="ModLibrary" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Discord}" ToolTip.Tip="Discord" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Forum}" ToolTip.Tip="Forum" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.HardDrive}" ToolTip.Tip="HardDrive" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Nexus}" ToolTip.Tip="Nexus" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Stethoscope}"
+                                               ToolTip.Tip="Stethoscope" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ShieldHalfFull}"
+                                               ToolTip.Tip="ShieldHalfFull" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Steam}" ToolTip.Tip="Steam" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.EA}" ToolTip.Tip="EA" />
-                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Ubisoft}" ToolTip.Tip="Ubisoft" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.GOG}" ToolTip.Tip="GOG" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Ubisoft}" ToolTip.Tip="Ubisoft" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Xbox}" ToolTip.Tip="Xbox" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Epic}" ToolTip.Tip="Epic" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Size}" ToolTip.Tip="Size" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.GamepadOutline}"
+                                               ToolTip.Tip="GamepadOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cardiology}" ToolTip.Tip="Cardiology" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.LibraryOutline}"
+                                               ToolTip.Tip="LibraryOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.CollectionsOutline}"
+                                               ToolTip.Tip="CollectionsOutline" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}"
+                                               ToolTip.Tip="ModsOutline" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.GitHub}" ToolTip.Tip="GitHub" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Premium}" ToolTip.Tip="Premium" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ToggleOn}" ToolTip.Tip="ToggleOn" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ToggleOff}" ToolTip.Tip="ToggleOff" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.ToggleIndeterminate}"
+                                               ToolTip.Tip="ToggleIndeterminate" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DragVerticalDots}"
+                                               ToolTip.Tip="DragVerticalDots" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.AvatarTest}" ToolTip.Tip="AvatarTest" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PanelAllFull}"
+                                               ToolTip.Tip="PanelAllFull" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" ToolTip.Tip="NexusColor" />
+
                         </WrapPanel>
+
                         <WrapPanel>
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramHealth}"
                                                ToolTip.Tip="PictogramHealth" />
@@ -1064,6 +1270,12 @@
                                                ToolTip.Tip="PictogramCelebrate, Size=32" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramCelebrate}" Size="48"
                                                ToolTip.Tip="PictogramCelebrate, Size=48" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramLibrary}"
+                                               ToolTip.Tip="PictogramSettings" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramLibrary}" Size="32"
+                                               ToolTip.Tip="PictogramSettings, Size=32" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramLibrary}" Size="48"
+                                               ToolTip.Tip="PictogramSettings, Size=48" />
                         </WrapPanel>
                         <WrapPanel>
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion"

@@ -127,7 +127,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null)
     {
         var libraryFile = await DownloadModFromNexusMods(modId, fileId);
-        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+        var result = await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+        return result.LoadoutItemGroup!.Value; // You can't attach external transaction in this context, so this is always valid.
     }
 
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
@@ -546,7 +547,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     public async Task DisposeAsync()
     {
-        await _host.StopAsync();
-        _host.Dispose();
+        // NOTE(erri120): forcing this method to complete within max 10 seconds
+        await _host.StopAsync(cancellationToken: new CancellationToken(canceled: true)).WaitAsync(timeout: TimeSpan.FromSeconds(1));
+        if (_host is IAsyncDisposable asyncDisposable) await asyncDisposable.DisposeAsync().AsTask().WaitAsync(timeout: TimeSpan.FromSeconds(8));
+        else
+        {
+            await Task.Run(() => _host.Dispose()).WaitAsync(timeout: TimeSpan.FromSeconds(8));
+        }
     }
 }

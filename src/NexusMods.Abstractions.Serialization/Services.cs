@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Hashes;
+using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Serialization.Json;
 using NexusMods.Abstractions.Settings;
 

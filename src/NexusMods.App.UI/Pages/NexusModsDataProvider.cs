@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;

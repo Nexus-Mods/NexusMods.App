@@ -11,8 +11,8 @@ using NexusMods.Abstractions.Diagnostics.References;
 using NexusMods.Abstractions.Diagnostics.Values;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.Sdk;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit;
 

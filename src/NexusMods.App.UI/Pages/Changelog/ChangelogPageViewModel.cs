@@ -7,7 +7,7 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Reloaded.Memory.Extensions;

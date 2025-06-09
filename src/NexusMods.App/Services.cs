@@ -22,6 +22,7 @@ using NexusMods.Games.Generic;
 using NexusMods.Games.TestHarness;
 using NexusMods.Jobs;
 using NexusMods.Library;
+using NexusMods.Networking.EpicGameStore;
 using NexusMods.Networking.GitHub;
 using NexusMods.Networking.GOG;
 using NexusMods.Networking.HttpDownloader;
@@ -29,7 +30,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.Steam;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
@@ -58,6 +59,7 @@ public static class Services
         if (startupMode.RunAsMain)
         {
             services
+                .AddEpicGameStore()
                 .AddSingleton<TimeProvider>(_ => TimeProvider.System)
                 .AddDataModel()
                 .AddLibrary()

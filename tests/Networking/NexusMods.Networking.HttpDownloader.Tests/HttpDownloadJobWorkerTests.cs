@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
-using NexusMods.Extensions.Hashing;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;

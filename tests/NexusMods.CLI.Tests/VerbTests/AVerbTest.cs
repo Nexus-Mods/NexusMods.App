@@ -3,11 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
-using NexusMods.ProxyConsole.Abstractions.Implementations;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 using Spectre.Console.Testing;
+using Table = NexusMods.Sdk.ProxyConsole.Table;
 
 namespace NexusMods.CLI.Tests.VerbTests;
 

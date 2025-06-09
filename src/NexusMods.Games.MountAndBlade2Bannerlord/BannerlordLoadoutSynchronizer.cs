@@ -3,10 +3,10 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;

@@ -1,7 +1,6 @@
 using Avalonia.Media.Imaging;
-using BitFaster.Caching;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using R3;
 
 namespace NexusMods.App.UI.Controls;

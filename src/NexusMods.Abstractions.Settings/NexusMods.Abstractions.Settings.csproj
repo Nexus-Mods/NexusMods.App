@@ -11,6 +11,7 @@
         <PackageReference Include="DynamicData" />
 
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="TransparentValueObjects.Abstractions" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,6 +35,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Icons\NexusMods.Icons.csproj" />
+      <ProjectReference Include="..\NexusMods.UI.Sdk\NexusMods.UI.Sdk.csproj" />
     </ItemGroup>
 </Project>

@@ -3,8 +3,7 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.NexusWebApi;
 

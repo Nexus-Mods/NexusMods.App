@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using FomodInstaller.Interface;
 using FomodInstaller.Scripting;
@@ -9,11 +10,11 @@ using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.FOMOD.CoreDelegates;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using IFileSystem = NexusMods.Paths.IFileSystem;
 using FomodMod = FomodInstaller.Interface.Mod;
 
@@ -84,7 +85,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
             .Where(x => x.Path.InFolder(fomodPathPrefix))
             .Select(x => new KeyValuePair<RelativePath, LibraryArchiveFileEntry.ReadOnly>(x.Path.DropFirst(pathPrefixDropCount), x))
             .DistinctBy(kv => kv.Key)
-            .ToDictionary(kv => kv.Key, kv => kv.Value);
+            .ToFrozenDictionary(kv => kv.Key, kv => kv.Value);
 
         var mod = new FomodMod(
             listModFiles: fomodArchiveFiles.Keys.Select(static x => x.ToString()).ToList(),
@@ -117,7 +118,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
 
         var executor = _scriptType.CreateExecutor(mod, _delegates);
         var installScript = _scriptType.LoadScript(rawScript, true);
-        FixScript(installScript, fomodArchiveFiles);
+        FixScript(installScript, fomodArchiveFiles, _logger);
 
         var instructions = await executor.Execute(installScript, "", null);
 
@@ -141,7 +142,10 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         return await streamReader.ReadToEndAsync(cancellationToken);
     }
 
-    private void FixScript(IScript script, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles)
+    private static void FixScript(
+        IScript script,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        ILogger? logger = null)
     {
         Debug.Assert(script is XmlScript);
         if (script is not XmlScript xmlScript) return;
@@ -151,30 +155,45 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
 
         foreach (var option in xmlScript.InstallSteps.SelectMany(x => x.OptionGroups).SelectMany(x => x.Options))
         {
-            option.ImagePath = FixPath(option.ImagePath, fomodArchiveFiles);
-            FixPaths(fomodArchiveFiles, option.Files);
+            option.ImagePath = FixPath(option.ImagePath, fomodArchiveFiles, logger: logger);
+            FixPaths(fomodArchiveFiles, option.Files, logger: logger);
         }
     }
 
-    private void FixPaths(Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, IEnumerable<InstallableFile> installableFiles)
+    private static void FixPaths(
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        IEnumerable<InstallableFile> installableFiles,
+        ILogger? logger = null)
     {
         foreach (var installableFile in installableFiles)
         {
-            installableFile.Source = FixPath(installableFile.Source, fomodArchiveFiles, isDirectory: installableFile.IsFolder);
-            installableFile.Destination = RelativePath.FromUnsanitizedInput(installableFile.Destination);
+            installableFile.Source = FixPath(installableFile.Source, fomodArchiveFiles, isDirectory: installableFile.IsFolder, logger: logger);
+            installableFile.Destination = RelativePath.FromUnsanitizedInput(RemoveRoot(installableFile.Destination));
         }
     }
 
-    private string FixPath(string? input, Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles, bool isDirectory = false)
+    private static readonly char[] TrimChars = ['\\', '/'];
+    internal static ReadOnlySpan<char> RemoveRoot(string? input)
     {
-        if (string.IsNullOrEmpty(input)) return string.Empty;
+        if (string.IsNullOrWhiteSpace(input)) return ReadOnlySpan<char>.Empty;
+        ReadOnlySpan<char> span = input;
+        return span.TrimStart(TrimChars);
+    }
 
-        var path = RelativePath.FromUnsanitizedInput(input);
+    internal static string FixPath(
+        string? input,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        bool isDirectory = false,
+        ILogger? logger = null)
+    {
+        var span = RemoveRoot(input);
+        if (span.IsEmpty) return string.Empty;
+
+        var path = RelativePath.FromUnsanitizedInput(span);
         if (isDirectory || fomodArchiveFiles.ContainsKey(path)) return path.ToString();
 
-        _logger.LogWarning("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
-        return input;
-
+        logger?.LogWarning("Didn't find matching archive file for referenced file in FOMOD `{OldPath}` -> `{NewPath}`", input, path);
+        return input ?? string.Empty;
     }
 
     private void InstructionsToLoadoutItems(
@@ -182,7 +201,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         LoadoutId loadoutId,
         LoadoutItemGroup.New loadoutGroup,
         IList<Instruction> instructions,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         foreach (var instruction in instructions)
@@ -208,7 +227,7 @@ public class FomodXmlInstaller : ALibraryArchiveInstaller
         Instruction instruction,
         LoadoutItemGroup.New loadoutGroup,
         LoadoutId loadoutId,
-        Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
+        FrozenDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly> fomodArchiveFiles,
         GamePath gamePath)
     {
         var src = RelativePath.FromUnsanitizedInput(instruction.source);

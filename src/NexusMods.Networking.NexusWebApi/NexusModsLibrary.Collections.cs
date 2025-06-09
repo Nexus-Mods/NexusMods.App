@@ -13,10 +13,10 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using StrawberryShake;
 using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
@@ -32,14 +32,13 @@ public partial class NexusModsLibrary
         var result = await _gqlClient.GetCollectionRevisionUploadUrl.ExecuteAsync(cancellationToken: cancellationToken);
         result.EnsureNoErrors();
 
-        var data = result.Data?.CollectionRevisionUploadUrl!;
-        var presignedUploadUrl = new PresignedUploadUrl(new Uri(data.Url), data.Uuid);
+        var presignedUploadUrl = PresignedUploadUrl.FromApi(result.Data?.CollectionRevisionUploadUrl!);
 
         await using var stream = await archiveStreamFactory.GetStreamAsync();
         using HttpContent httpContent = new StreamContent(stream);
         httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
 
-        var response = await _httpClient.PutAsync(presignedUploadUrl.UploadUri, httpContent, cancellationToken: cancellationToken);
+        var response = await _httpClient.PutAsync(presignedUploadUrl, httpContent, cancellationToken: cancellationToken);
         if (response.IsSuccessStatusCode) return presignedUploadUrl;
 
         var responseMessage = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);

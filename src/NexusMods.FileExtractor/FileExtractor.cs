@@ -6,6 +6,7 @@ using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
+using NexusMods.Paths.Utilities;
 
 namespace NexusMods.FileExtractor;
 
@@ -68,6 +69,11 @@ public class FileExtractor : IFileExtractor
             {
                 await extractor.ExtractAllAsync(sFn, dest, token);
                 return;
+            }
+            catch (PathException e)
+            {
+                _logger.LogError(e, "Path exception while extracting via {Extractor}", extractor);
+                throw;
             }
             catch (Exception ex)
             {

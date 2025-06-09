@@ -16,13 +16,13 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     /// <summary>
     /// The build ID of the found game.
     /// </summary>
-    public required string BuildId { get; init; }
+    public required ulong BuildId { get; init; }
     
     /// <inheritdoc/>
     public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
 
     /// <inheritdoc />
-    public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(BuildId)];
+    public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(BuildId.ToString())];
 }
 
 [PublicAPI]

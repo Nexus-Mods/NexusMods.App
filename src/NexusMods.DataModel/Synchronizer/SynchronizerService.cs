@@ -71,7 +71,7 @@ public class SynchronizerService : ISynchronizerService
                 var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
                 var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
 
-                var lastScannedDiskState = metaData.DiskStateAsOf(metaData.LastScannedDiskStateTransaction);
+                var lastScannedDiskState = metaData.DiskStateEntries;
                 var previousDiskState = hasPreviousLoadout ? metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : lastScannedDiskState;
         
                 return ValueTask.FromResult(synchronizer.ShouldSynchronize(loadout, previousDiskState, lastScannedDiskState));
@@ -81,24 +81,31 @@ public class SynchronizerService : ISynchronizerService
     /// <inheritdoc />
     public async Task Synchronize(LoadoutId loadoutId)
     {
-        await _semaphore.WaitAsync();
-        try
-        {
-            var loadout = Loadout.Load(_conn.Db, loadoutId);
-            ThrowIfMainBinaryInUse(loadout);
+        await _jobMonitor.Begin(new SynchronizeLoadoutJob(loadoutId),
+            async ctx =>
+            {
+                await _semaphore.WaitAsync();
+                try
+                {
+                    var loadout = Loadout.Load(_conn.Db, loadoutId);
+                    ThrowIfMainBinaryInUse(loadout);
 
-            var loadoutState = GetOrAddLoadoutState(loadoutId);
-            using var _ = loadoutState.WithLock();
+                    var loadoutState = GetOrAddLoadoutState(loadoutId);
+                    using var _ = loadoutState.WithLock();
 
-            var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
-            using var _2 = gameState.WithLock();
+                    var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
+                    using var _2 = gameState.WithLock();
 
-            await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
+                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
+                
+                return Unit.Default;
+            }
+        );
     }
 
     private SynchronizerState GetOrAddLoadoutState(LoadoutId loadoutId)
@@ -198,8 +205,7 @@ public class SynchronizerService : ISynchronizerService
         var isBusy = loadoutState.ObservePropertyChanged(l => l.Busy);
 
         var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
-            .ToObservable()
-            .Where(last => last != default(LoadoutWithTxId));
+            .ToObservable();
 
         var revisions = Loadout.RevisionsWithChildUpdates(_conn, loadoutId)
             .ToObservable()
@@ -227,7 +233,7 @@ public class SynchronizerService : ISynchronizerService
                     if (busy)
                         return LoadoutSynchronizerState.Pending;
 
-                    if (last.Id != loadoutId)
+                    if (last.Id != loadoutId && last != default(LoadoutWithTxId))
                         return LoadoutSynchronizerState.OtherLoadoutSynced;
 
                     // Last DB revision is the same in the applied loadout

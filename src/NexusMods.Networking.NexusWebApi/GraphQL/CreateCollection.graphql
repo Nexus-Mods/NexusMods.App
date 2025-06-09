@@ -1,7 +1,12 @@
 query GetCollectionRevisionUploadUrl {
     collectionRevisionUploadUrl {
-        url
-        uuid
+        ...PresignedUrl
+    }
+}
+
+query RequestMediaUploadUrl($mimeType: String!) {
+    requestMediaUploadUrl(mimeType: $mimeType) {
+        ...PresignedUrl
     }
 }
 
@@ -17,11 +22,44 @@ mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
     }
 }
 
-mutation CreateOrUpdateRevision($payload: CollectionPayload!, $collectionId: Int!, $uuid: String!){
+mutation CreateOrUpdateRevision($payload: CollectionPayload!, $collectionId: Int!, $uuid: String!) {
     createOrUpdateRevision(collectionData: $payload, collectionId: $collectionId, uuid: $uuid) {
         success
         revision {
             ...CollectionRevisionFragment
         }
+    }
+}
+
+mutation EditCollectionName($collectionId: Int!, $name: String!) {
+    editCollection(collectionId: $collectionId, name: $name) {
+        success,
+        collection {
+            ...CollectionFragment
+        }
+    }
+}
+
+mutation EditCollectionDescription($collectionId: Int!, $description: String!) {
+    editCollection(collectionId: $collectionId, description: $description) {
+        success,
+        collection {
+            ...CollectionFragment
+        }
+    }
+}
+
+mutation EditCollectionSummary($collectionId: Int!, $summary: String!) {
+    editCollection(collectionId: $collectionId, summary: $summary) {
+        success,
+        collection {
+            ...CollectionFragment
+        }
+    }
+}
+
+mutation PublishRevision($revisionId: ID!, $collectionStatus: CollectionStatus!) {
+    publishRevision(revisionId: $revisionId, collectionStatus: $collectionStatus) {
+        success
     }
 }

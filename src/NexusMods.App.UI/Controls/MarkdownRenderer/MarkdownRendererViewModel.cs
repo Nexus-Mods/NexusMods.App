@@ -9,7 +9,7 @@ using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Extensions;
 using NexusMods.CrossPlatform.Process;

@@ -85,18 +85,22 @@ public class NxRepackerTests
 */
         
         // Arrange
-        var archivePath = await CreateInitialArchive(fs, folderPath);
-        var collector = SetupGarbageCollector(archivePath, out _);
+        var initialArchivePath = await CreateInitialArchive(fs, folderPath);
+        var collector = SetupGarbageCollector(initialArchivePath, out _);
+        initialArchivePath.FileExists.Should().BeTrue();
+
+        AbsolutePath newArchivePath = default;
 
         // Act
         collector.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archiveRef) =>
         {
-            NxRepacker.RepackArchive(progress, toArchive, toRemove, archiveRef, true, out archivePath);
+            NxRepacker.RepackArchive(progress, toArchive, toRemove, archiveRef, deleteOriginal: true, out newArchivePath);
         });
 
         // Assert
-        archivePath.Should().NotBeNull();
-        fs.FileExists(archivePath).Should().BeFalse();
+        initialArchivePath.FileExists.Should().BeFalse(because: "original archive is deleted after repacking");
+        newArchivePath.Directory.Should().BeNull(because: "struct isn't initialized");
+        newArchivePath.FileName.Should().BeNull(because: "struct isn't initialized");
     }
 
     private async Task<AbsolutePath> CreateInitialArchive(InMemoryFileSystem fs, AbsolutePath folderPath)

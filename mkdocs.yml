@@ -95,8 +95,7 @@ nav:
     - Frequently Asked Questions: 
       - users/faq/index.md
       - How to find the log files: users/faq/LogFiles.md
-      - Nexus Mods Download Issues: users/faq/NexusModsDownloads.md
-      - Linux Protocol Registration: users/faq/LinuxProtocolRegistration.md
+      - Download/Login Issues: users/faq/NexusModsDownloads.md
     - Uninstall: users/Uninstall.md
   - Developer Docs:
     - Home: developers/index.md
@@ -160,6 +159,7 @@ nav:
         - '00: Immutable Modlists': developers/concepts/0000-immutable-modlists.md
         - '01: DAG Sorting': developers/concepts/0001-dag-sorting.md
         - '02: Data Model Triggers': developers/concepts/0002-datamodel-triggers.md
+        - '03: Load Order Management': developers/concepts/0003-load-order-management.md
     - Games:
         - '00: Template': developers/games/0000-Template.md
         - '01: Stardew Valley': developers/games/0001-StardewValley.md

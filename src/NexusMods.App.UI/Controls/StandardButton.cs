@@ -4,7 +4,7 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Styling;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Controls;
 
@@ -16,8 +16,8 @@ namespace NexusMods.App.UI.Controls;
 [TemplatePart("PART_Label", typeof(TextBlock))]
 public class StandardButton : Button
 {
-    #region Enums
-    
+#region Enums
+
     /// <summary>
     /// Defines what icons are shown on a <see cref="StandardButton"/>.
     /// </summary>
@@ -41,8 +41,8 @@ public class StandardButton : Button
         /// <summary>
         /// Icons are displayed on both sides.
         /// </summary>
-        Both,  
-        
+        Both,
+
         /// <summary>
         /// Single icon is displayed with zero padding and no label.
         /// </summary>
@@ -58,16 +58,16 @@ public class StandardButton : Button
         /// Small size. (Default)
         /// </summary>
         Small,
-        
+
         /// <summary>
         /// Medium size.
         /// </summary>
         Medium,
-        
+
         /// <summary>
-        /// Extra Small size.
+        /// Toolbar size.
         /// </summary>
-        ExtraSmall,
+        Toolbar,
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public class StandardButton : Button
         /// Weak fill (translucent). (Default)
         /// </summary>
         Weak,
-        
+
         /// <summary>
         /// No fill.
         /// </summary>
@@ -110,14 +110,19 @@ public class StandardButton : Button
         /// Strong fill.
         /// </summary>
         Strong,
-        
+
         /// <summary>
-        /// Weak fill (solid).
+        /// Weak fill (alternative).
         /// </summary>
         WeakAlt,
+
+        /// <summary>
+        /// Strong fill (alternative).
+        /// </summary>
+        StrongAlt,
     }
-    
-    #endregion
+
+#endregion
 
     private UnifiedIcon? _leftIcon = null;
     private UnifiedIcon? _rightIcon = null;
@@ -201,7 +206,7 @@ public class StandardButton : Button
         get => GetValue(RightIconProperty);
         set => SetValue(RightIconProperty, value);
     }
-    
+
     /// <summary>
     /// Gets or sets a value indicating whether the label is shown on the <see cref="StandardButton"/>. Defaults to True.
     /// </summary>
@@ -210,7 +215,7 @@ public class StandardButton : Button
         get => GetValue(ShowLabelProperty);
         set => SetValue(ShowLabelProperty, value);
     }
-    
+
     /// <summary>
     /// Gets or sets the type of the <see cref="StandardButton"/>. Defaults to <see cref="Types.Tertiary"/>.
     /// </summary>
@@ -237,7 +242,7 @@ public class StandardButton : Button
         get => GetValue(FillProperty);
         set => SetValue(FillProperty, value);
     }
-    
+
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -253,11 +258,11 @@ public class StandardButton : Button
         else if (change.Property == TextProperty)
         {
             UpdateLabel(change.GetNewValue<string?>());
-        } 
+        }
         else if (change.Property == ShowIconProperty)
         {
             UpdateIconVisibility();
-        } 
+        }
     }
 
     /// <inheritdoc/>
@@ -267,30 +272,30 @@ public class StandardButton : Button
         _border = e.NameScope.Find<Border>("PART_Border");
 
         if (_content == null || _border == null) return;
-        
+
         // label text
         _label = e.NameScope.Find<TextBlock>("PART_Label");
         if (_label != null)
             UpdateLabel(Text);
-        
+
         // left icon
         _leftIcon = e.NameScope.Find<UnifiedIcon>("PART_LeftIcon");
         if (_leftIcon != null)
             UpdateLeftIcon(LeftIcon);
-        
+
         // right icon
         _rightIcon = e.NameScope.Find<UnifiedIcon>("PART_RightIcon");
         if (_rightIcon != null)
             UpdateRightIcon(RightIcon);
-        
+
         // if Content is not null, display the Content just like a regular button would (using ContentPresenter).
         // Otherwise, build the button from the set properties
         _content.IsVisible = Content is not null;
         _border.IsVisible = Content is null;
-        
+
         base.OnApplyTemplate(e);
     }
-    
+
     /// <summary>
     /// Updates the icon visibility of the <see cref="StandardButton"/>.
     /// </summary>
@@ -298,11 +303,11 @@ public class StandardButton : Button
     {
         if (_leftIcon != null)
             _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
-        
+
         if (_rightIcon != null)
             _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
-    
+
     /// <summary>
     /// Updates the left icon of the <see cref="StandardButton"/>.
     /// </summary>
@@ -310,11 +315,11 @@ public class StandardButton : Button
     private void UpdateLeftIcon(IconValue? newIcon)
     {
         if (_leftIcon == null) return;
-        
+
         _leftIcon.Value = newIcon;
         _leftIcon.IsVisible = ShowIcon is ShowIconOptions.Left or ShowIconOptions.Both or ShowIconOptions.IconOnly;
     }
-    
+
     /// <summary>
     /// Updates the right icon of the <see cref="StandardButton"/>.
     /// </summary>
@@ -322,11 +327,11 @@ public class StandardButton : Button
     private void UpdateRightIcon(IconValue? newIcon)
     {
         if (_rightIcon == null) return;
-        
+
         _rightIcon.Value = newIcon;
         _rightIcon.IsVisible = ShowIcon is ShowIconOptions.Right or ShowIconOptions.Both;
     }
-    
+
     /// <summary>
     /// Updates the label text of the <see cref="StandardButton"/>.
     /// </summary>
@@ -334,8 +339,8 @@ public class StandardButton : Button
     private void UpdateLabel(string? newLabel)
     {
         if (_label == null) return;
-        
+
         _label.Text = newLabel;
-        _label.IsVisible = ShowLabel && ShowIcon != ShowIconOptions.IconOnly;
+        _label.IsVisible = !string.IsNullOrWhiteSpace(newLabel) && ShowLabel && ShowIcon != ShowIconOptions.IconOnly;
     }
 }

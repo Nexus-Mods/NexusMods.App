@@ -6,7 +6,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
                                 xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 mc:Ignorable="d" d:DesignWidth="710" d:DesignHeight="44"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentTreeEntryView">
     <Design.DataContext>

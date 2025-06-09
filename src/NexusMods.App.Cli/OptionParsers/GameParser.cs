@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.CLI.OptionParsers;
 

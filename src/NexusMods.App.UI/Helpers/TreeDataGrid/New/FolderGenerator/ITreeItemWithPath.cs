@@ -16,7 +16,7 @@ public interface ITreeItemWithPath
 }
 
 /// <summary>
-/// Factory for the <see cref="LoadoutItemTreeItemWithPath"/> type.
+/// Factory for the <see cref="GamePathTreeItemWithPath"/> type.
 /// </summary>
 public interface ITreeItemWithPathFactory<in TKey, out TTreeItemWithPath> where TTreeItemWithPath : ITreeItemWithPath
 {

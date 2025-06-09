@@ -14,8 +14,7 @@ using NexusMods.DataModel.Undo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 
@@ -40,6 +39,7 @@ public static class LoadoutManagementVerbs
             .AddVerb(() => SetVersion)
             .AddVerb(() => Synchronize)
             .AddVerb(() => InstallMod)
+            .AddVerb(() => Reindex)
             .AddVerb(() => ListLoadouts)
             .AddVerb(() => BackupFiles)
             .AddVerb(() => ListGroupContents)
@@ -136,6 +136,17 @@ public static class LoadoutManagementVerbs
             await libraryService.InstallItem(localFile.AsLibraryFile().AsLibraryItem(), loadout);
             return 0;
         });
+    }
+    
+    [Verb("loadout reindex", "Re-indexes the on-disk state of the loadout")]
+    private static async Task<int> Reindex([Injected] IRenderer renderer,
+        [Option("l", "loadout", "loadout to add the mod to")] Loadout.ReadOnly loadout,
+        [Injected] CancellationToken token)
+    {
+        await renderer.Text("Reindexing {0}", loadout.Name);
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        await synchronizer.RescanFiles(loadout.InstallationInstance, true);
+        return 0;
     }
 
 

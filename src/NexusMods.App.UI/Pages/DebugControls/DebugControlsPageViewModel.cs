@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using System.Reactive;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog.Enums;

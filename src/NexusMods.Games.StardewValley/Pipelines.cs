@@ -2,7 +2,7 @@ using System.Reactive;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.Resources;
+using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.Resources.Caching;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.StardewValley.Models;

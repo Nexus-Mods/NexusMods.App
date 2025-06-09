@@ -21,3 +21,4 @@ Finally, update the `Descriptions.md` file with the new data.
 | 2025-02-06 | `Issue-2608.rocksdb.zip`    | A snapshot for testing Issue [#2608](https://github.com/Nexus-Mods/NexusMods.App/issues/2608)                        |
 | 2025-02-13 | `Migration-5.rocksdb.zip`   | For testing migration 5                                                                                              |
 | 2025-02-17 | `Migration-6.rocksdb.zip`   | For testing migration 6                                                                                              |
+| 2025-05-26 | `Migration-7.rocksdb.zip`   | For testing migration 7                                                                                              |
