@@ -1,3 +1,39 @@
+# v0.12.3 - 2025-06-XX
+This release includes UI improvements, performance optimisations, and bug fixes. 
+
+We've had a lot of great feedback in the last few releases. Based on your most common requests we're currently looking at adding Epic Games support for Cyberpunk 2077, allowing users to set the storage location for downloads, and better searching in the Mods/Library sections for future releases. Stay tuned!
+
+## Headers, Toolbars, and Mutli-select Improvements
+We've just completed another pass of UI improvements to make using the app even easier. Each page in the app now has a header, distinct icon and a little bit of flavour text to help you easily know which area of the app you are in. 
+
+![The headers for the My Mods and Library sections of the app.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1749470649-282660551.png)
+
+The toolbars just got smarter too! Now the toolbars are context-aware and will only show options that are relevant to the row(s) you have selected. We've paired this with a new selection indicator which shows how many mods you have selected (using Ctrl + Click or Shift + Click) and lets you quickly clear the selection.
+
+![An example the toolbar reacting to the selection of multiple rows.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1749470649-1422442403.gif)
+
+## More Features
+- Reworked file trees in the app to be more performant. This includes the "View Mods Files", "External Changes" and "Preview Changes" pages. 
+
+## Technical Changes
+- Added translations submitted by the community: Russian, Ukrainian, Portuguese (Brazil).
+- Updated the "Missing Game" flow to try and prevent duplicate reports of missing, unsupported games.
+- Added the correct headers to API requests for Nexus Mods.
+- Further developed the backend systems required to create an export collections.
+- Further developed the backend system to make a game-agnostic load order system.
+- General performance optimisations.
+
+## Bug Fixes
+- Improved the way the app registers to handle Nexus Mods downloads on Linux.
+- Fixed a bug where FOMODs would incorrectly report issues with some assets paths.
+
+## Known Issues
+* Collection success ratings will sometimes not match what is shown on the website.
+* The app will attempt to run the REDmod.exe even if it is not installed, resulting in an error message. 
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+
 # v0.11.3 - 2025-05-21
 This bugfix release addresses issues related to the REDmod load order which prevent it from working as intended.
 
