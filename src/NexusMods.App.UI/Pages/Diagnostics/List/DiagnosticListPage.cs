@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Loadouts.Ids;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;

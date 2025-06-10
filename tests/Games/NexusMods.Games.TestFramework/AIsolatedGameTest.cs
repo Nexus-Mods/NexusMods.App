@@ -547,7 +547,12 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
 
     public async Task DisposeAsync()
     {
-        await _host.StopAsync();
-        _host.Dispose();
+        // NOTE(erri120): forcing this method to complete within max 10 seconds
+        await _host.StopAsync(cancellationToken: new CancellationToken(canceled: true)).WaitAsync(timeout: TimeSpan.FromSeconds(1));
+        if (_host is IAsyncDisposable asyncDisposable) await asyncDisposable.DisposeAsync().AsTask().WaitAsync(timeout: TimeSpan.FromSeconds(8));
+        else
+        {
+            await Task.Run(() => _host.Dispose()).WaitAsync(timeout: TimeSpan.FromSeconds(8));
+        }
     }
 }

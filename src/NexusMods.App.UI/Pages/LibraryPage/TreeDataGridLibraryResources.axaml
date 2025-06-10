@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                     xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
 
@@ -99,6 +99,7 @@
         </DataTemplate.DataType>
 
         <StackPanel Orientation="Horizontal">
+            
             <!-- Update -->
             <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
@@ -111,7 +112,9 @@
                                                          Text="{CompiledBinding ButtonText.Value}"
                                                          Size="Small"
                                                          Type="Primary"
-                                                         Fill="Weak" />
+                                                         Fill="WeakAlt"
+                                                         LeftIcon="{x:Static icons:IconValues.Download}"
+                                                         ShowIcon="Left"/>
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
@@ -130,7 +133,9 @@
                                                              Text="{CompiledBinding ButtonText.Value}"
                                                              Size="Small"
                                                              Type="Primary"
-                                                             Fill="Strong"
+                                                             Fill="StrongAlt"
+                                                             LeftIcon="{x:Static icons:IconValues.Add}"
+                                                             ShowIcon="Left"
                                                              IsVisible="{CompiledBinding !IsInstalled.Value}"/>
                                     <StackPanel x:Name="InstalledStack"
                                                 Orientation="Horizontal"

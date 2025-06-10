@@ -4,7 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.LogicalTree;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Controls;
 
@@ -18,3 +18,4 @@ public class Toolbar : ItemsControl
         ItemsPanelProperty.OverrideDefaultValue<Toolbar>(DefaultPanel);
     }
 }
+

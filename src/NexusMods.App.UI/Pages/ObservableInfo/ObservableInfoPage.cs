@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Pages.ObservableInfo;
 

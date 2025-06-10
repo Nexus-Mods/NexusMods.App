@@ -7,7 +7,7 @@
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView">
 
@@ -37,7 +37,7 @@
                         <Grid Grid.Column="0" ColumnDefinitions="Auto, *, Auto">
                             <Border Grid.Column="0" x:Name="ScrollLeftButtonBorder">
                                 <controls:StandardButton x:Name="ScrollLeftButton"
-                                                         Size="ExtraSmall"
+                                                         Size="Toolbar"
                                                          ShowIcon="Left"
                                                          ShowLabel="False"
                                                          LeftIcon="{x:Static icons:IconValues.ChevronLeft}"
@@ -73,7 +73,7 @@
                                             HorizontalAlignment="Stretch">
 
                                         <controls:StandardButton x:Name="AddTabButton1"
-                                                                 Size="ExtraSmall"
+                                                                 Size="Toolbar"
                                                                  ShowIcon="Left"
                                                                  ShowLabel="False"
                                                                  LeftIcon="{x:Static icons:IconValues.Add}"
@@ -90,7 +90,7 @@
 
                                     <controls:StandardButton x:Name="AddTabButton2"
 
-                                                             Size="ExtraSmall"
+                                                             Size="Toolbar"
                                                              ShowIcon="Left"
                                                              ShowLabel="False"
                                                              LeftIcon="{x:Static icons:IconValues.Add}"
@@ -98,7 +98,7 @@
                                                              Margin="0" />
 
                                     <controls:StandardButton x:Name="ScrollRightButton"
-                                                             Size="ExtraSmall"
+                                                             Size="Toolbar"
                                                              ShowIcon="Left"
                                                              ShowLabel="False"
                                                              LeftIcon="{x:Static icons:IconValues.ChevronRight}"
@@ -118,7 +118,7 @@
                                 <!-- TODO: Remove this hiding Border when PoppedOut panels are implemented -->
                                 <Border IsVisible="False">
                                     <controls:StandardButton x:Name="PopOutPanelButton"
-                                                             Size="ExtraSmall"
+                                                             Size="Toolbar"
                                                              ShowIcon="Left"
                                                              ShowLabel="False"
                                                              LeftIcon="{x:Static icons:IconValues.OpenInNew}"
@@ -126,7 +126,7 @@
                                 </Border>
 
                                 <controls:StandardButton x:Name="ClosePanelButton"
-                                                         Size="ExtraSmall"
+                                                         Size="Toolbar"
                                                          ShowIcon="Left"
                                                          ShowLabel="False"
                                                          LeftIcon="{x:Static icons:IconValues.Close}"
@@ -148,7 +148,7 @@
                         Margin="0 8 8 0"
                         ZIndex="999">
                     <controls:StandardButton x:Name="ClosePanelButton2"
-                                             Size="ExtraSmall"
+                                             Size="Toolbar"
                                              ShowIcon="Left"
                                              ShowLabel="False"
                                              LeftIcon="{x:Static icons:IconValues.Close}"

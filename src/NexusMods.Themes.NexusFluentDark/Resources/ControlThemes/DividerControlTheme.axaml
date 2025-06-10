@@ -1,18 +1,18 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
     
     <Design.PreviewWith>
         <controls:Statusbar Classes="Primary">
             <StackPanel>
                 <controls:StandardButton Text="Button 3" Fill="Weak"
-                                         Size="ExtraSmall"
+                                         Size="Toolbar"
                                          ShowLabel="False"
                                          ShowIcon="Left"
                                          LeftIcon="{x:Static icons:IconValues.MoreVertical}" />
                 <controls:StandardButton Text="Button 3" Fill="Weak"
-                                         Size="ExtraSmall" />
+                                         Size="Toolbar" />
             </StackPanel>
             <TextBlock Text="1 of 9 required mods" />
             <controls:Divider />
