@@ -9,6 +9,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.UI.Sdk.Icons;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -433,6 +434,7 @@ public static class LibraryComponents
         public BindableReactiveProperty<bool> IsEnabled { get; }
         public BindableReactiveProperty<bool> IsHidden { get; }
         public BindableReactiveProperty<string> ButtonText { get; }
+        public BindableReactiveProperty<IconValue> Icon { get; }
 
         public int CompareTo(HideUpdatesAction? other)
         {
@@ -450,6 +452,12 @@ public static class LibraryComponents
             ButtonText = IsHidden.AsObservable()
                 .CombineLatest(itemCount, static (isHidden, count) => FormatShowUpdates(isHidden, count))
                 .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false, 0));
+            
+            // Icon changes based on hidden state
+            // Use Visibility when hidden (showing "Show Updates"), VisibilityOff when shown (showing "Hide Updates")
+            Icon = IsHidden.AsObservable()
+                .Select(static isHidden => isHidden ? IconValues.VisibilityOff : IconValues.Visibility)
+                .ToBindableReactiveProperty(initialValue: IconValues.Visibility);
         }
 
         private bool _isDisposed;
@@ -458,7 +466,7 @@ public static class LibraryComponents
             if (!_isDisposed)
             {
                 if (disposing)
-                    Disposable.Dispose(CommandHideUpdates, IsEnabled, IsHidden, ButtonText);
+                    Disposable.Dispose(CommandHideUpdates, IsEnabled, IsHidden, ButtonText, Icon);
 
                 _isDisposed = true;
             }
