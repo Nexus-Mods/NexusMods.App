@@ -86,7 +86,8 @@ public partial class Loadout
     /// </summary>
     public static async ValueTask<bool> IsCollectionEnabled(IDb db, EntityId collectionId)
     {
-        var isEnabled = await db.Topology.QueryAsync(IsCollectionEnabledFlow.Where(row => row.CollectionId == collectionId));
+        using var isEnabled = await db.Topology.QueryAsync(
+            IsCollectionEnabledFlow.Where(row => row.CollectionId == collectionId));
         return isEnabled.Count == 1 && isEnabled.First().IsCollectionEnabled;
     }
     
@@ -105,7 +106,7 @@ public partial class Loadout
             .MatchDefault(IsCollectionEnabledFlow.Rekey(row => row.CollectionId), 
                 collectionId, out var collectionIsEnabledData, 
                 EntityId.From(0), (CollectionId: EntityId.From(0), IsCollectionEnabled: true))
-            .Project(collectionIsEnabledData, row => row.Item2, out var collectionIsEnabled)
+            .Project(collectionIsEnabledData, row => row.IsCollectionEnabled, out var collectionIsEnabled)
             .Return(groupId, collectionIsEnabled ,isModEnabled)
             .Select(row => (row.Item1, row.Item2 && row.Item3)); 
     
@@ -114,7 +115,9 @@ public partial class Loadout
     /// </summary>
     public static async ValueTask<bool> IsLoadoutItemGroupEnabled(IDb db, EntityId loadoutItemGroupId)
     {
-        var isEnabled = await db.Topology.QueryAsync(IsLoadoutItemGroupEnabledFlow.Where(row => row.GroupId == loadoutItemGroupId));
+        using var isEnabled = await db.Topology.QueryAsync(
+            IsLoadoutItemGroupEnabledFlow.Where(row => row.GroupId == loadoutItemGroupId)
+        );
         return isEnabled.Count == 1 && isEnabled.First().IsModEnabled;
     }
     
@@ -136,7 +139,32 @@ public partial class Loadout
     /// </summary>
     public static async ValueTask<bool> IsLoadoutItemEnabled(IDb db, EntityId loadoutItemId)
     {
-        var isEnabled = await db.Topology.QueryAsync(IsLoadoutItemEnabledFlow.Where(row => row.LoaodutItemId == loadoutItemId));
+        using var isEnabled = await db.Topology.QueryAsync(
+            IsLoadoutItemEnabledFlow.Where(row => row.LoaodutItemId == loadoutItemId)
+        );
         return isEnabled.Count == 1 && isEnabled.First().IsLoadoutItemEnabled;
+    }
+    
+    /// <summary>
+    /// Returns all enabled LoadoutItemsWithTargetPath in a loadout.
+    /// </summary>
+    public static readonly Flow<(EntityId LoadoutId, EntityId LoadoutItemWithTargetPathId)> EnabledLoadoutItemsWithTargetPathFlow =
+        Pattern.Create()
+            .Db(out var itemId, LoadoutItemWithTargetPath.TargetPath, out _)
+            .Db(itemId, LoadoutItem.LoadoutId, out var loadoutId)
+            .Match(IsLoadoutItemEnabledFlow, itemId, out var isEnabled)
+            .Return(loadoutId, itemId, isEnabled)
+            .Where(row => row.Item3.Equals(true))
+            .Select(row => (LoadoutId: row.Item1, LoadoutItemWithTargetPathId: row.Item2));
+
+    /// <summary>
+    /// Returns all enabled LoadoutItemsWithTargetPath in a loadout.
+    /// </summary>
+    public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> GetEnabledLoadoutItemsWithTargetPath(IDb db, LoadoutId loadoutId)
+    {
+        using var items = db.Topology.Query(
+            EnabledLoadoutItemsWithTargetPathFlow.Where(row => row.LoadoutId == loadoutId.Value)
+        );
+        return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId));
     }
 }
