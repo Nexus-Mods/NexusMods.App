@@ -45,7 +45,7 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The overall rating of this revision (often displayed as a percentage).
     /// </summary>
-    public static readonly FloatAttribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
+    public static readonly Float32Attribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
 
     /// <summary>
     /// The total number of ratings this revision has.
