@@ -6,7 +6,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Resources;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using R3;
 using ReactiveUI;

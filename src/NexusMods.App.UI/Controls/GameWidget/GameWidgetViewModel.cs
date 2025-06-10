@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
