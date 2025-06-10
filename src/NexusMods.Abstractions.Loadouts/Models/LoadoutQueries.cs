@@ -84,9 +84,9 @@ public partial class Loadout
     /// <summary>
     /// Returns whether a collection is enabled or not
     /// </summary>
-    public static bool IsCollectionEnabled(IDb db, EntityId collectionId)
+    public static async ValueTask<bool> IsCollectionEnabled(IDb db, EntityId collectionId)
     {
-        var isEnabled = db.Topology.Query(IsCollectionEnabledFlow.Where(row => row.CollectionId == collectionId));
+        var isEnabled = await db.Topology.QueryAsync(IsCollectionEnabledFlow.Where(row => row.CollectionId == collectionId));
         return isEnabled.Count == 1 && isEnabled.First().IsCollectionEnabled;
     }
     
@@ -99,11 +99,12 @@ public partial class Loadout
             .DbOrDefault(Query.Db, groupId, LoadoutItem.Disabled, out var modDisabled, default(Null))
             // Group is enabled if the Disabled attribute is missing, so if it is default.
             .Project(modDisabled, disabled => disabled.IsDefault, out var isModEnabled)
+            // .Return(groupId, isModEnabled);
             // Some groups my not have a parent collection, so in that case we take true as collectionIsEnabled value.
-            .DbOrDefault(groupId, LoadoutItem.Parent, out var collectionId, default(EntityId))
+            .DbOrDefault(groupId, LoadoutItem.Parent, out var collectionId, EntityId.From(0))
             .MatchDefault(IsCollectionEnabledFlow.Rekey(row => row.CollectionId), 
                 collectionId, out var collectionIsEnabledData, 
-                default(EntityId), (CollectionId: default(EntityId), IsCollectionEnabled: true))
+                EntityId.From(0), (CollectionId: EntityId.From(0), IsCollectionEnabled: true))
             .Project(collectionIsEnabledData, row => row.Item2, out var collectionIsEnabled)
             .Return(groupId, collectionIsEnabled ,isModEnabled)
             .Select(row => (row.Item1, row.Item2 && row.Item3)); 
@@ -111,9 +112,9 @@ public partial class Loadout
     /// <summary>
     /// Returns whether a loadoutItemGroup is enabled or not, also considering the parent collection's enabled state.
     /// </summary>
-    public static bool IsLoadoutItemGroupEnabled(IDb db, EntityId loadoutItemGroupId)
+    public static async ValueTask<bool> IsLoadoutItemGroupEnabled(IDb db, EntityId loadoutItemGroupId)
     {
-        var isEnabled = db.Topology.Query(IsLoadoutItemGroupEnabledFlow.Where(row => row.GroupId == loadoutItemGroupId));
+        var isEnabled = await db.Topology.QueryAsync(IsLoadoutItemGroupEnabledFlow.Where(row => row.GroupId == loadoutItemGroupId));
         return isEnabled.Count == 1 && isEnabled.First().IsModEnabled;
     }
     
@@ -133,9 +134,9 @@ public partial class Loadout
     /// <summary>
     /// Returns whether a loadoutItem is enabled or not, also considering the enabled states of the parent group and collection.
     /// </summary>
-    public static bool IsLoadoutItemEnabled(IDb db, EntityId loadoutItemId)
+    public static async ValueTask<bool> IsLoadoutItemEnabled(IDb db, EntityId loadoutItemId)
     {
-        var isEnabled = db.Topology.Query(IsLoadoutItemEnabledFlow.Where(row => row.LoaodutItemId == loadoutItemId));
+        var isEnabled = await db.Topology.QueryAsync(IsLoadoutItemEnabledFlow.Where(row => row.LoaodutItemId == loadoutItemId));
         return isEnabled.Count == 1 && isEnabled.First().IsLoadoutItemEnabled;
     }
 }

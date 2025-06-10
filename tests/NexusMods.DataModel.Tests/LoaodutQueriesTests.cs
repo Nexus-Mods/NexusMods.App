@@ -77,7 +77,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         var collection = await CreateCollection(loadout.LoadoutId, "Collection 1");
         
         // Check if the collection is enabled
-        var initialIsEnabled = Loadout.IsCollectionEnabled(Connection.Db, collection.Id);
+        var initialIsEnabled = await Loadout.IsCollectionEnabled(Connection.Db, collection.Id);
         initialIsEnabled.Should().BeTrue();
         
         // Disable the collection
@@ -85,7 +85,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         tx.Add(collection.Id, LoadoutItem.Disabled, Null.Instance, isRetract: false);
         var result = await tx.Commit();
         
-        var finalIsEnabled = Loadout.IsCollectionEnabled(Connection.Db, collection.Id);
+        var finalIsEnabled = await Loadout.IsCollectionEnabled(Connection.Db, collection.Id);
         finalIsEnabled.Should().BeFalse();
     }
     
@@ -113,7 +113,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         group.AsLoadoutItem().IsEnabled().Should().BeTrue();
         
         // Check if the group is enabled
-        var isEnabled = Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
+        var isEnabled = await Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
         isEnabled.Should().BeTrue();
 
         // Disable the group
@@ -122,7 +122,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx1.Commit();
         
         // Should now be disabled
-        isEnabled = Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
+        isEnabled = await Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
         isEnabled.Should().BeFalse();
         
         // Re-enable the group
@@ -131,7 +131,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx2.Commit();
         
         // Should now be enabled
-        isEnabled = Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
+        isEnabled = await Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
         isEnabled.Should().BeTrue();
         
         // Disable the collection
@@ -140,7 +140,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx3.Commit();
         
         // Should now be disabled due to collection being disabled
-        isEnabled = Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
+        isEnabled = await Loadout.IsLoadoutItemGroupEnabled(Connection.Db, group.Id);
         isEnabled.Should().BeFalse();
     }
     
@@ -168,7 +168,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         item.IsEnabled().Should().BeTrue();
 
         // Check if the item is enabled
-        var isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        var isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeTrue();
 
         // Disable the item
@@ -177,7 +177,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx2.Commit();
         
         // Should now be disabled
-        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeFalse();
         
         // Re-enable the item
@@ -186,7 +186,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx3.Commit();
         
         // Should now be enabled
-        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeTrue();
         
         // Disable the collection
@@ -195,7 +195,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx4.Commit();
         
         // Should now be disabled due to collection being disabled
-        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeFalse();
         
         // Re-enable the collection
@@ -204,7 +204,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx5.Commit();
         
         // Should now be enabled again
-        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeTrue();
         
         // Disable the group
@@ -214,7 +214,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx6.Commit();
         
         // Should now be disabled due to group being disabled
-        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeFalse();
     }
     
@@ -241,7 +241,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         item.IsEnabled().Should().BeTrue();
 
         // Check if the item is enabled
-        var isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        var isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeTrue();
 
         // Disable the item
@@ -250,7 +250,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx2.Commit();
         
         // Should now be disabled
-        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeFalse();
         
         // Re-enable the item
@@ -259,7 +259,7 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         await tx3.Commit();
         
         // Should now be enabled
-        isEnabled = Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
+        isEnabled = await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id);
         isEnabled.Should().BeTrue();
     }
     
