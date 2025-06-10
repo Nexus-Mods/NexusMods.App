@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x8220DBC3E5C20958
-   - Total attributes: 211
-   - Total namespaces: 71
+   - Fingerprint: 0x12CC31F0F026EAC1
+   - Total attributes: 213
+   - Total namespaces: 72
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -158,6 +158,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageResource              | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageUri                   | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Category                             | Reference               | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/CollectionId                         | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Endorsements                         | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/GameId                               | UInt32                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Name                                 | Utf8                    | False   | False | False     | 
@@ -199,6 +200,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.User/AvatarUri                                          | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.User/Name                                               | Utf8                    | True    | False | False     | 
 | NexusMods.NexusModsLibrary.User/NexusId                                            | UInt64                  | True    | False | False     | 
+| NexusMods.NexusWebApi.Filters.IgnoreFileUpdateModel/Uid                            | UInt64                  | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/Domain                             | Ascii                   | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/GameId                             | UInt32                  | True    | False | False     | 
 | NexusMods.RedEngine.Cyberpunk2077.RedModLoadoutGroup/RedModInfoFile                | Reference               | False   | False | False     | 
