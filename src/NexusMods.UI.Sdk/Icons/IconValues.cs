@@ -144,6 +144,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/eye/
     public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
+
+    // https://pictogrammers.com/library/mdi/icon/eye/
+    public static readonly IconValue VisibilityOff = new ProjektankerIcon("mdi-eye-off");
     
     // https://pictogrammers.com/library/mdi/icon/view-carousel/
     public static readonly IconValue ViewCarousel = new ProjektankerIcon("mdi-view-carousel");
