@@ -12,6 +12,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.Networking.NexusWebApi;
 using R3;
 
 namespace NexusMods.App.UI.Pages;
@@ -137,6 +138,38 @@ public static class LibraryDataProviderHelper
         var isHiddenObservable = R3.Observable.Return(false);
         var itemCountObservable = R3.Observable.Return(1);
         
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
+    }
+
+    public static void AddHideUpdatesActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        IObservable<Optional<ModUpdateOnPage>> fileUpdateObservable,
+        bool isEnabled = true)
+    {
+        // TODO: Wire up proper hidden state observable
+        var isHiddenObservable = R3.Observable.Return(false);
+        
+        // For individual files: count is 1 if update available, 0 if not
+        var itemCountObservable = fileUpdateObservable
+            .Select(static optional => optional.HasValue ? 1 : 0)
+            .ToObservable();
+
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
+    }
+
+    public static void AddHideUpdatesActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        IObservable<Optional<ModUpdatesOnModPage>> modPageUpdateObservable,
+        bool isEnabled = true)
+    {
+        // TODO: Wire up proper hidden state observable
+        var isHiddenObservable = R3.Observable.Return(false);
+        
+        // For mod pages: count is NumberOfModFilesToUpdate
+        var itemCountObservable = modPageUpdateObservable
+            .Select(static optional => optional.HasValue ? optional.Value.NumberOfModFilesToUpdate : 0)
+            .ToObservable();
+
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
     }
 }

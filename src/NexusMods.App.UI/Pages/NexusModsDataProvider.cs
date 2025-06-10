@@ -200,8 +200,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
         LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
-        // TODO: Wire up proper observables for hide updates functionality at parent/mod page level
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel);
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, newestFiles);
 
         return parentItemModel;
     }
@@ -227,8 +226,6 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
-        // TODO: Wire up proper observables for hide updates functionality at individual mod level
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel);
 
         // Update available
         var newestVersionObservable = _modUpdateService
@@ -257,6 +254,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 valueObservable
             )
         );
+
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFile);
 
         return itemModel;
     }
