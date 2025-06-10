@@ -1,5 +1,4 @@
 using DynamicData.Kernel;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -25,14 +24,17 @@ public static partial class CollectionGroupLoaderExtensions
     /// <summary>
     /// Find the user collection for a given loadout
     /// </summary>
-    /// <param name="loadout"></param>
-    /// <returns></returns>
-    public static IEnumerable<CollectionGroup.ReadOnly> MutableCollections(this Loadout.ReadOnly loadout)
+    public static async ValueTask<CollectionGroup.ReadOnly[]> MutableCollections(this Loadout.ReadOnly loadout)
     {
         var db = loadout.Db;
-        return db
-            .Datoms((LoadoutItem.LoadoutId, loadout.Id), 
-                (CollectionGroup.IsReadOnly, false))
-            .Select(e => CollectionGroup.Load(db, e));
+        using var query = await db.Topology.QueryAsync(Loadout.MutableCollections);
+
+        var result = query
+            .Where(x => x.Loadout == loadout)
+            .Select(x => CollectionGroup.Load(db, x.CollectionGroup))
+            .OrderBy(x => x.Id)
+            .ToArray();
+
+        return result;
     }
 }

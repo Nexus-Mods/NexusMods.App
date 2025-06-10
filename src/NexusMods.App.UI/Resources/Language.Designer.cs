@@ -1570,6 +1570,1018 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Modified.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Modified {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Modified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removed.
+        /// </summary>
+        public static string IFileTreeNodeViewModel_ToFormattedChangeState_Removed {
+            get {
+                return ResourceManager.GetString("IFileTreeNodeViewModel_ToFormattedChangeState_Removed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Did you know?.
+        /// </summary>
+        public static string InfoBanner_PrefixProperty_Did_you_know_ {
+            get {
+                return ResourceManager.GetString("InfoBanner_PrefixProperty_Did_you_know_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ingest.
+        /// </summary>
+        public static string IngestButtonTextBlock_Text {
+            get {
+                return ResourceManager.GetString("IngestButtonTextBlock_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Downloads.
+        /// </summary>
+        public static string InProgress_NoDownloadsTextBlock {
+            get {
+                return ResourceManager.GetString("InProgress_NoDownloadsTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string InProgressDownloadsPage_Title {
+            get {
+                return ResourceManager.GetString("InProgressDownloadsPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string InProgressTitleTextBlock {
+            get {
+                return ResourceManager.GetString("InProgressTitleTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to remaining.
+        /// </summary>
+        public static string InProgressView_InProgressView_Remaining {
+            get {
+                return ResourceManager.GetString("InProgressView_InProgressView_Remaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PLAY.
+        /// </summary>
+        public static string LaunchButtonViewModel_LaunchGame_LAUNCH {
+            get {
+                return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_LAUNCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GAME RUNNING....
+        /// </summary>
+        public static string LaunchButtonViewModel_LaunchGame_RUNNING {
+            get {
+                return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_RUNNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click to launch the game.
+        /// </summary>
+        public static string LaunchButtonViewModel_LaunchGame_ToolTip {
+            get {
+                return ResourceManager.GetString("LaunchButtonViewModel_LaunchGame_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed Mods.
+        /// </summary>
+        public static string LeftMenu_Label_Installed_Mods {
+            get {
+                return ResourceManager.GetString("LeftMenu_Label_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Utilities.
+        /// </summary>
+        public static string LeftMenu_Label_Utilities {
+            get {
+                return ResourceManager.GetString("LeftMenu_Label_Utilities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} selected.
+        /// </summary>
+        public static string Library_DeselectItemsButton_Text {
+            get {
+                return ResourceManager.GetString("Library_DeselectItemsButton_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clears the selection. Ctrl+Click selects/deselects items. Shift+Click selects a range..
+        /// </summary>
+        public static string Library_DeselectItemsButton_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_DeselectItemsButton_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download all.
+        /// </summary>
+        public static string LibraryItemButtonUpdate_All {
+            get {
+                return ResourceManager.GetString("LibraryItemButtonUpdate_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download update ({0}).
+        /// </summary>
+        public static string LibraryItemButtonUpdate_CounterInBracket {
+            get {
+                return ResourceManager.GetString("LibraryItemButtonUpdate_CounterInBracket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download update.
+        /// </summary>
+        public static string LibraryItemButtonUpdate_Single {
+            get {
+                return ResourceManager.GetString("LibraryItemButtonUpdate_Single", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete mod(s).
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_DeleteModsButton {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_DeleteModsButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting these mods permanently removes them from the app:.
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_HeaderQuestion {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_HeaderQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Permanently delete mod(s).
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_Title {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Used by {0}:.
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_UsedBy {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Used by {0} - {1}:.
+        /// </summary>
+        public static string LibraryItemDeleteConfirmation_UsedByWithLoadout {
+            get {
+                return ResourceManager.GetString("LibraryItemDeleteConfirmation_UsedByWithLoadout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage your downloaded mods and collections. Install, update or add more..
+        /// </summary>
+        public static string LibraryPageDescription {
+            get {
+                return ResourceManager.GetString("LibraryPageDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Library.
+        /// </summary>
+        public static string LibraryPageTitle {
+            get {
+                return ResourceManager.GetString("LibraryPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manage downloaded mods and collections.
+        /// </summary>
+        public static string LibraryPageTitleToolTip {
+            get {
+                return ResourceManager.GetString("LibraryPageTitleToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Loadout.
+        /// </summary>
+        public static string LoadoutCard_DeleteLoadoutToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutCard_DeleteLoadoutToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Copy.
+        /// </summary>
+        public static string LoadoutCardViewCreateCopyButton {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewCreateCopyButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating....
+        /// </summary>
+        public static string LoadoutCardViewCreatingText {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewCreatingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Currently Applied.
+        /// </summary>
+        public static string LoadoutCardViewCurrentlyAppliedTextBlock {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewCurrentlyAppliedTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deleting....
+        /// </summary>
+        public static string LoadoutCardViewDeletingText {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewDeletingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created {0}.
+        /// </summary>
+        public static string LoadoutCardViewModel_CreationTimeConverter_Created__0_ {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewModel_CreationTimeConverter_Created__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last applied: {0}.
+        /// </summary>
+        public static string LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_ {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewModel_FormatLastAppliedTime_Last_applied__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mods {0}.
+        /// </summary>
+        public static string LoadoutCardViewModel_FormatNumMods_Mods__0_ {
+            get {
+                return ResourceManager.GetString("LoadoutCardViewModel_FormatNumMods_Mods__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install your mods from the Library.
+        /// </summary>
+        public static string LoadoutGrid_EmptyModlistSubtitle_Add_from_library {
+            get {
+                return ResourceManager.GetString("LoadoutGrid_EmptyModlistSubtitle_Add_from_library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall.
+        /// </summary>
+        public static string LoadoutGridView__Remove {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall the selected mod(s) from this loadout.
+        /// </summary>
+        public static string LoadoutGridView__Remove_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__Remove_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View Mod files.
+        /// </summary>
+        public static string LoadoutGridView__View_Files {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__View_Files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View files contained within this mod.
+        /// </summary>
+        public static string LoadoutGridView__View_Files_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutGridView__View_Files_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a mod file to install..
+        /// </summary>
+        public static string LoadoutGridView_AddMod_FilePicker_Title {
+            get {
+                return ResourceManager.GetString("LoadoutGridView_AddMod_FilePicker_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archive.
+        /// </summary>
+        public static string LoadoutGridView_AddMod_FileType_Archive {
+            get {
+                return ResourceManager.GetString("LoadoutGridView_AddMod_FileType_Archive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No mods added to {0}.
+        /// </summary>
+        public static string LoadoutGridViewModel_EmptyModlistTitleString {
+            get {
+                return ResourceManager.GetString("LoadoutGridViewModel_EmptyModlistTitleString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Review your Loadout for any issues and learn how to resolve them if needed.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_Diagnostics_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_Diagnostics_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External Changes.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_External_Changes {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_External_Changes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Review, remove, or restore changes made outside the app..
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_External_Changes_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_External_Changes_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Health Check.
+        /// </summary>
+        public static string LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics {
+            get {
+                return ResourceManager.GetString("LoadoutLeftMenuViewModel_LoadoutLeftMenuViewModel_Diagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All ({0}).
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods_Default {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods_Default", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View and manage all installed mods.
+        /// </summary>
+        public static string LoadoutView_Title_Installed_Mods_ToolTip {
+            get {
+                return ResourceManager.GetString("LoadoutView_Title_Installed_Mods_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string LoadoutViewPageTitle {
+            get {
+                return ResourceManager.GetString("LoadoutViewPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To easily download mods from Nexus Mods you will need to log in with your Nexus Mods account. /// ///To add mods manually from your drive, you do not need to log in..
+        /// </summary>
+        public static string LoginMessageView_BodyTextBlock {
+            get {
+                return ResourceManager.GetString("LoginMessageView_BodyTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log in to get started.
+        /// </summary>
+        public static string LoginMessageView_Title {
+            get {
+                return ResourceManager.GetString("LoginMessageView_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string ManageGameWarning_Cancel {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        public static string ManageGameWarning_Continue {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Continue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you have existing mods, they will be detected and can be used alongside the app in the ‘External Changes’ page. /// ///However, if you later stop managing this game or uninstall the app, those mods will be permanently removed from your game folder..
+        /// </summary>
+        public static string ManageGameWarning_Desc1 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To keep any mods you want to save, please back them up before continuing..
+        /// </summary>
+        public static string ManageGameWarning_Desc2 {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Desc2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Managing this game will affect existing mods.
+        /// </summary>
+        public static string ManageGameWarning_Title {
+            get {
+                return ResourceManager.GetString("ManageGameWarning_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please wait while we verify the added file..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_CheckingText {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_CheckingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Checking Added File.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_CheckingTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_CheckingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Report bug.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorReportBugText {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorReportBugText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please check you added the correct file and version..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep1 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For guidance, check the &apos;Additional Instructions&apos; tab which may include further details on the required file and version..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep2 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you can’t find the correct file, consider reporting the issue to the collection curator as a potential bug..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorStep3 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorStep3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect Mod File Added.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_ErrorTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_ErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This collection requires specific mod file(s) from third-party websites to be complete. Follow these steps to proceed with the manual download:.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoDescription {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Collection curator has provided the following additional instructions:.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoInstructionsDescription {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoInstructionsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click the &apos;Open Browser&apos; button below to navigate to the required website..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep1 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locate and download the mod file &apos;{0}&apos; (File size: {1}).
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep2 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Return to this modal and add the downloaded file(s) using the &apos;Add File&apos; button..
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoStep3 {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoStep3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manual Download Required.
+        /// </summary>
+        public static string ManualDownloadRequiredOverlayView_InfoTitle {
+            get {
+                return ResourceManager.GetString("ManualDownloadRequiredOverlayView_InfoTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max panels reached.
+        /// </summary>
+        public static string MaxPanelsAddedToolTip {
+            get {
+                return ResourceManager.GetString("MaxPanelsAddedToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        public static string MessageBox_Button_No {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string MessageBox_Button_Ok {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string MessageBox_Button_Yes {
+            get {
+                return ResourceManager.GetString("MessageBox_Button_Yes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow.
+        /// </summary>
+        public static string MetricsOptIn_ALLOW {
+            get {
+                return ResourceManager.GetString("MetricsOptIn_ALLOW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deny.
+        /// </summary>
+        public static string MetricsOptIn_DENY {
+            get {
+                return ResourceManager.GetString("MetricsOptIn_DENY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We’d like to collect diagnostics and usage data to improve performance and enhance your experience. This data helps us identify issues, optimize features, and ensure the Nexus Mods app works better for everyone.
+        ///
+        ///Your data will be processed in accordance with our Privacy Policy. You can change your preference anytime in settings.
+        ///
+        ///Would you like to enable data collection?.
+        /// </summary>
+        public static string MetricsOptIn_MainMessage {
+            get {
+                return ResourceManager.GetString("MetricsOptIn_MainMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Diagnostics and usage data.
+        /// </summary>
+        public static string MetricsOptIn_OverlayTitle {
+            get {
+                return ResourceManager.GetString("MetricsOptIn_OverlayTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to remaining.
+        /// </summary>
+        public static string MinutesRemainingTextBlock {
+            get {
+                return ResourceManager.GetString("MinutesRemainingTextBlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files: {0} ({1}).
+        /// </summary>
+        public static string ModFileTreeViewModel_StatusBar_Files__0__1 {
+            get {
+                return ResourceManager.GetString("ModFileTreeViewModel_StatusBar_Files__0__1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My Games.
+        /// </summary>
+        public static string MyGames {
+            get {
+                return ResourceManager.GetString("MyGames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Supported Games.
+        /// </summary>
+        public static string MyGamesView__Detected_games {
+            get {
+                return ResourceManager.GetString("MyGamesView__Detected_games", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All supported games have been added. No new games detected..
+        /// </summary>
+        public static string MyGamesView__NoGamesDetectedText {
+            get {
+                return ResourceManager.GetString("MyGamesView__NoGamesDetectedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add games to start modding.
+        /// </summary>
+        public static string MyGamesView__NoGamesManagedText {
+            get {
+                return ResourceManager.GetString("MyGamesView__NoGamesManagedText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add games to get started.
+        /// </summary>
+        public static string MyGamesView__Page_Description {
+            get {
+                return ResourceManager.GetString("MyGamesView__Page_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Games Added.
+        /// </summary>
+        public static string MyGamesView__Ready_to_mod {
+            get {
+                return ResourceManager.GetString("MyGamesView__Ready_to_mod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to add a game before using Loadouts.
+        /// </summary>
+        public static string MyLoadoutsEmptyState_Header {
+            get {
+                return ResourceManager.GetString("MyLoadoutsEmptyState_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loadouts enable you to switch between various play styles by customising each with different mods and configurations..
+        /// </summary>
+        public static string MyLoadoutsEmptyState_Subtitle {
+            get {
+                return ResourceManager.GetString("MyLoadoutsEmptyState_Subtitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} Loadouts.
+        /// </summary>
+        public static string MyLoadoutsGameSectionHeading {
+            get {
+                return ResourceManager.GetString("MyLoadoutsGameSectionHeading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create game Loadouts which contain their own individual mod preferences and settings. Switch between Loadouts and apply the one you want to play..
+        /// </summary>
+        public static string MyLoadoutsPageDescriptionText {
+            get {
+                return ResourceManager.GetString("MyLoadoutsPageDescriptionText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My Loadouts.
+        /// </summary>
+        public static string MyLoadoutsPageTitle {
+            get {
+                return ResourceManager.GetString("MyLoadoutsPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open in new panel.
+        /// </summary>
+        public static string NavigationControl_NavigationControl_Open_in_new_panel {
+            get {
+                return ResourceManager.GetString("NavigationControl_NavigationControl_Open_in_new_panel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open in new tab.
+        /// </summary>
+        public static string NavigationControl_NavigationControl_Open_in_new_tab {
+            get {
+                return ResourceManager.GetString("NavigationControl_NavigationControl_Open_in_new_tab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Newsfeed.
+        /// </summary>
+        public static string Newsfeed {
+            get {
+                return ResourceManager.GetString("Newsfeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can add panels for split screen viewing by selecting the.
+        /// </summary>
+        public static string NewTabPageInfoBannerText1 {
+            get {
+                return ResourceManager.GetString("NewTabPageInfoBannerText1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to button in the toolbar.
+        /// </summary>
+        public static string NewTabPageInfoBannerText2 {
+            get {
+                return ResourceManager.GetString("NewTabPageInfoBannerText2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FREE.
+        /// </summary>
+        public static string Nexus_Premium_Status__Free {
+            get {
+                return ResourceManager.GetString("Nexus_Premium_Status__Free", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PREMIUM.
+        /// </summary>
+        public static string Nexus_Premium_Status__Premium {
+            get {
+                return ResourceManager.GetString("Nexus_Premium_Status__Premium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SUPPORTER.
+        /// </summary>
+        public static string Nexus_Premium_Status__Supporter {
+            get {
+                return ResourceManager.GetString("Nexus_Premium_Status__Supporter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Browser didn&apos;t open automatically?.
+        /// </summary>
+        public static string NexusLoginOverlayView__BROWSER_DIDNT_OPEN {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView__BROWSER_DIDNT_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please click &quot;Authorise&quot; on the website.
+        /// </summary>
+        public static string NexusLoginOverlayView__Please_Click_Authorize {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView__Please_Click_Authorize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please copy the following URL into your browser window. We support Chrome, Safari, Firefox and Edge..
+        /// </summary>
+        public static string NexusLoginOverlayView_Please_copy_url {
+            get {
+                return ResourceManager.GetString("NexusLoginOverlayView_Please_copy_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord.
+        /// </summary>
+        public static string OpenDiscordMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenDiscordMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nexus Mods forums.
+        /// </summary>
+        public static string OpenForumsMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenForumsMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GitHub.
+        /// </summary>
+        public static string OpenGitHubMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenGitHubMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status page.
+        /// </summary>
+        public static string OpenStatusPageMenuItem_Header {
+            get {
+                return ResourceManager.GetString("OpenStatusPageMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add tab.
+        /// </summary>
+        public static string Panel_Add_tab_ToolTip {
+            get {
+                return ResourceManager.GetString("Panel_Add_tab_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Tab.
+        /// </summary>
+        public static string PanelTabHeaderViewModel_Title_New_Tab {
+            get {
+                return ResourceManager.GetString("PanelTabHeaderViewModel_Title_New_Tab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total {1:0}%.
+        /// </summary>
+        public static string ProgressBar_ProgressTextFormat__Total_1_0 {
+            get {
+                return ResourceManager.GetString("ProgressBar_ProgressTextFormat__Total_1_0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string RemoveGameOverlayView_CancelButton {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_CancelButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing will uninstall all mods and collections for {0}, but your downloaded mods will remain. If you re-add the game, those mods will still be available in your Library..
+        /// </summary>
+        public static string RemoveGameOverlayView_Description {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove game and mods.
+        /// </summary>
+        public static string RemoveGameOverlayView_RemoveButton {
+            get {
+                return ResourceManager.GetString("RemoveGameOverlayView_RemoveButton", resourceCulture);
+            }
+        }
+        
         public static string LibraryItemButtonUpdate_Single {
             get {
                 return ResourceManager.GetString("LibraryItemButtonUpdate_Single", resourceCulture);
@@ -1885,6 +2897,102 @@ namespace NexusMods.App.UI.Resources {
         public static string UpgradeToPremiumView_UpgradeButton {
             get {
                 return ResourceManager.GetString("UpgradeToPremiumView_UpgradeButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View app logs.
+        /// </summary>
+        public static string ViewAppLogsMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ViewAppLogsMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View changelog.
+        /// </summary>
+        public static string ViewChangelogMenuItem_Header {
+            get {
+                return ResourceManager.GetString("ViewChangelogMenuItem.Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location:.
+        /// </summary>
+        public static string ViewModFilesView_Location {
+            get {
+                return ResourceManager.GetString("ViewModFilesView_Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location:.
+        /// </summary>
+        public static string ViewModFilesView_Locations {
+            get {
+                return ResourceManager.GetString("ViewModFilesView_Locations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod Not Found.
+        /// </summary>
+        public static string ViewModInfoPage_NotFound_Title {
+            get {
+                return ResourceManager.GetString("ViewModInfoPage_NotFound_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod Info.
+        /// </summary>
+        public static string ViewModInfoPage_Title {
+            get {
+                return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
+            }
+        }
+        
+        public static string LibraryComponents_InstallAction_ButtonText_Installed {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Installed", resourceCulture);
+            }
+        }
+        
+        public static string LibraryComponents_InstallAction_ButtonText_Install {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Install", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloaded {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloaded", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloading {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloading", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_DownloadAction_ButtonText_Download {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Download", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload", resourceCulture);
             }
         }
     }

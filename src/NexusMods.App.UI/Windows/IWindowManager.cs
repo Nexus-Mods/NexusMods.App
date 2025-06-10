@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.WorkspaceSystem;
 
 namespace NexusMods.App.UI.Windows;
@@ -56,4 +58,15 @@ public interface IWindowManager
     /// <param name="window"></param>
     /// <returns>Whether the restore was successful.</returns>
     public bool RestoreWindowState(IWorkspaceWindow window);
+
+    /// <summary>
+    /// Displays a dialog window of the specified type.
+    /// </summary>
+    /// <param name="dialog">The dialog to display.</param>
+    /// <param name="windowType">The type of the dialog window.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains the button definition ID 
+    /// of the button that was clicked to close the dialog.
+    /// </returns>
+    public Task<ButtonDefinitionId> ShowDialog(IDialog<ButtonDefinitionId> dialog, DialogWindowType windowType);
 }

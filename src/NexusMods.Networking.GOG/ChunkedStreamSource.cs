@@ -78,7 +78,7 @@ internal class ChunkedStreamSource : IChunkedStreamSource
         );
 
         #if DEBUG
-        var md5 = Md5.From(MD5.HashData(buffer.Span));
+        var md5 = Md5Value.From(MD5.HashData(buffer.Span));
         Debug.Assert(md5.Equals(chunk.Md5));
         #endif
         

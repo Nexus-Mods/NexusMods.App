@@ -9,7 +9,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.Paths;

@@ -5,7 +5,7 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:items="clr-namespace:NexusMods.App.UI.LeftMenu.Items"
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.LeftMenuItemView">

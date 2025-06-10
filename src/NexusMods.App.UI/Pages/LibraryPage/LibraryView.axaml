@@ -7,11 +7,13 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:collections="clr-namespace:NexusMods.App.UI.Pages.LibraryPage.Collections"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+    xmlns:loadouts="clr-namespace:NexusMods.Abstractions.Loadouts;assembly=NexusMods.Abstractions.Loadouts"
+    xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
 
@@ -119,6 +121,16 @@
                                                      LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}"
                                                      Classes="Danger" />
+                        </ItemsControl>
+
+                        <ItemsControl x:Name="InstallationTargetControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+                            <ComboBox x:Name="InstallationTargetSelector">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate DataType="local:InstallationTarget">
+                                        <TextBlock Text="{CompiledBinding Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </ItemsControl>
 
                         <!-- static button group -->

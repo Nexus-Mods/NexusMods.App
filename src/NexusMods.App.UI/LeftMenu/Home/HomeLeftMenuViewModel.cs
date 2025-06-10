@@ -8,7 +8,7 @@ using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Home;

@@ -11,7 +11,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls">
 
