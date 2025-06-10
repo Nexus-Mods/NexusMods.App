@@ -1,4 +1,4 @@
-# v0.12.3 - 2025-06-XX
+# v0.12.3 - 2025-06-10
 This release includes UI improvements, performance optimisations, and bug fixes. 
 
 We've had a lot of great feedback in the last few releases. Based on your most common requests we're currently looking at adding Epic Games support for Cyberpunk 2077, allowing users to set the storage location for downloads, and better searching in the Mods/Library sections for future releases. Stay tuned!
