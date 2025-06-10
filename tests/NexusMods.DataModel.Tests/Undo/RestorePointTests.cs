@@ -53,6 +53,8 @@ public class RestorePointTests(ITestOutputHelper helper) : AArchivedDatabaseTest
     [Fact]
     public async Task UndoDoesntCorruptTheDatabase()
     {
+        // NOTE(erri120): The database being loaded is broken as it contains a duplicated collection that fail unique assertions
+
         // Load up a database with two collections installed, and the first one deleted
         await using var tmpConn = await ConnectionFor("corruption_error_db.zip");
 
