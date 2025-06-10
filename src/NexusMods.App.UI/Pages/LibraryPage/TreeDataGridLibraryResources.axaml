@@ -162,6 +162,28 @@
 
                     <MenuFlyout>
 
+                        <!-- Hide Updates -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+HideUpdatesAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.HideUpdatesComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+HideUpdatesAction}">
+                                            <MenuItem Header="{CompiledBinding ButtonText.Value}"
+                                                      Command="{CompiledBinding CommandHideUpdates}"
+                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{CompiledBinding Icon.Value}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+
+                        <MenuItem Header="-" />
+
                         <!-- View Changelog -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                             <controls:ComponentControl.ComponentTemplate>
