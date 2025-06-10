@@ -12,6 +12,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
+using R3;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -126,5 +127,16 @@ public static class LibraryDataProviderHelper
         bool isEnabled = true)
     {
         itemModel.Add(LibraryColumns.Actions.ViewModPageComponentKey, new LibraryComponents.ViewModPageAction(isEnabled));
+    }
+
+    public static void AddHideUpdatesActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        bool isEnabled = true)
+    {
+        // Default the observables to simple static values for now
+        var isHiddenObservable = R3.Observable.Return(false);
+        var itemCountObservable = R3.Observable.Return(1);
+        
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
     }
 }
