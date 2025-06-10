@@ -28,6 +28,7 @@ The toolbars just got smarter, too! Now they are context-aware and will only sho
 * Fixed a bug where FOMODs would incorrectly report issues with some asset paths.
 
 ## Known Issues
+* When deleting a mod from the Library, the confirmation pop-up will not correctly show which collections depend on that mod.
 * Collection success ratings will sometimes not match what is shown on the website.
 * The app will attempt to run the REDmod.exe even if it is not installed, resulting in an error message. 
 * The sort order for some columns does not work as expected.
