@@ -440,16 +440,16 @@ public static class LibraryComponents
             return 0; // All hide updates actions are considered equal for sorting
         }
 
-        public HideUpdatesAction(Observable<bool> isHiddenObservable, bool isEnabled = true)
+        public HideUpdatesAction(Observable<bool> isHiddenObservable, Observable<int> itemCount, bool isEnabled = true)
         {
             IsHidden = isHiddenObservable.ToBindableReactiveProperty();
             IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
             
-            // Button text changes based on hidden state
-            // We use BindableReactiveProperty as UI elements bind to this.
-            ButtonText = IsHidden
-                .Select(static isHidden => FormatShowUpdates(isHidden))
-                .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false));
+            // Button text changes based on hidden state and item count
+            // We use BindableReactiveProperty on ButtonText field as UI elements bind to this.
+            ButtonText = IsHidden.AsObservable()
+                .CombineLatest(itemCount, static (isHidden, count) => FormatShowUpdates(isHidden, count))
+                .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false, 0));
         }
 
         private bool _isDisposed;
@@ -466,16 +466,11 @@ public static class LibraryComponents
             base.Dispose(disposing);
         }
 
-        private static string FormatShowUpdates(bool showUpdates)
+        private static string FormatShowUpdates(bool showUpdates, int itemCount)
         {
-            if (showUpdates)
-            {
-                return Resources.Language.Library_ShowUpdates;
-            }
-            else
-            {
-                return Resources.Language.Library_HideUpdates;
-            }
+            return string.Format(showUpdates 
+                ? Resources.Language.Library_ShowUpdates 
+                : Resources.Language.Library_HideUpdates, itemCount);
         }
     }
 }
