@@ -448,8 +448,8 @@ public static class LibraryComponents
             // Button text changes based on hidden state
             // We use BindableReactiveProperty as UI elements bind to this.
             ButtonText = IsHidden
-                .Select(static isHidden => isHidden ? "Show Updates" : "Hide Updates")
-                .ToBindableReactiveProperty(initialValue: "Hide Updates");
+                .Select(static isHidden => FormatShowUpdates(isHidden))
+                .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false));
         }
 
         private bool _isDisposed;
@@ -464,6 +464,18 @@ public static class LibraryComponents
             }
 
             base.Dispose(disposing);
+        }
+
+        private static string FormatShowUpdates(bool showUpdates)
+        {
+            if (showUpdates)
+            {
+                return Resources.Language.Library_ShowUpdates;
+            }
+            else
+            {
+                return Resources.Language.Library_HideUpdates;
+            }
         }
     }
 }

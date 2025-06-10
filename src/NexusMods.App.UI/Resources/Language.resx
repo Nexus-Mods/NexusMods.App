@@ -996,4 +996,10 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
         <value>Upgrade to Premium</value>
     </data>
+    <data name="Library_HideUpdates" xml:space="preserve">
+        <value>Hide Updates</value>
+    </data>
+    <data name="Library_ShowUpdates" xml:space="preserve">
+        <value>Show Updates</value>
+    </data>
 </root>

@@ -1887,5 +1887,17 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("UpgradeToPremiumView_UpgradeButton", resourceCulture);
             }
         }
+        
+        public static string Library_HideUpdates {
+            get {
+                return ResourceManager.GetString("Library_HideUpdates", resourceCulture);
+            }
+        }
+        
+        public static string Library_ShowUpdates {
+            get {
+                return ResourceManager.GetString("Library_ShowUpdates", resourceCulture);
+            }
+        }
     }
 }
