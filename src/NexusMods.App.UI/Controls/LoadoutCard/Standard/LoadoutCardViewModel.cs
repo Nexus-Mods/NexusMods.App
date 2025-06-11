@@ -147,7 +147,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
         {
             try
             {
-                var stream = await source.GetGame().Icon.GetStreamAsync();
+                var stream = await source.GetGame().GameImage.GetStreamAsync();
                 return new Bitmap(stream);
             }
             catch (Exception ex)

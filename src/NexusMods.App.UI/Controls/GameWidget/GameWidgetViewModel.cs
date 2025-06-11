@@ -78,7 +78,7 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     {
         try
         {
-            var stream = await ((IGame)source.Game).Icon.GetStreamAsync();
+            var stream = await ((IGame)source.Game).GameImage.GetStreamAsync();
             return new Bitmap(stream);
         }
         catch (Exception ex)
