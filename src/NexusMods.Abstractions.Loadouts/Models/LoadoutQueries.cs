@@ -159,9 +159,9 @@ public partial class Loadout
     /// <summary>
     /// Returns all enabled LoadoutItemsWithTargetPath in a loadout.
     /// </summary>
-    public static async Task<IEnumerable<LoadoutItemWithTargetPath.ReadOnly>> GetEnabledLoadoutItemsWithTargetPath(IDb db, LoadoutId loadoutId)
+    public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> GetEnabledLoadoutItemsWithTargetPath(IDb db, LoadoutId loadoutId)
     {
-        using var items = await db.Topology.QueryAsync(
+        using var items = db.Topology.Query(
             EnabledLoadoutItemsWithTargetPathFlow.Where(row => row.LoadoutId == loadoutId.Value)
         );
         return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId));
