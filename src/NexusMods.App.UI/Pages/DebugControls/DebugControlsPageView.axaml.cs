@@ -175,7 +175,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             if (ViewModel is null) return;
 
             // create custom content viewmodel
-            var customViewModel = new CustomContentViewModel("This is more lovely text");
+            var customViewModel = new CustomContentExampleViewModel("This is more lovely text");
 
             // create wrapper dialog around the custom content 
             var dialog = DialogFactory.CreateMessageBox(
@@ -282,7 +282,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             if (ViewModel is null) return;
 
             // create custom content viewmodel
-            var customViewModel = new CustomContentViewModel("This is more lovely text");
+            var customViewModel = new CustomContentExampleViewModel("This is more lovely text");
 
             // create markdown viewmodel
             var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();

@@ -8,9 +8,9 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public partial class CustomContentView : ReactiveUserControl<IViewModelInterface>
+public partial class CustomContentExampleView : ReactiveUserControl<IViewModelInterface>
 {
-    public CustomContentView()
+    public CustomContentExampleView()
     {
         InitializeComponent();
     }

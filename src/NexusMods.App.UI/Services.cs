@@ -205,8 +205,8 @@ public static class Services
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
             
             // Dialogs
-            .AddView<CustomContentView, IViewModelInterface>()
-            .AddViewModel<CustomContentViewModel, IViewModelInterface>()
+            .AddView<CustomContentExampleView, IViewModelInterface>()
+            .AddViewModel<CustomContentExampleViewModel, IViewModelInterface>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()

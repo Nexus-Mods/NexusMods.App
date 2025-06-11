@@ -1,12 +1,12 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="dialog:CustomContentViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="dialog:CustomContentExampleViewModel" xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
                                 mc:Ignorable="d"
-                                x:Class="NexusMods.App.UI.Dialog.CustomContentView"
-                                d:DataContext="{x:Static dialog:DesignDataContexts.CustomContentDesignViewModel}">
+                                x:Class="NexusMods.App.UI.Dialog.CustomContentExampleView"
+                                d:DataContext="{x:Static dialog:DesignDataContexts.CustomContentExampleDesignViewModel}">
     
     <Border Padding="0">
         <StackPanel Spacing="8">

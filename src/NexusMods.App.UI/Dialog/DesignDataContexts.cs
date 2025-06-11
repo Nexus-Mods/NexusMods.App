@@ -10,7 +10,7 @@ namespace NexusMods.App.UI.Dialog;
 /// </summary>
 internal static class DesignDataContexts
 {
-    public static CustomContentViewModel CustomContentDesignViewModel { get; } = new("Custom Text");
+    public static CustomContentExampleViewModel CustomContentExampleDesignViewModel { get; } = new("Custom Text");
 
     public static MarkdownRendererViewModel MarkdownRendererDesignViewModel { get; } = new MarkdownRendererViewModel
     {
@@ -95,7 +95,7 @@ internal static class DesignDataContexts
         IconValues.PictogramSettings,
         DialogWindowSize.Medium,
         null,
-        CustomContentDesignViewModel
+        CustomContentExampleDesignViewModel
     );
 
     public static DialogViewModel DialogCustomNoButtonsDesignViewModel { get; } = new(
@@ -106,7 +106,7 @@ internal static class DesignDataContexts
         IconValues.PictogramSettings,
         DialogWindowSize.Large,
         null,
-        CustomContentDesignViewModel
+        CustomContentExampleDesignViewModel
     );
 
     public static DialogViewModel DialogMarkdownDesignViewModel { get; } = new(
@@ -127,6 +127,6 @@ internal static class DesignDataContexts
         IconValues.PictogramSettings,
         DialogWindowSize.Medium,
         MarkdownRendererDesignViewModel,
-        CustomContentDesignViewModel
+        CustomContentExampleDesignViewModel
     );
 }
