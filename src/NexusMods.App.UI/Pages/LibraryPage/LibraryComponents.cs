@@ -7,6 +7,7 @@ using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
@@ -238,7 +239,9 @@ public static class LibraryComponents
             _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
-        internal static string GetButtonText(bool isInstalled) => isInstalled ? "Installed" : "Install";
+        internal static string GetButtonText(bool isInstalled) => isInstalled
+            ? Language.LibraryComponents_InstallAction_ButtonText_Installed // "Installed"
+            : Language.LibraryComponents_InstallAction_ButtonText_Install; // "Install"
 
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
         [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
@@ -250,18 +253,18 @@ public static class LibraryComponents
             {
                 if (numInstalled == numTotal)
                 {
-                    return "Installed";
+                    return Language.LibraryComponents_InstallAction_ButtonText_Installed;
                 } else {
-                    return $"Installed {numInstalled}/{numTotal}";
+                    return $"{Language.LibraryComponents_InstallAction_ButtonText_Installed} {numInstalled}/{numTotal}";
                 }
             }
             else
             {
                 if (!isExpanded && numTotal == 1)
                 {
-                    return "Install";
+                    return Language.LibraryComponents_InstallAction_ButtonText_Install;
                 } else {
-                    return $"Install ({numTotal})";
+                    return $"{Language.LibraryComponents_InstallAction_ButtonText_Install} {numTotal}";
                 }
             }
         }
@@ -358,7 +361,7 @@ public static class LibraryComponents
 
     public sealed class ViewChangelogAction : ReactiveR3Object, IItemModelComponent<ViewChangelogAction>, IComparable<ViewChangelogAction>
     {
-        public ReactiveCommand<Unit> CommandViewChangelog { get; }
+        public ReactiveCommand<Unit> CommandViewChangelog { get; } = new ReactiveCommand<Unit>();
         public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
 
         public int CompareTo(ViewChangelogAction? other)
@@ -370,9 +373,6 @@ public static class LibraryComponents
         public ViewChangelogAction(bool isEnabled = true)
         {
             IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
-            
-            // Command is enabled based on the IsEnabled property
-            CommandViewChangelog = IsEnabled.AsObservable().ToReactiveCommand<Unit>();
         }
 
         private bool _isDisposed;
@@ -394,7 +394,7 @@ public static class LibraryComponents
 
     public sealed class ViewModPageAction : ReactiveR3Object, IItemModelComponent<ViewModPageAction>, IComparable<ViewModPageAction>
     {
-        public ReactiveCommand<Unit> CommandViewModPage { get; }
+        public ReactiveCommand<Unit> CommandViewModPage { get; } = new();
         public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
 
         public int CompareTo(ViewModPageAction? other)
@@ -406,9 +406,6 @@ public static class LibraryComponents
         public ViewModPageAction(bool isEnabled = true)
         {
             IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
-            
-            // Command is enabled based on the IsEnabled property
-            CommandViewModPage = IsEnabled.AsObservable().ToReactiveCommand<Unit>();
         }
 
         private bool _isDisposed;

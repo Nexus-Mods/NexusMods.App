@@ -7,7 +7,7 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
@@ -15,7 +15,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *">
         
         <!-- different page header if it's a collection (i.e. My Mods) or if it's just All mods -->
         <Panel Grid.Row="0" Margin="24 24 24 0" >
@@ -28,11 +28,15 @@
                                    Title="All"
                                    Description="A combined view of all your installed mods from all collections." />
         </Panel>
+
+        <StackPanel Grid.Row="1">
+            <controls:StandardButton x:Name="ButtonUploadCollectionRevision" Text="Upload" />
+        </StackPanel>
         
         <!-- tabs -->
         
         <!-- Temp top margin as we don't have a proper PageHeader on this view yet -->
-        <TabControl Grid.Row="1" x:Name="RulesTabControl" Margin="0 12 0 0">
+        <TabControl Grid.Row="2" x:Name="RulesTabControl" Margin="0 12 0 0">
             <!-- mods tab -->
             <TabItem x:Name="ModsTabItem">
                 <TabItem.Header>

@@ -8,7 +8,7 @@ using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls.Alerts;
 using NexusMods.App.UI.Extensions;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using SkiaSharp;
 

@@ -68,14 +68,7 @@ public sealed class LibraryService : ILibraryService
         ILibraryItemInstaller? fallbackInstaller = null,
         ITransaction? transaction = null)
     {
-        if (!parent.HasValue)
-        {
-            if (!Loadout.Load(libraryItem.Db, targetLoadout).MutableCollections().TryGetFirst(out var userCollection))
-                throw new InvalidOperationException("Could not find the user collection for the target loadout");
-            parent = userCollection.AsLoadoutItemGroup().LoadoutItemGroupId;
-        }
-
-        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, parent.Value, itemInstaller, fallbackInstaller, transaction);
+        return InstallLoadoutItemJob.Create(_serviceProvider, libraryItem, targetLoadout, parent, itemInstaller, fallbackInstaller, transaction);
     }
     public async Task RemoveLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, GarbageCollectorRunMode gcRunMode = GarbageCollectorRunMode.RunAsynchronously)
     {

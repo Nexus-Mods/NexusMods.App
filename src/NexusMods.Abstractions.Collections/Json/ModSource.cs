@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
+using NexusMods.Sdk.Hashes;
 
 namespace NexusMods.Abstractions.Collections.Json;
 
@@ -43,7 +43,7 @@ public class ModSource
     /// <see cref="ModSourceType.Browse"/>, and <see cref="ModSourceType.Direct"/>.
     /// </summary>
     [JsonPropertyName("md5")]
-    public Md5HashValue Md5 { get; init; }
+    public Md5Value Md5 { get; init; }
 
     /// <summary>
     /// Present in <see cref="ModSourceType.Browse"/> and <see cref="ModSourceType.Direct"/>,

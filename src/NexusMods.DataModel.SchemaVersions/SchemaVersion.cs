@@ -1,4 +1,3 @@
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.DataModel.SchemaVersions;

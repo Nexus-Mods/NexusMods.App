@@ -1,10 +1,9 @@
 using System.Runtime.Versioning;
 using System.Text;
-using CliWrap;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.CrossPlatform.ProtocolRegistration;
 

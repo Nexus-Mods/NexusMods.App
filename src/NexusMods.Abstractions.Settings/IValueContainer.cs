@@ -9,6 +9,11 @@ namespace NexusMods.Abstractions.Settings;
 public interface IValueContainer
 {
     /// <summary>
+    /// Gets the current value.
+    /// </summary>
+    object CurrentValue { get; }
+
+    /// <summary>
     /// Gets whether the value has changed.
     /// </summary>
     bool HasChanged { get; }

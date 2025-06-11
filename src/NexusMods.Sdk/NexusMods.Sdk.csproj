@@ -4,8 +4,11 @@
     <ItemGroup>
         <PackageReference Include="DynamicData" />
         <PackageReference Include="MemoryPack" />
+        <PackageReference Include="Microsoft.Extensions.Options" />
         <PackageReference Include="NexusMods.Hashing.xxHash3" />
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
         <PackageReference Include="NexusMods.Paths" />
+        <PackageReference Include="OneOf" />
         <PackageReference Include="Polly.Core" />
         <PackageReference Include="R3" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -14,6 +17,33 @@
     <ItemGroup>
         <Compile Update="ProxyConsole\DelegateParser.cs">
             <DependentUpon>IOptionParser.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Md5Attribute.cs">
+          <DependentUpon>Md5Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Md5JsonConverter.cs">
+          <DependentUpon>Md5Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Sha1Attribute.cs">
+          <DependentUpon>Sha1Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Sha1JsonConverter.cs">
+          <DependentUpon>Sha1Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Crc32JsonConverter.cs">
+          <DependentUpon>Crc32Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Crc32Attribute.cs">
+          <DependentUpon>Crc32Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="EnvironmentVariableNames.cs">
+          <DependentUpon>EnvironmentVariables.cs</DependentUpon>
+        </Compile>
+        <Compile Update="InstallationMethod.cs">
+          <DependentUpon>ApplicationConstants.cs</DependentUpon>
+        </Compile>
+        <Compile Update="UserAgent.cs">
+          <DependentUpon>ApplicationConstants.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>
