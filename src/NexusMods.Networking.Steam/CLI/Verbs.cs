@@ -114,9 +114,9 @@ public static class Verbs
         return 0;
     }
 
-    private static async Task<ConcurrentBag<Sha1>> LoadExistingHashes(AbsolutePath folder, JsonSerializerOptions options, CancellationToken token)
+    private static async Task<ConcurrentBag<Sha1Value>> LoadExistingHashes(AbsolutePath folder, JsonSerializerOptions options, CancellationToken token)
     {
-        var bag = new ConcurrentBag<Sha1>();
+        var bag = new ConcurrentBag<Sha1Value>();
         var hashFiles = folder.EnumerateFiles("*.json", true);
         
         await Parallel.ForEachAsync(hashFiles, token, async (file, token) =>
@@ -137,7 +137,7 @@ public static class Verbs
         return bag;
     }
 
-    private static async Task IndexManifest(ISteamSession session, IRenderer renderer, AppId appId, AbsolutePath output, Manifest manifest, JsonSerializerOptions indentedOptions, ConcurrentBag<Sha1> existingHashes, ParallelOptions options)
+    private static async Task IndexManifest(ISteamSession session, IRenderer renderer, AppId appId, AbsolutePath output, Manifest manifest, JsonSerializerOptions indentedOptions, ConcurrentBag<Sha1Value> existingHashes, ParallelOptions options)
     {
         var writeLock = new SemaphoreSlim(1, 1);
         await Parallel.ForEachAsync(manifest.Files, options, async (file, token) =>
