@@ -542,7 +542,6 @@ public partial class NexusModsLibrary
         var revisionId = RevisionId.From((ulong)revisionInfo.Id);
         var resolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, revisionId);
 
-        resolver.Add(CollectionRevisionMetadata.RevisionId, revisionId);
         resolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revisionInfo.RevisionNumber));
         resolver.Add(CollectionRevisionMetadata.CollectionId, collectionEntityId);
         resolver.Add(CollectionRevisionMetadata.IsAdult, revisionInfo.AdultContent);
@@ -597,7 +596,6 @@ public partial class NexusModsLibrary
         var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
         resolver.Add(CollectionMetadata.CollectionId, id);
-        resolver.Add(CollectionMetadata.Slug, slug);
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
