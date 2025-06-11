@@ -9,7 +9,7 @@
     xmlns:base="clr-namespace:NexusMods.App.UI.Overlays.Generic.MessageBox.Base"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:deleteConf="clr-namespace:NexusMods.App.UI.Overlays.LibraryDeleteConfirmation"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:library="clr-namespace:NexusMods.App.UI.Pages.Library"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"

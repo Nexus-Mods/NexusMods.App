@@ -1,3 +1,4 @@
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
@@ -24,7 +25,7 @@ public interface IInstallLoadoutItemJob : IJobDefinition<InstallLoadoutItemJobRe
     /// <summary>
     /// The target parent group id
     /// </summary>
-    public LoadoutItemGroupId ParentGroupId { get; }
+    public Optional<LoadoutItemGroupId> ParentGroupId { get; }
     
     /// <summary>
     /// The optional installer to use (if null, the library will choose the best installer)

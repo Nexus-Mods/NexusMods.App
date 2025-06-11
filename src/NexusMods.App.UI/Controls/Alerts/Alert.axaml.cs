@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Markup.Xaml;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Disposables;

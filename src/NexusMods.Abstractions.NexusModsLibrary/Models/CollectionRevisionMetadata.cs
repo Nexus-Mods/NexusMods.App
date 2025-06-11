@@ -15,8 +15,8 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The globally unique id identifying a specific revision of a collection.
     /// </summary>
-    public static readonly RevisionIdAttribute RevisionId = new(Namespace, nameof(RevisionId)) { IsIndexed = true };
-    
+    public static readonly RevisionIdAttribute RevisionId = new(Namespace, nameof(RevisionId)) { IsIndexed = true, IsUnique = true };
+
     /// <summary>
     /// The locally unique revision number (aka "version") of a collection. Only unique within one collection.
     /// </summary>

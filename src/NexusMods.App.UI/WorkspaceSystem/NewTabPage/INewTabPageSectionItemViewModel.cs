@@ -1,6 +1,6 @@
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

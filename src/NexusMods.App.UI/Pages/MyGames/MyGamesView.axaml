@@ -14,7 +14,7 @@
     xmlns:gameWidget="clr-namespace:NexusMods.App.UI.Controls.GameWidget"
     xmlns:miniGameWidget="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader">
 

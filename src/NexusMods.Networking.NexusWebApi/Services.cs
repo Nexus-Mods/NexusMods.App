@@ -3,6 +3,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.App.BuildInfo;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Networking.NexusWebApi.V1Interop;
 using NexusMods.Sdk;
 
@@ -42,6 +43,8 @@ public static class Services
         collection.AddGameDomainToGameIdMappingModel();
         collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
         collection.AddSingleton(TimeProvider.System);
+
+        collection.AddIgnoreFileUpdateModel();
         
         collection
             .AddNexusModsLibraryModels()

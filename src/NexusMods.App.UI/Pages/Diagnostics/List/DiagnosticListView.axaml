@@ -7,7 +7,7 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.Diagnostics"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:diagnostics="clr-namespace:NexusMods.App.UI.Controls.Diagnostics"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"

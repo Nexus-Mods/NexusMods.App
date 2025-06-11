@@ -91,6 +91,21 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 this.BindCommand(ViewModel, vm => vm.RefreshUpdatesCommand, view => view.Refresh)
                     .AddTo(disposables);
 
+                this.WhenAnyValue(view => view.ViewModel!.InstallationTargets.Count)
+                    .OnUI()
+                    .SubscribeWithErrorLogging(count =>
+                    {
+                        InstallationTargetControlGroup.IsVisible = count > 1;
+                    }).AddTo(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.InstallationTargets, view => view.InstallationTargetSelector.ItemsSource)
+                    .AddTo(disposables);
+
+                this.Bind(ViewModel, vm => vm.SelectedInstallationTarget, view => view.InstallationTargetSelector.SelectedItem)
+                    .AddTo(disposables);
+
+                InstallationTargetSelector.SelectedIndex = 0;
+
                 this.WhenAnyValue(view => view.ViewModel!.SelectionCount)
                     .WhereNotNull()
                     .SubscribeWithErrorLogging(count =>

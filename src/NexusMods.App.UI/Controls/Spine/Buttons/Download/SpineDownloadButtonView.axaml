@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:download="clr-namespace:NexusMods.App.UI.Controls.Spine.Buttons.Download"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     mc:Ignorable="d" d:DesignWidth="150" d:DesignHeight="104"
     x:Class="NexusMods.App.UI.Controls.Spine.Buttons.Download.SpineDownloadButtonView">
     <Design.DataContext>

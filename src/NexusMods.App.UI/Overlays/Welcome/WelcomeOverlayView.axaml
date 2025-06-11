@@ -7,7 +7,7 @@
     xmlns:reactive="http://reactiveui.net"
     xmlns:overlays="clr-namespace:NexusMods.App.UI.Overlays"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
     x:Class="NexusMods.App.UI.Overlays.WelcomeOverlayView">
     

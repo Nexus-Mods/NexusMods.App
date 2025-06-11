@@ -9,7 +9,7 @@
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:ui1="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.App.UI.Pages.MyLoadouts.MyLoadoutsView">

@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using NexusMods.App.UI.Controls.Alerts;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.WorkspaceSystem;
 

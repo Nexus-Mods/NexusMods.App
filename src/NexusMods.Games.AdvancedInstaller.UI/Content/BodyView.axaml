@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
     xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
     mc:Ignorable="d" d:DesignWidth="1184" d:DesignHeight="492"

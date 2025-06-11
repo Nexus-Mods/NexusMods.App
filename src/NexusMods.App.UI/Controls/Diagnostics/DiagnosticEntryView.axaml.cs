@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.Diagnostics;

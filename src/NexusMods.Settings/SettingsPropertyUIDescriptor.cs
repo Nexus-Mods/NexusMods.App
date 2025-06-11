@@ -6,7 +6,7 @@ internal record SettingsPropertyUIDescriptor : ISettingsPropertyUIDescriptor
 {
     public required SectionId SectionId { get; init; }
     public required string DisplayName { get; init; }
-    public required string Description { get; init; }
+    public required Func<object, string> DescriptionFactory { get; init; }
     public required Uri? Link { get; init; }
     public required bool RequiresRestart { get; init; }
     public required string? RestartMessage { get; init; }
@@ -18,7 +18,7 @@ internal record SettingsPropertyUIDescriptor : ISettingsPropertyUIDescriptor
         {
             SectionId = output.SectionId,
             DisplayName = output.DisplayName,
-            Description = output.Description,
+            DescriptionFactory = output.DescriptionFactory,
             Link = output.Link,
             RequiresRestart = output.RequiresRestart,
             RestartMessage = output.RestartMessage,

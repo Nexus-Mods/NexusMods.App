@@ -20,13 +20,17 @@ using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.StardewValley;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
+using NSubstitute;
+using StrawberryShake;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
@@ -57,6 +61,25 @@ public abstract class AArchivedDatabaseTest
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
         
+        var mock = Substitute.For<INexusGraphQLClient>();
+        mock.CollectionSlugToId.ExecuteAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((x) =>
+        {
+            var slug = x.Arg<string>();
+            var id = slug.xxHash3AsUtf8().Value;
+
+            var data = Substitute.For<ICollectionSlugToId_Collection>();
+            data.Id.Returns((int)id);
+            data.Slug.Returns(slug);
+
+            var innerResult = Substitute.For<ICollectionSlugToIdResult>();
+            innerResult.Collection.Returns(data);
+
+            var result = Substitute.For<IOperationResult<ICollectionSlugToIdResult>>();
+            result.Data.Returns(innerResult);
+
+            return Task.FromResult(result);
+        });
+
         return services
             .AddSingleton<TimeProvider>(_ => TimeProvider.System)
             .AddLogging(builder => builder.AddXUnit())
@@ -82,9 +105,10 @@ public abstract class AArchivedDatabaseTest
             })
             .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false, registerWine: false)
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
+            .AddSingleton(mock)
             .Validate();
     }
-    
+
     private class Accessor : ITestOutputHelperAccessor
     {
         public ITestOutputHelper? Output { get; set; }

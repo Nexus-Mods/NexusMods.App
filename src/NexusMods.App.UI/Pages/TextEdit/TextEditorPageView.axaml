@@ -8,7 +8,7 @@
     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.TextEdit"
     xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
     xmlns:grammars="clr-namespace:TextMateSharp.Grammars;assembly=TextMateSharp.Grammars"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.TextEdit.TextEditorPageView">

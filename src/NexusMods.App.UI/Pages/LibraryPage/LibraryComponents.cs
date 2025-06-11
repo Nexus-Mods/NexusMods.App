@@ -358,7 +358,7 @@ public static class LibraryComponents
 
     public sealed class ViewChangelogAction : ReactiveR3Object, IItemModelComponent<ViewChangelogAction>, IComparable<ViewChangelogAction>
     {
-        public ReactiveCommand<Unit> CommandViewChangelog { get; }
+        public ReactiveCommand<Unit> CommandViewChangelog { get; } = new ReactiveCommand<Unit>();
         public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
 
         public int CompareTo(ViewChangelogAction? other)
@@ -370,9 +370,6 @@ public static class LibraryComponents
         public ViewChangelogAction(bool isEnabled = true)
         {
             IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
-            
-            // Command is enabled based on the IsEnabled property
-            CommandViewChangelog = IsEnabled.AsObservable().ToReactiveCommand<Unit>();
         }
 
         private bool _isDisposed;
@@ -394,7 +391,7 @@ public static class LibraryComponents
 
     public sealed class ViewModPageAction : ReactiveR3Object, IItemModelComponent<ViewModPageAction>, IComparable<ViewModPageAction>
     {
-        public ReactiveCommand<Unit> CommandViewModPage { get; }
+        public ReactiveCommand<Unit> CommandViewModPage { get; } = new();
         public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
 
         public int CompareTo(ViewModPageAction? other)
@@ -406,9 +403,6 @@ public static class LibraryComponents
         public ViewModPageAction(bool isEnabled = true)
         {
             IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
-            
-            // Command is enabled based on the IsEnabled property
-            CommandViewModPage = IsEnabled.AsObservable().ToReactiveCommand<Unit>();
         }
 
         private bool _isDisposed;

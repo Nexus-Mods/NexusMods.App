@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using R3;
 
 namespace NexusMods.App.UI.Pages.DebugControls;

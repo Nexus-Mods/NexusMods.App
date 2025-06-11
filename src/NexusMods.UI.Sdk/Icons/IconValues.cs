@@ -1,11 +1,9 @@
 using Avalonia;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using NexusMods.Icons.SimpleVector;
-using Projektanker.Icons.Avalonia;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-namespace NexusMods.Icons;
+namespace NexusMods.UI.Sdk.Icons;
 
 // https://www.figma.com/file/8pjtQeNggvVi7RWoLNGV80/%F0%9F%A7%B0-Nexus-Mods-Design-System?type=design&node-id=130-463
 
@@ -629,7 +627,7 @@ public static class IconValues
         new Rect(0, 0, 6, 10 )
     ));
     
-    public static readonly IconValue AvatarTest = new IconValue(new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")))));
+    public static readonly IconValue AvatarTest = new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"))));
 
 #endregion
 
@@ -646,47 +644,47 @@ public static class IconValues
     /// <summary>
     /// Brand pictogram for Health
     /// </summary>
-    public static readonly IconValue NexusColor = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo.svg"));
+    public static readonly IconValue NexusColor = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo.svg");
     
     /// <summary>
     /// Brand pictogram for Health
     /// </summary>
-    public static readonly IconValue PictogramHealth = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/health.svg"));
+    public static readonly IconValue PictogramHealth = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/health.svg");
     
     /// <summary>
     /// Brand pictogram for Games in 3D
     /// </summary>
-    public static readonly IconValue PictogramGame3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg"));
+    public static readonly IconValue PictogramGame3D = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/game-3d.svg");
     
     /// <summary>
     /// Brand pictogram for Loadouts
     /// </summary>
-    public static readonly IconValue PictogramBox2 = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/box2.svg"));
+    public static readonly IconValue PictogramBox2 = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/box2.svg");
     
     /// <summary>
     /// Brand pictogram for Settings
     /// </summary>
-    public static readonly IconValue PictogramSettings = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/settings.svg"));
+    public static readonly IconValue PictogramSettings = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/settings.svg");
 
     /// <summary>
     /// Brand pictogram for Celebrate
     /// </summary>
-    public static readonly IconValue PictogramCelebrate = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg"));
+    public static readonly IconValue PictogramCelebrate = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/celebrate.svg");
     
     /// <summary>
     /// Brand pictogram for Playlist Add
     /// </summary>
-    public static readonly IconValue PictogramPlaylistAdd = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/playlist-add.svg"));
+    public static readonly IconValue PictogramPlaylistAdd = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/playlist-add.svg");
     
     /// <summary>
     /// Brand pictogram for Collection in 3D
     /// </summary>
-    public static readonly IconValue PictogramCollection3D = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/collection-3d.svg"));
+    public static readonly IconValue PictogramCollection3D = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/collection-3d.svg");
     
     /// <summary>
     /// Brand pictogram for Library
     /// </summary>
-    public static readonly IconValue PictogramLibrary = new IconValue(new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/library.svg"));
+    public static readonly IconValue PictogramLibrary = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/library.svg");
 #endregion
     
 }

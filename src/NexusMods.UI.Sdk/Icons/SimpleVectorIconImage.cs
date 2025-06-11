@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Media;
 using JetBrains.Annotations;
 
-namespace NexusMods.Icons.SimpleVector;
+namespace NexusMods.UI.Sdk.Icons;
 
 /// <summary>
 /// Represents a simple SVG icon image that can be used in Avalonia applications.

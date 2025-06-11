@@ -3,7 +3,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.LeftMenu.Home;
 

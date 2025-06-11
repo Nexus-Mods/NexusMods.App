@@ -1,5 +1,5 @@
 using JetBrains.Annotations;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.Abstractions.Settings;
 

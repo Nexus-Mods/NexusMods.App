@@ -3,7 +3,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.Diagnostics;

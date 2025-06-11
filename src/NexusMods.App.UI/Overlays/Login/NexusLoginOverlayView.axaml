@@ -13,7 +13,7 @@
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls" 
     xmlns:progressRing="clr-namespace:NexusMods.App.UI.Controls.ProgressRing"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     ClipToBounds="False">
     
     <Design.DataContext>

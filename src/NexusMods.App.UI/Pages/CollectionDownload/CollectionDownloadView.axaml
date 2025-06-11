@@ -7,7 +7,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:collectionDownload="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner;assembly=NexusMods.App.UI"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"

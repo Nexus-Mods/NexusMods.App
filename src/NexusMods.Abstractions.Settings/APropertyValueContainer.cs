@@ -65,6 +65,9 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
         set => SetAndRaise(ref _currentValue, value, EqualityComparer);
     }
 
+    /// <inheritdoc/>
+    object IValueContainer.CurrentValue => CurrentValue;
+
     /// <summary>
     /// Gets whether <see cref="CurrentValue"/> is different from <see cref="PreviousValue"/>.
     /// </summary>

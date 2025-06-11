@@ -7,6 +7,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 
@@ -14,6 +15,50 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
+    private static string GenerateNewCollectionName(string[] allNames)
+    {
+        const string defaultValue = "My new collection";
+        const string template = "({0}) My new collection";
+        var count = 1;
+        var current = allNames.Any(x => x.SequenceEqual(defaultValue)) ? TemplatedName() : defaultValue;
+
+        foreach (var existingName in allNames.Order(StringComparer.OrdinalIgnoreCase))
+        {
+            if (existingName.SequenceEqual(current)) current = TemplatedName();
+        }
+
+        return current;
+        string TemplatedName() => string.Format(template, ++count);
+    }
+
+    /// <summary>
+    /// Creates a new collection group in the loadout.
+    /// </summary>
+    public static async ValueTask<CollectionGroup.ReadOnly> CreateNewCollectionGroup(IConnection connection, LoadoutId loadoutId)
+    {
+        var names = (await Loadout.Load(connection.Db, loadoutId).MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
+        var newName = GenerateNewCollectionName(names);
+
+        using var tx = connection.BeginTransaction();
+
+        var group = new CollectionGroup.New(tx, out var id)
+        {
+            IsReadOnly = false,
+            LoadoutItemGroup = new LoadoutItemGroup.New(tx, id)
+            {
+                IsGroup = true,
+                LoadoutItem = new LoadoutItem.New(tx, id)
+                {
+                    Name = newName,
+                    LoadoutId = loadoutId,
+                },
+            },
+        };
+
+        var result = await tx.Commit();
+        return result.Remap(group);
+    }
+
     /// <summary>
     /// Creates a collection JSON manifest from a loadout item group.
     /// </summary>

@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"

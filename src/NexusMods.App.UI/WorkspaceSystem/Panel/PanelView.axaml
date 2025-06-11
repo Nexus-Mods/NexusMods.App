@@ -7,7 +7,7 @@
     xmlns:workspace="clr-namespace:NexusMods.App.UI.WorkspaceSystem"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="200"
     x:Class="NexusMods.App.UI.WorkspaceSystem.PanelView">
 

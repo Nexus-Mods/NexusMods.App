@@ -1,6 +1,6 @@
 using System.Reactive;
 using NexusMods.Abstractions.UI;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.WorkspaceSystem;

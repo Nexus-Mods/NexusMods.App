@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
 
     <Design.PreviewWith>
         <Border Padding="16" Width="360" Height="240">
