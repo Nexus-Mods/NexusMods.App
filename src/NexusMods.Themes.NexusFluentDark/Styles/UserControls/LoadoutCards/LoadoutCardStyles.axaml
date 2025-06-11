@@ -7,11 +7,10 @@
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI">
 
     <Design.PreviewWith>
-        <Border Classes="Low">
-            <panels:FlexPanel Background="{StaticResource SurfaceLowBrush}"
-                              ColumnSpacing="8"
+        <StackPanel>
+            <panels:FlexPanel ColumnSpacing="12"
                               Wrap="Wrap"
-                              RowSpacing="8"
+                              RowSpacing="12"
                               Margin="24">
 
                 <panels:FlexPanel.Resources>
@@ -25,7 +24,7 @@
                 <loadoutCard:CreateNewLoadoutCardView />
                 <loadoutCard:CreateNewLoadoutCardView IsEnabled="False" />
             </panels:FlexPanel>
-        </Border>
+        </StackPanel>
 
     </Design.PreviewWith>
 
