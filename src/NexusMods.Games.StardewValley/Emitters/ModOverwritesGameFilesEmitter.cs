@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Diagnostics.References;
@@ -11,10 +12,18 @@ namespace NexusMods.Games.StardewValley.Emitters;
 
 public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
 {
+    private readonly ILogger _logger;
     private static readonly NamedLink SMAPIWikiLink = new("SMAPI Wiki", new Uri("https://stardewvalleywiki.com/Modding:Using_XNB_mods"));
     private static readonly NamedLink SMAPIWikiTableLink = new("SMAPI Wiki", new Uri("https://stardewvalleywiki.com/Modding:Using_XNB_mods#Alternatives_using_Content_Patcher"));
 
     private static readonly GamePath ContentDirectoryPath = new(LocationId.Game, Constants.ContentFolder);
+
+    public ModOverwritesGameFilesEmitter(
+        ILogger<ModOverwritesGameFilesEmitter> logger
+        )
+    {
+        _logger = logger;
+    }
 
     public async IAsyncEnumerable<Diagnostic> Diagnose(
         Loadout.ReadOnly loadout,
@@ -22,7 +31,10 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
     {
         await Task.Yield();
 
-        var groups = loadout.Items
+        IEnumerable<LoadoutItemGroup.ReadOnly> groups;
+        try
+        {
+            groups = loadout.Items
             .GetEnabledLoadoutFiles()
             .Where(file =>
             {
@@ -33,6 +45,12 @@ public class ModOverwritesGameFilesEmitter : ILoadoutDiagnosticEmitter
             .Where(file => ((GamePath)file.AsLoadoutItemWithTargetPath().TargetPath).StartsWith(ContentDirectoryPath))
             .Select(file => file.AsLoadoutItemWithTargetPath().AsLoadoutItem().Parent)
             .DistinctBy(item => item.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error checking for ModOverwrites: {error}", ex);
+            yield break;
+        } 
 
         foreach (var group in groups)
         {
