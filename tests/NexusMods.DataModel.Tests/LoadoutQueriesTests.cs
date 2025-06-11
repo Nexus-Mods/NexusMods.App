@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Tests;
 
-public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<LoaodutQueriesTests>(helper)
+public class LoadoutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<LoadoutQueriesTests>(helper)
 {
     [Fact]
     public async Task DeletingAModShouldUpdateTheLoadout()
