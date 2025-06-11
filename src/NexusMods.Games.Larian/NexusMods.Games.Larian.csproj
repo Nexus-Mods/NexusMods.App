@@ -12,10 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Resources\BaldursGate3\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Remove="Resources\BaldursGate3\game_image.jpg" />
       <EmbeddedResource Include="Resources\BaldursGate3\game_image.jpg" />
       <None Remove="Resources\BaldursGate3\icon.png" />

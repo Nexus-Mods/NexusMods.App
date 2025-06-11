@@ -5,6 +5,10 @@
         <EmbeddedResource Include="Resources\game_image.jpg" />
         <None Remove="Resources\icon.png" />
         <EmbeddedResource Include="Resources\icon.png" />
+        <None Remove="Resources\thumbnail.webp" />
+        <EmbeddedResource Include="Resources\thumbnail.webp" />
+        <None Remove="Resources\tile.webp" />
+        <EmbeddedResource Include="Resources\tile.webp" />
     </ItemGroup>
 
     <ItemGroup>
