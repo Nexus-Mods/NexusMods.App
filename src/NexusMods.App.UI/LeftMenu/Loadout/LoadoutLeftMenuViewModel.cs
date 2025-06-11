@@ -13,7 +13,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
@@ -42,7 +41,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
-    public ILeftMenuItemViewModel? LeftMenuItemNewCollection { get; }
+    public ILeftMenuItemViewModel LeftMenuItemNewCollection { get; }
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
     [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
@@ -120,7 +119,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             ToolTip = new StringComponent(Language.LoadoutView_Title_Installed_Mods_ToolTip),
         };
 
-        LeftMenuItemNewCollection = CompileConstants.IsDebug ? new NewCollectionViewModel(serviceProvider, loadout, workspaceController, workspaceId) : null;
+        LeftMenuItemNewCollection = new NewCollectionViewModel(serviceProvider, loadout, workspaceController, workspaceId);
 
         var collectionRevisionsObservable = CollectionRevisionMetadata
             .ObserveAll(conn)

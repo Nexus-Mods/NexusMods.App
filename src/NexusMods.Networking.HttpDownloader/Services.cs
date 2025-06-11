@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 using Polly;
 
 namespace NexusMods.Networking.HttpDownloader;
@@ -43,7 +43,7 @@ public static class Services
             DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
         };
 
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
+        client.DefaultRequestHeaders.UserAgent.Add(ApplicationConstants.UserAgent);
 
         return client;
     }

@@ -22,7 +22,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
@@ -32,6 +31,7 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
@@ -545,9 +545,19 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         }
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
-        await _host.StopAsync();
-        _host.Dispose();
+        _ = Task.Run(async () =>
+        {
+            // NOTE(erri120): forcing this method to complete within max 10 seconds
+            await _host.StopAsync(cancellationToken: new CancellationToken(canceled: true)).WaitAsync(timeout: TimeSpan.FromSeconds(1));
+            if (_host is IAsyncDisposable asyncDisposable) await asyncDisposable.DisposeAsync().AsTask().WaitAsync(timeout: TimeSpan.FromSeconds(5));
+            else
+            {
+                await Task.Run(() => _host.Dispose()).WaitAsync(timeout: TimeSpan.FromSeconds(5));
+            }
+        });
+
+        return Task.CompletedTask;
     }
 }

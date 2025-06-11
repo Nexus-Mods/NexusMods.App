@@ -2,6 +2,8 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk;
+using NexusMods.Sdk.MnemonicAttributes;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -35,5 +37,4 @@ public partial class SortOrder : IModelDefinition
     /// E.g. RedMod Load Order and .archive load order will have two different SortOrderTypeIds. 
     /// </summary>
     public static readonly GuidAttribute SortOrderTypeId = new(Namespace, nameof(SortOrderTypeId));
-    
 }

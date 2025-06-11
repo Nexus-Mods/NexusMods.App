@@ -1,0 +1,156 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:NexusMods.App.UI.Dialog"
+             xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+             xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+             xmlns:reactiveUi="http://reactiveui.net"
+             xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+             mc:Ignorable="d"
+             x:Class="NexusMods.App.UI.Dialog.DialogView"
+             d:DataContext="{x:Static vm:DesignDataContexts.DialogAllDesignViewModel}"
+             x:DataType="vm:DialogViewModel"
+             d:DesignHeight="450">
+
+    <!-- Temporary styles to see modal button variations -->
+    <UserControl.Styles>
+        <Style Selector="controls|StandardButton">
+            <Style Selector="^ /template/ TextBlock#PART_Label">
+                <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
+            </Style>
+
+            <Style Selector="^.Danger">
+                <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource DangerSubduedBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.Info">
+                <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource InfoSubduedBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.Premium">
+                <Setter Property="Background" Value="{StaticResource PremiumStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.Primary">
+                <Setter Property="Background" Value="{StaticResource PrimaryStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
+                </Style>
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- titlebar -->
+        <Grid Name="Titlebar" Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              Margin="16,16,16,0">
+
+            <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
+                custom titlebar dragging -->
+            <TextBlock Grid.Column="0" Name="TitleTextBlock"
+                       Text="{Binding WindowTitle}"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodySMSemiTheme}"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Close"
+                       IsHitTestVisible="False"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis" />
+
+            <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
+                                     DockPanel.Dock="Right"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                     ShowIcon="IconOnly"
+                                     ShowLabel="False"
+                                     Fill="None"
+                                     Type="Tertiary"
+                                     VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- content -->
+        <Border Name="ContentBorder" Grid.Row="1">
+
+            <!-- content, buttons -->
+            <Grid RowDefinitions="*, Auto" Margin="16,16,16,16">
+
+                <!-- basic content, remaining space with markdown and/or custom content -->
+                <Grid Name="GenericContentContainer"
+                      RowDefinitions="Auto,*"
+                      Margin="0">
+                    
+                    <StackPanel Grid.Row="0" Spacing="4">
+                        <icons:UnifiedIcon Name="Icon"
+                                           Value="{x:Static icons:IconValues.PictogramBox2}"
+                                           HorizontalAlignment="Left"
+                                           Size="48" />
+                        <TextBlock Name="HeaderTextBlock"
+                                   Text="Header"
+                                   Foreground="{StaticResource NeutralStrongBrush}"
+                                   Theme="{StaticResource BodyMDSemiTheme}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Name="TextTextBlock"
+                                   Foreground="{StaticResource NeutralSubduedBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    
+                    <ScrollViewer Grid.Row="1">
+                        <StackPanel
+                            Margin="0 8 0 0"
+                            Spacing="8">
+                            <Border x:Name="MarkdownContainer"
+                                    Margin="0">
+                                <Panel>
+                                    <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
+                                    <!-- float in the top right of the border, above the markdown -->
+                                    <controls:StandardButton x:Name="CopyDetailsButton"
+                                                             Margin="0 8 16 0"
+                                                             LeftIcon="{x:Static icons:IconValues.Copy}"
+                                                             ShowIcon="Left"
+                                                             Size="Small"
+                                                             Fill="WeakAlt"
+                                                             HorizontalAlignment="Right"
+                                                             VerticalAlignment="Top"
+                                                             ShowLabel="False"
+                                                             ToolTip.Tip="Copy to Clipboard" />
+                                </Panel>
+                            </Border>
+
+                            <!-- custom content - show this if custom content is provided -->
+                            <Border Name="CustomContentContainer"
+                                    Margin="0">
+                                <reactiveUi:ViewModelViewHost Name="ContentViewModelHost" />
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                    
+                </Grid>
+
+                <!-- buttons -->
+                <panels:FlexPanel Name="ButtonsFlexPanel" Grid.Row="1"
+                                  ColumnSpacing="8" Margin="0 16 0 0" />
+
+            </Grid>
+
+        </Border>
+    </Grid>
+</UserControl>

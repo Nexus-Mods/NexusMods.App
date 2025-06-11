@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -17,6 +16,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Hashes;
 using StrawberryShake;
 using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
@@ -46,6 +46,31 @@ public partial class NexusModsLibrary
 
         response.EnsureSuccessStatusCode();
         return presignedUploadUrl;
+    }
+
+    public async ValueTask<CollectionRevisionMetadata.ReadOnly> UploadCollectionRevision(
+        CollectionMetadata.ReadOnly collection,
+        IStreamFactory archiveStreamFactory,
+        CollectionRoot collectionManifest,
+        CancellationToken cancellationToken)
+    {
+        var payload = ManifestToPayload(collectionManifest);
+        var presignedUploadUrl = await UploadCollectionArchive(archiveStreamFactory, cancellationToken: cancellationToken);
+
+        var result = await _gqlClient.CreateOrUpdateRevision.ExecuteAsync(
+            payload: payload,
+            collectionId: (int)collection.CollectionId.Value,
+            uuid: presignedUploadUrl.UUID,
+            cancellationToken: cancellationToken
+        );
+
+        result.EnsureNoErrors();
+
+        var data = result.Data?.CreateOrUpdateRevision!;
+        if (!data.Success) throw new NotImplementedException();
+
+        var revision = await AddCollectionToDatabase(collectionManifest, data.Revision.Collection, data.Revision, cancellationToken);
+        return revision;
     }
 
     /// <summary>
@@ -254,7 +279,7 @@ public partial class NexusModsLibrary
 
         var md5ToDownload = modsAndDownloads
             .Select(static tuple => (tuple.Mod.Source.Md5, tuple.Download))
-            .Where(static tuple => tuple.Md5 != default(Md5HashValue))
+            .Where(static tuple => tuple.Md5 != default(Md5Value))
             .DistinctBy(static tuple => tuple.Md5)
             .ToDictionary(static tuple => tuple.Md5, static tuple => tuple.Download);
 
@@ -302,7 +327,7 @@ public partial class NexusModsLibrary
 
     private static Optional<CollectionDownload.ReadOnly> VortexModReferenceToCollectionDownload(
         VortexModReference reference,
-        Dictionary<Md5HashValue, CollectionDownload.ReadOnly> md5ToDownload,
+        Dictionary<Md5Value, CollectionDownload.ReadOnly> md5ToDownload,
         Dictionary<string, CollectionDownload.ReadOnly> tagToDownload,
         Dictionary<string, CollectionDownload.ReadOnly> fileExpressionToDownload)
     {
@@ -310,7 +335,7 @@ public partial class NexusModsLibrary
         // https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/testModReference.ts#L285-L299
 
         var md5 = reference.FileMD5;
-        if (md5 != default(Md5HashValue) && md5ToDownload.TryGetValue(md5, out var download)) return download;
+        if (md5 != default(Md5Value) && md5ToDownload.TryGetValue(md5, out var download)) return download;
 
         var tag = reference.Tag;
         if (!string.IsNullOrWhiteSpace(tag) && tagToDownload.TryGetValue(tag, out download)) return download;
@@ -508,7 +533,7 @@ public partial class NexusModsLibrary
         };
     }
 
-    private static EntityId UpdateRevisionInfo(
+    private EntityId UpdateRevisionInfo(
         IDb db,
         ITransaction tx,
         EntityId collectionEntityId,
@@ -517,10 +542,12 @@ public partial class NexusModsLibrary
         var revisionId = RevisionId.From((ulong)revisionInfo.Id);
         var resolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, revisionId);
 
-        resolver.Add(CollectionRevisionMetadata.RevisionId, revisionId);
         resolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revisionInfo.RevisionNumber));
         resolver.Add(CollectionRevisionMetadata.CollectionId, collectionEntityId);
         resolver.Add(CollectionRevisionMetadata.IsAdult, revisionInfo.AdultContent);
+
+        var status = ToStatus(_logger, revisionInfo);
+        if (status.HasValue) resolver.Add(CollectionRevisionMetadata.Status, status.Value);
 
         if (ulong.TryParse(revisionInfo.TotalSize, out var totalSize))
             resolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(totalSize));
@@ -535,19 +562,48 @@ public partial class NexusModsLibrary
         return resolver.Id;
     }
 
+    private static Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus> ToStatus(ICollectionFragment collectionFragment)
+    {
+        if (collectionFragment.CollectionStatus is null) return Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus>.None;
+        return collectionFragment.CollectionStatus.Value switch
+        {
+            CollectionStatus.Unlisted => Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted,
+            CollectionStatus.Listed => Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed,
+            _ => Optional<Abstractions.NexusModsLibrary.Models.CollectionStatus>.None,
+        };
+    }
+
+    private static Optional<RevisionStatus> ToStatus(ILogger logger, ICollectionRevisionFragment revisionFragment)
+    {
+        // NOTE(erri120): no idea why the revision fragment has two strings for the status
+        Debug.Assert(revisionFragment.Status.Equals(revisionFragment.RevisionStatus, StringComparison.OrdinalIgnoreCase), $"weird things happening: {revisionFragment.Status} != {revisionFragment.RevisionStatus}");
+
+        if (revisionFragment.Status.Equals("draft", StringComparison.OrdinalIgnoreCase))
+            return RevisionStatus.Draft;
+        if (revisionFragment.Status.Equals("published", StringComparison.OrdinalIgnoreCase))
+            return RevisionStatus.Published;
+        logger.LogWarning("Unknown revision status: `{Status}`", revisionFragment.Status);
+        return Optional<RevisionStatus>.None;
+    }
+
     private static EntityId UpdateCollectionInfo(
         IDb db,
         ITransaction tx,
         ICollectionFragment collectionInfo)
     {
+        var id = CollectionId.From((ulong)collectionInfo.Id);
         var slug = CollectionSlug.From(collectionInfo.Slug);
         var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
+        resolver.Add(CollectionMetadata.CollectionId, id);
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
         resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);
+
+        var status = ToStatus(collectionInfo);
+        if (status.HasValue) resolver.Add(CollectionMetadata.Status, status.Value);
 
         if (float.TryParse(collectionInfo.RecentRating ?? "0.0", CultureInfo.InvariantCulture, out var recentRating))
             resolver.Add(CollectionMetadata.RecentRating, recentRating);
