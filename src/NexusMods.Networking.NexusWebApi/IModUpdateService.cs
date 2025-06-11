@@ -37,7 +37,10 @@ public interface IModUpdateService
     /// Returns an observable for the newest version of a file.
     /// </summary>
     /// <param name="current">The current file to listen for changes in.</param>
-    /// <param name="select">A selector that can be used to transform or discard notifications about file updates. Return null to discard.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard notifications about file updates. Return null to discard.
+    ///     You probably want 'IgnoreModUpdateFilter' w/ 'SelectMod' (see usages).
+    /// </param>
     /// <returns>An observable that signals an update for a singular mod on a page.</returns>
     IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, ModUpdateOnPage?>? select = null);
 
@@ -45,7 +48,10 @@ public interface IModUpdateService
     /// Returns an observable when any file on a mod page is updated. 
     /// </summary>
     /// <param name="current">The current mod page to listen for changes in.</param>
-    /// <param name="select">A selector that can be used to transform or discard notifications about mod page updates. Return null to discard.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard notifications about mod page updates. Return null to discard.
+    ///     You probably want 'IgnoreModUpdateFilter' w/ 'SelectModPage' (see usages).
+    /// </param>
     /// <returns>An observable that returns all updated items on a given mod page.</returns>
     IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
 }
