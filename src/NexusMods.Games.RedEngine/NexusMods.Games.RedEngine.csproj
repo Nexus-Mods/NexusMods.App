@@ -24,6 +24,9 @@
           <Pack>true</Pack>
           <PackagePath>build/NexusMods.FileExtractor.targets</PackagePath>
         </None>
+        <EmbeddedResource Include="Resources\Cyberpunk2077\thumbnail.webp" />
+        <None Remove="Resources\Cyberpunk2077\tile.webp" />
+        <EmbeddedResource Include="Resources\Cyberpunk2077\tile.webp" />
     </ItemGroup>
 
     <Import Project="build\NexusMods.Games.RedEngine.targets" />
