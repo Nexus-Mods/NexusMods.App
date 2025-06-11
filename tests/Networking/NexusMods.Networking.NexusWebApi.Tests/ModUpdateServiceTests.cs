@@ -9,7 +9,9 @@ using NexusMods.Networking.ModUpdates;
 using NexusMods.Paths;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.TestFramework;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using Xunit.Abstractions;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
@@ -417,6 +419,64 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         // And check all expected updates were found in the results
         var updateOnPage = updateResults[0];
         AssertUpdatesContainAllResults(spaceCoreData.Updates, updateOnPage);
+    }
+    
+    [Fact]
+    public async Task NotifyForUpdates_WithIgnoreFilter_ShouldNotReportIgnoredUpdates()
+    {
+        // Arrange
+        var spaceCoreData = StaticTestData.SpaceCoreModData;
+
+        // Download an old version of SpaceCore
+        await using var tempFile = _temporaryFileManager.CreateFile();
+        var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
+            destination: tempFile,
+            gameId: (GameId)spaceCoreData.GameId,
+            modId: (ModId)spaceCoreData.ModId,
+            fileId: (FileId)spaceCoreData.FileId
+        );
+        
+        // Create a filter to ignore updates for this mod
+        var ignoreFilter = new IgnoreModUpdateFilter(ServiceProvider.GetRequiredService<IConnection>());
+
+        // Setup observable with the ignore filter applied
+        var observable = _modUpdateService.GetNewestFileVersionObservable(
+            downloadJob.Job.FileMetadata,
+            ignoreFilter.SelectMod); // Apply the filter
+        
+        // Create collection for results
+        ModUpdateOnPage? updateOnPage = null;
+        using var subscription = observable.Subscribe(val => 
+        {
+            if (val.HasValue)
+                updateOnPage = val.Value;
+            else
+                updateOnPage = null; // We're watching only for 1 item.
+        });
+        
+        // Add the mod to the library - should initially see updates
+        _ = await _libraryService.AddDownload(downloadJob);
+        
+        // Verify we initially receive update notifications
+        updateOnPage!.Should().NotBeNull("Before adding the ignore filter, updates should be visible");
+        
+        // Create an ignore entry for the newest file (the one we would update to)
+        var newestFile = spaceCoreData.Updates[^1]; // Get the latest update
+        var newestFileUid = new UidForFile(
+            (FileId)newestFile.FileId,
+            (GameId)newestFile.GameId
+        );
+        var connection = ServiceProvider.GetRequiredService<IConnection>();
+        using (var tx = connection.BeginTransaction())
+        {
+            // Create an IgnoreFileUpdateModel for the latest update file ID
+            _ = new IgnoreFileUpdate.New(tx) { Uid = newestFileUid };
+            await tx.Commit(); // This auto updates the ignore filter in `ModUpdateService`.
+            // And updates the `updateOnPage` variable via previous observable.
+        }
+
+        // We should no longer have the ignored file.
+        updateOnPage!.Value.NewerFiles.Should().NotContain(x => x.Uid == newestFileUid,"After adding the ignore filter, updates should not be visible");
     }
     
     private static void AssertUpdatesContainAllResults(StaticTestData.TestModData[] updates, ModUpdateOnPage modUpdate)
