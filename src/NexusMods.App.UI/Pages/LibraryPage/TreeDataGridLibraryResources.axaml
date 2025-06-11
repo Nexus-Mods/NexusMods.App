@@ -150,75 +150,8 @@
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
-
-            <Border Background="DarkSlateGray" Width="20" Height="20">
-                <Border.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}">
-                            <MenuItem.Icon>
-                                <icons:UnifiedIcon
-                                    Value="{x:Static icons:IconValues.FileDocumentOutline}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator/>
-                        <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}">
-                            <MenuItem.Icon>
-                                <icons:UnifiedIcon
-                                    Value="{x:Static icons:IconValues.OpenInNew}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </ContextMenu>
-                </Border.ContextMenu>
-            </Border>
-            
-            <Border Background="DarkSlateBlue" Width="20" Height="20">
-                <Border.ContextMenu>
-                    <ContextMenu Classes="TreeDataGridMenu">
-                        <!-- View Changelog -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate
-                                    x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
-                                    ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
-                                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}"
-                                                      Command="{CompiledBinding CommandViewChangelog}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon
-                                                        Value="{x:Static icons:IconValues.FileDocumentOutline}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-
-                        <Separator/>
-
-                        <!-- View Mod Page -->
-                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
-                            <controls:ComponentControl.ComponentTemplate>
-                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+ViewModPageAction"
-                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
-                                    <controls:ComponentTemplate.DataTemplate>
-                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
-                                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
-                                                      Command="{CompiledBinding CommandViewModPage}">
-                                                <MenuItem.Icon>
-                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
-                                                </MenuItem.Icon>
-                                            </MenuItem>
-                                        </DataTemplate>
-                                    </controls:ComponentTemplate.DataTemplate>
-                                </controls:ComponentTemplate>
-                            </controls:ComponentControl.ComponentTemplate>
-                        </controls:ComponentControl>
-                    </ContextMenu>
-                </Border.ContextMenu>
-            </Border>
-
+           
+            <!-- more options -->
             <controls:StandardButton
                 ToolTip.Tip="More options"
                 x:Name="HamburgerMenuButton"

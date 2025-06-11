@@ -203,8 +203,6 @@
         <!--
         https://github.com/AvaloniaUI/Avalonia/blob/master/src/Avalonia.Themes.Fluent/Controls/MenuFlyoutPresenter.xaml
         -->
-        <!-- <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" /> -->
-        <!-- <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" /> -->
     </Style>
 
     <Style Selector="MenuItem">
@@ -259,6 +257,7 @@
     </Style>
 
 
+    <!-- used for treedatagrid menus to fix the problem of our componentcontrol nesting menuitems -->
     <Style Selector="ContextMenu.TreeDataGridMenu,MenuFlyoutPresenter.TreeDataGridMenu">
 
         <Style Selector="^ > MenuItem">
@@ -279,7 +278,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="^> Separator">
+        <Style Selector="^ > Separator">
             <Setter Property="Background" Value="{StaticResource SurfaceTranslucentMidBrush}" />
             <Setter Property="Height" Value="1" />
         </Style>
