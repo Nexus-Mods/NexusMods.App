@@ -32,8 +32,8 @@
     <!-- Standard loadout card -->
 
     <Style Selector="loadoutCard|LoadoutCardView">
-        <Setter Property="Width" Value="208" />
-        <Setter Property="Height" Value="347" />
+        <Setter Property="Width" Value="200" />
+        <Setter Property="Height" Value="246" />
         <Setter Property="ClipToBounds" Value="False" />
 
         <Style Selector="^ Button#CardOuterButton">
@@ -43,7 +43,7 @@
             <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="12,12,12,0" />
+            <Setter Property="Padding" Value="12" />
             <Setter Property="ClipToBounds" Value="False" />
 
             <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
@@ -71,64 +71,57 @@
                 <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}" />
             </Style>
         </Style>
-
-        <Style Selector="^ DockPanel#ActionsDock">
-            <Setter Property="Margin" Value="0,0,0,12" />
-
-            <Style Selector="^ controls|StandardButton#DeleteButton">
-                <Setter Property="Margin" Value="8,0,0,0" />
-            </Style>
+        
+        <!-- name -->
+        <Style Selector="^ TextBlock#LoadoutNameTextBlock">
+            <Setter Property="Theme" Value="{StaticResource BodyMDSemiTheme}" />
         </Style>
 
-        <Style Selector="^ StackPanel#CardOuterStack">
-            <Setter Property="Orientation" Value="Vertical" />
+        <!-- image -->
+        <Style Selector="^ Border#ImageSectionBorder">
+            <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
+            <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
 
-            <Style Selector="^ Border#ImageSectionBorder">
-                <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}" />
-                <Setter Property="ClipToBounds" Value="True" />
-                <Setter Property="Height" Value="184" />
-                <Setter Property="Width" Value="184" />
-
-                <Style Selector="^ Image#GameImage">
-                    <Setter Property="Stretch" Value="UniformToFill" />
-                </Style>
+            <Style Selector="^ Image#GameImage">
+                <Setter Property="Stretch" Value="Uniform" />
             </Style>
+        </Style>
+        
+        <Style Selector="^ StackPanel#DetailsSectionStack">
+            <Setter Property="Spacing" Value="4" />
 
-
-            <Style Selector="^ StackPanel#DetailsSectionStack">
+            <Style Selector="^ StackPanel#DetailsBodyStack">
                 <Setter Property="Orientation" Value="Vertical" />
-                <Setter Property="Spacing" Value="4" />
-                <Setter Property="Margin" Value="0,12,0,0" />
+                <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}" />
 
-                <Style Selector="^ TextBlock#LoadoutNameTextBlock">
-                    <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+                <Style Selector="^ > TextBlock">
+                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+                    <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
                 </Style>
 
-                <Style Selector="^ StackPanel#DetailsBodyStack">
-                    <Setter Property="Orientation" Value="Vertical" />
-                    <Setter Property="Spacing" Value="{StaticResource Spacing-0.5}" />
+                <Style Selector="^ StackPanel#CurrentlyAppliedStack">
+                    <Setter Property="Orientation" Value="Horizontal" />
+                    <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
 
-                    <Style Selector="^ > TextBlock">
-                        <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-                        <Setter Property="Theme" Value="{StaticResource BodySMNormalTheme}" />
+                    <Style Selector="^ TextBlock#CurrentlyAppliedTextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
+                        <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
                     </Style>
-
-                    <Style Selector="^ StackPanel#CurrentlyAppliedStack">
-                        <Setter Property="Orientation" Value="Horizontal" />
-                        <Setter Property="Spacing" Value="{StaticResource Spacing-1}" />
-
-                        <Style Selector="^ TextBlock#CurrentlyAppliedTextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource NeutralStrongBrush}" />
-                            <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
-                        </Style>
-                        <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">
-                            <Setter Property="Size" Value="16" />
-                        </Style>
+                    <Style Selector="^ icons|UnifiedIcon#AppliedCheckBoxIcon">
+                        <Setter Property="Size" Value="16" />
                     </Style>
                 </Style>
             </Style>
         </Style>
-
+        
+        <Style Selector="^ DockPanel#ActionsDock">
+            <Style Selector="^ controls|StandardButton#DeleteButton">
+                <Setter Property="Margin" Value="6,0,0,0" />
+            </Style>
+        </Style>
 
         <Style Selector="^ StackPanel#OverlayStack">
             <Setter Property="Orientation" Value="Vertical" />
@@ -159,7 +152,7 @@
 
     <Style Selector="loadoutCard|CreateNewLoadoutCardView">
         <Setter Property="Width" Value="208" />
-        <Setter Property="Height" Value="347" />
+        <Setter Property="Height" Value="246" />
         <Setter Property="ClipToBounds" Value="False" />
 
         <Style Selector="^ Button#CreateNewLoadoutButton">
