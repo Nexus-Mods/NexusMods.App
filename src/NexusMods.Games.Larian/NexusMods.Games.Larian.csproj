@@ -16,6 +16,10 @@
       <EmbeddedResource Include="Resources\BaldursGate3\game_image.jpg" />
       <None Remove="Resources\BaldursGate3\icon.png" />
       <EmbeddedResource Include="Resources\BaldursGate3\icon.png" />
+      <None Remove="Resources\BaldursGate3\thumbnail.webp" />
+      <EmbeddedResource Include="Resources\BaldursGate3\thumbnail.webp" />
+      <None Remove="Resources\BaldursGate3\tile.webp" />
+      <EmbeddedResource Include="Resources\BaldursGate3\tile.webp" />
     </ItemGroup>
 
     <ItemGroup>
