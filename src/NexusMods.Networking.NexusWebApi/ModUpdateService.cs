@@ -27,16 +27,13 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly ILogger<ModUpdateService> _logger;
     private readonly NexusGraphQLClient _gqlClient;
     private readonly TimeProvider _timeProvider;
+    private readonly IModUpdateFilterService _filterService;
     
     // Use SourceCache to maintain latest values per key
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
     
-    // Trigger for forcing filter re-evaluation
-    private readonly Subject<Unit> _filterTrigger = new();
-    
     private readonly IDisposable _updateObserver;
-    private readonly IDisposable _ignoreFilterObserver;
     private DateTimeOffset _lastUpdateCheckTime = DateTimeOffset.MinValue;
 
     /// <summary/>
@@ -46,7 +43,8 @@ public class ModUpdateService : IModUpdateService, IDisposable
         IGameDomainToGameIdMappingCache gameIdMappingCache,
         ILogger<ModUpdateService> logger,
         NexusGraphQLClient gqlClient,
-        TimeProvider timeProvider)
+        TimeProvider timeProvider,
+        IModUpdateFilterService filterService)
     {
         _connection = connection;
         _nexusApiClient = nexusApiClient;
@@ -54,10 +52,24 @@ public class ModUpdateService : IModUpdateService, IDisposable
         _logger = logger;
         _gqlClient = gqlClient;
         _timeProvider = timeProvider;
+
+        // Note(sewer): Technically speaking, the user can supply a custom filter that is not attached
+        // to `IgnoreFileUpdate` (IModUpdateFilterService) when calling APIs such as 
+        // `GetNewestModPageVersionObservable` or `GetNewestFileVersionObservable`.
+        //
+        // In that case, a change in `IModUpdateFilterService` could cause a re-evaluation of
+        // observables unaffected by its filter, which is a performance no-no.
+        //
+        // However, (IModUpdateFilterService) is currently the only filter that is used
+        // in the App; and we're not expecting any other filters to be added for a while.
+        //
+        // If we ever do, we can revisit and make it more efficient by only refreshing affected
+        // observables.
+        _filterService = filterService;
+        
         // Note(sewer): This is a singleton, so we don't actually need to dispose, that said
         // I'm opting to for the sake of following good practices.
         _updateObserver = ObserveUpdates();
-        _ignoreFilterObserver = ObserveIgnoreFilterChanges();
     }
 
     private IDisposable ObserveUpdates()
@@ -106,28 +118,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
                     affectedModPage.Add(change.Current.ModPageMetadataId);
                 
                 NotifyForUpdatesOfSpecificModPages(affectedModPage);
-            });
-    }
-
-    private IDisposable ObserveIgnoreFilterChanges()
-    {
-        return IgnoreFileUpdate.ObserveAll(_connection)
-            .Subscribe(changes =>
-            {
-                // Note(sewer):
-                // When ignored mods change, we need to refresh all filtered views
-                // so that observables with custom select functions can re-evaluate
-                // whether files should be shown or hidden based on the new ignore state.
-                _filterTrigger.OnNext(Unit.Default);
-
-                // Technically speaking, since the user can supply a custom filter that is not attached
-                // to `IgnoreFileUpdate`, having this here is not the 'correct' thing to do. Instead,
-                // an external caller should activate this. But, in practice, in the actual App, as of
-                // now, this is the only filter that is used.
-
-                // Should there be a need to add another filter, we can have an API like 
-                // `AddFilterTrigger` that allows external callers to add their own mechanisms
-                // for specifying when filtered viewes should be re-evaluated.
             });
     }
 
@@ -250,7 +240,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
             return observable;
         
         // When a custom selector is provided, also trigger on the filter trigger
-        var triggerObservable = _filterTrigger
+        var triggerObservable = _filterService.FilterTrigger
             .Select(_ => _newestModVersionCache.Lookup(current.Id))
             .Select(kv => kv.HasValue ? Optional.Some(kv.Value.Value) : Optional<ModUpdateOnPage>.None);
         
@@ -279,7 +269,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
             return observable;
         
         // When a custom selector is provided, also trigger on the filter trigger
-        var triggerObservable = _filterTrigger
+        var triggerObservable = _filterService.FilterTrigger
             .Select(_ => _newestModOnAnyPageCache.Lookup(current.Id))
             .Select(kv => kv.HasValue ? Optional.Some(kv.Value.Value) : Optional<ModUpdatesOnModPage>.None);
         
@@ -302,9 +292,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
     {
         _newestModVersionCache.Dispose();
         _newestModOnAnyPageCache.Dispose();
-        _filterTrigger.Dispose();
         _updateObserver.Dispose();
-        _ignoreFilterObserver.Dispose();
     }
     
     /// <summary>
