@@ -102,10 +102,10 @@ public partial class Loadout
             .Project(modDisabled, disabled => disabled.IsDefault, out var isModEnabled)
             // .Return(groupId, isModEnabled);
             // Some groups my not have a parent collection, so in that case we take true as collectionIsEnabled value.
-            .DbOrDefault(groupId, LoadoutItem.Parent, out var collectionId, EntityId.From(0))
+            .DbOrDefault(groupId, LoadoutItem.Parent, out var collectionId, default(EntityId))
             .MatchDefault(IsCollectionEnabledFlow.Rekey(row => row.CollectionId), 
                 collectionId, out var collectionIsEnabledData, 
-                EntityId.From(0), (CollectionId: EntityId.From(0), IsCollectionEnabled: true))
+                default(EntityId), (CollectionId: default(EntityId), IsCollectionEnabled: true))
             .Project(collectionIsEnabledData, row => row.IsCollectionEnabled, out var collectionIsEnabled)
             .Return(groupId, collectionIsEnabled ,isModEnabled)
             .Select(row => (row.Item1, row.Item2 && row.Item3)); 
@@ -144,7 +144,7 @@ public partial class Loadout
         );
         return isEnabled.Count == 1 && isEnabled.First().IsLoadoutItemEnabled;
     }
-    
+
     /// <summary>
     /// Returns all enabled LoadoutItemsWithTargetPath in a loadout.
     /// </summary>
@@ -152,17 +152,16 @@ public partial class Loadout
         Pattern.Create()
             .Db(out var itemId, LoadoutItemWithTargetPath.TargetPath, out _)
             .Db(itemId, LoadoutItem.LoadoutId, out var loadoutId)
-            .Match(IsLoadoutItemEnabledFlow, itemId, out var isEnabled)
-            .Return(loadoutId, itemId, isEnabled)
-            .Where(row => row.Item3.Equals(true))
-            .Select(row => (LoadoutId: row.Item1, LoadoutItemWithTargetPathId: row.Item2));
+            .Match(IsLoadoutItemEnabledFlow.Where(row => row.IsLoadoutItemEnabled), itemId, out _)
+            .Return(loadoutId, itemId);
+            // .Select(row => (LoadoutId: row.Item1, LoadoutItemWithTargetPathId: row.Item2));
 
     /// <summary>
     /// Returns all enabled LoadoutItemsWithTargetPath in a loadout.
     /// </summary>
-    public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> GetEnabledLoadoutItemsWithTargetPath(IDb db, LoadoutId loadoutId)
+    public static async Task<IEnumerable<LoadoutItemWithTargetPath.ReadOnly>> GetEnabledLoadoutItemsWithTargetPath(IDb db, LoadoutId loadoutId)
     {
-        using var items = db.Topology.Query(
+        using var items = await db.Topology.QueryAsync(
             EnabledLoadoutItemsWithTargetPathFlow.Where(row => row.LoadoutId == loadoutId.Value)
         );
         return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId));

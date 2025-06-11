@@ -218,10 +218,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             };
         }
         
-        foreach (var loadoutItem in Loadout.GetEnabledLoadoutItemsWithTargetPath(loadout.Db.Connection.Db, loadout.LoadoutId))
+        foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
         {
+            // Skip disabled items
+            if (!loadoutItem.AsLoadoutItem().IsEnabled())
+                continue;
+            
             var targetPath = loadoutItem.TargetPath;
-
+            
             SyncNodePart sourceItem;
             LoadoutSourceItemType sourceItemType;
             if (loadoutItem.TryGetAsLoadoutFile(out var loadutFile))

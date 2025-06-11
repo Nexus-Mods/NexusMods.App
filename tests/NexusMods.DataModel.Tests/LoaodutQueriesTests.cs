@@ -263,4 +263,45 @@ public class LoaodutQueriesTests(ITestOutputHelper helper) : ACyberpunkIsolatedG
         isEnabled.Should().BeTrue();
     }
     
+    [Fact]
+    public async Task GetEnabledLoadoutItemsWithTargetPath_ShouldWorkWithCollections()
+    {
+        var loadout = await CreateLoadout();
+        var collection = await CreateCollection(loadout.LoadoutId, "Collection 1");
+        var modFiles = new List<RelativePath> { "Data/textureA.dds" };
+        
+        using var tx = Connection.BeginTransaction();
+        
+        var modA = await AddModAsync(tx, modFiles, loadout.LoadoutId, "Mod A", parentGroup: collection.Id);
+        modA.hashes.Should().ContainSingle();
+        
+        await tx.Commit();
+
+        var loadoutFiles = LoadoutFile.FindByHash(Connection.Db, modA.hashes.First());
+        loadoutFiles.Should().ContainSingle();
+
+        var item = loadoutFiles.First().AsLoadoutItemWithTargetPath().AsLoadoutItem();
+        
+        item.IsDisabled.Should().BeFalse();
+        
+        item.IsEnabled().Should().BeTrue();
+
+        // Get enabled items
+        var enabledItems = (await Loadout.GetEnabledLoadoutItemsWithTargetPath(Connection.Db, loadout.LoadoutId)).ToArray();
+        enabledItems.Should().ContainSingle();
+        enabledItems.First().Id.Should().Be(item.Id);
+        
+        // Disable the collection
+        using var tx2 = Connection.BeginTransaction();
+        tx2.Add(collection.Id, LoadoutItem.Disabled, Null.Instance, isRetract: false);
+        await tx2.Commit();
+        
+        item.Rebase(Connection.Db).IsEnabled().Should().BeFalse();
+        (await Loadout.IsLoadoutItemEnabled(Connection.Db, item.Id)).Should().BeFalse();
+        
+        // Should now be empty as the collection is disabled
+        enabledItems = (await Loadout.GetEnabledLoadoutItemsWithTargetPath(Connection.Db, loadout.LoadoutId)).ToArray();
+        enabledItems.Should().BeEmpty();
+    }
+    
 }
