@@ -12,7 +12,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
 using Avalonia.ReactiveUI;
-using NexusMods.Icons;
 
 namespace NexusMods.App.UI.Dialog;
 

@@ -4,8 +4,6 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
-                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
                                 mc:Ignorable="d"
                                 x:Class="NexusMods.App.UI.Dialog.CustomContentView"
                                 d:DataContext="{x:Static dialog:DesignDataContexts.CustomContentDesignViewModel}">

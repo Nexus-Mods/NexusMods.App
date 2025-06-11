@@ -1,6 +1,6 @@
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using TransparentValueObjects;
 
 namespace NexusMods.App.UI.Dialog;
