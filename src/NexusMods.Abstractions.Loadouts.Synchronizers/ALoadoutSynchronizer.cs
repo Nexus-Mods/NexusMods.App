@@ -217,12 +217,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 SourceItemType = LoadoutSourceItemType.Game,
             };
         }
-        
-        foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
+
+        foreach (var loadoutItem in Loadout.GetEnabledLoadoutItemsWithTargetPath(loadout.Db.Connection.Db, loadout.LoadoutId))
         {
-            // Skip disabled items
-            if (!loadoutItem.AsLoadoutItem().IsEnabled())
-                continue;
             
             var targetPath = loadoutItem.TargetPath;
             
