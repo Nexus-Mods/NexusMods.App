@@ -72,9 +72,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate DataType="gameWidget:IGameWidgetViewModel">
                                         <reactiveUi:ViewModelViewHost
-                                            ViewModel="{CompiledBinding .}"
-                                            Width="184"
-                                            Height="293" />
+                                            ViewModel="{CompiledBinding .}" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
