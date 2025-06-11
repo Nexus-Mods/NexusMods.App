@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x5F7165E760F9FD4E
-   - Total attributes: 203
-   - Total namespaces: 70
+   - Fingerprint: 0x12CC31F0F026EAC1
+   - Total attributes: 213
+   - Total namespaces: 72
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -158,6 +158,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageResource              | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageUri                   | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Category                             | Reference               | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/CollectionId                         | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Endorsements                         | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/GameId                               | UInt32                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Name                                 | Utf8                    | False   | False | False     | 
@@ -199,6 +200,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.User/AvatarUri                                          | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.User/Name                                               | Utf8                    | True    | False | False     | 
 | NexusMods.NexusModsLibrary.User/NexusId                                            | UInt64                  | True    | False | False     | 
+| NexusMods.NexusWebApi.Filters.IgnoreFileUpdateModel/Uid                            | UInt64                  | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/Domain                             | Ascii                   | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/GameId                             | UInt32                  | True    | False | False     | 
 | NexusMods.RedEngine.Cyberpunk2077.RedModLoadoutGroup/RedModInfoFile                | Reference               | False   | False | False     | 
@@ -213,3 +215,11 @@ models in the app, then validate the tests to update this file.
 | NexusMods.StardewValley.SMAPIManifestLoadoutFile/ManifestFile                      | Null                    | True    | False | False     | 
 | NexusMods.StardewValley.SMAPIModDatabaseLoadoutFile/ModDatabaseFile                | Null                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPIModLoadoutItem/Manifest                               | Reference               | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/AppName                          | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildId                          | Utf8Insensitive         | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildVersion                     | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/CreatedAt                        | Int64                   | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/Files                            | Reference               | False   | True  | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/ItemId                           | Utf8Insensitive         | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/LabelName                        | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/UpdatedAt                        | Int64                   | False   | False | False     | 

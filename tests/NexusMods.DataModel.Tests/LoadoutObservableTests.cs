@@ -56,17 +56,17 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
         await Connection.Topology.FlushEffectsAsync();
         var firstRow = loadouts.First();
         firstRow.RowId.Should().Be(loadoutId);
-        var originalTx = firstRow.TxId.Value;
+        var originalItemCount = firstRow.ItemCount;
 
         
         // Delete a file and the row should update
         using var tx2 = Connection.BeginTransaction();
         tx2.Delete(fileId, false);
         var result2 = await tx2.Commit();
-        await Connection.Topology.FlushEffectsAsync();
-        firstRow.RowId.Should().Be(loadoutId);
-        firstRow.TxId.Should().NotBe(originalTx);
         
-
+        await Connection.Topology.FlushEffectsAsync();
+        var firstRow2 = loadouts.First();
+        var newItemCount = firstRow2.ItemCount;
+        newItemCount.Should().NotBe(originalItemCount);
     }
 }

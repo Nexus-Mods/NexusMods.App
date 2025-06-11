@@ -42,7 +42,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
-    public ILeftMenuItemViewModel? LeftMenuItemNewCollection { get; }
+    public ILeftMenuItemViewModel LeftMenuItemNewCollection { get; }
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
     [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
@@ -120,7 +120,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             ToolTip = new StringComponent(Language.LoadoutView_Title_Installed_Mods_ToolTip),
         };
 
-        LeftMenuItemNewCollection = CompileConstants.IsDebug ? new NewCollectionViewModel(serviceProvider, loadout, workspaceController, workspaceId) : null;
+        LeftMenuItemNewCollection = new NewCollectionViewModel(serviceProvider, loadout, workspaceController, workspaceId);
 
         var collectionRevisionsObservable = CollectionRevisionMetadata
             .ObserveAll(conn)

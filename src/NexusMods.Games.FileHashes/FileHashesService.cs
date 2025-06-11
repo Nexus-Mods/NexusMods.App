@@ -39,7 +39,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
     private readonly ILogger<FileHashesService> _logger;
 
-    private record ConnectedDb(IDb Db, Connection Connection, DatomStore Store, Backend Backend, DateTimeOffset Timestamp, AbsolutePath Path);
+    private record ConnectedDb(IDb Db, Connection Connection, DatomStore Store, MnemonicDB.Storage.RocksDbBackend.Backend Backend, DateTimeOffset Timestamp, AbsolutePath Path);
 
     public FileHashesService(ILogger<FileHashesService> logger, ISettingsManager settingsManager, IFileSystem fileSystem, HttpClient httpClient, JsonSerializerOptions jsonSerializerOptions, IServiceProvider provider)
     {
@@ -80,7 +80,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 return existing;
 
             _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", path, timestamp);
-            var backend = new Backend(readOnly: true);
+            var backend = new MnemonicDB.Storage.RocksDbBackend.Backend(readOnly: true);
             var settings = new DatomStoreSettings
             {
                 Path = path,

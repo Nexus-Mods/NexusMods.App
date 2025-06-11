@@ -21,7 +21,7 @@ public interface ISettingsPropertyUIDescriptor
     /// <summary>
     /// Gets the description.
     /// </summary>
-    public string Description { get; }
+    public Func<object, string> DescriptionFactory { get; }
 
     /// <summary>
     /// Gets the optional link.

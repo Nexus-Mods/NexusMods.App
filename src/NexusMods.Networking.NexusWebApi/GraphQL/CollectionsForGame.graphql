@@ -17,3 +17,11 @@ query CollectionsForGame($gameId: String!, $offset: Int!, $count: Int!) {
         }
     }
 }
+
+query CollectionSlugToId($slug: String!) {
+    collection(slug: $slug) {
+        id
+        slug
+        gameId
+    }
+}

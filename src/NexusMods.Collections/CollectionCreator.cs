@@ -1,5 +1,4 @@
 using DynamicData.Kernel;
-using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -16,11 +15,30 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
+    private static string GenerateNewCollectionName(string[] allNames)
+    {
+        const string defaultValue = "My new collection";
+        const string template = "({0}) My new collection";
+        var count = 1;
+        var current = allNames.Any(x => x.SequenceEqual(defaultValue)) ? TemplatedName() : defaultValue;
+
+        foreach (var existingName in allNames.Order(StringComparer.OrdinalIgnoreCase))
+        {
+            if (existingName.SequenceEqual(current)) current = TemplatedName();
+        }
+
+        return current;
+        string TemplatedName() => string.Format(template, ++count);
+    }
+
     /// <summary>
     /// Creates a new collection group in the loadout.
     /// </summary>
     public static async ValueTask<CollectionGroup.ReadOnly> CreateNewCollectionGroup(IConnection connection, LoadoutId loadoutId)
     {
+        var names = (await Loadout.Load(connection.Db, loadoutId).MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
+        var newName = GenerateNewCollectionName(names);
+
         using var tx = connection.BeginTransaction();
 
         var group = new CollectionGroup.New(tx, out var id)
@@ -31,7 +49,7 @@ public static class CollectionCreator
                 IsGroup = true,
                 LoadoutItem = new LoadoutItem.New(tx, id)
                 {
-                    Name = "My new collection",
+                    Name = newName,
                     LoadoutId = loadoutId,
                 },
             },
