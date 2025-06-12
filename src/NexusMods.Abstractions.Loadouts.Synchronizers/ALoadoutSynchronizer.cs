@@ -218,8 +218,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             };
         }
 
-        foreach (var loadoutItem in Loadout.GetEnabledLoadoutItemsWithTargetPath(loadout.Db.Connection.Db, loadout.LoadoutId))
+        var enabledLoadoutItems = Loadout.GetEnabledLoadoutItemsWithTargetPath(loadout.Db.Connection.Db, loadout.LoadoutId);
+
+        var diagram = loadout.Db.Topology.Diagram();
+        
+        foreach (var loadoutItem in enabledLoadoutItems)
         {
+            Debug.Assert(loadoutItem.AsLoadoutItem().IsEnabled());
             
             var targetPath = loadoutItem.TargetPath;
             

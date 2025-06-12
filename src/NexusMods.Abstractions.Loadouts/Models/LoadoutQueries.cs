@@ -166,4 +166,15 @@ public partial class Loadout
         );
         return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId));
     }
+    
+    /// <summary>
+    /// Returns all enabled LoadoutItemsWithTargetPath in a loadout.
+    /// </summary>
+    public static async Task<IEnumerable<LoadoutItemWithTargetPath.ReadOnly>> GetEnabledLoadoutItemsWithTargetPathAsync(IDb db, LoadoutId loadoutId)
+    {
+        using var items = await db.Topology.QueryAsync(
+            EnabledLoadoutItemsWithTargetPathFlow.Where(row => row.LoadoutId == loadoutId.Value)
+        );
+        return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId));
+    }
 }
