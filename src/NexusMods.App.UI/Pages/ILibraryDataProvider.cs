@@ -147,15 +147,15 @@ public static class LibraryDataProviderHelper
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<Optional<ModUpdateOnPage>> fileUpdateObservable,
-        IModUpdateFilterService filterService,
         bool isEnabled = true)
     {
         // Wire up proper hidden state observable using the filter service
         var isHiddenObservable = fileUpdateObservable
-            .Select<Optional<ModUpdateOnPage>, IObservable<bool>>(optional => optional.HasValue 
-                ? filterService.ObserveFileHiddenState(optional.Value.File.Uid)
-                : System.Reactive.Linq.Observable.Return(false))
-            .Switch()
+            .Select(optional => !optional.HasValue) 
+            // Note(sewer):
+            // The filter decides if this update is available, at the caller site,
+            // so we know if the update is available or not by simply ckecking if the optional
+            // has a value or not.
             .ToObservable();
         
         // For individual files: count is always 1

@@ -102,15 +102,15 @@ public class ModUpdateFilterService : IModUpdateFilterService
         return Observable.Create<bool>(observer =>
         {
             // Helper function to check if file is hidden
-            bool IsFileHidden() => IgnoreFileUpdate.FindByUid(_connection.Db, fileUid).Any();
+            bool IsThisFileHidden() => IgnoreFileUpdate.FindByUid(_connection.Db, fileUid).Any();
             
             // Emit the current state immediately
-            observer.OnNext(IsFileHidden());
+            observer.OnNext(IsThisFileHidden());
             
             // Subscribe to filter changes and emit new state when changes occur
             var subscription = _filterTrigger.Subscribe(_ =>
             {
-                observer.OnNext(IsFileHidden());
+                observer.OnNext(IsThisFileHidden());
             });
             
             return subscription;

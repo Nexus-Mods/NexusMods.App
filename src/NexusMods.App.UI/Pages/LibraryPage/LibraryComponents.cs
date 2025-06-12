@@ -474,9 +474,9 @@ public static class LibraryComponents
             base.Dispose(disposing);
         }
 
-        private static string FormatShowUpdates(bool showUpdates, int itemCount)
+        private static string FormatShowUpdates(bool isHidden, int itemCount)
         {
-            return string.Format(showUpdates 
+            return string.Format(isHidden 
                 ? Resources.Language.Library_ShowUpdates 
                 : Resources.Language.Library_HideUpdates, itemCount);
         }
