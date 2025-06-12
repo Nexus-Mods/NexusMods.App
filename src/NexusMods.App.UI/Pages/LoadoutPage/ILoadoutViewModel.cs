@@ -36,4 +36,6 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     public bool HasRulesSection { get; }
     
     public LoadoutPageSubTabs SelectedSubTab { get; }
+
+    R3.ReactiveCommand<R3.Unit> CommandUploadRevision { get; }
 }
