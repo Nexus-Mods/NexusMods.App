@@ -16,6 +16,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using R3;
+using Observable = R3.Observable;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -157,10 +158,8 @@ public static class LibraryDataProviderHelper
             .Switch()
             .ToObservable();
         
-        // For individual files: count is 1 if update available, 0 if not
-        var itemCountObservable = fileUpdateObservable
-            .Select(static optional => optional.HasValue ? 1 : 0)
-            .ToObservable();
+        // For individual files: count is always 1
+        var itemCountObservable = Observable.Return(1);
 
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
     }
