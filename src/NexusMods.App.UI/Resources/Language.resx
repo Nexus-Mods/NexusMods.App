@@ -990,4 +990,25 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
         <value>Upgrade to Premium</value>
     </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Installed" xml:space="preserve">
+        <value>Installed</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Install" xml:space="preserve">
+        <value>Install</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloaded" xml:space="preserve">
+        <value>Downloaded</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloading" xml:space="preserve">
+        <value>Downloading</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Download" xml:space="preserve">
+        <value>Download</value>
+    </data>
+    <data name="CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload" xml:space="preserve">
+        <value>Third-party download</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
+        <value>Manual download</value>
+    </data>
 </root>
