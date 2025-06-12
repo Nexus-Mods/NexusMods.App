@@ -456,7 +456,7 @@ public static class LibraryComponents
             // Icon changes based on hidden state
             // Use Visibility when hidden (showing "Show Updates"), VisibilityOff when shown (showing "Hide Updates")
             Icon = IsHidden.AsObservable()
-                .Select(static isHidden => isHidden ? IconValues.VisibilityOff : IconValues.Visibility)
+                .Select(static isHidden => isHidden ? IconValues.Visibility : IconValues.VisibilityOff)
                 .ToBindableReactiveProperty(initialValue: IconValues.Visibility);
         }
 
