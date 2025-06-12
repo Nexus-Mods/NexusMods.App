@@ -4,6 +4,7 @@ using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
+using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
@@ -71,8 +72,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(isCollection =>
                 {
-                    // TODO: remove for GA
-                    ButtonUploadCollectionRevision.IsVisible = isCollection && CompileConstants.IsDebug;
+                    ButtonUploadCollectionRevision.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
                     WritableCollectionPageHeader.IsVisible = isCollection;
                     AllPageHeader.IsVisible = !isCollection;
                 })
