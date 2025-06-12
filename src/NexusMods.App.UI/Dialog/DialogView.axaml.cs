@@ -177,6 +177,9 @@ public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogV
                 case ButtonStyling.Primary:
                     button.Classes.Add("Primary");
                     break;
+                case ButtonStyling.Default:
+                    button.Classes.Add("Default");
+                    break;
                 case ButtonStyling.None:
                     break;
                 default:
