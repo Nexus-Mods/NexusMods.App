@@ -20,6 +20,7 @@ using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -28,6 +29,7 @@ using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -56,6 +58,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     [Reactive] public bool HasRulesSection { get; private set; } = false;
     [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
+
+    public ReactiveCommand<Unit> CommandUploadRevision { get; }
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -98,6 +102,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId,
                 canEditObservable: isSingleCollectionObservable
             );
+
+            CommandUploadRevision = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                await CollectionCreator.UploadCollectionRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
+            }, maxSequential: 1, configureAwait: false);
         }
         else
         {
@@ -105,9 +114,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
-            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId,
-                Optional<Observable<bool>>.None
-            );
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
+            CommandUploadRevision = new ReactiveCommand();
         }
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
