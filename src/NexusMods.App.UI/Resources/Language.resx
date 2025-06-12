@@ -607,7 +607,7 @@
         <value>Install the selected mod(s) to this loadout</value>
     </data>
     <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
-        <value>Permanently remove this mod from your Library</value>
+        <value>Permanently delete this mod</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
         <value>Select specific files from a mod to add to your loadout</value>

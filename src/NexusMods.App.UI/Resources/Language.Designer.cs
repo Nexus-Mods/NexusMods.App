@@ -953,7 +953,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Permanently remove this mod from your Library.
+        ///   Looks up a localized string similar to Permanently delete this mod.
         /// </summary>
         public static string FileOriginPage_DeleteMod_ToolTip {
             get {
