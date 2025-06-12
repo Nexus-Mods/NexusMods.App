@@ -727,6 +727,12 @@
         <Compile Update="Overlays\Generic\MessageBox\Ok\MessageBoxOkDesignViewModel.cs">
           <DependentUpon>IMessageBoxOkViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="MessageBox\MessageBoxViewModel.cs">
+          <DependentUpon>IDialogViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="MessageBox\Dialog.cs">
+          <DependentUpon>IDialog.cs</DependentUpon>
+        </Compile>
         <Compile Update="Pages\ProtocolRegistration\ProtocolRegistrationTestPageViewModel.cs">
           <DependentUpon>IProtocolRegistrationTestPageViewModel.cs</DependentUpon>
         </Compile>
