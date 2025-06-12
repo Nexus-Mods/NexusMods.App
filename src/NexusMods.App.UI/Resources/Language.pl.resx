@@ -597,7 +597,7 @@
 		<value>Kliknij, aby zainstalować wybrany mod do tego zestawu</value>
 	</data>
 	<data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
-		<value>Kliknij, aby trwale usunąć ten mod ze swojej biblioteki</value>
+		<value>Kliknij, aby trwale usunąć ten mod</value>
 	</data>
 	<data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby wybrać określone pliki z moda, które dodasz do swojego zestawu</value>
@@ -947,5 +947,26 @@
 	</data>
 	<data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
 		<value>Przejdź na premium</value>
+	</data>
+	<data name="LibraryComponents_InstallAction_ButtonText_Installed" xml:space="preserve">
+		<value>Zainstalowane</value>
+	</data>
+	<data name="LibraryComponents_InstallAction_ButtonText_Install" xml:space="preserve">
+		<value>Zainstaluj</value>
+	</data>
+	<data name="CollectionComponents_DownloadAction_ButtonText_Downloaded" xml:space="preserve">
+		<value>Pobrana</value>
+	</data>
+	<data name="CollectionComponents_DownloadAction_ButtonText_Downloading" xml:space="preserve">
+		<value>Pobieranie</value>
+	</data>
+	<data name="CollectionComponents_DownloadAction_ButtonText_Download" xml:space="preserve">
+		<value>Pobierz</value>
+	</data>
+	<data name="CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload" xml:space="preserve">
+		<value>Pobierz z zewnętrznego źródła</value>
+	</data>
+	<data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
+		<value>Ręczne pobieranie</value>
 	</data>
 </root>
