@@ -59,7 +59,11 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/check/
     public static readonly IconValue Check = new ProjektankerIcon("mdi-check");
+    
 
+    // https://pictogrammers.com/library/mdi/icon/check-bold/
+    public static readonly IconValue CheckBold = new ProjektankerIcon("mdi-check-bold");
+    
     // https://pictogrammers.com/library/mdi/icon/check-circle/
     public static readonly IconValue CheckCircle = new ProjektankerIcon("mdi-check-circle");
     

@@ -105,9 +105,9 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         return result;
     }
 
-    public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.icon.png");
+    public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
 
-    public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.game_image.jpg");
+    public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [

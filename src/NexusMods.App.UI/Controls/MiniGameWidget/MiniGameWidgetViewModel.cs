@@ -45,8 +45,8 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
 
         try
         {
-            var stream = await game.Icon.GetStreamAsync();
-            return new Bitmap(stream);
+            var iconStream = await game.Icon.GetStreamAsync();
+            return Bitmap.DecodeToWidth(iconStream, 48);
         }
         catch (Exception ex)
         {

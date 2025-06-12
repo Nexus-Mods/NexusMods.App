@@ -408,7 +408,7 @@
         <value>Add games to start modding</value>
     </data>
     <data name="GameWidget__Adding_game" xml:space="preserve">
-        <value>Adding game</value>
+        <value>Adding...</value>
     </data>
     <data name="GameWidget__View" xml:space="preserve">
         <value>View</value>
@@ -417,7 +417,7 @@
         <value>Removes the game and all mods installed by the app</value>
     </data>
     <data name="GameWidget__Removing_game" xml:space="preserve">
-        <value>Removing game</value>
+        <value>Removing...</value>
     </data>
     <data name="ApplyDiff_Refresh" xml:space="preserve">
         <value>Refresh</value>
