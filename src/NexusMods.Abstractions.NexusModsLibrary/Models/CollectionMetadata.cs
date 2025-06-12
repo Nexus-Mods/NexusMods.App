@@ -12,12 +12,17 @@ namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 public partial class CollectionMetadata : IModelDefinition
 {
     private const string Namespace = "NexusMods.NexusModsLibrary.CollectionMetadata";
-    
+
+    /// <summary>
+    /// The collection ID.
+    /// </summary>
+    public static readonly CollectionIdAttribute CollectionId = new(Namespace, nameof(CollectionId)) { IsIndexed = true, IsUnique = true };
+
     /// <summary>
     /// The collection slug.
     /// </summary>
     public static readonly CollectionsSlugAttribute Slug = new(Namespace, nameof(Slug)) { IsIndexed = true };
-    
+
     /// <summary>
     /// The name of the collection.
     /// </summary>
@@ -81,7 +86,7 @@ public partial class CollectionMetadata : IModelDefinition
     /// <summary>
     /// An average taken from all revision ratings.
     /// </summary>
-    public static readonly FloatAttribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
+    public static readonly Float32Attribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
 
     /// <summary>
     /// Total number of ratings given across all revisions
@@ -91,7 +96,7 @@ public partial class CollectionMetadata : IModelDefinition
     /// <summary>
     /// A 30-day average of all revision ratings.
     /// </summary>
-    public static readonly FloatAttribute RecentRating = new(Namespace, nameof(RecentRating)) { IsOptional = true };
+    public static readonly Float32Attribute RecentRating = new(Namespace, nameof(RecentRating)) { IsOptional = true };
 
     /// <summary>
     /// Total number of ratings given in the last 30 days.

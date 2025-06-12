@@ -81,8 +81,8 @@ public readonly struct Chunk
     /// The MD5 hash of the chunk.
     /// </summary>
     [JsonPropertyName("md5")]
-    public required Md5 Md5 { get; init; }
-    
+    public required Md5Value Md5 { get; init; }
+
     /// <summary>
     /// The uncompressed size of the chunk.
     /// </summary>
@@ -93,7 +93,7 @@ public readonly struct Chunk
     /// The Md5 hash of the compressed chunk.
     /// </summary>
     [JsonPropertyName("compressedMd5")]
-    public required Md5 CompressedMd5 { get; init; }
+    public required Md5Value CompressedMd5 { get; init; }
     
     /// <summary>
     /// The compressed size of the chunk.

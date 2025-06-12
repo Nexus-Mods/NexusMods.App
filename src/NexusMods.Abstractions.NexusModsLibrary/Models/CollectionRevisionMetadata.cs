@@ -15,8 +15,8 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The globally unique id identifying a specific revision of a collection.
     /// </summary>
-    public static readonly RevisionIdAttribute RevisionId = new(Namespace, nameof(RevisionId)) { IsIndexed = true };
-    
+    public static readonly RevisionIdAttribute RevisionId = new(Namespace, nameof(RevisionId)) { IsIndexed = true, IsUnique = true };
+
     /// <summary>
     /// The locally unique revision number (aka "version") of a collection. Only unique within one collection.
     /// </summary>
@@ -45,7 +45,7 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// <summary>
     /// The overall rating of this revision (often displayed as a percentage).
     /// </summary>
-    public static readonly FloatAttribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
+    public static readonly Float32Attribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
 
     /// <summary>
     /// The total number of ratings this revision has.

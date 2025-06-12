@@ -12,7 +12,7 @@ public class SettingEntryDesignViewModel : SettingEntryViewModel
         {
             SectionId = SectionId.NewId(),
             DisplayName = "Enable Telemetry",
-            Description = "Send anonymous analytics information and usage data to Nexus Mods.",
+            DescriptionFactory = _ => "Send anonymous analytics information and usage data to Nexus Mods.",
             Link = new Uri("https://www.example.org"),
             RequiresRestart = true,
             RestartMessage = null,
@@ -28,7 +28,7 @@ public class SettingEntryDesignViewModel : SettingEntryViewModel
     {
         public required SectionId SectionId { get; init; }
         public required string DisplayName { get; init; }
-        public required string Description { get; init; }
+        public required Func<object, string> DescriptionFactory { get; init; }
         public required Uri? Link { get; init; }
         public required bool RequiresRestart { get; init; }
         public required string? RestartMessage { get; init; }

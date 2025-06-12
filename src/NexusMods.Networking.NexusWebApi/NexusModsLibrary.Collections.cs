@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -17,6 +16,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Hashes;
 using StrawberryShake;
 using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
@@ -254,7 +254,7 @@ public partial class NexusModsLibrary
 
         var md5ToDownload = modsAndDownloads
             .Select(static tuple => (tuple.Mod.Source.Md5, tuple.Download))
-            .Where(static tuple => tuple.Md5 != default(Md5HashValue))
+            .Where(static tuple => tuple.Md5 != default(Md5Value))
             .DistinctBy(static tuple => tuple.Md5)
             .ToDictionary(static tuple => tuple.Md5, static tuple => tuple.Download);
 
@@ -302,7 +302,7 @@ public partial class NexusModsLibrary
 
     private static Optional<CollectionDownload.ReadOnly> VortexModReferenceToCollectionDownload(
         VortexModReference reference,
-        Dictionary<Md5HashValue, CollectionDownload.ReadOnly> md5ToDownload,
+        Dictionary<Md5Value, CollectionDownload.ReadOnly> md5ToDownload,
         Dictionary<string, CollectionDownload.ReadOnly> tagToDownload,
         Dictionary<string, CollectionDownload.ReadOnly> fileExpressionToDownload)
     {
@@ -310,7 +310,7 @@ public partial class NexusModsLibrary
         // https://github.com/Nexus-Mods/Vortex/blob/1bc2a0bca27353df617f5a0b0f331cf9d23eea9c/src/extensions/mod_management/util/testModReference.ts#L285-L299
 
         var md5 = reference.FileMD5;
-        if (md5 != default(Md5HashValue) && md5ToDownload.TryGetValue(md5, out var download)) return download;
+        if (md5 != default(Md5Value) && md5ToDownload.TryGetValue(md5, out var download)) return download;
 
         var tag = reference.Tag;
         if (!string.IsNullOrWhiteSpace(tag) && tagToDownload.TryGetValue(tag, out download)) return download;
@@ -540,9 +540,12 @@ public partial class NexusModsLibrary
         ITransaction tx,
         ICollectionFragment collectionInfo)
     {
+        var id = CollectionId.From((ulong)collectionInfo.Id);
         var slug = CollectionSlug.From(collectionInfo.Slug);
         var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
+        resolver.Add(CollectionMetadata.CollectionId, id);
+        resolver.Add(CollectionMetadata.Slug, slug);
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
