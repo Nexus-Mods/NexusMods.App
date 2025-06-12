@@ -11,6 +11,7 @@ public static class Services
     public static IServiceCollection AddNexusModsCollections(this IServiceCollection services)
     {
         return services
+            .AddManagedCollectionLoadoutGroupModel()
             .AddNexusCollectionLoadoutGroupModel()
             .AddDirectDownloadLibraryFileModel()
             .AddNexusCollectionBundledLoadoutGroupModel()

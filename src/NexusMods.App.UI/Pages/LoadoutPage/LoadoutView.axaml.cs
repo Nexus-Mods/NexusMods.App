@@ -1,8 +1,10 @@
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
+using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
+using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
@@ -59,8 +61,10 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             
             this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
                 .AddTo(disposables);
-            
-            
+
+            this.BindCommand(ViewModel, vm => vm.CommandUploadRevision, view => view.ButtonUploadCollectionRevision)
+                .AddTo(disposables);
+
             this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
                 .AddTo(disposables);
             
@@ -68,6 +72,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(isCollection =>
                 {
+                    ButtonUploadCollectionRevision.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
                     WritableCollectionPageHeader.IsVisible = isCollection;
                     AllPageHeader.IsVisible = !isCollection;
                 })
