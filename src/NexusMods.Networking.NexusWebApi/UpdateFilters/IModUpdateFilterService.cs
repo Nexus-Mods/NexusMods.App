@@ -23,6 +23,13 @@ public interface IModUpdateFilterService : IDisposable
     IObservable<bool> ObserveFileHiddenState(UidForFile fileUid);
     
     /// <summary>
+    /// Get the current hidden state of a specific file synchronously.
+    /// </summary>
+    /// <param name="fileUid">The unique identifier of the file to check.</param>
+    /// <returns>True if the file is currently hidden, false if it's visible.</returns>
+    bool IsFileHidden(UidForFile fileUid);
+    
+    /// <summary>
     /// Manually trigger a filter re-evaluation.
     /// This is useful when external conditions that affect filtering have changed.
     /// </summary>

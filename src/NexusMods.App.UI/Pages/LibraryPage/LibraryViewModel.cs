@@ -365,7 +365,7 @@ After asking design, we're choosing to simply open the mod page for now.
                     var anyHidden = false;
                     foreach (var fileUid in newestFileUids)
                     {
-                        var isHidden = await modUpdateFilterService.ObserveFileHiddenState(fileUid).FirstAsync();
+                        var isHidden = modUpdateFilterService.IsFileHidden(fileUid);
                         if (isHidden)
                         {
                             anyHidden = true;
@@ -390,7 +390,7 @@ After asking design, we're choosing to simply open the mod page for now.
                 if (updateFile.HasValue)
                 {
                     var fileUid = updateFile.Value.NewestFile.Uid;
-                    var isHidden = await modUpdateFilterService.ObserveFileHiddenState(fileUid).FirstAsync();
+                    var isHidden = modUpdateFilterService.IsFileHidden(fileUid);
 
                     // Toggle the hidden state
                     if (isHidden)

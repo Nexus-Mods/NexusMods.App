@@ -119,6 +119,12 @@ public class ModUpdateFilterService : IModUpdateFilterService
     }
 
     /// <inheritdoc />
+    public bool IsFileHidden(UidForFile fileUid)
+    {
+        return IgnoreFileUpdate.FindByUid(_connection.Db, fileUid).Any();
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         _filterTrigger.Dispose();
