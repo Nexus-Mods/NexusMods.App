@@ -198,6 +198,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             });
 
         LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
+        LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
+        LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
 
         return parentItemModel;
     }
@@ -221,6 +223,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel);
+        LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
 
         // Update available
         var newestVersionObservable = _modUpdateService

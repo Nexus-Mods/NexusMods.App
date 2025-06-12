@@ -113,4 +113,18 @@ public static class LibraryDataProviderHelper
             childrenItemIdsObservable: libraryItemsObservable.TransformImmutable(static x => x.LibraryItemId)
         ));
     }
+
+    public static void AddViewChangelogActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        bool isEnabled = true)
+    {
+        itemModel.Add(LibraryColumns.Actions.ViewChangelogComponentKey, new LibraryComponents.ViewChangelogAction(isEnabled));
+    }
+
+    public static void AddViewModPageActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        bool isEnabled = true)
+    {
+        itemModel.Add(LibraryColumns.Actions.ViewModPageComponentKey, new LibraryComponents.ViewModPageAction(isEnabled));
+    }
 }
