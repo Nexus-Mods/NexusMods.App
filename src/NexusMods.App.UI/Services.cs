@@ -14,6 +14,7 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.MiniGameWidget;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
+using NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -156,6 +157,8 @@ public static class Services
             .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
             .AddView<SettingComboBoxView, ISettingComboBoxViewModel>()
             .AddViewModel<SettingComboBoxViewModel, ISettingComboBoxViewModel>()
+            .AddView<SettingPathsControl, ISettingPathsViewModel>()
+            .AddViewModel<SettingPathsViewModel, ISettingPathsViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
