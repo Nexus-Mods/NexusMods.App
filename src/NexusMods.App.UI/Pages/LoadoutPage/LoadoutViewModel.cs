@@ -11,6 +11,8 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
@@ -21,9 +23,11 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -105,7 +109,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadRevision = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
-                await CollectionCreator.UploadCollectionRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
+                var revision = await CollectionCreator.UploadCollectionRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
+                var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+                var gameDomain = await mappingCache.TryGetDomainAsync(revision.Collection.GameId, cancellationToken);
+
+                var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, revision.Collection.Slug, revision.RevisionNumber);
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
             }, maxSequential: 1, configureAwait: false);
         }
         else
