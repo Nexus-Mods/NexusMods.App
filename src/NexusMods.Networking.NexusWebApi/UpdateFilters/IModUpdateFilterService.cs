@@ -16,6 +16,13 @@ public interface IModUpdateFilterService : IDisposable
     IObservable<Unit> FilterTrigger { get; }
     
     /// <summary>
+    /// Observe the hidden state of a specific file.
+    /// </summary>
+    /// <param name="fileUid">The unique identifier of the file to observe.</param>
+    /// <returns>An observable that emits true when the file is hidden, false when it's visible.</returns>
+    IObservable<bool> ObserveFileHiddenState(UidForFile fileUid);
+    
+    /// <summary>
     /// Manually trigger a filter re-evaluation.
     /// This is useful when external conditions that affect filtering have changed.
     /// </summary>

@@ -7,12 +7,14 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
+using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using R3;
 
 namespace NexusMods.App.UI.Pages;
@@ -144,10 +146,16 @@ public static class LibraryDataProviderHelper
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<Optional<ModUpdateOnPage>> fileUpdateObservable,
+        IModUpdateFilterService filterService,
         bool isEnabled = true)
     {
-        // TODO: Wire up proper hidden state observable
-        var isHiddenObservable = R3.Observable.Return(false);
+        // Wire up proper hidden state observable using the filter service
+        var isHiddenObservable = fileUpdateObservable
+            .Select<Optional<ModUpdateOnPage>, IObservable<bool>>(optional => optional.HasValue 
+                ? filterService.ObserveFileHiddenState(optional.Value.File.Uid)
+                : System.Reactive.Linq.Observable.Return(false))
+            .Switch()
+            .ToObservable();
         
         // For individual files: count is 1 if update available, 0 if not
         var itemCountObservable = fileUpdateObservable

@@ -17,6 +17,7 @@ using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
 
@@ -26,12 +27,14 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
     private readonly IModUpdateService _modUpdateService;
+    private readonly IModUpdateFilterService _modUpdateFilterService;
     private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
+        _modUpdateFilterService = serviceProvider.GetRequiredService<IModUpdateFilterService>();
 
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
@@ -255,7 +258,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             )
         );
 
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFile);
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFile, _modUpdateFilterService);
 
         return itemModel;
     }
