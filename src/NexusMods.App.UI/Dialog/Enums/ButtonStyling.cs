@@ -9,6 +9,11 @@ public enum ButtonStyling
     /// No specific styling is applied to the button.
     /// </summary>
     None,
+    
+    /// <summary>
+    /// The button is styled as a primary action, used for a neutral result.
+    /// </summary>
+    Default,
 
     /// <summary>
     /// The button is styled to indicate a premium action.
@@ -21,12 +26,12 @@ public enum ButtonStyling
     Info,
 
     /// <summary>
-    /// The button is styled as a primary action, typically used for the main action in a dialog.
+    /// The button is styled as a primary action, used for a positive result.
     /// </summary>
     Primary,
 
     /// <summary>
-    /// The button is styled to indicate a destructive action, typically used for actions that cannot be undone.
+    /// The button is styled as a primary action, used for a destructive result and typicall for actions that cannot be undone.
     /// </summary>
     Destructive,
 }
