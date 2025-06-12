@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -28,6 +29,7 @@ using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
@@ -340,11 +342,64 @@ After asking design, we're choosing to simply open the mod page for now.
         );
     }
     
-    private ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
+    private async ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
     {
-        // For now, just return completed task as placeholder
-        // This could be extended later to implement actual hide/show updates functionality
-        return ValueTask.CompletedTask;
+        var modUpdateFilterService = _serviceProvider.GetRequiredService<IModUpdateFilterService>();
+
+        await hideUpdatesMessage.Id.Match(
+            async modPageId =>
+            {
+                // Handle hiding/showing updates for a mod page (affects all files in the mod)
+                var modPage = NexusModsModPageMetadata.Load(_connection.Db, modPageId);
+                var updateFiles = await _modUpdateService.GetNewestModPageVersionObservable(modPage).FirstAsync();
+
+                if (updateFiles.HasValue)
+                {
+                    // Get all the newest files (update targets) from all mappings, removing duplicates
+                    var newestFileUids = updateFiles.Value.FileMappings
+                        .Select(mapping => mapping.NewestFile.Uid)
+                        .Distinct()
+                        .ToArray();
+
+                    // Check if any of the newest files are currently hidden to determine if we should hide or show
+                    var anyHidden = false;
+                    foreach (var fileUid in newestFileUids)
+                    {
+                        var isHidden = await modUpdateFilterService.ObserveFileHiddenState(fileUid).FirstAsync();
+                        if (isHidden)
+                        {
+                            anyHidden = true;
+                            break;
+                        }
+                    }
+
+                    // If any are hidden, show all; if none are hidden, hide all
+                    if (anyHidden)
+                        await modUpdateFilterService.ShowFilesAsync(newestFileUids);
+                    else
+                        await modUpdateFilterService.HideFilesAsync(newestFileUids);
+                }
+            },
+            async libraryItemId =>
+            {
+                // Handle hiding/showing updates for a single file
+                var libraryItem = NexusModsLibraryItem.Load(_connection.Db, libraryItemId);
+                var fileMetadata = libraryItem.FileMetadata;
+                var updateFile = await _modUpdateService.GetNewestFileVersionObservable(fileMetadata).FirstAsync();
+
+                if (updateFile.HasValue)
+                {
+                    var fileUid = updateFile.Value.NewestFile.Uid;
+                    var isHidden = await modUpdateFilterService.ObserveFileHiddenState(fileUid).FirstAsync();
+
+                    // Toggle the hidden state
+                    if (isHidden)
+                        await modUpdateFilterService.ShowFileAsync(fileUid);
+                    else
+                        await modUpdateFilterService.HideFileAsync(fileUid);
+                }
+            }
+        );
     }
 
     private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId, CancellationToken cancellationToken)

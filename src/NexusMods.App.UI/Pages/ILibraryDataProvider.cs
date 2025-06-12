@@ -168,10 +168,30 @@ public static class LibraryDataProviderHelper
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<Optional<ModUpdatesOnModPage>> modPageUpdateObservable,
+        IModUpdateFilterService filterService,
         bool isEnabled = true)
     {
-        // TODO: Wire up proper hidden state observable
-        var isHiddenObservable = R3.Observable.Return(false);
+        // Behaviour per captainsandypants (Slack).
+        // 'If any children have updates set to hidden, then the parent should have "Show updates" as the menu item.
+        // When selected, this will set all children to show updates.'
+        
+        // Check if any children have updates set to hidden
+        var isHiddenObservable = modPageUpdateObservable
+            .Select(optional =>
+            {
+                if (!optional.HasValue || optional.Value.FileMappings.Length == 0)
+                    return System.Reactive.Linq.Observable.Return(false);
+
+                // Observe all file hidden states and return true if ANY are hidden
+                var fileHiddenObservables = optional.Value.FileMappings
+                    .Select(mapping => filterService.ObserveFileHiddenState(mapping.File.Uid))
+                    .ToArray();
+
+                return fileHiddenObservables
+                    .CombineLatest(hiddenStates => hiddenStates.Any(isHidden => isHidden));
+            })
+            .Switch()
+            .ToObservable();
         
         // For mod pages: count is NumberOfModFilesToUpdate
         var itemCountObservable = modPageUpdateObservable
