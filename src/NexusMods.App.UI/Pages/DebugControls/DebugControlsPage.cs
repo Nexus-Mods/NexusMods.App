@@ -1,10 +1,7 @@
-using JetBrains.Annotations;
 using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.App.BuildInfo;
-using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Sdk;
 using NexusMods.UI.Sdk.Icons;
-using R3;
 
 namespace NexusMods.App.UI.Pages.DebugControls;
 
@@ -25,7 +22,7 @@ public class DebugControlsPageFactory : APageFactory<IDebugControlsPageViewModel
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
-        if (!CompileConstants.IsDebug) return [];
+        if (!ApplicationConstants.IsDebug) return [];
 
         return
         [

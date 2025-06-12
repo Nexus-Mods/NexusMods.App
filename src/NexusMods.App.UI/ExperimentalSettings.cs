@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 
 namespace NexusMods.App.UI;
 
@@ -14,7 +14,7 @@ public record ExperimentalSettings : ISettings
     /// <summary>
     /// Enables games that are not enabled by default.
     /// </summary>
-    public bool EnableAllGames { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
+    public bool EnableAllGames { get; [UsedImplicitly] set; } = ApplicationConstants.IsDebug;
 
     [JsonIgnore]
     public readonly GameId[] SupportedGames =

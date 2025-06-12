@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Sdk;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Pages.ObservableInfo;
@@ -27,7 +27,7 @@ public class ObservableInfoPageFactory : APageFactory<IObservableInfoPageViewMod
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)
     {
-        if (!CompileConstants.IsDebug) return [];
+        if (!ApplicationConstants.IsDebug) return [];
 
         return
         [

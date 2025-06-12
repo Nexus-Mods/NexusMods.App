@@ -2,7 +2,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
 
-namespace NexusMods.Sdk;
+namespace NexusMods.Sdk.MnemonicAttributes;
 
 /// <summary>
 /// Bytes.

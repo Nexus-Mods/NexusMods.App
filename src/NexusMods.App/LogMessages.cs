@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
-using NexusMods.App.BuildInfo;
-using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.Sdk;
 
 namespace NexusMods.App;
 

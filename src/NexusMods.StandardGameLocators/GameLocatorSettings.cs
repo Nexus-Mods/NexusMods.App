@@ -1,16 +1,16 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 
 namespace NexusMods.StandardGameLocators;
 
 public record GameLocatorSettings : ISettings
 {
-    public bool EnableXboxGamePass { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
+    public bool EnableXboxGamePass { get; [UsedImplicitly] set; } = ApplicationConstants.IsDebug;
 
     public static ISettingsBuilder Configure(ISettingsBuilder settingsBuilder)
     {
-        if (!CompileConstants.IsDebug) return settingsBuilder;
+        if (!ApplicationConstants.IsDebug) return settingsBuilder;
 
         return settingsBuilder
             .ConfigureStorageBackend<GameLocatorSettings>(builder => builder.UseJson())

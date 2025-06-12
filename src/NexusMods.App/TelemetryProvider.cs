@@ -7,13 +7,13 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Pages;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using OneOf;
 
 namespace NexusMods.App;

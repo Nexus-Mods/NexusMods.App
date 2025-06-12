@@ -2,8 +2,8 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Resources;
+using NexusMods.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
@@ -16,7 +16,7 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
         InitializeComponent();
 
         // TODO: remove for GA
-        NewCollection.IsVisible = CompileConstants.IsDebug;
+        NewCollection.IsVisible = ApplicationConstants.IsDebug;
 
         this.WhenActivated(disposables =>
         {

@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -15,8 +15,8 @@ public class BaseHttpMessageFactory : IHttpMessageFactory
     public virtual ValueTask<HttpRequestMessage> Create(HttpMethod method, Uri uri)
     {
         var result = new HttpRequestMessage(method, uri);
-        result.Headers.Add(HeaderApplicationName, ApplicationConstants.UserAgentApplicationName);
-        result.Headers.Add(HeaderApplicationVersion, ApplicationConstants.UserAgentApplicationVersion);
+        result.Headers.Add(HeaderApplicationName, ApplicationConstants.UserAgent.ApplicationName);
+        result.Headers.Add(HeaderApplicationVersion, ApplicationConstants.UserAgent.ApplicationVersion);
 
         return ValueTask.FromResult(result);
     }
