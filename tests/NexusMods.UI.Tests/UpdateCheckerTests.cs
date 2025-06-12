@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
 using FluentAssertions;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.UI.Tests;
 

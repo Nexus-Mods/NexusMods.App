@@ -4,6 +4,7 @@
     <ItemGroup>
         <PackageReference Include="DynamicData" />
         <PackageReference Include="MemoryPack" />
+        <PackageReference Include="Microsoft.Extensions.Options" />
         <PackageReference Include="NexusMods.Hashing.xxHash3" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
         <PackageReference Include="NexusMods.Paths" />
@@ -34,6 +35,15 @@
         </Compile>
         <Compile Update="Hashes\Crc32Attribute.cs">
           <DependentUpon>Crc32Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="EnvironmentVariableNames.cs">
+          <DependentUpon>EnvironmentVariables.cs</DependentUpon>
+        </Compile>
+        <Compile Update="InstallationMethod.cs">
+          <DependentUpon>ApplicationConstants.cs</DependentUpon>
+        </Compile>
+        <Compile Update="UserAgent.cs">
+          <DependentUpon>ApplicationConstants.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>
