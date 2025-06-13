@@ -260,7 +260,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             )
         );
 
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFile);
+        var newestFileUnfiltered = _modUpdateService.GetNewestFileVersionObservable(fileMetadata);
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService);
 
         return itemModel;
     }
