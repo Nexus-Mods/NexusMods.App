@@ -2,13 +2,13 @@ using DynamicData.Kernel;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.Hashes;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 
 namespace NexusMods.Collections;
@@ -148,7 +148,7 @@ public static class CollectionCreator
                 FileId = nexusModsFile.Uid.FileId,
                 UpdatePolicy = UpdatePolicy.ExactVersionOnly,
                 FileSize = libraryFile.Convert(x => x.Size).ValueOr(() => Size.Zero),
-                Md5 = libraryFile.Convert(x => x.Md5).ValueOr(() => Md5HashValue.From(0)),
+                Md5 = libraryFile.Convert(x => x.Md5).ValueOr(() => Md5Value.From(0)),
             },
         };
     }
