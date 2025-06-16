@@ -194,4 +194,27 @@ public static class RunUpdateCheck
             )
             .OrderByDescending(x => x.UploadedAt);
     }
+
+    /// <summary>
+    /// Returns all file versions of a given file, including current and all older and newer versions, using fuzzy name matching.
+    /// </summary>
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetAllVersionsForExistingFile(NexusModsFileMetadata.ReadOnly file)
+    {
+        var mixin = new ModFileMetadataMixin(file);
+        var normalizedName = FuzzySearch.NormalizeFileName(file.Name, file.Version);
+        return mixin.OtherFilesInSameModPage
+            .Where(f => FuzzySearch.NormalizeFileName(f.Name, f.Version)
+                .Equals(normalizedName, StringComparison.OrdinalIgnoreCase))
+            .Select(f => ((ModFileMetadataMixin)f).Metadata)
+            .OrderBy(f => f.UploadedAt);
+    }
+
+    /// <summary>
+    /// Returns all file versions for a file identified by UID.
+    /// </summary>
+    public static IEnumerable<NexusModsFileMetadata.ReadOnly> GetAllVersionsForExistingFile(IDb db, UidForFile uid)
+    {
+        var metadata = NexusModsFileMetadata.FindByUid(db, uid).First();
+        return GetAllVersionsForExistingFile(metadata);
+    }
 }
