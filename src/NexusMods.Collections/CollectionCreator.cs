@@ -15,7 +15,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.App.BuildInfo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -23,6 +22,7 @@ using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 using ModSource = NexusMods.Abstractions.Collections.Json.ModSource;
+using Size = NexusMods.Paths.Size;
 using UpdatePolicy = NexusMods.Abstractions.Collections.Json.UpdatePolicy;
 
 namespace NexusMods.Collections;
@@ -30,7 +30,7 @@ namespace NexusMods.Collections;
 public static class CollectionCreator
 {
     // TODO: remove for GA
-    public static bool IsFeatureEnabled => CompileConstants.IsDebug;
+    public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
 
     private static string GenerateNewCollectionName(string[] allNames)
     {

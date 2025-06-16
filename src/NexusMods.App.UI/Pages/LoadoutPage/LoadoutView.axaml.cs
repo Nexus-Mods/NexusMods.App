@@ -1,12 +1,9 @@
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
-using ObservableCollections;
 using R3;
 using ReactiveUI;
 
