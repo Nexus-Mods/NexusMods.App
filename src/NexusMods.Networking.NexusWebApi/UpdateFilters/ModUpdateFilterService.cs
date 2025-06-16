@@ -7,15 +7,13 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 
-/// <summary>
-/// Default implementation of <see cref="IModUpdateFilterService"/> that observes
-/// <see cref="IgnoreFileUpdate"/> changes and triggers filter re-evaluation.
-/// </summary>
+/// <inheritdoc />
 public class ModUpdateFilterService : IModUpdateFilterService
 {
     private readonly Subject<Unit> _filterTrigger = new();
     private readonly IDisposable _ignoreFilterObserver;
     private readonly IConnection _connection;
+    private readonly IgnoreModUpdateFilter _ignoreFilter;
     
     /// <inheritdoc />
     public IObservable<Unit> FilterTrigger => _filterTrigger.AsObservable();
@@ -27,6 +25,7 @@ public class ModUpdateFilterService : IModUpdateFilterService
     public ModUpdateFilterService(IConnection connection)
     {
         _connection = connection;
+        _ignoreFilter = new IgnoreModUpdateFilter(connection);
         _ignoreFilterObserver = ObserveIgnoreFilterChanges(connection);
     }
 
@@ -122,6 +121,18 @@ public class ModUpdateFilterService : IModUpdateFilterService
     public bool IsFileHidden(UidForFile fileUid)
     {
         return IgnoreFileUpdate.FindByUid(_connection.Db, fileUid).Any();
+    }
+    
+    /// <inheritdoc />
+    public ModUpdateOnPage? SelectMod(ModUpdateOnPage modUpdateOnPage)
+    {
+        return _ignoreFilter.SelectMod(modUpdateOnPage);
+    }
+    
+    /// <inheritdoc />
+    public ModUpdatesOnModPage? SelectModPage(ModUpdatesOnModPage modUpdatesOnModPage)
+    {
+        return _ignoreFilter.SelectModPage(modUpdatesOnModPage);
     }
 
     /// <inheritdoc />

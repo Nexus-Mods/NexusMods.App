@@ -4,8 +4,12 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 
 /// <summary>
-/// Service responsible for managing filter triggers and providing filter notifications
-/// for mod update observables.
+/// This service provides services for filtering mod updates in the Nexus Mods App.
+/// More specifically, this is the entry point for all filtering; it allows you to hide or show files
+/// and unifies underlying filters with potential different under the hood implementations as one.
+/// 
+/// Likewise, this service also provides notifications for when filter rules are changed, and therefore
+/// when mod updates should be re-evaluated for relevant callers.
 /// </summary>
 public interface IModUpdateFilterService : IDisposable
 {
@@ -58,4 +62,20 @@ public interface IModUpdateFilterService : IDisposable
     /// </summary>
     /// <param name="fileUids">The unique identifiers of the files to show.</param>
     Task ShowFilesAsync(IEnumerable<UidForFile> fileUids);
+    
+    /// <summary>
+    /// Filters a mod update to hide ignored files. Returns null if all files are filtered out.
+    /// This method automatically applies all filters which are enabled by default.
+    /// </summary>
+    /// <param name="modUpdateOnPage">The mod update to filter.</param>
+    /// <returns>The filtered mod update, or null if all files should be hidden.</returns>
+    ModUpdateOnPage? SelectMod(ModUpdateOnPage modUpdateOnPage);
+    
+    /// <summary>
+    /// Filters a mod page update to hide ignored files. Returns null if all file mappings are filtered out.
+    /// This method automatically applies all filters which are enabled by default.
+    /// </summary>
+    /// <param name="modUpdatesOnModPage">The mod page update to filter.</param>
+    /// <returns>The filtered mod page update, or null if all file mappings should be hidden.</returns>
+    ModUpdatesOnModPage? SelectModPage(ModUpdatesOnModPage modUpdatesOnModPage);
 }

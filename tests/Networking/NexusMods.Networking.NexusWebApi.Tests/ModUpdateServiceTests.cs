@@ -439,13 +439,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
             fileId: (FileId)spaceCoreData.FileId
         );
         
-        // Create a filter to test with
-        var ignoreFilter = new IgnoreModUpdateFilter(ServiceProvider.GetRequiredService<IConnection>());
-
-        // Setup observable with the ignore filter applied
+        // Setup observable with the filter service applied
         var observable = _modUpdateService.GetNewestFileVersionObservable(
             downloadJob.Job.FileMetadata,
-            ignoreFilter.SelectMod);
+            _filterService.SelectMod);
         
         // Create collection for results
         ModUpdateOnPage? updateOnPage = null;
@@ -500,13 +497,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
             fileId: (FileId)spaceCoreData.FileId
         );
         
-        // Create a filter to test with
-        var ignoreFilter = new IgnoreModUpdateFilter(ServiceProvider.GetRequiredService<IConnection>());
-
-        // Setup observable with the ignore filter applied
+        // Setup observable with the filter service applied
         var observable = _modUpdateService.GetNewestFileVersionObservable(
             downloadJob.Job.FileMetadata,
-            ignoreFilter.SelectMod);
+            _filterService.SelectMod);
         
         // Create collection for results
         ModUpdateOnPage? updateOnPage = null;
