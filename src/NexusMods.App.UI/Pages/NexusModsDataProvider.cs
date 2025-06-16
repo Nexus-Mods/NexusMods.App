@@ -203,7 +203,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
         LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, newestFiles, _modUpdateFilterService);
+
+        var filesOnModPage = libraryItems
+            .QueryWhenChanged(query => query.Items.ToArray());
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, filesOnModPage, _modUpdateFilterService);
 
         return parentItemModel;
     }

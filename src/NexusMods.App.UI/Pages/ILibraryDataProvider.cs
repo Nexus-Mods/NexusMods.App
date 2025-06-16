@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.App.UI.Controls;
@@ -164,37 +165,41 @@ public static class LibraryDataProviderHelper
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
     }
 
+    private record struct FileUpdateDetails(int NumHidden, int TotalFiles)
+    {
+        public int NumNotHidden => TotalFiles - NumHidden;        
+    }
+
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
-        IObservable<Optional<ModUpdatesOnModPage>> modPageUpdateObservable,
-        IModUpdateFilterService filterService,
+        IObservable<NexusModsLibraryItem.ReadOnly[]> filesOnModPage,
+        IModUpdateFilterService modUpdateFilterService,
         bool isEnabled = true)
     {
+        // Trigger refresh either if mods on page change, or filter is updated.
+        var currentDetails = filesOnModPage
+            .CombineLatest(modUpdateFilterService.FilterTrigger.StartWith(System.Reactive.Unit.Default), (files, _) => files)
+            .Select(files =>
+            {
+                var numHidden = 0;
+                foreach (var file in files)
+                {
+                    if (modUpdateFilterService.IsFileHidden(file.FileMetadata.Uid))
+                        numHidden++;
+                }
+
+                return new FileUpdateDetails(numHidden, files.Length);
+            });
+
         // Behaviour per captainsandypants (Slack).
         // 'If any children have updates set to hidden, then the parent should have "Show updates" as the menu item.
         // When selected, this will set all children to show updates.'
-        
-        // Check if any children have updates set to hidden
-        var isHiddenObservable = modPageUpdateObservable
-            .Select(optional =>
-            {
-                if (!optional.HasValue || optional.Value.FileMappings.Length == 0)
-                    return System.Reactive.Linq.Observable.Return(false);
-
-                // Observe all file hidden states and return true if ANY are hidden
-                var fileHiddenObservables = optional.Value.FileMappings
-                    .Select(mapping => filterService.ObserveFileHiddenState(mapping.File.Uid))
-                    .ToArray();
-
-                return fileHiddenObservables
-                    .CombineLatest(hiddenStates => hiddenStates.Any(isHidden => isHidden));
-            })
-            .Switch()
+        var isHiddenObservable = currentDetails.Select(details => details.NumHidden > 0)
             .ToObservable();
         
-        // For mod pages: count is NumberOfModFilesToUpdate
-        var itemCountObservable = modPageUpdateObservable
-            .Select(static optional => optional.HasValue ? optional.Value.NumberOfModFilesToUpdate : 0)
+        // Always show the number of files under the 'Mod Page' item, as this is the number of items
+        // affected by the 'Show updates' action.
+        var itemCountObservable = currentDetails.Select(details => details.TotalFiles)
             .ToObservable();
 
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));

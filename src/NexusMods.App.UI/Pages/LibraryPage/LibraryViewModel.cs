@@ -358,9 +358,9 @@ After asking design, we're choosing to simply open the mod page for now.
 
                 // Toggle the hidden state
                 if (isAnyHidden)
-                    await modUpdateFilterService.ShowFilesAsync(allFiles.Select(x => x.Uid));
+                    await modUpdateFilterService.ShowFilesAsync(allFiles.Select(x => x.Uid).Distinct());
                 else
-                    await modUpdateFilterService.HideFilesAsync(allFiles.Select(x => x.Uid));
+                    await modUpdateFilterService.HideFilesAsync(allFiles.Select(x => x.Uid).Distinct());
             },
             async libraryItemId =>
             {
