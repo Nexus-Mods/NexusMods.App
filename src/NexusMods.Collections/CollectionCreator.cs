@@ -15,6 +15,7 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.App.BuildInfo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -28,6 +29,9 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
+    // TODO: remove for GA
+    public static bool IsFeatureEnabled => CompileConstants.IsDebug;
+
     private static string GenerateNewCollectionName(string[] allNames)
     {
         const string defaultValue = "My new collection";
