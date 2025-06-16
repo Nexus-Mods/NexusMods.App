@@ -6,7 +6,7 @@ using System.Reactive.Subjects;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 
 namespace NexusMods.Settings;
 
@@ -64,7 +64,7 @@ internal partial class SettingsManager : ISettingsManager
         _asyncStorageBackendMappings = builderOutput.AsyncStorageBackendMappings;
         _propertyBuilderOutputs = builderOutput.PropertyBuilderOutputs;
 
-        if (CompileConstants.IsDebug)
+        if (ApplicationConstants.IsDebug)
         {
             var ids = new HashSet<SectionId>();
             foreach (var sectionDescriptor in settingsSectionSetups)
