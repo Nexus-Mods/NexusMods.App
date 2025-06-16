@@ -351,7 +351,7 @@ After asking design, we're choosing to simply open the mod page for now.
             {
                 // Handle hiding/showing updates for a mod page
                 // First get all library items we have that come from the mod page.
-                var allFiles =  NexusModsLibraryItem.All(_connection.Db)
+                var allLibraryFilesForThisMod =  NexusModsLibraryItem.All(_connection.Db)
                     .Where(x => x.ModPageMetadataId == modPageId)
                     .Select(x => x.FileMetadata)
                     .ToArray();
@@ -365,19 +365,29 @@ After asking design, we're choosing to simply open the mod page for now.
                 // We have a list of ***current versions*** of files in the mod page.
                 // We need to check if it's possible to update ***any of these current versions*** to a new file.
                 //     👉 👉 So for each file we need to check if any of its versions is not ignored as an update.
-                var doesAnyModHaveItsUpdatesHidden = allFiles.Any(x =>
+                var modsWithUpdatesHidden = allLibraryFilesForThisMod.Where(x =>
                     {
                         // Checking all versions is not a bug, it is intended behaviour per design.
                         // Search 'That definition also means older versions should be excluded from update checks.' in Slack.
                         var newerFiles = RunUpdateCheck.GetAllVersionsForExistingFile(x).ToArray();
                         return newerFiles.All(newer => modUpdateFilterService.IsFileHidden(newer.Uid));
                     }
-                );
+                ).ToArray();
 
-                if (doesAnyModHaveItsUpdatesHidden)
-                    await modUpdateFilterService.ShowFilesAsync(allFiles.Select(x => x.Uid).Distinct());
+                if (modsWithUpdatesHidden.Length > 0)
+                {
+                    var allVersionsOfLibraryItemsWithUpdatesHidden =
+                        modsWithUpdatesHidden.SelectMany(RunUpdateCheck.GetAllVersionsForExistingFile)
+                                             .Select(x => x.Uid);
+                    await modUpdateFilterService.ShowFilesAsync(allVersionsOfLibraryItemsWithUpdatesHidden);
+                }
                 else
-                    await modUpdateFilterService.HideFilesAsync(allFiles.Select(x => x.Uid).Distinct());
+                {
+                    var allVersionsOfAllFiles = allLibraryFilesForThisMod
+                        .SelectMany(RunUpdateCheck.GetAllVersionsForExistingFile)
+                        .Select(x => x.Uid);
+                    await modUpdateFilterService.HideFilesAsync(allVersionsOfAllFiles);
+                }
             },
             async libraryItemId =>
             {
