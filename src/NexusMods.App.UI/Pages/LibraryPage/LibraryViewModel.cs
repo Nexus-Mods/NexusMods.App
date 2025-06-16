@@ -351,34 +351,16 @@ After asking design, we're choosing to simply open the mod page for now.
             {
                 // Handle hiding/showing updates for a mod page (affects all files in the mod)
                 var modPage = NexusModsModPageMetadata.Load(_connection.Db, modPageId);
-                var updateFiles = await _modUpdateService.GetNewestModPageVersionObservable(modPage).FirstAsync();
+                var allFiles = modPage.Files;
 
-                if (updateFiles.HasValue)
-                {
-                    // Get all the newest files (update targets) from all mappings, removing duplicates
-                    var newestFileUids = updateFiles.Value.FileMappings
-                        .Select(mapping => mapping.NewestFile.Uid)
-                        .Distinct()
-                        .ToArray();
+                // Should always be true by definition, since we started with 1
+                var isAnyHidden = allFiles.Any(x => modUpdateFilterService.IsFileHidden(x.Uid));
 
-                    // Check if any of the newest files are currently hidden to determine if we should hide or show
-                    var anyHidden = false;
-                    foreach (var fileUid in newestFileUids)
-                    {
-                        var isHidden = modUpdateFilterService.IsFileHidden(fileUid);
-                        if (isHidden)
-                        {
-                            anyHidden = true;
-                            break;
-                        }
-                    }
-
-                    // If any are hidden, show all; if none are hidden, hide all
-                    if (anyHidden)
-                        await modUpdateFilterService.ShowFilesAsync(newestFileUids);
-                    else
-                        await modUpdateFilterService.HideFilesAsync(newestFileUids);
-                }
+                // Toggle the hidden state
+                if (isAnyHidden)
+                    await modUpdateFilterService.ShowFilesAsync(allFiles.Select(x => x.Uid));
+                else
+                    await modUpdateFilterService.HideFilesAsync(allFiles.Select(x => x.Uid));
             },
             async libraryItemId =>
             {
