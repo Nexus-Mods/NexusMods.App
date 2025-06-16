@@ -7,7 +7,6 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Sdk.Resources;
 using NexusMods.Abstractions.Resources.Caching;
-using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.UI.Sdk.Resources;

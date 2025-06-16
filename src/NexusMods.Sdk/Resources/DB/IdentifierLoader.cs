@@ -1,10 +1,13 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.Sdk.Resources;
 
-namespace NexusMods.Abstractions.Resources.DB;
+namespace NexusMods.Sdk.Resources;
 
+/// <summary>
+/// Represents a loader that transforms an <see cref="EntityId"/> into a resource identifier
+/// and subsequently retrieves the corresponding resource data.
+/// </summary>
 [PublicAPI]
 public sealed class IdentifierLoader<TResourceIdentifier, TData> : IResourceLoader<EntityId, TData>
     where TResourceIdentifier : notnull
@@ -69,44 +72,5 @@ public sealed class IdentifierLoader<TResourceIdentifier, TData> : IResourceLoad
         }
 
         return Optional<TResourceIdentifier>.None;
-    }
-}
-
-public static partial class ExtensionsMethods
-{
-    public static IResourceLoader<EntityId, TData> EntityIdToIdentifier<TResourceIdentifier, TData>(
-        this IResourceLoader<ValueTuple<EntityId, TResourceIdentifier>, TData> inner,
-        IConnection connection,
-        IReadableAttribute<TResourceIdentifier> attribute)
-        where TResourceIdentifier : notnull
-        where TData : notnull
-    {
-        return inner.Then(
-            state: (connection, attribute),
-            factory: static (input, inner) => new IdentifierLoader<TResourceIdentifier,TData>(
-                connection: input.connection,
-                attribute: input.attribute,
-                innerLoader: inner
-            )
-        );
-    }
-
-    public static IResourceLoader<EntityId, TData> EntityIdToOptionalIdentifier<TResourceIdentifier, TData>(
-        this IResourceLoader<ValueTuple<EntityId, TResourceIdentifier>, TData> inner,
-        IConnection connection,
-        TData fallbackValue,
-        IReadableAttribute<TResourceIdentifier> attribute)
-        where TResourceIdentifier : notnull
-        where TData : notnull
-    {
-        return inner.Then(
-            state: (connection, fallbackValue, attribute),
-            factory: static (input, inner) => new IdentifierLoader<TResourceIdentifier,TData>(
-                connection: input.connection,
-                fallbackValue: input.fallbackValue,
-                attribute: input.attribute,
-                innerLoader: inner
-            )
-        );
     }
 }

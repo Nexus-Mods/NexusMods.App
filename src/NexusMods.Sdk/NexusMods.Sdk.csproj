@@ -7,6 +7,7 @@
         <PackageReference Include="Microsoft.Extensions.Options" />
         <PackageReference Include="NexusMods.Hashing.xxHash3" />
         <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="OneOf" />
         <PackageReference Include="Polly.Core" />
@@ -44,6 +45,15 @@
         </Compile>
         <Compile Update="UserAgent.cs">
           <DependentUpon>ApplicationConstants.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\ResourceLoader.cs">
+          <DependentUpon>IResourceLoader.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\ANestedResourceLoader.cs">
+          <DependentUpon>IResourceLoader.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\DB\PersistedDbResource.cs">
+          <DependentUpon>PersistedDbResourceLoader.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>
