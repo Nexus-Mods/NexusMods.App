@@ -349,9 +349,12 @@ After asking design, we're choosing to simply open the mod page for now.
         await hideUpdatesMessage.Id.Match(
             async modPageId =>
             {
-                // Handle hiding/showing updates for a mod page (affects all files in the mod)
-                var modPage = NexusModsModPageMetadata.Load(_connection.Db, modPageId);
-                var allFiles = modPage.Files;
+                // Handle hiding/showing updates for a mod page
+                // First get all library items we have that come from the mod page.
+                var allFiles =  NexusModsLibraryItem.All(_connection.Db)
+                    .Where(x => x.ModPageMetadataId == modPageId)
+                    .Select(x => x.FileMetadata)
+                    .ToArray();
 
                 // Note(sewer):
                 // Behaviour per captainsandypants (Slack).
