@@ -51,4 +51,9 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     /// The total number of ratings this revision has.
     /// </summary>
     public static readonly UInt64Attribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
+
+    /// <summary>
+    /// Publication status.
+    /// </summary>
+    public static readonly EnumAttribute<RevisionStatus> Status = new(Namespace, nameof(Status)) { IsOptional = true };
 }
