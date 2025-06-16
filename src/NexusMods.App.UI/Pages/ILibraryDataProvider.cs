@@ -151,26 +151,37 @@ public static class LibraryDataProviderHelper
         IModUpdateFilterService filterService)
     {
         // Note(sewer):
-        // Determine if the current file is hidden by checking if the newest is hidden.
+        // Determine if the current file is hidden by checking if any of the newer
+        // files are hidden in an unfiltered state.
+        //
+        // The reason we use the unfiltered observable is that we also need to capture
+        // cases where *there are no updates*; so we can appropriately disable the button.
+        // With a filtered view we *can't do that*, because we may not be seeing updates
+        
         // The 'newest' in this context is unfiltered, and is the target we would update to,
         // so this is the correct file to check.
         var isHiddenObservable = unfilteredFileUpdateObservable
-            .Select<Optional<ModUpdateOnPage>, IObservable<bool>>(optional => optional.HasValue 
-                ? filterService.ObserveFileHiddenState(optional.Value.NewestFile.Uid)
-                : System.Reactive.Linq.Observable.Return(true))
-            .Switch()
+            // Because our view is unfiltered, we must listen to filter changes ourselves.
+            .CombineLatest(filterService.FilterTrigger.StartWith(System.Reactive.Unit.Default), (optional, _) => optional)
+            .Select(optional =>
+            {
+                if (!optional.HasValue)
+                    return false;
+                    
+                // Check if all newer files are hidden to determine if this update is hidden.
+                return optional.Value.NewerFiles.All(x => filterService.IsFileHidden(x.Uid));
+            })
             .ToObservable();
         
         // For individual files: count is always 1
         var itemCountObservable = Observable.Return(1);
         
-        // Disable the button if *there are no updates*.
-        // This is why we pass in unfiltered. Because if there are updates, BUT they are
-        // filtered, the button would be disabled. We don't want that, as the user should
-        // still be able to unhide updates.
+        // Disable the button if there are no newer files (when unfiltered).
+        // This means there are no updates, so show/hide is meaningless.
         var isEnabledObservable = unfilteredFileUpdateObservable
             .Select(optional => optional.HasValue)
             .ToObservable();
+
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable));
     }
 
