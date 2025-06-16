@@ -1,0 +1,40 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="dialog:CustomContentExampleViewModel" xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
+                                mc:Ignorable="d"
+                                x:Class="NexusMods.App.UI.Dialog.CustomContentExampleView"
+                                d:DataContext="{x:Static dialog:DesignDataContexts.CustomContentExampleDesignViewModel}">
+    
+    <Border Padding="0">
+        <StackPanel Spacing="8">
+            <TextBlock Text="{Binding CustomText}"
+                       Theme="{StaticResource BodyLGBoldTheme}"/>
+            <TextBlock Text="Download an entire mod collection at full speed with one click without leaving the app."
+                       TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Easy in app mod updates," Foreground="{StaticResource NeutralStrongBrush}"/>
+                <TextBlock Text=" no more manual downloads."/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Uncapped downloads speeds" Foreground="{StaticResource NeutralStrongBrush}"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="No Ads for life," Foreground="{StaticResource NeutralStrongBrush}"/>
+                <TextBlock Text=" even if you cancel!"/>
+            </StackPanel>
+            <CheckBox Content="Don't ask again" IsChecked="{Binding DontAskAgain}" />
+            <CheckBox Content="Should endorse download mods?" IsChecked="{Binding ShouldEndorseDownloadedMods}" />
+            <ComboBox PlaceholderText="Choose something..."
+                      ItemsSource="{Binding MyItems}"
+                      SelectedItem="{Binding MySelectedItem}"/>
+
+        </StackPanel>
+    </Border>
+    
+</reactiveUi:ReactiveUserControl>
+

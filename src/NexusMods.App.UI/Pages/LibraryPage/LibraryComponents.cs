@@ -7,6 +7,7 @@ using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.UI.Sdk.Icons;
@@ -244,7 +245,9 @@ public static class LibraryComponents
             _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
-        internal static string GetButtonText(bool isInstalled) => isInstalled ? "Installed" : "Install";
+        internal static string GetButtonText(bool isInstalled) => isInstalled
+            ? Language.LibraryComponents_InstallAction_ButtonText_Installed // "Installed"
+            : Language.LibraryComponents_InstallAction_ButtonText_Install; // "Install"
 
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
         [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
@@ -256,18 +259,18 @@ public static class LibraryComponents
             {
                 if (numInstalled == numTotal)
                 {
-                    return "Installed";
+                    return Language.LibraryComponents_InstallAction_ButtonText_Installed;
                 } else {
-                    return $"Installed {numInstalled}/{numTotal}";
+                    return $"{Language.LibraryComponents_InstallAction_ButtonText_Installed} {numInstalled}/{numTotal}";
                 }
             }
             else
             {
                 if (!isExpanded && numTotal == 1)
                 {
-                    return "Install";
+                    return Language.LibraryComponents_InstallAction_ButtonText_Install;
                 } else {
-                    return $"Install ({numTotal})";
+                    return $"{Language.LibraryComponents_InstallAction_ButtonText_Install} {numTotal}";
                 }
             }
         }

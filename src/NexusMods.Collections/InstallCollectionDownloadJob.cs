@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.IO.Hashing;
 using System.Security.Cryptography;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
@@ -15,7 +14,6 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Games.FOMOD;
@@ -24,6 +22,9 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Sdk.Hashes;
+using Crc32 = System.IO.Hashing.Crc32;
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace NexusMods.Collections;
@@ -232,7 +233,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     {
         // So collections hash everything by MD5, so we'll have to collect MD5 information for the files in the archive.
         // We don't do this during indexing into the library because this is the only case where we need MD5 hashes.
-        ConcurrentDictionary<Md5HashValue, HashMapping> hashes = new();
+        ConcurrentDictionary<Md5Value, HashMapping> hashes = new();
 
         var libraryFile = GetLibraryFile(Item, Connection.Db);
         if (!libraryFile.TryGetAsLibraryArchive(out var libraryArchive))
@@ -243,7 +244,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             await using var stream = await FileStore.GetFileStream(child.AsLibraryFile().Hash, token);
             using var hasher = MD5.Create();
             var hash = await hasher.ComputeHashAsync(stream, token);
-            var md5 = Md5HashValue.From(hash);
+            var md5 = Md5Value.From(hash);
 
             var file = child.AsLibraryFile();
             hashes[md5] = new HashMapping()
@@ -318,7 +319,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     /// </summary>
     private async Task PatchFiles(
         LibraryArchive.ReadOnly modArchive,
-        ConcurrentDictionary<Md5HashValue, HashMapping> hashes)
+        ConcurrentDictionary<Md5Value, HashMapping> hashes)
     {
         // Index all the files in the collection zip file and the mod archive by their paths so we can find them easily.
         var modChildren = IndexChildren(modArchive);
@@ -359,7 +360,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
             // Hash the patched file and add it to the patched files list
             using var md5 = MD5.Create();
             md5.ComputeHash(patchedArray);
-            var md5Hash = Md5HashValue.From(md5.Hash!);
+            var md5Hash = Md5Value.From(md5.Hash!);
             var xxHash = patchedArray.xxHash3();
 
             patchedFiles.Add(new ArchivedFileEntry(new MemoryStreamFactory(srcPath, patchedFile), xxHash, Size.FromLong(patchedFile.Length)));

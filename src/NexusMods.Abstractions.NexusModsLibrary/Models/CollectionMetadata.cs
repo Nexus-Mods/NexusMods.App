@@ -86,7 +86,7 @@ public partial class CollectionMetadata : IModelDefinition
     /// <summary>
     /// An average taken from all revision ratings.
     /// </summary>
-    public static readonly FloatAttribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
+    public static readonly Float32Attribute OverallRating = new(Namespace, nameof(OverallRating)) { IsOptional = true };
 
     /// <summary>
     /// Total number of ratings given across all revisions
@@ -96,10 +96,15 @@ public partial class CollectionMetadata : IModelDefinition
     /// <summary>
     /// A 30-day average of all revision ratings.
     /// </summary>
-    public static readonly FloatAttribute RecentRating = new(Namespace, nameof(RecentRating)) { IsOptional = true };
+    public static readonly Float32Attribute RecentRating = new(Namespace, nameof(RecentRating)) { IsOptional = true };
 
     /// <summary>
     /// Total number of ratings given in the last 30 days.
     /// </summary>
     public static readonly Int32Attribute RecentRatingCount = new(Namespace, nameof(RecentRatingCount)) { IsOptional = true };
+
+    /// <summary>
+    /// Listing status.
+    /// </summary>
+    public static readonly EnumAttribute<CollectionStatus> Status = new(Namespace, nameof(Status)) { IsOptional = true };
 }
