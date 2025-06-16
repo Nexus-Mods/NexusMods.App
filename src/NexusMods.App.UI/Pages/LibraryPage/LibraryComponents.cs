@@ -445,10 +445,10 @@ public static class LibraryComponents
             return 0; // All hide updates actions are considered equal for sorting
         }
 
-        public HideUpdatesAction(Observable<bool> isHiddenObservable, Observable<int> itemCount, bool isEnabled = true)
+        public HideUpdatesAction(Observable<bool> isHiddenObservable, Observable<int> itemCount, Observable<bool> isEnabled)
         {
             IsHidden = isHiddenObservable.ToBindableReactiveProperty();
-            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+            IsEnabled = isEnabled.ToBindableReactiveProperty();
             
             // Button text changes based on hidden state and item count
             // We use BindableReactiveProperty on ButtonText field as UI elements bind to this.

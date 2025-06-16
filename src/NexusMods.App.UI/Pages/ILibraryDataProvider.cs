@@ -142,17 +142,19 @@ public static class LibraryDataProviderHelper
         var isHiddenObservable = R3.Observable.Return(false);
         var itemCountObservable = R3.Observable.Return(1);
         
-        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, Observable.Return(isEnabled)));
     }
 
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
-        IObservable<Optional<ModUpdateOnPage>> fileUpdateObservable,
-        IModUpdateFilterService filterService,
-        bool isEnabled = true)
+        IObservable<Optional<ModUpdateOnPage>> unfilteredFileUpdateObservable,
+        IModUpdateFilterService filterService)
     {
-        // Wire up proper hidden state observable using the filter service
-        var isHiddenObservable = fileUpdateObservable
+        // Note(sewer):
+        // Determine if the current file is hidden by checking if the newest is hidden.
+        // The 'newest' in this context is unfiltered, and is the target we would update to,
+        // so this is the correct file to check.
+        var isHiddenObservable = unfilteredFileUpdateObservable
             .Select<Optional<ModUpdateOnPage>, IObservable<bool>>(optional => optional.HasValue 
                 ? filterService.ObserveFileHiddenState(optional.Value.NewestFile.Uid)
                 : System.Reactive.Linq.Observable.Return(true))
@@ -161,8 +163,15 @@ public static class LibraryDataProviderHelper
         
         // For individual files: count is always 1
         var itemCountObservable = Observable.Return(1);
-
-        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
+        
+        // Disable the button if *there are no updates*.
+        // This is why we pass in unfiltered. Because if there are updates, BUT they are
+        // filtered, the button would be disabled. We don't want that, as the user should
+        // still be able to unhide updates.
+        var isEnabledObservable = unfilteredFileUpdateObservable
+            .Select(optional => optional.HasValue)
+            .ToObservable();
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable));
     }
 
     private record struct FileUpdateDetails(int NumHidden, int TotalFiles);
@@ -201,6 +210,6 @@ public static class LibraryDataProviderHelper
         var itemCountObservable = currentDetails.Select(details => details.TotalFiles)
             .ToObservable();
 
-        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, Observable.Return(true)));
     }
 }
