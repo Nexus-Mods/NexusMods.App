@@ -104,7 +104,7 @@ public partial class CollectionMetadata : IModelDefinition
     public static readonly Int32Attribute RecentRatingCount = new(Namespace, nameof(RecentRatingCount)) { IsOptional = true };
 
     /// <summary>
-    /// Status.
+    /// Listing status.
     /// </summary>
     public static readonly EnumAttribute<CollectionStatus> Status = new(Namespace, nameof(Status)) { IsOptional = true };
 }

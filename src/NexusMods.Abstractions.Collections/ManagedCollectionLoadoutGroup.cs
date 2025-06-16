@@ -5,6 +5,9 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Collections;
 
+/// <summary>
+/// Represents an uploaded collection managed by the app.
+/// </summary>
 [Include<CollectionGroup>]
 public partial class ManagedCollectionLoadoutGroup : IModelDefinition
 {

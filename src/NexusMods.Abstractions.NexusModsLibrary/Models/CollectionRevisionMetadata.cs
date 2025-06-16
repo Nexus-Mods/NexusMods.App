@@ -53,7 +53,7 @@ public partial class CollectionRevisionMetadata : IModelDefinition
     public static readonly UInt64Attribute TotalRatings = new(Namespace, nameof(TotalRatings)) { IsOptional = true };
 
     /// <summary>
-    /// Status.
+    /// Publication status.
     /// </summary>
     public static readonly EnumAttribute<RevisionStatus> Status = new(Namespace, nameof(Status)) { IsOptional = true };
 }
