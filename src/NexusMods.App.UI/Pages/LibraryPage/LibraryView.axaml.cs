@@ -122,4 +122,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             }
         );
     }
+
+    private void SearchButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        SearchPanel.IsVisible = !SearchPanel.IsVisible;
+    }
 }

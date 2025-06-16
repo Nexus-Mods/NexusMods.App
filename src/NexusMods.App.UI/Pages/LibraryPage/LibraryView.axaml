@@ -47,40 +47,36 @@
                         <!-- search button group -->
                         <!-- leave in for now, it won't be long before we have a search component -->
 
-                        <!-- <ItemsControl Template="{StaticResource ToolbarControlGroup}"> -->
-                        <!--     <DockPanel> -->
-                        <!--         <controls:StandardButton x:Name="SearchButton" -->
-                        <!--                                  Text="x selected" -->
-                        <!--                                  Type="Tertiary" -->
-                        <!--                                  Size="ExtraSmall" -->
-                        <!--                                  Fill="WeakAlt" -->
-                        <!--                                  ShowIcon="Left" -->
-                        <!--                                  ShowLabel="False" -->
-                        <!--                                  LeftIcon="{x:Static icons:IconValues.Search}" -->
-                        <!--                                  DockPanel.Dock="Left"/> -->
-                        <!--         <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188"> -->
-                        <!--             <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="Search..." Padding="4 2 24 2" -->
-                        <!--                      Margin="4 0 0 0"/> -->
-                        <!--             <controls:StandardButton x:Name="SearchClearButton" -->
-                        <!--                                      Margin="0 0 4 0" -->
-                        <!--                                      HorizontalAlignment="Right" -->
-                        <!--                                      Type="Tertiary" -->
-                        <!--                                      Size="ExtraSmall" -->
-                        <!--                                      Fill="None" -->
-                        <!--                                      ShowIcon="IconOnly" -->
-                        <!--                                      ShowLabel="False" -->
-                        <!--                                      LeftIcon="{x:Static icons:IconValues.Close}"/> -->
-                        <!--             <Panel.Transitions> -->
-                        <!--                 <Transitions> -->
-                        <!--                     <DoubleTransition Property="Width" Duration="0:0:0.1"/> -->
-                        <!--                 </Transitions> -->
-                        <!--             </Panel.Transitions> -->
-                        <!--         </Panel> -->
-                        <!--     </DockPanel> -->
-                        <!-- </ItemsControl> -->
+                        <ItemsControl>
+                            <DockPanel>
+                                <controls:StandardButton x:Name="SearchButton"
+                                                         Text="x selected"
+                                                         Type="Tertiary"
+                                                         Size="Toolbar"
+                                                         Fill="WeakAlt"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False"
+                                                         LeftIcon="{x:Static icons:IconValues.Search}"
+                                                         DockPanel.Dock="Left"
+                                                         Click="SearchButton_OnClick"/>
+                                <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188" IsVisible="False">
+                                    <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="Search..." Padding="4 2 24 2"
+                                             Margin="4 0 0 0"/>
+                                    <controls:StandardButton x:Name="SearchClearButton"
+                                                             Margin="0 0 4 0"
+                                                             HorizontalAlignment="Right"
+                                                             Type="Tertiary"
+                                                             Size="Toolbar"
+                                                             Fill="None"
+                                                             ShowIcon="IconOnly"
+                                                             ShowLabel="False"
+                                                             LeftIcon="{x:Static icons:IconValues.Close}"/>
+                                </Panel>
+                            </DockPanel>
+                        </ItemsControl>
 
                         <!-- selection related button group -->
-                        <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl x:Name="ContextControlGroup">
 
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"
@@ -123,7 +119,7 @@
                                                      Classes="Danger" />
                         </ItemsControl>
 
-                        <ItemsControl x:Name="InstallationTargetControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl x:Name="InstallationTargetControlGroup">
                             <ComboBox x:Name="InstallationTargetSelector">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate DataType="local:InstallationTarget">
@@ -134,7 +130,7 @@
                         </ItemsControl>
 
                         <!-- static button group -->
-                        <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl>
                             <controls:StandardButton
                                 Text="Add"
                                 Type="Tertiary"
@@ -210,7 +206,7 @@
 
                     <!-- toolbar component -->
                     <controls:Toolbar Margin="24,12, 24, 0">
-                        <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl>
                             <controls:StandardButton
                                 Text="Add"
                                 Type="Tertiary"
