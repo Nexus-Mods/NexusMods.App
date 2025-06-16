@@ -458,6 +458,11 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// Given that each array entry represents a single mod file, this is just the count of the internal array.
     /// </summary>
     public int NumberOfModFilesToUpdate => FileMappings.Length;
+    
+    /// <summary>
+    /// True if there are any updates available for any mod on this page.
+    /// </summary>
+    public bool HasAnyUpdates => FileMappings.Length > 0;
 
     /// <summary>
     /// Returns the newest file across mods on this mod page.

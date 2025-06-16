@@ -173,11 +173,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         );
 
         // Update button
-        var newestFiles = _modUpdateService.GetNewestModPageVersionObservable(modPage);
-
+        var updatesOnPage = _modUpdateService.GetNewestModPageVersionObservable(modPage);
         parentItemModel.AddObservable(
             key: LibraryColumns.Actions.UpdateComponentKey,
-            observable: newestFiles,
+            observable: updatesOnPage,
             componentFactory: static (valueObservable, initialValue) => new LibraryComponents.UpdateAction(
                 initialValue,
                 valueObservable
@@ -204,9 +203,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
         LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
 
-        var filesOnModPage = libraryItems
-            .QueryWhenChanged(query => query.Items.ToArray());
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, filesOnModPage, _modUpdateFilterService);
+        var updatesOnPageUnfiltered = _modUpdateService.GetNewestModPageVersionObservableUnfiltered(modPage);
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService);
 
         return parentItemModel;
     }

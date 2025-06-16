@@ -185,42 +185,63 @@ public static class LibraryDataProviderHelper
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable));
     }
 
-    private record struct FileUpdateDetails(int NumHidden, int TotalFiles);
+    private record struct FileUpdateDetails(int NumUpdatesHidden, int NumUpdatesShown);
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
-        IObservable<NexusModsLibraryItem.ReadOnly[]> filesOnModPage,
-        IModUpdateFilterService modUpdateFilterService,
-        bool isEnabled = true)
+        IObservable<Optional<ModUpdatesOnModPage>> unfilteredUpdatedOnModPage,
+        IModUpdateFilterService modUpdateFilterService)
     {
+        // Note(sewer):
+        //
+        // Same note as above.
+        //
+        // The reason we use the unfiltered observable is that we also need to capture
+        // cases where *there are no updates*; so we can appropriately disable the button.
+        // With a filtered view we *can't do that*, because we may not be seeing updates
+        //
+        // In addition, we must also be able to capture cases where *all* updates are hidden,
+        // not just where they are visible, so we can show proper counters in the UI, as per
+        // the design spec. Therefore, we must do the filtering ourselves 😉
+        
         // Trigger refresh either if mods on page change, or filter is updated.
-        var currentDetails = filesOnModPage
+        var currentDetails = unfilteredUpdatedOnModPage
             .CombineLatest(modUpdateFilterService.FilterTrigger.StartWith(System.Reactive.Unit.Default), (files, _) => files)
             .Select(files =>
             {
+                if (!files.HasValue)
+                    return new FileUpdateDetails(0, 0);
+                
                 var numHidden = 0;
-                foreach (var file in files)
+                var numShown = 0;
+                foreach (var updateOnPage in files.Value.FileMappings)
                 {
-                    var newerFiles = RunUpdateCheck.GetAllVersionsForExistingFile(file.FileMetadata).ToArray();
-                    var areAllUpdatesHidden = newerFiles.All(newer => modUpdateFilterService.IsFileHidden(newer.Uid));
+                    var areAllUpdatesHidden = updateOnPage.NewerFiles.All(newer => modUpdateFilterService.IsFileHidden(newer.Uid));
                     if (areAllUpdatesHidden)
                         numHidden++;
+                    else
+                        numShown++;
                 }
 
-                return new FileUpdateDetails(numHidden, files.Length);
+                return new FileUpdateDetails(numHidden, numShown);
             });
 
         // Note(sewer):
         // Behaviour per captainsandypants (Slack).
         // 'If any children have updates set to hidden, then the parent should have "Show updates" as the menu item.
         // When selected, this will set all children to show updates.'
-        var isHiddenObservable = currentDetails.Select(details => details.NumHidden > 0)
+        var isHiddenObservable = currentDetails.Select(details => details.NumUpdatesHidden > 0)
             .ToObservable();
         
         // Always show the number of files under the 'Mod Page' item, as this is the number of items
         // affected by the 'Show updates' action.
-        var itemCountObservable = currentDetails.Select(details => details.TotalFiles)
+        var itemCountObservable = currentDetails.Select(details => details.NumUpdatesHidden > 0 ? details.NumUpdatesHidden : details.NumUpdatesShown)
             .ToObservable();
-
-        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, Observable.Return(true)));
+        
+        // ReSharper disable once MergeIntoPattern
+        var isEnabledObservable = unfilteredUpdatedOnModPage
+            .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
+            .ToObservable();
+        
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable));
     }
 }
