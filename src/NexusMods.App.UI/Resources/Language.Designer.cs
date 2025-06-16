@@ -1900,15 +1900,6 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Mod Info.
-        /// </summary>
-        public static string ViewModInfoPage_Title {
-            get {
-                return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
-            }
-        }
-        
         public static string LibraryComponents_InstallAction_ButtonText_Installed {
             get {
                 return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Installed", resourceCulture);
