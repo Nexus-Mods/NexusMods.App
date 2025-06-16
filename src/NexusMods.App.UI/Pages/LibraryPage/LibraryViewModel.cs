@@ -385,19 +385,16 @@ After asking design, we're choosing to simply open the mod page for now.
                 // Handle hiding/showing updates for a single file
                 var libraryItem = NexusModsLibraryItem.Load(_connection.Db, libraryItemId);
                 var fileMetadata = libraryItem.FileMetadata;
-                var updateFile = await _modUpdateService.GetNewestFileVersionObservable(fileMetadata).FirstAsync();
+                var allVersions = RunUpdateCheck.GetAllVersionsForExistingFile(fileMetadata).ToArray();
 
-                if (updateFile.HasValue)
-                {
-                    var fileUid = updateFile.Value.NewestFile.Uid;
-                    var isHidden = modUpdateFilterService.IsFileHidden(fileUid);
+                // Should always be true by definition, since we started with 1
+                var isAnyHidden = allVersions.Any(x => modUpdateFilterService.IsFileHidden(x.Uid));
 
-                    // Toggle the hidden state
-                    if (isHidden)
-                        await modUpdateFilterService.ShowFileAsync(fileUid);
-                    else
-                        await modUpdateFilterService.HideFileAsync(fileUid);
-                }
+                // Toggle the hidden state
+                if (isAnyHidden)
+                    await modUpdateFilterService.ShowFilesAsync(allVersions.Select(x => x.Uid));
+                else
+                    await modUpdateFilterService.HideFilesAsync(allVersions.Select(x => x.Uid));
             }
         );
     }
