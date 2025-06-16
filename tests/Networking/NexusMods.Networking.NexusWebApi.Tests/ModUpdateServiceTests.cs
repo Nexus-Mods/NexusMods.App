@@ -440,9 +440,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
         
         // Setup observable with the filter service applied
-        var observable = _modUpdateService.GetNewestFileVersionObservable(
-            downloadJob.Job.FileMetadata,
-            _filterService.SelectMod);
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
         
         // Create collection for results
         ModUpdateOnPage? updateOnPage = null;
@@ -498,9 +496,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
         
         // Setup observable with the filter service applied
-        var observable = _modUpdateService.GetNewestFileVersionObservable(
-            downloadJob.Job.FileMetadata,
-            _filterService.SelectMod);
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
         
         // Create collection for results
         ModUpdateOnPage? updateOnPage = null;

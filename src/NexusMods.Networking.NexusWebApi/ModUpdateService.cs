@@ -236,8 +236,9 @@ public class ModUpdateService : IModUpdateService, IDisposable
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
         
+        // If no custom selector is provided, apply default filters
         if (select == null) 
-            return observable;
+            select = _filterService.SelectMod;
         
         // When a custom selector is provided, also trigger on the filter trigger
         var triggerObservable = _filterService.FilterTrigger
@@ -265,8 +266,9 @@ public class ModUpdateService : IModUpdateService, IDisposable
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
         
+        // If no custom selector is provided, apply default filters
         if (select == null) 
-            return observable;
+            select = _filterService.SelectModPage;
         
         // When a custom selector is provided, also trigger on the filter trigger
         var triggerObservable = _filterService.FilterTrigger
