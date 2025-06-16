@@ -165,11 +165,7 @@ public static class LibraryDataProviderHelper
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabled));
     }
 
-    private record struct FileUpdateDetails(int NumHidden, int TotalFiles)
-    {
-        public int NumNotHidden => TotalFiles - NumHidden;        
-    }
-
+    private record struct FileUpdateDetails(int NumHidden, int TotalFiles);
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<NexusModsLibraryItem.ReadOnly[]> filesOnModPage,
@@ -184,13 +180,16 @@ public static class LibraryDataProviderHelper
                 var numHidden = 0;
                 foreach (var file in files)
                 {
-                    if (modUpdateFilterService.IsFileHidden(file.FileMetadata.Uid))
+                    var newerFiles = RunUpdateCheck.GetAllVersionsForExistingFile(file.FileMetadata).ToArray();
+                    var areAllUpdatesHidden = newerFiles.All(newer => modUpdateFilterService.IsFileHidden(newer.Uid));
+                    if (areAllUpdatesHidden)
                         numHidden++;
                 }
 
                 return new FileUpdateDetails(numHidden, files.Length);
             });
 
+        // Note(sewer):
         // Behaviour per captainsandypants (Slack).
         // 'If any children have updates set to hidden, then the parent should have "Show updates" as the menu item.
         // When selected, this will set all children to show updates.'

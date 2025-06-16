@@ -353,11 +353,25 @@ After asking design, we're choosing to simply open the mod page for now.
                 var modPage = NexusModsModPageMetadata.Load(_connection.Db, modPageId);
                 var allFiles = modPage.Files;
 
-                // Should always be true by definition, since we started with 1
-                var isAnyHidden = allFiles.Any(x => modUpdateFilterService.IsFileHidden(x.Uid));
+                // Note(sewer):
+                // Behaviour per captainsandypants (Slack).
+                // 'If any children have updates set to hidden, then the parent should have "Show updates" as the menu item.
+                // When selected, this will set all children to show updates.'
+                //
+                // We have to be careful here.
+                // We have a list of ***current versions*** of files in the mod page.
+                // We need to check if it's possible to update ***any of these current versions*** to a new file.
+                //     👉 👉 So for each file we need to check if any of its versions is not ignored as an update.
+                var doesAnyModHaveItsUpdatesHidden = allFiles.Any(x =>
+                    {
+                        // Checking all versions is not a bug, it is intended behaviour per design.
+                        // Search 'That definition also means older versions should be excluded from update checks.' in Slack.
+                        var newerFiles = RunUpdateCheck.GetAllVersionsForExistingFile(x).ToArray();
+                        return newerFiles.All(newer => modUpdateFilterService.IsFileHidden(newer.Uid));
+                    }
+                );
 
-                // Toggle the hidden state
-                if (isAnyHidden)
+                if (doesAnyModHaveItsUpdatesHidden)
                     await modUpdateFilterService.ShowFilesAsync(allFiles.Select(x => x.Uid).Distinct());
                 else
                     await modUpdateFilterService.HideFilesAsync(allFiles.Select(x => x.Uid).Distinct());
@@ -369,11 +383,9 @@ After asking design, we're choosing to simply open the mod page for now.
                 var fileMetadata = libraryItem.FileMetadata;
                 var allVersions = RunUpdateCheck.GetAllVersionsForExistingFile(fileMetadata).ToArray();
 
-                // Should always be true by definition, since we started with 1
-                var isAnyHidden = allVersions.Any(x => modUpdateFilterService.IsFileHidden(x.Uid));
+                var areAllHidden = allVersions.All(x => modUpdateFilterService.IsFileHidden(x.Uid));
 
-                // Toggle the hidden state
-                if (isAnyHidden)
+                if (areAllHidden)
                     await modUpdateFilterService.ShowFilesAsync(allVersions.Select(x => x.Uid));
                 else
                     await modUpdateFilterService.HideFilesAsync(allVersions.Select(x => x.Uid));
