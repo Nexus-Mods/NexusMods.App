@@ -514,6 +514,34 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// </summary>
     public IEnumerable<NexusModsFileMetadata.ReadOnly> NewestUniqueFileForEachMod() => NewestFileForEachMod().DistinctBy(only => only.Id);
     
+    /// <summary>
+    /// Returns mappings of unique newest file(s) to 1 or more current files.
+    /// </summary>
+    /// <remarks>
+    ///     In most cases, for each file there will be a single 'current' version.
+    ///     However, if you have multiple versions of the same mod installed, such as in
+    ///     different collections or loadouts, then there may be multiple 'current' files.
+    /// </remarks>
+    public Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> NewestToCurrentFileMapping()
+    {
+        // Group current files by their newest file version
+        // Multiple current files can map to the same newest file
+        var result = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
+        
+        foreach (var mapping in FileMappings)
+        {
+            if (!result.TryGetValue(mapping.NewestFile, out var currentFiles))
+            {
+                currentFiles = new List<NexusModsFileMetadata.ReadOnly>();
+                result[mapping.NewestFile] = currentFiles;
+            }
+
+            currentFiles.Add(mapping.File);
+        }
+        
+        return result;
+    }
+    
     /// <summary/>
     public static explicit operator ModUpdatesOnModPage(ModUpdateOnPage[] inner) => new(inner);
     
