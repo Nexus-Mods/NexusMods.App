@@ -13,6 +13,8 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
@@ -254,9 +256,106 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
+    private record struct OldToNewFileMapping(LibraryItem.ReadOnly OldFile, LibraryItem.ReadOnly NewFile);
     private async ValueTask HandleUpdateAndReplaceMessage(UpdateAndReplaceMessage updateAndReplaceMessage, CancellationToken cancellationToken)
     {
-        // TODO: Implement this
+        var isPremium = _loginManager.IsPremium;
+        if (!isPremium)
+        {
+            var dialog = DialogFactory.CreateOkCancelMessageBox(
+                Language.Dialog_ReplaceNotSupported_Title,
+                Language.Dialog_ReplaceNotSupported_Text
+            );
+            
+            await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+            await HandleUpdateAndKeepOldMessage(new UpdateAndKeepOldMessage(updateAndReplaceMessage.Updates, updateAndReplaceMessage.TreeNode), cancellationToken);
+        }
+        else
+        {
+            var updatesOnPage = updateAndReplaceMessage.Updates;
+
+            // Note(sewer): There's usually just a few files in like 99% of the cases here
+            //              so no need to optimize around file reuse and TemporaryFileManager.
+            var oldToNewLibraryMapping = new List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
+            var downloadErrors = new List<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
+            var successfulDownloads = new List<LibraryItem.ReadOnly>();
+
+            // There are 3 states:
+            // - Some downloads failed
+            // - All downloads failed
+            // - All downloads succeeded
+            //
+            // If some downloads failed, we should show a message to the user asking them if we should keep the ones that succeeded,
+            // and replace them. Otherwise they can cancel to remove all the downloads.
+            //
+            // If all downloads failed, we should show a message to the user that all downloads failed; with an 'ok' button.
+            //
+            // If all downloads succeeded, we should proceed with replacing automatically.
+            var newestToCurrentMapping = updatesOnPage.NewestToCurrentFileMapping();
+            foreach (var (newestFile, currentFiles) in newestToCurrentMapping)
+            {
+                try
+                {
+                    // Try a download.
+                    await using var tempPath = _temporaryFileManager.CreateFile();
+                    var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
+                    var libraryFile = await _libraryService.AddDownload(job);
+                    var newLibraryItem = libraryFile.AsLibraryItem();
+                    successfulDownloads.Add(newLibraryItem);
+                    
+                    // Map each current file to the new file
+                    foreach (var currentFile in currentFiles)
+                    {
+                        // Find existing library items for this file metadata
+                        var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
+                        foreach (var existingLibraryFile in existingLibraryItems) // Should only be one.
+                        {
+                            var currentLibraryItem = existingLibraryFile.AsLibraryItem();
+                            oldToNewLibraryMapping.Add((currentLibraryItem, newLibraryItem));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    downloadErrors.Add((newestFile, ex));
+                }
+            }
+
+            if (downloadErrors.Count == 0)
+            {
+                // All downloads succeeded, proceed with replacement
+                var options = new ReplaceLibraryItemsOptions
+                {
+                    IgnoreReadOnlyCollections = true,
+                };
+                
+                var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
+                if (result == LibraryItemReplacementResult.Success)
+                {
+                    // Replace operation succeeded, complete the operation as usual
+                }
+                else
+                {
+                    // Replace operation failed, delete the downloads
+                    // TODO: Delete the downloaded files from successfulDownloads
+                    // TODO: Log or handle the replacement error
+                }
+            }
+            else if (successfulDownloads.Count > 0)
+            {
+                // Some downloads failed - show message asking if user wants to keep successful ones
+                // TODO: Show dialog with options to:
+                // - Keep successful downloads and replace them
+                // - Cancel and remove all downloads
+            }
+            else
+            {
+                // All downloads failed - show error message
+                // TODO: Show dialog with error message and 'OK' button
+            }
+        }
+        
+        return;
     }
     
     private async ValueTask HandleUpdateAndKeepOldMessage(UpdateAndKeepOldMessage updateAndKeepOldMessage, CancellationToken cancellationToken)

@@ -2920,5 +2920,17 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Library_UpdateAndKeepOldMod", resourceCulture);
             }
         }
+        
+        public static string Dialog_ReplaceNotSupported_Title {
+            get {
+                return ResourceManager.GetString("Dialog_ReplaceNotSupported_Title", resourceCulture);
+            }
+        }
+        
+        public static string Dialog_ReplaceNotSupported_Text {
+            get {
+                return ResourceManager.GetString("Dialog_ReplaceNotSupported_Text", resourceCulture);
+            }
+        }
     }
 }
