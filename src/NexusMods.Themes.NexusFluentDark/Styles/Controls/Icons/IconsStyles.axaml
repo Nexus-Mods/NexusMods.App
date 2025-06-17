@@ -153,6 +153,7 @@
                     <icons:UnifiedIcon Classes="ToggleSwitchOn" />
                     <icons:UnifiedIcon Classes="ToggleSwitchOff" />
                     <icons:UnifiedIcon Classes="ToggleSwitchIndeterminate" />
+                    <icons:UnifiedIcon Classes="ExportVariant" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="PanelAllFull" />
@@ -735,8 +736,10 @@
     <Style Selector="icons|UnifiedIcon.PictogramPlaylistAdd">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramPlaylistAdd}" />
     </Style>
-    
     <Style Selector="icons|UnifiedIcon.PictogramLibrary">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramLibrary}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.ExportVariant">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ExportVariant}" />
     </Style>
 </Styles>

@@ -15,6 +15,8 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
@@ -109,10 +111,51 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadRevision = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
+                var shareDialog = DialogFactory.CreateMessageBox("Share Your Collection on Nexus Mods",
+                    """
+                    Upload “My new collection” to Nexus Mods to share it with friends or, if you choose, with the entire Nexus Mods community.
+                    
+                    Your collection will be added as a private draft until you publish it.
+                    """,
+                    [
+                        new DialogButtonDefinition("Cancel", ButtonDefinitionId.From("cancel"), ButtonAction.Reject),
+                        new DialogButtonDefinition("Share to Nexus Mods", ButtonDefinitionId.From("share"), ButtonAction.Accept, ButtonStyling.Primary),
+                    ],
+                    null,
+                    DialogWindowSize.Medium
+                );
+                
+                var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                
+                // If the user did not click the share button, we do not proceed
+                if (shareDialogResult != ButtonDefinitionId.From("share")) return;
+                
                 var revision = await CollectionCreator.UploadCollectionRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
                 var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
                 var gameDomain = await mappingCache.TryGetDomainAsync(revision.Collection.GameId, cancellationToken);
-
+                
+                var addedDialog = DialogFactory.CreateMessageBox("Your Collection Has Been Added as a Draft",
+                    """
+                    Click View Page to edit details and optionally publish your collection as either:
+                    
+                    • Listed – Anyone can discover this collection on Nexus Mods.
+                    • Unlisted – Only people with the link can view it.
+                    
+                    You can change the visibility at any time in your collection settings on the Nexus Mods page.
+                    """,
+                    [
+                        new DialogButtonDefinition("Close", ButtonDefinitionId.From("close"), ButtonAction.Reject),
+                        new DialogButtonDefinition("View page", ButtonDefinitionId.From("view-page"), ButtonAction.Accept, ButtonStyling.Default, IconValues.OpenInNew),
+                    ],
+                    null,
+                    DialogWindowSize.Medium
+                );
+                
+                var addedDialogResult = await windowManager.ShowDialog(addedDialog, DialogWindowType.Modal);
+                
+                // If the user did not click the view page button, we do not proceed
+                if (addedDialogResult != ButtonDefinitionId.From("view-page")) return;
+                
                 var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, revision.Collection.Slug, revision.RevisionNumber);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
             }, maxSequential: 1, configureAwait: false);

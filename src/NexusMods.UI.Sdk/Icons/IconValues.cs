@@ -311,6 +311,9 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/update/
     public static readonly IconValue Update = new ProjektankerIcon("mdi-update");
+    
+    // https://pictogrammers.com/library/mdi/icon/export-variant/
+    public static readonly IconValue ExportVariant = new ProjektankerIcon("mdi-export-variant");
 
 #endregion
 

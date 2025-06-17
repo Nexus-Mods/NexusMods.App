@@ -19,7 +19,16 @@
             <Style Selector="^ /template/ TextBlock#PART_Label">
                 <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
             </Style>
+            
+            <Style Selector="^.Default">
+                <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
 
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
+                </Style>
+            </Style>
+            
             <Style Selector="^.Danger">
                 <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
