@@ -31,9 +31,9 @@ public class LoadoutCardDesignViewModel : AViewModel<ILoadoutCardViewModel>, ILo
     
     public ILoadoutBadgeViewModel LoadoutBadgeViewModel { get; } = new LoadoutBadgeDesignViewModel();
     public string LoadoutName { get; } = "Loadout B";
-    public IImage LoadoutImage { get; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
+    public IImage LoadoutImage { get; } = Bitmap.DecodeToWidth(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/thumbnail.webp")), (int) ImageSizes.GameThumbnail.Width);
 
-    public bool IsLoadoutApplied { get; } = true;
+    public bool IsLoadoutApplied { get; } = false;
     public string HumanizedLoadoutLastApplyTime { get; } = "Last applied 2 months ago";
     public string HumanizedLoadoutCreationTime { get; } = "Created 10 months ago";
     public string LoadoutModCount { get; } = "Mods 276";
