@@ -184,8 +184,6 @@
                             </controls:ComponentControl.ComponentTemplate>
                         </controls:ComponentControl>
 
-                        <MenuItem Header="-" />
-
                         <!-- View Changelog -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                             <controls:ComponentControl.ComponentTemplate>
