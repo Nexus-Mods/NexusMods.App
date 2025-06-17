@@ -256,8 +256,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private record struct OldToNewFileMapping(LibraryItem.ReadOnly OldFile, LibraryItem.ReadOnly NewFile);
-    
     /// <summary>
     /// Attempts to replace library items in all loadouts and shows error dialog if the operation fails.
     /// </summary>
