@@ -17,9 +17,4 @@ public partial class ManagedCollectionLoadoutGroup : IModelDefinition
     /// The collection.
     /// </summary>
     public static readonly ReferenceAttribute<CollectionMetadata> Collection = new(Namespace, nameof(Collection)) { IsIndexed = true };
-
-    /// <summary>
-    /// The revision.
-    /// </summary>
-    public static readonly ReferenceAttribute<CollectionRevisionMetadata> LastUploadedRevision = new(Namespace, nameof(LastUploadedRevision)) { IsIndexed = true };
 }
