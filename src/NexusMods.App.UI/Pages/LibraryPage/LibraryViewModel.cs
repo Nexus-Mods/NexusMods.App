@@ -203,8 +203,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                                 await InstallLibraryItem(libraryItem, _loadout, GetInstallationTarget(), cancellationToken);
                             }
                         },
-                        async updateMessage => await HandleUpdateMessage(updateMessage, cancellationToken),
                         async updateAndReplaceMessage => await HandleUpdateAndReplaceMessage(updateAndReplaceMessage, cancellationToken),
+                        async updateAndKeepOldMessage => await HandleUpdateAndKeepOldMessage(updateAndKeepOldMessage, cancellationToken),
                         async viewChangelogMessage => await HandleViewChangelogMessage(viewChangelogMessage, cancellationToken),
                         async viewModPageMessage => await HandleViewModPageMessage(viewModPageMessage, cancellationToken),
                         async hideUpdatesMessage => await HandleHideUpdatesMessage(hideUpdatesMessage, cancellationToken)
@@ -254,9 +254,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private async ValueTask HandleUpdateMessage(UpdateMessage updateMessage, CancellationToken cancellationToken)
+    private async ValueTask HandleUpdateAndReplaceMessage(UpdateAndReplaceMessage updateAndReplaceMessage, CancellationToken cancellationToken)
     {
-        var updatesOnPage = updateMessage.Updates;
+        // TODO: Implement this
+    }
+    
+    private async ValueTask HandleUpdateAndKeepOldMessage(UpdateAndKeepOldMessage updateAndKeepOldMessage, CancellationToken cancellationToken)
+    {
+        var updatesOnPage = updateAndKeepOldMessage.Updates;
         
         // Note(sewer)
         // If the user is a free user, they have to go to the website due to API restrictions.
@@ -305,20 +310,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 await _libraryService.AddDownload(job);
             }
         }
-    }
-    
-    private async ValueTask HandleUpdateAndReplaceMessage(UpdateAndReplaceMessage updateAndReplaceMessage, CancellationToken cancellationToken)
-    {
-        // TODO: Implement update and replace logic
-        // This should download the new version and replace/remove the old version from the library
-        // For now, this is a stub implementation
-        
-        // Placeholder: Currently just calls the same logic as regular update
-        // In the future, this should:
-        // 1. Download the new version (same as regular update)
-        // 2. Remove or replace the old version in the library/loadouts
-        var updateMessage = new UpdateMessage(updateAndReplaceMessage.Updates, updateAndReplaceMessage.TreeNode);
-        await HandleUpdateMessage(updateMessage, cancellationToken);
     }
     
     private ValueTask HandleViewChangelogMessage(ViewChangelogMessage viewChangelogMessage, CancellationToken cancellationToken)
@@ -523,21 +514,21 @@ After asking design, we're choosing to simply open the mod page for now.
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
-public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
 public readonly record struct UpdateAndReplaceMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
+public readonly record struct UpdateAndKeepOldMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
 public readonly record struct ViewChangelogMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct ViewModPageMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct HideUpdatesMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateMessage, UpdateAndReplaceMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
     private readonly IConnection _connection;
 
-    public Subject<OneOf<InstallMessage, UpdateMessage, UpdateAndReplaceMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
 
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
@@ -570,13 +561,13 @@ public class LibraryTreeDataGridAdapter :
         model.SubscribeToComponentAndTrack<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
-            factory: static (self, itemModel, component) => component.CommandUpdate
+            factory: static (self, itemModel, component) => component.CommandUpdateAndKeepOld
                 .SubscribeOnUIThreadDispatcher() // Update payload may expand row for free users, requiring UI thread.
                 .Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, model, component) = state;
                 var newFile = component.NewFiles.Value;
-                self.MessageSubject.OnNext(new UpdateMessage(newFile, model));
+                self.MessageSubject.OnNext(new UpdateAndKeepOldMessage(newFile, model));
             })
         );
 
