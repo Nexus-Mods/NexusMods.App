@@ -4,6 +4,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk.Icons;
 using R3;
 using ReactiveUI;
 
@@ -74,6 +75,33 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                     AllPageHeader.IsVisible = !isCollection;
                 })
                 .AddTo(disposables);
+            
+            this.WhenAnyValue(view => view.ViewModel!.IsCollectionUploaded)
+                .WhereNotNull()
+                .SubscribeWithErrorLogging(isCollectionUploaded =>
+                {
+                    StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
+                    ButtonUploadCollectionRevision.Text = isCollectionUploaded ? "Upload update" : "Share";
+                    ButtonUploadCollectionRevision.ShowIcon = isCollectionUploaded ? StandardButton.ShowIconOptions.None : StandardButton.ShowIconOptions.Left;
+                    ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
+                    
+                    if (isCollectionUploaded)
+                    {
+                        StatusText.Classes.Add("Success");
+                        StatusIcon.Classes.Add("Success");
+                        StatusIcon.Value = IconValues.CollectionsOutline;
+                    }
+                    else
+                    {
+                        StatusText.Classes.Remove("Success");
+                        StatusIcon.Classes.Remove("Success");
+                        StatusIcon.Value = IconValues.Info;
+                    }
+                    
+                    StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
+                })
+                .AddTo(disposables);
+
             
             this.WhenAnyValue( view => view.ViewModel!.SelectedSubTab)
                 .WhereNotNull()

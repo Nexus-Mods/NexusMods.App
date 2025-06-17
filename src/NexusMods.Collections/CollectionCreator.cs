@@ -31,7 +31,14 @@ public static class CollectionCreator
 {
     // TODO: remove for GA
     public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
-
+    
+    public static bool IsCollectionUploaded(IConnection connection, LoadoutItemGroupId groupId)
+    {
+        var group = CollectionGroup.Load(connection.Db, groupId);
+        
+        return group.IsValid() && group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup);
+    }
+    
     private static string GenerateNewCollectionName(string[] allNames)
     {
         const string defaultValue = "My new collection";

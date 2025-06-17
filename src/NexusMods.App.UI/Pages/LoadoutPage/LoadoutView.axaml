@@ -45,62 +45,78 @@
                 </TabItem.Header>
 
                 <Grid RowDefinitions="Auto, Auto, *">
-                    
+
                     <!-- STATUSBAR -->
-                    
+
                     <controls:Statusbar Grid.Row="0">
-                        <controls:StandardButton Size="Toolbar"
-                                                 Fill="Weak"
-                                                 Type="Tertiary"
-                                                 LeftIcon="{x:Static icons:IconValues.MoreVertical}"
-                                                 ShowIcon="Left"
-                                                 ShowLabel="False">
+                        <StackPanel>
+                                
+                            <controls:StandardButton Size="Toolbar"
+                                                     Fill="Weak"
+                                                     Type="Tertiary"
+                                                     LeftIcon="{x:Static icons:IconValues.MoreVertical}"
+                                                     ShowIcon="Left"
+                                                     ShowLabel="False">
 
-                            <controls:StandardButton.Flyout>
-                                <MenuFlyout>
-                                    
-                                    <!-- not used yet as we don't show local collections in Library -> Collections tab yet -->
-                                    <MenuItem IsVisible="False">
-                                        <MenuItem.Icon>
-                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.LibraryOutline}" />
-                                        </MenuItem.Icon>
-                                        <MenuItem.Header>
-                                            <TextBlock Text="View Library" />
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                    
-                                    <MenuItem>
-                                        <MenuItem.Icon>
-                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
-                                        </MenuItem.Icon>
-                                        <MenuItem.Header>
-                                            <TextBlock Text="Rename Collection" />
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                    
-                                    <MenuItem Classes="Critical">
-                                        <MenuItem.Icon>
-                                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteForever}" />
-                                        </MenuItem.Icon>
-                                        <MenuItem.Header>
-                                            <TextBlock Text="Delete Collection" />
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                </MenuFlyout>
-                            </controls:StandardButton.Flyout>
-                        </controls:StandardButton>
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
 
-                        <controls:StandardButton x:Name="ButtonUploadCollectionRevision"
-                                                 Text="Share"
-                                                 Size="Toolbar"
-                                                 Fill="Weak"
-                                                 Type="Tertiary"
-                                                 LeftIcon="{x:Static icons:IconValues.ExportVariant}"
-                                                 ShowIcon="Left" />
+                                        <!-- not used yet as we don't show local collections in Library -> Collections tab yet -->
+                                        <MenuItem IsVisible="False">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.LibraryOutline}" />
+                                            </MenuItem.Icon>
+                                            <MenuItem.Header>
+                                                <TextBlock Text="View Library" />
+                                            </MenuItem.Header>
+                                        </MenuItem>
+
+                                        <MenuItem>
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
+                                            </MenuItem.Icon>
+                                            <MenuItem.Header>
+                                                <TextBlock Text="Rename Collection" />
+                                            </MenuItem.Header>
+                                        </MenuItem>
+
+                                        <MenuItem Classes="Critical">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteForever}" />
+                                            </MenuItem.Icon>
+                                            <MenuItem.Header>
+                                                <TextBlock Text="Delete Collection" />
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+                            </controls:StandardButton>
+
+                            <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
+                                                     Type="Tertiary"
+                                                     LeftIcon="{x:Static icons:IconValues.Link}"
+                                                     ShowIcon="Left"
+                                                     ShowLabel="False"/>
+                            
+                            <controls:StandardButton x:Name="ButtonUploadCollectionRevision"
+                                                     Text="Share"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
+                                                     Type="Tertiary"
+                                                     LeftIcon="{x:Static icons:IconValues.ExportVariant}"
+                                                     ShowIcon="Left" />
+                        </StackPanel>
+
+                        <StackPanel x:Name="StatusStack" Orientation="Horizontal">
+                            <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.Info}" />
+                            <TextBlock x:Name="StatusText" Text="Status" />
+                        </StackPanel>
                     </controls:Statusbar>
 
                     <!-- TOOLBAR (starts off hidden) -->
-                    
+
                     <controls:Toolbar Grid.Row="1" Margin="24,12, 24, 0">
                         <!-- selection related button group -->
                         <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
@@ -132,9 +148,9 @@
                                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />
                         </ItemsControl>
                     </controls:Toolbar>
-                    
+
                     <!-- TREEDATAGRID -->
-                    
+
                     <controls:EmptyState Grid.Row="2" x:Name="EmptyState" Header="Header">
 
                         <controls:EmptyState.Subtitle>

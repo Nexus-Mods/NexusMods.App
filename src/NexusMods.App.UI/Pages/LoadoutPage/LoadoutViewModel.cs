@@ -42,6 +42,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewModel
 {
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
+    public ReactiveCommand<Unit> RevisionUrlLinkCommand { get; }
     public string EmptyStateTitleText { get; }
     public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
     public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
@@ -57,6 +58,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public int SelectionCount { get; private set; }
     [Reactive] public bool IsCollection { get; private set; }
     [Reactive] public bool IsCollectionEnabled { get; private set; }
+    [Reactive] public bool IsCollectionUploaded { get; private set; }
 
     [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
 
@@ -96,6 +98,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 async (_, _) => await ToggleCollectionGroup(collectionGroupId, !IsCollectionEnabled, connection),
                 configureAwait: false
             );
+            
+            // check if uploaded
+            IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value);
 
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
             // so we show the `sorting views here` view here instead
@@ -104,26 +109,16 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .Transform(collection => collection.Id)
                 .QueryWhenChanged(collections => collections.Count == 1)
                 .ToObservable();
-
+            
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId,
                 canEditObservable: isSingleCollectionObservable
             );
-
+            
             CommandUploadRevision = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
-                var shareDialog = DialogFactory.CreateMessageBox("Share Your Collection on Nexus Mods",
-                    """
-                    Upload “My new collection” to Nexus Mods to share it with friends or, if you choose, with the entire Nexus Mods community.
-                    
-                    Your collection will be added as a private draft until you publish it.
-                    """,
-                    [
-                        new DialogButtonDefinition("Cancel", ButtonDefinitionId.From("cancel"), ButtonAction.Reject),
-                        new DialogButtonDefinition("Share to Nexus Mods", ButtonDefinitionId.From("share"), ButtonAction.Accept, ButtonStyling.Primary),
-                    ],
-                    null,
-                    DialogWindowSize.Medium
-                );
+                var shareDialog = IsCollectionUploaded ? 
+                    LoadoutDialogs.UpdateCollection(CollectionName) : 
+                    LoadoutDialogs.ShareCollection(CollectionName);
                 
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
                 
@@ -134,27 +129,18 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
                 var gameDomain = await mappingCache.TryGetDomainAsync(revision.Collection.GameId, cancellationToken);
                 
-                var addedDialog = DialogFactory.CreateMessageBox("Your Collection Has Been Added as a Draft",
-                    """
-                    Click View Page to edit details and optionally publish your collection as either:
-                    
-                    • Listed – Anyone can discover this collection on Nexus Mods.
-                    • Unlisted – Only people with the link can view it.
-                    
-                    You can change the visibility at any time in your collection settings on the Nexus Mods page.
-                    """,
-                    [
-                        new DialogButtonDefinition("Close", ButtonDefinitionId.From("close"), ButtonAction.Reject),
-                        new DialogButtonDefinition("View page", ButtonDefinitionId.From("view-page"), ButtonAction.Accept, ButtonStyling.Default, IconValues.OpenInNew),
-                    ],
-                    null,
-                    DialogWindowSize.Medium
-                );
                 
-                var addedDialogResult = await windowManager.ShowDialog(addedDialog, DialogWindowType.Modal);
+                var successDialog = IsCollectionUploaded ? 
+                    LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : 
+                    LoadoutDialogs.ShareCollectionSuccess(CollectionName);
+                
+                var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+                
+                // check if uploaded
+                IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value);
                 
                 // If the user did not click the view page button, we do not proceed
-                if (addedDialogResult != ButtonDefinitionId.From("view-page")) return;
+                if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
                 
                 var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, revision.Collection.Slug, revision.RevisionNumber);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
@@ -169,11 +155,13 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
             CommandUploadRevision = new ReactiveCommand();
         }
+        
+        RevisionUrlLinkCommand = new ReactiveCommand<Unit>(_ => { });
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
 
         SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
-
+        
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None);
 
         var loadout = Loadout.Load(connection.Db, loadoutId);

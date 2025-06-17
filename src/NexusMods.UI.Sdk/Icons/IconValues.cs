@@ -166,6 +166,9 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/logout/
     public static readonly IconValue Logout = new ProjektankerIcon("mdi-logout");
+    
+    // https://pictogrammers.com/library/mdi/icon/link/
+    public static readonly IconValue Link = new ProjektankerIcon("mdi-link");
 #endregion
 
 #region Alert
@@ -692,6 +695,11 @@ public static class IconValues
     /// Brand pictogram for Library
     /// </summary>
     public static readonly IconValue PictogramLibrary = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/library.svg");
+    
+    /// <summary>
+    /// Brand pictogram for Library
+    /// </summary>
+    public static readonly IconValue PictogramUpload = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/upload.svg");
 #endregion
     
 }

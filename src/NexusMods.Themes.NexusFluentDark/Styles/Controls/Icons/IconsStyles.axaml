@@ -140,6 +140,7 @@
                     <icons:UnifiedIcon Classes="WindowMaximize" />
                     <icons:UnifiedIcon Classes="WindowMinimize" />
                     <icons:UnifiedIcon Classes="WindowRestore" />
+                    <icons:UnifiedIcon Classes="Link" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -188,6 +189,9 @@
                     <icons:UnifiedIcon Classes="PictogramCollection3D" />
                     <icons:UnifiedIcon Classes="PictogramCollection3D" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramCollection3D" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramUpload" />
+                    <icons:UnifiedIcon Classes="PictogramUpload" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramUpload" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
@@ -744,7 +748,13 @@
     <Style Selector="icons|UnifiedIcon.PictogramLibrary">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramLibrary}" />
     </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramUpload">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramUpload}" />
+    </Style>
     <Style Selector="icons|UnifiedIcon.ExportVariant">
         <Setter Property="Value" Value="{x:Static icons:IconValues.ExportVariant}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Link">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Link}" />
     </Style>
 </Styles>
