@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -22,6 +23,7 @@ using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
+using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -136,6 +138,7 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             
+            
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
             .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
             .AddView<LoadoutCardView, ILoadoutCardViewModel>()
@@ -203,6 +206,10 @@ public static class Services
 
             .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
+            
+            // Dialogs
+            .AddView<CustomContentExampleView, IViewModelInterface>()
+            .AddViewModel<CustomContentExampleViewModel, IViewModelInterface>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()
@@ -280,6 +287,8 @@ public static class Services
             .AddSingleton<UpdateChecker>()
             .AddFileSystem()
             .AddImagePipelines();
+        
+        
     }
 
 }

@@ -953,7 +953,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Permanently remove this mod from your Library.
+        ///   Looks up a localized string similar to Permanently delete this mod.
         /// </summary>
         public static string FileOriginPage_DeleteMod_ToolTip {
             get {
@@ -2807,6 +2807,48 @@ namespace NexusMods.App.UI.Resources {
         public static string ViewModInfoPage_Title {
             get {
                 return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
+            }
+        }
+        
+        public static string LibraryComponents_InstallAction_ButtonText_Installed {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Installed", resourceCulture);
+            }
+        }
+        
+        public static string LibraryComponents_InstallAction_ButtonText_Install {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Install", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloaded {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloaded", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloading {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloading", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_DownloadAction_ButtonText_Download {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Download", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload", resourceCulture);
+            }
+        }
+        
+        public static string CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload", resourceCulture);
             }
         }
     }

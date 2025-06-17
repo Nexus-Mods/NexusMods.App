@@ -1,7 +1,9 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.MnemonicAttributes;
 
 namespace NexusMods.Abstractions.Resources.DB;
 

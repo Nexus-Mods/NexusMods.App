@@ -114,7 +114,8 @@
                                                          Type="Primary"
                                                          Fill="WeakAlt"
                                                          LeftIcon="{x:Static icons:IconValues.Download}"
-                                                         ShowIcon="Left"/>
+                                                         ShowIcon="Left"
+                                                         ToolTip.Tip="Update mod"/>
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
