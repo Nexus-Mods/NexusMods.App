@@ -31,7 +31,7 @@ public class LoadoutCardDesignViewModel : AViewModel<ILoadoutCardViewModel>, ILo
     
     public ILoadoutBadgeViewModel LoadoutBadgeViewModel { get; } = new LoadoutBadgeDesignViewModel();
     public string LoadoutName { get; } = "Loadout B";
-    public IImage LoadoutImage { get; } = Bitmap.DecodeToWidth(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/thumbnail.webp")), 48);
+    public IImage LoadoutImage { get; } = Bitmap.DecodeToWidth(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/thumbnail.webp")), (int) ImageSizes.GameThumbnail.Width);
 
     public bool IsLoadoutApplied { get; } = false;
     public string HumanizedLoadoutLastApplyTime { get; } = "Last applied 2 months ago";
