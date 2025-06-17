@@ -163,6 +163,46 @@
                 <controls:StandardButton.Flyout>
 
                     <MenuFlyout FlyoutPresenterClasses="TreeDataGridMenu">
+                        
+                        <!-- Update (and Replace) -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+                                            <MenuItem Header="{CompiledBinding UpdateButtonText.Value}"
+                                                      Command="{CompiledBinding CommandUpdateAndReplace}"
+                                                      ToolTip.Tip="Update mod and replace the old version">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+                        
+                        <!-- Update and Keep Old Mod -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+                                            <MenuItem Header="{CompiledBinding UpdateAndKeepOldModButtonText.Value}"
+                                                      Command="{CompiledBinding CommandUpdate}"
+                                                      ToolTip.Tip="Update mod while keeping the old version">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
 
                         <!-- Hide Updates -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">

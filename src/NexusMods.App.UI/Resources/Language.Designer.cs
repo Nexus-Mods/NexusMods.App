@@ -1942,9 +1942,15 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string dada {
+        public static string Library_Update {
             get {
-                return ResourceManager.GetString("dada", resourceCulture);
+                return ResourceManager.GetString("Library_Update", resourceCulture);
+            }
+        }
+        
+        public static string Library_UpdateAndKeepOldMod {
+            get {
+                return ResourceManager.GetString("Library_UpdateAndKeepOldMod", resourceCulture);
             }
         }
     }
