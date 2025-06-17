@@ -257,6 +257,71 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     }
 
     private record struct OldToNewFileMapping(LibraryItem.ReadOnly OldFile, LibraryItem.ReadOnly NewFile);
+    
+    /// <summary>
+    /// Attempts to replace library items in all loadouts and shows error dialog if the operation fails.
+    /// </summary>
+    /// <param name="oldToNewLibraryMapping">Mapping of old library items to new ones</param>
+    /// <param name="successfulDownloads">List of successfully downloaded items (for potential cleanup on failure)</param>
+    /// <returns>True if the replace operation succeeded, false otherwise</returns>
+    private async ValueTask<bool> TryReplaceLibraryItemsAsync(
+        List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping,
+        List<LibraryItem.ReadOnly> successfulDownloads)
+    {
+        var options = new ReplaceLibraryItemsOptions
+        {
+            IgnoreReadOnlyCollections = true,
+        };
+
+        var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
+        if (result != LibraryItemReplacementResult.Success)
+        {
+            // Replace operation failed, show error dialog with options
+            // TODO: Add to Language.resx
+            var errorDialog = DialogFactory.CreateMessageBox(
+                "Update Failed",
+                "Failed to replace mods in your loadouts. The downloaded files are still available in your Library.\n\n" +
+                "Would you like to retry the operation, keep the downloaded files, or remove them?",
+                [
+                    new DialogButtonDefinition("Remove Files", 
+                        ButtonDefinitionId.From("RemoveFiles"),
+                        ButtonAction.None, 
+                        ButtonStyling.Destructive
+                    ),
+                    new DialogButtonDefinition("Keep Files", 
+                        ButtonDefinitionId.From("KeepFiles"),
+                        ButtonAction.Reject, 
+                        ButtonStyling.Default
+                    ),
+                    new DialogButtonDefinition("Retry", 
+                        ButtonDefinitionId.From("Retry"),
+                        ButtonAction.Accept, 
+                        ButtonStyling.Primary
+                    )
+                ]
+            );
+
+            var dialogResult = await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
+            
+            if (dialogResult == ButtonDefinitionId.From("Retry"))
+            {
+                // User wants to retry the operation - recursively call this method
+                return await TryReplaceLibraryItemsAsync(oldToNewLibraryMapping, successfulDownloads);
+            }
+            else if (dialogResult == ButtonDefinitionId.From("RemoveFiles"))
+            {
+                // User chose to delete the downloaded files from library
+                await _libraryService.RemoveLibraryItems(successfulDownloads);
+            }
+            // If "KeepFiles" was selected, do nothing - files remain in library
+            
+            // TODO: Log the replacement error details
+            return false;
+        }
+
+        return true;
+    }
+
     private async ValueTask HandleUpdateAndReplaceMessage(UpdateAndReplaceMessage updateAndReplaceMessage, CancellationToken cancellationToken)
     {
         var isPremium = _loginManager.IsPremium;
@@ -324,34 +389,57 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             if (downloadErrors.Count == 0)
             {
                 // All downloads succeeded, proceed with replacement
-                var options = new ReplaceLibraryItemsOptions
-                {
-                    IgnoreReadOnlyCollections = true,
-                };
-                
-                var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
-                if (result == LibraryItemReplacementResult.Success)
-                {
-                    // Replace operation succeeded, complete the operation as usual
-                }
-                else
-                {
-                    // Replace operation failed, delete the downloads
-                    // TODO: Delete the downloaded files from successfulDownloads
-                    // TODO: Log or handle the replacement error
-                }
+                await TryReplaceLibraryItemsAsync(oldToNewLibraryMapping, successfulDownloads);
             }
             else if (successfulDownloads.Count > 0)
             {
                 // Some downloads failed - show message asking if user wants to keep successful ones
-                // TODO: Show dialog with options to:
-                // - Keep successful downloads and replace them
-                // - Cancel and remove all downloads
+                var failedCount = downloadErrors.Count;
+                var successCount = successfulDownloads.Count;
+
+                // TODO: Add to Language.resx
+                //       This is deliberately untranslated until design provides the final text.
+                //       I don't want the translators to translate the wrong text.
+                var partialFailureDialog = DialogFactory.CreateMessageBox(
+                    "Some Downloads Failed",
+                    $"{failedCount} of {failedCount + successCount} downloads failed.\n\n" +
+                    $"Do you want to continue with the {successCount} successful downloads and update your mods?",
+                    [
+                        DialogStandardButtons.Cancel,
+                        new DialogButtonDefinition("Continue",
+                            ButtonDefinitionId.From("Continue"),
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        )
+                    ]
+                );
+
+                var result = await WindowManager.ShowDialog(partialFailureDialog, DialogWindowType.Modal);
+                if (result == ButtonDefinitionId.From("Continue"))
+                {
+                    // User wants to continue with successful downloads
+                    await TryReplaceLibraryItemsAsync(oldToNewLibraryMapping, successfulDownloads);
+                }
+                else
+                {
+                    // User cancelled, remove all downloaded files
+                    await _libraryService.RemoveLibraryItems(successfulDownloads);
+                }
             }
             else
             {
                 // All downloads failed - show error message
-                // TODO: Show dialog with error message and 'OK' button
+                var errorCount = downloadErrors.Count;
+
+                // TODO: Add to Language.resx
+                var allFailedDialog = DialogFactory.CreateMessageBox(
+                    "All Downloads Failed",
+                    $"All {errorCount} download(s) failed. No mods were updated.\n\n" +
+                    "Please check your internet connection and try again.",
+                    [DialogStandardButtons.Ok]
+                );
+
+                await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
             }
         }
         
