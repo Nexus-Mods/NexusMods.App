@@ -13,6 +13,9 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.Query.SliceDescriptors;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -48,6 +51,35 @@ public partial class NexusModsLibrary
         return presignedUploadUrl;
     }
 
+    /// <summary>
+    /// Edits the collection name.
+    /// </summary>
+    public async ValueTask<CollectionMetadata.ReadOnly> EditCollectionName(CollectionMetadata.ReadOnly collection, string newName, CancellationToken cancellationToken)
+    {
+        var result = await _gqlClient.EditCollectionName.ExecuteAsync(
+            collectionId: (int)collection.CollectionId.Value,
+            name: newName,
+            cancellationToken: cancellationToken
+        );
+
+        result.EnsureNoErrors();
+
+        var data = result.Data?.EditCollection!;
+        if (!data.Success) throw new NotImplementedException();
+
+        using var tx = _connection.BeginTransaction();
+        var db = _connection.Db;
+
+        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var commitResult = await tx.Commit();
+
+        collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        return collection;
+    }
+
+    /// <summary>
+    /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
+    /// </summary>
     public async ValueTask<CollectionRevisionMetadata.ReadOnly> UploadCollectionRevision(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory archiveStreamFactory,
@@ -440,6 +472,19 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
+        // NOTE(erri120): This exists because we can't replace downloads, there is no consistent identity generator for them.
+        // Usually, revisions don't get added twice; they are immutable once published. However, it's possible to add draft
+        // revisions to the app, which is what we do when uploading collections.
+        var existingDownloads = CollectionDownload.FindByCollectionRevision(db, collectionRevisionEntityId);
+        foreach (var entity in existingDownloads)
+        {
+            tx.Delete(entity, recursive: false);
+
+            // TODO: figure out what we want to do here
+            var references = db.Datoms(new ReferencesSlice(entity));
+            if (references.Count > 0) throw new NotImplementedException($"Collection download `{entity.Name}` (index={entity.ArrayIndex}) for collection `{collectionRoot.Info.Name}`/`{revisionInfo.RevisionNumber}` can't be deleted because it gets referenced by `{references.Count}` datoms, likely because it got installed");
+        }
+
         for (var i = 0; i < collectionRoot.Mods.Length; i++)
         {
             var collectionMod = collectionRoot.Mods[i];
