@@ -294,7 +294,7 @@ public static class LibraryComponents
 
     public sealed class UpdateAction : ReactiveR3Object, IItemModelComponent<UpdateAction>, IComparable<UpdateAction>
     {
-        public ReactiveCommand<Unit> CommandUpdate { get; } = new();
+        public ReactiveCommand<Unit> CommandUpdateAndKeepOld { get; } = new();
         public ReactiveCommand<Unit> CommandUpdateAndReplace { get; } = new();
 
         private readonly BindableReactiveProperty<ModUpdatesOnModPage> _newFiles;
@@ -378,7 +378,7 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, CommandUpdate, CommandUpdateAndReplace, 
+                    Disposable.Dispose(_activationDisposable, CommandUpdateAndKeepOld, CommandUpdateAndReplace, 
                         _buttonText, _updateButtonText, _updateAndKeepOldModButtonText);
                 }
 

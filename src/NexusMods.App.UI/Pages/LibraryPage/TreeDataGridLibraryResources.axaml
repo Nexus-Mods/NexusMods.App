@@ -109,7 +109,7 @@
                         <controls:ComponentTemplate.DataTemplate>
                             <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
 
-                                <controls:StandardButton Command="{CompiledBinding CommandUpdate}"
+                                <controls:StandardButton Command="{CompiledBinding CommandUpdateAndKeepOld}"
                                                          Text="{CompiledBinding ButtonText.Value}"
                                                          Size="Small"
                                                          Type="Primary"
@@ -192,7 +192,7 @@
                                     <controls:ComponentTemplate.DataTemplate>
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
                                             <MenuItem Header="{CompiledBinding UpdateAndKeepOldModButtonText.Value}"
-                                                      Command="{CompiledBinding CommandUpdate}"
+                                                      Command="{CompiledBinding CommandUpdateAndKeepOld}"
                                                       ToolTip.Tip="Update mod while keeping the old version">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
