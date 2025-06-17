@@ -740,6 +740,12 @@
         </Compile>
         <Compile Update="Pages\LoadoutGroupFilesPage\LoadoutGroupFilesViewModel.cs">
           <DependentUpon>ILoadoutGroupFilesViewModel.cs</DependentUpon>
+         </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsViewModel.cs">
+          <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsDesignViewModel.cs">
+          <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

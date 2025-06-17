@@ -52,8 +52,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
     public ILibraryService _LibraryService;
-    
-    [Reactive] public string CollectionName { get; private set; } 
+
+    [Reactive] public string CollectionName { get; private set; }
 
     [Reactive] public int SelectionCount { get; private set; }
     [Reactive] public bool IsCollection { get; private set; }
@@ -247,6 +247,31 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         .ToArray();
 
                     if (ids.Length == 0) return;
+
+                    var dialog = DialogFactory.CreateMessageBox(
+                        "Uninstall mod(s)",
+                        $"""
+                        This will remove the selected mod(s) from:
+                        
+                        {CollectionName}
+                        
+                        ✓ The mod(s) will stay in your Library
+                        ✓ You can reinstall anytime
+                        """,
+                        [
+                            DialogStandardButtons.Cancel, 
+                            new DialogButtonDefinition("Uninstall", 
+                                ButtonDefinitionId.From("Uninstall"),
+                                ButtonAction.Accept, 
+                                ButtonStyling.Default
+                            )
+                        ]
+                    );
+
+                    var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+
+                    if (result != ButtonDefinitionId.From("Uninstall")) return;
+
                     await _LibraryService.RemoveLinkedItemsFromLoadout(ids);
                 },
                 awaitOperation: AwaitOperation.Sequential,
@@ -278,16 +303,17 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         }
                     }, awaitOperation: AwaitOperation.Parallel, configureAwait: false
                 ).AddTo(disposables);
-                
+
                 // Update the selection count based on the selected models
                 Adapter.SelectedModels
-                        .ObserveChanged()
-                        .Select(_ => Adapter.SelectedModels
-                            .SelectMany(model => GetLoadoutItemIds(model))
-                            .Distinct()
-                            .Count())
-                        .ObserveOnUIThreadDispatcher()
-                        .Subscribe(count => SelectionCount = count);
+                    .ObserveChanged()
+                    .Select(_ => Adapter.SelectedModels
+                        .SelectMany(model => GetLoadoutItemIds(model))
+                        .Distinct()
+                        .Count()
+                    )
+                    .ObserveOnUIThreadDispatcher()
+                    .Subscribe(count => SelectionCount = count);
 
                 // Compute the target group for the ViewFilesCommand
                 Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)

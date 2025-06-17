@@ -75,22 +75,31 @@ public static class LibraryColumns
             var aUpdate = a.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
             var bUpdate = b.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
 
-            var orderA = GetOrder(aInstall, aUpdate);
-            var orderB = GetOrder(bInstall, bUpdate);
+            var aViewChangelog = a.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
+            var bViewChangelog = b.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
+
+            var aViewModPage = a.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+            var bViewModPage = b.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+
+            var orderA = GetOrder(aInstall, aUpdate, aViewChangelog, aViewModPage);
+            var orderB = GetOrder(bInstall, bUpdate, bViewChangelog, bViewModPage);
 
             return orderA.CompareTo(orderB);
             
-            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update)
+            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update, Optional<LibraryComponents.ViewChangelogAction> viewChangelog, Optional<LibraryComponents.ViewModPageAction> viewModPage)
             {
                 var isUpdateAvailable = update.HasValue;
                 var hasInstallButton = install is { HasValue: true, Value.IsInstalled.Value: false };
                 var isInstalled = install is { HasValue: true, Value.IsInstalled.Value: true };
+                var hasViewChangelog = viewChangelog.HasValue;
+                var hasViewModPage = viewModPage.HasValue;
 
                 if (isUpdateAvailable && hasInstallButton) return 1;
                 if (hasInstallButton) return 2;
                 if (isUpdateAvailable) return 3;
                 if (isInstalled) return 4;
-                return 5;
+                if (hasViewChangelog || hasViewModPage) return 5;
+                return 6;
             }
         }
 
@@ -98,6 +107,8 @@ public static class LibraryColumns
 
         public static readonly ComponentKey InstallComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Install");
         public static readonly ComponentKey UpdateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Update");
+        public static readonly ComponentKey ViewChangelogComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewChangelog");
+        public static readonly ComponentKey ViewModPageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewModPage");
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
@@ -339,6 +350,72 @@ public static class LibraryComponents
                 if (disposing)
                 {
                     Disposable.Dispose(_activationDisposable, CommandUpdate);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
+    public sealed class ViewChangelogAction : ReactiveR3Object, IItemModelComponent<ViewChangelogAction>, IComparable<ViewChangelogAction>
+    {
+        public ReactiveCommand<Unit> CommandViewChangelog { get; } = new ReactiveCommand<Unit>();
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public int CompareTo(ViewChangelogAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All view changelog actions are considered equal for sorting
+        }
+
+        public ViewChangelogAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(CommandViewChangelog, IsEnabled);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
+    public sealed class ViewModPageAction : ReactiveR3Object, IItemModelComponent<ViewModPageAction>, IComparable<ViewModPageAction>
+    {
+        public ReactiveCommand<Unit> CommandViewModPage { get; } = new();
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public int CompareTo(ViewModPageAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All view mod page actions are considered equal for sorting
+        }
+
+        public ViewModPageAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(CommandViewModPage, IsEnabled);
                 }
 
                 _isDisposed = true;

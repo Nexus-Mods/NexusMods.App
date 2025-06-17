@@ -169,7 +169,8 @@
                                       ShowColumnHeaders="True"
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
-                                      Classes="MainListsStyling" />
+                                      Classes="MainListsStyling"
+                                      Margin="0 8 0 0"/>
                     </controls:EmptyState>
                 </Grid>
             </TabItem>
