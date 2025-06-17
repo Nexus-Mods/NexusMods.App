@@ -195,7 +195,8 @@
                                     <controls:ComponentTemplate.DataTemplate>
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
                                             <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}"
-                                                      Command="{CompiledBinding CommandViewChangelog}">
+                                                      Command="{CompiledBinding CommandViewChangelog}"
+                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon
                                                         Value="{x:Static icons:IconValues.FileDocumentOutline}" />
@@ -217,7 +218,8 @@
                                     <controls:ComponentTemplate.DataTemplate>
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
                                             <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
-                                                      Command="{CompiledBinding CommandViewModPage}">
+                                                      Command="{CompiledBinding CommandViewModPage}"
+                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
                                                 </MenuItem.Icon>
