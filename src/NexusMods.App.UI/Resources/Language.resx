@@ -1023,4 +1023,10 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="Library_ShowUpdates" xml:space="preserve">
         <value>Show updates ({0})</value>
     </data>
+    <data name="Library_Update" xml:space="preserve">
+        <value>Update ({0})</value>
+    </data>
+    <data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+        <value>Update and keep old mod ({0})</value>
+    </data>
 </root>
