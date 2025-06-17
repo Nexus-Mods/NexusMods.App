@@ -51,6 +51,35 @@ public partial class NexusModsLibrary
         return presignedUploadUrl;
     }
 
+    /// <summary>
+    /// Edits the collection name.
+    /// </summary>
+    public async ValueTask<CollectionMetadata.ReadOnly> EditCollectionName(CollectionMetadata.ReadOnly collection, string newName, CancellationToken cancellationToken)
+    {
+        var result = await _gqlClient.EditCollectionName.ExecuteAsync(
+            collectionId: (int)collection.CollectionId.Value,
+            name: newName,
+            cancellationToken: cancellationToken
+        );
+
+        result.EnsureNoErrors();
+
+        var data = result.Data?.EditCollection!;
+        if (!data.Success) throw new NotImplementedException();
+
+        using var tx = _connection.BeginTransaction();
+        var db = _connection.Db;
+
+        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var commitResult = await tx.Commit();
+
+        collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        return collection;
+    }
+
+    /// <summary>
+    /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
+    /// </summary>
     public async ValueTask<CollectionRevisionMetadata.ReadOnly> UploadCollectionRevision(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory archiveStreamFactory,
