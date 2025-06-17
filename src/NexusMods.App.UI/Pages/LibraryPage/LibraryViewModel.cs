@@ -384,10 +384,10 @@ After asking design, we're choosing to simply open the mod page for now.
                 }
                 else
                 {
-                    var allVersionsOfAllFiles = allLibraryFilesForThisMod
+                    var allVersionsOfAllFilesForThisMod = allLibraryFilesForThisMod
                         .SelectMany(RunUpdateCheck.GetAllVersionsForExistingFile)
                         .Select(x => x.Uid);
-                    await modUpdateFilterService.HideFilesAsync(allVersionsOfAllFiles);
+                    await modUpdateFilterService.HideFilesAsync(allVersionsOfAllFilesForThisMod);
                 }
             },
             async libraryItemId =>
