@@ -1151,7 +1151,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding game.
+        ///   Looks up a localized string similar to Adding....
         /// </summary>
         public static string GameWidget__Adding_game {
             get {
@@ -1169,7 +1169,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Removing game.
+        ///   Looks up a localized string similar to Removing....
         /// </summary>
         public static string GameWidget__Removing_game {
             get {

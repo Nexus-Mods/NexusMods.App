@@ -57,6 +57,7 @@
                     <icons:UnifiedIcon Classes="FolderEditOutline" />
                     <icons:UnifiedIcon Classes="File" />
                     <icons:UnifiedIcon Classes="Check" />
+                    <icons:UnifiedIcon Classes="CheckBold" />
                     <icons:UnifiedIcon Classes="CheckCircle" />
                     <icons:UnifiedIcon Classes="CheckCircleOutline" />
                     <icons:UnifiedIcon Classes="DeleteOutline" />
@@ -381,6 +382,10 @@
         <Setter Property="Value" Value="{x:Static icons:IconValues.Check}" />
     </Style>
 
+    <Style Selector="icons|UnifiedIcon.CheckBold">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.CheckBold}" />
+    </Style>
+    
     <Style Selector="icons|UnifiedIcon.DeleteOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.DeleteOutline}" />
     </Style>
