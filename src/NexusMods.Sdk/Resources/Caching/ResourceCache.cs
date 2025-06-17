@@ -1,9 +1,8 @@
 using BitFaster.Caching;
 using BitFaster.Caching.Lru;
 using JetBrains.Annotations;
-using NexusMods.Sdk.Resources;
 
-namespace NexusMods.Abstractions.Resources.Caching;
+namespace NexusMods.Sdk.Resources;
 
 /// <summary>
 /// Cache for pipeline results.
@@ -58,28 +57,5 @@ public sealed class ResourceCache<TResourceIdentifier, TKey, TData> : IResourceL
     {
         var resource = await self._inner.LoadResourceAsync(resourceIdentifier, cancellationToken);
         return resource.Data;
-    }
-}
-
-public static partial class ExtensionsMethods
-{
-    public static IResourceLoader<TResourceIdentifier, TData> UseCache<TResourceIdentifier, TKey, TData>(
-        this IResourceLoader<TResourceIdentifier, TData> inner,
-        Func<TResourceIdentifier, TKey> keyGenerator,
-        IEqualityComparer<TKey> keyComparer,
-        ICapacityPartition capacityPartition)
-        where TResourceIdentifier : notnull
-        where TData : notnull
-        where TKey : notnull
-    {
-        return inner.Then(
-            state: (keyGenerator, keyComparer, capacityPartition),
-            factory: static (input, inner) => new ResourceCache<TResourceIdentifier, TKey, TData>(
-                keyGenerator: input.keyGenerator,
-                keyComparer: input.keyComparer,
-                capacityPartition: input.capacityPartition,
-                inner: inner
-            )
-        );
     }
 }

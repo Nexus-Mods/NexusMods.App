@@ -1,6 +1,6 @@
 ﻿using Reloaded.Memory.Extensions;
 
-namespace NexusMods.Abstractions.IO.ChunkedStreams;
+namespace NexusMods.Sdk;
 
 /// <summary>
 /// An extremely lightweight LRU cache that is not thread safe. All values are expected

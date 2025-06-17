@@ -1,6 +1,6 @@
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.IO;
+namespace NexusMods.Sdk.IO;
 
 /// <summary>
 ///     A way of creating a stream from another object. Could be an entry in an archive, lazy extracted, could be a
@@ -9,18 +9,13 @@ namespace NexusMods.Abstractions.IO;
 public interface IStreamFactory
 {
     /// <summary>
-    ///     The Path of the stream.
+    /// Gets the name of the file that the stream is based on or <see cref="RelativePath.Empty"/> if there
+    /// isn't a file.
     /// </summary>
-    IPath Name { get; }
+    RelativePath FileName { get; }
 
     /// <summary>
-    ///     The size of the stream
+    ///Returns a read-only stream for the given factory
     /// </summary>
-    Size Size { get; }
-
-    /// <summary>
-    ///     Returns a read-only stream for the given factory
-    /// </summary>
-    /// <returns></returns>
     ValueTask<Stream> GetStreamAsync();
 }

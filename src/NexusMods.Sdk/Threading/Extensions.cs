@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Sdk;
+namespace NexusMods.Sdk.Threading;
 
 /// <summary>
 /// Extension methods for <see cref="SemaphoreSlim"/>.

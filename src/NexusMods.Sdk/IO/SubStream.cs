@@ -1,25 +1,32 @@
+using JetBrains.Annotations;
 using NexusMods.Paths;
 
-namespace NexusMods.Abstractions.IO;
+namespace NexusMods.Sdk.IO;
 
+/// <summary>
+/// Sub-stream on existing stream.
+/// </summary>
+[PublicAPI]
 public class SubStream : Stream
 {
     private readonly Stream _parent;
     private readonly long _offset;
     private readonly long _length;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
     public SubStream(Stream parent, Size offset, Size length)
     {
         _parent = parent;
         _offset = (long)offset.Value;
         _length = (long)length.Value;
     }
-    
-    public override void Flush()
-    {
-        // Do nothing
-    }
 
+    /// <inheritdoc/>
+    public override void Flush() { }
+
+    /// <inheritdoc/>
     public override int Read(byte[] buffer, int offset, int count)
     {
         if (count > _length - Position)
@@ -33,21 +40,24 @@ public class SubStream : Stream
         return read;
     }
 
-    public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
+        var count = buffer.Length;
         if (count > _length - Position)
         {
             count = (int)(_length - Position);
         }
 
-        if (count == 0)
-            return 0;
+        if (count == 0) return 0;
+
         _parent.Position = _offset + Position;
-        var read = await _parent.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
+        var read = await _parent.ReadAsync(buffer[..count], cancellationToken);
         Position += read;
         return read;
     }
 
+    /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)
     {
         return origin switch
@@ -61,16 +71,10 @@ public class SubStream : Stream
 
 
     /// <inheritdoc />
-    public override void SetLength(long value)
-    {
-        throw new NotSupportedException();
-    }
+    public override void SetLength(long value) => throw new NotSupportedException();
 
     /// <inheritdoc />
-    public override void Write(byte[] buffer, int offset, int count)
-    {
-        throw new NotSupportedException();
-    }
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 
     /// <inheritdoc />
     public override bool CanRead => true;

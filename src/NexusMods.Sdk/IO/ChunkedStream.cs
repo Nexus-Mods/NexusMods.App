@@ -1,8 +1,7 @@
 ﻿using System.Buffers;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 
-namespace NexusMods.Abstractions.IO.ChunkedStreams;
+namespace NexusMods.Sdk.IO;
 
 /// <summary>
 /// A stream that reads data in chunks, caching the chunks in a cache and allowing
@@ -250,7 +249,8 @@ public class ChunkedStream<T> : Stream where T : IChunkedStreamSource
         get => (long)_position;
         set => Seek(value, SeekOrigin.Begin);
     }
-    
+
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

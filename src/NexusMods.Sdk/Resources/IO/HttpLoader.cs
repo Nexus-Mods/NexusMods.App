@@ -1,8 +1,7 @@
 using System.Diagnostics;
 using JetBrains.Annotations;
-using NexusMods.Sdk.Resources;
 
-namespace NexusMods.Abstractions.Resources.IO;
+namespace NexusMods.Sdk.Resources;
 
 [PublicAPI]
 public sealed class HttpLoader : IResourceLoader<Uri, byte[]>

@@ -1,10 +1,8 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.Sdk.Resources;
+using NexusMods.Sdk.FileStore;
 
-namespace NexusMods.Abstractions.Resources.IO;
-
+namespace NexusMods.Sdk.Resources;
 
 /// <summary>
 /// Resource loader that returns a stream of a file in the file store.

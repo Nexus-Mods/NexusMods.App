@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace NexusMods.Sdk;
+namespace NexusMods.Sdk.Threading;
 
 /// <summary>
 /// Wrapper around <see cref="SemaphoreSlim"/> that releases the semaphore on dispose.

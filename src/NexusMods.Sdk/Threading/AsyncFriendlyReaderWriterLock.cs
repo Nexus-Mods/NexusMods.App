@@ -1,24 +1,12 @@
-namespace NexusMods.Abstractions.IO;
+namespace NexusMods.Sdk.Threading;
 
 /// <summary>
 /// This is an implementation of a simple <see cref="ReaderWriterLock"/>.
 /// It differs from the standard <see cref="ReaderWriterLockSlim"/> in that it allows
 /// a different thread than the one that acquired the lock to release it.
 ///
-/// This is useful when needing to run asynchoronous operations that require a lock.
+/// This is useful when needing to run asynchronous operations that require a lock.
 /// </summary>
-/// <remarks>
-/// This is used to prevent the concurrent running of the garbage collector
-/// and the file store.
-/// 
-/// When a Garbage Collector is being run, it acquires a write lock (during the process
-/// of the whole operation), meaning that no <see cref="IFileStore"/> operations may be done
-/// during that time.
-///
-/// When using the <see cref="IFileStore"/> on the other hand, we acquire a read lock,
-/// meaning we can run as many operations as we want concurrently, but cannot run
-/// the GC during that time.
-/// </remarks>
 public class AsyncFriendlyReaderWriterLock
 {
     private const int WriteLockValue = int.MinValue;

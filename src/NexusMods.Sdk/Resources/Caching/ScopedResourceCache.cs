@@ -1,9 +1,8 @@
 using BitFaster.Caching;
 using BitFaster.Caching.Lru;
 using JetBrains.Annotations;
-using NexusMods.Sdk.Resources;
 
-namespace NexusMods.Abstractions.Resources.Caching;
+namespace NexusMods.Sdk.Resources;
 
 /// <summary>
 /// Cache for scoped pipeline results.
@@ -62,29 +61,5 @@ public sealed class ScopedResourceCache<TResourceIdentifier, TKey, TData> : IRes
     {
         var resource = await self._inner.LoadResourceAsync(resourceIdentifier, cancellationToken);
         return new Scoped<TData>(resource.Data);
-    }
-}
-
-[PublicAPI]
-public static partial class ExtensionsMethods
-{
-    public static IResourceLoader<TResourceIdentifier, Lifetime<TData>> UseScopedCache<TResourceIdentifier, TKey, TData>(
-        this IResourceLoader<TResourceIdentifier, TData> inner,
-        Func<TResourceIdentifier, TKey> keyGenerator,
-        IEqualityComparer<TKey> keyComparer,
-        ICapacityPartition capacityPartition)
-        where TResourceIdentifier : notnull
-        where TData : IDisposable
-        where TKey : notnull
-    {
-        return inner.Then(
-            state: (keyGenerator, keyComparer, capacityPartition),
-            factory: static (input, inner) => new ScopedResourceCache<TResourceIdentifier, TKey, TData>(
-                keyGenerator: input.keyGenerator,
-                keyComparer: input.keyComparer,
-                capacityPartition: input.capacityPartition,
-                inner: inner
-            )
-        );
     }
 }

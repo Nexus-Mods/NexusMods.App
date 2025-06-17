@@ -1,7 +1,8 @@
-﻿using NexusMods.Hashing.xxHash3;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk.Threading;
 
-namespace NexusMods.Abstractions.IO;
+namespace NexusMods.Sdk.FileStore;
 
 /// <summary>
 /// Takes hashes and files and stores them in a way that can be retrieved later on. Essentially this is a
@@ -36,7 +37,7 @@ public interface IFileStore
     /// and manually check for duplicates with <see cref="HaveFile"/> API when constructing
     /// the <paramref name="backups"/> collection.
     ///
-    /// The <see cref="BackupFiles"/> itself is thread safe, but duplicates may be made
+    /// The <c>BackupFiles</c> itself is thread safe, but duplicates may be made
     /// if called from duplicate threads at once. This can prevent with taking a lock
     /// via <see cref="Lock"/> (and `using` statement). That said, the probability of duplicates
     /// being made without a lock is so low that it is generally recommended not to lock
@@ -45,13 +46,12 @@ public interface IFileStore
     Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default);
 
     /// <summary>
-    /// Similar to <see cref="BackupFiles(System.Collections.Generic.IEnumerable{NexusMods.Abstractions.IO.ArchivedFileEntry},bool,System.Threading.CancellationToken)"/>
-    /// except the same archive is used.
+    /// Similar to <c>BackupFiles</c> except the same archive is used.
     /// </summary>
     Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Extract the given files to the given disk locations, provide as a less-abstract interface incase
+    /// Extract the given files to the given disk locations, provide as a less-abstract interface in case
     /// the extractor needs more direct access (such as memory mapping).
     /// </summary>
     /// <param name="files"></param>
@@ -76,7 +76,7 @@ public interface IFileStore
     Task<Stream> GetFileStream(Hash hash, CancellationToken token = default);
 
     /// <summary>
-    /// Load the given file into memory, 
+    /// Load the given file into memory.
     /// </summary>
     Task<byte[]> Load(Hash hash, CancellationToken token = default);
 
@@ -93,11 +93,4 @@ public interface IFileStore
 }
 
 
-/// <summary>
-/// A helper class for <see cref="IFileStore"/> that represents a file to be backed up. The Path is optional,
-/// but should be provided if it is expected that the paths will be used for extraction or mod installation.
-/// </summary>
-/// <param name="StreamFactory"></param>
-/// <param name="Hash"></param>
-/// <param name="Size"></param>
-public readonly record struct ArchivedFileEntry(IStreamFactory StreamFactory, Hash Hash, Size Size);
+

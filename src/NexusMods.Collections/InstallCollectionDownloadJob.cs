@@ -7,8 +7,6 @@ using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Types;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
@@ -22,7 +20,9 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.IO;
 using Crc32 = System.IO.Hashing.Crc32;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

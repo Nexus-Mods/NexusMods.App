@@ -1,9 +1,8 @@
 using JetBrains.Annotations;
-using NexusMods.Abstractions.IO;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.Sdk.Resources;
+using NexusMods.Sdk.FileStore;
 
-namespace NexusMods.Abstractions.Resources.IO;
+namespace NexusMods.Sdk.Resources;
 
 [PublicAPI]
 public sealed class FileStoreLoader : IResourceLoader<Hash, byte[]>

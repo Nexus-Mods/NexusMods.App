@@ -1,13 +1,11 @@
 using System.Reactive;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.IO;
 using NexusMods.Sdk.Resources;
-using NexusMods.Abstractions.Resources.Caching;
-using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.StardewValley.Models;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.FileStore;
 using SMAPIManifest = StardewModdingAPI.Toolkit.Serialization.Models.Manifest;
 
 namespace NexusMods.Games.StardewValley;

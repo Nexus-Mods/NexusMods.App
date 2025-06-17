@@ -5,11 +5,10 @@ using System.Reactive.Disposables;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.IO;
 using Reloaded.Memory.Extensions;
 
 namespace NexusMods.FileExtractor.Extractors;
@@ -232,7 +231,7 @@ public class SevenZipExtractor : IExtractor
     {
         if (streamFactory is NativeFileStreamFactory nativeFileStreamFactory) return (nativeFileStreamFactory.Path, Disposable.Empty);
 
-        var temporaryFile = _temporaryFileManager.CreateFile(ext: streamFactory.Name.FileName.Extension);
+        var temporaryFile = _temporaryFileManager.CreateFile(ext: streamFactory.FileName.Extension);
         await using var stream = await streamFactory.GetStreamAsync();
         await temporaryFile.Path.CopyFromAsync(stream, cancellationToken);
 
