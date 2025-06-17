@@ -50,7 +50,7 @@
                     
                     <controls:Statusbar Grid.Row="0">
                         <controls:StandardButton Size="Toolbar"
-                                                 Fill="Strong"
+                                                 Fill="Weak"
                                                  Type="Tertiary"
                                                  LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                                  ShowIcon="Left"
@@ -58,6 +58,7 @@
 
                             <controls:StandardButton.Flyout>
                                 <MenuFlyout>
+                                    
                                     <!-- not used yet as we don't show local collections in Library -> Collections tab yet -->
                                     <MenuItem IsVisible="False">
                                         <MenuItem.Icon>
@@ -67,6 +68,7 @@
                                             <TextBlock Text="View Library" />
                                         </MenuItem.Header>
                                     </MenuItem>
+                                    
                                     <MenuItem>
                                         <MenuItem.Icon>
                                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
@@ -75,6 +77,7 @@
                                             <TextBlock Text="Rename Collection" />
                                         </MenuItem.Header>
                                     </MenuItem>
+                                    
                                     <MenuItem Classes="Critical">
                                         <MenuItem.Icon>
                                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteForever}" />
@@ -90,7 +93,7 @@
                         <controls:StandardButton x:Name="ButtonUploadCollectionRevision"
                                                  Text="Share"
                                                  Size="Toolbar"
-                                                 Fill="Strong"
+                                                 Fill="Weak"
                                                  Type="Tertiary"
                                                  LeftIcon="{x:Static icons:IconValues.ExportVariant}"
                                                  ShowIcon="Left" />
@@ -105,7 +108,7 @@
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"
                                                      Size="Toolbar"
-                                                     Fill="WeakAlt"
+                                                     Fill="Weak"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                                      ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
@@ -113,8 +116,8 @@
                             <navigation:NavigationControl x:Name="ViewFilesButton"
                                                           Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
                                                           Type="Tertiary"
-                                                          Size="Small"
-                                                          Fill="WeakAlt"
+                                                          Size="Toolbar"
+                                                          Fill="Weak"
                                                           ShowIcon="Left"
                                                           LeftIcon="{x:Static icons:IconValues.Folder}"
                                                           ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}" />
@@ -122,8 +125,8 @@
                             <controls:StandardButton x:Name="DeleteButton"
                                                      Text="{x:Static resources:Language.LoadoutGridView__Remove}"
                                                      Type="Tertiary"
-                                                     Size="Small"
-                                                     Fill="WeakAlt"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.PlaylistRemove}"
                                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />
