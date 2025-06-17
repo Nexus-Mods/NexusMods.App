@@ -213,6 +213,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                             foreach (var id in installMessage.Ids)
                             {
                                 var libraryItem = LibraryItem.Load(_connection.Db, id);
+                                if (!libraryItem.IsValid()) continue;
                                 await InstallLibraryItem(libraryItem, _loadout, GetInstallationTarget(), cancellationToken);
                             }
                         },
