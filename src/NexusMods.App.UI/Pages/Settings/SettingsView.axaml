@@ -10,10 +10,8 @@
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
                                 xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                                d:DataContext="{d:DesignInstance Type=settings:SettingsPageDesignViewModel, IsDesignTimeCreatable=True}"
                                 x:Class="NexusMods.App.UI.Pages.Settings.SettingsView">
-    <Design.DataContext>
-        <settings:SettingsPageDesignViewModel />
-    </Design.DataContext>
 
     <DockPanel>
         <!-- header -->
