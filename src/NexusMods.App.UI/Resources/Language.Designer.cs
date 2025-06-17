@@ -231,11 +231,56 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string CollectionComponents_DownloadAction_ButtonText_Download {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloaded.
+        /// </summary>
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloaded {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading.
+        /// </summary>
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloading {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Third-party download.
+        /// </summary>
+        public static string CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible..
         /// </summary>
         public static string CollectionComponents_ExternalDownloadAction_ToolTip {
             get {
                 return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manual download.
+        /// </summary>
+        public static string CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload", resourceCulture);
             }
         }
         
@@ -1516,6 +1561,42 @@ namespace NexusMods.App.UI.Resources {
         public static string Library_DeselectItemsButton_ToolTip {
             get {
                 return ResourceManager.GetString("Library_DeselectItemsButton_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View Changelog.
+        /// </summary>
+        public static string Library_ViewChangelog_Text {
+            get {
+                return ResourceManager.GetString("Library_ViewChangelog_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View Mod Page.
+        /// </summary>
+        public static string Library_ViewModPage_Text {
+            get {
+                return ResourceManager.GetString("Library_ViewModPage_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        public static string LibraryComponents_InstallAction_ButtonText_Install {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string LibraryComponents_InstallAction_ButtonText_Installed {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Installed", resourceCulture);
             }
         }
         
@@ -2807,48 +2888,6 @@ namespace NexusMods.App.UI.Resources {
         public static string ViewModInfoPage_Title {
             get {
                 return ResourceManager.GetString("ViewModInfoPage_Title", resourceCulture);
-            }
-        }
-        
-        public static string LibraryComponents_InstallAction_ButtonText_Installed {
-            get {
-                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Installed", resourceCulture);
-            }
-        }
-        
-        public static string LibraryComponents_InstallAction_ButtonText_Install {
-            get {
-                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Install", resourceCulture);
-            }
-        }
-        
-        public static string CollectionComponents_DownloadAction_ButtonText_Downloaded {
-            get {
-                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloaded", resourceCulture);
-            }
-        }
-        
-        public static string CollectionComponents_DownloadAction_ButtonText_Downloading {
-            get {
-                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloading", resourceCulture);
-            }
-        }
-        
-        public static string CollectionComponents_DownloadAction_ButtonText_Download {
-            get {
-                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Download", resourceCulture);
-            }
-        }
-        
-        public static string CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload {
-            get {
-                return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload", resourceCulture);
-            }
-        }
-        
-        public static string CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload {
-            get {
-                return ResourceManager.GetString("CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload", resourceCulture);
             }
         }
     }
