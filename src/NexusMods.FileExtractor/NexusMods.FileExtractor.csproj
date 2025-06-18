@@ -12,6 +12,7 @@
     <ItemGroup>
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="SharpZipLib" />
         <PackageReference Include="System.Linq.Async" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
