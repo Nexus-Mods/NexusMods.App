@@ -1,3 +1,4 @@
+using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
@@ -131,5 +132,6 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 .AddTo(disposables);
         });
     }
+
 }
 

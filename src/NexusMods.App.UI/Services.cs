@@ -210,6 +210,9 @@ public static class Services
             // Dialogs
             .AddView<CustomContentExampleView, IViewModelInterface>()
             .AddViewModel<CustomContentExampleViewModel, IViewModelInterface>()
+            
+            .AddView<TextInputView, ITextInputViewModel>()
+            .AddViewModel<TextInputViewModel, ITextInputViewModel>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()

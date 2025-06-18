@@ -33,6 +33,8 @@ public class DialogViewModel : IDialogViewModel<ButtonDefinitionId>
 
     public IDialogView<ButtonDefinitionId>? View { get; set; }
     public ButtonDefinitionId Result { get; set; }
+    
+    public IViewModelInterface? InputViewModel { get; set; }
     public IViewModelInterface? ContentViewModel { get; set; }
 
     /// <summary>

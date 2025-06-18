@@ -11,6 +11,7 @@ namespace NexusMods.App.UI.Dialog;
 internal static class DesignDataContexts
 {
     public static CustomContentExampleViewModel CustomContentExampleDesignViewModel { get; } = new("Custom Text");
+    public static TextInputViewModel TextInputDesignViewModel { get; } = new("Input Label", "Input Watermark");
 
     public static MarkdownRendererViewModel MarkdownRendererDesignViewModel { get; } = new MarkdownRendererViewModel
     {

@@ -33,7 +33,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     private async void ShowModal(IDialog<ButtonDefinitionId> dialog)
     {
         if (ViewModel is null) return;
-
+        
         var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
         Console.WriteLine($@"result: {result}");
     }
@@ -341,6 +341,47 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             Console.WriteLine($@"result: {result}");
             Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
             Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
+        }
+        catch
+        {
+            throw; // TODO handle exception
+        }
+    }
+
+    private async void ShowModalInput_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel is null) return;
+
+            // create custom content viewmodel
+            var inputViewModel = new TextInputViewModel("Collection name", "e.g. My Armour Mods");
+
+            var dialog = DialogFactory.CreateMessageBox(
+                "Name your Collection",
+                "This is the name that will appear in the left hand menu and on the Collections page.",
+                "",
+                [
+                    DialogStandardButtons.Cancel,
+                    new DialogButtonDefinition(
+                        "Create",
+                        ButtonDefinitionId.From("create"),
+                        ButtonAction.Accept,
+                        ButtonStyling.Primary
+                    )
+                ],
+                null,
+                DialogWindowSize.Small,
+                null,
+                inputViewModel
+            );
+            
+            // tell windowmanager to show it
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+
+            // check viewmodel properties when dialog has been closed
+            Console.WriteLine($@"result: {result}");
+            Console.WriteLine($@"InputText: {inputViewModel.InputText}");
         }
         catch
         {
