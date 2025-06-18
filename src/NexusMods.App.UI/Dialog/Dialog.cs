@@ -9,7 +9,7 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
     where TViewModel : IDialogViewModel<TResult>
 {
     private TView _view;
-    private TViewModel _viewModel;
+    public TViewModel _viewModel;
     private bool _hasUserResized = false;
 
     public Dialog(TView view, TViewModel viewModel)

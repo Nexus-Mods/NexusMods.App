@@ -747,6 +747,10 @@
         <Compile Update="Controls\Settings\SettingEntries\SettingInteractionControls\PathsList\SettingPathsDesignViewModel.cs">
           <DependentUpon>ISettingPathsViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Dialog\TextInputView.axaml.cs">
+          <DependentUpon>TextInputView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
