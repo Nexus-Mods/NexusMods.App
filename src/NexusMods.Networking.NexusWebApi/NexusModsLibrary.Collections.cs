@@ -13,6 +13,9 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.Query.SliceDescriptors;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -48,7 +51,36 @@ public partial class NexusModsLibrary
         return presignedUploadUrl;
     }
 
-    public async ValueTask<CollectionRevisionMetadata.ReadOnly> UploadCollectionRevision(
+    /// <summary>
+    /// Edits the collection name.
+    /// </summary>
+    public async ValueTask<CollectionMetadata.ReadOnly> EditCollectionName(CollectionMetadata.ReadOnly collection, string newName, CancellationToken cancellationToken)
+    {
+        var result = await _gqlClient.EditCollectionName.ExecuteAsync(
+            collectionId: (int)collection.CollectionId.Value,
+            name: newName,
+            cancellationToken: cancellationToken
+        );
+
+        result.EnsureNoErrors();
+
+        var data = result.Data?.EditCollection!;
+        if (!data.Success) throw new NotImplementedException();
+
+        using var tx = _connection.BeginTransaction();
+        var db = _connection.Db;
+
+        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var commitResult = await tx.Commit();
+
+        collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        return collection;
+    }
+
+    /// <summary>
+    /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
+    /// </summary>
+    public async ValueTask UploadDraftRevision(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
@@ -68,15 +100,12 @@ public partial class NexusModsLibrary
 
         var data = result.Data?.CreateOrUpdateRevision!;
         if (!data.Success) throw new NotImplementedException();
-
-        var revision = await AddCollectionToDatabase(collectionManifest, data.Revision.Collection, data.Revision, cancellationToken);
-        return revision;
     }
 
     /// <summary>
     /// Uploads a new collection to Nexus Mods and adds it to the app.
     /// </summary>
-    public async ValueTask<CollectionRevisionMetadata.ReadOnly> CreateCollection(
+    public async ValueTask<CollectionMetadata.ReadOnly> CreateCollection(
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
         CancellationToken cancellationToken)
@@ -95,8 +124,14 @@ public partial class NexusModsLibrary
         var data = result.Data?.CreateCollection!;
         if (!data.Success) throw new NotImplementedException();
 
-        var revision = await AddCollectionToDatabase(collectionManifest, data.Collection, data.Revision, cancellationToken);
-        return revision;
+        using var tx = _connection.BeginTransaction();
+        var db = _connection.Db;
+
+        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var commitResult = await tx.Commit();
+
+        var collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        return collection;
     }
 
     private static CollectionPayload ManifestToPayload(CollectionRoot manifest)
@@ -208,6 +243,11 @@ public partial class NexusModsLibrary
         var db = _connection.Db;
 
         var collectionEntityId = UpdateCollectionInfo(db, tx, collectionFragment);
+
+        var revisionId = RevisionId.From((ulong)collectionRevisionFragment.Id);
+        var existingRevisions = CollectionRevisionMetadata.FindByRevisionId(db, revisionId);
+        if (existingRevisions.Count > 0) throw new NotSupportedException($"Revision with id `{revisionId}` already exists!");
+
         var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, collectionEntityId, collectionRevisionFragment);
 
         var resolvedEntitiesLookup = ResolveModFiles(db, tx, collectionManifest, gameIds, collectionRevisionFragment);

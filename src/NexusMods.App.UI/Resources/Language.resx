@@ -408,7 +408,7 @@
         <value>Add games to start modding</value>
     </data>
     <data name="GameWidget__Adding_game" xml:space="preserve">
-        <value>Adding game</value>
+        <value>Adding...</value>
     </data>
     <data name="GameWidget__View" xml:space="preserve">
         <value>View</value>
@@ -417,7 +417,7 @@
         <value>Removes the game and all mods installed by the app</value>
     </data>
     <data name="GameWidget__Removing_game" xml:space="preserve">
-        <value>Removing game</value>
+        <value>Removing...</value>
     </data>
     <data name="ApplyDiff_Refresh" xml:space="preserve">
         <value>Refresh</value>
@@ -603,11 +603,17 @@
     <data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
         <value>Clears the selection. Ctrl+Click selects/deselects items. Shift+Click selects a range.</value>
     </data>
+    <data name="Library_ViewChangelog_Text" xml:space="preserve">
+        <value>View Changelog</value>
+    </data>
+    <data name="Library_ViewModPage_Text" xml:space="preserve">
+        <value>View Mod Page</value>
+    </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
         <value>Install the selected mod(s) to this loadout</value>
     </data>
     <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
-        <value>Permanently remove this mod from your Library</value>
+        <value>Permanently delete this mod</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
         <value>Select specific files from a mod to add to your loadout</value>

@@ -41,7 +41,6 @@
                             </navigation:NavigationMenuItem>
                             <MenuItem Header="Uninstall Collection"
                                       x:Name="RemoveCollectionMenuItem"
-                                      Classes="Critical"
                                       ToolTip.Tip="Uninstall this collection from loadout. (Collection will remain in library)">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Size="16"

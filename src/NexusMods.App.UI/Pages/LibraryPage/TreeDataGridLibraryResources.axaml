@@ -3,7 +3,8 @@
                     xmlns:local="clr-namespace:NexusMods.App.UI.Pages.LibraryPage"
                     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions">
+                    xmlns:abstractions="clr-namespace:NexusMods.MnemonicDB.Abstractions;assembly=NexusMods.MnemonicDB.Abstractions"
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <!-- Downloaded Date -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+DownloadedDate.ColumnTemplateResourceKey}">
@@ -17,14 +18,14 @@
                                             ComponentKey="{x:Static local:LibraryColumns+DownloadedDate.ComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type controls:DateComponent}">
-                            <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
+                            <TextBlock Text="{CompiledBinding FormattedValue.Value}" />
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
             </controls:ComponentControl.ComponentTemplate>
 
             <controls:ComponentControl.Fallback>
-                <TextBlock Text="-"/>
+                <TextBlock Text="-" />
             </controls:ComponentControl.Fallback>
         </controls:ComponentControl>
     </DataTemplate>
@@ -41,28 +42,28 @@
                                             ComponentKey="{x:Static controls:SharedColumns+ItemSize.ComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type controls:SizeComponent}">
-                            <TextBlock Text="{CompiledBinding FormattedValue.Value}"/>
+                            <TextBlock Text="{CompiledBinding FormattedValue.Value}" />
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
             </controls:ComponentControl.ComponentTemplate>
 
             <controls:ComponentControl.Fallback>
-                <TextBlock Text="-"/>
+                <TextBlock Text="-" />
             </controls:ComponentControl.Fallback>
         </controls:ComponentControl>
     </DataTemplate>
 
     <!-- Version -->
     <DataTemplate x:Key="{x:Static local:LibraryColumns+ItemVersion.ColumnTemplateResourceKey}">
-        
+
         <DataTemplate.DataType>
             <x:Type TypeName="controls:CompositeItemModel" x:TypeArguments="abstractions:EntityId" />
         </DataTemplate.DataType>
 
         <controls:MultiComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
             <controls:MultiComponentControl.AvailableTemplates>
-                
+
                 <!-- New version -->
                 <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+NewVersionAvailable"
                                             ComponentKey="{x:Static local:LibraryColumns+ItemVersion.NewVersionComponentKey}">
@@ -71,7 +72,7 @@
                             <StackPanel x:Name="NewVersionStack"
                                         Orientation="Horizontal">
                                 <TextBlock Text="{CompiledBinding CurrentVersion.Value.Value}" />
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}"/>
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.ArrowForward}" />
                                 <TextBlock Text="{CompiledBinding NewVersion.Value}" />
                             </StackPanel>
                         </DataTemplate>
@@ -83,7 +84,7 @@
                                             ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
                         <DataTemplate DataType="{x:Type controls:StringComponent}">
-                            <TextBlock Text="{CompiledBinding Value.Value}"/>
+                            <TextBlock Text="{CompiledBinding Value.Value}" />
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
                 </controls:ComponentTemplate>
@@ -99,7 +100,7 @@
         </DataTemplate.DataType>
 
         <StackPanel Orientation="Horizontal">
-            
+
             <!-- Update -->
             <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
@@ -114,7 +115,8 @@
                                                          Type="Primary"
                                                          Fill="WeakAlt"
                                                          LeftIcon="{x:Static icons:IconValues.Download}"
-                                                         ShowIcon="Left"/>
+                                                         ShowIcon="Left"
+                                                         ToolTip.Tip="Update mod"/>
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
@@ -136,12 +138,12 @@
                                                              Fill="StrongAlt"
                                                              LeftIcon="{x:Static icons:IconValues.Add}"
                                                              ShowIcon="Left"
-                                                             IsVisible="{CompiledBinding !IsInstalled.Value}"/>
+                                                             IsVisible="{CompiledBinding !IsInstalled.Value}" />
                                     <StackPanel x:Name="InstalledStack"
                                                 Orientation="Horizontal"
                                                 IsVisible="{CompiledBinding IsInstalled.Value}">
-                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}"/>
-                                        <TextBlock Text="{CompiledBinding ButtonText.Value}"/>
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.Check}" />
+                                        <TextBlock Text="{CompiledBinding ButtonText.Value}" />
                                     </StackPanel>
                                 </Panel>
                             </DataTemplate>
@@ -149,8 +151,68 @@
                     </controls:ComponentTemplate>
                 </controls:ComponentControl.ComponentTemplate>
             </controls:ComponentControl>
+           
+            <!-- more options -->
+            <controls:StandardButton
+                ToolTip.Tip="More options"
+                x:Name="HamburgerMenuButton"
+                LeftIcon="{x:Static icons:IconValues.MoreVertical}"
+                ShowIcon="Left"
+                ShowLabel="False"
+                Fill="None">
+                <controls:StandardButton.Flyout>
+
+                    <MenuFlyout FlyoutPresenterClasses="TreeDataGridMenu">
+
+                        <!-- View Changelog -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate
+                                    x:TypeArguments="local:LibraryComponents+ViewChangelogAction"
+                                    ComponentKey="{x:Static local:LibraryColumns+Actions.ViewChangelogComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewChangelogAction}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewChangelog_Text}"
+                                                      Command="{CompiledBinding CommandViewChangelog}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon
+                                                        Value="{x:Static icons:IconValues.FileDocumentOutline}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+
+                        <Separator/>
+
+                        <!-- View Mod Page -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+ViewModPageAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.ViewModPageComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+ViewModPageAction}">
+                                            <MenuItem Header="{x:Static resources:Language.Library_ViewModPage_Text}"
+                                                      Command="{CompiledBinding CommandViewModPage}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.OpenInNew}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+                        
+                    </MenuFlyout>
+                    
+                </controls:StandardButton.Flyout>
+            </controls:StandardButton>
+
+
         </StackPanel>
     </DataTemplate>
 
 </ResourceDictionary>
-
