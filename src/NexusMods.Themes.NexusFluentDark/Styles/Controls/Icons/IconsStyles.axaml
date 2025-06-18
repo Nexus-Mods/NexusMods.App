@@ -189,6 +189,11 @@
                     <icons:UnifiedIcon Classes="PictogramCollection3D" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramPremium" />
+                    <icons:UnifiedIcon Classes="PictogramPremium" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramPremium" Size="48" />
+                </WrapPanel>
+                <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical" />
@@ -743,5 +748,8 @@
     
     <Style Selector="icons|UnifiedIcon.PictogramLibrary">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramLibrary}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramPremium">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramPremium}" />
     </Style>
 </Styles>
