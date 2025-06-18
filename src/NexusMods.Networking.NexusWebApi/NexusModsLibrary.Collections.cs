@@ -80,7 +80,7 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
     /// </summary>
-    public async ValueTask<CollectionRevisionMetadata.ReadOnly> UploadCollectionRevision(
+    public async ValueTask UploadDraftRevision(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
@@ -100,15 +100,12 @@ public partial class NexusModsLibrary
 
         var data = result.Data?.CreateOrUpdateRevision!;
         if (!data.Success) throw new NotImplementedException();
-
-        var revision = await AddCollectionToDatabase(collectionManifest, data.Revision.Collection, data.Revision, cancellationToken);
-        return revision;
     }
 
     /// <summary>
     /// Uploads a new collection to Nexus Mods and adds it to the app.
     /// </summary>
-    public async ValueTask<CollectionRevisionMetadata.ReadOnly> CreateCollection(
+    public async ValueTask<CollectionMetadata.ReadOnly> CreateCollection(
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
         CancellationToken cancellationToken)
@@ -127,8 +124,14 @@ public partial class NexusModsLibrary
         var data = result.Data?.CreateCollection!;
         if (!data.Success) throw new NotImplementedException();
 
-        var revision = await AddCollectionToDatabase(collectionManifest, data.Collection, data.Revision, cancellationToken);
-        return revision;
+        using var tx = _connection.BeginTransaction();
+        var db = _connection.Db;
+
+        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var commitResult = await tx.Commit();
+
+        var collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        return collection;
     }
 
     private static CollectionPayload ManifestToPayload(CollectionRoot manifest)
@@ -240,6 +243,11 @@ public partial class NexusModsLibrary
         var db = _connection.Db;
 
         var collectionEntityId = UpdateCollectionInfo(db, tx, collectionFragment);
+
+        var revisionId = RevisionId.From((ulong)collectionRevisionFragment.Id);
+        var existingRevisions = CollectionRevisionMetadata.FindByRevisionId(db, revisionId);
+        if (existingRevisions.Count > 0) throw new NotSupportedException($"Revision with id `{revisionId}` already exists!");
+
         var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, collectionEntityId, collectionRevisionFragment);
 
         var resolvedEntitiesLookup = ResolveModFiles(db, tx, collectionManifest, gameIds, collectionRevisionFragment);
@@ -472,19 +480,6 @@ public partial class NexusModsLibrary
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
     {
-        // NOTE(erri120): This exists because we can't replace downloads, there is no consistent identity generator for them.
-        // Usually, revisions don't get added twice; they are immutable once published. However, it's possible to add draft
-        // revisions to the app, which is what we do when uploading collections.
-        var existingDownloads = CollectionDownload.FindByCollectionRevision(db, collectionRevisionEntityId);
-        foreach (var entity in existingDownloads)
-        {
-            tx.Delete(entity, recursive: false);
-
-            // TODO: figure out what we want to do here
-            var references = db.Datoms(new ReferencesSlice(entity));
-            if (references.Count > 0) throw new NotImplementedException($"Collection download `{entity.Name}` (index={entity.ArrayIndex}) for collection `{collectionRoot.Info.Name}`/`{revisionInfo.RevisionNumber}` can't be deleted because it gets referenced by `{references.Count}` datoms, likely because it got installed");
-        }
-
         for (var i = 0; i < collectionRoot.Mods.Length; i++)
         {
             var collectionMod = collectionRoot.Mods[i];

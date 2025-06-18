@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
@@ -125,10 +126,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 // If the user did not click the share button, we do not proceed
                 if (shareDialogResult != ButtonDefinitionId.From("share")) return;
                 
-                var revision = await CollectionCreator.UploadCollectionRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
+                var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
                 var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
-                var gameDomain = await mappingCache.TryGetDomainAsync(revision.Collection.GameId, cancellationToken);
-                
+                var gameDomain = await mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
                 
                 var successDialog = IsCollectionUploaded ? 
                     LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : 
@@ -142,7 +142,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 // If the user did not click the view page button, we do not proceed
                 if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
                 
-                var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, revision.Collection.Slug, revision.RevisionNumber);
+                var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
             }, maxSequential: 1, configureAwait: false);
         }
