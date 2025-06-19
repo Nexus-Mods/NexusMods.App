@@ -109,7 +109,7 @@
                         <controls:ComponentTemplate.DataTemplate>
                             <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
 
-                                <controls:StandardButton Command="{CompiledBinding CommandUpdateAndKeepOld}"
+                                <controls:StandardButton Command="{CompiledBinding CommandUpdateAndReplace}"
                                                          Text="{CompiledBinding ButtonText.Value}"
                                                          Size="Small"
                                                          Type="Primary"
