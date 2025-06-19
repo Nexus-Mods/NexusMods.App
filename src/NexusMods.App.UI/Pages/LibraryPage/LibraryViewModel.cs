@@ -293,18 +293,27 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             }
 
             // Find all affected loadouts
-            var loadoutsWithCollections = _libraryService.CollectionsWithLibraryItems(libraryItemsToUpdate);
-            var affectedCollectionCount = loadoutsWithCollections.Count;
+            var collectionsAffected = _libraryService.CollectionsWithLibraryItems(libraryItemsToUpdate, excludeReadOnlyCollections: true);
+            var affectedCollectionCount = collectionsAffected.Count;
 
-            // If there are more than 2 total collections, show confirmation dialog
-            if (affectedCollectionCount > 0)
+            // If there is more than 1 non-readonly affected collection, show confirmation dialog
+            if (affectedCollectionCount >= 2)
             {
                 var updateButtonId = ButtonDefinitionId.From("Update");
                 var cancelButtonId = ButtonDefinitionId.From("Cancel");
 
+                var dialogDesc = new StringBuilder();
+                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1);
+                dialogDesc.AppendLine();
+                foreach (var collectionAffected in collectionsAffected)
+                    dialogDesc.AppendLine(collectionAffected.Key.AsLoadoutItemGroup().AsLoadoutItem().Name);
+                
+                dialogDesc.AppendLine();
+                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
+
                 var confirmDialog = DialogFactory.CreateMessageBox(
                     Language.Library_Update_InstalledInMultipleCollections_Title,
-                    Language.Library_Update_InstalledInMultipleCollections_Description1 + "\n" + Language.Library_Update_InstalledInMultipleCollections_Description2,
+                    dialogDesc.ToString(),
                     [
                         new DialogButtonDefinition(
                             Language.Library_Update_InstalledInMultipleCollections_Cancel,

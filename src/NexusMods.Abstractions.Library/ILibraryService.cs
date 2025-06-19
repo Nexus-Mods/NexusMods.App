@@ -52,20 +52,22 @@ public interface ILibraryService
     /// Returns all collections that contain the given library item.
     /// </summary>
     /// <param name="libraryItem">The item to search for.</param>
+    /// <param name="excludeReadOnlyCollections">If true, filters out read-only collections such as collections from Nexus Mods.</param>
     /// <remarks>
     ///     Returns tuples containing the collection and the linked item within that collection.
     /// </remarks>
-    IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem);
+    IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem, bool excludeReadOnlyCollections = false);
 
     /// <summary>
     /// Returns all unique collections that contain any of the given library items.
     /// </summary>
     /// <param name="libraryItems">The items to search for.</param>
+    /// <param name="excludeReadOnlyCollections">If true, filters out read-only collections such as collections from Nexus Mods.</param>
     /// <remarks>
     ///     Returns a dictionary where each key is a collection and the value is a list of 
     ///     tuples containing the library items found in that collection and their linked items.
     /// </remarks>
-    IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems);
+    IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, bool excludeReadOnlyCollections = false);
 
     /// <summary>
     /// Adds a library file.
