@@ -1067,10 +1067,10 @@ Please check your internet connection and try again.</value>
         <value>Cancel</value>
     </data>
     <data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
-        <value>Update in {0} collections</value>
+        <value>Update in {0} collection(s)</value>
     </data>
     <data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
-        <value>Updating will apply to all local collections where the mod is installed.</value>
+        <value>Updating will apply to all local collections where the mod is installed:</value>
     </data>
     <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
         <value>Nexus Mods collections you are subscribed to will not be affected.</value>

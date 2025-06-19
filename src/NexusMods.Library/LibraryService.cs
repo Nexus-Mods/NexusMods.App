@@ -85,7 +85,7 @@ public sealed class LibraryService : ILibraryService
         );
     }
 
-    public IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem)
+    public IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem, bool excludeReadOnlyCollections = false)
     {
         var dbToUse = _connection.Db;
 
@@ -101,6 +101,10 @@ public sealed class LibraryService : ILibraryService
                 if (parent.TryGetAsLoadoutItemGroup(out var itemGroup) &&
                     itemGroup.TryGetAsCollectionGroup(out var collectionGroup))
                 {
+                    // Filter out read-only collections if requested
+                    if (excludeReadOnlyCollections && collectionGroup.IsReadOnly)
+                        break; // Skip this collection but continue looking up the parent chain
+                    
                     yield return (collectionGroup, linkedItem);
                     break; // Found the nearest collection, no need to go further up
                 }
@@ -108,7 +112,7 @@ public sealed class LibraryService : ILibraryService
         }
     }
 
-    public IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems)
+    public IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, bool excludeReadOnlyCollections = false)
     {
         var dbToUse = _connection.Db;
         var result = new Dictionary<CollectionGroup.ReadOnly, List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>>();
@@ -128,6 +132,10 @@ public sealed class LibraryService : ILibraryService
                     if (parent.TryGetAsLoadoutItemGroup(out var itemGroup) && 
                         itemGroup.TryGetAsCollectionGroup(out var collectionGroup))
                     {
+                        // Filter out read-only collections if requested
+                        if (excludeReadOnlyCollections && collectionGroup.IsReadOnly)
+                            break; // Skip this collection but continue looking up the parent chain
+                        
                         if (!result.TryGetValue(collectionGroup, out var list))
                         {
                             list = new List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>();
