@@ -275,24 +275,65 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         {
             var updatesOnPage = updateAndReplaceMessage.Updates;
 
+            // Collect all library items that will be updated by linking with file metadata.
+            var libraryItemsToUpdate = new List<LibraryItem.ReadOnly>();
+            var newestToCurrentMapping = updatesOnPage.NewestToCurrentFileMapping();
+            foreach (var (_, currentFiles) in newestToCurrentMapping)
+            {
+                foreach (var currentFile in currentFiles)
+                {
+                    // Find existing library items for this file metadata
+                    var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
+                    foreach (var existingLibraryFile in existingLibraryItems)
+                    {
+                        var currentLibraryItem = existingLibraryFile.AsLibraryItem();
+                        libraryItemsToUpdate.Add(currentLibraryItem);
+                    }
+                }
+            }
+
+            // Find all affected loadouts
+            var loadoutsWithItems = _libraryService.LoadoutsWithLibraryItems(libraryItemsToUpdate);
+            var affectedLoadoutCount = loadoutsWithItems.Count;
+
+            // If there are more than 2 total loadouts, show confirmation dialog
+            if (affectedLoadoutCount > 2)
+            {
+                var updateButtonId = ButtonDefinitionId.From("Update");
+                var cancelButtonId = ButtonDefinitionId.From("Cancel");
+
+                var confirmDialog = DialogFactory.CreateMessageBox(
+                    Language.Library_Update_InstalledInMultipleCollections_Title,
+                    Language.Library_Update_InstalledInMultipleCollections_Description1 + "\n" + Language.Library_Update_InstalledInMultipleCollections_Description2,
+                    [
+                        new DialogButtonDefinition(
+                            Language.Library_Update_InstalledInMultipleCollections_Cancel,
+                            cancelButtonId,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedLoadoutCount),
+                            updateButtonId,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        )
+                    ]
+                );
+                
+                var dialogResult = await WindowManager.ShowDialog(confirmDialog, DialogWindowType.Modal);
+                if (dialogResult != updateButtonId)
+                {
+                    // User cancelled, don't proceed with update
+                    return;
+                }
+            }
+
             // Note(sewer): There's usually just a few files in like 99% of the cases here
             //              so no need to optimize around file reuse and TemporaryFileManager.
             var oldToNewLibraryMapping = new List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
             var downloadErrors = new List<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
             var successfulDownloads = new List<LibraryItem.ReadOnly>();
 
-            // There are 3 states:
-            // - Some downloads failed
-            // - All downloads failed
-            // - All downloads succeeded
-            //
-            // If some downloads failed, we should show a message to the user asking them if we should keep the ones that succeeded,
-            // and replace them. Otherwise they can cancel to remove all the downloads.
-            //
-            // If all downloads failed, we should show a message to the user that all downloads failed; with an 'ok' button.
-            //
-            // If all downloads succeeded, we should proceed with replacing automatically.
-            var newestToCurrentMapping = updatesOnPage.NewestToCurrentFileMapping();
             foreach (var (newestFile, currentFiles) in newestToCurrentMapping)
             {
                 try
@@ -303,7 +344,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     var libraryFile = await _libraryService.AddDownload(job);
                     var newLibraryItem = libraryFile.AsLibraryItem();
                     successfulDownloads.Add(newLibraryItem);
-                    
+
                     // Map each current file to the new file
                     foreach (var currentFile in currentFiles)
                     {

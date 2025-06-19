@@ -1060,4 +1060,19 @@ Please check your internet connection and try again.</value>
     <data name="Library_Update_Success_Description2" xml:space="preserve">
         <value>The following updates failed:</value>
     </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+        <value>Updating mods installed in multiple collections</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+        <value>Update in {0} collections</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+        <value>Updating will apply to all local collections where the mod is installed.</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+        <value>Nexus Mods collections you are subscribed to will not be affected.</value>
+    </data>
 </root>

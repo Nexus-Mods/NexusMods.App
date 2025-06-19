@@ -55,6 +55,36 @@ public sealed class LibraryService : ILibraryService
             .Select(x => (x.AsLoadoutItem().Loadout, x));
     }
 
+    public IReadOnlyDictionary<Loadout.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> LoadoutsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems)
+    {
+        var dbToUse = _connection.Db;
+        var result = new Dictionary<Loadout.ReadOnly, List<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>>();
+        
+        foreach (var libraryItem in libraryItems)
+        {
+            var linkedItems = LibraryLinkedLoadoutItem
+                .FindByLibraryItem(dbToUse, libraryItem)
+                .Select(x => (libraryItem, linkedItem: x))
+                .ToArray();
+                
+            foreach (var (item, linkedItem) in linkedItems)
+            {
+                var loadout = linkedItem.AsLoadoutItem().Loadout;
+                if (!result.TryGetValue(loadout, out var list))
+                {
+                    list = new List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>();
+                    result[loadout] = list;
+                }
+                list.Add((item, linkedItem));
+            }
+        }
+        
+        return result.ToDictionary(
+            kvp => kvp.Key,
+            kvp => (IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>)kvp.Value.AsReadOnly()
+        );
+    }
+
     public async Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source)
     {
         return await AddLibraryFileJob.Create(_serviceProvider, transaction, filePath: source);

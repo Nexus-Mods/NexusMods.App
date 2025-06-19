@@ -39,13 +39,23 @@ public interface ILibraryService
     IEnumerable<(Loadout.ReadOnly loadout, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem);
 
     /// <summary>
+    /// Returns all unique loadouts that contain any of the given library items.
+    /// </summary>
+    /// <param name="libraryItems">The items to search for.</param>
+    /// <remarks>
+    ///     Returns a dictionary where each key is a loadout and the value is a list of 
+    ///     tuples containing the library items found in that loadout and their linked items.
+    /// </remarks>
+    IReadOnlyDictionary<Loadout.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> LoadoutsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems);
+
+    /// <summary>
     /// Adds a library file.
     /// </summary>
     Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source);
 
     /// <summary>
     /// Installs a library item into a target loadout.
-    /// To remove an installed item, use <see cref="RemoveLinkedItemFromLoadout"/>.
+    /// To remove an installed item, use <see cref="RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId)"/>.
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>

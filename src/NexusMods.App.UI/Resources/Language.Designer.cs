@@ -2974,5 +2974,35 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Library_Update_Success_Description2", resourceCulture);
             }
         }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Title", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Cancel {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Cancel", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Ok {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Ok", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Description1 {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Description1", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Description2 {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Description2", resourceCulture);
+            }
+        }
     }
 }
