@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x12CC31F0F026EAC1
-   - Total attributes: 213
-   - Total namespaces: 72
+   - Fingerprint: 0x5B0193762822F0C3
+   - Total attributes: 216
+   - Total namespaces: 73
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -115,6 +115,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.SortOrder/SortOrderTypeId                                       | UInt128                 | False   | False | False     | 
 | NexusMods.Loadouts.SortableEntry/ParentSortOrder                                   | Reference               | True    | False | False     | 
 | NexusMods.Loadouts.SortableEntry/SortIndex                                         | Int32                   | False   | False | False     | 
+| NexusMods.ManagedCollectionLoadoutGroup/Collection                                 | Reference               | True    | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                      | Utf8                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Indexed                                            | UInt8                   | False   | False | False     | 
@@ -167,6 +168,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/RecentRating                         | Float32                 | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/RecentRatingCount                    | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Slug                                 | Ascii                   | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/Status                               | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Summary                              | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/TileImageResource                    | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/TileImageUri                         | Utf8                    | False   | False | False     | 
@@ -176,6 +178,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/OverallRating                | Float32                 | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/RevisionId                   | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/RevisionNumber               | UInt64                  | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionRevisionMetadata/Status                       | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/TotalRatings                 | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/TotalSize                    | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.NexusModsCollectionLibraryFile/CollectionRevisionNumber | UInt64                  | True    | False | False     | 

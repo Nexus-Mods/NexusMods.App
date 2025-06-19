@@ -102,4 +102,9 @@ public partial class CollectionMetadata : IModelDefinition
     /// Total number of ratings given in the last 30 days.
     /// </summary>
     public static readonly Int32Attribute RecentRatingCount = new(Namespace, nameof(RecentRatingCount)) { IsOptional = true };
+
+    /// <summary>
+    /// Listing status.
+    /// </summary>
+    public static readonly EnumAttribute<CollectionStatus> Status = new(Namespace, nameof(Status)) { IsOptional = true };
 }

@@ -7,6 +7,7 @@ using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using R3;
 
@@ -104,8 +105,8 @@ public static class CollectionComponents
 
         protected virtual string GetButtonText(bool isDownloading, bool isDownloaded)
         {
-            if (isDownloaded) return "Downloaded";
-            return isDownloading ? "Downloading" : "Download";
+            if (isDownloaded) return Language.CollectionComponents_DownloadAction_ButtonText_Downloaded;
+            return isDownloading ? Language.CollectionComponents_DownloadAction_ButtonText_Downloading : Language.CollectionComponents_DownloadAction_ButtonText_Download;
         }
 
         private bool _isDisposed;
@@ -144,7 +145,7 @@ public static class CollectionComponents
         protected override string GetButtonText(bool isDownloading, bool isDownloaded)
         {
             if (isDownloading || isDownloaded) return base.GetButtonText(isDownloading, isDownloaded);
-            return "Third-party download";
+            return Language.CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload;
         }
     }
 
@@ -173,7 +174,7 @@ public static class CollectionComponents
 
         public ReactiveCommand<Unit, CollectionDownloadExternal.ReadOnly> CommandOpenModal { get; }
 
-        private static string GetButtonText(bool isDownloaded) => isDownloaded ? "Downloaded" : "Manual download";
+        private static string GetButtonText(bool isDownloaded) => isDownloaded ? Language.CollectionComponents_DownloadAction_ButtonText_Downloaded : Language.CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload;
 
         private bool _isDisposed;
 

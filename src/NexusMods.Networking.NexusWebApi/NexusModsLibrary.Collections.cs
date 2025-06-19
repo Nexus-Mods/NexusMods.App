@@ -13,6 +13,9 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.Query;
+using NexusMods.MnemonicDB.Abstractions.Query.SliceDescriptors;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -49,9 +52,60 @@ public partial class NexusModsLibrary
     }
 
     /// <summary>
+    /// Edits the collection name.
+    /// </summary>
+    public async ValueTask<CollectionMetadata.ReadOnly> EditCollectionName(CollectionMetadata.ReadOnly collection, string newName, CancellationToken cancellationToken)
+    {
+        var result = await _gqlClient.EditCollectionName.ExecuteAsync(
+            collectionId: (int)collection.CollectionId.Value,
+            name: newName,
+            cancellationToken: cancellationToken
+        );
+
+        result.EnsureNoErrors();
+
+        var data = result.Data?.EditCollection!;
+        if (!data.Success) throw new NotImplementedException();
+
+        using var tx = _connection.BeginTransaction();
+        var db = _connection.Db;
+
+        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var commitResult = await tx.Commit();
+
+        collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        return collection;
+    }
+
+    /// <summary>
+    /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
+    /// </summary>
+    public async ValueTask UploadDraftRevision(
+        CollectionMetadata.ReadOnly collection,
+        IStreamFactory archiveStreamFactory,
+        CollectionRoot collectionManifest,
+        CancellationToken cancellationToken)
+    {
+        var payload = ManifestToPayload(collectionManifest);
+        var presignedUploadUrl = await UploadCollectionArchive(archiveStreamFactory, cancellationToken: cancellationToken);
+
+        var result = await _gqlClient.CreateOrUpdateRevision.ExecuteAsync(
+            payload: payload,
+            collectionId: (int)collection.CollectionId.Value,
+            uuid: presignedUploadUrl.UUID,
+            cancellationToken: cancellationToken
+        );
+
+        result.EnsureNoErrors();
+
+        var data = result.Data?.CreateOrUpdateRevision!;
+        if (!data.Success) throw new NotImplementedException();
+    }
+
+    /// <summary>
     /// Uploads a new collection to Nexus Mods and adds it to the app.
     /// </summary>
-    public async ValueTask<CollectionRevisionMetadata.ReadOnly> CreateCollection(
+    public async ValueTask<CollectionMetadata.ReadOnly> CreateCollection(
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
         CancellationToken cancellationToken)
@@ -70,8 +124,14 @@ public partial class NexusModsLibrary
         var data = result.Data?.CreateCollection!;
         if (!data.Success) throw new NotImplementedException();
 
-        var revision = await AddCollectionToDatabase(collectionManifest, data.Collection, data.Revision, cancellationToken);
-        return revision;
+        using var tx = _connection.BeginTransaction();
+        var db = _connection.Db;
+
+        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var commitResult = await tx.Commit();
+
+        var collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        return collection;
     }
 
     private static CollectionPayload ManifestToPayload(CollectionRoot manifest)
@@ -183,6 +243,11 @@ public partial class NexusModsLibrary
         var db = _connection.Db;
 
         var collectionEntityId = UpdateCollectionInfo(db, tx, collectionFragment);
+
+        var revisionId = RevisionId.From((ulong)collectionRevisionFragment.Id);
+        var existingRevisions = CollectionRevisionMetadata.FindByRevisionId(db, revisionId);
+        if (existingRevisions.Count > 0) throw new NotSupportedException($"Revision with id `{revisionId}` already exists!");
+
         var collectionRevisionEntityId = UpdateRevisionInfo(db, tx, collectionEntityId, collectionRevisionFragment);
 
         var resolvedEntitiesLookup = ResolveModFiles(db, tx, collectionManifest, gameIds, collectionRevisionFragment);
@@ -508,7 +573,7 @@ public partial class NexusModsLibrary
         };
     }
 
-    private static EntityId UpdateRevisionInfo(
+    private EntityId UpdateRevisionInfo(
         IDb db,
         ITransaction tx,
         EntityId collectionEntityId,
@@ -517,10 +582,12 @@ public partial class NexusModsLibrary
         var revisionId = RevisionId.From((ulong)revisionInfo.Id);
         var resolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, revisionId);
 
-        resolver.Add(CollectionRevisionMetadata.RevisionId, revisionId);
         resolver.Add(CollectionRevisionMetadata.RevisionNumber, RevisionNumber.From((ulong)revisionInfo.RevisionNumber));
         resolver.Add(CollectionRevisionMetadata.CollectionId, collectionEntityId);
         resolver.Add(CollectionRevisionMetadata.IsAdult, revisionInfo.AdultContent);
+
+        var status = ToStatus(_logger, revisionInfo);
+        if (status.HasValue) resolver.Add(CollectionRevisionMetadata.Status, status.Value);
 
         if (ulong.TryParse(revisionInfo.TotalSize, out var totalSize))
             resolver.Add(CollectionRevisionMetadata.TotalSize, Size.From(totalSize));
@@ -535,6 +602,30 @@ public partial class NexusModsLibrary
         return resolver.Id;
     }
 
+    private static Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus> ToStatus(ICollectionFragment collectionFragment)
+    {
+        if (collectionFragment.CollectionStatus is null) return Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus>.None;
+        return collectionFragment.CollectionStatus.Value switch
+        {
+            CollectionStatus.Unlisted => Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted,
+            CollectionStatus.Listed => Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed,
+            _ => Optional<Abstractions.NexusModsLibrary.Models.CollectionStatus>.None,
+        };
+    }
+
+    private static Optional<RevisionStatus> ToStatus(ILogger logger, ICollectionRevisionFragment revisionFragment)
+    {
+        // NOTE(erri120): no idea why the revision fragment has two strings for the status
+        Debug.Assert(revisionFragment.Status.Equals(revisionFragment.RevisionStatus, StringComparison.OrdinalIgnoreCase), $"weird things happening: {revisionFragment.Status} != {revisionFragment.RevisionStatus}");
+
+        if (revisionFragment.Status.Equals("draft", StringComparison.OrdinalIgnoreCase))
+            return RevisionStatus.Draft;
+        if (revisionFragment.Status.Equals("published", StringComparison.OrdinalIgnoreCase))
+            return RevisionStatus.Published;
+        logger.LogWarning("Unknown revision status: `{Status}`", revisionFragment.Status);
+        return Optional<RevisionStatus>.None;
+    }
+
     private static EntityId UpdateCollectionInfo(
         IDb db,
         ITransaction tx,
@@ -545,12 +636,14 @@ public partial class NexusModsLibrary
         var resolver = GraphQLResolver.Create(db, tx, CollectionMetadata.Slug, slug);
 
         resolver.Add(CollectionMetadata.CollectionId, id);
-        resolver.Add(CollectionMetadata.Slug, slug);
         resolver.Add(CollectionMetadata.Name, collectionInfo.Name);
         resolver.Add(CollectionMetadata.GameId, GameId.From((uint)collectionInfo.Game.Id));
         resolver.Add(CollectionMetadata.Summary, collectionInfo.Summary);
         resolver.Add(CollectionMetadata.Endorsements, (ulong)collectionInfo.Endorsements);
         resolver.Add(CollectionMetadata.TotalDownloads, (ulong)collectionInfo.TotalDownloads);
+
+        var status = ToStatus(collectionInfo);
+        if (status.HasValue) resolver.Add(CollectionMetadata.Status, status.Value);
 
         if (float.TryParse(collectionInfo.RecentRating ?? "0.0", CultureInfo.InvariantCulture, out var recentRating))
             resolver.Add(CollectionMetadata.RecentRating, recentRating);
