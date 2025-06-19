@@ -1037,4 +1037,10 @@ To apply changes or launch the game again, please close the game first.</value>
 
 Click **OK** to visit the mod page for manual update.</value>
     </data>
+    <data name="Library_Update_ReplaceFailed_Title" xml:space="preserve">
+        <value>Updates</value>
+    </data>
+    <data name="Library_Update_ReplaceFailed_Description" xml:space="preserve">
+        <value>The following updates failed:</value>
+    </data>
 </root>
