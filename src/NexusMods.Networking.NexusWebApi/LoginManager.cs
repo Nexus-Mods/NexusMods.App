@@ -9,7 +9,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Auth;
-using NexusMods.Sdk;
+using NexusMods.Sdk.Threading;
 using R3;
 
 namespace NexusMods.Networking.NexusWebApi;

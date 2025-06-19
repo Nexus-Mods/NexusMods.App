@@ -1,9 +1,11 @@
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Threading;
+
 namespace NexusMods.App.GarbageCollection.DataModel;
 
 /// <summary>

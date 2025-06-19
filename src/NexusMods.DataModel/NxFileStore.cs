@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Nx.Models;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
@@ -15,14 +13,14 @@ using NexusMods.Archives.Nx.Packing.Unpack;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.Hashes;
-#if DEBUG
+using NexusMods.Sdk.Threading;
 using System.Diagnostics;
-#endif
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.DataModel;
 

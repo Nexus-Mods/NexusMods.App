@@ -4,7 +4,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
         <ProjectReference Include="..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
         <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
     </ItemGroup>
