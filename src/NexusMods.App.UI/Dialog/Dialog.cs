@@ -5,11 +5,11 @@ using NexusMods.App.UI.Dialog.Enums;
 namespace NexusMods.App.UI.Dialog;
 
 public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
-    where TView : UserControl, IDialogView<TResult>
+    where TView : UserControl, IDialogView
     where TViewModel : IDialogViewModel<TResult>
 {
     private TView _view;
-    public TViewModel _viewModel;
+    private TViewModel _viewModel;
     private bool _hasUserResized = false;
 
     public Dialog(TView view, TViewModel viewModel)
@@ -18,7 +18,7 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
         _viewModel = viewModel;
     }
 
-    public Task<TResult?> ShowWindow(Window owner, bool isModal = false)
+    public Task<TResult> ShowWindow(Window owner, bool isModal = false)
     {
         // Get the initial size and position of the owner window
         var ownerSize = owner.ClientSize;
@@ -38,7 +38,7 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
             ShowInTaskbar = !isModal, // Show the window in the taskbar if it's not modal
         };
 
-        var tcs = new TaskCompletionSource<TResult?>();
+        var tcs = new TaskCompletionSource<TResult>();
 
         // when the window is closed, set the result and complete the task
         window.Closed += (o, args) =>

@@ -10,6 +10,20 @@ namespace NexusMods.App.UI.Dialog;
 /// </summary>
 public static class DialogFactory
 {
+   public static Dialog<DialogView, InputDialogViewModel, InputDialogResult> TestInputDialog => 
+        CreateInputDialog(
+            "Name your Collection",
+            [
+                DialogStandardButtons.Cancel,
+                // a create primary button
+                new DialogButtonDefinition("Create", ButtonDefinitionId.From("create"), ButtonAction.Accept, ButtonStyling.Primary),
+            ],
+            text: "This is the name that will appear in the left hand menu and on the Collections page.",
+            inputLabel: "Collection name",
+            inputWatermark: "e.g. My Armour Mods",
+            dialogWindowSize: DialogWindowSize.Medium
+        );
+    
     /*
      * STANDARD MESSAGE BOX INCLUDING BUTTONS
      */
@@ -118,6 +132,38 @@ public static class DialogFactory
             icon, dialogWindowSize, heading,
             markdownRenderer, contentViewModel
         );
+    }
+
+    private static Dialog<DialogView, InputDialogViewModel, InputDialogResult> CreateInputDialog(
+        string title,
+        DialogButtonDefinition[] buttonDefinitions,
+        string? text = null,
+        string? inputText = null,
+        string? inputLabel = null,
+        string? inputWatermark = null,
+        IconValue? icon = null,
+        DialogWindowSize dialogWindowSize = DialogWindowSize.Small,
+        string? heading = null,
+        IMarkdownRendererViewModel? markdownRenderer = null,
+        IViewModelInterface? contentViewModel = null)
+    {
+        var viewModel = new InputDialogViewModel(
+            title,
+            buttonDefinitions,
+            text,
+            heading,
+            inputText,
+            inputLabel,
+            inputWatermark,
+            icon,
+            dialogWindowSize,
+            markdownRenderer,
+            contentViewModel
+        );
+
+        var view = new DialogView { DataContext = viewModel };
+
+        return new Dialog<DialogView, InputDialogViewModel, InputDialogResult>(view, viewModel);
     }
 
     /// <summary>

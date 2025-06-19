@@ -1,51 +1,53 @@
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.UI.Sdk.Icons;
+using R3;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace NexusMods.App.UI.Dialog;
 
-public class DialogViewModel : IDialogViewModel<ButtonDefinitionId>
+public class InputDialogViewModel : AViewModel<IDialogViewModel<InputDialogResult>>, IDialogViewModel<InputDialogResult>
 {
-    public R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> ButtonPressCommand { get; }
     public string WindowTitle { get; }
     public double WindowWidth { get; }
     public string? Text { get; set; }
     public string? Heading { get; set; }
-    
+
     /// <summary>
     /// If provided, this will be displayed in a markdown control below the description. Use this
     /// for more descriptive information.
     /// </summary>
     public IMarkdownRendererViewModel? MarkdownRenderer { get; set; }
+
     public IconValue? Icon { get; }
     public DialogWindowSize DialogWindowSize { get; }
-    public event PropertyChangedEventHandler? PropertyChanged;
-    public ViewModelActivator Activator { get; } = null!;
 
     public IDialogView? View { get; set; }
-    public ButtonDefinitionId Result { get; set; }
+    public InputDialogResult Result { get; set; }
     public DialogButtonDefinition[] ButtonDefinitions { get; }
     public IViewModelInterface? ContentViewModel { get; set; }
+    
+    [Reactive]
+    public string InputText { get; set; }
+    public string InputLabel { get; set; }
+    public string InputWatermark { get; set; }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DialogViewModel"/> class.
-    /// </summary>
-    /// <param name="title">The title of the message box window.</param>
-    /// <param name="text">The main text content of the message box.</param>
-    /// <param name="buttonDefinitions">An array of button definitions for the message box.</param>
-    /// <param name="heading">An optional heading for the message box.</param>
-    /// <param name="icon">An optional icon to display in the message box.</param>
-    /// <param name="dialogWindowSize">The size of the message box (Small, Medium, or Large).</param>
-    /// <param name="markdownRendererViewModel">An optional markdown renderer for additional descriptive information.</param>
-    /// <param name="contentViewModel">An optional content view model for custom content. If this is set, only title and buttonDefinitions are additionally used.</param>
-    public DialogViewModel(
+    public R3.ReactiveCommand ClearInputCommand { get; }
+
+    public R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> ButtonPressCommand { get; }
+
+    public InputDialogViewModel(
         string title,
         DialogButtonDefinition[] buttonDefinitions,
         string? text = null,
         string? heading = null,
+        string? inputText = null,
+        string? inputLabel = null,
+        string? inputWatermark = null,
         IconValue? icon = null,
         DialogWindowSize dialogWindowSize = DialogWindowSize.Small,
         IMarkdownRendererViewModel? markdownRendererViewModel = null,
@@ -68,10 +70,26 @@ public class DialogViewModel : IDialogViewModel<ButtonDefinitionId>
         ContentViewModel = contentViewModel;
         MarkdownRenderer = markdownRendererViewModel;
 
-        ButtonPressCommand = new R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId>((id) =>
+        InputLabel = inputLabel ?? string.Empty;
+        InputWatermark = inputWatermark ?? string.Empty;
+        InputText = inputText ?? string.Empty;
+        
+        ClearInputCommand = new R3.ReactiveCommand(
+            executeAsync: (_, cancellationToken) =>
+            {
+                InputText = string.Empty;
+                return ValueTask.CompletedTask;
+            }
+        );
+
+        ButtonPressCommand = new R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId>(id =>
             {
                 Console.WriteLine(id);
-                Result = id;
+                Result = new InputDialogResult
+                {
+                    ButtonId = id,
+                    InputText = InputText,
+                };
                 return id;
             }
         );

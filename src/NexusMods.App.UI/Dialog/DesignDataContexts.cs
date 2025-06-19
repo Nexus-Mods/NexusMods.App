@@ -11,7 +11,21 @@ namespace NexusMods.App.UI.Dialog;
 internal static class DesignDataContexts
 {
     public static CustomContentExampleViewModel CustomContentExampleDesignViewModel { get; } = new("Custom Text");
-    public static TextInputViewModel TextInputDesignViewModel { get; } = new("Input Label", "Input Watermark");
+
+    public static InputDialogViewModel InputDialogDesignViewModel { get; } = new
+    (
+        title: "Input Dialog",
+        buttonDefinitions:
+        [
+            DialogStandardButtons.Ok,
+            DialogStandardButtons.Cancel,
+        ],
+        text: "Please enter your input:",
+        inputLabel: "Input",
+        inputWatermark: "Type here...",
+        icon: IconValues.AccountCog,
+        dialogWindowSize: DialogWindowSize.Medium
+    );
 
     public static MarkdownRendererViewModel MarkdownRendererDesignViewModel { get; } = new MarkdownRendererViewModel
     {
@@ -44,7 +58,7 @@ internal static class DesignDataContexts
      * The following message box examples are used for design purposes only. They are not intended to be used in production code.
      * https://www.figma.com/design/RGRSmIC4KoVlIosQB5YmQY/%F0%9F%93%B1%F0%9F%A7%B1-App-components?m=auto&node-id=2-1912
      */
-    
+
     public static DialogViewModel DialogDesignViewModelExampleSmall { get; } = new(
         "Delete this mod?",
         [
@@ -58,7 +72,7 @@ internal static class DesignDataContexts
         ],
         "Deleting this mod will remove it from all collections. This action cannot be undone."
     );
-    
+
     public static DialogViewModel DialogDesignViewModelExampleMedium { get; } = new(
         "Delete this mod?",
         [
@@ -119,7 +133,7 @@ internal static class DesignDataContexts
         DialogWindowSize.Medium,
         MarkdownRendererDesignViewModel
     );
-    
+
     public static DialogViewModel DialogAllDesignViewModel { get; } = new(
         "Title",
         [DialogStandardButtons.Ok, DialogStandardButtons.Yes, DialogStandardButtons.Cancel],

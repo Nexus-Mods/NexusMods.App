@@ -5,10 +5,15 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public interface IDialogViewModel<TResult> : IViewModelInterface
+public interface IDialogViewModel : IViewModelInterface
 {
-    public TResult? Result { get; set; }
-    public ReactiveCommand<TResult, TResult> CloseWindowCommand { get; }
+    public DialogButtonDefinition[] ButtonDefinitions { get; }
+    public R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> ButtonPressCommand { get; }
     public string WindowTitle { get; }
     public double WindowWidth { get; }
+}
+
+public interface IDialogViewModel<TResult> : IDialogViewModel
+{
+    public TResult Result { get; set; }
 }

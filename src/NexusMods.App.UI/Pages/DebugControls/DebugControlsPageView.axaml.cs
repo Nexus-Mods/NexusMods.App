@@ -354,34 +354,13 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         {
             if (ViewModel is null) return;
 
-            // create custom content viewmodel
-            var inputViewModel = new TextInputViewModel("Collection name", "e.g. My Armour Mods");
-
-            var dialog = DialogFactory.CreateMessageBox(
-                "Name your Collection",
-                "This is the name that will appear in the left hand menu and on the Collections page.",
-                "",
-                [
-                    DialogStandardButtons.Cancel,
-                    new DialogButtonDefinition(
-                        "Create",
-                        ButtonDefinitionId.From("create"),
-                        ButtonAction.Accept,
-                        ButtonStyling.Primary
-                    )
-                ],
-                null,
-                DialogWindowSize.Small,
-                null,
-                inputViewModel
-            );
+            var dialog = DialogFactory.TestInputDialog;
             
             // tell windowmanager to show it
             var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
 
             // check viewmodel properties when dialog has been closed
             Console.WriteLine($@"result: {result}");
-            Console.WriteLine($@"InputText: {inputViewModel.InputText}");
         }
         catch
         {

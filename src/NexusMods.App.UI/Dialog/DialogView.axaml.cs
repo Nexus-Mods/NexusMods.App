@@ -1,13 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text.RegularExpressions;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using Avalonia.Labs.Panels;
-using Avalonia.Markup.Xaml;
-using DynamicData;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 using ReactiveUI;
@@ -15,10 +9,10 @@ using Avalonia.ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogView<ButtonDefinitionId>
+public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDialogView
 {
     // this is what is returned when the window close button is clicked
-    private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.From("DefaultClose");
+    private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.From("window-close");
 
     public DialogView()
     {
@@ -37,7 +31,7 @@ public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogV
                 
                 // Bind the CloseWindowCommand to the CloseButton's Command.
                 this.OneWayBind(ViewModel,
-                        vm => vm.CloseWindowCommand,
+                        vm => vm.ButtonPressCommand,
                         view => view.CloseButton.Command
                     )
                     .DisposeWith(disposables);
@@ -81,7 +75,7 @@ public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogV
                     .DisposeWith(disposables);
 
                 // HIDE CONTROLS IF NOT NEEDED
-
+                
                 // only show the text if not null or empty
                 this.WhenAnyValue(view => view.ViewModel!.Text)
                     .Select(string.IsNullOrWhiteSpace)
@@ -111,6 +105,36 @@ public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogV
                     .Select(custom => custom is not null)
                     .Subscribe(b => CustomContentContainer.IsVisible = b)
                     .DisposeWith(disposables);
+                
+                    // only show the input stuff if not null or empty
+                this.WhenAnyValue(view => view.ViewModel!.InputLabel)
+                    .Select(string.IsNullOrWhiteSpace)
+                    .Subscribe(b => InputStack.IsVisible = !b)
+                    .DisposeWith(disposables);
+                
+                this.OneWayBind(ViewModel,
+                        vm => vm.InputLabel,
+                        view => view.InputLabel.Text
+                    )
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.InputWatermark,
+                        view => view.InputTextBox.Watermark
+                    )
+                    .DisposeWith(disposables);
+
+                this.Bind(ViewModel,
+                        vm => vm.InputText,
+                        view => view.InputTextBox.Text
+                    )
+                    .DisposeWith(disposables);
+                
+                this.BindCommand(ViewModel,
+                        vm => vm.ClearInputCommand,
+                        view => view.ButtonInputClear
+                    )
+                    .DisposeWith(disposables);
             }
         );
     }
@@ -134,7 +158,7 @@ public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogV
         buttonsFlexPanel.Children.Clear();
 
         // Access the ButtonDefinitions from the DataContext (assumes it's bound to MessageBoxViewModel)
-        if (DataContext is not DialogViewModel viewModel || viewModel.ButtonDefinitions.Length == 0) return;
+        if (DataContext is not IDialogViewModel viewModel || viewModel.ButtonDefinitions.Length == 0) return;
 
         // Loop through each button definition and create a StandardButton
         foreach (var buttonDefinition in viewModel.ButtonDefinitions)
@@ -144,22 +168,21 @@ public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogV
             {
                 Name = $"{buttonDefinition.Id}Button",
                 Text = buttonDefinition.Text,
-                Command = viewModel.CloseWindowCommand,
+                Command = viewModel.ButtonPressCommand,
                 CommandParameter = buttonDefinition.Id,
                 IsDefault = buttonDefinition.ButtonAction == ButtonAction.Accept,
                 IsCancel = buttonDefinition.ButtonAction == ButtonAction.Reject,
                 [Flex.GrowProperty] = 1,
                 [Flex.ShrinkProperty] = 0,
                 [Flex.BasisProperty] = FlexBasis.Parse("0%"),
-            };
-
-            // change showicon property based on what properties are set
-            button.ShowIcon = buttonDefinition switch
-            {
-                { LeftIcon: not null, RightIcon: null } => StandardButton.ShowIconOptions.Left,
-                { LeftIcon: null, RightIcon: not null } => StandardButton.ShowIconOptions.Right,
-                { LeftIcon: not null, RightIcon: not null } => StandardButton.ShowIconOptions.Both,
-                _ => StandardButton.ShowIconOptions.None
+                // change showicon property based on what properties are set
+                ShowIcon = buttonDefinition switch
+                {
+                    { LeftIcon: not null, RightIcon: null } => StandardButton.ShowIconOptions.Left,
+                    { LeftIcon: null, RightIcon: not null } => StandardButton.ShowIconOptions.Right,
+                    { LeftIcon: not null, RightIcon: not null } => StandardButton.ShowIconOptions.Both,
+                    _ => StandardButton.ShowIconOptions.None
+                },
             };
 
             switch (buttonDefinition.ButtonStyling)
@@ -191,5 +214,8 @@ public partial class DialogView : ReactiveUserControl<DialogViewModel>, IDialogV
         }
 
         buttonsFlexPanel.IsVisible = true;
+        
+        // Focus the InputTextBox when the modal loads
+        InputTextBox.AttachedToVisualTree += (s, e) => InputTextBox.Focus();
     }
 }

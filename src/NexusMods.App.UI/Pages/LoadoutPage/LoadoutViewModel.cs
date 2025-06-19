@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
@@ -121,7 +122,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     LoadoutDialogs.UpdateCollection(CollectionName) : 
                     LoadoutDialogs.ShareCollection(CollectionName);
                 
-                var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                var shareDialogResult = await windowManager.ShowDialog<ButtonDefinitionId>(shareDialog, DialogWindowType.Modal);
                 
                 // If the user did not click the share button, we do not proceed
                 if (shareDialogResult != ButtonDefinitionId.From("share")) return;
