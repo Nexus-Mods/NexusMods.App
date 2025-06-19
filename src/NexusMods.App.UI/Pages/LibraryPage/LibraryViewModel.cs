@@ -258,46 +258,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    /// <summary>
-    /// Attempts to replace library items in all loadouts and shows error dialog if the operation fails.
-    /// </summary>
-    /// <param name="oldToNewLibraryMapping">Mapping of old library items to new ones</param>
-    /// <param name="successfulDownloads">List of successfully downloaded items (for potential cleanup on failure)</param>
-    /// <returns>True if the replace operation succeeded, false otherwise</returns>
-    private async ValueTask<bool> TryReplaceLibraryItemsAsync(
-        List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping,
-        List<LibraryItem.ReadOnly> successfulDownloads)
-    {
-        var options = new ReplaceLibraryItemsOptions
-        {
-            IgnoreReadOnlyCollections = true,
-        };
-
-        var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
-        if (result != LibraryItemReplacementResult.Success)
-        {
-            // Replace operation failed, show error dialog with options
-            var description = Language.Library_Update_ReplaceFailed_Description + "\n";
-            var modsFailedToBuildStr = new StringBuilder();
-            foreach (var failed in oldToNewLibraryMapping)
-                modsFailedToBuildStr.AppendLine($"{failed.oldItem.Name}");
-
-            var errorDialog = DialogFactory.CreateMessageBox(
-                Language.Library_Update_ReplaceFailed_Title,
-                description + modsFailedToBuildStr,
-                [ DialogStandardButtons.Ok ]
-            );
-
-            await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
-
-            // User chose to delete the downloaded files from library
-            await _libraryService.RemoveLibraryItems(successfulDownloads);
-            return false;
-        }
-
-        return true;
-    }
-
     private async ValueTask HandleUpdateAndReplaceMessage(UpdateAndReplaceMessage updateAndReplaceMessage, CancellationToken cancellationToken)
     {
         var isPremium = _loginManager.IsPremium;
@@ -362,64 +322,75 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 }
             }
 
-            if (downloadErrors.Count == 0)
+            // If there's no downloads to replace, we failed to do all of them.
+            if (oldToNewLibraryMapping.Count > 0)
             {
-                // All downloads succeeded, proceed with replacement
-                await TryReplaceLibraryItemsAsync(oldToNewLibraryMapping, successfulDownloads);
-            }
-            else if (successfulDownloads.Count > 0)
-            {
-                // Some downloads failed - show message asking if user wants to keep successful ones
-                var failedCount = downloadErrors.Count;
-                var successCount = successfulDownloads.Count;
-
-                // TODO: Add to Language.resx
-                //       This is deliberately untranslated until design provides the final text.
-                //       I don't want the translators to translate the wrong text.
-                var partialFailureDialog = DialogFactory.CreateMessageBox(
-                    "Some Downloads Failed",
-                    $"{failedCount} of {failedCount + successCount} downloads failed.\n\n" +
-                    $"Do you want to continue with the {successCount} successful downloads and update your mods?",
-                    [
-                        DialogStandardButtons.Cancel,
-                        new DialogButtonDefinition("Continue",
-                            ButtonDefinitionId.From("Continue"),
-                            ButtonAction.Accept,
-                            ButtonStyling.Primary
-                        )
-                    ]
-                );
-
-                var result = await WindowManager.ShowDialog(partialFailureDialog, DialogWindowType.Modal);
-                if (result == ButtonDefinitionId.From("Continue"))
+                var options = new ReplaceLibraryItemsOptions
                 {
-                    // User wants to continue with successful downloads
-                    await TryReplaceLibraryItemsAsync(oldToNewLibraryMapping, successfulDownloads);
+                    IgnoreReadOnlyCollections = true,
+                };
+
+                var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
+                if (result != LibraryItemReplacementResult.Success)
+                {
+                    // Replace operation failed, show error dialog with options
+                    // We will pretend all items failed to replace, as we can't tell which
+                    // ones currently failed. The replace is an atomic operation either way,
+                    // so either one fails or all fail regardless.
+                    var description = Language.Library_Update_ReplaceFailed_Description + "\n";
+                    var modsFailedToBuildSb = new StringBuilder();
+                    foreach (var failed in oldToNewLibraryMapping)
+                        modsFailedToBuildSb.AppendLine($"{failed.oldItem.Name}");
+
+                    var errorDialog = DialogFactory.CreateMessageBox(
+                        Language.Library_Update_ReplaceFailed_Title,
+                        description + modsFailedToBuildSb,
+                        [ DialogStandardButtons.Ok ]
+                    );
+
+                    await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
+
+                    // User chose to delete the downloaded files from library
+                    await _libraryService.RemoveLibraryItems(successfulDownloads);
                 }
                 else
                 {
-                    // User cancelled, remove all downloaded files
-                    await _libraryService.RemoveLibraryItems(successfulDownloads);
+                    // Successfully replaced all items, show success message
+                    var finalDescription = new StringBuilder();
+                    finalDescription.AppendLine(Language.Library_Update_Success_Description1);
+                    finalDescription.AppendLine();
+                    foreach (var successItem in oldToNewLibraryMapping)
+                        finalDescription.AppendLine($"{successItem.oldItem.Name}");
+
+                    if (downloadErrors.Count > 0)
+                    {
+                        finalDescription.AppendLine();
+                        finalDescription.AppendLine(Language.Library_Update_Success_Description2);
+                        foreach (var downloadError in downloadErrors)
+                            finalDescription.AppendLine($"{downloadError.File.Name}");
+                    }
+                    
+                    var successDialog = DialogFactory.CreateMessageBox(
+                        Language.Library_Update_Success_Title,
+                        finalDescription.ToString(),
+                        [ DialogStandardButtons.Ok ]
+                    );
+
+                    await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
                 }
             }
             else
             {
-                // All downloads failed - show error message
-                var errorCount = downloadErrors.Count;
-
-                // TODO: Add to Language.resx
+                // All downloads failed, show error message
                 var allFailedDialog = DialogFactory.CreateMessageBox(
-                    "All Downloads Failed",
-                    $"All {errorCount} download(s) failed. No mods were updated.\n\n" +
-                    "Please check your internet connection and try again.",
+                    Language.Library_Update_AllDownloadsFailed_Title,
+                    string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count),
                     [DialogStandardButtons.Ok]
                 );
 
                 await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
             }
         }
-        
-        return;
     }
     
     private async ValueTask HandleUpdateAndKeepOldMessage(UpdateAndKeepOldMessage updateAndKeepOldMessage, CancellationToken cancellationToken)

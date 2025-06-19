@@ -2944,5 +2944,35 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Library_Update_ReplaceFailed_Description", resourceCulture);
             }
         }
+        
+        public static string Library_Update_AllDownloadsFailed_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_AllDownloadsFailed_Title", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_AllDownloadsFailed_Description {
+            get {
+                return ResourceManager.GetString("Library_Update_AllDownloadsFailed_Description", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_Success_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_Success_Title", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_Success_Description1 {
+            get {
+                return ResourceManager.GetString("Library_Update_Success_Description1", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_Success_Description2 {
+            get {
+                return ResourceManager.GetString("Library_Update_Success_Description2", resourceCulture);
+            }
+        }
     }
 }
