@@ -347,4 +347,50 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             throw; // TODO handle exception
         }
     }
+   
+
+    private async void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel is null) return;
+            
+            var dialog = DialogFactory.CreateMessageBox(
+                "Go Premium for one-click mod updates",
+                """
+                No browser, no manual downloads. Premium users also get:
+                
+                • Download entire collections with one click
+                • Uncapped download speeds
+                • No Ads for life, even if you unsubscribe after 1 month!
+                """,
+                "Update all your mods, or individual mods, in one click.",
+                [
+                    new DialogButtonDefinition(
+                        "Update mods manually",
+                        ButtonDefinitionId.From("update-manually"),
+                        ButtonAction.Reject),
+                    new DialogButtonDefinition(
+                        "Upgrade to Premium",
+                        ButtonDefinitionId.From("upgrade-premium"),
+                        ButtonAction.Accept,
+                        ButtonStyling.Premium)
+                ],
+                IconValues.PictogramPremium,
+                DialogWindowSize.Medium,
+                null,
+                null
+            );
+            
+            // tell windowmanager to show it
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+
+            // check viewmodel properties when dialog has been closed
+            Console.WriteLine($@"result: {result}");
+        }
+        catch
+        {
+            throw; // TODO handle exception
+        }
+    }
 }
