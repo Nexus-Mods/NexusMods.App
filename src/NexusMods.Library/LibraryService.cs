@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -58,16 +59,15 @@ public sealed class LibraryService : ILibraryService
     public IReadOnlyDictionary<Loadout.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> LoadoutsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems)
     {
         var dbToUse = _connection.Db;
-        var result = new Dictionary<Loadout.ReadOnly, List<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>>();
-        
+        var result = new Dictionary<Loadout.ReadOnly, List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>>();
+
         foreach (var libraryItem in libraryItems)
         {
             var linkedItems = LibraryLinkedLoadoutItem
                 .FindByLibraryItem(dbToUse, libraryItem)
-                .Select(x => (libraryItem, linkedItem: x))
                 .ToArray();
                 
-            foreach (var (item, linkedItem) in linkedItems)
+            foreach (var linkedItem in linkedItems)
             {
                 var loadout = linkedItem.AsLoadoutItem().Loadout;
                 if (!result.TryGetValue(loadout, out var list))
@@ -75,7 +75,68 @@ public sealed class LibraryService : ILibraryService
                     list = new List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>();
                     result[loadout] = list;
                 }
-                list.Add((item, linkedItem));
+                list.Add((libraryItem, linkedItem));
+            }
+        }
+
+        return result.ToDictionary(
+            kvp => kvp.Key,
+            kvp => (IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>)kvp.Value.AsReadOnly()
+        );
+    }
+
+    public IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem)
+    {
+        var dbToUse = _connection.Db;
+
+        // Find all linked loadout items for this library item
+        var linkedItems = LibraryLinkedLoadoutItem.FindByLibraryItem(dbToUse, libraryItem);
+
+        foreach (var linkedItem in linkedItems)
+        {
+            // Walk up the parent chain to find the nearest collection group
+            foreach (var parent in linkedItem.AsLoadoutItem().GetThisAndParents())
+            {
+                // First check if it's a LoadoutItemGroup, then if it's a CollectionGroup
+                if (parent.TryGetAsLoadoutItemGroup(out var itemGroup) &&
+                    itemGroup.TryGetAsCollectionGroup(out var collectionGroup))
+                {
+                    yield return (collectionGroup, linkedItem);
+                    break; // Found the nearest collection, no need to go further up
+                }
+            }
+        }
+    }
+
+    public IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems)
+    {
+        var dbToUse = _connection.Db;
+        var result = new Dictionary<CollectionGroup.ReadOnly, List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>>();
+        
+        foreach (var libraryItem in libraryItems)
+        {
+            var linkedItems = LibraryLinkedLoadoutItem
+                .FindByLibraryItem(dbToUse, libraryItem)
+                .ToArray();
+                
+            foreach (var linkedItem in linkedItems)
+            {
+                // Walk up the parent chain to find the nearest collection group
+                foreach (var parent in linkedItem.AsLoadoutItem().GetThisAndParents())
+                {
+                    // First check if it's a LoadoutItemGroup, then if it's a CollectionGroup
+                    if (parent.TryGetAsLoadoutItemGroup(out var itemGroup) && 
+                        itemGroup.TryGetAsCollectionGroup(out var collectionGroup))
+                    {
+                        if (!result.TryGetValue(collectionGroup, out var list))
+                        {
+                            list = new List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>();
+                            result[collectionGroup] = list;
+                        }
+                        list.Add((libraryItem, linkedItem));
+                        break; // Found the nearest collection, no need to go further up
+                    }
+                }
             }
         }
         
