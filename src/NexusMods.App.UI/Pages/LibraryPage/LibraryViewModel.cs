@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reactive.Linq;
+using System.Text;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -14,6 +15,8 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
@@ -217,7 +220,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                                 await InstallLibraryItem(libraryItem, _loadout, GetInstallationTarget(), cancellationToken);
                             }
                         },
-                        async updateMessage => await HandleUpdateMessage(updateMessage, cancellationToken),
+                        async updateAndReplaceMessage => await HandleUpdateAndReplaceMessage(updateAndReplaceMessage, cancellationToken),
+                        async updateAndKeepOldMessage => await HandleUpdateAndKeepOldMessage(updateAndKeepOldMessage, cancellationToken),
                         async viewChangelogMessage => await HandleViewChangelogMessage(viewChangelogMessage, cancellationToken),
                         async viewModPageMessage => await HandleViewModPageMessage(viewModPageMessage, cancellationToken),
                         async hideUpdatesMessage => await HandleHideUpdatesMessage(hideUpdatesMessage, cancellationToken)
@@ -257,9 +261,194 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         });
     }
 
-    private async ValueTask HandleUpdateMessage(UpdateMessage updateMessage, CancellationToken cancellationToken)
+    private async ValueTask HandleUpdateAndReplaceMessage(UpdateAndReplaceMessage updateAndReplaceMessage, CancellationToken cancellationToken)
     {
-        var updatesOnPage = updateMessage.Updates;
+        var isPremium = _loginManager.IsPremium;
+        if (!isPremium)
+        {
+            var dialog = DialogFactory.CreateOkCancelMessageBox(
+                Language.Dialog_ReplaceNotSupported_Title,
+                Language.Dialog_ReplaceNotSupported_Text
+            );
+            
+            await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+            await HandleUpdateAndKeepOldMessage(new UpdateAndKeepOldMessage(updateAndReplaceMessage.Updates, updateAndReplaceMessage.TreeNode), cancellationToken);
+        }
+        else
+        {
+            var updatesOnPage = updateAndReplaceMessage.Updates;
+
+            // Collect all library items that will be updated by linking with file metadata.
+            var libraryItemsToUpdate = new List<LibraryItem.ReadOnly>();
+            var newestToCurrentMapping = updatesOnPage.NewestToCurrentFileMapping();
+            foreach (var (_, currentFiles) in newestToCurrentMapping)
+            {
+                foreach (var currentFile in currentFiles)
+                {
+                    // Find existing library items for this file metadata
+                    var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
+                    foreach (var existingLibraryFile in existingLibraryItems)
+                    {
+                        var currentLibraryItem = existingLibraryFile.AsLibraryItem();
+                        libraryItemsToUpdate.Add(currentLibraryItem);
+                    }
+                }
+            }
+
+            // Find all affected loadouts
+            var collectionsAffected = _libraryService.CollectionsWithLibraryItems(libraryItemsToUpdate, excludeReadOnlyCollections: true);
+            var affectedCollectionCount = collectionsAffected.Count;
+
+            // If there is more than 1 non-readonly affected collection, show confirmation dialog
+            if (affectedCollectionCount >= 2)
+            {
+                var updateButtonId = ButtonDefinitionId.From("Update");
+                var cancelButtonId = ButtonDefinitionId.From("Cancel");
+
+                var dialogDesc = new StringBuilder();
+                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1);
+                dialogDesc.AppendLine();
+                foreach (var collectionAffected in collectionsAffected)
+                    dialogDesc.AppendLine(collectionAffected.Key.AsLoadoutItemGroup().AsLoadoutItem().Name);
+                
+                dialogDesc.AppendLine();
+                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
+
+                var confirmDialog = DialogFactory.CreateMessageBox(
+                    Language.Library_Update_InstalledInMultipleCollections_Title,
+                    dialogDesc.ToString(),
+                    [
+                        new DialogButtonDefinition(
+                            Language.Library_Update_InstalledInMultipleCollections_Cancel,
+                            cancelButtonId,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedCollectionCount),
+                            updateButtonId,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        )
+                    ]
+                );
+                
+                var dialogResult = await WindowManager.ShowDialog(confirmDialog, DialogWindowType.Modal);
+                if (dialogResult != updateButtonId)
+                {
+                    // User cancelled, don't proceed with update
+                    return;
+                }
+            }
+
+            // Note(sewer): There's usually just a few files in like 99% of the cases here
+            //              so no need to optimize around file reuse and TemporaryFileManager.
+            var oldToNewLibraryMapping = new List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
+            var downloadErrors = new List<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
+            var successfulDownloads = new List<LibraryItem.ReadOnly>();
+
+            foreach (var (newestFile, currentFiles) in newestToCurrentMapping)
+            {
+                try
+                {
+                    // Try a download.
+                    await using var tempPath = _temporaryFileManager.CreateFile();
+                    var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
+                    var libraryFile = await _libraryService.AddDownload(job);
+                    var newLibraryItem = libraryFile.AsLibraryItem();
+                    successfulDownloads.Add(newLibraryItem);
+
+                    // Map each current file to the new file
+                    foreach (var currentFile in currentFiles)
+                    {
+                        // Find existing library items for this file metadata
+                        var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
+                        foreach (var existingLibraryFile in existingLibraryItems) // Should only be one.
+                        {
+                            var currentLibraryItem = existingLibraryFile.AsLibraryItem();
+                            oldToNewLibraryMapping.Add((currentLibraryItem, newLibraryItem));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    downloadErrors.Add((newestFile, ex));
+                }
+            }
+
+            // If there's no downloads to replace, we failed to do all of them.
+            if (oldToNewLibraryMapping.Count > 0)
+            {
+                var options = new ReplaceLibraryItemsOptions
+                {
+                    IgnoreReadOnlyCollections = true,
+                };
+
+                var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
+                if (result != LibraryItemReplacementResult.Success)
+                {
+                    // Replace operation failed, show error dialog with options
+                    // We will pretend all items failed to replace, as we can't tell which
+                    // ones currently failed. The replace is an atomic operation either way,
+                    // so either one fails or all fail regardless.
+                    var description = Language.Library_Update_ReplaceFailed_Description + "\n";
+                    var modsFailedToBuildSb = new StringBuilder();
+                    foreach (var failed in oldToNewLibraryMapping)
+                        modsFailedToBuildSb.AppendLine($"{failed.oldItem.Name}");
+
+                    var errorDialog = DialogFactory.CreateMessageBox(
+                        Language.Library_Update_ReplaceFailed_Title,
+                        description + modsFailedToBuildSb,
+                        [ DialogStandardButtons.Ok ]
+                    );
+
+                    await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
+
+                    // User chose to delete the downloaded files from library
+                    await _libraryService.RemoveLibraryItems(successfulDownloads);
+                }
+                else
+                {
+                    // Successfully replaced all items, show success message
+                    var finalDescription = new StringBuilder();
+                    finalDescription.AppendLine(Language.Library_Update_Success_Description1);
+                    finalDescription.AppendLine();
+                    foreach (var successItem in oldToNewLibraryMapping)
+                        finalDescription.AppendLine($"{successItem.oldItem.Name}");
+
+                    if (downloadErrors.Count > 0)
+                    {
+                        finalDescription.AppendLine();
+                        finalDescription.AppendLine(Language.Library_Update_Success_Description2);
+                        foreach (var downloadError in downloadErrors)
+                            finalDescription.AppendLine($"{downloadError.File.Name}");
+                    }
+                    
+                    var successDialog = DialogFactory.CreateMessageBox(
+                        Language.Library_Update_Success_Title,
+                        finalDescription.ToString(),
+                        [ DialogStandardButtons.Ok ]
+                    );
+
+                    await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+                }
+            }
+            else
+            {
+                // All downloads failed, show error message
+                var allFailedDialog = DialogFactory.CreateMessageBox(
+                    Language.Library_Update_AllDownloadsFailed_Title,
+                    string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count),
+                    [DialogStandardButtons.Ok]
+                );
+
+                await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
+            }
+        }
+    }
+    
+    private async ValueTask HandleUpdateAndKeepOldMessage(UpdateAndKeepOldMessage updateAndKeepOldMessage, CancellationToken cancellationToken)
+    {
+        var updatesOnPage = updateAndKeepOldMessage.Updates;
         
         // Note(sewer)
         // If the user is a free user, they have to go to the website due to API restrictions.
@@ -512,20 +701,21 @@ After asking design, we're choosing to simply open the mod page for now.
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
-public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
+public readonly record struct UpdateAndReplaceMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
+public readonly record struct UpdateAndKeepOldMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
 public readonly record struct ViewChangelogMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct ViewModPageMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct HideUpdatesMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
     private readonly IConnection _connection;
 
-    public Subject<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, UpdateAndReplaceMessage, UpdateAndKeepOldMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
 
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
@@ -558,13 +748,26 @@ public class LibraryTreeDataGridAdapter :
         model.SubscribeToComponentAndTrack<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
             key: LibraryColumns.Actions.UpdateComponentKey,
             state: this,
-            factory: static (self, itemModel, component) => component.CommandUpdate
+            factory: static (self, itemModel, component) => component.CommandUpdateAndKeepOld
                 .SubscribeOnUIThreadDispatcher() // Update payload may expand row for free users, requiring UI thread.
                 .Subscribe((self, itemModel, component), static (_, state) =>
             {
                 var (self, model, component) = state;
                 var newFile = component.NewFiles.Value;
-                self.MessageSubject.OnNext(new UpdateMessage(newFile, model));
+                self.MessageSubject.OnNext(new UpdateAndKeepOldMessage(newFile, model));
+            })
+        );
+
+        model.SubscribeToComponentAndTrack<LibraryComponents.UpdateAction, LibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.UpdateComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandUpdateAndReplace
+                .SubscribeOnUIThreadDispatcher() // Update payload may expand row for free users, requiring UI thread.
+                .Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, component) = state;
+                var newFile = component.NewFiles.Value;
+                self.MessageSubject.OnNext(new UpdateAndReplaceMessage(newFile, model));
             })
         );
 

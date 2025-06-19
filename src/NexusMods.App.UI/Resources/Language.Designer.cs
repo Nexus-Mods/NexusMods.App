@@ -1942,9 +1942,99 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        public static string dada {
+        public static string Library_Update {
             get {
-                return ResourceManager.GetString("dada", resourceCulture);
+                return ResourceManager.GetString("Library_Update", resourceCulture);
+            }
+        }
+        
+        public static string Library_UpdateAndKeepOldMod {
+            get {
+                return ResourceManager.GetString("Library_UpdateAndKeepOldMod", resourceCulture);
+            }
+        }
+        
+        public static string Dialog_ReplaceNotSupported_Title {
+            get {
+                return ResourceManager.GetString("Dialog_ReplaceNotSupported_Title", resourceCulture);
+            }
+        }
+        
+        public static string Dialog_ReplaceNotSupported_Text {
+            get {
+                return ResourceManager.GetString("Dialog_ReplaceNotSupported_Text", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_ReplaceFailed_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_ReplaceFailed_Title", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_ReplaceFailed_Description {
+            get {
+                return ResourceManager.GetString("Library_Update_ReplaceFailed_Description", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_AllDownloadsFailed_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_AllDownloadsFailed_Title", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_AllDownloadsFailed_Description {
+            get {
+                return ResourceManager.GetString("Library_Update_AllDownloadsFailed_Description", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_Success_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_Success_Title", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_Success_Description1 {
+            get {
+                return ResourceManager.GetString("Library_Update_Success_Description1", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_Success_Description2 {
+            get {
+                return ResourceManager.GetString("Library_Update_Success_Description2", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Title", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Cancel {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Cancel", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Ok {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Ok", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Description1 {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Description1", resourceCulture);
+            }
+        }
+        
+        public static string Library_Update_InstalledInMultipleCollections_Description2 {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Description2", resourceCulture);
             }
         }
     }
