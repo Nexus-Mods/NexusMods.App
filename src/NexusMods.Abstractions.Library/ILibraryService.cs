@@ -49,6 +49,25 @@ public interface ILibraryService
     IReadOnlyDictionary<Loadout.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> LoadoutsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems);
 
     /// <summary>
+    /// Returns all collections that contain the given library item.
+    /// </summary>
+    /// <param name="libraryItem">The item to search for.</param>
+    /// <remarks>
+    ///     Returns tuples containing the collection and the linked item within that collection.
+    /// </remarks>
+    IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem);
+
+    /// <summary>
+    /// Returns all unique collections that contain any of the given library items.
+    /// </summary>
+    /// <param name="libraryItems">The items to search for.</param>
+    /// <remarks>
+    ///     Returns a dictionary where each key is a collection and the value is a list of 
+    ///     tuples containing the library items found in that collection and their linked items.
+    /// </remarks>
+    IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems);
+
+    /// <summary>
     /// Adds a library file.
     /// </summary>
     Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source);

@@ -293,11 +293,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             }
 
             // Find all affected loadouts
-            var loadoutsWithItems = _libraryService.LoadoutsWithLibraryItems(libraryItemsToUpdate);
-            var affectedLoadoutCount = loadoutsWithItems.Count;
+            var loadoutsWithCollections = _libraryService.CollectionsWithLibraryItems(libraryItemsToUpdate);
+            var affectedCollectionCount = loadoutsWithCollections.Count;
 
-            // If there are more than 2 total loadouts, show confirmation dialog
-            if (affectedLoadoutCount > 2)
+            // If there are more than 2 total collections, show confirmation dialog
+            if (affectedCollectionCount > 0)
             {
                 var updateButtonId = ButtonDefinitionId.From("Update");
                 var cancelButtonId = ButtonDefinitionId.From("Cancel");
@@ -312,7 +312,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                             ButtonAction.Reject
                         ),
                         new DialogButtonDefinition(
-                            string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedLoadoutCount),
+                            string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedCollectionCount),
                             updateButtonId,
                             ButtonAction.Accept,
                             ButtonStyling.Primary
