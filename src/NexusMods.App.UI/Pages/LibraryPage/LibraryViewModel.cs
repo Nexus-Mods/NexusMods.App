@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reactive.Linq;
+using System.Text;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -275,45 +277,21 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         if (result != LibraryItemReplacementResult.Success)
         {
             // Replace operation failed, show error dialog with options
-            // TODO: Add to Language.resx
+            var description = Language.Library_Update_ReplaceFailed_Description + "\n";
+            var modsFailedToBuildStr = new StringBuilder();
+            foreach (var failed in oldToNewLibraryMapping)
+                modsFailedToBuildStr.AppendLine($"{failed.oldItem.Name}");
+
             var errorDialog = DialogFactory.CreateMessageBox(
-                "Update Failed",
-                "Failed to replace mods in your loadouts. The downloaded files are still available in your Library.\n\n" +
-                "Would you like to retry the operation, keep the downloaded files, or remove them?",
-                [
-                    new DialogButtonDefinition("Remove Files", 
-                        ButtonDefinitionId.From("RemoveFiles"),
-                        ButtonAction.None, 
-                        ButtonStyling.Destructive
-                    ),
-                    new DialogButtonDefinition("Keep Files", 
-                        ButtonDefinitionId.From("KeepFiles"),
-                        ButtonAction.Reject, 
-                        ButtonStyling.Default
-                    ),
-                    new DialogButtonDefinition("Retry", 
-                        ButtonDefinitionId.From("Retry"),
-                        ButtonAction.Accept, 
-                        ButtonStyling.Primary
-                    )
-                ]
+                Language.Library_Update_ReplaceFailed_Title,
+                description + modsFailedToBuildStr,
+                [ DialogStandardButtons.Ok ]
             );
 
-            var dialogResult = await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
-            
-            if (dialogResult == ButtonDefinitionId.From("Retry"))
-            {
-                // User wants to retry the operation - recursively call this method
-                return await TryReplaceLibraryItemsAsync(oldToNewLibraryMapping, successfulDownloads);
-            }
-            else if (dialogResult == ButtonDefinitionId.From("RemoveFiles"))
-            {
-                // User chose to delete the downloaded files from library
-                await _libraryService.RemoveLibraryItems(successfulDownloads);
-            }
-            // If "KeepFiles" was selected, do nothing - files remain in library
-            
-            // TODO: Log the replacement error details
+            await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
+
+            // User chose to delete the downloaded files from library
+            await _libraryService.RemoveLibraryItems(successfulDownloads);
             return false;
         }
 
