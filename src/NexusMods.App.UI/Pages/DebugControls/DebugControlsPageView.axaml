@@ -1078,6 +1078,7 @@
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" ToolTip.Tip="Cog" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.CogOutline}" ToolTip.Tip="CogOutline" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Visibility}" ToolTip.Tip="Visibility" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.VisibilityOff}" ToolTip.Tip="VisibilityOff" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.ViewCarousel}"
                                                ToolTip.Tip="ViewCarousel" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Sort}" ToolTip.Tip="Sort" />
