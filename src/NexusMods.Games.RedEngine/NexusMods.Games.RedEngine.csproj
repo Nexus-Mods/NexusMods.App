@@ -17,13 +17,14 @@
 
     <ItemGroup>
         <None Remove="Resources\Cyberpunk2077\icon.png" />
-        <EmbeddedResource Include="Resources\Cyberpunk2077\icon.png" />
         <None Remove="Resources\Cyberpunk2077\game_image.jpg" />
-        <EmbeddedResource Include="Resources\Cyberpunk2077\game_image.jpg" />
         <None Update="build\NexusMods.Games.RedEngine.targets">
           <Pack>true</Pack>
           <PackagePath>build/NexusMods.FileExtractor.targets</PackagePath>
         </None>
+        <EmbeddedResource Include="Resources\Cyberpunk2077\thumbnail.webp" />
+        <None Remove="Resources\Cyberpunk2077\tile.webp" />
+        <EmbeddedResource Include="Resources\Cyberpunk2077\tile.webp" />
     </ItemGroup>
 
     <Import Project="build\NexusMods.Games.RedEngine.targets" />

@@ -1,13 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.App.BuildInfo;
 using NexusMods.Games.Larian.BaldursGate3;
 using NexusMods.Games.TestFramework;
+using NexusMods.Sdk;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.Games.Larian.Tests;

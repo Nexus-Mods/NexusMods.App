@@ -1,7 +1,7 @@
 ﻿using Avalonia.ReactiveUI;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
+using NexusMods.Sdk;
 using ReactiveUI;
 using R3;
 

@@ -30,6 +30,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
 {
     private readonly ILibraryService _libraryService;
     private readonly IModUpdateService _modUpdateService;
+    private readonly IModUpdateFilterService _filterService;
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly FakeTimeProvider _timeProvider;
@@ -40,13 +41,15 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         _libraryService = ServiceProvider.GetRequiredService<ILibraryService>();
         _nexusModsLibrary = ServiceProvider.GetRequiredService<NexusModsLibrary>();
         _timeProvider = new FakeTimeProvider();
+        _filterService = new ModUpdateFilterService(Connection);
         _modUpdateService = new ModUpdateService(
             ServiceProvider.GetRequiredService<IConnection>(),
             ServiceProvider.GetRequiredService<INexusApiClient>(),
             ServiceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>(),
             ServiceProvider.GetRequiredService<ILogger<ModUpdateService>>(),
             ServiceProvider.GetRequiredService<NexusGraphQLClient>(),
-            _timeProvider);
+            _timeProvider,
+            _filterService);
     }
 
     [Fact]
@@ -422,7 +425,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
     
     [Fact]
-    public async Task NotifyForUpdates_WithIgnoreFilter_ShouldNotReportIgnoredUpdates()
+    public async Task FilterService_HideAndShowFile_ShouldToggleUpdateVisibility()
     {
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
@@ -436,13 +439,8 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
             fileId: (FileId)spaceCoreData.FileId
         );
         
-        // Create a filter to ignore updates for this mod
-        var ignoreFilter = new IgnoreModUpdateFilter(ServiceProvider.GetRequiredService<IConnection>());
-
-        // Setup observable with the ignore filter applied
-        var observable = _modUpdateService.GetNewestFileVersionObservable(
-            downloadJob.Job.FileMetadata,
-            ignoreFilter.SelectMod); // Apply the filter
+        // Setup observable with the filter service applied
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
         
         // Create collection for results
         ModUpdateOnPage? updateOnPage = null;
@@ -451,32 +449,96 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
             if (val.HasValue)
                 updateOnPage = val.Value;
             else
-                updateOnPage = null; // We're watching only for 1 item.
+                updateOnPage = null;
         });
         
         // Add the mod to the library - should initially see updates
         _ = await _libraryService.AddDownload(downloadJob);
+        updateOnPage.Should().NotBeNull("Before hiding files, updates should be visible");
+        var initialUpdateCount = updateOnPage!.Value.NewerFiles.Length;
         
-        // Verify we initially receive update notifications
-        updateOnPage!.Should().NotBeNull("Before adding the ignore filter, updates should be visible");
-        
-        // Create an ignore entry for the newest file (the one we would update to)
+        // Hide the newest update file using the filter service
         var newestFile = spaceCoreData.Updates[^1]; // Get the latest update
         var newestFileUid = new UidForFile(
             (FileId)newestFile.FileId,
             (GameId)newestFile.GameId
         );
-        var connection = ServiceProvider.GetRequiredService<IConnection>();
-        using (var tx = connection.BeginTransaction())
-        {
-            // Create an IgnoreFileUpdateModel for the latest update file ID
-            _ = new IgnoreFileUpdate.New(tx) { Uid = newestFileUid };
-            await tx.Commit(); // This auto updates the ignore filter in `ModUpdateService`.
-            // And updates the `updateOnPage` variable via previous observable.
-        }
+        
+        await _filterService.HideFileAsync(newestFileUid);
+        
+        // Verify the file is now hidden
+        updateOnPage.Should().NotBeNull("Update should still exist after hiding a file");
+        updateOnPage!.Value.NewerFiles.Should().NotContain(x => x.Uid == newestFileUid, "After hiding the file, it should not be visible in updates");
+        updateOnPage.Value.NewerFiles.Length.Should().BeLessThan(initialUpdateCount, "Update count should decrease after hiding a file");
+        
+        // Show the file again using the filter service
+        await _filterService.ShowFileAsync(newestFileUid);
+        
+        // Verify the file is now visible again
+        updateOnPage.Should().NotBeNull("Update should still exist after showing a file");
+        updateOnPage!.Value.NewerFiles.Should().Contain(x => x.Uid == newestFileUid, "After showing the file, it should be visible in updates again");
+        updateOnPage.Value.NewerFiles.Length.Should().Be(initialUpdateCount, "Update count should return to original after showing the file");
+    }
+    
+    [Fact]
+    public async Task FilterService_HideAndShowMultipleFiles_ShouldToggleUpdateVisibility()
+    {
+        // Arrange
+        var spaceCoreData = StaticTestData.SpaceCoreModData;
 
-        // We should no longer have the ignored file.
-        updateOnPage!.Value.NewerFiles.Should().NotContain(x => x.Uid == newestFileUid,"After adding the ignore filter, updates should not be visible");
+        // Download an old version of SpaceCore
+        await using var tempFile = _temporaryFileManager.CreateFile();
+        var downloadJob = await _nexusModsLibrary.CreateDownloadJob(
+            destination: tempFile,
+            gameId: (GameId)spaceCoreData.GameId,
+            modId: (ModId)spaceCoreData.ModId,
+            fileId: (FileId)spaceCoreData.FileId
+        );
+        
+        // Setup observable with the filter service applied
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
+        
+        // Create collection for results
+        ModUpdateOnPage? updateOnPage = null;
+        using var subscription = observable.Subscribe(val => 
+        {
+            if (val.HasValue)
+                updateOnPage = val.Value;
+            else
+                updateOnPage = null;
+        });
+        
+        // Add the mod to the library - should initially see updates
+        _ = await _libraryService.AddDownload(downloadJob);
+        updateOnPage.Should().NotBeNull("Before hiding files, updates should be visible");
+        var initialUpdateCount = updateOnPage!.Value.NewerFiles.Length;
+        
+        // Hide multiple update files using the filter service
+        var filesToHide = spaceCoreData.Updates.TakeLast(2).Select(update => new UidForFile(
+            (FileId)update.FileId,
+            (GameId)update.GameId
+        )).ToArray();
+        
+        await _filterService.HideFilesAsync(filesToHide);
+        
+        // Verify the files are now hidden
+        updateOnPage.Should().NotBeNull("Update should still exist after hiding files");
+        foreach (var hiddenFileUid in filesToHide)
+        {
+            updateOnPage!.Value.NewerFiles.Should().NotContain(x => x.Uid == hiddenFileUid, $"After hiding, file {hiddenFileUid.FileId} should not be visible in updates");
+        }
+        updateOnPage!.Value.NewerFiles.Length.Should().BeLessThan(initialUpdateCount, "Update count should decrease after hiding files");
+        
+        // Show the files again using the filter service
+        await _filterService.ShowFilesAsync(filesToHide);
+        
+        // Verify the files are now visible again
+        updateOnPage.Should().NotBeNull("Update should still exist after showing files");
+        foreach (var shownFileUid in filesToHide)
+        {
+            updateOnPage!.Value.NewerFiles.Should().Contain(x => x.Uid == shownFileUid, $"After showing, file {shownFileUid.FileId} should be visible in updates again");
+        }
+        updateOnPage!.Value.NewerFiles.Length.Should().Be(initialUpdateCount, "Update count should return to original after showing the files");
     }
     
     private static void AssertUpdatesContainAllResults(StaticTestData.TestModData[] updates, ModUpdateOnPage modUpdate)

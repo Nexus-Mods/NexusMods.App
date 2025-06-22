@@ -6,6 +6,7 @@ namespace NexusMods.Networking.NexusWebApi.UpdateFilters;
 
 /// <summary>
 /// Represents a remote file on Nexus Mods which is currently ignored from update checks.
+/// If this structure is present in the database, it means that the file will not be included in update notifications.
 /// </summary>
 [PublicAPI]
 public partial class IgnoreFileUpdate : IModelDefinition

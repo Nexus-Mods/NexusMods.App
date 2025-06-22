@@ -25,7 +25,7 @@ public static class DialogStandardButtons
         Text: "Yes",
         Id: ButtonDefinitionId.From("Yes"),
         ButtonAction: ButtonAction.Accept,
-        ButtonStyling: ButtonStyling.Primary
+        ButtonStyling: ButtonStyling.Default
     );
     
     /// <summary>

@@ -408,7 +408,7 @@
         <value>Add games to start modding</value>
     </data>
     <data name="GameWidget__Adding_game" xml:space="preserve">
-        <value>Adding game</value>
+        <value>Adding...</value>
     </data>
     <data name="GameWidget__View" xml:space="preserve">
         <value>View</value>
@@ -417,7 +417,7 @@
         <value>Removes the game and all mods installed by the app</value>
     </data>
     <data name="GameWidget__Removing_game" xml:space="preserve">
-        <value>Removing game</value>
+        <value>Removing...</value>
     </data>
     <data name="ApplyDiff_Refresh" xml:space="preserve">
         <value>Refresh</value>
@@ -603,11 +603,17 @@
     <data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
         <value>Clears the selection. Ctrl+Click selects/deselects items. Shift+Click selects a range.</value>
     </data>
+    <data name="Library_ViewChangelog_Text" xml:space="preserve">
+        <value>View changelog</value>
+    </data>
+    <data name="Library_ViewModPage_Text" xml:space="preserve">
+        <value>View mod page</value>
+    </data>
     <data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
         <value>Install the selected mod(s) to this loadout</value>
     </data>
     <data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
-        <value>Permanently remove this mod from your Library</value>
+        <value>Permanently delete this mod</value>
     </data>
     <data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
         <value>Select specific files from a mod to add to your loadout</value>
@@ -989,5 +995,32 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
         <value>Upgrade to Premium</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Installed" xml:space="preserve">
+        <value>Installed</value>
+    </data>
+    <data name="LibraryComponents_InstallAction_ButtonText_Install" xml:space="preserve">
+        <value>Install</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloaded" xml:space="preserve">
+        <value>Downloaded</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Downloading" xml:space="preserve">
+        <value>Downloading</value>
+    </data>
+    <data name="CollectionComponents_DownloadAction_ButtonText_Download" xml:space="preserve">
+        <value>Download</value>
+    </data>
+    <data name="CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload" xml:space="preserve">
+        <value>Third-party download</value>
+    </data>
+    <data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
+        <value>Manual download</value>
+    </data>
+    <data name="Library_HideUpdates" xml:space="preserve">
+        <value>Hide updates ({0})</value>
+    </data>
+    <data name="Library_ShowUpdates" xml:space="preserve">
+        <value>Show updates ({0})</value>
     </data>
 </root>
