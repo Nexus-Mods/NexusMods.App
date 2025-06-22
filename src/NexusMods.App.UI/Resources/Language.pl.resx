@@ -393,7 +393,7 @@
 		<value>Dodaj swoje ulubione gry, aby rozpocząć ekscytującą przygodę z modowaniem.</value>
 	</data>
 	<data name="GameWidget__Adding_game" xml:space="preserve">
-		<value>Dodawanie gry</value>
+		<value>Dodawanie...</value>
 	</data>
 	<data name="GameWidget__View" xml:space="preserve">
 		<value>Pokaż</value>
@@ -402,7 +402,7 @@
 		<value>Usuwa grę i wszystkie mody zainstalowane przez aplikację</value>
 	</data>
 	<data name="GameWidget__Removing_game" xml:space="preserve">
-		<value>Usuwanie gry</value>
+		<value>Usuwanie...</value>
 	</data>
 	<data name="ApplyDiff_Refresh" xml:space="preserve">
 		<value>Odśwież</value>
@@ -968,5 +968,11 @@
 	</data>
 	<data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
 		<value>Ręczne pobieranie</value>
+	</data>
+	<data name="Library_HideUpdates" xml:space="preserve">
+		<value>Ukryj aktualizacje ({0})</value>
+	</data>
+	<data name="Library_ShowUpdates" xml:space="preserve">
+		<value>Pokaż aktualizacje ({0})</value>
 	</data>
 </root>
