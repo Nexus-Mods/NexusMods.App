@@ -693,10 +693,7 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Browse Collections.
-        /// </summary>
-        public static string FileOriginsPage_BrowseCollectionsNexusMods {
+        public static string DiagnosticDetailsView_SeverityTitle_SUGGESTION {
             get {
                 return ResourceManager.GetString("DiagnosticDetailsView_SeverityTitle_SUGGESTION", resourceCulture);
             }
