@@ -1,3 +1,34 @@
+# v0.13.0 2025-06-XX
+This release includes x, y and z.
+
+## Headline 1
+
+## Headline 2
+
+## More Features
+* Added the ability to toggle visibility of updates in the Library.
+* Updated the game artwork used by the app to match the Nexus Mods website.
+* Added the ability to select a preferred folder for Library storage.
+
+## Technical Changes
+* Collection and Library text strings can now be localised.
+
+## Bug Fixes
+* Fixes several issues with game detection for Heroic Games Launcher related to manifest parsing. 
+* Added timeouts to the background processes so it should now close correctly after 15-20 seconds if any tasks are still running, rather than staying open indefinitely. 
+* If REDmod is not installed when the app needs to run it, an error is silently added to the logs instead of showing the user a pop-up.
+* Fixed an error caused by the app attempting to compile REDmods but there are none installed. 
+* Fixed an error parsing WINE overrides on Linux for Cyberpunk 2077. 
+* Fixed a false positive with the "Missing packages" diagnostic for Cyberpunk 2077 on Linux caused by the app looking in the wrong location. 
+
+## Known Issues
+* When deleting a mod from the Library, the confirmation pop-up will not correctly show which collections depend on that mod.
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+
+
+
 # v0.12.3 - 2025-06-10
 This release includes UI improvements, performance optimisations, and bug fixes. 
 
