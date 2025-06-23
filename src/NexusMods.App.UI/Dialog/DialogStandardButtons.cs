@@ -19,7 +19,7 @@ public static class DialogStandardButtons
     );
     
     /// <summary>
-    /// Represents an "Yes" button with an accept action.
+    /// Represents a "Yes" button with an accept action.
     /// </summary>
     public static readonly DialogButtonDefinition Yes = new(
         Text: "Yes",
@@ -29,7 +29,7 @@ public static class DialogStandardButtons
     );
     
     /// <summary>
-    /// Represents a "No" button with an accept action.
+    /// Represents a "No" button with a reject action.
     /// </summary>
     public static readonly DialogButtonDefinition No = new(
         Text: "No",
