@@ -5,8 +5,8 @@ using System.Text;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.IO;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.FileExtractor.Extractors;
 

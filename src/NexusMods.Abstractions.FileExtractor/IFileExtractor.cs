@@ -1,5 +1,5 @@
-using NexusMods.Abstractions.IO;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Abstractions.FileExtractor;
 
@@ -22,7 +22,6 @@ public interface IFileExtractor
     /// <param name="sFn">The source stream.</param>
     /// <param name="dest">Destination file path.</param>
     /// <param name="token">Used for cancellation of the operation.</param>
-    /// <exception cref="FileExtractionException"></exception>
     public Task ExtractAllAsync(IStreamFactory sFn, AbsolutePath dest, CancellationToken token = default);
 
     /// <summary>

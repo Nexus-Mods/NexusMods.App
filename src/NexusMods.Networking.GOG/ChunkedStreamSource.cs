@@ -3,8 +3,8 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 using SmartFormat;
 
 namespace NexusMods.Networking.GOG;
