@@ -402,6 +402,7 @@ public class BuildHashesDb : IAsyncDisposable
                 _ = new EpicGameStoreBuild.New(tx)
                 {
                     BuildId = NexusMods.Abstractions.EpicGameStore.Values.BuildId.FromUnsanitized(build.Id),
+                    ManifestHash = ManifestHash.FromUnsanitized(build.ManifestHash),
                     ItemId = ItemId.FromUnsanitized(id),
                     AppName = build.AppName,
                     BuildVersion = build.BuildVersion,

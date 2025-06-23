@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.EpicGameStore.Attributes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -29,6 +30,11 @@ public partial class EpicGameStoreBuild : IModelDefinition
     /// The application name of the Epic Game Store build.
     /// </summary>
     public static readonly StringAttribute AppName = new(Namespace, nameof(AppName));
+    
+    /// <summary>
+    /// The manifest hash of the Epic Game Store build.
+    /// </summary>
+    public static readonly ManifestHashAttribute ManifestHash = new(Namespace, nameof(ManifestHash)) { IsIndexed = true };
     
     /// <summary>
     /// The label name of the Epic Game Store build.
