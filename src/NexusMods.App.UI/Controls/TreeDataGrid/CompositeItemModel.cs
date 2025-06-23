@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
@@ -60,19 +61,48 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
                 if (component is not IReactiveR3Object reactiveR3Object) continue;
                 reactiveR3Object.Activate().AddTo(disposables);
             }
-
-            self._components.ObserveDictionaryAdd().ObserveOnUIThreadDispatcher().Subscribe((self, disposables), static (change, tuple) =>
+            
+            self._components.ObserveChanged().ObserveOnUIThreadDispatcher().Subscribe((self, disposables), static (change, tuple) =>
             {
                 var (_, disposables) = tuple;
-                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
-                reactiveR3Object.Activate().AddTo(disposables);
-            }).AddTo(disposables);
 
-            self._components.ObserveDictionaryRemove().ObserveOnUIThreadDispatcher().Subscribe(static change =>
-            {
-                if (change.Value is not IReactiveR3Object reactiveR3Object) return;
-                reactiveR3Object.Dispose();
+                switch (change.Action)
+                {
+                    case NotifyCollectionChangedAction.Add:
+                    {
+                        if (change.NewItem.Value is not IReactiveR3Object reactiveR3Object) return;
+                        reactiveR3Object.Activate().AddTo(disposables);
+                        break;
+                    }
+                    case NotifyCollectionChangedAction.Remove:
+                    {
+                        if (change.OldItem.Value is not IReactiveR3Object oldReactiveR3Object) return;
+                        oldReactiveR3Object.Dispose();
+                        break;
+                    }
+                    case NotifyCollectionChangedAction.Replace:
+                    {
+                        // Don't dispose the old item if it's the same as the new one.
+                        if (change.OldItem.Value == change.NewItem.Value) return;
+                        
+                        if (change.OldItem.Value is IReactiveR3Object oldReactiveR3Object)
+                        {
+                            oldReactiveR3Object.Dispose();
+                        }
+
+                        if (change.NewItem.Value is not IReactiveR3Object reactiveR3Object) return;
+                        reactiveR3Object.Activate().AddTo(disposables);
+                        break;
+                    }
+                    case NotifyCollectionChangedAction.Move:
+                    case NotifyCollectionChangedAction.Reset:
+                        return;
+                    default: 
+                        // ReSharper disable once LocalizableElement
+                        throw new ArgumentOutOfRangeException(paramName: nameof(change.Action), actualValue: change.Action, "Unknown NotifyCollectionChangedAction");
+                }
             }).AddTo(disposables);
+            
         });
     }
 
@@ -314,17 +344,24 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
     /// </remarks>
     public Observable<Optional<TComponent>> GetObservable<TComponent>(ComponentKey key) where TComponent : class, IItemModelComponent<TComponent>, IComparable<TComponent>
     {
-        var adds = _components
-            .ObserveDictionaryAdd()
-            .Where(key, static (ev, key) => ev.Key == key)
-            .Select(key, static (ev, key) => Optional<TComponent>.Create(AssertComponent<TComponent>(key, ev.Value)));
+        var changes = _components
+            .ObserveChanged()
+            .Where(key,
+                static (ev, key) => ev.Action switch
+                        {
+                            NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Replace => ev.NewItem.Key == key,
+                            NotifyCollectionChangedAction.Remove => ev.OldItem.Key == key,
+                            NotifyCollectionChangedAction.Reset => true,
+                            NotifyCollectionChangedAction.Move => false,
+                        }
+            )
+            .Select(key, static (ev, key) => 
+                ev.Action is NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Replace ? 
+                Optional<TComponent>.Create(AssertComponent<TComponent>(key, ev.NewItem.Value)) : 
+                Optional<TComponent>.None
+            );
 
-        var removes = _components
-            .ObserveDictionaryRemove()
-            .Where(key, static (ev, key) => ev.Key == key)
-            .Select(static _ => Optional<TComponent>.None);
-
-        return adds.Merge(removes).Prepend((this, key), static state => state.Item1.GetOptional<TComponent>(state.Item2));
+        return changes.Prepend((this, key), static state => state.Item1.GetOptional<TComponent>(state.Item2));
     }
 
     /// <summary>
