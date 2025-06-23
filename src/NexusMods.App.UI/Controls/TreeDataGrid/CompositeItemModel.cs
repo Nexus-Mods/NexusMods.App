@@ -83,7 +83,7 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
                     case NotifyCollectionChangedAction.Replace:
                     {
                         // Don't dispose the old item if it's the same as the new one.
-                        if (change.OldItem.Value == change.NewItem.Value) return;
+                        if (ReferenceEquals(change.OldItem.Value, change.NewItem.Value)) return;
                         
                         if (change.OldItem.Value is IReactiveR3Object oldReactiveR3Object)
                         {
