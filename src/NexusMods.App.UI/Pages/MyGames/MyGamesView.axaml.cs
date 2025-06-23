@@ -21,8 +21,6 @@ public partial class MyGamesView : ReactiveUserControl<IMyGamesViewModel>
                     .BindToView(this, view => view.SupportedGamesItemsControl.ItemsSource)
                     .DisposeWith(d);
 
-                this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.GiveFeedbackButton)
-                    .DisposeWith(d);
 
                 this.BindCommand(ViewModel, vm => vm.OpenRoadmapCommand, view => view.OpenRoadmapButton)
                     .DisposeWith(d);
