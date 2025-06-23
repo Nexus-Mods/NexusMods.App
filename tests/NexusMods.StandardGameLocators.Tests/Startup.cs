@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.DependencyInjection;

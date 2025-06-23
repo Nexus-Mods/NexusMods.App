@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.App.BuildInfo;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Networking.NexusWebApi.V1Interop;
 using NexusMods.Sdk;
 
@@ -42,12 +42,15 @@ public static class Services
         collection.AddGameDomainToGameIdMappingModel();
         collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
         collection.AddSingleton(TimeProvider.System);
+
+        collection.AddIgnoreFileUpdateModel();
         
         collection
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
+            .AddSingleton<IModUpdateFilterService, ModUpdateFilterService>()
             .AddAllSingleton<IModUpdateService, ModUpdateService>()
             .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
@@ -57,10 +60,10 @@ public static class Services
             .ConfigureHttpClient((serviceProvider, httpClient) =>
             {
                 httpClient.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql");
-                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
+                httpClient.DefaultRequestHeaders.UserAgent.Add(ApplicationConstants.UserAgent);
 
-                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationName, ApplicationConstants.UserAgentApplicationName);
-                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationVersion, ApplicationConstants.UserAgentApplicationVersion);
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationName, ApplicationConstants.UserAgent.ApplicationName);
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationVersion, ApplicationConstants.UserAgent.ApplicationVersion);
 
                 var authenticationHeaderValue = serviceProvider.GetRequiredService<IHttpMessageFactory>().GetAuthenticationHeaderValue();
                 if (authenticationHeaderValue is null) return;

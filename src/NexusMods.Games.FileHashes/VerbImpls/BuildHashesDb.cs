@@ -395,7 +395,7 @@ public class BuildHashesDb : IAsyncDisposable
                 foreach (var file in buildFiles)
                 {
                     var relativePath = RelativePath.FromUnsanitizedInput(file.FileName);
-                    var relation = EnsureHashPathRelation(tx, _connection.Db, relativePath, Sha1.ParseFromHex(file.FileHash));
+                    var relation = EnsureHashPathRelation(tx, _connection.Db, relativePath, Sha1Value.FromHex(file.FileHash));
                     pathIds.Add(relation);
                 }
 
@@ -490,7 +490,7 @@ public class BuildHashesDb : IAsyncDisposable
     /// <summary>
     /// Find or insert a hash path relation
     /// </summary>
-    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1 hash)
+    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1Value hash)
     {
         var hashRelation = HashRelation.FindBySha1(referenceDb, hash).FirstOrDefault();
         

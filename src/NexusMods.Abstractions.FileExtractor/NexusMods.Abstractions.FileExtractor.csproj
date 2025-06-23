@@ -18,7 +18,6 @@
       <PackageReference Include="NexusMods.Paths" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
     </ItemGroup>
 </Project>

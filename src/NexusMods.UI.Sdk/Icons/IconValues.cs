@@ -59,7 +59,11 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/check/
     public static readonly IconValue Check = new ProjektankerIcon("mdi-check");
+    
 
+    // https://pictogrammers.com/library/mdi/icon/check-bold/
+    public static readonly IconValue CheckBold = new ProjektankerIcon("mdi-check-bold");
+    
     // https://pictogrammers.com/library/mdi/icon/check-circle/
     public static readonly IconValue CheckCircle = new ProjektankerIcon("mdi-check-circle");
     
@@ -144,6 +148,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/eye/
     public static readonly IconValue Visibility = new ProjektankerIcon("mdi-eye");
+
+    // https://pictogrammers.com/library/mdi/icon/eye/
+    public static readonly IconValue VisibilityOff = new ProjektankerIcon("mdi-eye-off");
     
     // https://pictogrammers.com/library/mdi/icon/view-carousel/
     public static readonly IconValue ViewCarousel = new ProjektankerIcon("mdi-view-carousel");

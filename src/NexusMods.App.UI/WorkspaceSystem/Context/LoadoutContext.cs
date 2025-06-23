@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Ids;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.MnemonicDB.Abstractions;
 

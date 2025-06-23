@@ -8,8 +8,6 @@ using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -19,6 +17,7 @@ using NexusMods.Games.FileHashes.Emitters;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.StardewValley.Installers;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.StardewValley;
 
@@ -105,9 +104,9 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         return result;
     }
 
-    public override IStreamFactory Icon => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.icon.png");
+    public override IStreamFactory Icon => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.thumbnail.webp");
 
-    public override IStreamFactory GameImage => new EmbededResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.game_image.jpg");
+    public override IStreamFactory GameImage => new EmbeddedResourceStreamFactory<StardewValley>("NexusMods.Games.StardewValley.Resources.tile.webp");
 
     public override ILibraryItemInstaller[] LibraryItemInstallers =>
     [

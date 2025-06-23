@@ -54,12 +54,14 @@ public class HeroicGogLocator : IGameLocator
             if (found is HeroicGOGGame heroicGOGGame)
             {
                 var wineData = heroicGOGGame.WineData;
-                if (wineData is not null)
+                var winePrefix = heroicGOGGame.GetWinePrefix();
+                if (wineData is not null && winePrefix is not null)
                 {
-                    if (wineData.WinePrefixPath.DirectoryExists())
+                    var winePrefixPath = winePrefix.ConfigurationDirectory;
+                    if (winePrefixPath.DirectoryExists())
                     {
-                        fs = heroicGOGGame.GetWinePrefix()!.CreateOverlayFileSystem(fs);
-                        linuxCompatibilityDataProvider = new LinuxCompatibilityDataProvider(wineData.WinePrefixPath, wineData.EnvironmentVariables);
+                        fs = winePrefix.CreateOverlayFileSystem(fs);
+                        linuxCompatibilityDataProvider = new LinuxCompatibilityDataProvider(winePrefixPath, wineData.EnvironmentVariables);
                     }
                 }
 
@@ -70,12 +72,14 @@ public class HeroicGogLocator : IGameLocator
                     gamePath = gamePath.Combine("game");
             }
 
-            yield return new GameLocatorResult(gamePath, fs, GameStore.GOG, new HeroicGOGLocatorResultMetadata
-            {
-                Id = id,
-                BuildId = found.BuildId,
-                LinuxCompatibilityDataProvider = linuxCompatibilityDataProvider,
-            });
+            yield return new GameLocatorResult(gamePath, fs, GameStore.GOG,
+                new HeroicGOGLocatorResultMetadata
+                {
+                    Id = id,
+                    BuildId = found.BuildId,
+                    LinuxCompatibilityDataProvider = linuxCompatibilityDataProvider,
+                }
+            );
         }
     }
 

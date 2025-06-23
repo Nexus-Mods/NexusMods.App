@@ -11,8 +11,13 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
+using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
@@ -20,14 +25,18 @@ using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
+using NexusMods.Collections;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -43,8 +52,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
     public ILibraryService _LibraryService;
-    
-    [Reactive] public string CollectionName { get; private set; } 
+
+    [Reactive] public string CollectionName { get; private set; }
 
     [Reactive] public int SelectionCount { get; private set; }
     [Reactive] public bool IsCollection { get; private set; }
@@ -56,6 +65,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     [Reactive] public bool HasRulesSection { get; private set; } = false;
     [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
+
+    public ReactiveCommand<Unit> CommandUploadRevision { get; }
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -98,6 +109,16 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId,
                 canEditObservable: isSingleCollectionObservable
             );
+
+            CommandUploadRevision = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
+                var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+                var gameDomain = await mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
+
+                var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
+            }, maxSequential: 1, configureAwait: false);
         }
         else
         {
@@ -105,9 +126,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
-            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId,
-                Optional<Observable<bool>>.None
-            );
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
+            CommandUploadRevision = new ReactiveCommand();
         }
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
@@ -199,6 +219,31 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         .ToArray();
 
                     if (ids.Length == 0) return;
+
+                    var dialog = DialogFactory.CreateMessageBox(
+                        "Uninstall mod(s)",
+                        $"""
+                        This will remove the selected mod(s) from:
+                        
+                        {CollectionName}
+                        
+                        ✓ The mod(s) will stay in your Library
+                        ✓ You can reinstall anytime
+                        """,
+                        [
+                            DialogStandardButtons.Cancel, 
+                            new DialogButtonDefinition("Uninstall", 
+                                ButtonDefinitionId.From("Uninstall"),
+                                ButtonAction.Accept, 
+                                ButtonStyling.Default
+                            )
+                        ]
+                    );
+
+                    var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+
+                    if (result != ButtonDefinitionId.From("Uninstall")) return;
+
                     await _LibraryService.RemoveLinkedItemsFromLoadout(ids);
                 },
                 awaitOperation: AwaitOperation.Sequential,
@@ -230,16 +275,17 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         }
                     }, awaitOperation: AwaitOperation.Parallel, configureAwait: false
                 ).AddTo(disposables);
-                
+
                 // Update the selection count based on the selected models
                 Adapter.SelectedModels
-                        .ObserveChanged()
-                        .Select(_ => Adapter.SelectedModels
-                            .SelectMany(model => GetLoadoutItemIds(model))
-                            .Distinct()
-                            .Count())
-                        .ObserveOnUIThreadDispatcher()
-                        .Subscribe(count => SelectionCount = count);
+                    .ObserveChanged()
+                    .Select(_ => Adapter.SelectedModels
+                        .SelectMany(model => GetLoadoutItemIds(model))
+                        .Distinct()
+                        .Count()
+                    )
+                    .ObserveOnUIThreadDispatcher()
+                    .Subscribe(count => SelectionCount = count);
 
                 // Compute the target group for the ViewFilesCommand
                 Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)

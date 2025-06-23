@@ -1,20 +1,36 @@
+using System.Diagnostics;
+using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 using DynamicData.Kernel;
+using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
+using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.IO;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
+using ModSource = NexusMods.Abstractions.Collections.Json.ModSource;
+using Size = NexusMods.Paths.Size;
+using UpdatePolicy = NexusMods.Abstractions.Collections.Json.UpdatePolicy;
 
 namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
+    // TODO: remove for GA
+    public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
+
     private static string GenerateNewCollectionName(string[] allNames)
     {
         const string defaultValue = "My new collection";
@@ -59,6 +75,84 @@ public static class CollectionCreator
         return result.Remap(group);
     }
 
+    public static async ValueTask<CollectionMetadata.ReadOnly> UploadDraftRevision(
+        IServiceProvider serviceProvider,
+        LoadoutItemGroupId groupId,
+        CancellationToken cancellationToken)
+    {
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+        var loginManager = serviceProvider.GetRequiredService<ILoginManager>();
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
+        var jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
+        var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+
+        var userInfo = loginManager.UserInfo;
+        if (userInfo is null) throw new NotImplementedException();
+
+        var users = User.FindByNexusId(connection.Db, userInfo.UserId.Value);
+        if (!users.TryGetFirst(out var user))
+        {
+            using var tx1 = connection.BeginTransaction();
+
+            var newUser = new User.New(tx1)
+            {
+                Name = userInfo.Name,
+                AvatarUri = userInfo.AvatarUrl ?? new Uri("https://example.org"),
+                NexusId = userInfo.UserId.Value,
+            };
+
+            var result = await tx1.Commit();
+            user = result.Remap(newUser);
+        }
+
+        var group = CollectionGroup.Load(connection.Db, groupId);
+        Debug.Assert(group.IsValid());
+
+        var collectionManifest = LoadoutItemGroupToCollectionManifest(
+            group: group.AsLoadoutItemGroup(),
+            mappingCache: mappingCache,
+            author: user
+        );
+
+        await using var archiveFile = temporaryFileManager.CreateFile(ext: Extension.FromPath(".zip"));
+        var streamFactory = await CreateArchive(archiveFile, jsonSerializerOptions, collectionManifest, cancellationToken);
+
+        using var tx = connection.BeginTransaction();
+
+        CollectionMetadata.ReadOnly collection;
+        if (group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup))
+        {
+            collection = managedCollectionLoadoutGroup.Collection;
+            await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+        }
+        else
+        {
+            collection = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
+            tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
+        }
+
+        await tx.Commit();
+        return collection;
+    }
+
+    private static async ValueTask<IStreamFactory> CreateArchive(
+        AbsolutePath archiveFilePath,
+        JsonSerializerOptions jsonSerializerOptions,
+        CollectionRoot collectionManifest,
+        CancellationToken cancellationToken)
+    {
+        await using (var archiveStream = archiveFilePath.Open(mode: FileMode.Create, access: FileAccess.ReadWrite, share: FileShare.Read))
+        using (var zipArchive = new ZipArchive(archiveStream, ZipArchiveMode.Create, leaveOpen: true, entryNameEncoding: Encoding.UTF8))
+        {
+            var entry = zipArchive.CreateEntry("collection.json");
+            await using var entryStream = entry.Open();
+            await JsonSerializer.SerializeAsync(entryStream, collectionManifest, jsonSerializerOptions, cancellationToken: cancellationToken);
+        }
+
+        return new NativeFileStreamFactory(archiveFilePath);
+    }
+
     /// <summary>
     /// Creates a collection JSON manifest from a loadout item group.
     /// </summary>
@@ -67,6 +161,8 @@ public static class CollectionCreator
         IGameDomainToGameIdMappingCache mappingCache,
         User.ReadOnly author)
     {
+        Debug.Assert(group.IsValid());
+
         var gameId = group.AsLoadoutItem().Loadout.Installation.GameId;
         var gameDomain = mappingCache.TryGetDomain(gameId, CancellationToken.None).Value;
 
@@ -148,7 +244,7 @@ public static class CollectionCreator
                 FileId = nexusModsFile.Uid.FileId,
                 UpdatePolicy = UpdatePolicy.ExactVersionOnly,
                 FileSize = libraryFile.Convert(x => x.Size).ValueOr(() => Size.Zero),
-                Md5 = libraryFile.Convert(x => x.Md5).ValueOr(() => Md5HashValue.From(0)),
+                Md5 = libraryFile.Convert(x => x.Md5).ValueOr(() => Md5Value.From(0)),
             },
         };
     }
