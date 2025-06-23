@@ -3,9 +3,9 @@ using System.Text;
 using FluentAssertions;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging.Abstractions;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.FileExtractor.Tests;
 
