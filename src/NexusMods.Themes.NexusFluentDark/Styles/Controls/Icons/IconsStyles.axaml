@@ -509,6 +509,10 @@
     <Style Selector="icons|UnifiedIcon.Visibility">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Visibility}" />
     </Style>
+    
+    <Style Selector="icons|UnifiedIcon.VisibilityOff">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityOff}" />
+    </Style>
 
     <Style Selector="icons|UnifiedIcon.PlaylistAdd">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PlaylistAdd}" />

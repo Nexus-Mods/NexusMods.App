@@ -2,13 +2,12 @@ using JetBrains.Annotations;
 using Polly;
 using Polly.Fallback;
 
-namespace NexusMods.Sdk.Resources.Resilience;
+namespace NexusMods.Sdk.Resources;
 
 /// <summary>
 /// Extension methods.
 /// </summary>
-[PublicAPI]
-public static class Extensions
+public static partial class Extensions
 {
     /// <summary>
     /// Adds resilience using Polly.

@@ -1,11 +1,10 @@
-using System.Collections.Frozen;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Paths;
-using NexusMods.Sdk;
+using NexusMods.Sdk.Threading;
 using GroupId = NexusMods.Abstractions.GuidedInstallers.ValueObjects.GroupId;
 using Option = NexusMods.Abstractions.GuidedInstallers.Option;
 using OptionGroup = NexusMods.Abstractions.GuidedInstallers.OptionGroup;

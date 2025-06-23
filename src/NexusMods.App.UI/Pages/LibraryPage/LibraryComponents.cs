@@ -10,6 +10,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.UI.Sdk.Icons;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -81,24 +82,28 @@ public static class LibraryColumns
             var aViewModPage = a.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
             var bViewModPage = b.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
 
-            var orderA = GetOrder(aInstall, aUpdate, aViewChangelog, aViewModPage);
-            var orderB = GetOrder(bInstall, bUpdate, bViewChangelog, bViewModPage);
+            var aHideUpdates = a.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
+            var bHideUpdates = b.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
+
+            var orderA = GetOrder(aInstall, aUpdate, aViewChangelog, aViewModPage, aHideUpdates);
+            var orderB = GetOrder(bInstall, bUpdate, bViewChangelog, bViewModPage, bHideUpdates);
 
             return orderA.CompareTo(orderB);
             
-            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update, Optional<LibraryComponents.ViewChangelogAction> viewChangelog, Optional<LibraryComponents.ViewModPageAction> viewModPage)
+            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update, Optional<LibraryComponents.ViewChangelogAction> viewChangelog, Optional<LibraryComponents.ViewModPageAction> viewModPage, Optional<LibraryComponents.HideUpdatesAction> hideUpdates)
             {
                 var isUpdateAvailable = update.HasValue;
                 var hasInstallButton = install is { HasValue: true, Value.IsInstalled.Value: false };
                 var isInstalled = install is { HasValue: true, Value.IsInstalled.Value: true };
                 var hasViewChangelog = viewChangelog.HasValue;
                 var hasViewModPage = viewModPage.HasValue;
+                var hasHideUpdates = hideUpdates.HasValue;
 
                 if (isUpdateAvailable && hasInstallButton) return 1;
                 if (hasInstallButton) return 2;
                 if (isUpdateAvailable) return 3;
                 if (isInstalled) return 4;
-                if (hasViewChangelog || hasViewModPage) return 5;
+                if (hasViewChangelog || hasViewModPage || hasHideUpdates) return 5;
                 return 6;
             }
         }
@@ -109,6 +114,7 @@ public static class LibraryColumns
         public static readonly ComponentKey UpdateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Update");
         public static readonly ComponentKey ViewChangelogComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewChangelog");
         public static readonly ComponentKey ViewModPageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewModPage");
+        public static readonly ComponentKey HideUpdatesComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "HideUpdates");
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
@@ -361,7 +367,7 @@ public static class LibraryComponents
 
     public sealed class ViewChangelogAction : ReactiveR3Object, IItemModelComponent<ViewChangelogAction>, IComparable<ViewChangelogAction>
     {
-        public ReactiveCommand<Unit> CommandViewChangelog { get; } = new ReactiveCommand<Unit>();
+        public ReactiveCommand<Unit> CommandViewChangelog { get; } = new();
         public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
 
         public int CompareTo(ViewChangelogAction? other)
@@ -422,6 +428,60 @@ public static class LibraryComponents
             }
 
             base.Dispose(disposing);
+        }
+    }
+
+    public sealed class HideUpdatesAction : ReactiveR3Object, IItemModelComponent<HideUpdatesAction>, IComparable<HideUpdatesAction>
+    {
+        public ReactiveCommand<Unit> CommandHideUpdates { get; } = new();
+        public BindableReactiveProperty<bool> IsEnabled { get; }
+        public BindableReactiveProperty<bool> IsHidden { get; }
+        public BindableReactiveProperty<string> ButtonText { get; }
+        public BindableReactiveProperty<IconValue> Icon { get; }
+
+        public int CompareTo(HideUpdatesAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All hide updates actions are considered equal for sorting
+        }
+
+        public HideUpdatesAction(Observable<bool> isHiddenObservable, Observable<int> itemCount, Observable<bool> isEnabled)
+        {
+            IsHidden = isHiddenObservable.ToBindableReactiveProperty();
+            IsEnabled = isEnabled.ToBindableReactiveProperty();
+            
+            // Button text changes based on hidden state and item count
+            // We use BindableReactiveProperty on ButtonText field as UI elements bind to this.
+            ButtonText = IsHidden.AsObservable()
+                .CombineLatest(itemCount, static (isHidden, count) => FormatShowUpdates(isHidden, count))
+                .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false, 0));
+            
+            // Icon changes based on hidden state
+            // Use Visibility when hidden (showing "Show Updates"), VisibilityOff when shown (showing "Hide Updates")
+            Icon = IsHidden.AsObservable()
+                .Select(static isHidden => isHidden ? IconValues.Visibility : IconValues.VisibilityOff)
+                .ToBindableReactiveProperty(initialValue: IconValues.Visibility);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                    Disposable.Dispose(CommandHideUpdates, IsEnabled, IsHidden, ButtonText, Icon);
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private static string FormatShowUpdates(bool isHidden, int itemCount)
+        {
+            return string.Format(isHidden 
+                ? Resources.Language.Library_ShowUpdates 
+                : Resources.Language.Library_HideUpdates, itemCount);
         }
     }
 }

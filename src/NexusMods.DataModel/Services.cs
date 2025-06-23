@@ -5,10 +5,8 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Sorting;
-using NexusMods.Abstractions.Resources.DB;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
@@ -24,6 +22,8 @@ using NexusMods.MnemonicDB.Storage.Abstractions;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.DataModel;
 

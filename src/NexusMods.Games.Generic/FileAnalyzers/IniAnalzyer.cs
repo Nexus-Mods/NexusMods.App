@@ -1,7 +1,7 @@
 using IniParser;
 using IniParser.Model.Configuration;
 using IniParser.Parser;
-using NexusMods.Abstractions.IO;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.Generic.FileAnalyzers;
 

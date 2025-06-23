@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -28,6 +29,7 @@ using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
@@ -217,7 +219,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                         },
                         async updateMessage => await HandleUpdateMessage(updateMessage, cancellationToken),
                         async viewChangelogMessage => await HandleViewChangelogMessage(viewChangelogMessage, cancellationToken),
-                        async viewModPageMessage => await HandleViewModPageMessage(viewModPageMessage, cancellationToken)
+                        async viewModPageMessage => await HandleViewModPageMessage(viewModPageMessage, cancellationToken),
+                        async hideUpdatesMessage => await HandleHideUpdatesMessage(hideUpdatesMessage, cancellationToken)
                     );
                 },
                 awaitOperation: AwaitOperation.Parallel,
@@ -339,6 +342,70 @@ After asking design, we're choosing to simply open the mod page for now.
             libraryItemId => OpenModPage(new NexusModsLibraryItem.ReadOnly(_connection.Db, libraryItemId).ModPageMetadataId, cancellationToken)
         );
     }
+    
+    private async ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
+    {
+        var modUpdateFilterService = _serviceProvider.GetRequiredService<IModUpdateFilterService>();
+
+        await hideUpdatesMessage.Id.Match(
+            async modPageId =>
+            {
+                // Handle hiding/showing updates for a mod page
+                // First get all library items we have that come from the mod page.
+                var allLibraryFilesForThisMod =  NexusModsLibraryItem.All(_connection.Db)
+                    .Where(x => x.ModPageMetadataId == modPageId)
+                    .Select(x => x.FileMetadata)
+                    .ToArray();
+
+                // Note(sewer):
+                // Behaviour per captainsandypants (Slack).
+                // 'If any children have updates set to hidden, then the parent should have "Show updates" as the menu item.
+                // When selected, this will set all children to show updates.'
+                //
+                // We have to be careful here.
+                // We have a list of ***current versions*** of files in the mod page.
+                // We need to check if it's possible to update ***any of these current versions*** to a new file.
+                //     👉 👉 So for each file we need to check if any of its versions is not ignored as an update.
+                var modsWithUpdatesHidden = allLibraryFilesForThisMod.Where(x =>
+                    {
+                        // Checking all versions is not a bug, it is intended behaviour per design.
+                        // Search 'That definition also means older versions should be excluded from update checks.' in Slack.
+                        var newerFiles = RunUpdateCheck.GetAllVersionsForExistingFile(x).ToArray();
+                        return newerFiles.All(newer => modUpdateFilterService.IsFileHidden(newer.Uid));
+                    }
+                ).ToArray();
+
+                if (modsWithUpdatesHidden.Length > 0)
+                {
+                    var allVersionsOfLibraryItemsWithUpdatesHidden =
+                        modsWithUpdatesHidden.SelectMany(RunUpdateCheck.GetAllVersionsForExistingFile)
+                                             .Select(x => x.Uid);
+                    await modUpdateFilterService.ShowFilesAsync(allVersionsOfLibraryItemsWithUpdatesHidden);
+                }
+                else
+                {
+                    var allVersionsOfAllFilesForThisMod = allLibraryFilesForThisMod
+                        .SelectMany(RunUpdateCheck.GetAllVersionsForExistingFile)
+                        .Select(x => x.Uid);
+                    await modUpdateFilterService.HideFilesAsync(allVersionsOfAllFilesForThisMod);
+                }
+            },
+            async libraryItemId =>
+            {
+                // Handle hiding/showing updates for a single file
+                var libraryItem = NexusModsLibraryItem.Load(_connection.Db, libraryItemId);
+                var fileMetadata = libraryItem.FileMetadata;
+                var allVersions = RunUpdateCheck.GetAllVersionsForExistingFile(fileMetadata).ToArray();
+
+                var areAllHidden = allVersions.All(x => modUpdateFilterService.IsFileHidden(x.Uid));
+
+                if (areAllHidden)
+                    await modUpdateFilterService.ShowFilesAsync(allVersions.Select(x => x.Uid));
+                else
+                    await modUpdateFilterService.HideFilesAsync(allVersions.Select(x => x.Uid));
+            }
+        );
+    }
 
     private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId, CancellationToken cancellationToken)
     {
@@ -448,16 +515,17 @@ public readonly record struct InstallMessage(LibraryItemId[] Ids);
 public readonly record struct UpdateMessage(ModUpdatesOnModPage Updates, CompositeItemModel<EntityId> TreeNode);
 public readonly record struct ViewChangelogMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 public readonly record struct ViewModPageMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
+public readonly record struct HideUpdatesMessage(OneOf<NexusModsModPageMetadataId, NexusModsLibraryItemId> Id);
 
 public class LibraryTreeDataGridAdapter :
     TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage>>
+    ITreeDataGirdMessageAdapter<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>>
 {
     private readonly ILibraryDataProvider[] _libraryDataProviders;
     private readonly LibraryFilter _libraryFilter;
     private readonly IConnection _connection;
 
-    public Subject<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage>> MessageSubject { get; } = new();
+    public Subject<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
 
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
@@ -535,6 +603,18 @@ public class LibraryTreeDataGridAdapter :
                 var entityId = model.Key;
 
                 self.MessageSubject.OnNext(new ViewModPageMessage(GetModPageIdOneOfType(self._connection.Db, entityId)));
+            })
+        );
+
+        model.SubscribeToComponentAndTrack<LibraryComponents.HideUpdatesAction, LibraryTreeDataGridAdapter>(
+            key: LibraryColumns.Actions.HideUpdatesComponentKey,
+            state: this,
+            factory: static (self, itemModel, component) => component.CommandHideUpdates.Subscribe((self, itemModel, component), static (_, state) =>
+            {
+                var (self, model, _) = state;
+                var entityId = model.Key;
+
+                self.MessageSubject.OnNext(new HideUpdatesMessage(GetModPageIdOneOfType(self._connection.Db, entityId)));
             })
         );
     }
