@@ -6,9 +6,11 @@ This release includes x, y and z.
 ## Headline 2
 
 ## More Features
+* Added a kebab menu to Library items including links to the changelog and mod page.
 * Added the ability to toggle visibility of updates in the Library.
 * Updated the game artwork used by the app to match the Nexus Mods website.
 * Added the ability to select a preferred folder for Library storage.
+* Added the ability to select a preferred collection for installing Library items. 
 
 ## Technical Changes
 * Collection and Library text strings can now be localised.
