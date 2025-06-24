@@ -164,7 +164,7 @@ public partial class Loadout
         using var items = db.Topology.Query(
             EnabledLoadoutItemsWithTargetPathFlow.Where(row => row.LoadoutId == loadoutId.Value)
         );
-        return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId));
+        return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId)).ToArray();
     }
     
     /// <summary>
@@ -175,6 +175,6 @@ public partial class Loadout
         using var items = await db.Topology.QueryAsync(
             EnabledLoadoutItemsWithTargetPathFlow.Where(row => row.LoadoutId == loadoutId.Value)
         );
-        return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId));
+        return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId)).ToArray();
     }
 }
