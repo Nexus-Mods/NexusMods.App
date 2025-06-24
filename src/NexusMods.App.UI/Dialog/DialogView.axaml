@@ -9,9 +9,7 @@
              xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
              mc:Ignorable="d"
              x:Class="NexusMods.App.UI.Dialog.DialogView"
-             d:DataContext="{x:Static vm:DesignDataContexts.InputDialogDesignViewModel}"
-             x:DataType="vm:InputDialogViewModel"
-             d:DesignHeight="250">
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageDialogViewModelIcon}">
 
     <!-- Temporary styles to see modal button variations -->
     <UserControl.Styles>
@@ -19,7 +17,7 @@
             <Style Selector="^ /template/ TextBlock#PART_Label">
                 <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
             </Style>
-            
+
             <Style Selector="^.Default">
                 <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -28,7 +26,7 @@
                     <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
                 </Style>
             </Style>
-            
+
             <Style Selector="^.Danger">
                 <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -106,7 +104,7 @@
                 <Grid x:Name="GenericContentContainer"
                       RowDefinitions="Auto,*"
                       Margin="0">
-                    
+
                     <StackPanel Grid.Row="0" Spacing="4">
                         <icons:UnifiedIcon x:Name="Icon"
                                            Value="{x:Static icons:IconValues.PictogramBox2}"
@@ -120,28 +118,27 @@
                         <TextBlock x:Name="TextTextBlock"
                                    Foreground="{StaticResource NeutralSubduedBrush}"
                                    TextWrapping="Wrap" />
-                        <Border Margin="0 16 0 0">
-                            <StackPanel x:Name="InputStack" Spacing="4">
-                                <TextBlock x:Name="InputLabel"
-                                           Text="InputLabel"
-                                           Foreground="{StaticResource NeutralStrongBrush}"
-                                           Theme="{StaticResource BodySMNormalTheme}"/>
-                                <Panel>
-                                    <TextBox x:Name="InputTextBox" Padding="8 5 24 4"  />
-                                    <controls:StandardButton x:Name="ButtonInputClear"
-                                                             Margin="0 0 4 0"
-                                                             HorizontalAlignment="Right"
-                                                             Type="Tertiary"
-                                                             Size="Toolbar"
-                                                             Fill="None"
-                                                             ShowIcon="IconOnly"
-                                                             ShowLabel="False"
-                                                             LeftIcon="{x:Static icons:IconValues.Close}"/>
-                                </Panel>
-                            </StackPanel>
-                        </Border>
+
+                        <StackPanel x:Name="InputStack" Margin="0 16 0 0" Spacing="4">
+                            <TextBlock x:Name="InputLabel"
+                                       Text="InputLabel"
+                                       Foreground="{StaticResource NeutralStrongBrush}"
+                                       Theme="{StaticResource BodySMNormalTheme}" />
+                            <Panel>
+                                <TextBox x:Name="InputTextBox" Padding="8 5 24 4" />
+                                <controls:StandardButton x:Name="ButtonInputClear"
+                                                         Margin="0 0 4 0"
+                                                         HorizontalAlignment="Right"
+                                                         Type="Tertiary"
+                                                         Size="Toolbar"
+                                                         Fill="None"
+                                                         ShowIcon="IconOnly"
+                                                         ShowLabel="False"
+                                                         LeftIcon="{x:Static icons:IconValues.Close}" />
+                            </Panel>
+                        </StackPanel>
                     </StackPanel>
-                    
+
                     <ScrollViewer Grid.Row="1">
                         <StackPanel
                             Margin="0 8 0 0"
@@ -171,7 +168,7 @@
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
-                    
+
                 </Grid>
 
                 <!-- buttons -->

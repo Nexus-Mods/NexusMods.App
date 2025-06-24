@@ -9,7 +9,7 @@ using Avalonia.ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDialogView
+public partial class DialogView : ReactiveUserControl<IDialogViewModel>, IDialogView
 {
     // this is what is returned when the window close button is clicked
     private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.From("window-close");
@@ -22,13 +22,10 @@ public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDi
             {
                 // COMMANDS
 
-                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () =>
-                {
-                    await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents);
-                });
+                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () => { await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents); });
 
                 CloseButton.CommandParameter = _closeButtonResult;
-                
+
                 // Bind the CloseWindowCommand to the CloseButton's Command.
                 this.OneWayBind(ViewModel,
                         vm => vm.ButtonPressCommand,
@@ -75,7 +72,7 @@ public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDi
                     .DisposeWith(disposables);
 
                 // HIDE CONTROLS IF NOT NEEDED
-                
+
                 // only show the text if not null or empty
                 this.WhenAnyValue(view => view.ViewModel!.Text)
                     .Select(string.IsNullOrWhiteSpace)
@@ -93,48 +90,46 @@ public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDi
                     .Select(icon => icon is not null)
                     .Subscribe(b => Icon.IsVisible = b)
                     .DisposeWith(disposables);
-                
+
                 // only show the markdown container if markdown is not null
                 this.WhenAnyValue(view => view.ViewModel!.MarkdownRenderer)
                     .Select(markdown => markdown is not null)
                     .Subscribe(b => MarkdownContainer.IsVisible = b)
                     .DisposeWith(disposables);
-                
+
                 // only show the custom content container if custom content is not null
                 this.WhenAnyValue(view => view.ViewModel!.ContentViewModel)
                     .Select(custom => custom is not null)
                     .Subscribe(b => CustomContentContainer.IsVisible = b)
                     .DisposeWith(disposables);
-                
-                    // only show the input stuff if not null or empty
-                this.WhenAnyValue(view => view.ViewModel!.InputLabel)
-                    .Select(string.IsNullOrWhiteSpace)
-                    .Subscribe(b => InputStack.IsVisible = !b)
-                    .DisposeWith(disposables);
-                
-                this.OneWayBind(ViewModel,
-                        vm => vm.InputLabel,
-                        view => view.InputLabel.Text
-                    )
-                    .DisposeWith(disposables);
 
-                this.OneWayBind(ViewModel,
-                        vm => vm.InputWatermark,
-                        view => view.InputTextBox.Watermark
-                    )
-                    .DisposeWith(disposables);
+                // only show input related controls if the ViewModel is of type InputDialogViewModel
+                if (ViewModel is InputDialogViewModel inputDialogViewModel)
+                {
+                    InputStack.IsVisible = true;
+                    
+                    this.Bind(inputDialogViewModel, 
+                        vm => vm.InputText, 
+                        view => view.InputTextBox.Text);
+                    
+                    this.OneWayBind(inputDialogViewModel, 
+                        vm => vm.InputLabel, 
+                        view => view.InputLabel.Text);
+                    
+                    this.OneWayBind(inputDialogViewModel, 
+                        vm => vm.InputWatermark, 
+                        view => view.InputTextBox.Watermark);
 
-                this.Bind(ViewModel,
-                        vm => vm.InputText,
-                        view => view.InputTextBox.Text
-                    )
-                    .DisposeWith(disposables);
-                
-                this.BindCommand(ViewModel,
-                        vm => vm.ClearInputCommand,
-                        view => view.ButtonInputClear
-                    )
-                    .DisposeWith(disposables);
+                    this.BindCommand(inputDialogViewModel,
+                            vm => vm.ClearInputCommand,
+                            view => view.ButtonInputClear
+                        )
+                        .DisposeWith(disposables);
+                }
+                else
+                {
+                    InputStack.IsVisible = false;
+                }
             }
         );
     }
@@ -166,7 +161,7 @@ public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDi
             // Create a new StandardButton
             var button = new StandardButton
             {
-                Name = $"{buttonDefinition.Id}Button",
+                Name = $"{buttonDefinition.Id}-button",
                 Text = buttonDefinition.Text,
                 Command = viewModel.ButtonPressCommand,
                 CommandParameter = buttonDefinition.Id,
@@ -175,7 +170,8 @@ public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDi
                 [Flex.GrowProperty] = 1,
                 [Flex.ShrinkProperty] = 0,
                 [Flex.BasisProperty] = FlexBasis.Parse("0%"),
-                // change showicon property based on what properties are set
+                LeftIcon = buttonDefinition.LeftIcon,
+                RightIcon = buttonDefinition.RightIcon,
                 ShowIcon = buttonDefinition switch
                 {
                     { LeftIcon: not null, RightIcon: null } => StandardButton.ShowIconOptions.Left,
@@ -214,7 +210,7 @@ public partial class DialogView : ReactiveUserControl<InputDialogViewModel>, IDi
         }
 
         buttonsFlexPanel.IsVisible = true;
-        
+
         // Focus the InputTextBox when the modal loads
         InputTextBox.AttachedToVisualTree += (s, e) => InputTextBox.Focus();
     }
