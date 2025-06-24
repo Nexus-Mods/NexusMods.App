@@ -560,7 +560,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         loadout = loadout.Rebase();
-ix         
+        
         var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
         var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
         
