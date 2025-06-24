@@ -509,11 +509,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
         var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
         
-        var locatorAdditions = locatorsToAdd.Length;
-        var locatorRemovals = locatorsToRemove.Length;
-
         // No reason to change the loadout if the version is the same
-        if (locatorRemovals == 0 && locatorAdditions == 0)
+        if (locatorsToAdd.Length == 0 && locatorsToRemove.Length == 0)
             return loadout;
 
         // Make a lookup set of the new files
