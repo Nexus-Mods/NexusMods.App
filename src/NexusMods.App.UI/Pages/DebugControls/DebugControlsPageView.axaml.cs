@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Standard;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Windows;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using R3;
@@ -172,5 +174,17 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         {
             throw; // TODO handle exception
         }
+    }
+
+
+    private async void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+
+        var osInterop = ViewModel.ServiceProvider.GetRequiredService<IOSInterop>();
+        var result = await PremiumDialog.ShowUpdatePremiumDialog(ViewModel.WindowManager, osInterop);
+
+        // check viewmodel properties when dialog has been closed
+        Console.WriteLine($@"result: {result}");
     }
 }

@@ -16,6 +16,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Standard;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
@@ -70,6 +71,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     
     [Reactive] public int UpdatableSelectionCount { get; private set; }
     
+    [Reactive] public bool HasAnyUpdatesAvailable { get; private set; }
+
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
     private readonly IServiceProvider _serviceProvider;
@@ -133,8 +136,15 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             executeAsync: (_, token) => RefreshUpdates(token),
             awaitOperation: AwaitOperation.Switch
         );
-        
-        UpdateAllCommand = new ReactiveCommand<Unit>(_ => throw new NotImplementedException("[Update All] This feature is not yet implemented, please wait for the next release."));
+
+        UpdateAllCommand = new ReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => UpdateAllItems(cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            configureAwait: false
+        );
+
+        // Initial check for updates
+        CheckAndUpdateHasAnyUpdatesAvailable();
 
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
@@ -618,6 +628,9 @@ After asking design, we're choosing to simply open the mod page for now.
                     await modUpdateFilterService.HideFilesAsync(allVersions.Select(x => x.Uid));
             }
         );
+        
+        // Check for updates after filter operations complete
+        CheckAndUpdateHasAnyUpdatesAvailable();
     }
 
     private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId, CancellationToken cancellationToken)
@@ -634,6 +647,9 @@ After asking design, we're choosing to simply open the mod page for now.
     private async ValueTask RefreshUpdates(CancellationToken token) 
     {
         await _modUpdateService.CheckAndUpdateModPages(token, notify: true);
+        
+        // Check for updates after refresh completes
+        CheckAndUpdateHasAnyUpdatesAvailable();
     }
 
     private async ValueTask InstallItems(LibraryItemId[] ids, LoadoutItemGroupId targetLoadoutGroup, bool useAdvancedInstaller, CancellationToken cancellationToken)
@@ -673,6 +689,24 @@ After asking design, we're choosing to simply open the mod page for now.
                 return updateComponent.HasValue && updateComponent.Value.NewFiles.Value.HasAnyUpdates;
             });
     }
+
+    private bool CheckForAnyUpdatesInLibrary() => GetAllModelsWithUpdates().Any();
+
+    private IEnumerable<CompositeItemModel<EntityId>> GetAllModelsWithUpdates()
+    {
+        // Apply the same filtering logic as GetSelectedModelsWithUpdates() but to all loaded models
+        return Adapter.GetAllLoadedModels()
+            .Where(model =>
+            {
+                // Note(sewer): In the library we have Mod Pages as Roots, and then Files as children.
+                // If an update is available on a child, the parent (page / root) will have an update; therefore
+                // checking the update component on the root is sufficient. 
+                var updateComponent = model.GetOptional<LibraryComponents.UpdateAction>(LibraryColumns.Actions.UpdateComponentKey);
+                return updateComponent.HasValue && updateComponent.Value.NewFiles.Value.HasAnyUpdates;
+            });
+    }
+
+    private void CheckAndUpdateHasAnyUpdatesAvailable() => HasAnyUpdatesAvailable = CheckForAnyUpdatesInLibrary();
 
     private LoadoutItemGroupId GetInstallationTarget() => (SelectedInstallationTarget?.Id ?? _installationTargets[0].Id).Value;
 
@@ -771,6 +805,37 @@ After asking design, we're choosing to simply open the mod page for now.
             }
         }
     }
+
+    private async ValueTask UpdateAllItems(CancellationToken cancellationToken)
+    {
+        var isPremium = _loginManager.IsPremium;
+
+        if (!isPremium)
+        {
+            var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+            await PremiumDialog.ShowUpdatePremiumDialog(WindowManager, osInterop);
+            return;
+        }
+
+        // Get all models with updates available and process them
+        var allModelsWithUpdates = GetAllModelsWithUpdates();
+        
+        foreach (var model in allModelsWithUpdates)
+        {
+            // Check if this model has an update component
+            var updateComponent = model.GetOptional<LibraryComponents.UpdateAction>(LibraryColumns.Actions.UpdateComponentKey);
+            if (!updateComponent.HasValue) continue;
+
+            var component = updateComponent.Value;
+            var updatesOnPage = component.NewFiles.Value;
+            
+            if (!updatesOnPage.HasAnyUpdates) continue;
+
+            // For "Update All", use Update and Replace behavior by default
+            var message = new UpdateAndReplaceMessage(updatesOnPage, model);
+            await HandleUpdateAndReplaceMessage(message, cancellationToken);
+        }
+    }
 }
 
 public readonly record struct InstallMessage(LibraryItemId[] Ids);
@@ -800,6 +865,11 @@ public class LibraryTreeDataGridAdapter :
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         return _libraryDataProviders.Select(x => x.ObserveLibraryItems(_libraryFilter)).MergeChangeSets();
+    }
+    
+    public IEnumerable<CompositeItemModel<EntityId>> GetAllLoadedModels()
+    {
+        return Roots;
     }
 
     protected override void BeforeModelActivationHook(CompositeItemModel<EntityId> model)
