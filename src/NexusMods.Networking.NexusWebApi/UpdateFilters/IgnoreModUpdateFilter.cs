@@ -16,10 +16,10 @@ public class IgnoreModUpdateFilter<TShouldIgnoreFile> where TShouldIgnoreFile : 
     public IgnoreModUpdateFilter(TShouldIgnoreFile fileFilter) => _fileFilter = fileFilter;
 
     /// <summary>Returns true if a file should be excluded from update results.</summary>
-    internal bool ShouldIgnoreFile(NexusModsFileMetadata.ReadOnly file) => ShouldIgnoreFile(file.Uid);
+    private bool ShouldIgnoreFile(NexusModsFileMetadata.ReadOnly file) => ShouldIgnoreFile(file.Uid);
 
     /// <summary>Returns true if a file should be excluded from update results.</summary>
-    internal bool ShouldIgnoreFile(UidForFile file) => _fileFilter.ShouldIgnoreFile(file);
+    private bool ShouldIgnoreFile(UidForFile file) => _fileFilter.ShouldIgnoreFile(file);
 
     /// <summary>
     /// Plugs into <see cref="ModUpdateService.GetNewestFileVersionObservable"/>

@@ -123,7 +123,7 @@
                             <ComboBox x:Name="InstallationTargetSelector">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate DataType="local:InstallationTarget">
-                                        <TextBlock Text="{CompiledBinding Name}"/>
+                                        <TextBlock Text="{CompiledBinding Name}" />
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -208,24 +208,13 @@
                     <controls:Toolbar Margin="24,12, 24, 0">
                         <ItemsControl>
                             <controls:StandardButton
-                                Text="Add"
+                                x:Name="GetCollectionFromNexusButton"
+                                Text="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}"
                                 Type="Tertiary"
                                 Size="Toolbar"
                                 Fill="Weak"
-                                ShowIcon="Both"
-                                LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
-                                RightIcon="{x:Static icons:IconValues.ChevronDown}">
-                                <controls:StandardButton.Flyout>
-                                    <MenuFlyout>
-                                        <MenuItem x:Name="GetCollectionFromNexusButton"
-                                                  Header="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}">
-                                            <MenuItem.Icon>
-                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.NexusColor}" />
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                    </MenuFlyout>
-                                </controls:StandardButton.Flyout>
-                            </controls:StandardButton>
+                                ShowIcon="Left"
+                                LeftIcon="{x:Static icons:IconValues.NexusColor}"/>
                         </ItemsControl>
                     </controls:Toolbar>
 

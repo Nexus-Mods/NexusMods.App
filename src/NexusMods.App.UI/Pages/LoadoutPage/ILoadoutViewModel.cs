@@ -10,6 +10,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
 
     R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
     
+    R3.ReactiveCommand<R3.Unit> RevisionUrlLinkCommand { get; }
+    
     R3.ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     
     string EmptyStateTitleText { get; }
@@ -26,6 +28,7 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     bool IsCollection { get; }
     
     bool IsCollectionEnabled { get; }
+    bool IsCollectionUploaded { get; }
     
     string CollectionName { get; } 
     
