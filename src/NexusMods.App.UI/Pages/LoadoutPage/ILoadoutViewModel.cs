@@ -41,4 +41,6 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     public LoadoutPageSubTabs SelectedSubTab { get; }
 
     R3.ReactiveCommand<R3.Unit> CommandUploadRevision { get; }
+
+    R3.ReactiveCommand<R3.Unit> CommandRenameGroup { get; }
 }
