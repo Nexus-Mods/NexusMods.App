@@ -1,5 +1,4 @@
 ﻿<reactiveUi:ReactiveUserControl
-    d:DesignWidth="194"
     mc:Ignorable="d"
     x:Class="NexusMods.App.UI.Controls.MiniGameWidget.MiniGameWidget"
     x:TypeArguments="miniGameWidget:IMiniGameWidgetViewModel"
@@ -17,7 +16,8 @@
             BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
             BorderThickness="1"
             CornerRadius="8"
-            Padding="12">
+            Padding="12"
+            Width="194">
 
         <StackPanel Spacing="8">
 
