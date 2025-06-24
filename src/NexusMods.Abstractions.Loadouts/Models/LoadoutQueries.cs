@@ -95,20 +95,27 @@ public partial class Loadout
     /// Returns loadoutItemGroup ids and their enabled state, also considering the parent collection's enabled state.
     /// </summary>
     public static readonly Flow<(EntityId GroupId, bool IsModEnabled)> IsLoadoutItemGroupEnabledFlow =
+        // First find all groups that are attached to a collection and then check if the collection is enabled
         Pattern.Create()
             .Db(out var groupId, LoadoutItemGroup.Group, out _)
             .DbOrDefault(Query.Db, groupId, LoadoutItem.Disabled, out var modDisabled, default(Null))
             // Group is enabled if the Disabled attribute is missing, so if it is default.
             .Project(modDisabled, disabled => disabled.IsDefault, out var isModEnabled)
-            // .Return(groupId, isModEnabled);
-            // Some groups my not have a parent collection, so in that case we take true as collectionIsEnabled value.
-            .DbOrDefault(groupId, LoadoutItem.Parent, out var collectionId, default(EntityId))
-            .MatchDefault(IsCollectionEnabledFlow.Rekey(row => row.CollectionId), 
-                collectionId, out var collectionIsEnabledData, 
-                default(EntityId), (CollectionId: default(EntityId), IsCollectionEnabled: true))
-            .Project(collectionIsEnabledData, row => row.IsCollectionEnabled, out var collectionIsEnabled)
-            .Return(groupId, collectionIsEnabled ,isModEnabled)
-            .Select(row => (row.Item1, row.Item2 && row.Item3)); 
+            .Db(groupId, LoadoutItem.Parent, out var collectionId)
+            .Match(IsCollectionEnabledFlow, collectionId, out var collectionIsEnabledData)
+            .Return(groupId, collectionIsEnabledData ,isModEnabled)
+            .Select(row => (row.Item1, row.Item2 && row.Item3))
+            .Union()
+            .With(
+                Pattern.Create()
+                .Db(out groupId, LoadoutItemGroup.Group, out _)
+                .DbOrDefault(Query.Db, groupId, LoadoutItem.Disabled, modDisabled, default(Null))
+                // Group is enabled if the Disabled attribute is missing, so if it is default.
+                .Project(modDisabled, disabled => disabled.IsDefault, out var isModEnabled2)
+                .DbOrDefault(Query.Db, groupId, LoadoutItem.Parent, out var parentId2, default(EntityId))
+                .IsDefault(parentId2)
+                .Return(groupId, isModEnabled2)
+                .Select(row => (row.Item1, row.Item2))); 
     
     /// <summary>
     /// Returns whether a loadoutItemGroup is enabled or not, also considering the parent collection's enabled state.
@@ -172,7 +179,7 @@ public partial class Loadout
     /// </summary>
     public static async Task<IEnumerable<LoadoutItemWithTargetPath.ReadOnly>> GetEnabledLoadoutItemsWithTargetPathAsync(IDb db, LoadoutId loadoutId)
     {
-        using var items = await db.Topology.QueryAsync(
+        var items = await db.Topology.QueryAsync(
             EnabledLoadoutItemsWithTargetPathFlow.Where(row => row.LoadoutId == loadoutId.Value)
         );
         return items.Select(row => LoadoutItemWithTargetPath.Load(db, row.LoadoutItemWithTargetPathId)).ToArray();
