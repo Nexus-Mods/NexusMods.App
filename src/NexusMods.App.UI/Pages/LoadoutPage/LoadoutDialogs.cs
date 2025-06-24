@@ -8,7 +8,7 @@ public static class LoadoutDialogs
 {
     public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> ShareCollection(string collectionName)
     {
-        return DialogFactory.CreateDialog(
+        return DialogFactory.CreateMessageDialog(
             title: "Share Your Collection on Nexus Mods",
             text: $"""
                     Upload "{collectionName}" to Nexus Mods to share it with friends or, if you choose, with the entire Nexus Mods community.
@@ -36,7 +36,7 @@ public static class LoadoutDialogs
 
     public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> ShareCollectionSuccess(string collectionName)
     {
-        return DialogFactory.CreateDialog(
+        return DialogFactory.CreateMessageDialog(
             title: "Your Collection Has Been Added as a Draft",
             text: """
                     Click View Page to edit details and optionally publish your collection as either:
@@ -60,7 +60,7 @@ public static class LoadoutDialogs
 
     public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> UpdateCollection(string collectionName)
     {
-        return DialogFactory.CreateDialog(
+        return DialogFactory.CreateMessageDialog(
             title: "Update Your Collection on Nexus Mods",
             text: $"""
                     Upload an update of "{collectionName}" to Nexus Mods.
@@ -81,7 +81,7 @@ public static class LoadoutDialogs
 
     public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> UpdateCollectionSuccess(string collectionName)
     {
-        return DialogFactory.CreateDialog(
+        return DialogFactory.CreateMessageDialog(
             title: "Your Collection Has Been Updated",
             text: $"""
                     You have successfully uploaded a new revision of "{collectionName}".

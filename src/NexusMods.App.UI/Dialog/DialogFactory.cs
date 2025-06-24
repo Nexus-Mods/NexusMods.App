@@ -42,13 +42,13 @@ public static class DialogFactory
     /// </returns>
     public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> CreateOkCancelMessageBox(string title, string text)
     {
-        return CreateDialog(
-            title,
-            [
+        return CreateMessageDialog(
+            title: title,
+            buttonDefinitions: [
                 DialogStandardButtons.Ok,
                 DialogStandardButtons.Cancel,
             ],
-            text
+            text: text
         );
     }
 
@@ -62,13 +62,13 @@ public static class DialogFactory
     /// </returns>
     public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> CreateYesNoMessageBox(string title, string text)
     {
-        return CreateDialog(
-            title,
-            [
+        return CreateMessageDialog(
+            title: title,
+            buttonDefinitions: [
                 DialogStandardButtons.Yes,
                 DialogStandardButtons.No,
             ],
-            text
+            text: text
         );
     }
 
@@ -108,7 +108,7 @@ public static class DialogFactory
         return new Dialog<DialogView, InputDialogViewModel, InputDialogResult>(view, viewModel);
     }
 
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> CreateDialog(
+    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> CreateMessageDialog(
         string title,
         DialogButtonDefinition[] buttonDefinitions,
         string? text = null,

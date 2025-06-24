@@ -326,10 +326,7 @@
                                 <TextBlock Grid.Column="2" Grid.Row="0" Text="Modeless" />
 
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="Ok" VerticalAlignment="Center"  />
-                                <controls:StandardButton x:Name="ShowModalOk" Click="ShowModalOk_OnClick"
-                                                         Text="Open" Grid.Column="1" Grid.Row="1" />
-                                <controls:StandardButton x:Name="ShowModelessOk" Click="ShowModelessOk_OnClick"
-                                                         Text="Open" Grid.Column="2" Grid.Row="1" />
+                                
 
                                 <TextBlock Grid.Column="0" Grid.Row="2" Text="OkCancel" VerticalAlignment="Center"  />
                                 <controls:StandardButton x:Name="ShowModalOkCancel" Click="ShowModalOkCancel_OnClick"
@@ -346,12 +343,10 @@
                                                          Text="Open" Grid.Column="2" Grid.Row="3" />
                                 
                                 <TextBlock Grid.Column="0" Grid.Row="4" Text="Example Small" VerticalAlignment="Center"  />
-                                <controls:StandardButton x:Name="ShowModalExampleSmall" Click="ShowModalExampleSmall_OnClick"
-                                                         Text="Open" Grid.Column="1" Grid.Row="4" />
+                                
                                 
                                 <TextBlock Grid.Column="0" Grid.Row="5" Text="Example Medium"  VerticalAlignment="Center" />
-                                <controls:StandardButton x:Name="ShowModalExampleMedium" Click="ShowModalExampleMedium_OnClick"
-                                                         Text="Open" Grid.Column="1" Grid.Row="5" />
+                                
                                 
                                 <TextBlock Grid.Column="0" Grid.Row="6" Text="Example Markdown"  VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalExampleMarkdown" Click="ShowModalExampleMarkdown_OnClick"

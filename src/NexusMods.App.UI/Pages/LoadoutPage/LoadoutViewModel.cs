@@ -249,7 +249,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (ids.Length == 0) return;
 
-                    var dialog = DialogFactory.CreateDialog(
+                    var dialog = DialogFactory.CreateMessageDialog(
                         title: "Uninstall mod(s)",
                         text: $"""
                         This will remove the selected mod(s) from:
