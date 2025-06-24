@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Standard;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Windows;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using R3;
@@ -296,36 +298,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     {
         if (ViewModel is null) return;
 
-        var dialog = DialogFactory.CreateMessageDialog(
-            title: "Go Premium for one-click mod updates",
-            text: """
-                No browser, no manual downloads. Premium users also get:
-                
-                • Download entire collections with one click
-                • Uncapped download speeds
-                • No Ads for life, even if you unsubscribe after 1 month!
-                """,
-            heading: "Update all your mods, or individual mods, in one click.",
-            buttonDefinitions:
-            [
-                new DialogButtonDefinition(
-                    "Update mods manually",
-                    ButtonDefinitionId.From("update-manually"),
-                    ButtonAction.Reject
-                ),
-                new DialogButtonDefinition(
-                    "Upgrade to Premium",
-                    ButtonDefinitionId.From("upgrade-premium"),
-                    ButtonAction.Accept,
-                    ButtonStyling.Premium
-                )
-            ],
-            icon: IconValues.PictogramPremium,
-            dialogWindowSize: DialogWindowSize.Medium
-        );
-
-        // tell windowmanager to show it
-        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        var osInterop = ViewModel.ServiceProvider.GetRequiredService<IOSInterop>();
+        var result = await PremiumDialog.ShowUpdatePremiumDialog(ViewModel.WindowManager, osInterop);
 
         // check viewmodel properties when dialog has been closed
         Console.WriteLine($@"result: {result}");

@@ -122,6 +122,12 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 this.BindCommand(ViewModel, vm => vm.RefreshUpdatesCommand, view => view.Refresh)
                     .AddTo(disposables);
 
+                this.BindCommand(ViewModel, vm => vm.UpdateAllCommand, view => view.UpdateAllButton)
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.HasAnyUpdatesAvailable, view => view.UpdateAllButton.IsVisible)
+                    .AddTo(disposables);
+
                 this.WhenAnyValue(view => view.ViewModel!.InstallationTargets.Count)
                     .OnUI()
                     .SubscribeWithErrorLogging(count =>
