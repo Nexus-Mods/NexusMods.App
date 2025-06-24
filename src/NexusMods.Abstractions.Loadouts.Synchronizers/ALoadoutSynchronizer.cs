@@ -505,9 +505,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (newLocatorIds.Length != metadataLocatorIds.Length)
             Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while reprocessing game updates", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
-
-        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds).Count();
-        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds).Count();
+        
+        var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
+        var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
+        
+        var locatorAdditions = locatorsToAdd.Length;
+        var locatorRemovals = locatorsToRemove.Length;
 
         // No reason to change the loadout if the version is the same
         if (locatorRemovals == 0 && locatorAdditions == 0)
@@ -561,8 +564,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         loadout = loadout.Rebase();
         
-        var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
-        var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
+
         
         foreach (var id in locatorsToRemove) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
