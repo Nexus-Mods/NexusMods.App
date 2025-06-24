@@ -3,46 +3,64 @@
         xmlns:loadout="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout;assembly=NexusMods.App.UI"
         xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home;assembly=NexusMods.App.UI">
     <Design.PreviewWith>
-        <Border Padding="8" Width="500" Height="500">
-            
-            <Grid ColumnDefinitions="200, 200">
-                <home:HomeLeftMenuView Grid.Column="0" >
-                    <home:HomeLeftMenuView.DataContext>
-                        <home:HomeLeftMenuDesignViewModel/>
-                    </home:HomeLeftMenuView.DataContext>
-                </home:HomeLeftMenuView>
-                
-                <loadout:LoadoutLeftMenuView Grid.Column="1">
-                    <loadout:LoadoutLeftMenuView.DataContext>
-                        <loadout:LoadoutLeftMenuDesignViewModel/>
-                    </loadout:LoadoutLeftMenuView.DataContext>
-                </loadout:LoadoutLeftMenuView>
-            </Grid>
+        <Border Padding="0">
+
+            <!-- <home:HomeLeftMenuView Grid.Column="0"> -->
+            <!--     <home:HomeLeftMenuView.DataContext> -->
+            <!--         <home:HomeLeftMenuDesignViewModel /> -->
+            <!--     </home:HomeLeftMenuView.DataContext> -->
+            <!-- </home:HomeLeftMenuView> -->
+
+            <loadout:LoadoutLeftMenuView Grid.Column="1">
+                <loadout:LoadoutLeftMenuView.DataContext>
+                    <loadout:LoadoutLeftMenuDesignViewModel />
+                </loadout:LoadoutLeftMenuView.DataContext>
+            </loadout:LoadoutLeftMenuView>
         </Border>
     </Design.PreviewWith>
-    
+
     <!-- HOME & LOADOUT LEFT MENU -->
     <Style Selector="
         home|HomeLeftMenuView,
         loadout|LoadoutLeftMenuView">
-        
+
+        <!-- add resources -->
+
+
         <!-- MAIN STACK -->
         <Style Selector="^ StackPanel#LeftMenuStack">
-            <Setter Property="Spacing" Value="{StaticResource Spacing-1.5}" />
 
-            <!-- SEPERATOR AND TITLE STACK -->
-            <Style Selector="^ > StackPanel">
-                <Setter Property="Margin" Value="0,4,0,4" />
-                <Style Selector="^ > Separator">
-                    <Setter Property="Margin" Value="0,0,0,12" />
+            <Style Selector="^ Separator">
+                <Setter Property="Margin" Value="0,0,0,4" />
+                <Setter Property="Height" Value="1" />
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+            </Style>
+            
+            <Style Selector="^ Expander">
+                <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
+                    <Setter Property="Padding" Value="0 8" />
+                    <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+
+                    <!-- pointerover -->
+                    <Style Selector="^:pointerover /template/ Border#ToggleButtonBackground">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                    </Style>
+                    <Style Selector="^:pointerover /template/ Border#ExpandCollapseChevronBorder">
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                    </Style>
+
                 </Style>
-                <Style Selector="^ > TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+
+                <Style Selector="^:down /template/ ToggleButton#ExpanderHeader">
+                    <Style Selector="^ Border#ExpandCollapseChevronBorder">
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+                    </Style>
                 </Style>
             </Style>
+
         </Style>
     </Style>
-    
-    
+
+
 </Styles>

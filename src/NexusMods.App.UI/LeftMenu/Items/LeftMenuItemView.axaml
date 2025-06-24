@@ -7,7 +7,7 @@
                                 xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
                                 xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="100"
+                                mc:Ignorable="d" d:DesignWidth="200"
                                 x:Class="NexusMods.App.UI.LeftMenu.Items.LeftMenuItemView">
     <Design.DataContext>
         <items:LeftMenuItemDesignViewModel />
