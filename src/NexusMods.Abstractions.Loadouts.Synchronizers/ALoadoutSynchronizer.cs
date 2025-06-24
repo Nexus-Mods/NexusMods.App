@@ -560,9 +560,13 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         loadout = loadout.Rebase();
-        foreach (var id in loadout.LocatorIds) 
+ix         
+        var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
+        var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
+        
+        foreach (var id in locatorsToRemove) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
-        foreach (var id in newLocatorIds)
+        foreach (var id in locatorsToAdd)
             tx.Add(loadout, Loadout.LocatorIds, id);
         
         var result = await tx.Commit();
