@@ -690,20 +690,51 @@ After asking design, we're choosing to simply open the mod page for now.
             });
     }
 
-    private bool CheckForAnyUpdatesInLibrary() => GetAllModelsWithUpdates().Any();
-
-    private IEnumerable<CompositeItemModel<EntityId>> GetAllModelsWithUpdates()
+    private bool CheckForAnyUpdatesInLibrary()
     {
-        // Apply the same filtering logic as GetSelectedModelsWithUpdates() but to all loaded models
-        return Adapter.GetAllLoadedModels()
-            .Where(model =>
+        try
+        {
+            // Note(sewer): We can't reliably check UI models (Adapter.Roots) because they might not be 
+            // updated by the time we check them. Instead, we go directly to the data source:
+            // check all library items and use the mod update service to verify updates.
+            
+            // Get all NexusMods mod pages from the library
+            var allNexusItems = NexusModsLibraryItem.All(_connection.Db);
+            var modPages = allNexusItems
+                .Select(item => item.ModPageMetadata)
+                .DistinctBy(modPage => modPage.Id)
+                .ToArray();
+            
+            // Check each mod page for updates using the non-observable version
+            foreach (var modPage in modPages)
             {
-                // Note(sewer): In the library we have Mod Pages as Roots, and then Files as children.
-                // If an update is available on a child, the parent (page / root) will have an update; therefore
-                // checking the update component on the root is sufficient. 
-                var updateComponent = model.GetOptional<LibraryComponents.UpdateAction>(LibraryColumns.Actions.UpdateComponentKey);
-                return updateComponent.HasValue && updateComponent.Value.NewFiles.Value.HasAnyUpdates;
-            });
+                // Note(sewer): For speed, don't share code with GetAllModPagesWithUpdates here.
+                var updates = _modUpdateService.HasModPageUpdatesAvailable(modPage);
+                if (updates.HasValue && updates.Value.HasAnyUpdates)
+                    return true;
+            }
+            
+            return false;
+        }
+        catch
+        {
+            // If there's any error, assume no updates to prevent UI issues
+            return false;
+        }
+    }
+    
+    private IEnumerable<(NexusModsModPageMetadata.ReadOnly modPage, ModUpdatesOnModPage updates)> GetAllModPagesWithUpdates()
+    {
+        // Get all NexusMods mod pages from the library that have updates
+        var allNexusItems = NexusModsLibraryItem.All(_connection.Db);
+        var modPagesWithUpdates = allNexusItems
+            .Select(item => item.ModPageMetadata)
+            .DistinctBy(modPage => modPage.Id)
+            .Select(modPage => (modPage, updates: _modUpdateService.HasModPageUpdatesAvailable(modPage)))
+            .Where(tuple => tuple.updates.HasValue && tuple.updates.Value.HasAnyUpdates)
+            .Select(tuple => (tuple.modPage, tuple.updates.Value));
+        
+        return modPagesWithUpdates;
     }
 
     private void CheckAndUpdateHasAnyUpdatesAvailable() => HasAnyUpdatesAvailable = CheckForAnyUpdatesInLibrary();
@@ -817,22 +848,14 @@ After asking design, we're choosing to simply open the mod page for now.
             return;
         }
 
-        // Get all models with updates available and process them
-        var allModelsWithUpdates = GetAllModelsWithUpdates();
+        // Get all mod pages with updates available and process them
+        var modPagesWithUpdates = GetAllModPagesWithUpdates();
         
-        foreach (var model in allModelsWithUpdates)
+        foreach (var (modPage, updates) in modPagesWithUpdates)
         {
-            // Check if this model has an update component
-            var updateComponent = model.GetOptional<LibraryComponents.UpdateAction>(LibraryColumns.Actions.UpdateComponentKey);
-            if (!updateComponent.HasValue) continue;
-
-            var component = updateComponent.Value;
-            var updatesOnPage = component.NewFiles.Value;
-            
-            if (!updatesOnPage.HasAnyUpdates) continue;
-
-            // For "Update All", use Update and Replace behavior by default
-            var message = new UpdateAndReplaceMessage(updatesOnPage, model);
+            // Create a minimal model for the message (we need this for future/existing infrastructure)
+            var model = new CompositeItemModel<EntityId>(modPage.Id);
+            var message = new UpdateAndReplaceMessage(updates, model);
             await HandleUpdateAndReplaceMessage(message, cancellationToken);
         }
     }
@@ -865,11 +888,6 @@ public class LibraryTreeDataGridAdapter :
     protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
     {
         return _libraryDataProviders.Select(x => x.ObserveLibraryItems(_libraryFilter)).MergeChangeSets();
-    }
-    
-    public IEnumerable<CompositeItemModel<EntityId>> GetAllLoadedModels()
-    {
-        return Roots;
     }
 
     protected override void BeforeModelActivationHook(CompositeItemModel<EntityId> model)
