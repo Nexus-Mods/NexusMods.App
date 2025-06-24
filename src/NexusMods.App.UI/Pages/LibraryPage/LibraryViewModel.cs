@@ -468,6 +468,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     );
 
                     await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+                    await RemoveOldLibraryItemsIfNotInReadOnlyCollections(oldToNewLibraryMapping);
                 }
             }
             else
@@ -807,6 +808,31 @@ After asking design, we're choosing to simply open the mod page for now.
             var message = new UpdateAndReplaceMessage(updates, model);
             await HandleUpdateAndReplaceMessage(message, cancellationToken);
         }
+    }
+
+    /// <summary>
+    /// Removes old library items that are not installed in any read-only collections.
+    /// This helps keep the library clean by removing outdated versions that are only in modifiable collections.
+    /// Items that are still installed in read-only collections are preserved.
+    /// </summary>
+    /// <param name="oldToNewLibraryMapping">The mapping of old library items to their new replacements.</param>
+    private async ValueTask RemoveOldLibraryItemsIfNotInReadOnlyCollections(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping)
+    {
+        var oldItemsToRemove = new List<LibraryItem.ReadOnly>();
+        
+        foreach (var (oldItem, _) in oldToNewLibraryMapping)
+        {
+            // Check if the old item is still linked to any collections
+            var collectionsWithItem = _libraryService.CollectionsWithLibraryItem(oldItem, excludeReadOnlyCollections: false);
+            
+            // Only remove if the item is NOT in any read-only collections (i.e., only in modifiable collections or no collections)
+            var hasReadOnlyCollections = collectionsWithItem.Any(x => x.collection.IsReadOnly);
+            if (!hasReadOnlyCollections)
+                oldItemsToRemove.Add(oldItem);
+        }
+
+        if (oldItemsToRemove.Count > 0)
+            await _libraryService.RemoveLibraryItems(oldItemsToRemove);
     }
 }
 
