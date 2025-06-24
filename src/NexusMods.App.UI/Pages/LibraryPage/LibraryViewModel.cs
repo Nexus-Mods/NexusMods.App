@@ -338,10 +338,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 dialogDesc.AppendLine();
                 dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
 
-                var confirmDialog = DialogFactory.CreateMessageBox(
-                    Language.Library_Update_InstalledInMultipleCollections_Title,
-                    dialogDesc.ToString(),
-                    [
+                var confirmDialog = DialogFactory.CreateMessageDialog(
+                    title: Language.Library_Update_InstalledInMultipleCollections_Title,
+                    text: dialogDesc.ToString(),
+                    buttonDefinitions: [
                         new DialogButtonDefinition(
                             Language.Library_Update_InstalledInMultipleCollections_Cancel,
                             cancelButtonId,
@@ -419,10 +419,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     foreach (var failed in oldToNewLibraryMapping)
                         modsFailedToBuildSb.AppendLine($"{failed.oldItem.Name}");
 
-                    var errorDialog = DialogFactory.CreateMessageBox(
-                        Language.Library_Update_ReplaceFailed_Title,
-                        description + modsFailedToBuildSb,
-                        [ DialogStandardButtons.Ok ]
+                    var errorDialog = DialogFactory.CreateMessageDialog(
+                        title: Language.Library_Update_ReplaceFailed_Title,
+                        text: description + modsFailedToBuildSb.ToString(),
+                        buttonDefinitions: [DialogStandardButtons.Ok]
                     );
 
                     await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
@@ -447,10 +447,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                             finalDescription.AppendLine($"{downloadError.File.Name}");
                     }
                     
-                    var successDialog = DialogFactory.CreateMessageBox(
-                        Language.Library_Update_Success_Title,
-                        finalDescription.ToString(),
-                        [ DialogStandardButtons.Ok ]
+                    var successDialog = DialogFactory.CreateMessageDialog(
+                        title: Language.Library_Update_Success_Title,
+                        text: finalDescription.ToString(),
+                        buttonDefinitions: [DialogStandardButtons.Ok]
                     );
 
                     await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
@@ -459,10 +459,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             else
             {
                 // All downloads failed, show error message
-                var allFailedDialog = DialogFactory.CreateMessageBox(
-                    Language.Library_Update_AllDownloadsFailed_Title,
-                    string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count),
-                    [DialogStandardButtons.Ok]
+                var allFailedDialog = DialogFactory.CreateMessageDialog(
+                    title: Language.Library_Update_AllDownloadsFailed_Title,
+                    text: string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count),
+                    buttonDefinitions: [DialogStandardButtons.Ok]
                 );
 
                 await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
