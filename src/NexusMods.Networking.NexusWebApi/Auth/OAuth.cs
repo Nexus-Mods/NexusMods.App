@@ -15,7 +15,6 @@ namespace NexusMods.Networking.NexusWebApi.Auth;
 /// </summary>
 public class OAuth
 {
-    private const string OAuthUrl = "https://users.nexusmods.com/oauth";
     // NOTE(erri120): The backend has a list of valid redirect URLs and client IDs.
     // We can't change these on our own.
     private const string OAuthRedirectUrl = "nxm://oauth/callback";
@@ -87,7 +86,7 @@ public class OAuth
 
         var content = new FormUrlEncodedContent(request);
 
-        var response = await _http.PostAsync($"{OAuthUrl}/token", content, cancel);
+        var response = await _http.PostAsync($"{ClientConfig.OAuthUrl}/token", content, cancel);
         var responseString = await response.Content.ReadAsStringAsync(cancel);
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
@@ -108,7 +107,7 @@ public class OAuth
 
         var content = new FormUrlEncodedContent(request);
 
-        var response = await httpClient.PostAsync($"{OAuthUrl}/token", content, cancel);
+        var response = await httpClient.PostAsync($"{ClientConfig.OAuthUrl}/token", content, cancel);
         var responseString = await response.Content.ReadAsStringAsync(cancel);
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
@@ -126,6 +125,6 @@ public class OAuth
             { "state", state },
         };
 
-        return new Uri(QueryHelpers.AddQueryString($"{OAuthUrl}/authorize", request));
+        return new Uri(QueryHelpers.AddQueryString($"{ClientConfig.OAuthUrl}/authorize", request));
     }
 }

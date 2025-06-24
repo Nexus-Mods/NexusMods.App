@@ -22,6 +22,7 @@ internal static class ClientConfig
         UsersUrl = new Uri($"https://{usersSubdomain}.{baseDomain}");
         LegacyApiEndpoint = new Uri($"https://{apiSubdomain}.{baseDomain}/v1");
         GraphQlEndpoint = new Uri($"https://{apiSubdomain}.{baseDomain}/v2/graphql");
+        OAuthUrl = new Uri($"{UsersUrl}/oauth");
     }
 
     public static readonly Uri BaseUrl;
@@ -29,4 +30,5 @@ internal static class ClientConfig
     public static readonly Uri UsersUrl;
     public static readonly Uri LegacyApiEndpoint;
     public static readonly Uri GraphQlEndpoint;
+    public static readonly Uri OAuthUrl;
 }
