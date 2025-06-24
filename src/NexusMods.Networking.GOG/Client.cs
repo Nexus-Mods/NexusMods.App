@@ -10,8 +10,6 @@ using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
@@ -19,6 +17,7 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Models;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 using Polly;
 using Polly.Retry;
 

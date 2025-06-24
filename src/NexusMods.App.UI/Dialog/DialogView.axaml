@@ -9,9 +9,7 @@
              xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
              mc:Ignorable="d"
              x:Class="NexusMods.App.UI.Dialog.DialogView"
-             d:DataContext="{x:Static vm:DesignDataContexts.DialogAllDesignViewModel}"
-             x:DataType="vm:DialogViewModel"
-             d:DesignHeight="450">
+             d:DataContext="{x:Static vm:DesignDataContexts.MessageDialogViewModelIcon}">
 
     <!-- Temporary styles to see modal button variations -->
     <UserControl.Styles>
@@ -19,7 +17,7 @@
             <Style Selector="^ /template/ TextBlock#PART_Label">
                 <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
             </Style>
-            
+
             <Style Selector="^.Default">
                 <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
@@ -70,13 +68,13 @@
     <Grid RowDefinitions="Auto,*">
 
         <!-- titlebar -->
-        <Grid Name="Titlebar" Grid.Row="0"
+        <Grid x:Name="Titlebar" Grid.Row="0"
               ColumnDefinitions="*,Auto"
               Margin="16,16,16,0">
 
             <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
                 custom titlebar dragging -->
-            <TextBlock Grid.Column="0" Name="TitleTextBlock"
+            <TextBlock Grid.Column="0" x:Name="TitleTextBlock"
                        Text="{Binding WindowTitle}"
                        Foreground="{StaticResource NeutralStrongBrush}"
                        Theme="{StaticResource BodySMSemiTheme}"
@@ -97,31 +95,50 @@
         </Grid>
 
         <!-- content -->
-        <Border Name="ContentBorder" Grid.Row="1">
+        <Border x:Name="ContentBorder" Grid.Row="1">
 
             <!-- content, buttons -->
             <Grid RowDefinitions="*, Auto" Margin="16,16,16,16">
 
                 <!-- basic content, remaining space with markdown and/or custom content -->
-                <Grid Name="GenericContentContainer"
+                <Grid x:Name="GenericContentContainer"
                       RowDefinitions="Auto,*"
                       Margin="0">
-                    
+
                     <StackPanel Grid.Row="0" Spacing="4">
-                        <icons:UnifiedIcon Name="Icon"
+                        <icons:UnifiedIcon x:Name="Icon"
                                            Value="{x:Static icons:IconValues.PictogramBox2}"
                                            HorizontalAlignment="Left"
                                            Size="48" />
-                        <TextBlock Name="HeaderTextBlock"
+                        <TextBlock x:Name="HeaderTextBlock"
                                    Text="Header"
                                    Foreground="{StaticResource NeutralStrongBrush}"
                                    Theme="{StaticResource BodyMDSemiTheme}"
                                    TextWrapping="Wrap" />
-                        <TextBlock Name="TextTextBlock"
+                        <TextBlock x:Name="TextTextBlock"
                                    Foreground="{StaticResource NeutralSubduedBrush}"
                                    TextWrapping="Wrap" />
+
+                        <StackPanel x:Name="InputStack" Margin="0 16 0 0" Spacing="4">
+                            <TextBlock x:Name="InputLabel"
+                                       Text="InputLabel"
+                                       Foreground="{StaticResource NeutralStrongBrush}"
+                                       Theme="{StaticResource BodySMNormalTheme}" />
+                            <Panel>
+                                <TextBox x:Name="InputTextBox" Padding="8 5 24 4" />
+                                <controls:StandardButton x:Name="ButtonInputClear"
+                                                         Margin="0 0 4 0"
+                                                         HorizontalAlignment="Right"
+                                                         Type="Tertiary"
+                                                         Size="Toolbar"
+                                                         Fill="None"
+                                                         ShowIcon="IconOnly"
+                                                         ShowLabel="False"
+                                                         LeftIcon="{x:Static icons:IconValues.Close}" />
+                            </Panel>
+                        </StackPanel>
                     </StackPanel>
-                    
+
                     <ScrollViewer Grid.Row="1">
                         <StackPanel
                             Margin="0 8 0 0"
@@ -145,17 +162,17 @@
                             </Border>
 
                             <!-- custom content - show this if custom content is provided -->
-                            <Border Name="CustomContentContainer"
+                            <Border x:Name="CustomContentContainer"
                                     Margin="0">
-                                <reactiveUi:ViewModelViewHost Name="ContentViewModelHost" />
+                                <reactiveUi:ViewModelViewHost x:Name="ContentViewModelHost" />
                             </Border>
                         </StackPanel>
                     </ScrollViewer>
-                    
+
                 </Grid>
 
                 <!-- buttons -->
-                <panels:FlexPanel Name="ButtonsFlexPanel" Grid.Row="1"
+                <panels:FlexPanel x:Name="ButtonsFlexPanel" Grid.Row="1"
                                   ColumnSpacing="8" Margin="0 16 0 0" />
 
             </Grid>

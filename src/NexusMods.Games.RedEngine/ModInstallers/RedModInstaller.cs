@@ -3,18 +3,17 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Trees;
 using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk.IO;
+using NexusMods.Sdk.FileStore;
 
 namespace NexusMods.Games.RedEngine.ModInstallers;
 

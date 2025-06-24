@@ -1,15 +1,15 @@
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.DataModel;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
+
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
 public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection connection, ISettingsManager settingsManager)
