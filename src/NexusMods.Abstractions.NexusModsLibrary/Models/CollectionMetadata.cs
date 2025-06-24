@@ -1,8 +1,8 @@
 using NexusMods.Abstractions.NexusModsLibrary.Attributes;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Abstractions.Resources.DB;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 

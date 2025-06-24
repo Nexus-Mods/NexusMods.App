@@ -6,8 +6,6 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -20,6 +18,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.IO;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 using ModSource = NexusMods.Abstractions.Collections.Json.ModSource;
 using Size = NexusMods.Paths.Size;
@@ -31,7 +30,14 @@ public static class CollectionCreator
 {
     // TODO: remove for GA
     public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
-
+    
+    public static bool IsCollectionUploaded(IConnection connection, LoadoutItemGroupId groupId)
+    {
+        var group = CollectionGroup.Load(connection.Db, groupId);
+        
+        return group.IsValid() && group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup);
+    }
+    
     private static string GenerateNewCollectionName(string[] allNames)
     {
         const string defaultValue = "My new collection";
