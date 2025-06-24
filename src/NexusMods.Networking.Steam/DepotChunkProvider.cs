@@ -1,9 +1,8 @@
 using System.Buffers;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 using SteamKit2;
 
 namespace NexusMods.Networking.Steam;

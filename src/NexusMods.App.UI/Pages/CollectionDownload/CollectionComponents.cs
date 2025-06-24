@@ -213,7 +213,7 @@ public static class CollectionComponents
             {
                 var (_, isInstalledObservable) = state;
 
-                isInstalledObservable.Subscribe(self, static (isInstalled, self) =>
+                isInstalledObservable.ObserveOnUIThreadDispatcher().Subscribe(self, static (isInstalled, self) =>
                 {
                     self._canInstall.OnNext(!isInstalled);
                     self._isInstalled.Value = isInstalled;

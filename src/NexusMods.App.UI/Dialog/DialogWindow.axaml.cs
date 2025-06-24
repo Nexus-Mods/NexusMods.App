@@ -1,9 +1,10 @@
-using System.Reactive.Disposables;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Labs.Panels;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using R3;
+using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
 
 namespace NexusMods.App.UI.Dialog;
 
@@ -24,14 +25,13 @@ public partial class DialogWindow : Window, IDisposable
         // Bind the CloseCommand to the Window's close action
         this.DataContextChanged += (sender, args) =>
         {
-            if (DataContext is DialogViewModel viewModel)
+            if (DataContext is IDialogViewModel viewModel)
             {
-                // when the close button is clicked, close the window
-                _serialDisposable.Disposable = viewModel.CloseWindowCommand.Subscribe(result =>
-                    {
-                        Close();
-                    }
-                );
+                // Bind the CloseCommand to the Window's close action
+                _serialDisposable.Disposable = viewModel.ButtonPressCommand.Subscribe( id => 
+                {
+                    Close();
+                });
             }
             else
             {

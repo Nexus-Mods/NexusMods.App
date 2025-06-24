@@ -14,7 +14,7 @@ public enum ButtonStyling
     /// The button is styled as a primary action, used for a neutral result.
     /// </summary>
     Default,
-
+    
     /// <summary>
     /// The button is styled to indicate a premium action.
     /// </summary>

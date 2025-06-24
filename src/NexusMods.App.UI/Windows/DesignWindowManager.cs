@@ -24,7 +24,8 @@ public class DesignWindowManager : IWindowManager
 
     public void SaveWindowState(IWorkspaceWindow window) { }
     public bool RestoreWindowState(IWorkspaceWindow window) => false;
-    public Task<ButtonDefinitionId> ShowDialog(IDialog<ButtonDefinitionId> dialog, DialogWindowType windowType)
+    
+    public Task<TResult> ShowDialog<TResult>(IDialog<TResult> dialog, DialogWindowType windowType)
     {
         throw new NotImplementedException();
     }

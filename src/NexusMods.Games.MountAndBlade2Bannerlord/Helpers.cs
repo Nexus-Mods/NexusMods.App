@@ -2,7 +2,6 @@ using System.Runtime.CompilerServices;
 using Bannerlord.ModuleManager;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Resources;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Sdk.Resources;
 

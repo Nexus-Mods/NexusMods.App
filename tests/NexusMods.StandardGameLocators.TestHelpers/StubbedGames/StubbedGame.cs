@@ -10,12 +10,11 @@ using NexusMods.Abstractions.GameLocators.Stores.Origin;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 
 // ReSharper disable InconsistentNaming
 
@@ -46,7 +45,7 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         new DefaultSynchronizer(_serviceProvider);
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<StubbedGame>(
+        new EmbeddedResourceStreamFactory<StubbedGame>(
             "NexusMods.StandardGameLocators.TestHelpers.Resources.question_mark_game.png");
 
     public override IStreamFactory GameImage => throw new NotImplementedException("No game image for stubbed game.");

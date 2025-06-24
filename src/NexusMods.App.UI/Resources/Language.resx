@@ -540,7 +540,7 @@
         <value>Browse Nexus Mods</value>
     </data>
     <data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
-        <value>Browse Nexus Mods</value>
+        <value>Browse Collections</value>
     </data>
     <data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
         <value>View</value>

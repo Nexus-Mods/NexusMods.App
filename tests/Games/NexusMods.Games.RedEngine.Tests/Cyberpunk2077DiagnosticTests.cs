@@ -1,19 +1,16 @@
-using System.Reactive.Linq;
 using System.Text;
 using FluentAssertions;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Extensions;
-using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.RedEngine.Cyberpunk2077.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Tests;

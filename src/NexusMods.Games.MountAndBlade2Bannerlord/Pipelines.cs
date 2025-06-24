@@ -2,13 +2,11 @@ using System.Reactive;
 using System.Xml;
 using Bannerlord.ModuleManager;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.IO;
 using NexusMods.Sdk.Resources;
-using NexusMods.Abstractions.Resources.Caching;
-using NexusMods.Abstractions.Resources.IO;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.FileStore;
 
 namespace NexusMods.Games.MountAndBlade2Bannerlord;
 
