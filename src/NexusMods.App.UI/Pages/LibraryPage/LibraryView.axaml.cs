@@ -85,6 +85,19 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         count => count > 0)
                     .AddTo(disposables);
 
+                // Bind menu item headers to show real-time counts
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateModMenuItem.Header,
+                        count => string.Format(Language.Library_Update, count))
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateAndKeepOldModMenuItem.Header,
+                        count => string.Format(Language.Library_UpdateAndKeepOldMod, count))
+                    .AddTo(disposables);
+
                 this.BindCommand(ViewModel, vm => vm.OpenFilePickerCommand, view => view.GetModsFromDriveButton)
                     .AddTo(disposables);
 

@@ -121,11 +121,9 @@
 
                                 <controls:StandardButton.Flyout>
                                     <MenuFlyout>
-                                        <MenuItem x:Name="UpdateModMenuItem"
-                                                  Header="{x:Static resources:Language.Library_Update}">
+                                        <MenuItem x:Name="UpdateModMenuItem">
                                         </MenuItem>
-                                        <MenuItem x:Name="UpdateAndKeepOldModMenuItem"
-                                                  Header="{x:Static resources:Language.Library_UpdateAndKeepOldMod}">
+                                        <MenuItem x:Name="UpdateAndKeepOldModMenuItem">
                                         </MenuItem>
                                     </MenuFlyout>
                                 </controls:StandardButton.Flyout>
