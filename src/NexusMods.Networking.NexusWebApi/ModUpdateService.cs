@@ -325,6 +325,29 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
+    public IEnumerable<(NexusModsModPageMetadataId modPageId, ModUpdatesOnModPage updates)> GetAllModPagesWithUpdates(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
+    {
+        // If no custom selector is provided, apply default filters
+        select ??= _filterService.SelectModPage;
+
+        // Efficiently get all mod pages with updates from the cache without LINQ
+        var results = new List<(NexusModsModPageMetadataId, ModUpdatesOnModPage)>();
+        
+        foreach (var cacheItem in _newestModOnAnyPageCache.Items)
+        {
+            var modPageId = cacheItem.Key;
+            var updates = cacheItem.Value;
+            
+            // Apply the filter
+            var filteredUpdates = select(updates);
+            if (filteredUpdates != null)
+                results.Add((modPageId, filteredUpdates.Value));
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         _newestModVersionCache.Dispose();

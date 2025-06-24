@@ -688,22 +688,6 @@ After asking design, we're choosing to simply open the mod page for now.
             });
     }
 
-
-    
-    private IEnumerable<(NexusModsModPageMetadata.ReadOnly modPage, ModUpdatesOnModPage updates)> GetAllModPagesWithUpdates()
-    {
-        // Get all NexusMods mod pages from the library that have updates
-        var allNexusItems = NexusModsLibraryItem.All(_connection.Db);
-        var modPagesWithUpdates = allNexusItems
-            .Select(item => item.ModPageMetadata)
-            .DistinctBy(modPage => modPage.Id)
-            .Select(modPage => (modPage, updates: _modUpdateService.HasModPageUpdatesAvailable(modPage)))
-            .Where(tuple => tuple.updates.HasValue && tuple.updates.Value.HasAnyUpdates)
-            .Select(tuple => (tuple.modPage, tuple.updates.Value));
-        
-        return modPagesWithUpdates;
-    }
-
     private LoadoutItemGroupId GetInstallationTarget() => (SelectedInstallationTarget?.Id ?? _installationTargets[0].Id).Value;
 
     private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
@@ -813,13 +797,13 @@ After asking design, we're choosing to simply open the mod page for now.
             return;
         }
 
-        // Get all mod pages with updates available and process them
-        var modPagesWithUpdates = GetAllModPagesWithUpdates();
+        // Use the efficient method directly from ModUpdateService
+        var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates();
         
-        foreach (var (modPage, updates) in modPagesWithUpdates)
+        foreach (var (modPageId, updates) in modPagesWithUpdates)
         {
             // Create a minimal model for the message (we need this for future/existing infrastructure)
-            var model = new CompositeItemModel<EntityId>(modPage.Id);
+            var model = new CompositeItemModel<EntityId>(modPageId);
             var message = new UpdateAndReplaceMessage(updates, model);
             await HandleUpdateAndReplaceMessage(message, cancellationToken);
         }
