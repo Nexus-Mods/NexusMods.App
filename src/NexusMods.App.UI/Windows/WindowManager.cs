@@ -164,7 +164,6 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         }
     }
 
-
     private void ResetSavedData()
     {
         _logger.LogInformation("Removing possible broken window state from the DB");
@@ -178,7 +177,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         tx.Commit();
     }
     
-    public async Task<ButtonDefinitionId> ShowDialog(IDialog<ButtonDefinitionId> dialog, DialogWindowType windowType)
+    public async Task<TResult> ShowDialog<TResult>(IDialog<TResult> dialog, DialogWindowType windowType)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             throw new InvalidOperationException("Application lifetime is not configured properly.");
