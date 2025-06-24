@@ -290,6 +290,19 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
+    public Optional<ModUpdatesOnModPage> HasModPageUpdatesAvailable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
+    {
+        select ??= _filterService.SelectModPage;
+        var cached = _newestModOnAnyPageCache.Lookup(current.Id);
+        if (!cached.HasValue)
+            return Optional<ModUpdatesOnModPage>.None;
+        
+        // Apply the filter and return the result
+        var result = select(cached.Value.Value);
+        return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdatesOnModPage>.None;
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         _newestModVersionCache.Dispose();
