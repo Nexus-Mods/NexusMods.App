@@ -148,7 +148,7 @@ public class LoadoutCardViewModel : AViewModel<ILoadoutCardViewModel>, ILoadoutC
             try
             {
                 var stream = await source.GetGame().Icon.GetStreamAsync();
-                return new Bitmap(stream);
+                return Bitmap.DecodeToWidth(stream, (int) ImageSizes.GameThumbnail.Width);
             }
             catch (Exception ex)
             {

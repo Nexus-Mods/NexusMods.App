@@ -1,19 +1,18 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Security.Cryptography;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Library;
 
@@ -67,13 +66,13 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         var hash = await filePath.XxHash3Async(token: context.CancellationToken);
 
         // TODO: hash once with both algorithms
-        var md5 = Optional<Md5HashValue>.None;
+        var md5 = Optional<Md5Value>.None;
         if (!isNestedFile)
         {
             await using var fileStream = filePath.Read();
             using var algo = MD5.Create();
             var rawHash = await algo.ComputeHashAsync(fileStream, cancellationToken: context.CancellationToken);
-            md5 = Md5HashValue.From(rawHash);
+            md5 = Md5Value.From(rawHash);
         }
 
         var libraryFile = CreateLibraryFile(Transaction, filePath, hash, md5);
@@ -137,7 +136,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
         return false;
     }
 
-    private static LibraryFile.New CreateLibraryFile(ITransaction tx, AbsolutePath filePath, Hash hash, Optional<Md5HashValue> md5)
+    private static LibraryFile.New CreateLibraryFile(ITransaction tx, AbsolutePath filePath, Hash hash, Optional<Md5Value> md5)
     {
         var libraryFile = new LibraryFile.New(tx, out var id)
         {

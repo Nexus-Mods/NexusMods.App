@@ -7,13 +7,13 @@ namespace NexusMods.Abstractions.Settings;
 /// Value container for a settings property.
 /// </summary>
 [PublicAPI]
-public class SettingsPropertyValueContainer : OneOfBase<BooleanContainer, SingleValueMultipleChoiceContainer>
+public class SettingsPropertyValueContainer : OneOfBase<BooleanContainer, SingleValueMultipleChoiceContainer, ConfigurablePathsContainer>
 {
     /// <summary>
     /// Constructor.
     /// </summary>
     public SettingsPropertyValueContainer(OneOf<
         BooleanContainer,
-        SingleValueMultipleChoiceContainer
-    > input) : base(input) { }
+        SingleValueMultipleChoiceContainer,
+        ConfigurablePathsContainer> input) : base(input) { }
 }

@@ -1,4 +1,5 @@
-<reactiveUi:ReactiveUserControl x:TypeArguments="leftMenu:ILoadoutLeftMenuViewModel" xmlns="https://github.com/avaloniaui"
+<reactiveUi:ReactiveUserControl x:TypeArguments="leftMenu:ILoadoutLeftMenuViewModel"
+                                xmlns="https://github.com/avaloniaui"
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,34 +14,37 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="*, Auto" Margin="12,0,12,12">
-        <StackPanel Grid.Row="0" Orientation="Vertical" x:Name="LeftMenuStack">
-            <items:LeftMenuItemView x:Name="LibraryItem" />
-            
-            <StackPanel>
-                <Separator />
-                <TextBlock x:Name="InstalledModsSectionText" />
+
+        <ScrollViewer>
+            <StackPanel Grid.Row="0" Orientation="Vertical" x:Name="LeftMenuStack">
+                <items:LeftMenuItemView x:Name="LibraryItem" />
+
+                <StackPanel>
+                    <Separator />
+                    <TextBlock x:Name="InstalledModsSectionText" />
+                </StackPanel>
+
+                <items:LeftMenuItemView x:Name="LoadoutItem" />
+
+                <ItemsControl x:Name="CollectionItems">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="{StaticResource Spacing-2}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <items:LeftMenuItemView x:Name="NewCollection" />
+
+                <StackPanel>
+                    <Separator />
+                    <TextBlock x:Name="UtilitiesSectionText" />
+                </StackPanel>
+
+                <items:LeftMenuItemView x:Name="HealthCheckItem" />
+                <items:LeftMenuItemView x:Name="ExternalChangesItem" />
             </StackPanel>
-            
-            <items:LeftMenuItemView x:Name="LoadoutItem" />
-
-            <ItemsControl x:Name="CollectionItems">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Spacing="{StaticResource Spacing-2}" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-
-            <items:LeftMenuItemView x:Name="NewCollection"/>
-
-            <StackPanel>
-                <Separator />
-                <TextBlock x:Name="UtilitiesSectionText" />
-            </StackPanel>
-            
-            <items:LeftMenuItemView x:Name="HealthCheckItem" />
-            <items:LeftMenuItemView x:Name="ExternalChangesItem" />
-        </StackPanel>
+        </ScrollViewer>
 
         <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="ApplyControlViewHost" />
     </Grid>

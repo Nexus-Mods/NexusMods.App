@@ -1,6 +1,6 @@
-using NexusMods.Abstractions.Resources.DB;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk.Resources;
 
 namespace NexusMods.Abstractions.NexusModsLibrary.Models;
 

@@ -3,8 +3,8 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 using SmartFormat;
 
 namespace NexusMods.Networking.GOG;
@@ -78,7 +78,7 @@ internal class ChunkedStreamSource : IChunkedStreamSource
         );
 
         #if DEBUG
-        var md5 = Md5.From(MD5.HashData(buffer.Span));
+        var md5 = Md5Value.From(MD5.HashData(buffer.Span));
         Debug.Assert(md5.Equals(chunk.Md5));
         #endif
         

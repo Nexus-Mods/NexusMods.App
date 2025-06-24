@@ -4,10 +4,10 @@ using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Converters;
 using NexusMods.App.UI.Windows;
+using NexusMods.Sdk;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Projektanker.Icons.Avalonia;
@@ -94,10 +94,9 @@ public class Startup
 
     public static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider)
     {
-        ReactiveUiExtensions.DefaultLogger = serviceProvider.GetRequiredService<ILogger<Startup>>();
-
-        IconProvider.Current
-            .Register<MaterialDesignIconProvider>();
+        var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
+        ReactiveUiExtensions.DefaultLogger = logger;
+        IconProvider.Current.Register<MaterialDesignIconProvider>();
 
         var app = AppBuilder
             .Configure(serviceProvider.GetRequiredService<App>)
@@ -115,7 +114,10 @@ public class Startup
                 UseOpacitySaveLayer = true,
             })
             .LogToTrace()
-            .UseR3()
+            .UseR3(unhandledExceptionHandler: exception =>
+            {
+                LogMessages.R3UnhandledException(logger, exception);
+            })
             .UseReactiveUI();
 
         Locator.CurrentMutable.UnregisterCurrent(typeof(IViewLocator));
@@ -123,11 +125,7 @@ public class Startup
         
         Locator.CurrentMutable.RegisterConstant<IBindingTypeConverter>(new SizeToStringTypeConverter());
         
-        var logger = serviceProvider.GetRequiredService<ILogger<Startup>>();
-        ObservableSystem.RegisterUnhandledExceptionHandler(exception =>
-        {
-            LogMessages.R3UnhandledException(logger, exception);
-        });
+
 
         return app;
     }

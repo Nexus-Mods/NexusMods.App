@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.BuildInfo;
 using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
+using NexusMods.Sdk;
 
 namespace NexusMods.Games.AdvancedInstaller.UI.Tests;
 

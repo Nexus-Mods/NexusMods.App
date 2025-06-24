@@ -4,7 +4,6 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
 using NexusMods.CrossPlatform;
 using NexusMods.DataModel;
 using NexusMods.FileExtractor;
@@ -13,6 +12,7 @@ using NexusMods.Library;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Settings;
 using Xunit.DependencyInjection.Logging;
 

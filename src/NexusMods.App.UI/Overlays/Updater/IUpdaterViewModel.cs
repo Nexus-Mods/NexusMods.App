@@ -1,4 +1,4 @@
-﻿using NexusMods.App.BuildInfo;
+﻿using NexusMods.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Overlays.Updater;

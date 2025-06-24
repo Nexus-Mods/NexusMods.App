@@ -1,8 +1,6 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using NexusMods.App.BuildInfo;
 using R3;
 using ReactiveUI;
 

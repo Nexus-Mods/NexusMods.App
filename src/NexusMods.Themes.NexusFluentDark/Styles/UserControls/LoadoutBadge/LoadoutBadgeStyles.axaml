@@ -41,49 +41,49 @@
 
     <!-- Add Styles Here -->
     <Style Selector="loadoutBadge|LoadoutBadge">
-        <Setter Property="Background" Value="{StaticResource NeutralStrong}" />
+        <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
         <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
         <Setter Property="CornerRadius" Value="0,8,0,4" />
-        <Setter Property="Padding" Value="4,0,6,0" />
-        <Setter Property="Height" Value="24" />
+        <Setter Property="Padding" Value="3 0 3 0" />
+        <Setter Property="Height" Value="20" />
 
         <Style Selector="^ spinner|Spinner#Spinner">
             <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
             <Setter Property="IsVisible" Value="False" />
-            <Setter Property="Height" Value="12" />
-            <Setter Property="Width" Value="12" />
-            <Setter Property="Margin" Value="0" />
+            <Setter Property="Height" Value="10" />
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Margin" Value="2 0 0 0" />
         </Style>
 
         <Style Selector="^ icons|UnifiedIcon#Icon">
             <Setter Property="IsVisible" Value="False" />
-            <Setter Property="Size" Value="16" />
+            <Setter Property="Size" Value="12" />
             <Setter Property="Margin" Value="0" />
         </Style>
 
         <Style Selector="^ TextBlock#ShortName">
-            <Setter Property="Theme" Value="{StaticResource BodyLGBoldTheme}" />
+            <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
             <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="2,0,0,0" />
+            <Setter Property="Margin" Value="2,0,2,0" />
         </Style>
 
         <!-- Selected state -->
         <Style Selector="^:not(:selected)">
-            <Setter Property="Background" Value="{StaticResource NeutralTranslucentModerate}" />
+            <Setter Property="Background" Value="{StaticResource NeutralTranslucentModerateBrush}" />
         </Style>
 
         <!-- Applied state -->
         <Style Selector="^:applied:not(:in-progress)">
-            <Setter Property="Padding" Value="2,0,6,0" />
+            <!-- <Setter Property="Padding" Value="2,0,2,0" /> -->
             
             <Style Selector="^ icons|UnifiedIcon#Icon">
                 <Setter Property="IsVisible" Value="True" />
             </Style>
             
             <Style Selector="^ TextBlock#ShortName">
-                <Setter Property="Margin" Value="0,0,0,0" />
+                <!-- <Setter Property="Margin" Value="0,0,0,0" /> -->
             </Style>
         </Style>
 

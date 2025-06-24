@@ -15,7 +15,7 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *">
         
         <!-- different page header if it's a collection (i.e. My Mods) or if it's just All mods -->
         <Panel Grid.Row="0" Margin="24 24 24 0" >
@@ -28,11 +28,15 @@
                                    Title="All"
                                    Description="A combined view of all your installed mods from all collections." />
         </Panel>
+
+        <StackPanel Grid.Row="1">
+            <controls:StandardButton x:Name="ButtonUploadCollectionRevision" Text="Upload" />
+        </StackPanel>
         
         <!-- tabs -->
         
         <!-- Temp top margin as we don't have a proper PageHeader on this view yet -->
-        <TabControl Grid.Row="1" x:Name="RulesTabControl" Margin="0 12 0 0">
+        <TabControl Grid.Row="2" x:Name="RulesTabControl" Margin="0 12 0 0">
             <!-- mods tab -->
             <TabItem x:Name="ModsTabItem">
                 <TabItem.Header>
@@ -95,7 +99,8 @@
                                       ShowColumnHeaders="True"
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
-                                      Classes="MainListsStyling" />
+                                      Classes="MainListsStyling"
+                                      Margin="0 8 0 0"/>
                     </controls:EmptyState>
                 </Grid>
             </TabItem>

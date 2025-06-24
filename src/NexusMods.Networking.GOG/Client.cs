@@ -10,8 +10,6 @@ using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.MnemonicDB.Abstractions;
@@ -19,6 +17,7 @@ using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Networking.GOG.Models;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 using Polly;
 using Polly.Retry;
 
@@ -50,7 +49,7 @@ internal class Client : IClient
     // A cache of blocks from the shared block cache. When a depot contains a small file container, we want to 
     // cache the blocks so that we don't have to re-download them if there are a lot of files that are found in the 
     // same block
-    private readonly FastCache<Md5, Memory<byte>> _blockCache;
+    private readonly FastCache<Md5Value, Memory<byte>> _blockCache;
     
     /// <summary>
     /// TTL time for the secure URL cache.
@@ -80,7 +79,7 @@ internal class Client : IClient
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         };
 
-        _blockCache = new FastCache<Md5, Memory<byte>>();
+        _blockCache = new FastCache<Md5Value, Memory<byte>>();
         
         _pipeline = new ResiliencePipelineBuilder()
             .AddRetry(new RetryStrategyOptions())
@@ -409,7 +408,7 @@ internal class Client : IClient
     /// <summary>
     /// Try to get a cached block.
     /// </summary>
-    internal bool TryGetCachedBlock(Md5 md5, out Memory<byte> found)
+    internal bool TryGetCachedBlock(Md5Value md5, out Memory<byte> found)
     {
         return _blockCache.TryGet(md5, out found);
     }
@@ -417,7 +416,7 @@ internal class Client : IClient
     /// <summary>
     /// Add a block to the global cache.
     /// </summary>
-    public void AddCachedBlock(Md5 md5, Memory<byte> buffer)
+    public void AddCachedBlock(Md5Value md5, Memory<byte> buffer)
     {
         _blockCache.AddOrUpdate(md5, buffer, CacheTime);
     }

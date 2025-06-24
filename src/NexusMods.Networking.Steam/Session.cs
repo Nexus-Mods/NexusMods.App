@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Networking.Steam.DTOs;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 using Polly;
 using Polly.Retry;
 using SteamKit2;

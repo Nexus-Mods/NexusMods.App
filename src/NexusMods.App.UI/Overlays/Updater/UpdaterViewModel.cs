@@ -2,11 +2,11 @@ using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Settings;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Networking.GitHub;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using R3;
 
 namespace NexusMods.App.UI.Overlays.Updater;

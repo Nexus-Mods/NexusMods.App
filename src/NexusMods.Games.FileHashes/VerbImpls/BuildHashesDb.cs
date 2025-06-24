@@ -16,11 +16,14 @@ using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
-using NexusMods.MnemonicDB.Storage.RocksDbBackend;
+using NexusMods.Networking.EpicGameStore.DTOs.EgData;
+using NexusMods.Networking.EpicGameStore.Models;
+using NexusMods.Networking.EpicGameStore.Values;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.ProxyConsole;
 using YamlDotNet.Serialization;
+using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 using Manifest = NexusMods.Abstractions.Steam.DTOs.Manifest;
 using OperatingSystem = NexusMods.Abstractions.Games.FileHashes.Values.OperatingSystem;
 
@@ -38,7 +41,7 @@ public class BuildHashesDb : IAsyncDisposable
     private readonly JsonSerializerOptions _jsonOptions;
     
     private readonly Dictionary<(RelativePath Path, EntityId HashId), EntityId> _knownHashPaths = new();
-    private readonly Backend _backend;
+    private readonly MnemonicDB.Storage.RocksDbBackend.Backend _backend;
     private readonly IGameRegistry _gameRegistry;
 
     public BuildHashesDb(IRenderer renderer, IServiceProvider provider, TemporaryFileManager temporaryFileManager, IGameRegistry gameRegistry)
@@ -51,7 +54,7 @@ public class BuildHashesDb : IAsyncDisposable
         
         
         
-        _backend = new Backend();
+        _backend = new MnemonicDB.Storage.RocksDbBackend.Backend();
         var settings = new DatomStoreSettings
         {
             Path = _tempFolder,
@@ -69,6 +72,7 @@ public class BuildHashesDb : IAsyncDisposable
             await AddHashes(path);
             await AddGogData(path);
             await AddSteamData(path);
+            await AddEpicGameStoreData(path);
             await AddVersions(path);
         }
         catch (Exception ex)
@@ -335,6 +339,75 @@ public class BuildHashesDb : IAsyncDisposable
         await _renderer.TextLine("Imported {0} builds with {1} paths", buildCount, pathCount);
     }
 
+    private async Task AddEpicGameStoreData(AbsolutePath path)
+    {
+        using var tx = _connection.BeginTransaction();
+        await _renderer.TextLine("Importing GOG data");
+
+        var buildsPath = path / "json" / "stores" / "egs" / "builds";
+
+        var metadata = new Dictionary<string, Build>();
+        var files = new Dictionary<string, BuildFile[]>();
+
+        foreach (var itemFolder in buildsPath.EnumerateDirectories())
+        {
+            var itemId = itemFolder.GetFileNameWithoutExtension();
+
+            foreach (var file in itemFolder.EnumerateFiles(KnownExtensions.Json))
+            {
+                await using var fs = file.Read();
+                if (file.FileName.EndsWith("_metadata.json"))
+                {
+                    metadata[itemId] = (await JsonSerializer.DeserializeAsync<Build>(fs, _jsonOptions))!;
+                }
+                if (file.FileName.EndsWith("_files.json"))
+                {
+                    files[itemId] = (await JsonSerializer.DeserializeAsync<BuildFile[]>(fs, _jsonOptions))!;
+                }
+            }
+        }
+
+        var buildCount = 0;
+        foreach (var (id, build) in metadata)
+        {
+            try
+            {
+                var buildFiles = files[id];
+                
+                var pathIds = new List<EntityId>();
+
+                foreach (var file in buildFiles)
+                {
+                    var relativePath = RelativePath.FromUnsanitizedInput(file.FileName);
+                    var relation = EnsureHashPathRelation(tx, _connection.Db, relativePath, Sha1Value.FromHex(file.FileHash));
+                    pathIds.Add(relation);
+                }
+
+                _ = new EpicGameStoreBuild.New(tx)
+                {
+                    BuildId = NexusMods.Networking.EpicGameStore.Values.BuildId.FromUnsanitized(build.Id),
+                    ItemId = ItemId.FromUnsanitized(id),
+                    AppName = build.AppName,
+                    BuildVersion = build.BuildVersion,
+                    LabelName = build.LabelName,
+                    CreatedAt = build.CreatedAt,
+                    UpdatedAt = build.UpdatedAt,
+                    FilesIds = pathIds,
+                };
+                
+                buildCount++;
+            }
+            catch (Exception ex)
+            {
+                await _renderer.Error(ex, "Failed to import {0}: {1}", id, ex.Message);
+            }
+        }
+        
+        var result = await tx.Commit();
+        await _renderer.TextLine("Imported {0} EGS builds", buildCount);
+        RemapHashPaths(result);
+    }
+
     private void RemapHashPaths(ICommitResult result)
     {
         var toRemap = _knownHashPaths.Where(f => f.Value.Partition == PartitionId.Temp).ToArray();
@@ -400,7 +473,7 @@ public class BuildHashesDb : IAsyncDisposable
     /// <summary>
     /// Find or insert a hash path relation
     /// </summary>
-    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1 hash)
+    private EntityId EnsureHashPathRelation(ITransaction tx, IDb referenceDb, RelativePath path, Sha1Value hash)
     {
         var hashRelation = HashRelation.FindBySha1(referenceDb, hash).FirstOrDefault();
         

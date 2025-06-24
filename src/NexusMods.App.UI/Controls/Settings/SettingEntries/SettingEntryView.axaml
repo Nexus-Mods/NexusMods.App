@@ -15,18 +15,19 @@
     <Border Padding="16,12"
             Background="{StaticResource SurfaceMidBrush}"
             CornerRadius="{StaticResource Rounded-lg}">
-        <Grid RowDefinitions="Auto, Auto">
+        <Grid RowDefinitions="Auto, Auto" >
             <Grid Grid.Row="0" 
-                ColumnDefinitions="*, Auto">
+                ColumnDefinitions="*, Auto" >
+                
                 <StackPanel Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Left">
                     <TextBlock x:Name="EntryName" 
                                Theme="{StaticResource BodyMDNormalTheme}" 
                                Foreground="{StaticResource NeutralStrongBrush}"
                                TextWrapping="Wrap" />
-                    <TextBlock x:Name="EntryDescription" 
-                               Theme="{StaticResource BodySMNormalTheme}"
-                               Foreground="{StaticResource NeutralSubduedBrush}"
-                               TextWrapping="Wrap" />
+                    
+                    <reactiveUi:ViewModelViewHost x:Name="DescriptionMarkdownRendererViewModelViewHost"
+                                                  Margin="0,4,0,0"/>
+                    
                     <reactiveUi:ViewModelViewHost x:Name="LinkViewModel" IsVisible="True" Margin="0,8,0,0" />
                 </StackPanel>
 
@@ -48,10 +49,11 @@
                 <StackPanel Orientation="Horizontal" 
                             Spacing="{StaticResource Spacing-2}">
                     <icons:UnifiedIcon 
-                        Value="{x:Static icons:IconValues.Warning}"
-                        Foreground="{StaticResource WarningStrongBrush}"/>
+                        Value="{x:Static icons:IconValues.WarningAmber}"
+                        Foreground="{StaticResource WarningStrongBrush}"
+                        Size="16"/>
                     <TextBlock x:Name="RequiresRestartMessage"
-                               Theme="{StaticResource BodyMDSemiTheme}"
+                               Theme="{StaticResource BodySMSemiTheme}"
                                Foreground="{StaticResource WarningStrongBrush}"  />
                 </StackPanel>
 

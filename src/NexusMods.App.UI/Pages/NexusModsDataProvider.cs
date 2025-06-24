@@ -17,6 +17,7 @@ using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
 
@@ -26,12 +27,14 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
     private readonly IModUpdateService _modUpdateService;
+    private readonly IModUpdateFilterService _modUpdateFilterService;
     private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
+        _modUpdateFilterService = serviceProvider.GetRequiredService<IModUpdateFilterService>();
 
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
@@ -170,11 +173,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         );
 
         // Update button
-        var newestFiles = _modUpdateService.GetNewestModPageVersionObservable(modPage);
-
+        var updatesOnPage = _modUpdateService.GetNewestModPageVersionObservable(modPage);
         parentItemModel.AddObservable(
             key: LibraryColumns.Actions.UpdateComponentKey,
-            observable: newestFiles,
+            observable: updatesOnPage,
             componentFactory: static (valueObservable, initialValue) => new LibraryComponents.UpdateAction(
                 initialValue,
                 valueObservable
@@ -198,6 +200,11 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             });
 
         LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
+        LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
+        LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
+
+        var updatesOnPageUnfiltered = _modUpdateService.GetNewestModPageVersionObservableUnfiltered(modPage);
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService);
 
         return parentItemModel;
     }
@@ -221,6 +228,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel);
+        LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
 
         // Update available
         var newestVersionObservable = _modUpdateService
@@ -249,6 +258,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 valueObservable
             )
         );
+
+        var newestFileUnfiltered = _modUpdateService.GetNewestFileVersionObservableUnfiltered(fileMetadata);
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService);
 
         return itemModel;
     }

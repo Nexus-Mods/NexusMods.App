@@ -1,9 +1,8 @@
 using System.Buffers;
-using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.IO.ChunkedStreams;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 using SteamKit2;
 
 namespace NexusMods.Networking.Steam;
@@ -48,7 +47,7 @@ public class DepotChunkProvider : IChunkedStreamSource
         await _session._pipeline.ExecuteAsync(async token =>
             {
                 var chunk = _chunksSorted[chunkIndex];
-                var chunkData = new DepotManifest.ChunkData(chunk.ChunkId.ToArray(), chunk.Checksum.Value, chunk.Offset,
+                var chunkData = new DepotManifest.ChunkData(chunk.ChunkId.AsSpan().ToArray(), chunk.Checksum.Value, chunk.Offset,
                     (uint)chunk.CompressedSize.Value, (uint)chunk.UncompressedSize.Value
                 );
                 var server = await _session.CDNPool.GetServer();

@@ -11,7 +11,7 @@
         <PackageReference Include="NexusMods.Archives.Nx" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+      <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
     </ItemGroup>
     
 </Project>

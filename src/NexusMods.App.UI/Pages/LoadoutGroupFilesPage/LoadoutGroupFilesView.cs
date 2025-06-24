@@ -1,8 +1,8 @@
-using System.Reactive.Disposables;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Controls;
+using R3;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
@@ -17,13 +17,13 @@ public partial class LoadoutGroupFilesView : ReactiveUserControl<ILoadoutGroupFi
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.FileTreeAdapter!.Source.Value, view => view.TreeDataGrid.Source)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
             
             this.BindCommand(ViewModel, vm => vm.OpenEditorCommand, view => view.OpenEditorMenuItem)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
             
             this.BindCommand(ViewModel, vm => vm.RemoveCommand, view => view.RemoveButton)
-                .DisposeWith(disposables);
+                .AddTo(disposables);
         });
     }
 }

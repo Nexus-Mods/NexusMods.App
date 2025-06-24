@@ -222,7 +222,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     {
         try
         {
-            return Bitmap.DecodeToWidth(iconStream, 48);
+            return Bitmap.DecodeToWidth(iconStream, (int) ImageSizes.GameThumbnail.Width);
         }
         catch (Exception ex)
         {

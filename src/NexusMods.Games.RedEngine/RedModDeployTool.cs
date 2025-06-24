@@ -94,7 +94,8 @@ public class RedModDeployTool : ITool
 
         // NOTE(erri120): redmod only accepts CRLR line breaks, everything else breaks the program
         // and results in getting errors like `Non-existant mod selected`
-        var output = order.Aggregate((a, b) => $"{a}\r\n{b}");
+        var output = order.Count > 0 ? string.Join("\r\n", order) : string.Empty;
+
         await loadorderFilePath.WriteAllTextAsync(output);
     }
     public string Name => "RedMod Deploy";

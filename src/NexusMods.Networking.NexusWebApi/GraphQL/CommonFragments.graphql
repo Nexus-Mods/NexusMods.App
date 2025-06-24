@@ -37,6 +37,8 @@ fragment CollectionRevisionFragment on CollectionRevision {
     overallRating
     overallRatingCount
     modCount
+    status
+    revisionStatus
 
     modFiles {
         id,
@@ -64,8 +66,10 @@ fragment CategoryFragment on Category {
 }
 
 fragment CollectionFragment on Collection {
+    id
     slug
     name
+    collectionStatus
     summary
     endorsements
     totalDownloads

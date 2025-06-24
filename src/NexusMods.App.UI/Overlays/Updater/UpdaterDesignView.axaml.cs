@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using JetBrains.Annotations;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 
 namespace NexusMods.App.UI.Overlays.Updater;
 

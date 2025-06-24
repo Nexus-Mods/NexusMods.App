@@ -33,7 +33,19 @@ public record DataModelSettings : ISettings
     {
         return settingsBuilder
             .ConfigureDefault(CreateDefault)
-            .ConfigureStorageBackend<DataModelSettings>(builder => builder.UseJson());
+            .ConfigureStorageBackend<DataModelSettings>(builder => builder.UseJson())
+            .AddToUI<DataModelSettings>(builder => builder
+                .AddPropertyToUI(x => x.ArchiveLocations, propertyBuilder => propertyBuilder
+                    .AddToSection(Sections.General)
+                    .WithDisplayName("Storage Location")
+                    .WithDescription(currentPath => $"""
+                          Mods and backups are stored in:  
+                          **{currentPath[0].ToPath(FileSystem.Shared)}**
+                          
+                          *Important: Existing files won’t move automatically when you change storage location, you’ll need to move them manually.*
+                          """)
+                    .UseConfigurablePathsContainer()
+                    .RequiresRestart()));
     }
 
     /// <summary>

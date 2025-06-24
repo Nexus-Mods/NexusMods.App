@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Cascade;
 using NexusMods.Cascade.Patterns;
@@ -76,6 +77,7 @@ public class UndoService
         GameInstallMetadata.LastSyncedLoadoutTransactionId,
         DiskStateEntry.GameId,
         Loadout.LastAppliedDateTime,
+        ManagedCollectionLoadoutGroup.Collection,
     ];
 
     /// <summary>

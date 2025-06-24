@@ -6,7 +6,10 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
-using System;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -24,10 +27,12 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly ILogger<ModUpdateService> _logger;
     private readonly NexusGraphQLClient _gqlClient;
     private readonly TimeProvider _timeProvider;
+    private readonly IModUpdateFilterService _filterService;
     
     // Use SourceCache to maintain latest values per key
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
     private readonly SourceCache<KeyValuePair<NexusModsModPageMetadataId, ModUpdatesOnModPage>, EntityId> _newestModOnAnyPageCache = new (static kv => kv.Key);
+    
     private readonly IDisposable _updateObserver;
     private DateTimeOffset _lastUpdateCheckTime = DateTimeOffset.MinValue;
 
@@ -38,7 +43,8 @@ public class ModUpdateService : IModUpdateService, IDisposable
         IGameDomainToGameIdMappingCache gameIdMappingCache,
         ILogger<ModUpdateService> logger,
         NexusGraphQLClient gqlClient,
-        TimeProvider timeProvider)
+        TimeProvider timeProvider,
+        IModUpdateFilterService filterService)
     {
         _connection = connection;
         _nexusApiClient = nexusApiClient;
@@ -46,6 +52,21 @@ public class ModUpdateService : IModUpdateService, IDisposable
         _logger = logger;
         _gqlClient = gqlClient;
         _timeProvider = timeProvider;
+
+        // Note(sewer): Technically speaking, the user can supply a custom filter that is not attached
+        // to `IgnoreFileUpdate` (IModUpdateFilterService) when calling APIs such as 
+        // `GetNewestModPageVersionObservable` or `GetNewestFileVersionObservable`.
+        //
+        // In that case, a change in `IModUpdateFilterService` could cause a re-evaluation of
+        // observables unaffected by its filter, which is a performance no-no.
+        //
+        // However, (IModUpdateFilterService) is currently the only filter that is used
+        // in the App; and we're not expecting any other filters to be added for a while.
+        //
+        // If we ever do, we can revisit and make it more efficient by only refreshing affected
+        // observables.
+        _filterService = filterService;
+        
         // Note(sewer): This is a singleton, so we don't actually need to dispose, that said
         // I'm opting to for the sake of following good practices.
         _updateObserver = ObserveUpdates();
@@ -209,19 +230,63 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, ModUpdateOnPage?>? select = null)
     {
-        return _newestModVersionCache.Connect()
+        var observable = _newestModVersionCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
+        
+        // If no custom selector is provided, apply default filters
+        if (select == null) 
+            select = _filterService.SelectMod;
+        
+        // When a custom selector is provided, also trigger on the filter trigger
+        var triggerObservable = _filterService.FilterTrigger
+            .Select(_ => _newestModVersionCache.Lookup(current.Id))
+            .Select(kv => kv.HasValue ? Optional.Some(kv.Value.Value) : Optional<ModUpdateOnPage>.None);
+        
+        // Merge the observables, apply the filter, THEN apply distinct
+        return observable
+            .Merge(triggerObservable)
+            .Select(optional => 
+            {
+                if (!optional.HasValue)
+                    return Optional<ModUpdateOnPage>.None;
+                
+                var result = select(optional.Value);
+                return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdateOnPage>.None;
+            })
+            .DistinctUntilChanged();
     }
 
     /// <inheritdoc />
-    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current)
+    public IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
     {
-        return _newestModOnAnyPageCache.Connect()
+        var observable = _newestModOnAnyPageCache.Connect()
             .Transform(kv => kv.Value)
             .QueryWhenChanged(query => query.Lookup(current.Id));
+        
+        // If no custom selector is provided, apply default filters
+        if (select == null) 
+            select = _filterService.SelectModPage;
+        
+        // When a custom selector is provided, also trigger on the filter trigger
+        var triggerObservable = _filterService.FilterTrigger
+            .Select(_ => _newestModOnAnyPageCache.Lookup(current.Id))
+            .Select(kv => kv.HasValue ? Optional.Some(kv.Value.Value) : Optional<ModUpdatesOnModPage>.None);
+        
+        // Merge the observables, apply the filter, THEN apply distinct
+        return observable
+            .Merge(triggerObservable)
+            .Select(optional => 
+            {
+                if (!optional.HasValue)
+                    return Optional<ModUpdatesOnModPage>.None;
+                
+                var result = select(optional.Value);
+                return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdatesOnModPage>.None;
+            })
+            .DistinctUntilChanged();
     }
 
     /// <inheritdoc />
@@ -393,6 +458,11 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// Given that each array entry represents a single mod file, this is just the count of the internal array.
     /// </summary>
     public int NumberOfModFilesToUpdate => FileMappings.Length;
+    
+    /// <summary>
+    /// True if there are any updates available for any mod on this page.
+    /// </summary>
+    public bool HasAnyUpdates => FileMappings.Length > 0;
 
     /// <summary>
     /// Returns the newest file across mods on this mod page.
