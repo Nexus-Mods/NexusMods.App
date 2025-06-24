@@ -53,6 +53,10 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
     public ReactiveCommand<Unit> InstallSelectedItemsWithAdvancedInstallerCommand { get; }
 
+    public ReactiveCommand<Unit> UpdateSelectedItemsCommand { get; }
+    
+    public ReactiveCommand<Unit> UpdateAndKeepOldSelectedItemsCommand { get; }
+
     public ReactiveCommand<Unit> RemoveSelectedItemsCommand { get; }
     
     public ReactiveCommand<Unit> DeselectItemsCommand { get; }
@@ -63,6 +67,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     public ReactiveCommand<Unit> OpenNexusModsCollectionsCommand { get; }
 
     [Reactive] public int SelectionCount { get; private set; }
+    
+    [Reactive] public int UpdatableSelectionCount { get; private set; }
     
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
@@ -143,6 +149,24 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         InstallSelectedItemsWithAdvancedInstallerCommand = hasSelection.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => InstallSelectedItems(useAdvancedInstaller: true, cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            initialCanExecute: false,
+            configureAwait: false
+        );
+
+        var hasUpdatableSelection = Adapter.SelectedModels
+            .ObserveCountChanged()
+            .Select(_ => GetSelectedModelsWithUpdates().Any());
+
+        UpdateSelectedItemsCommand = hasUpdatableSelection.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => UpdateSelectedItems(cancellationToken),
+            awaitOperation: AwaitOperation.Parallel,
+            initialCanExecute: false,
+            configureAwait: false
+        );
+
+        UpdateAndKeepOldSelectedItemsCommand = hasUpdatableSelection.ToReactiveCommand<Unit>(
+            executeAsync: (_, cancellationToken) => UpdateAndKeepOldSelectedItems(cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: false,
             configureAwait: false
@@ -249,9 +273,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             // Update the selection count based on the selected models
             Adapter.SelectedModels
                 .ObserveChanged()
-                .Select(_ => GetSelectedIds().Length)
                 .ObserveOnUIThreadDispatcher()
-                .Subscribe(count => SelectionCount = count);
+                .Subscribe(_ => 
+                {
+                    SelectionCount = GetSelectedIds().Length;
+                    UpdatableSelectionCount = GetSelectedModelsWithUpdates().Count();
+                });
 
             // Auto check updates on entering library.
             RefreshUpdatesCommand.Execute(Unit.Default);
@@ -637,6 +664,16 @@ After asking design, we're choosing to simply open the mod page for now.
         return ids;
     }
 
+    private IEnumerable<CompositeItemModel<EntityId>> GetSelectedModelsWithUpdates()
+    {
+        return Adapter.SelectedModels
+            .Where(model =>
+            {
+                var updateComponent = model.GetOptional<LibraryComponents.UpdateAction>(LibraryColumns.Actions.UpdateComponentKey);
+                return updateComponent.HasValue && updateComponent.Value.NewFiles.Value.HasAnyUpdates;
+            });
+    }
+
     private LoadoutItemGroupId GetInstallationTarget() => (SelectedInstallationTarget?.Id ?? _installationTargets[0].Id).Value;
 
     private ValueTask InstallSelectedItems(bool useAdvancedInstaller, CancellationToken cancellationToken)
@@ -694,6 +731,45 @@ After asking design, we're choosing to simply open the mod page for now.
             },
             cancellationToken: cancellationToken
         );
+    }
+
+    private ValueTask UpdateSelectedItems(CancellationToken cancellationToken)
+    {
+        return UpdateSelectedItemsInternal(useUpdateAndReplace: true, cancellationToken);
+    }
+
+    private ValueTask UpdateAndKeepOldSelectedItems(CancellationToken cancellationToken)
+    {
+        return UpdateSelectedItemsInternal(useUpdateAndReplace: false, cancellationToken);
+    }
+
+    private async ValueTask UpdateSelectedItemsInternal(bool useUpdateAndReplace, CancellationToken cancellationToken)
+    {
+        var selectedModels = Adapter.SelectedModels.ToArray();
+        
+        foreach (var model in selectedModels)
+        {
+            // Check if this model has an update component
+            var updateComponent = model.GetOptional<LibraryComponents.UpdateAction>(LibraryColumns.Actions.UpdateComponentKey);
+            if (!updateComponent.HasValue) continue;
+
+            var component = updateComponent.Value;
+            var updatesOnPage = component.NewFiles.Value;
+            
+            if (!updatesOnPage.HasAnyUpdates) continue;
+
+            // Create the appropriate message and handle it
+            if (useUpdateAndReplace)
+            {
+                var message = new UpdateAndReplaceMessage(updatesOnPage, model);
+                await HandleUpdateAndReplaceMessage(message, cancellationToken);
+            }
+            else
+            {
+                var message = new UpdateAndKeepOldMessage(updatesOnPage, model);
+                await HandleUpdateAndKeepOldMessage(message, cancellationToken);
+            }
+        }
     }
 }
 
