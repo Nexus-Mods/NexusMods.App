@@ -156,9 +156,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             configureAwait: false
         );
 
-        // Initial check for updates
-        CheckAndUpdateHasAnyUpdatesAvailable();
-
         var hasSelection = Adapter.SelectedModels
             .ObserveCountChanged()
             .Select(count => count > 0);
@@ -291,7 +288,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 {
                     SelectionCount = GetSelectedIds().Length;
                     UpdatableSelectionCount = GetSelectedModelsWithUpdates().Count();
-                });
+                })
+                .AddTo(disposables);
+
+            // Subscribe to mod update service to automatically track "has any updates" state
+            _modUpdateService.HasAnyUpdatesObservable()
+                .OnUI()
+                .Subscribe(hasUpdates => HasAnyUpdatesAvailable = hasUpdates)
+                .AddTo(disposables);
 
             // Auto check updates on entering library.
             RefreshUpdatesCommand.Execute(Unit.Default);
@@ -631,9 +635,6 @@ After asking design, we're choosing to simply open the mod page for now.
                     await modUpdateFilterService.HideFilesAsync(allVersions.Select(x => x.Uid));
             }
         );
-        
-        // Check for updates after filter operations complete
-        CheckAndUpdateHasAnyUpdatesAvailable();
     }
 
     private ValueTask OpenModPage(NexusModsModPageMetadataId modPageMetadataId, CancellationToken cancellationToken)
@@ -650,9 +651,6 @@ After asking design, we're choosing to simply open the mod page for now.
     private async ValueTask RefreshUpdates(CancellationToken token) 
     {
         await _modUpdateService.CheckAndUpdateModPages(token, notify: true);
-        
-        // Check for updates after refresh completes
-        CheckAndUpdateHasAnyUpdatesAvailable();
     }
 
     private async ValueTask InstallItems(LibraryItemId[] ids, LoadoutItemGroupId targetLoadoutGroup, bool useAdvancedInstaller, CancellationToken cancellationToken)
@@ -693,38 +691,7 @@ After asking design, we're choosing to simply open the mod page for now.
             });
     }
 
-    private bool CheckForAnyUpdatesInLibrary()
-    {
-        try
-        {
-            // Note(sewer): We can't reliably check UI models (Adapter.Roots) because they might not be 
-            // updated by the time we check them. Instead, we go directly to the data source:
-            // check all library items and use the mod update service to verify updates.
-            
-            // Get all NexusMods mod pages from the library
-            var allNexusItems = NexusModsLibraryItem.All(_connection.Db);
-            var modPages = allNexusItems
-                .Select(item => item.ModPageMetadata)
-                .DistinctBy(modPage => modPage.Id)
-                .ToArray();
-            
-            // Check each mod page for updates using the non-observable version
-            foreach (var modPage in modPages)
-            {
-                // Note(sewer): For speed, don't share code with GetAllModPagesWithUpdates here.
-                var updates = _modUpdateService.HasModPageUpdatesAvailable(modPage);
-                if (updates.HasValue && updates.Value.HasAnyUpdates)
-                    return true;
-            }
-            
-            return false;
-        }
-        catch
-        {
-            // If there's any error, assume no updates to prevent UI issues
-            return false;
-        }
-    }
+
     
     private IEnumerable<(NexusModsModPageMetadata.ReadOnly modPage, ModUpdatesOnModPage updates)> GetAllModPagesWithUpdates()
     {
@@ -739,8 +706,6 @@ After asking design, we're choosing to simply open the mod page for now.
         
         return modPagesWithUpdates;
     }
-
-    private void CheckAndUpdateHasAnyUpdatesAvailable() => HasAnyUpdatesAvailable = CheckForAnyUpdatesInLibrary();
 
     private LoadoutItemGroupId GetInstallationTarget() => (SelectedInstallationTarget?.Id ?? _installationTargets[0].Id).Value;
 
