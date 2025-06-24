@@ -303,6 +303,28 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
+    public IObservable<bool> HasAnyUpdatesObservable(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
+    {
+        var observable = _newestModOnAnyPageCache.Connect()
+            .Transform(kv => kv.Value);
+
+        // If no custom selector is provided, apply default filters
+        select ??= _filterService.SelectModPage;
+
+        // When a custom selector is provided, also trigger on  when
+        // the update filter changes.
+        var triggerObservable = _filterService.FilterTrigger
+            .Select(_ => _newestModOnAnyPageCache.Items.Select(kv => kv.Value));
+
+        // Merge the observables and check if any updates exist after filtering
+        return observable
+            .Select(changeSet => _newestModOnAnyPageCache.Items.Select(kv => kv.Value))
+            .Merge(triggerObservable)
+            .Select(updates => updates.Any(update => select(update) != null))
+            .DistinctUntilChanged();
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         _newestModVersionCache.Dispose();
