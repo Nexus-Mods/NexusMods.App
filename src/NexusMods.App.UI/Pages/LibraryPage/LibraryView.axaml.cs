@@ -67,6 +67,24 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsWithAdvancedInstallerCommand, view => view.AdvancedInstallModMenuItem)
                     .AddTo(disposables);
 
+                this.BindCommand(ViewModel, vm => vm.UpdateSelectedItemsCommand, view => view.UpdateModMenuItem)
+                    .AddTo(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.UpdateAndKeepOldSelectedItemsCommand, view => view.UpdateAndKeepOldModMenuItem)
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateButton.Text,
+                        count => count > 0 ? count.ToString() : "")
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateButton.IsVisible,
+                        count => count > 0)
+                    .AddTo(disposables);
+
                 this.BindCommand(ViewModel, vm => vm.OpenFilePickerCommand, view => view.GetModsFromDriveButton)
                     .AddTo(disposables);
 

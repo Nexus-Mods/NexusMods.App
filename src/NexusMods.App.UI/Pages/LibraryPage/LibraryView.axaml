@@ -111,6 +111,27 @@
 
                             </controls:StandardButton>
 
+                            <controls:StandardButton x:Name="UpdateButton"
+                                                     Type="Primary"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
+                                                     ShowIcon="Both"
+                                                     LeftIcon="{x:Static icons:IconValues.Download}"
+                                                     RightIcon="{x:Static icons:IconValues.ChevronDown}">
+
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="UpdateModMenuItem"
+                                                  Header="{x:Static resources:Language.Library_Update}">
+                                        </MenuItem>
+                                        <MenuItem x:Name="UpdateAndKeepOldModMenuItem"
+                                                  Header="{x:Static resources:Language.Library_UpdateAndKeepOldMod}">
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+
+                            </controls:StandardButton>
+
                             <controls:StandardButton x:Name="RemoveModButton"
                                                      Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
                                                      Type="Tertiary"
