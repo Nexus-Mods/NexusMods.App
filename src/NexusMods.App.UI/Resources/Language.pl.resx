@@ -525,7 +525,7 @@
 		<value>Przeglądaj Nexus Mods</value>
 	</data>
 	<data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
-		<value>Przeglądaj Nexus Mods</value>
+		<value>Przeglądaj kolekcje</value>
 	</data>
 	<data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
 		<value>Pokaż</value>
