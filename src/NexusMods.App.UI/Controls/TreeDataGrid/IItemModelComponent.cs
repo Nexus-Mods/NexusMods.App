@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 
 namespace NexusMods.App.UI.Controls;
 
@@ -10,7 +11,16 @@ namespace NexusMods.App.UI.Controls;
 /// Represents a component in a composite item model.
 /// </summary>
 [PublicAPI]
-public interface IItemModelComponent;
+public interface IItemModelComponent
+{
+    /// <summary>
+    /// Evaluates if this component matches the given filter.
+    /// Default implementation returns Indeterminate (has no opinion on the filter).
+    /// </summary>
+    /// <param name="filter">The filter to evaluate against.</param>
+    /// <returns>The filter result indicating if this component passes, fails, or has no opinion.</returns>
+    FilterResult MatchesFilter(Filter filter) => FilterResult.Indeterminate;
+}
 
 /// <summary>
 /// Represents a component in a composite item model.

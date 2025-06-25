@@ -6,6 +6,7 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
@@ -155,6 +156,20 @@ public static class LibraryComponents
             return string.Compare(NewVersion.Value, other.NewVersion.Value, StringComparison.OrdinalIgnoreCase);
         }
 
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.UpdateAvailableFilter updateFilter => updateFilter.ShowWithUpdates 
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.VersionFilter versionFilter => 
+                    (NewVersion.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase) ||
+                     CurrentVersion.Value.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
+        }
+
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
         {
@@ -188,6 +203,18 @@ public static class LibraryComponents
         {
             if (other is null) return 1;
             return IsInstalled.Value.CompareTo(other.IsInstalled.Value);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.InstalledFilter installedFilter => 
+                    ((IsInstalled.Value && installedFilter.ShowInstalled) ||
+                     (!IsInstalled.Value && installedFilter.ShowNotInstalled))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private readonly ReactiveR3Object _source;
@@ -306,6 +333,16 @@ public static class LibraryComponents
         {
             if (other is null) return 1;
             return NewFiles.Value.NewestFile().UploadedAt.CompareTo(other.NewFiles.Value.NewestFile().UploadedAt);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.UpdateAvailableFilter updateFilter => updateFilter.ShowWithUpdates
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private readonly IDisposable _activationDisposable;
@@ -455,7 +492,7 @@ public static class LibraryComponents
             ButtonText = IsHidden.AsObservable()
                 .CombineLatest(itemCount, static (isHidden, count) => FormatShowUpdates(isHidden, count))
                 .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false, 0));
-            
+
             // Icon changes based on hidden state
             // Use Visibility when hidden (showing "Show Updates"), VisibilityOff when shown (showing "Hide Updates")
             Icon = IsHidden.AsObservable()

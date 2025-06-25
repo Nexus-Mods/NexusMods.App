@@ -41,7 +41,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     private readonly IDisposable _activationDisposable;
     private readonly SerialDisposable _selectionModelsSerialDisposable = new();
     protected TreeDataGridAdapter()
-    {
+    { 
         RootsView = Roots.CreateView(static kv => kv);
         RootsCollectionChangedView = RootsView.ToNotifyCollectionChanged();
 
