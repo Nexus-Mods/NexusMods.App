@@ -199,7 +199,7 @@ public class BuildHashesDb : IAsyncDisposable
                 try
                 {
                     var manifest = EpicGameStoreBuild
-                        .FindByBuildId(referenceDb, Abstractions.EpicGameStore.Values.BuildId.FromUnsanitized(id))
+                        .FindByManifestHash(referenceDb, ManifestHash.FromUnsanitized(id))
                         .Single();
                     tx.Add(versionDef, VersionDefinition.EpicGameStoreBuilds, manifest.Id);
                 }

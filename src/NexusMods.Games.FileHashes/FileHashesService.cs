@@ -411,6 +411,24 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 return false;
             }
         }
+        else if (gameStore == GameStore.EGS)
+        {
+            var versionsByManifestHash = VersionDefinition.All(_currentDb!.Db)
+                .SelectMany(version =>
+                    {
+                        if (VersionDefinition.EpicGameStoreBuildsIds.IsIn(version)) 
+                            return version.EpicGameStoreBuilds.Select(build => (Name: version.Name, Build: build));
+                        return [];
+                    }
+                )
+                .ToLookup(row => row.Build.ManifestHash);
+
+            var builds = locatorIds
+                .Select(locatorString => ManifestHash.FromUnsanitized(locatorString.Value))
+                .SelectMany(manifestHash => versionsByManifestHash[manifestHash].Select(row => row.Build));
+                
+            throw new NotImplementedException();
+        }
         else
         {
             _logger.LogDebug("No way to get game version for: {Store}", gameStore);
