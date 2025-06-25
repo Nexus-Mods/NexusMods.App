@@ -1,7 +1,7 @@
 using JetBrains.Annotations;
 using Polly;
 
-namespace NexusMods.Sdk.Resources.Resilience;
+namespace NexusMods.Sdk.Resources;
 
 /// <summary>
 /// Uses a resilience pipeline.

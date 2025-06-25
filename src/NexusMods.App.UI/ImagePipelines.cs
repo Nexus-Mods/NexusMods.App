@@ -2,16 +2,13 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Sdk.Resources;
-using NexusMods.Abstractions.Resources.DB;
-using NexusMods.Abstractions.Resources.IO;
-using NexusMods.Sdk.Resources.Resilience;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.UI.Sdk.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.FileStore;
 using R3;
 using SkiaSharp;
 
