@@ -582,10 +582,25 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// </remarks>
     public Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> NewestToCurrentFileMapping()
     {
+        var result = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
+        NewestToCurrentFileMapping(result);
+        return result;
+    }
+    
+    /// <summary>
+    /// Populates an existing dictionary with mappings of unique newest file(s) to 1 or more current files.
+    /// If a key already exists in the dictionary, the current files will be added to the existing list.
+    /// </summary>
+    /// <param name="result">The dictionary to populate with the mappings.</param>
+    /// <remarks>
+    ///     In most cases, for each file there will be a single 'current' version.
+    ///     However, if you have multiple versions of the same mod installed, such as in
+    ///     different collections or loadouts, then there may be multiple 'current' files.
+    /// </remarks>
+    public void NewestToCurrentFileMapping(Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> result)
+    {
         // Group current files by their newest file version
         // Multiple current files can map to the same newest file
-        var result = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
-        
         foreach (var mapping in FileMappings)
         {
             if (!result.TryGetValue(mapping.NewestFile, out var currentFiles))
@@ -596,8 +611,6 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
 
             currentFiles.Add(mapping.File);
         }
-        
-        return result;
     }
     
     /// <summary/>
