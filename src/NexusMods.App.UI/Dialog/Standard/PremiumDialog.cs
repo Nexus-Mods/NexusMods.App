@@ -1,4 +1,5 @@
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
@@ -19,24 +20,18 @@ public static class PremiumDialog
     public static async Task<ButtonDefinitionId> ShowUpdatePremiumDialog(IWindowManager windowManager, IOSInterop osInterop)
     {
         var dialog = DialogFactory.CreateMessageDialog(
-            title: "Go Premium for one-click mod updates",
-            text: """
-                No browser, no manual downloads. Premium users also get:
-                
-                • Download entire collections with one click
-                • Uncapped download speeds
-                • No Ads for life, even if you unsubscribe after 1 month!
-                """,
-            heading: "Update all your mods, or individual mods, in one click.",
+            title: Language.PremiumDialog_UpdateTitle,
+            text: Language.PremiumDialog_UpdateDescription,
+            heading: Language.PremiumDialog_UpdateHeading,
             buttonDefinitions:
             [
                 new DialogButtonDefinition(
-                    "Update mods manually",
+                    Language.PremiumDialog_UpdateManuallyButton,
                     ButtonDefinitionId.From("update-manually"),
                     ButtonAction.Reject
                 ),
                 new DialogButtonDefinition(
-                    "Go Premium",
+                    Language.PremiumDialog_GoPremiumButton,
                     ButtonDefinitionId.From("go-premium"),
                     ButtonAction.Accept,
                     ButtonStyling.Primary

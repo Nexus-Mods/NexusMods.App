@@ -3022,5 +3022,35 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Library_UpdateModAndReplace_ToolTip", resourceCulture);
             }
         }
+        
+        public static string PremiumDialog_UpdateTitle {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateTitle", resourceCulture);
+            }
+        }
+        
+        public static string PremiumDialog_UpdateDescription {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateDescription", resourceCulture);
+            }
+        }
+        
+        public static string PremiumDialog_UpdateHeading {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateHeading", resourceCulture);
+            }
+        }
+        
+        public static string PremiumDialog_UpdateManuallyButton {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateManuallyButton", resourceCulture);
+            }
+        }
+        
+        public static string PremiumDialog_GoPremiumButton {
+            get {
+                return ResourceManager.GetString("PremiumDialog_GoPremiumButton", resourceCulture);
+            }
+        }
     }
 }
