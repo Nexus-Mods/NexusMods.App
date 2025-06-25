@@ -1,9 +1,9 @@
+using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.ValueSerializers;
-using NexusMods.Networking.EpicGameStore.Values;
 
-namespace NexusMods.Networking.EpicGameStore.Attributes;
+namespace NexusMods.Abstractions.EpicGameStore.Attributes;
 
 public sealed class BuildIdAttribute(string ns, string name) : ScalarAttribute<BuildId, string, Utf8InsensitiveSerializer>(ns, name)
 {

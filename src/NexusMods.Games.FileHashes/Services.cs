@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.EpicGameStore.Models;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.Settings;
@@ -18,6 +19,7 @@ public static class Services
             .AddVersionDefinitionModel()
             .AddGogBuildModel()
             .AddSteamManifestModel()
+            .AddEpicGameStoreBuildModel()
             .AddSingleton<IFileHashesService, FileHashesService>()
             .AddSettings<FileHashesServiceSettings>()
             .AddHashRelationModel();

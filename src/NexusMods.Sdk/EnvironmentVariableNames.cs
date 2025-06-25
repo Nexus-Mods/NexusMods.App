@@ -3,7 +3,7 @@ namespace NexusMods.Sdk;
 /// <summary>
 /// Environment variables
 /// </summary>
-internal static class EnvironmentVariableNames
+public static class EnvironmentVariableNames
 {
     /// <summary>
     /// Prefix for all environment variables.
@@ -29,4 +29,19 @@ internal static class EnvironmentVariableNames
     /// Installation method.
     /// </summary>
     public const string InstallationMethod = Prefix + "INSTALLATION_METHOD";
+
+    /// <summary>
+    /// Base domain for Nexus Mods.
+    /// </summary>
+    public const string NexusModsBaseDomain = Prefix + "NEXUS_MODS_BASE_DOMAIN";
+
+    /// <summary>
+    /// Subdomain for the API.
+    /// </summary>
+    public const string NexusModsApiSubdomain = Prefix + "NEXUS_MODS_API_SUBDOMAIN";
+
+    /// <summary>
+    /// Subdomain for the users.
+    /// </summary>
+    public const string NexusModsUsersSubdomain = Prefix + "NEXUS_MODS_USERS_SUBDOMAIN";
 }

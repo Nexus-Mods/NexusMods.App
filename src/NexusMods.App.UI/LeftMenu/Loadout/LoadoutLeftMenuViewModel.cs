@@ -144,7 +144,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
                 return new LeftMenuItemWithRightIconViewModel(workspaceController, workspaceId, pageData)
                 {
-                    Text = new StringComponent(revision.Collection.Name),
+                    Text = new StringComponent(initialValue: revision.Collection.Name, CollectionMetadata.Observe(conn, revision.Collection).Select(x => x.Name)),
                     Icon = IconValues.CollectionsOutline,
                     RightIcon = IconValues.Downloading,
                 };
@@ -194,7 +194,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     collection.CollectionGroupId
                 )
                 {
-                    Text = new StringComponent(collection.AsLoadoutItemGroup().AsLoadoutItem().Name),
+                    Text = new StringComponent(initialValue: collection.AsLoadoutItemGroup().AsLoadoutItem().Name, LoadoutItem.Observe(conn, collection).Select(x => x.Name)),
                     Icon = IconValues.CollectionsOutline,
                     IsCollectionReadOnly = collection.IsReadOnly,
                 };

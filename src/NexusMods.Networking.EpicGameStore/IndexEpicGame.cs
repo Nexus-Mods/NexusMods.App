@@ -97,7 +97,6 @@ public static class IndexEpicGame
     private static async Task<int> Index(
         [Injected] IRenderer renderer,
         [Option("o", "output", "Path to the cloned GitHub hashes repo (with the `json` postfix)")] AbsolutePath output,
-        [Option("g", "game", "Game to index")] GameId gameId,
         [Option("a", "appId", "Output path for the built database")] string appId,
         [Injected] JsonSerializerOptions jsonSerializerOptions,
         [Injected] TemporaryFileManager temporaryFileManager,

@@ -3,10 +3,11 @@ using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.EpicGameStore.Models;
+using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
@@ -19,6 +20,7 @@ using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 
 namespace NexusMods.Games.FileHashes;
 
@@ -266,6 +268,30 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 if (!SteamManifest.FindByManifestId(Current, manifestId).TryGetFirst(out var firstManifest))
                     continue;
 
+                foreach (var file in firstManifest.Files)
+                {
+                    yield return new GameFileRecord
+                    {
+                        Path = (LocationId.Game, file.Path),
+                        Size = file.Hash.Size,
+                        MinimalHash = file.Hash.MinimalHash,
+                        Hash = file.Hash.XxHash3,
+                    };
+                }
+            }
+        }
+        else if (gameStore == GameStore.EGS)
+        {
+            foreach (var manifestId in locatorIds)
+            {
+                var egManifestId = ManifestHash.FromUnsanitized(manifestId.Value);
+                
+                if (!EpicGameStoreBuild.FindByManifestHash(Current, egManifestId).TryGetFirst(out var firstManifest))
+                {
+                    _logger.LogWarning("No EGS manifest found for {ManifestId}", egManifestId.Value);
+                    continue;
+                }
+                
                 foreach (var file in firstManifest.Files)
                 {
                     yield return new GameFileRecord

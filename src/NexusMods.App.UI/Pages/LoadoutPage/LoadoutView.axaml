@@ -71,7 +71,7 @@
                                             </MenuItem.Header>
                                         </MenuItem>
 
-                                        <MenuItem>
+                                        <MenuItem x:Name="MenuItemRenameCollection">
                                             <MenuItem.Icon>
                                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
                                             </MenuItem.Icon>

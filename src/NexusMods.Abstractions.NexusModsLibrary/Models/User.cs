@@ -19,12 +19,12 @@ public partial class User : IModelDefinition
     /// <summary>
     /// The nexus id of the user.
     /// </summary>
-    public static readonly UInt64Attribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true };
+    public static readonly UInt64Attribute NexusId = new(Namespace, nameof(NexusId)) { IsIndexed = true, IsUnique = true };
 
     /// <summary>
     /// Url to the avatar.
     /// </summary>
-    public static readonly UriAttribute AvatarUri = new(Namespace, nameof(AvatarUri));
+    public static readonly UriAttribute AvatarUri = new(Namespace, nameof(AvatarUri)) { IsOptional = true };
 
     /// <summary>
     /// Avatar resource.

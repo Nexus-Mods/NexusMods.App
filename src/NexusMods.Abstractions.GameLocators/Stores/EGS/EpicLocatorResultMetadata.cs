@@ -12,10 +12,15 @@ public record EpicLocatorResultMetadata : IGameLocatorResultMetadata
     /// The specific ID of the found game.
     /// </summary>
     public required string CatalogItemId { get; init; }
+    
+    /// <summary>
+    /// The hashes of the installed game manifests.
+    /// </summary>
+    public required IReadOnlyList<string> ManifestHashes { get; init; }
 
     /// <inheritdoc/>
     public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
 
     /// <inheritdoc />
-    public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(CatalogItemId)];
+    public IEnumerable<LocatorId> ToLocatorIds() => ManifestHashes.Select(LocatorId.From);
 }
