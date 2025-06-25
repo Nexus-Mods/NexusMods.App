@@ -55,7 +55,7 @@ public partial class VersionDefinition : IModelDefinition
     public static readonly ReferencesAttribute<SteamManifest> SteamManifests = new(Namespace, nameof(SteamManifests));
     
     /// <summary>
-    /// The resolved steam manfiests builds for this version (if they exist)
+    /// The resolved Epic manfiests builds for this version (if they exist)
     /// </summary>
     public static readonly ReferencesAttribute<EpicGameStoreBuild> EpicGameStoreBuilds = new(Namespace, nameof(EpicGameStoreBuilds));
 }
