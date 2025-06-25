@@ -417,7 +417,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 .SelectMany(version =>
                     {
                         if (VersionDefinition.EpicGameStoreBuildsIds.IsIn(version)) 
-                            return version.EpicGameStoreBuilds.Select(build => (Name: version.Name, Build: build));
+                            return version.EpicGameStoreBuilds.Select(build => (Version: version, Build: build));
                         return [];
                     }
                 )
@@ -425,9 +425,15 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
             var builds = locatorIds
                 .Select(locatorString => ManifestHash.FromUnsanitized(locatorString.Value))
-                .SelectMany(manifestHash => versionsByManifestHash[manifestHash].Select(row => row.Build));
-                
-            throw new NotImplementedException();
+                .SelectMany(manifestHash => versionsByManifestHash[manifestHash].Select(row => (row.Version, manifestHash)));
+
+            if (builds.TryGetFirst(out var build))
+            {
+                versionDefinition = build.Version;
+                return true;
+            }
+
+            return false;
         }
         else
         {
@@ -441,32 +447,14 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     /// <inheritdoc />
     public bool TryGetLocatorIdsForVanityVersion(GameStore gameStore, VanityVersion version, out LocatorId[] commonIds)
     {
-        if (gameStore == GameStore.GOG)
+        if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
         {
-            if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
-            {
-                commonIds = [];
-                return false;
-            }
+            commonIds = [];
+            return false;
+        }
 
-            commonIds = GetLocatorIdsForVersionDefinition(gameStore, versionDef);
-            return true;
-        }
-        else if (gameStore == GameStore.Steam)
-        {
-            if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
-            {
-                commonIds = [];
-                return false;
-            }
-
-            commonIds = GetLocatorIdsForVersionDefinition(gameStore, versionDef);
-            return true;
-        }
-        else
-        {
-            throw new NotSupportedException("No way to get common IDs for: " + gameStore);
-        }
+        commonIds = GetLocatorIdsForVersionDefinition(gameStore, versionDef);
+        return true;
     }
 
     public LocatorId[] GetLocatorIdsForVersionDefinition(GameStore gameStore, VersionDefinition.ReadOnly versionDefinition)
@@ -479,6 +467,11 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         if (gameStore == GameStore.Steam)
         {
             return versionDefinition.SteamManifests.Select(manifest => LocatorId.From(manifest.ManifestId.ToString())).ToArray();
+        }
+        
+        if (gameStore == GameStore.EGS)
+        {
+            return versionDefinition.EpicGameStoreBuilds.Select(build => LocatorId.From(build.ManifestHash.Value)).ToArray();
         }
 
         throw new NotSupportedException("No way to get common IDs for: " + gameStore);
