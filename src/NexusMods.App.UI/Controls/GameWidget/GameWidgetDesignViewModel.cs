@@ -4,7 +4,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.UI;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -31,9 +31,8 @@ public class GameWidgetDesignViewModel : AViewModel<IGameWidgetViewModel>, IGame
  
     public GameWidgetDesignViewModel()
     {
-        Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));
-        State = GameWidgetState.DetectedGame;
-        
+        Image = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/tile.webp")));
+        State = GameWidgetState.ManagedGame;
         Version = $"Version: 1.5.6";
         Store = Installation.Store.Value;
         GameStoreIcon = GameWidgetViewModel.MapGameStoreToIcon(Installation.Store);

@@ -2,7 +2,7 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.DevelopmentBuildBanner;
@@ -39,7 +39,7 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
             }
         );
         
-        var appName = CompileConstants.IsDebug ? "DEVELOPMENT USE ONLY" : "Preview";
+        var appName = ApplicationConstants.IsDebug ? "DEVELOPMENT USE ONLY" : "Preview";
 
         AppVersion = GetAppVersion();
         AppName = $"{appName}:";
@@ -47,6 +47,6 @@ public partial class DevelopmentBuildBannerView : ReactiveUserControl<IDevelopme
 
     private static string GetAppVersion()
     {
-        return CompileConstants.IsDebug ? $"Debug build - {ApplicationConstants.CommitHash}" : ApplicationConstants.Version.ToString();
+        return ApplicationConstants.IsDebug ? $"Debug build - {ApplicationConstants.CommitHash}" : ApplicationConstants.Version.ToString();
     }
 }

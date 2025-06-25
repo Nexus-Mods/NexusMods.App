@@ -10,6 +10,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
 
     R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
     
+    R3.ReactiveCommand<R3.Unit> RevisionUrlLinkCommand { get; }
+    
     R3.ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     
     string EmptyStateTitleText { get; }
@@ -19,10 +21,16 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     R3.ReactiveCommand<R3.Unit> RemoveItemCommand { get; }
     
     R3.ReactiveCommand<R3.Unit> CollectionToggleCommand { get; }
+    R3.ReactiveCommand<R3.Unit> DeselectItemsCommand { get; }
+    
+    public int SelectionCount { get; } 
     
     bool IsCollection { get; }
     
     bool IsCollectionEnabled { get; }
+    bool IsCollectionUploaded { get; }
+    
+    string CollectionName { get; } 
     
     ISortingSelectionViewModel RulesSectionViewModel { get; }
     
@@ -31,4 +39,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     public bool HasRulesSection { get; }
     
     public LoadoutPageSubTabs SelectedSubTab { get; }
+
+    R3.ReactiveCommand<R3.Unit> CommandUploadRevision { get; }
+
+    R3.ReactiveCommand<R3.Unit> CommandRenameGroup { get; }
 }

@@ -1,10 +1,11 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.App.UI.Extensions;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using SkiaSharp;
 
@@ -31,14 +32,26 @@ public partial class GameWidget : ReactiveUserControl<IGameWidgetViewModel>
                         }
                     )
                     .DisposeWith(d);
-
-                this.OneWayBind(ViewModel, vm => vm.Store, v => v.GameStoreToolTipTextBlock.Text)
+                
+                this.WhenAnyValue(view => view.ViewModel!.Store)
+                    .Subscribe(store =>
+                        {
+                            // Update the tooltip text for the game store
+                            ToolTip.SetTip(StoreBackground, store);
+                        }
+                    )
+                    .DisposeWith(d);
+                
+                this.WhenAnyValue(view => view.ViewModel!.Name)
+                    .Subscribe(name =>
+                        {
+                            // Update the tooltip for the game name
+                            ToolTip.SetTip(ImageSectionBorder, name);
+                        }
+                    )
                     .DisposeWith(d);
 
                 this.OneWayBind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
-                    .DisposeWith(d);
-
-                this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                     .DisposeWith(d);
 
                 this.OneWayBind(ViewModel, vm => vm.Version, v => v.VersionTextBlock.Text)

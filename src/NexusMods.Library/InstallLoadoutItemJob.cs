@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
@@ -18,8 +19,9 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public ILibraryItemInstaller? Installer { get; init; }
     public ILibraryItemInstaller? FallbackInstaller { get; init; }
     public LibraryItem.ReadOnly LibraryItem { get; init; }
-    public LoadoutItemGroupId ParentGroupId { get; init; }
+    public Optional<LoadoutItemGroupId> ParentGroupId { get; set; }
     public LoadoutId LoadoutId { get; init; }
+    
     public required ITransaction Transaction { get; init; }
     required internal IConnection Connection { get; init; }
     required internal IServiceProvider ServiceProvider { get; init; }
@@ -34,21 +36,21 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     public static IJobTask<InstallLoadoutItemJob, InstallLoadoutItemJobResult> Create(
         IServiceProvider serviceProvider,
         LibraryItem.ReadOnly libraryItem,
-        LoadoutItemGroupId groupId,
+        LoadoutId targetLoadout,
+        Optional<LoadoutItemGroupId> groupId = default,
         ILibraryItemInstaller? installer = null,
         ILibraryItemInstaller? fallbackInstaller = null, 
         ITransaction? transaction = null)
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
-        var group = LoadoutItemGroup.Load(connection.Db, groupId);
         var job = new InstallLoadoutItemJob
         {
             Logger = serviceProvider.GetRequiredService<ILogger<InstallLoadoutItemJob>>(),
             Installer = installer,
             FallbackInstaller = fallbackInstaller,
             LibraryItem = libraryItem,
+            LoadoutId = targetLoadout,
             ParentGroupId = groupId,
-            LoadoutId = group.AsLoadoutItem().LoadoutId,
             Connection = connection,
             ServiceProvider = serviceProvider,
             Transaction = transaction ?? connection.BeginTransaction(),
@@ -59,6 +61,12 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
 
     public async ValueTask<InstallLoadoutItemJobResult> StartAsync(IJobContext<InstallLoadoutItemJob> context)
     {
+        if (!ParentGroupId.HasValue)
+        {
+            var collections = await (Loadout.Load(Connection.Db, LoadoutId).MutableCollections());
+            ParentGroupId = collections.First().AsLoadoutItemGroup().LoadoutItemGroupId;
+        }
+
         await context.YieldAsync();
         
         var loadout = Loadout.Load(Connection.Db, LoadoutId);
@@ -118,7 +126,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
                 {
                     Name = LibraryItem.Name,
                     LoadoutId = LoadoutId,
-                    ParentId = ParentGroupId,
+                    ParentId = ParentGroupId.Value,
                 },
             };
 

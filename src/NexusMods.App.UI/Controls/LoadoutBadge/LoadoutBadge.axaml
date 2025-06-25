@@ -3,11 +3,11 @@
                                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
-                                mc:Ignorable="d" d:DesignWidth="120" d:DesignHeight="120"
+                                mc:Ignorable="d" d:DesignWidth="48" d:DesignHeight="48"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutBadge.LoadoutBadge"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top">
@@ -20,8 +20,7 @@
         <TextBlock x:Name="ShortName"
                            DockPanel.Dock="Right"/>
         <spinner:Spinner x:Name="Spinner" />
-        <icons:UnifiedIcon x:Name="Icon" Value="{x:Static icons:IconValues.Check}" />
-        
+        <icons:UnifiedIcon x:Name="Icon" Value="{x:Static icons:IconValues.CheckBold}" />
     </DockPanel>
     
 </reactiveUi:ReactiveUserControl>

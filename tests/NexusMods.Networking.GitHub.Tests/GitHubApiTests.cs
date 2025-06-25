@@ -1,9 +1,8 @@
-using System.Net.Http.Headers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.BuildInfo;
+using NexusMods.Sdk;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
@@ -37,7 +36,7 @@ public class GitHubApiTests
     public async Task Test_FetchReleases()
     {
         var client = new HttpClient();
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
+        client.DefaultRequestHeaders.UserAgent.Add(ApplicationConstants.UserAgent);
 
         var logger = _serviceProvider.GetRequiredService<ILogger<GitHubApi>>();
         var api = new GitHubApi(logger, client);

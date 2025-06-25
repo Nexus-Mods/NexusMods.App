@@ -13,6 +13,7 @@
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
+        <ProjectReference Include="..\NexusMods.Backend\NexusMods.Backend.csproj" />
         <ProjectReference Include="..\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj" />
         <ProjectReference Include="..\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
@@ -21,6 +22,7 @@
         <ProjectReference Include="..\NexusMods.Games.Larian\NexusMods.Games.Larian.csproj" />
         <ProjectReference Include="..\NexusMods.Games.MountAndBlade2Bannerlord\NexusMods.Games.MountAndBlade2Bannerlord.csproj" />
         <ProjectReference Include="..\NexusMods.Games.TestHarness\NexusMods.Games.TestHarness.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.EpicGameStore\NexusMods.Networking.EpicGameStore.csproj" />
         <ProjectReference Include="..\\NexusMods.Networking.GOG\NexusMods.Networking.GOG.csproj" />
         <ProjectReference Include="..\\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
         <ProjectReference Include="..\\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
@@ -83,6 +85,9 @@
         </None>
         <None Update="icon.svg">
             <DependentUpon>app.pupnet.conf</DependentUpon>
+        </None>
+        <None Update="com.nexusmods.app.releases.xml">
+          <DependentUpon>app.pupnet.conf</DependentUpon>
         </None>
     </ItemGroup>
 

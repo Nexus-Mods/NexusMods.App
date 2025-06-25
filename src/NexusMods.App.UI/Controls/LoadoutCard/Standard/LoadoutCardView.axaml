@@ -6,12 +6,12 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:loadoutCard="clr-namespace:NexusMods.App.UI.Controls.LoadoutCard"
                                 xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:loadoutBadge="clr-namespace:NexusMods.App.UI.Controls.LoadoutBadge"
                                 xmlns:spinner="clr-namespace:NexusMods.App.UI.Controls.Spinner"
                                 xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                                mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="400"
+                                mc:Ignorable="d"
                                 x:Class="NexusMods.App.UI.Controls.LoadoutCard.LoadoutCardView">
     <Design.DataContext>
         <loadoutCard:LoadoutCardDesignViewModel />
@@ -23,34 +23,38 @@
 
                 <DockPanel>
 
-                    <DockPanel x:Name="ActionsDock"
-                               DockPanel.Dock="Bottom">
+                    <!-- buttons -->
+                    <DockPanel DockPanel.Dock="Bottom" x:Name="ActionsDock">
 
                         <controls:StandardButton x:Name="DeleteButton"
-                                                 DockPanel.Dock="Right"
                                                  ShowLabel="False"
                                                  ShowIcon="Left"
-                                                 Size="Medium"
                                                  LeftIcon="{x:Static icons:IconValues.DeleteForever}"
-                                                 ToolTip.Tip="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}" />
+                                                 ToolTip.Tip="{x:Static resources:Language.LoadoutCard_DeleteLoadoutToolTip}"
+                                                 DockPanel.Dock="Right"/>
 
                         <controls:StandardButton x:Name="CreateCopyButton"
-                                                 Size="Medium"
                                                  Text="{x:Static resources:Language.LoadoutCardViewCreateCopyButton}"
-                                                 HorizontalAlignment="Stretch" />
+                                                 HorizontalAlignment="Stretch"/>
                     </DockPanel>
 
-                    <StackPanel x:Name="CardOuterStack">
+                    <!-- content -->
+                    <StackPanel x:Name="ContentStack" Spacing="8">
+
+                        <!-- name -->
+                        <TextBlock x:Name="LoadoutNameTextBlock" />
+
+                        <!-- image -->
                         <Border x:Name="ImageSectionBorder">
                             <Panel>
                                 <Image x:Name="GameImage" />
                                 <Rectangle x:Name="GradientLayerRectangle" />
-                                <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" Classes="CardSize" />
+                                <loadoutBadge:LoadoutBadge x:Name="LoadoutBadge" />
                             </Panel>
                         </Border>
 
+                        <!-- meta -->
                         <StackPanel x:Name="DetailsSectionStack">
-                            <TextBlock x:Name="LoadoutNameTextBlock" />
 
                             <StackPanel x:Name="DetailsBodyStack">
                                 <StackPanel x:Name="CurrentlyAppliedStack">
@@ -65,8 +69,6 @@
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
-
-
                 </DockPanel>
             </Button>
 

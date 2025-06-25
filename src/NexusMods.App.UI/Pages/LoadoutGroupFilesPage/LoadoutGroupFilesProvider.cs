@@ -9,7 +9,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Trees.Common;
 using NexusMods.App.UI.Helpers;
 using NexusMods.App.UI.Helpers.TreeDataGrid.New.FolderGenerator;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.Paths;
@@ -49,7 +49,7 @@ public class LoadoutGroupFilesProvider
     public IObservable<IChangeSet<CompositeItemModel<GamePath>, GamePath>> ObserveModFiles(ModFilesFilter filesFilter, bool useFullFilePaths)
     {
         var filesObservable = FilteredModFiles(filesFilter)
-            .Transform(x => ToModFileItemModel(new LoadoutFile.ReadOnly(x.Db, x.EntitySegment, x.Id), useFullFilePaths));
+            .Transform(x => ToModFileItemModel(new LoadoutItemWithTargetPath.ReadOnly(x.Db, x.EntitySegment, x.Id), useFullFilePaths));
 
         // If we are requesting a flat view, we can skip folder generation.
         if (useFullFilePaths)
@@ -62,11 +62,11 @@ public class LoadoutGroupFilesProvider
         return wrapper; // Use `SimplifiedObservableRoots` to match previous behaviour pre-CompositeItemModels.
     }
 
-    private CompositeItemModel<GamePath> ToModFileItemModel(LoadoutFile.ReadOnly modFile, bool useFullFilePaths)
+    private CompositeItemModel<GamePath> ToModFileItemModel(LoadoutItemWithTargetPath.ReadOnly modFile, bool useFullFilePaths)
     {
         // Files don't have children.
         // We inject the relevant folders at the listener level, i.e. whatever calls `ObserveModFiles`
-        var fileItemModel = new CompositeItemModel<GamePath>(FileToGamePath(modFile.AsLoadoutItemWithTargetPath()))
+        var fileItemModel = new CompositeItemModel<GamePath>(FileToGamePath(modFile))
         {
             HasChildrenObservable = System.Reactive.Linq.Observable.Return(false),
             ChildrenObservable = System.Reactive.Linq.Observable.Empty<IChangeSet<CompositeItemModel<GamePath>, GamePath>>(),
@@ -78,17 +78,21 @@ public class LoadoutGroupFilesProvider
         //              And we check if a value is the same as before when we assign the inner
         //              BindableReactiveProperty from the component, so actually, not filtering
         //              might be better. Food for thought.
-        var itemUpdates = LoadoutFile.Observe(_connection, modFile.Id);
+        var itemUpdates = LoadoutItemWithTargetPath.Observe(_connection, modFile.Id);
         var nameUpdates = itemUpdates.Select(x => useFullFilePaths ? FileToFilePath(x) : FileToFileName(x));
         var iconUpdates = itemUpdates.Select(FileToIconValue);
-        var sizeUpdates = itemUpdates.Select(x => LoadoutFile.Size.TryGetValue(x, out var size) ? size : Size.Zero);
-        
-        fileItemModel.Add(SharedColumns.NameWithFileIcon.StringComponentKey, new StringComponent(initialValue: FileToFileName(modFile), valueObservable: nameUpdates));
+        var sizeUpdates = itemUpdates.Select(x => LoadoutFile.Size.TryGetValue(x, out var sizeVal) ? sizeVal : Size.Zero);
+
+        fileItemModel.Add(SharedColumns.NameWithFileIcon.FileEntryComponentKey,
+            new FileEntryComponent(
+                new StringComponent(initialValue: FileToFileName(modFile), valueObservable: nameUpdates),
+                new ValueComponent<bool>(modFile.IsDeletedFile())
+            ));
         fileItemModel.Add(SharedColumns.NameWithFileIcon.IconComponentKey, new UnifiedIconComponent(initialValue: FileToIconValue(modFile), valueObservable: iconUpdates));
         fileItemModel.Add(SharedColumns.ItemSizeOverGamePath.ComponentKey, new SizeComponent(initialValue: LoadoutFile.Size.TryGetValue(modFile, out var size) ? size : Size.Zero, valueObservable: sizeUpdates));
         // Note(sewer): File Count omitted to avoid rendering a '1' for every file for cleanliness.
         //              Will see how this goes once the columns are actually there.
-
+        
         return fileItemModel;
     }
 }
@@ -118,9 +122,9 @@ public class LoadoutGroupFilesTreeFolderModelInitializer : IFolderModelInitializ
         GeneratedFolder<GamePathTreeItemWithPath, TFolderModelInitializer> folder)
         where TFolderModelInitializer : IFolderModelInitializer<GamePathTreeItemWithPath>
     {
-        model.Add(SharedColumns.NameWithFileIcon.StringComponentKey,
-            new StringComponent(initialValue: folder.FolderName.ToString(), valueObservable: R3.Observable.Return(folder.FolderName.ToString()))
-        );
+       // Add name
+        model.Add(SharedColumns.NameWithFileIcon.FileEntryComponentKey, 
+            new FileEntryComponent(new StringComponent(folder.FolderName.ToString()), isDeleted: new ValueComponent<bool>(false)));
 
         // Add the icon for the folder, making it flip on 'IsExpanded'.
         var iconStream = model.ObservePropertyChanged(m => m.IsExpanded)
@@ -181,9 +185,9 @@ internal static class PathHelpers
         var path = modFile.TargetPath;
         return new GamePath(path.Item2, path.Item3);
     }
-    internal static string FileToFilePath(LoadoutFile.ReadOnly modFile) => modFile.AsLoadoutItemWithTargetPath().TargetPath.Item3;
-    internal static IconValue FileToIconValue(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFileName(modFile)).Extension.GetIconType().GetIconValue();
-    internal static string FileToFileName(LoadoutFile.ReadOnly modFile) => ((RelativePath)FileToFilePath(modFile)).FileName;
+    internal static string FileToFilePath(LoadoutItemWithTargetPath.ReadOnly modFile) => modFile.TargetPath.Item3;
+    internal static IconValue FileToIconValue(LoadoutItemWithTargetPath.ReadOnly modFile) => ((RelativePath)FileToFileName(modFile)).Extension.GetIconType().GetIconValue();
+    internal static string FileToFileName(LoadoutItemWithTargetPath.ReadOnly modFile) => ((RelativePath)FileToFilePath(modFile)).FileName;
 }
 
 internal static class LoadoutFilesObservableExtensions
