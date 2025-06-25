@@ -120,7 +120,6 @@ public sealed class LoginManager : IDisposable, ILoginManager
         }
 
         tx.Add(entityId, UserInDb.Name, userInfo.Name);
-        tx.Add(entityId, UserInDb.NexusId, userInfo.UserId.Value);
 
         if (userInfo.AvatarUrl is not null)
             tx.Add(entityId, UserInDb.AvatarUri, userInfo.AvatarUrl);
