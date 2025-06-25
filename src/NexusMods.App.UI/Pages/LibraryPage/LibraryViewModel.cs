@@ -446,7 +446,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 }
                 else
                 {
-                    // Successfully replaced all items, show success message
+                    // Replace of all items worked, but some download failed.
+                    // Let them know.
                     if (downloadErrors.Count > 0)
                     {
                         var finalDescription = new StringBuilder();
