@@ -31,7 +31,7 @@
 		<value>Diagnostyka i dane</value>
 	</data>
 	<data name="MetricsOptIn_MainMessage" xml:space="preserve">
-		<value>Chcielibyśmy zbierać dane diagnostyczne oraz dane dotyczące użytkowania, aby poprawić wydajność i zwiększyć komfort korzystania z aplikacji. Dane te pomagają nam identyfikować problemy, optymalizować funkcje i zapewniać, że aplikacja Nexus Mods działa lepiej dla wszystkich.&#x0a;&#x0a;Twoje dane będą przetwarzane zgodnie z naszą Polityką prywatności. Możesz zmienić swoje preferencje w dowolnym momencie w ustawieniach.&#x0a;&#x0a;Czy chcesz włączyć zbieranie danych?</value>
+		<value>Chcielibyśmy zbierać dane diagnostyczne oraz informacje o Twoim użytkowaniu, aby poprawić wydajność i zwiększyć komfort korzystania z aplikacji. Dzięki tym danym będziemy mogli lepiej identyfikować ewentualne problemy, optymalizować funkcje oraz zapewniać, że Nexus Mods działa jeszcze sprawniej dla wszystkich użytkowników.&#x0a;&#x0a;Twoje dane będą przetwarzane zgodnie z naszą Polityką prywatności. W dowolnym momencie możesz zmienić swoje preferencje w ustawieniach.&#x0a;&#x0a;Czy chcesz włączyć zbieranie danych?</value>
 	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
 		<value>Zobacz aktualizację</value>
