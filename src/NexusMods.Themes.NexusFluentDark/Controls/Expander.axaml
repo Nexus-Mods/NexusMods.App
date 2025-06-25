@@ -178,16 +178,13 @@
                                 Grid.Column="1"
                                 Width="{StaticResource ExpanderChevronButtonSize}"
                                 Height="{StaticResource ExpanderChevronButtonSize}"
-                                Margin="{StaticResource ExpanderChevronMargin}"
                                 CornerRadius="{StaticResource ControlCornerRadius}"
-                                BorderBrush="{StaticResource ExpanderChevronBorderBrush}"
-                                BorderThickness="{StaticResource ExpanderChevronBorderThickness}"
-                                Background="{StaticResource ExpanderChevronBackground}">
+                                BorderThickness="{StaticResource ExpanderChevronBorderThickness}">
                             <icons:UnifiedIcon x:Name="ExpandCollapseChevron"
+                                               Foreground="{TemplateBinding Foreground}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center"
                                                RenderTransformOrigin="50%,50%"
-                                               Foreground="{StaticResource ExpanderChevronForeground}"
                                                Size="20">
                                 <icons:UnifiedIcon.RenderTransform>
                                     <RotateTransform />
@@ -223,6 +220,12 @@
                     </KeyFrame>
                 </Animation>
             </Style.Animations>
+        </Style>
+
+        <Style Selector="^ /template/ Border#ExpandCollapseChevronBorder">
+            <Setter Property="Margin" Value="{StaticResource ExpanderChevronMargin}" />
+            <Setter Property="Background" Value="{StaticResource ExpanderChevronBackground}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ExpanderChevronBorderBrush}" />
         </Style>
 
         <!-- PointerOver -->

@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loadout="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout;assembly=NexusMods.App.UI"
-        xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home;assembly=NexusMods.App.UI">
+        xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
     <Design.PreviewWith>
         <Border Padding="0">
 
@@ -18,6 +19,45 @@
             </loadout:LoadoutLeftMenuView>
         </Border>
     </Design.PreviewWith>
+
+    <Styles.Resources>
+
+        <!-- new control theme for the expander header -->
+        <ControlTheme x:Key="LeftMenuExpanderToggleButtonControlTheme" TargetType="ToggleButton"
+                      BasedOn="{StaticResource FluentExpanderToggleButtonTheme}">
+
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+
+            <Style Selector="^ /template/ icons|UnifiedIcon#ExpandCollapseChevron">
+                <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronUp}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#ExpandCollapseChevronBorder">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            </Style>
+
+            <!-- PointerOver -->
+            <Style Selector="^:pointerover /template/ Border#ToggleButtonBackground">
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ Border#ExpandCollapseChevronBorder">
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ icons|UnifiedIcon#ExpandCollapseChevron">
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+        </ControlTheme>
+
+    </Styles.Resources>
 
     <!-- HOME & LOADOUT LEFT MENU -->
     <Style Selector="
@@ -37,31 +77,12 @@
             </Style>
 
             <Style Selector="^ Expander">
-                <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
-                    <Setter Property="Padding" Value="0 8" />
-                    <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
 
-
-                    <!-- pointerover -->
-                    <Style Selector="^:pointerover /template/ Border#ToggleButtonBackground">
-                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-                    </Style>
-                    <Style Selector="^:pointerover /template/ Border#ExpandCollapseChevronBorder">
-                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-                    </Style>
-
+                <Style Selector="^:down ToggleButton#ExpanderHeader">
+                    <Setter Property="Theme" Value="{StaticResource LeftMenuExpanderToggleButtonControlTheme}" />
                 </Style>
 
-                <Style Selector="^:down /template/ ToggleButton#ExpanderHeader">
-                    <Style Selector="^ Border#ExpandCollapseChevronBorder">
-                        <Setter Property="Margin" Value="0" />
-                        <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-                    </Style>
-                </Style>
 
-                <Style Selector="^ TextBlock#InstalledModsSectionText,^ TextBlock#UtilitiesSectionText">
-                    <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
-                </Style>
             </Style>
 
         </Style>

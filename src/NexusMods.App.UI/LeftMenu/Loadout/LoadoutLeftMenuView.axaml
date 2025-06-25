@@ -24,14 +24,15 @@
                     <Separator />
                     <Expander HorizontalAlignment="Stretch" IsExpanded="True">
                         <Expander.Header>
-                            <TextBlock x:Name="InstalledModsSectionText"/>
+                            <TextBlock x:Name="InstalledModsSectionText"
+                                       Theme="{StaticResource BodySMSemiTheme}" />
                         </Expander.Header>
-                        <StackPanel>
+                        <StackPanel Spacing="{StaticResource Spacing-0.5}">
                             <items:LeftMenuItemView x:Name="LoadoutItem" />
                             <ItemsControl x:Name="CollectionItems">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel />
+                                        <StackPanel Spacing="{StaticResource Spacing-0.5}" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                             </ItemsControl>
@@ -45,9 +46,10 @@
                     <Separator />
                     <Expander HorizontalAlignment="Stretch" IsExpanded="True">
                         <Expander.Header>
-                            <TextBlock x:Name="UtilitiesSectionText" />
+                            <TextBlock x:Name="UtilitiesSectionText"
+                                       Theme="{StaticResource BodySMSemiTheme}" />
                         </Expander.Header>
-                        <StackPanel>
+                        <StackPanel Spacing="{StaticResource Spacing-0.5}">
                             <items:LeftMenuItemView x:Name="HealthCheckItem" />
                             <items:LeftMenuItemView x:Name="ExternalChangesItem" />
                         </StackPanel>
