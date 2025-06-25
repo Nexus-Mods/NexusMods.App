@@ -1075,4 +1075,13 @@ Please check your internet connection and try again.</value>
     <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
         <value>Nexus Mods collections you are subscribed to will not be affected.</value>
     </data>
+    <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+        <value>Update mod</value>
+    </data>
+    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+        <value>More options</value>
+    </data>
+    <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+        <value>Update mod and replace the old version</value>
+    </data>
 </root>
