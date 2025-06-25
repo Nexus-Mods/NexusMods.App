@@ -40,7 +40,7 @@ public partial class VersionDefinition : IModelDefinition
     public static readonly StringsAttribute Steam = new(Namespace, nameof(Steam)) { IsIndexed = true };
     
     /// <summary>
-    /// The associated Steam ManifestIDs for this version
+    /// The associated Epic ManifestIDs for this version
     /// </summary>
     public static readonly StringsAttribute EpicBuildIds = new(Namespace, nameof(EpicBuildIds)) { IsIndexed = true };
     
