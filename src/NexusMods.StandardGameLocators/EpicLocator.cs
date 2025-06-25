@@ -31,6 +31,7 @@ public class EpicLocator : AGameLocator<EGSGame, EGSGameId, IEpicGame, EpicLocat
         return new EpicLocatorResultMetadata
         {
             CatalogItemId = game.CatalogItemId.Value,
+            ManifestHashes = game.ManifestHash,
         };
     }
 }

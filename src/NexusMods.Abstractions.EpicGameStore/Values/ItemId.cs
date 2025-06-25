@@ -1,6 +1,6 @@
 using Reloaded.Memory.Extensions;
 
-namespace NexusMods.Networking.EpicGameStore.Values;
+namespace NexusMods.Abstractions.EpicGameStore.Values;
 
 /// <summary>
 /// An id for an item in the Epic Game Store "item", which is a generic term for anything that can be purchased or downloaded, such as games, DLC, etc.
