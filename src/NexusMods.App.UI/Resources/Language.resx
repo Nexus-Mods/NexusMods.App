@@ -1084,4 +1084,23 @@ Please check your internet connection and try again.</value>
     <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
         <value>Update mod and replace the old version</value>
     </data>
+    <data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+        <value>Go Premium for one-click mod updates</value>
+    </data>
+    <data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+        <value>No browser, no manual downloads. Premium users also get:
+
+• Download entire collections with one click
+• Uncapped download speeds
+• No Ads for life, even if you unsubscribe after 1 month!</value>
+    </data>
+    <data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+        <value>Update all your mods, or individual mods, in one click.</value>
+    </data>
+    <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+        <value>Update mods manually</value>
+    </data>
+    <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+        <value>Go Premium</value>
+    </data>
 </root>
