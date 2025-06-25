@@ -3004,5 +3004,23 @@ namespace NexusMods.App.UI.Resources {
                 return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Description2", resourceCulture);
             }
         }
+        
+        public static string Library_UpdateMod_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_UpdateMod_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Library_MoreOptions_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_MoreOptions_ToolTip", resourceCulture);
+            }
+        }
+        
+        public static string Library_UpdateModAndReplace_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_UpdateModAndReplace_ToolTip", resourceCulture);
+            }
+        }
     }
 }
