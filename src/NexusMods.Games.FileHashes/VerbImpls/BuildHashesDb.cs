@@ -3,6 +3,8 @@ using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
+using NexusMods.Abstractions.EpicGameStore.Models;
+using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.Games.FileHashes.Models;
@@ -17,8 +19,6 @@ using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.Networking.EpicGameStore.DTOs.EgData;
-using NexusMods.Networking.EpicGameStore.Models;
-using NexusMods.Networking.EpicGameStore.Values;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.ProxyConsole;
@@ -157,6 +157,7 @@ public class BuildHashesDb : IAsyncDisposable
                 GameId = gameObject.GameId,
                 GOG = definition.GOG ?? [],
                 Steam = definition.Steam ?? [],
+                EpicBuildIds = definition.Epic ?? [],
             };
 
             var productIds = ((IGogGame)gameObject).GogIds.Select(id => ProductId.From((ulong)id));
@@ -190,6 +191,21 @@ public class BuildHashesDb : IAsyncDisposable
                 catch (InvalidOperationException _)
                 {
                     await _renderer.TextLine("Failed to find Steam manifest for {0} {1} {2}", gameName, osName, id);
+                }
+            }
+            
+            foreach (var id in definition.Epic ?? [])
+            {
+                try
+                {
+                    var manifest = EpicGameStoreBuild
+                        .FindByBuildId(referenceDb, Abstractions.EpicGameStore.Values.BuildId.FromUnsanitized(id))
+                        .Single();
+                    tx.Add(versionDef, VersionDefinition.EpicGameStoreBuilds, manifest.Id);
+                }
+                catch (InvalidOperationException _)
+                {
+                    await _renderer.TextLine("Failed to find Epic manifest for {0} {1} {2}", gameName, osName, id);
                 }
             }
         }
@@ -385,7 +401,8 @@ public class BuildHashesDb : IAsyncDisposable
 
                 _ = new EpicGameStoreBuild.New(tx)
                 {
-                    BuildId = NexusMods.Networking.EpicGameStore.Values.BuildId.FromUnsanitized(build.Id),
+                    BuildId = NexusMods.Abstractions.EpicGameStore.Values.BuildId.FromUnsanitized(build.Id),
+                    ManifestHash = ManifestHash.FromUnsanitized(build.ManifestHash),
                     ItemId = ItemId.FromUnsanitized(id),
                     AppName = build.AppName,
                     BuildVersion = build.BuildVersion,

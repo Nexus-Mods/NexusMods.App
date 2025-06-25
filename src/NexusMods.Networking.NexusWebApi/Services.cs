@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
@@ -59,7 +60,7 @@ public static class Services
             .AddNexusGraphQLClient()
             .ConfigureHttpClient((serviceProvider, httpClient) =>
             {
-                httpClient.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql");
+                httpClient.BaseAddress = ClientConfig.GraphQlEndpoint;
                 httpClient.DefaultRequestHeaders.UserAgent.Add(ApplicationConstants.UserAgent);
 
                 httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationName, ApplicationConstants.UserAgent.ApplicationName);
