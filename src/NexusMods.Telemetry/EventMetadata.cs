@@ -27,7 +27,7 @@ public readonly struct EventMetadata
     /// <summary>
     /// Value of the event.
     /// </summary>
-    public readonly Optional<float> Value;
+    public readonly Optional<double> Value;
 
     /// <summary>
     /// Constructor.
@@ -43,14 +43,14 @@ public readonly struct EventMetadata
     /// </summary>
     public static EventMetadata Create<T>(string? name, T value, TimeProvider? timeProvider = null) where T : INumber<T>, IConvertible
     {
-        var floatValue = value.ToSingle(CultureInfo.InvariantCulture);
-        return new EventMetadata(name, value: floatValue, timeProvider: timeProvider);
+        var doubleValue = value.ToDouble(CultureInfo.InvariantCulture);
+        return new EventMetadata(name, value: doubleValue, timeProvider: timeProvider);
     }
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public EventMetadata(string? name, Optional<float> value = default, TimeProvider? timeProvider = null)
+    public EventMetadata(string? name, Optional<double> value = default, TimeProvider? timeProvider = null)
     {
         Name = name;
         Value = value;
@@ -71,9 +71,20 @@ public readonly struct EventMetadata
         return WebUtility.UrlEncodeToBytes(bytes, offset: 0, count: bytes.Length);
     }
 
-    private static byte[] EncodeValue(float value)
+    internal static string FormatValue(double value)
     {
-        var stringRepresentation = value.ToString(CultureInfo.InvariantCulture);
-        return EncodeString(stringRepresentation);
+        var integralPart = Math.Truncate(value);
+        if (Math.Abs(integralPart - value) < double.Epsilon)
+        {
+            var integer = (int)integralPart;
+            return integer.ToString(CultureInfo.InvariantCulture);
+        }
+
+        return value.ToString("F3", CultureInfo.InvariantCulture);
+    }
+
+    private static byte[] EncodeValue(double value)
+    {
+        return EncodeString(FormatValue(value));
     }
 }
