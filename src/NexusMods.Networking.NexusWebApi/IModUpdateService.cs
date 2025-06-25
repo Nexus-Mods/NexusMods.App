@@ -58,6 +58,42 @@ public interface IModUpdateService
     /// </param>
     /// <returns>An observable that returns all updated items on a given mod page.</returns>
     IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
+
+    /// <summary>
+    /// Checks if a mod page has updates available without creating an observable.
+    /// This is a non-observable version of <see cref="GetNewestModPageVersionObservable"/> that checks the current cache state.
+    /// </summary>
+    /// <param name="current">The current mod page to check for updates.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard update results. Return null to discard.
+    ///     If null is passed, default filters will be applied automatically.
+    /// </param>
+    /// <returns>The current update state for the mod page, if any updates are available.</returns>
+    Optional<ModUpdatesOnModPage> HasModPageUpdatesAvailable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
+
+    /// <summary>
+    /// Returns an observable that emits true when there are any mod updates available in the library, false when there are none.
+    /// This observable monitors the internal update caches and notifies whenever the overall update state changes.
+    /// </summary>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard mod page updates. Return null to discard updates.
+    ///     If null is passed, default filters will be applied automatically.
+    ///     To get unfiltered data, pass an empty filter function that returns the input unchanged.
+    /// </param>
+    /// <returns>An observable that emits the overall update state for the library.</returns>
+    IObservable<bool> HasAnyUpdatesObservable(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
+
+    /// <summary>
+    /// Gets all mod pages that have updates available in the library.
+    /// This method efficiently checks the internal cache for all mod pages with updates.
+    /// </summary>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard mod page updates. Return null to discard updates.
+    ///     If null is passed, default filters will be applied automatically.
+    ///     To get unfiltered data, pass an empty filter function that returns the input unchanged.
+    /// </param>
+    /// <returns>An enumerable of tuples containing mod page IDs and their available updates.</returns>
+    IEnumerable<(NexusModsModPageMetadataId modPageId, ModUpdatesOnModPage updates)> GetAllModPagesWithUpdates(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
 }
 
 

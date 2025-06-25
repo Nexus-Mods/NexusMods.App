@@ -319,7 +319,7 @@
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
                     <StackPanel Spacing="16" Orientation="Vertical">
                         <StackPanel Spacing="8">
-                            <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40,40,40"
+                            <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40,40,40,40"
                                   ColumnDefinitions="160,60,60">
  
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
@@ -363,9 +363,14 @@
                                 <TextBlock Grid.Column="0" Grid.Row="9" Text="All possible controls"  VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalAllControls" Click="ShowModalAllControls_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="9" />
+                                
                                 <TextBlock Grid.Column="0" Grid.Row="10" Text="Input"  VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalInput" Click="ShowModalInput_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="10" />
+                                
+                                <TextBlock Grid.Column="0" Grid.Row="11" Text="Premium"  VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalPremium" Click="ShowModalPremium_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="11" />
                             </Grid>
                         </StackPanel>
                         <StackPanel Spacing="8">

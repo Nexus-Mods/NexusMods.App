@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Standard;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Windows;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using R3;
@@ -32,7 +34,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     }
 
     // helper methods to show modal and modeless dialogs
-    
+
     private async void ShowModal(IDialog<ButtonDefinitionId> dialog)
     {
         if (ViewModel is null) return;
@@ -48,7 +50,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
         Console.WriteLine($@"result: {result}");
     }
-    
+
     // event handlers for button clicks
 
     private void ShowModalOkCancel_OnClick(object? sender, RoutedEventArgs e)
@@ -123,7 +125,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             dialogWindowSize: DialogWindowSize.Medium,
             markdownRenderer: markdownRendererViewModel
         );
-        
+
         var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
         Console.WriteLine($@"result: {result}");
     }
@@ -169,7 +171,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     private void ShowModalUnhandledException_OnClick(object? sender, RoutedEventArgs e)
     {
         var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-        
+
         markdownRendererViewModel.Contents = """
             System.AggregateException: One or more errors occurred. (Entity `EId:4000000000015BF` doesn't have attribute NexusMods.Loadouts.DiskStateEntry/Hash)
              ---> System.Collections.Generic.KeyNotFoundException: Entity `EId:4000000000015BF` doesn't have attribute NexusMods.Loadouts.DiskStateEntry/Hash
@@ -200,20 +202,20 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             dialogWindowSize: DialogWindowSize.Medium,
             markdownRenderer: markdownRendererViewModel
         );
-        
+
         ShowModal(dialog);
     }
 
     private async void ShowModalAllControls_OnClick(object? sender, RoutedEventArgs e)
     {
-            if (ViewModel is null) return;
+        if (ViewModel is null) return;
 
-            // create custom content viewmodel
-            var customViewModel = new CustomContentExampleViewModel("This is more lovely text");
+        // create custom content viewmodel
+        var customViewModel = new CustomContentExampleViewModel("This is more lovely text");
 
-            // create markdown viewmodel
-            var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-            markdownRendererViewModel.Contents = """
+        // create markdown viewmodel
+        var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        markdownRendererViewModel.Contents = """
             ```
             System.AggregateException: One or more errors occurred. (Entity `EId:4000000000015BF` doesn't have attribute NexusMods.Loadouts.DiskStateEntry/Hash)
              ---> System.Collections.Generic.KeyNotFoundException: Entity `EId:4000000000015BF` doesn't have attribute NexusMods.Loadouts.DiskStateEntry/Hash
@@ -237,38 +239,38 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                ```
             """;
 
-            // create wrapper dialog around the custom content 
-            var dialog = DialogFactory.CreateMessageDialog(
-                title: "Custom Dialog",
-                text: "Some text can be here",
-                heading: "And even a heading",
-                buttonDefinitions: [
-                    new DialogButtonDefinition(
-                        "Secondary",
-                        ButtonDefinitionId.From("cancel"),
-                        ButtonAction.Reject
-                    ),
-                    new DialogButtonDefinition(
-                        "Primary",
-                        ButtonDefinitionId.From("primary"),
-                        ButtonAction.Accept,
-                        ButtonStyling.Primary
-                    )
-                ],
-                icon: IconValues.PictogramHealth,
-                dialogWindowSize: DialogWindowSize.Medium,
-                markdownRenderer: markdownRendererViewModel,
-                contentViewModel: customViewModel
-            );
-            
-            // tell windowmanager to show it
-            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-            
-            // check viewmodel properties when dialog has been closed
-            Console.WriteLine($@"result: {result}");
-            Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
-            Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
+        // create wrapper dialog around the custom content 
+        var dialog = DialogFactory.CreateMessageDialog(
+            title: "Custom Dialog",
+            text: "Some text can be here",
+            heading: "And even a heading",
+            buttonDefinitions:
+            [
+                new DialogButtonDefinition(
+                    "Secondary",
+                    ButtonDefinitionId.From("cancel"),
+                    ButtonAction.Reject
+                ),
+                new DialogButtonDefinition(
+                    "Primary",
+                    ButtonDefinitionId.From("primary"),
+                    ButtonAction.Accept,
+                    ButtonStyling.Primary
+                )
+            ],
+            icon: IconValues.PictogramHealth,
+            dialogWindowSize: DialogWindowSize.Medium,
+            markdownRenderer: markdownRendererViewModel,
+            contentViewModel: customViewModel
+        );
 
+        // tell windowmanager to show it
+        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+
+        // check viewmodel properties when dialog has been closed
+        Console.WriteLine($@"result: {result}");
+        Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
+        Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
     }
 
     private async void ShowModalInput_OnClick(object? sender, RoutedEventArgs e)
@@ -289,5 +291,17 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         {
             throw; // TODO handle exception
         }
+    }
+
+
+    private async void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    {
+        if (ViewModel is null) return;
+
+        var osInterop = ViewModel.ServiceProvider.GetRequiredService<IOSInterop>();
+        var result = await PremiumDialog.ShowUpdatePremiumDialog(ViewModel.WindowManager, osInterop);
+
+        // check viewmodel properties when dialog has been closed
+        Console.WriteLine($@"result: {result}");
     }
 }
