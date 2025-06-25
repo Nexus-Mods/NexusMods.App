@@ -304,189 +304,208 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
         {
-            var dialog = DialogFactory.CreateOkCancelMessageBox(
-                Language.Dialog_ReplaceNotSupported_Title,
-                Language.Dialog_ReplaceNotSupported_Text
-            );
-            
-            await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-            await HandleUpdateAndKeepOldMessage(new UpdateAndKeepOldMessage(updateAndReplaceMessage.Updates, updateAndReplaceMessage.TreeNode), cancellationToken);
+            await UpdateAndReplaceForMultiModPagesFreeOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
         }
         else
         {
             var updatesOnPage = updateAndReplaceMessage.Updates;
+            await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, [updatesOnPage]);
+        }
+    }
 
-            // Collect all library items that will be updated by linking with file metadata.
-            var libraryItemsToUpdate = new List<LibraryItem.ReadOnly>();
-            var newestToCurrentMapping = updatesOnPage.NewestToCurrentFileMapping();
-            foreach (var (_, currentFiles) in newestToCurrentMapping)
+    private async ValueTask UpdateAndReplaceForMultiModPagesFreeOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
+    {
+        // Show the original dialog
+        var dialog = DialogFactory.CreateOkCancelMessageBox(
+            Language.Dialog_ReplaceNotSupported_Title,
+            Language.Dialog_ReplaceNotSupported_Text
+        );
+        
+        var dialogResult = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        if (dialogResult != DialogStandardButtons.Ok.Id)
+        {
+            // User cancelled, don't proceed
+            return;
+        }
+        
+        await UpdateAndKeepOldFree(updatesOnPageCollection, cancellationToken);
+    }
+
+    private async ValueTask UpdateAndReplaceForMultiModPagesPremiumOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
+    {
+        // Collect all library items that will be updated by linking with file metadata.
+        var newestToCurrentMapping = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
+        foreach (var updatesOnPage in updatesOnPageCollection)
+            updatesOnPage.NewestToCurrentFileMapping(newestToCurrentMapping);
+        
+        var libraryItemsToUpdate = new List<LibraryItem.ReadOnly>();
+        foreach (var (_, currentFiles) in newestToCurrentMapping)
+        {
+            foreach (var currentFile in currentFiles)
             {
+                // Find existing library items for this file metadata
+                var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
+                foreach (var existingLibraryFile in existingLibraryItems)
+                {
+                    var currentLibraryItem = existingLibraryFile.AsLibraryItem();
+                    libraryItemsToUpdate.Add(currentLibraryItem);
+                }
+            }
+        }
+
+        // Find all affected loadouts
+        var collectionsAffected = _libraryService.CollectionsWithLibraryItems(libraryItemsToUpdate, excludeReadOnlyCollections: true);
+        var affectedCollectionCount = collectionsAffected.Count;
+
+        // If there is more than 1 non-readonly affected collection, show confirmation dialog
+        if (affectedCollectionCount >= 2)
+        {
+            var updateButtonId = ButtonDefinitionId.From("Update");
+            var cancelButtonId = ButtonDefinitionId.From("Cancel");
+
+            var dialogDesc = new StringBuilder();
+            dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1);
+            dialogDesc.AppendLine();
+            foreach (var collectionAffected in collectionsAffected)
+                dialogDesc.AppendLine(collectionAffected.Key.AsLoadoutItemGroup().AsLoadoutItem().Name);
+                
+            dialogDesc.AppendLine();
+            dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
+
+            var confirmDialog = DialogFactory.CreateMessageDialog(
+                title: Language.Library_Update_InstalledInMultipleCollections_Title,
+                text: dialogDesc.ToString(),
+                buttonDefinitions: [
+                    new DialogButtonDefinition(
+                        Language.Library_Update_InstalledInMultipleCollections_Cancel,
+                        cancelButtonId,
+                        ButtonAction.Reject
+                    ),
+                    new DialogButtonDefinition(
+                        string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedCollectionCount),
+                        updateButtonId,
+                        ButtonAction.Accept,
+                        ButtonStyling.Primary
+                    )
+                ]
+            );
+                
+            var dialogResult = await WindowManager.ShowDialog(confirmDialog, DialogWindowType.Modal);
+            if (dialogResult != updateButtonId)
+            {
+                // User cancelled, don't proceed with update
+                return;
+            }
+        }
+
+        // Note(sewer): There's usually just a few files in like 99% of the cases here
+        //              so no need to optimize around file reuse and TemporaryFileManager.
+        var oldToNewLibraryMapping = new List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
+        var downloadErrors = new List<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
+        var successfulDownloads = new List<LibraryItem.ReadOnly>();
+
+        foreach (var (newestFile, currentFiles) in newestToCurrentMapping)
+        {
+            try
+            {
+                // Try a download.
+                await using var tempPath = _temporaryFileManager.CreateFile();
+                var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
+                var libraryFile = await _libraryService.AddDownload(job);
+                var newLibraryItem = libraryFile.AsLibraryItem();
+                successfulDownloads.Add(newLibraryItem);
+
+                // Map each current file to the new file
                 foreach (var currentFile in currentFiles)
                 {
                     // Find existing library items for this file metadata
                     var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
-                    foreach (var existingLibraryFile in existingLibraryItems)
+                    foreach (var existingLibraryFile in existingLibraryItems) // Should only be one.
                     {
                         var currentLibraryItem = existingLibraryFile.AsLibraryItem();
-                        libraryItemsToUpdate.Add(currentLibraryItem);
+                        oldToNewLibraryMapping.Add((currentLibraryItem, newLibraryItem));
                     }
                 }
             }
-
-            // Find all affected loadouts
-            var collectionsAffected = _libraryService.CollectionsWithLibraryItems(libraryItemsToUpdate, excludeReadOnlyCollections: true);
-            var affectedCollectionCount = collectionsAffected.Count;
-
-            // If there is more than 1 non-readonly affected collection, show confirmation dialog
-            if (affectedCollectionCount >= 2)
+            catch (Exception ex)
             {
-                var updateButtonId = ButtonDefinitionId.From("Update");
-                var cancelButtonId = ButtonDefinitionId.From("Cancel");
-
-                var dialogDesc = new StringBuilder();
-                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1);
-                dialogDesc.AppendLine();
-                foreach (var collectionAffected in collectionsAffected)
-                    dialogDesc.AppendLine(collectionAffected.Key.AsLoadoutItemGroup().AsLoadoutItem().Name);
-                
-                dialogDesc.AppendLine();
-                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
-
-                var confirmDialog = DialogFactory.CreateMessageDialog(
-                    title: Language.Library_Update_InstalledInMultipleCollections_Title,
-                    text: dialogDesc.ToString(),
-                    buttonDefinitions: [
-                        new DialogButtonDefinition(
-                            Language.Library_Update_InstalledInMultipleCollections_Cancel,
-                            cancelButtonId,
-                            ButtonAction.Reject
-                        ),
-                        new DialogButtonDefinition(
-                            string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedCollectionCount),
-                            updateButtonId,
-                            ButtonAction.Accept,
-                            ButtonStyling.Primary
-                        )
-                    ]
-                );
-                
-                var dialogResult = await WindowManager.ShowDialog(confirmDialog, DialogWindowType.Modal);
-                if (dialogResult != updateButtonId)
-                {
-                    // User cancelled, don't proceed with update
-                    return;
-                }
+                downloadErrors.Add((newestFile, ex));
             }
+        }
 
-            // Note(sewer): There's usually just a few files in like 99% of the cases here
-            //              so no need to optimize around file reuse and TemporaryFileManager.
-            var oldToNewLibraryMapping = new List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
-            var downloadErrors = new List<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
-            var successfulDownloads = new List<LibraryItem.ReadOnly>();
-
-            foreach (var (newestFile, currentFiles) in newestToCurrentMapping)
+        // If there's no downloads to replace, we failed to do all of them.
+        if (oldToNewLibraryMapping.Count > 0)
+        {
+            var options = new ReplaceLibraryItemsOptions
             {
-                try
-                {
-                    // Try a download.
-                    await using var tempPath = _temporaryFileManager.CreateFile();
-                    var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
-                    var libraryFile = await _libraryService.AddDownload(job);
-                    var newLibraryItem = libraryFile.AsLibraryItem();
-                    successfulDownloads.Add(newLibraryItem);
+                IgnoreReadOnlyCollections = true,
+            };
 
-                    // Map each current file to the new file
-                    foreach (var currentFile in currentFiles)
-                    {
-                        // Find existing library items for this file metadata
-                        var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
-                        foreach (var existingLibraryFile in existingLibraryItems) // Should only be one.
-                        {
-                            var currentLibraryItem = existingLibraryFile.AsLibraryItem();
-                            oldToNewLibraryMapping.Add((currentLibraryItem, newLibraryItem));
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    downloadErrors.Add((newestFile, ex));
-                }
-            }
-
-            // If there's no downloads to replace, we failed to do all of them.
-            if (oldToNewLibraryMapping.Count > 0)
+            var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
+            if (result != LibraryItemReplacementResult.Success)
             {
-                var options = new ReplaceLibraryItemsOptions
-                {
-                    IgnoreReadOnlyCollections = true,
-                };
+                // Replace operation failed, show error dialog with options
+                // We will pretend all items failed to replace, as we can't tell which
+                // ones currently failed. The replace is an atomic operation either way,
+                // so either one fails or all fail regardless.
+                var description = Language.Library_Update_ReplaceFailed_Description + "\n";
+                var modsFailedToBuildSb = new StringBuilder();
+                foreach (var failed in oldToNewLibraryMapping)
+                    modsFailedToBuildSb.AppendLine($"{failed.oldItem.Name}");
 
-                var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
-                if (result != LibraryItemReplacementResult.Success)
-                {
-                    // Replace operation failed, show error dialog with options
-                    // We will pretend all items failed to replace, as we can't tell which
-                    // ones currently failed. The replace is an atomic operation either way,
-                    // so either one fails or all fail regardless.
-                    var description = Language.Library_Update_ReplaceFailed_Description + "\n";
-                    var modsFailedToBuildSb = new StringBuilder();
-                    foreach (var failed in oldToNewLibraryMapping)
-                        modsFailedToBuildSb.AppendLine($"{failed.oldItem.Name}");
-
-                    var errorDialog = DialogFactory.CreateMessageDialog(
-                        title: Language.Library_Update_ReplaceFailed_Title,
-                        text: description + modsFailedToBuildSb.ToString(),
-                        buttonDefinitions: [DialogStandardButtons.Ok]
-                    );
-
-                    await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
-
-                    // User chose to delete the downloaded files from library
-                    await _libraryService.RemoveLibraryItems(successfulDownloads);
-                }
-                else
-                {
-                    // Replace of all items worked, but some download failed.
-                    // Let them know.
-                    if (downloadErrors.Count > 0)
-                    {
-                        var finalDescription = new StringBuilder();
-                        finalDescription.AppendLine(Language.Library_Update_Success_Description1);
-                        finalDescription.AppendLine();
-                        foreach (var successItem in oldToNewLibraryMapping)
-                            finalDescription.AppendLine($"{successItem.oldItem.Name}");
-
-                        finalDescription.AppendLine();
-                        finalDescription.AppendLine(Language.Library_Update_Success_Description2);
-                        foreach (var downloadError in downloadErrors)
-                            finalDescription.AppendLine($"{downloadError.File.Name}");
-                        
-                        var successDialog = DialogFactory.CreateMessageDialog(
-                            title: Language.Library_Update_Success_Title,
-                            text: finalDescription.ToString(),
-                            buttonDefinitions: [DialogStandardButtons.Ok]
-                        );
-
-                        await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
-                    }
-
-                    await RemoveOldLibraryItemsIfNotInReadOnlyCollections(oldToNewLibraryMapping);
-                }
-            }
-            else
-            {
-                // All downloads failed, show error message
-                var allFailedDialog = DialogFactory.CreateMessageDialog(
-                    title: Language.Library_Update_AllDownloadsFailed_Title,
-                    text: string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count),
+                var errorDialog = DialogFactory.CreateMessageDialog(
+                    title: Language.Library_Update_ReplaceFailed_Title,
+                    text: description + modsFailedToBuildSb.ToString(),
                     buttonDefinitions: [DialogStandardButtons.Ok]
                 );
 
-                await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
+                await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
+
+                // User chose to delete the downloaded files from library
+                await _libraryService.RemoveLibraryItems(successfulDownloads);
+            }
+            else
+            {
+                // Replace of all items worked, but some download failed.
+                // Let them know.
+                if (downloadErrors.Count > 0)
+                {
+                    var finalDescription = new StringBuilder();
+                    finalDescription.AppendLine(Language.Library_Update_Success_Description1);
+                    finalDescription.AppendLine();
+                    foreach (var successItem in oldToNewLibraryMapping)
+                        finalDescription.AppendLine($"{successItem.oldItem.Name}");
+
+                    finalDescription.AppendLine();
+                    finalDescription.AppendLine(Language.Library_Update_Success_Description2);
+                    foreach (var downloadError in downloadErrors)
+                        finalDescription.AppendLine($"{downloadError.File.Name}");
+                        
+                    var successDialog = DialogFactory.CreateMessageDialog(
+                        title: Language.Library_Update_Success_Title,
+                        text: finalDescription.ToString(),
+                        buttonDefinitions: [DialogStandardButtons.Ok]
+                    );
+
+                    await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+                }
+
+                await RemoveOldLibraryItemsIfNotInReadOnlyCollections(oldToNewLibraryMapping);
             }
         }
+        else
+        {
+            // All downloads failed, show error message
+            var allFailedDialog = DialogFactory.CreateMessageDialog(
+                title: Language.Library_Update_AllDownloadsFailed_Title,
+                text: string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count),
+                buttonDefinitions: [DialogStandardButtons.Ok]
+            );
+
+            await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
+        }
     }
-    
+
     private async ValueTask HandleUpdateAndKeepOldMessage(UpdateAndKeepOldMessage updateAndKeepOldMessage, CancellationToken cancellationToken)
     {
         var updatesOnPage = updateAndKeepOldMessage.Updates;
@@ -519,27 +538,47 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                }
             */
 
-            // Open download page for every unique file.
-            foreach (var file in updatesOnPage.NewestUniqueFileForEachMod())
-            {
-                var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-                var uri = NexusModsUrlBuilder.GetFileDownloadUri(file.ModPage.GameDomain, file.ModPage.Uid.ModId, file.Uid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignUpdates);
-                await osInterop.OpenUrl(uri, cancellationToken: cancellationToken);
-            }
+            await UpdateAndKeepOldFree([updatesOnPage], cancellationToken);
         }
         else
         {
-            // Note(sewer): There's usually just 1 file in like 99% of the cases here
-            //              so no need to optimize around file reuse and TemporaryFileManager.
-            foreach (var newestFile in updatesOnPage.NewestUniqueFileForEachMod())
-            {
-                await using var tempPath = _temporaryFileManager.CreateFile();
-                var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
-                await _libraryService.AddDownload(job);
-            }
+            await UpdateAndKeepOldPremium([updatesOnPage], cancellationToken);
         }
     }
-    
+
+    private async Task UpdateAndKeepOldFree(IEnumerable<ModUpdatesOnModPage> updatesOnPages, CancellationToken cancellationToken)
+    {
+        // Aggregate all unique files across all mod pages
+        var newestToCurrentMapping = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
+        foreach (var updatesOnPage in updatesOnPages)
+            updatesOnPage.NewestToCurrentFileMapping(newestToCurrentMapping);
+        
+        // Open download page for every unique file
+        var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+        foreach (var newestFile in newestToCurrentMapping.Keys)
+        {
+            var uri = NexusModsUrlBuilder.GetFileDownloadUri(newestFile.ModPage.GameDomain, newestFile.ModPage.Uid.ModId, newestFile.Uid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignUpdates);
+            await osInterop.OpenUrl(uri, cancellationToken: cancellationToken);
+        }
+    }
+
+    private async Task UpdateAndKeepOldPremium(IEnumerable<ModUpdatesOnModPage> updatesOnPages, CancellationToken cancellationToken)
+    {
+        // Aggregate all unique files across all mod pages
+        var newestToCurrentMapping = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
+        foreach (var updatesOnPage in updatesOnPages)
+            updatesOnPage.NewestToCurrentFileMapping(newestToCurrentMapping);
+        
+        // Note(sewer): There's usually just 1 file in like 99% of the cases here
+        //              so no need to optimize around file reuse and TemporaryFileManager.
+        foreach (var newestFile in newestToCurrentMapping.Keys)
+        {
+            await using var tempPath = _temporaryFileManager.CreateFile();
+            var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
+            await _libraryService.AddDownload(job);
+        }
+    }
+
     private ValueTask HandleViewChangelogMessage(ViewChangelogMessage viewChangelogMessage, CancellationToken cancellationToken)
     {
 /*
@@ -763,6 +802,10 @@ After asking design, we're choosing to simply open the mod page for now.
     private async ValueTask UpdateSelectedItemsInternal(bool useUpdateAndReplace, CancellationToken cancellationToken)
     {
         var selectedModels = Adapter.SelectedModels.ToArray();
+        // Note(sewer): The selection count is not guaranteed to equal the number of items
+        // with updates because the user can select a mixture of items with and without updates
+        // in a single selection.
+        var withUpdatesOnPage = new List<ModUpdatesOnModPage>(); 
         
         foreach (var model in selectedModels)
         {
@@ -774,17 +817,27 @@ After asking design, we're choosing to simply open the mod page for now.
             var updatesOnPage = component.NewFiles.Value;
             
             if (!updatesOnPage.HasAnyUpdates) continue;
-
-            // Create the appropriate message and handle it
+            withUpdatesOnPage.Add(updatesOnPage);
+        }
+        
+        // Note(sewer): This should (by definition) be always true, because the user had at least
+        // 1 selection with an update (otherwise they wouldn't be able to call this)
+        if (withUpdatesOnPage.Count > 0)
+        {
+            var isPremium = _loginManager.IsPremium;
             if (useUpdateAndReplace)
             {
-                var message = new UpdateAndReplaceMessage(updatesOnPage, model);
-                await HandleUpdateAndReplaceMessage(message, cancellationToken);
+                if (!isPremium)
+                    await UpdateAndReplaceForMultiModPagesFreeOnly(cancellationToken, withUpdatesOnPage);
+                else
+                    await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, withUpdatesOnPage);
             }
             else
             {
-                var message = new UpdateAndKeepOldMessage(updatesOnPage, model);
-                await HandleUpdateAndKeepOldMessage(message, cancellationToken);
+                if (!isPremium)
+                    await UpdateAndKeepOldFree(withUpdatesOnPage, cancellationToken);
+                else
+                    await UpdateAndKeepOldPremium(withUpdatesOnPage, cancellationToken);
             }
         }
     }
