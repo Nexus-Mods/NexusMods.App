@@ -50,7 +50,7 @@ public static class PremiumDialog
         
         if (result == ButtonDefinitionId.From("go-premium"))
         {
-            var premiumUrl = new Uri("https://www.nexusmods.com/register/premium");
+            var premiumUrl = new Uri("https://next.nexusmods.com/premium");
             await osInterop.OpenUrl(premiumUrl);
         }
 
