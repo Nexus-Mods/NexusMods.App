@@ -31,6 +31,7 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
@@ -53,7 +54,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> DeselectItemsCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
-    public ILibraryService _LibraryService;
 
     [Reactive] public string CollectionName { get; private set; }
 
@@ -70,6 +70,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
 
     public ReactiveCommand<Unit> CommandUploadRevision { get; }
+    public ReactiveCommand<Unit> CommandRenameGroup { get; }
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -86,8 +87,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
-        _LibraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
 
         if (collectionGroupId.HasValue)
         {
@@ -101,8 +103,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 configureAwait: false
             );
 
-            // check if uploaded
-            IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value);
+            IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
 
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
             // so we show the `sorting views here` view here instead
@@ -116,34 +117,49 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 canEditObservable: isSingleCollectionObservable
             );
 
-            CommandUploadRevision = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            CommandUploadRevision = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            {
+                var shareDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollection(CollectionName) : LoadoutDialogs.ShareCollection(CollectionName);
+                var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                if (shareDialogResult != ButtonDefinitionId.From("share")) return;
+
+                var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
+                var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+                var gameDomain = await mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
+
+                var successDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : LoadoutDialogs.ShareCollectionSuccess(CollectionName);
+
+                var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+
+                IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
+                if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
+
+                var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
+            }, maxSequential: 1, configureAwait: false);
+
+            CommandRenameGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                var dialog = LoadoutDialogs.RenameCollection(CollectionName);
+                var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+                if (result.ButtonId != ButtonDefinitionId.From("rename")) return;
+
+                var newName = result.InputText;
+                if (string.IsNullOrWhiteSpace(newName)) return;
+
+                if (CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out var collection))
                 {
-                    var shareDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollection(CollectionName) : LoadoutDialogs.ShareCollection(CollectionName);
+                    await nexusModsLibrary.EditCollectionName(collection, newName, CancellationToken.None);
+                }
 
-                    var shareDialogResult = await windowManager.ShowDialog<ButtonDefinitionId>(shareDialog, DialogWindowType.Modal);
+                using var tx = connection.BeginTransaction();
+                tx.Add(collectionGroupId.Value, LoadoutItem.Name, newName);
+                await tx.Commit();
 
-                    // If the user did not click the share button, we do not proceed
-                    if (shareDialogResult != ButtonDefinitionId.From("share")) return;
-
-                    var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
-                    var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
-                    var gameDomain = await mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
-
-                    var successDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : LoadoutDialogs.ShareCollectionSuccess(CollectionName);
-
-                    var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
-
-                    // check if uploaded
-                    IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value);
-
-                    // If the user did not click the view page button, we do not proceed
-                    if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
-
-                    var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
-
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
-                }, maxSequential: 1, configureAwait: false
-            );
+                CollectionName = newName;
+                TabTitle = CollectionName;
+            });
         }
         else
         {
@@ -151,10 +167,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
-            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId,
-                Optional<Observable<bool>>.None
-            );
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
             CommandUploadRevision = new ReactiveCommand();
+            CommandRenameGroup = new ReactiveCommand();
         }
 
         RevisionUrlLinkCommand = new ReactiveCommand<Unit>(_ => { });
@@ -274,7 +289,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (result != ButtonDefinitionId.From("Uninstall")) return;
 
-                    await _LibraryService.RemoveLinkedItemsFromLoadout(ids);
+                    await libraryService.RemoveLinkedItemsFromLoadout(ids);
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,
