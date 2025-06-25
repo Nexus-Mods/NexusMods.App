@@ -13,7 +13,7 @@
         <leftMenu:LoadoutLeftMenuDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="*, Auto" Margin="12 0 12 12">
 
         <ScrollViewer Grid.Row="0">
             <StackPanel x:Name="LeftMenuStack">
@@ -24,7 +24,7 @@
                     <Separator />
                     <Expander HorizontalAlignment="Stretch" IsExpanded="True">
                         <Expander.Header>
-                            <TextBlock x:Name="InstalledModsSectionText" />
+                            <TextBlock x:Name="InstalledModsSectionText"/>
                         </Expander.Header>
                         <StackPanel>
                             <items:LeftMenuItemView x:Name="LoadoutItem" />

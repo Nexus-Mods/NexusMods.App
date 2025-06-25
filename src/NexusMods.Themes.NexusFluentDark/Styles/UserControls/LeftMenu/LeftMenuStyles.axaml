@@ -31,15 +31,16 @@
         <Style Selector="^ StackPanel#LeftMenuStack">
 
             <Style Selector="^ Separator">
-                <Setter Property="Margin" Value="0,0,0,4" />
+                <Setter Property="Margin" Value="0,6,0,4" />
                 <Setter Property="Height" Value="1" />
                 <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             </Style>
-            
+
             <Style Selector="^ Expander">
                 <Style Selector="^ /template/ ToggleButton#ExpanderHeader">
                     <Setter Property="Padding" Value="0 8" />
                     <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+
 
                     <!-- pointerover -->
                     <Style Selector="^:pointerover /template/ Border#ToggleButtonBackground">
@@ -56,6 +57,10 @@
                         <Setter Property="Margin" Value="0" />
                         <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
                     </Style>
+                </Style>
+
+                <Style Selector="^ TextBlock#InstalledModsSectionText,^ TextBlock#UtilitiesSectionText">
+                    <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
                 </Style>
             </Style>
 
