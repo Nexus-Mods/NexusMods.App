@@ -39,7 +39,7 @@
     <StyleInclude Source="/Styles/Controls/ToolTips/ToolTipStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/FlexPanel/FlexPanelStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/TabControl/TabControlStyles.axaml" />
-    <!-- <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" /> -->
+    <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/ScrollBar/ScrollBarStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Menu/MenuStyles.axaml" />
      
