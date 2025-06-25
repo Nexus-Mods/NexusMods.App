@@ -447,27 +447,28 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 else
                 {
                     // Successfully replaced all items, show success message
-                    var finalDescription = new StringBuilder();
-                    finalDescription.AppendLine(Language.Library_Update_Success_Description1);
-                    finalDescription.AppendLine();
-                    foreach (var successItem in oldToNewLibraryMapping)
-                        finalDescription.AppendLine($"{successItem.oldItem.Name}");
-
                     if (downloadErrors.Count > 0)
                     {
+                        var finalDescription = new StringBuilder();
+                        finalDescription.AppendLine(Language.Library_Update_Success_Description1);
+                        finalDescription.AppendLine();
+                        foreach (var successItem in oldToNewLibraryMapping)
+                            finalDescription.AppendLine($"{successItem.oldItem.Name}");
+
                         finalDescription.AppendLine();
                         finalDescription.AppendLine(Language.Library_Update_Success_Description2);
                         foreach (var downloadError in downloadErrors)
                             finalDescription.AppendLine($"{downloadError.File.Name}");
-                    }
-                    
-                    var successDialog = DialogFactory.CreateMessageDialog(
-                        title: Language.Library_Update_Success_Title,
-                        text: finalDescription.ToString(),
-                        buttonDefinitions: [DialogStandardButtons.Ok]
-                    );
+                        
+                        var successDialog = DialogFactory.CreateMessageDialog(
+                            title: Language.Library_Update_Success_Title,
+                            text: finalDescription.ToString(),
+                            buttonDefinitions: [DialogStandardButtons.Ok]
+                        );
 
-                    await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+                        await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+                    }
+
                     await RemoveOldLibraryItemsIfNotInReadOnlyCollections(oldToNewLibraryMapping);
                 }
             }
