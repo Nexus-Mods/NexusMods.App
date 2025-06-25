@@ -24,8 +24,8 @@ public class ReadOnlyFileStore : IReadOnlyFileStore
         _session = session;
         _hashesService = fileHashesService;
         _ = _session.Connect(CancellationToken.None);
-        _knownHashes = connection.Topology.QueryNoWait(Queries.AvailableHashes);
-        _availableFiles = connection.Topology.QueryNoWait(Queries.AvailableFiles);
+        _knownHashes = connection.Topology.Query(Queries.AvailableHashes);
+        _availableFiles = connection.Topology.Query(Queries.AvailableFiles);
     }
     
     public async ValueTask<bool> HaveFile(Hash hash)

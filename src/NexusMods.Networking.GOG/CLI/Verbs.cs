@@ -96,7 +96,7 @@ public static class Verbs
                                 var fullSize = item.Chunks.Sum(s => (double)s.Size.Value);
                                 {
                                     await using var task = await renderer.StartProgressTask($"Hashing {item.Path}", maxValue: fullSize);
-                                    await using var stream = await client.GetFileStream(build, depot, item.Path,
+                                    await using var stream = await client.GetFileStream(build.ProductId, depot, item.Path,
                                         token
                                     );
                                     var multiHasher = new MultiHasher();
@@ -129,7 +129,7 @@ public static class Verbs
                                 if (verify)
                                 {
                                     var offset = Size.Zero;
-                                    await using var stream = await client.GetFileStream(build, depot, item.Path,
+                                    await using var stream = await client.GetFileStream(build.ProductId, depot, item.Path,
                                         token
                                     );
                                     await foreach (var chunk in item.Chunks.WithProgress(renderer, $"Verifying {item.Path}"))

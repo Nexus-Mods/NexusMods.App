@@ -19,6 +19,7 @@ using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.Threading;
 using System.Diagnostics;
+using NexusMods.Abstractions.IO;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 

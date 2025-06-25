@@ -391,7 +391,7 @@ internal class Client : IClient
     /// <summary>
     /// Given a depot, a build, and a path, return a stream to the file.
     /// </summary>
-    public async Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token)
+    public async Task<Stream> GetFileStream(ProductId productId, DepotInfo depotInfo, RelativePath path, CancellationToken token)
     { 
         return await _pipeline.ExecuteAsync(async token =>
             {
@@ -399,7 +399,7 @@ internal class Client : IClient
                 if (itemInfo == null)
                     throw new KeyNotFoundException($"The path {path} was not found in the depot.");
 
-                var secureUrl = await GetSecureUrl(build.ProductId, token);
+                var secureUrl = await GetSecureUrl(productId, token);
 
                 if (itemInfo.SfcRef == null)
                 {

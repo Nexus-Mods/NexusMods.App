@@ -32,12 +32,14 @@ public static class Queries
     /// <summary>
     /// A flow of all the hashes for a given gog product ID.
     /// </summary>
-    public static readonly Flow<(ProductId ProductId, Hash Hash)> HashesForProductId =
+    public static readonly Flow<(ProductId ProductId, BuildId BuildId, RelativePath Path, Hash Hash)> HashesForProductId =
         Pattern.Create()
             .Db(Db, out var manifest, GogBuild.ProductId, out var productId)
+            .Db(Db, manifest, GogBuild.BuildId, out var buildId)
             .Db(Db, manifest, GogBuild.Files, out var file)
             .Db(Db, file, PathHashRelation.Hash, out var hashRelation)
+            .Db(Db, file, PathHashRelation.Path, out var path)
             .Db(Db, hashRelation, HashRelation.XxHash3, out var xxHash3)
-            .Return(productId, xxHash3);
+            .Return(productId, buildId, path, xxHash3);
         
 }
