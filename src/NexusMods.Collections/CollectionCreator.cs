@@ -95,23 +95,10 @@ public static class CollectionCreator
         var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
 
         var userInfo = loginManager.UserInfo;
-        if (userInfo is null) throw new NotImplementedException();
+        if (userInfo is null) throw new NotSupportedException("User has to be logged in!");
 
         var users = User.FindByNexusId(connection.Db, userInfo.UserId.Value);
-        if (!users.TryGetFirst(out var user))
-        {
-            using var tx1 = connection.BeginTransaction();
-
-            var newUser = new User.New(tx1)
-            {
-                Name = userInfo.Name,
-                AvatarUri = userInfo.AvatarUrl ?? new Uri("https://example.org"),
-                NexusId = userInfo.UserId.Value,
-            };
-
-            var result = await tx1.Commit();
-            user = result.Remap(newUser);
-        }
+        if (!users.TryGetFirst(out var user)) throw new NotSupportedException("User has to be logged in!");
 
         var group = CollectionGroup.Load(connection.Db, groupId);
         Debug.Assert(group.IsValid());
