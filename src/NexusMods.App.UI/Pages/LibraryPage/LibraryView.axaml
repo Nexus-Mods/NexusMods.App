@@ -60,7 +60,7 @@
                                                          DockPanel.Dock="Left"
                                                          Click="SearchButton_OnClick"/>
                                 <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188" IsVisible="False">
-                                    <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="Search..." Padding="4 2 24 2"
+                                    <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="{x:Static resources:Language.SearchBox__Search_Watermark}" Padding="4 2 24 2"
                                              Margin="4 0 0 0"/>
                                     <controls:StandardButton x:Name="SearchClearButton"
                                                              Margin="0 0 4 0"
