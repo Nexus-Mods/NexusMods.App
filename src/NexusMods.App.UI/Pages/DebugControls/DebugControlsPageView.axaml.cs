@@ -45,8 +45,8 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     {
         if (ViewModel is null) return;
 
-        //var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
-        //Console.WriteLine($@"result: {result}");
+        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
+        Console.WriteLine($@"result: {result}");
     }
     
     // event handlers for button clicks
@@ -62,12 +62,11 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
 
     private void ShowModelessOkCancel_OnClick(object? sender, RoutedEventArgs e)
     {
-        // ShowModeless(
-        //     DialogFactory.CreateOkCancelMessageBox(
-        //         "OK Cancel",
-        //         "This is an OK Cancel message box."
-        //     )
-        // );
+        ShowModeless(DialogFactory.CreateStandardDialog(
+            "Standard dialog", 
+            "This is a standard dialog with OK and Cancel buttons.",
+            [DialogStandardButtons.Ok, DialogStandardButtons.Cancel]
+        ));
     }
 
     private void ShowModalYesNo_OnClick(object? sender, RoutedEventArgs e)

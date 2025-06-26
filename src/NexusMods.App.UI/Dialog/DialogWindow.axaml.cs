@@ -25,7 +25,7 @@ public partial class DialogWindow : ReactiveWindow<IDialogViewModel>, IDisposabl
     {
         ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
         ExtendClientAreaToDecorationsHint = true;
-        ExtendClientAreaTitleBarHeightHint = -1;
+        ExtendClientAreaTitleBarHeightHint = 33;
 
         InitializeComponent();
         
