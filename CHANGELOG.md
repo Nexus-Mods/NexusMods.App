@@ -8,7 +8,7 @@ One of the most common requests we've had is to be able to change where the app 
 
 We've given the feature an overhaul by adding a new setting option to set your storage location. This is where mods, collections, and backed up game files will be saved. 
 
-![The option in Settings to change the location of downloaded files](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1750940157-1496949943.png)
+![The option in Settings to change the location of downloaded files](./docs/changelog-assets/0901d03b5c7ac22a405c3d92353349c9.webp)
 
 This new option is available in the Settings under "General". 
 
