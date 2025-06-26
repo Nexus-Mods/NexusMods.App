@@ -4,9 +4,9 @@ using NexusMods.App.UI.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 
-public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
+public class Dialog<TView, TViewModel> : IDialog
     where TView : UserControl, IDialogView
-    where TViewModel : IDialogViewModel<TResult>
+    where TViewModel : IDialogViewModel
 {
     private TView _view;
     private TViewModel _viewModel;
@@ -18,7 +18,7 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
         _viewModel = viewModel;
     }
 
-    public Task<TResult> ShowWindow(Window owner, bool isModal = false)
+    public Task<ButtonDefinitionId> ShowWindow(Window owner, bool isModal = false)
     {
         // Get the initial size and position of the owner window
         var ownerSize = owner.ClientSize;
@@ -30,7 +30,13 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
             DataContext = _viewModel,
 
             Title = _viewModel.WindowTitle,
-            Width = _viewModel.WindowWidth, // set by the DialogWindowSize enum
+            Width = _viewModel.DialogWindowSize switch
+            {
+                DialogWindowSize.Small => 400,
+                DialogWindowSize.Medium => 600,
+                DialogWindowSize.Large => 800,
+                _ => 600
+            },
             CanResize = true,
             SizeToContent = SizeToContent.Height, // Height is set by Avalonia based on content
             MaxHeight = ownerSize.Height * 0.8, // We don't ever want the auto height sizing to be greater than 80% of the owner window height
@@ -38,7 +44,7 @@ public class Dialog<TView, TViewModel, TResult> : IDialog<TResult>
             ShowInTaskbar = !isModal, // Show the window in the taskbar if it's not modal
         };
 
-        var tcs = new TaskCompletionSource<TResult>();
+        var tcs = new TaskCompletionSource<ButtonDefinitionId>();
 
         // when the window is closed, set the result and complete the task
         window.Closed += (o, args) =>

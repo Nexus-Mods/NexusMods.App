@@ -33,7 +33,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
 
     // helper methods to show modal and modeless dialogs
     
-    private async void ShowModal(IDialog<ButtonDefinitionId> dialog)
+    private async void ShowModal(IDialog dialog)
     {
         if (ViewModel is null) return;
 
@@ -41,129 +41,128 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         Console.WriteLine($@"result: {result}");
     }
 
-    private async void ShowModeless(IDialog<ButtonDefinitionId> dialog)
+    private async void ShowModeless(IDialog dialog)
     {
         if (ViewModel is null) return;
 
-        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
-        Console.WriteLine($@"result: {result}");
+        //var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
+        //Console.WriteLine($@"result: {result}");
     }
     
     // event handlers for button clicks
 
     private void ShowModalOkCancel_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModal(
-            DialogFactory.CreateOkCancelMessageBox(
-                "OK Cancel",
-                "This is an OK Cancel message box."
-            )
-        );
+        ShowModal(DialogFactory.CreateStandardDialog(
+            "Standard dialog", 
+            "This is a standard dialog with OK and Cancel buttons.",
+            [DialogStandardButtons.Ok, DialogStandardButtons.Cancel]
+        ));
     }
 
     private void ShowModelessOkCancel_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModeless(
-            DialogFactory.CreateOkCancelMessageBox(
-                "OK Cancel",
-                "This is an OK Cancel message box."
-            )
-        );
+        // ShowModeless(
+        //     DialogFactory.CreateOkCancelMessageBox(
+        //         "OK Cancel",
+        //         "This is an OK Cancel message box."
+        //     )
+        // );
     }
 
     private void ShowModalYesNo_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModal(
-            DialogFactory.CreateYesNoMessageBox(
-                "Yes No",
-                "This is a Yes No message box."
-            )
-        );
+        // ShowModal(
+        //     DialogFactory.CreateYesNoMessageBox(
+        //         "Yes No",
+        //         "This is a Yes No message box."
+        //     )
+        // );
     }
 
     private void ShowModelessYesNo_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowModeless(
-            DialogFactory.CreateYesNoMessageBox(
-                "Yes No",
-                "This is a Yes No message box."
-            )
-        );
+        // ShowModeless(
+        //     DialogFactory.CreateYesNoMessageBox(
+        //         "Yes No",
+        //         "This is a Yes No message box."
+        //     )
+        // );
     }
 
     private async void ShowModalExampleMarkdown_OnClick(object? sender, RoutedEventArgs e)
     {
-        var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-        // markdownRendererViewModel.Contents = """
-        //     ## This is a markdown message box
-        //     
-        //     This is an example of a markdown message box.
-        //     
-        //     You can use **bold** and *italic* text.
-        //     
-        //     You can also use [links](https://www.nexusmods.com).
-        //     """;
-        markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
-
-        var dialog = DialogFactory.CreateMessageDialog(
-            title: "Markdown Message Box",
-            text: "This is an example of a markdown message box.",
-            heading: "Lovely markdown just below",
-            buttonDefinitions:
-            [
-                DialogStandardButtons.Cancel,
-                new DialogButtonDefinition(
-                    "This is great",
-                    ButtonDefinitionId.From("read-markdown"),
-                    ButtonAction.Accept,
-                    ButtonStyling.Info
-                )
-            ],
-            icon: IconValues.PictogramSettings,
-            dialogWindowSize: DialogWindowSize.Medium,
-            markdownRenderer: markdownRendererViewModel
-        );
-        
-        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        Console.WriteLine($@"result: {result}");
+        // var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        // // markdownRendererViewModel.Contents = """
+        // //     ## This is a markdown message box
+        // //     
+        // //     This is an example of a markdown message box.
+        // //     
+        // //     You can use **bold** and *italic* text.
+        // //     
+        // //     You can also use [links](https://www.nexusmods.com).
+        // //     """;
+        // markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
+        //
+        // var dialog = DialogFactory.CreateMessageDialog(
+        //     title: "Markdown Message Box",
+        //     text: "This is an example of a markdown message box.",
+        //     heading: "Lovely markdown just below",
+        //     buttonDefinitions:
+        //     [
+        //         DialogStandardButtons.Cancel,
+        //         new DialogButtonDefinition(
+        //             "This is great",
+        //             ButtonDefinitionId.From("read-markdown"),
+        //             ButtonAction.Accept,
+        //             ButtonStyling.Info
+        //         )
+        //     ],
+        //     icon: IconValues.PictogramSettings,
+        //     dialogWindowSize: DialogWindowSize.Medium,
+        //     markdownRenderer: markdownRendererViewModel
+        // );
+        //
+        // var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        // Console.WriteLine($@"result: {result}");
     }
 
     private async void ShowModalExampleCustom_OnClick(object? sender, RoutedEventArgs e)
     {
-        if (ViewModel is null) return;
-
-        // create custom content viewmodel
-        var customViewModel = new CustomContentExampleViewModel("This is more lovely text");
-
-        // create wrapper dialog around the custom content 
-        var dialog = DialogFactory.CreateMessageDialog(
-            title: "Custom Dialog",
-            text: "Some text can be here",
-            buttonDefinitions:
-            [
-                new DialogButtonDefinition(
-                    "Secondary",
-                    ButtonDefinitionId.From("cancel"),
-                    ButtonAction.Reject
-                ),
-                new DialogButtonDefinition(
-                    "Primary",
-                    ButtonDefinitionId.From("primary"),
-                    ButtonAction.Accept,
-                    ButtonStyling.Primary
-                )
-            ],
-            dialogWindowSize: DialogWindowSize.Medium,
-            contentViewModel: customViewModel
-        );
-
-        // tell windowmanager to show it
-        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-
-        // check viewmodel properties when dialog has been closed
-        Console.WriteLine($@"result: {result}");
-        Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
-        Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
+        // if (ViewModel is null) return;
+        //
+        // // create custom content viewmodel
+        // var customViewModel = new CustomContentExampleViewModel("This is more lovely text");
+        //
+        // // create wrapper dialog around the custom content 
+        // var dialog = DialogFactory.CreateMessageDialog(
+        //     title: "Custom Dialog",
+        //     text: "Some text can be here",
+        //     buttonDefinitions:
+        //     [
+        //         new DialogButtonDefinition(
+        //             "Secondary",
+        //             ButtonDefinitionId.From("cancel"),
+        //             ButtonAction.Reject
+        //         ),
+        //         new DialogButtonDefinition(
+        //             "Primary",
+        //             ButtonDefinitionId.From("primary"),
+        //             ButtonAction.Accept,
+        //             ButtonStyling.Primary
+        //         )
+        //     ],
+        //     dialogWindowSize: DialogWindowSize.Medium,
+        //     contentViewModel: customViewModel
+        // );
+        //
+        // // tell windowmanager to show it
+        // var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        //
+        // // check viewmodel properties when dialog has been closed
+        // Console.WriteLine($@"result: {result}");
+        // Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
+        // Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
     }
 
     private void ShowModalUnhandledException_OnClick(object? sender, RoutedEventArgs e)
@@ -192,16 +191,16 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                --- End of inner exception stack trace ---
             """;
 
-        var dialog = DialogFactory.CreateMessageDialog(
-            title: "Unhandled Exception",
-            text: "This is an example of a markdown message box.",
-            buttonDefinitions: [DialogStandardButtons.Ok],
-            icon: IconValues.Warning,
-            dialogWindowSize: DialogWindowSize.Medium,
-            markdownRenderer: markdownRendererViewModel
-        );
-        
-        ShowModal(dialog);
+        // var dialog = DialogFactory.CreateMessageDialog(
+        //     title: "Unhandled Exception",
+        //     text: "This is an example of a markdown message box.",
+        //     buttonDefinitions: [DialogStandardButtons.Ok],
+        //     icon: IconValues.Warning,
+        //     dialogWindowSize: DialogWindowSize.Medium,
+        //     markdownRenderer: markdownRendererViewModel
+        // );
+        //
+        // ShowModal(dialog);
     }
 
     private async void ShowModalAllControls_OnClick(object? sender, RoutedEventArgs e)
@@ -238,56 +237,56 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             """;
 
             // create wrapper dialog around the custom content 
-            var dialog = DialogFactory.CreateMessageDialog(
-                title: "Custom Dialog",
-                text: "Some text can be here",
-                heading: "And even a heading",
-                buttonDefinitions: [
-                    new DialogButtonDefinition(
-                        "Secondary",
-                        ButtonDefinitionId.From("cancel"),
-                        ButtonAction.Reject
-                    ),
-                    new DialogButtonDefinition(
-                        "Primary",
-                        ButtonDefinitionId.From("primary"),
-                        ButtonAction.Accept,
-                        ButtonStyling.Primary
-                    )
-                ],
-                icon: IconValues.PictogramHealth,
-                dialogWindowSize: DialogWindowSize.Medium,
-                markdownRenderer: markdownRendererViewModel,
-                contentViewModel: customViewModel
-            );
-            
-            // tell windowmanager to show it
-            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-            
-            // check viewmodel properties when dialog has been closed
-            Console.WriteLine($@"result: {result}");
-            Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
-            Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
+            // var dialog = DialogFactory.CreateMessageDialog(
+            //     title: "Custom Dialog",
+            //     text: "Some text can be here",
+            //     heading: "And even a heading",
+            //     buttonDefinitions: [
+            //         new DialogButtonDefinition(
+            //             "Secondary",
+            //             ButtonDefinitionId.From("cancel"),
+            //             ButtonAction.Reject
+            //         ),
+            //         new DialogButtonDefinition(
+            //             "Primary",
+            //             ButtonDefinitionId.From("primary"),
+            //             ButtonAction.Accept,
+            //             ButtonStyling.Primary
+            //         )
+            //     ],
+            //     icon: IconValues.PictogramHealth,
+            //     dialogWindowSize: DialogWindowSize.Medium,
+            //     markdownRenderer: markdownRendererViewModel,
+            //     contentViewModel: customViewModel
+            // );
+            //
+            // // tell windowmanager to show it
+            // var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+            //
+            // // check viewmodel properties when dialog has been closed
+            // Console.WriteLine($@"result: {result}");
+            // Console.WriteLine($@"DontAskAgain: {customViewModel.DontAskAgain}");
+            // Console.WriteLine($@"ShouldEndorseDownloadedMods: {customViewModel.ShouldEndorseDownloadedMods}");
 
     }
 
     private async void ShowModalInput_OnClick(object? sender, RoutedEventArgs e)
     {
-        try
-        {
-            if (ViewModel is null) return;
-
-            var dialog = DialogFactory.TestInputDialog;
-
-            // tell windowmanager to show it
-            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-
-            // check viewmodel properties when dialog has been closed
-            Console.WriteLine($@"result: {result}");
-        }
-        catch
-        {
-            throw; // TODO handle exception
-        }
+        // try
+        // {
+        //     if (ViewModel is null) return;
+        //
+        //     var dialog = DialogFactory.TestInputDialog;
+        //
+        //     // tell windowmanager to show it
+        //     var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        //
+        //     // check viewmodel properties when dialog has been closed
+        //     Console.WriteLine($@"result: {result}");
+        // }
+        // catch
+        // {
+        //     throw; // TODO handle exception
+        // }
     }
 }

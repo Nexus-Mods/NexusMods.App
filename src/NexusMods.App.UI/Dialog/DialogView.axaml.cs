@@ -20,10 +20,6 @@ public partial class DialogView : ReactiveUserControl<IDialogViewModel>, IDialog
 
         this.WhenActivated(disposables =>
             {
-                // COMMANDS
-
-                CopyDetailsButton.Command = ReactiveCommand.CreateFromTask(async () => { await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(ViewModel?.MarkdownRenderer?.Contents); });
-
                 CloseButton.CommandParameter = _closeButtonResult;
 
                 // Bind the CloseWindowCommand to the CloseButton's Command.
@@ -42,94 +38,11 @@ public partial class DialogView : ReactiveUserControl<IDialogViewModel>, IDialog
                     .DisposeWith(disposables);
 
                 this.OneWayBind(ViewModel,
-                        vm => vm.Heading,
-                        view => view.HeaderTextBlock.Text
-                    )
-                    .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel,
-                        vm => vm.Text,
-                        view => view.TextTextBlock.Text
-                    )
-                    .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel,
-                        vm => vm.Icon,
-                        view => view.Icon.Value
-                    )
-                    .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel,
-                        vm => vm.MarkdownRenderer,
-                        v => v.MarkdownRendererViewModelViewHost.ViewModel
-                    )
-                    .DisposeWith(disposables);
-
-                this.OneWayBind(ViewModel,
                         vm => vm.ContentViewModel,
                         view => view.ContentViewModelHost.ViewModel
                     )
                     .DisposeWith(disposables);
-
-                // HIDE CONTROLS IF NOT NEEDED
-
-                // only show the text if not null or empty
-                this.WhenAnyValue(view => view.ViewModel!.Text)
-                    .Select(string.IsNullOrWhiteSpace)
-                    .Subscribe(b => TextTextBlock.IsVisible = !b)
-                    .DisposeWith(disposables);
-
-                // only show the heading if not null or empty
-                this.WhenAnyValue(view => view.ViewModel!.Heading)
-                    .Select(string.IsNullOrWhiteSpace)
-                    .Subscribe(b => HeaderTextBlock.IsVisible = !b)
-                    .DisposeWith(disposables);
-
-                // only show the icon if the icon is not null
-                this.WhenAnyValue(view => view.ViewModel!.Icon)
-                    .Select(icon => icon is not null)
-                    .Subscribe(b => Icon.IsVisible = b)
-                    .DisposeWith(disposables);
-
-                // only show the markdown container if markdown is not null
-                this.WhenAnyValue(view => view.ViewModel!.MarkdownRenderer)
-                    .Select(markdown => markdown is not null)
-                    .Subscribe(b => MarkdownContainer.IsVisible = b)
-                    .DisposeWith(disposables);
-
-                // only show the custom content container if custom content is not null
-                this.WhenAnyValue(view => view.ViewModel!.ContentViewModel)
-                    .Select(custom => custom is not null)
-                    .Subscribe(b => CustomContentContainer.IsVisible = b)
-                    .DisposeWith(disposables);
-
-                // only show input related controls if the ViewModel is of type InputDialogViewModel
-                if (ViewModel is InputDialogViewModel inputDialogViewModel)
-                {
-                    InputStack.IsVisible = true;
-                    
-                    this.Bind(inputDialogViewModel, 
-                        vm => vm.InputText, 
-                        view => view.InputTextBox.Text);
-                    
-                    this.OneWayBind(inputDialogViewModel, 
-                        vm => vm.InputLabel, 
-                        view => view.InputLabel.Text);
-                    
-                    this.OneWayBind(inputDialogViewModel, 
-                        vm => vm.InputWatermark, 
-                        view => view.InputTextBox.Watermark);
-
-                    this.BindCommand(inputDialogViewModel,
-                            vm => vm.ClearInputCommand,
-                            view => view.ButtonInputClear
-                        )
-                        .DisposeWith(disposables);
-                }
-                else
-                {
-                    InputStack.IsVisible = false;
-                }
+                
             }
         );
     }
@@ -210,8 +123,5 @@ public partial class DialogView : ReactiveUserControl<IDialogViewModel>, IDialog
         }
 
         buttonsFlexPanel.IsVisible = true;
-
-        // Focus the InputTextBox when the modal loads
-        InputTextBox.AttachedToVisualTree += (s, e) => InputTextBox.Focus();
     }
 }

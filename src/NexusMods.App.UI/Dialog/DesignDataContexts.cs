@@ -12,36 +12,36 @@ internal static class DesignDataContexts
 {
     public static CustomContentExampleViewModel CustomContentExampleDesignViewModel { get; } = new("Custom Text");
 
-    public static InputDialogViewModel InputDialogDesignViewModel { get; } = new
-    (
-        new DialogBaseModel(
-            title: "Input Dialog",
-            buttonDefinitions:
-            [
-                DialogStandardButtons.Ok,
-                DialogStandardButtons.Cancel,
-            ],
-            text: "Please enter your input:",
-            icon: IconValues.AccountCog,
-            dialogWindowSize: DialogWindowSize.Medium
-        ),
-        inputLabel: "Input",
-        inputWatermark: "Type here..."
-    );
-    
-    public static MessageDialogViewModel MessageDialogViewModelIcon { get; } = new(
-        new DialogBaseModel(
-            title: "Delete this mod?",
-            buttonDefinitions:
-            [
-                DialogStandardButtons.Yes,
-                DialogStandardButtons.No,
-            ],
-            text: "Deleting this mod will remove it from all collections. This action cannot be undone.",
-            icon: IconValues.PictogramSettings,
-            dialogWindowSize: DialogWindowSize.Medium
-        )
-    );
+    // public static InputDialogViewModel InputDialogDesignViewModel { get; } = new
+    // (
+    //     new DialogBaseModel(
+    //         title: "Input Dialog",
+    //         buttonDefinitions:
+    //         [
+    //             DialogStandardButtons.Ok,
+    //             DialogStandardButtons.Cancel,
+    //         ],
+    //         text: "Please enter your input:",
+    //         icon: IconValues.AccountCog,
+    //         dialogWindowSize: DialogWindowSize.Medium
+    //     ),
+    //     inputLabel: "Input",
+    //     inputWatermark: "Type here..."
+    // );
+    //
+    // public static MessageDialogViewModel MessageDialogViewModelIcon { get; } = new(
+    //     new DialogBaseModel(
+    //         title: "Delete this mod?",
+    //         buttonDefinitions:
+    //         [
+    //             DialogStandardButtons.Yes,
+    //             DialogStandardButtons.No,
+    //         ],
+    //         text: "Deleting this mod will remove it from all collections. This action cannot be undone.",
+    //         icon: IconValues.PictogramSettings,
+    //         dialogWindowSize: DialogWindowSize.Medium
+    //     )
+    // );
 
     // public static MarkdownRendererViewModel MarkdownRendererDesignViewModel { get; } = new MarkdownRendererViewModel
     // {

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DynamicData;
@@ -177,7 +178,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         tx.Commit();
     }
     
-    public async Task<TResult> ShowDialog<TResult>(IDialog<TResult> dialog, DialogWindowType windowType)
+    public async Task<ButtonDefinitionId> ShowDialog(IDialog dialog, DialogWindowType windowType)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             throw new InvalidOperationException("Application lifetime is not configured properly.");

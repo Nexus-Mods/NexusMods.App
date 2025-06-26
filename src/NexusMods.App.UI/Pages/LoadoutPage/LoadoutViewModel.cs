@@ -120,7 +120,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     var shareDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollection(CollectionName) : LoadoutDialogs.ShareCollection(CollectionName);
 
-                    var shareDialogResult = await windowManager.ShowDialog<ButtonDefinitionId>(shareDialog, DialogWindowType.Modal);
+                    var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
 
                     // If the user did not click the share button, we do not proceed
                     if (shareDialogResult != ButtonDefinitionId.From("share")) return;
@@ -249,25 +249,27 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (ids.Length == 0) return;
 
-                    var dialog = DialogFactory.CreateMessageDialog(
+                    var dialog = DialogFactory.CreateDialog(
                         title: "Uninstall mod(s)",
-                        text: $"""
-                        This will remove the selected mod(s) from:
-                        
-                        {CollectionName}
-                        
-                        ✓ The mod(s) will stay in your Library
-                        ✓ You can reinstall anytime
-                        """,
+//                         text: $"""
+//                         This will remove the selected mod(s) from:
+//                         
+//                         {CollectionName}
+//                         
+//                         ✓ The mod(s) will stay in your Library
+//                         ✓ You can reinstall anytime
+//                         """,
                         buttonDefinitions:
                         [
                             DialogStandardButtons.Cancel,
                             new DialogButtonDefinition("Uninstall",
-                                ButtonDefinitionId.From("Uninstall"),
+                                ButtonDefinitionId.From("uninstall"),
                                 ButtonAction.Accept,
                                 ButtonStyling.Default
                             )
-                        ]
+                        ],
+                        dialogWindowSize: DialogWindowSize.Medium,
+                        contentViewModel: null!
                     );
 
                     var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);

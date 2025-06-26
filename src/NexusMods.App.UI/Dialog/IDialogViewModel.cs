@@ -7,14 +7,25 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public interface IDialogViewModel : IViewModelInterface, IDialogBaseModel
+public interface IDialogViewModel : IViewModelInterface
 {
     public R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> ButtonPressCommand { get; }
     public string WindowTitle { get; }
-    public double WindowWidth { get; }
+    public DialogWindowSize DialogWindowSize { get; }
+    public IViewModelInterface? ContentViewModel { get; }
+    public DialogButtonDefinition[] ButtonDefinitions { get; }
+    public ButtonDefinitionId Result { get; set; }
 }
 
-public interface IDialogViewModel<TResult> : IDialogViewModel
+public interface IDialogStandardContentViewModel: IViewModelInterface
 {
-    public TResult Result { get; set; }
+    string? Text { get; }
+    string? Heading { get; }
+    IconValue? Icon { get; }
+    IMarkdownRendererViewModel? MarkdownRenderer { get; }
+    string InputText { get; set; }
+    string InputLabel { get; set; }
+    string InputWatermark { get; set; }
+    
+    public R3.ReactiveCommand ClearInputCommand { get; set; }
 }

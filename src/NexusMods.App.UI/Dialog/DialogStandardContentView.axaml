@@ -1,0 +1,79 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="vm:DialogStandardContentViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:vm="clr-namespace:NexusMods.App.UI.Dialog"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+                                mc:Ignorable="d" d:DesignWidth="400"
+                                x:Class="NexusMods.App.UI.Dialog.DialogStandardContentView">
+
+    <!-- basic content, remaining space with markdown and/or custom content -->
+    <Grid x:Name="GenericContentContainer"
+          RowDefinitions="Auto,*"
+          Margin="0">
+
+        <StackPanel Grid.Row="0" Spacing="4">
+            <icons:UnifiedIcon x:Name="Icon"
+                               Value="{x:Static icons:IconValues.PictogramBox2}"
+                               HorizontalAlignment="Left"
+                               Size="48" />
+            <TextBlock x:Name="HeaderTextBlock"
+                       Text="Header"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodyMDSemiTheme}"
+                       TextWrapping="Wrap" />
+            <TextBlock x:Name="TextTextBlock"
+                       Foreground="{StaticResource NeutralSubduedBrush}"
+                       TextWrapping="Wrap" />
+
+            <StackPanel x:Name="InputStack" Margin="0 16 0 0" Spacing="4">
+                <TextBlock x:Name="InputLabel"
+                           Text="InputLabel"
+                           Foreground="{StaticResource NeutralStrongBrush}"
+                           Theme="{StaticResource BodySMNormalTheme}" />
+                <Panel>
+                    <TextBox x:Name="InputTextBox" Padding="8 5 24 4" />
+                    <controls:StandardButton x:Name="ButtonInputClear"
+                                             Margin="0 0 4 0"
+                                             HorizontalAlignment="Right"
+                                             Type="Tertiary"
+                                             Size="Toolbar"
+                                             Fill="None"
+                                             ShowIcon="IconOnly"
+                                             ShowLabel="False"
+                                             LeftIcon="{x:Static icons:IconValues.Close}" />
+                </Panel>
+            </StackPanel>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel
+                Margin="0 8 0 0"
+                Spacing="8">
+                <Border x:Name="MarkdownContainer"
+                        Margin="0">
+                    <Panel>
+                        <reactiveUi:ViewModelViewHost x:Name="MarkdownRendererViewModelViewHost" />
+                        <!-- float in the top right of the border, above the markdown -->
+                        <controls:StandardButton x:Name="CopyDetailsButton"
+                                                 Margin="0 8 16 0"
+                                                 LeftIcon="{x:Static icons:IconValues.Copy}"
+                                                 ShowIcon="Left"
+                                                 Size="Small"
+                                                 Fill="WeakAlt"
+                                                 HorizontalAlignment="Right"
+                                                 VerticalAlignment="Top"
+                                                 ShowLabel="False"
+                                                 ToolTip.Tip="Copy to Clipboard" />
+                    </Panel>
+                </Border>
+
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</reactiveUi:ReactiveUserControl>
