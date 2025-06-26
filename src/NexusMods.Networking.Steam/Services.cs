@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Steam;
+using NexusMods.Abstractions.Steam.Models;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Networking.Steam.CLI;
 using NexusMods.Sdk.ProxyConsole;
@@ -14,6 +16,7 @@ public static class Services
     public static IServiceCollection AddSteam(this IServiceCollection services)
     {
         services.AddSingleton<ISteamSession, Session>();
+        services.AddSteamLicensesModel();
         return services;
     }
     
@@ -48,6 +51,7 @@ public static class Services
         services.AddSingleton<IAuthInterventionHandler, RenderingAuthenticationHandler>();
         services.AddLocalAuthFileStorage();
         services.AddSteamVerbs();
+        services.AddSingleton<IReadOnlyFileStore, ReadOnlyFileStore>();
         return services;
     }
     

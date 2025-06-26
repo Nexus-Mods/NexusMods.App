@@ -3,13 +3,15 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xD7B048D3EFE21816
-   - Total attributes: 219
-   - Total namespaces: 73
+   - Fingerprint: 0xB5B51B6BF98A736B
+   - Total attributes: 221
+   - Total namespaces: 74
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
 | ---------------------------------------------------------------------------------- | ----------------------- | ------- | ----- | --------- | 
+| Namespace/AppIds                                                                   | UInt32                  | True    | True  | False     | 
+| Namespace/PackageId                                                                | UInt32                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/BuildId                           | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/Files                             | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.GogBuild/OperatingSystem                   | UInt8                   | False   | False | False     | 
