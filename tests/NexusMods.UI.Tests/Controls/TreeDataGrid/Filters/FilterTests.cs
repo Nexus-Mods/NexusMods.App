@@ -30,7 +30,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("TestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("TestMod"));
         
         var filter = new Filter.NameFilter("TestMod", CaseSensitive: true);
 
@@ -46,7 +46,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("TestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("TestMod"));
         
         var filter = new Filter.NameFilter("testmod", CaseSensitive: true);
 
@@ -62,7 +62,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("TestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("TestMod"));
         
         var filter = new Filter.NameFilter("testmod", CaseSensitive: false);
 
@@ -78,7 +78,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("MyAwesomeTestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("MyAwesomeTestMod"));
         
         var filter = new Filter.NameFilter("Test", CaseSensitive: false);
 
@@ -254,7 +254,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("TestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("TestMod"));
         var installAction = CreateInstallAction(isInstalled: true);
         model.Add(ComponentKey.From("install"), installAction);
         
@@ -274,7 +274,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("TestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("TestMod"));
         var installAction = CreateInstallAction(isInstalled: false);
         model.Add(ComponentKey.From("install"), installAction);
         
@@ -294,7 +294,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("TestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("TestMod"));
         var installAction = CreateInstallAction(isInstalled: false);
         model.Add(ComponentKey.From("install"), installAction);
         
@@ -314,7 +314,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("name"), new StringComponent("TestMod"));
+        model.Add<NameComponent>(ComponentKey.From("name"), new NameComponent("TestMod"));
         
         var nameFilter = new Filter.NameFilter("Test", CaseSensitive: false);
         var notFilter = new Filter.NotFilter(nameFilter);
