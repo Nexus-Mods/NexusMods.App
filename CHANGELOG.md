@@ -1,4 +1,4 @@
-# v0.13.0 2025-06-XX
+# v0.13.4 2025-06-XX
 This release includes the ability to change your storage location, new game artwork and lots of bug fixes.
 
 Check out the latest [developer blog](https://www.nexusmods.com/news/15313).
@@ -12,15 +12,16 @@ We've given the feature an overhaul by adding a new setting option to set your s
 
 This new option is available in the Settings under "General". 
 
-**Note: You must move all files to the new folder manually and restart the app to avoid issues. This step will be automated in a future build.**
+**Note: You must move all files to the new folder manually and restart the app to avoid issues. This step will be automated in a future release.**
 
 ## New Artwork
-To match the new game artwork on the Nexus Mods website 
+The spine icons and game artwork has been updated to match the new assets on the Nexus Mods website. 
+
+![The Games page with the new artwork.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1750947482-1189992648.png)
 
 ## More Features
 * Added a kebab menu to Library items including links to the changelog and mod page.
 * Added the ability to toggle visibility of updates in the Library.
-* Updated the game artwork used by the app to match the Nexus Mods website.
 
 ## Technical Changes
 * Collection and Library text strings can now be localised.
@@ -28,9 +29,9 @@ To match the new game artwork on the Nexus Mods website
 ## Bug Fixes
 * Fixed an issue which would cause the app to delete and restore the entire game on apply in certain situations.
 * Fixed issues detecting changes to DLCs (e.g. Phantom Liberty, REDmod).
-* Fixed an issue where the app would fail to install certain archives due to the character encoding of the internal files being recognised. 
+* Fixed an issue where the app would fail to install certain archives due to the character encoding of the internal files not being recognised. 
 * Fixes several issues with game detection for Heroic Games Launcher related to manifest parsing. 
-* Added timeouts to the background processes so it should now close correctly after 15-20 seconds if any tasks are still running, rather than staying open indefinitely. 
+* Added timeouts to the background processes so the app should now close correctly after 15-20 seconds if any tasks are still running, rather than staying open indefinitely. 
 * If REDmod is not installed when the app needs to run it, an error is silently added to the logs instead of showing the user a pop-up.
 * Fixed an error caused by the app attempting to compile REDmods but there are none installed. 
 * Fixed an error parsing WINE overrides on Linux for Cyberpunk 2077. 

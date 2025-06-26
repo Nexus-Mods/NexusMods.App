@@ -8,7 +8,7 @@ This page includes a summary of the information available on the individual game
 ??? note "Information may be outdated"
     As this information is manually updated, it may not match the "source of truth" on the game pages. If there is any dispute, please refer to the dedicated game page as the correct version. 
 
-<!-- This page   -->
+<!-- This page exists to solve a design need in v0.14+ and is not a good long term solution  -->
 
 ## Stardew Valley
 [Learn more about this game.](./StardewValley.md)
