@@ -130,7 +130,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
                 if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
 
-                var uri = await GetCollectionUri(collection, cancellationToken);
+                var uri = GetCollectionUri(collection);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
             }, maxSequential: 1, configureAwait: false);
 
@@ -139,7 +139,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, collectionGroupId.Value);
                 if (!managedCollectionLoadoutGroup.IsValid()) return;
 
-                var uri = await GetCollectionUri(managedCollectionLoadoutGroup.Collection, cancellationToken);
+                var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
             }, configureAwait: false);
             
@@ -365,11 +365,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         );
     }
 
-    private async ValueTask<Uri> GetCollectionUri(CollectionMetadata.ReadOnly collection, CancellationToken cancellationToken)
+    private Uri GetCollectionUri(CollectionMetadata.ReadOnly collection)
     {
         var mappingCache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
-        var gameDomain = await mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
-        var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+        var gameDomain = mappingCache[collection.GameId];
+        var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
         return uri;
     }
 

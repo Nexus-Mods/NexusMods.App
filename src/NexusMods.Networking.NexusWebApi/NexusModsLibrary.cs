@@ -175,7 +175,7 @@ public partial class NexusModsLibrary
     /// </summary>
     public async ValueTask<bool> IsAlreadyDownloaded(NXMModUrl url, CancellationToken cancellationToken)
     {
-        var gameId = (await _mappingCache.TryGetIdAsync(GameDomain.From(url.Game), cancellationToken)).Value;
+        var gameId = _mappingCache[GameDomain.From(url.Game)];
 
         var modPage = await GetOrAddModPage(url.ModId, gameId, cancellationToken);
         var file = await GetOrAddFile(url.FileId, modPage, cancellationToken);
@@ -193,7 +193,7 @@ public partial class NexusModsLibrary
         CancellationToken cancellationToken)
     {
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
-        var gameId = (await _mappingCache.TryGetIdAsync(GameDomain.From(url.Game), cancellationToken)).Value;
+        var gameId = _mappingCache[GameDomain.From(url.Game)];
         return await CreateDownloadJob(destination, gameId, url.ModId, url.FileId, nxmData, cancellationToken);
     }
 
@@ -213,8 +213,8 @@ public partial class NexusModsLibrary
 
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
 
-        var domain = await _mappingCache.TryGetDomainAsync(gameId, cancellationToken);
-        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain.Value, modId), destination);
+        var domain = _mappingCache[gameId];
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain, modId), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
         return nexusJob;
@@ -227,8 +227,8 @@ public partial class NexusModsLibrary
     {
         var uri = await GetDownloadUri(fileMetadata, Optional<(NXMKey, DateTime)>.None, cancellationToken: cancellationToken);
 
-        var domain = await _mappingCache.TryGetDomainAsync(fileMetadata.Uid.GameId, cancellationToken);
-        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain.Value, fileMetadata.ModPage.Uid.ModId), destination);
+        var domain = _mappingCache[fileMetadata.Uid.GameId];
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain, fileMetadata.ModPage.Uid.ModId), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, fileMetadata);
 
         return nexusJob;
