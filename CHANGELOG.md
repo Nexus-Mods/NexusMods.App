@@ -8,7 +8,7 @@ One of the most common requests we've had is to be able to change where the app 
 
 We've given the feature an overhaul by adding a new setting option to set your storage location. This is where mods, collections, and backed up game files will be saved. 
 
-![The option in Settings to change the location of downloaded files](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1750940157-1496949943.png)
+![The option in Settings to change the location of downloaded files](./docs/changelog-assets/0901d03b5c7ac22a405c3d92353349c9.webp)
 
 This new option is available in the Settings under "General". 
 
@@ -17,7 +17,7 @@ This new option is available in the Settings under "General".
 ## New Artwork
 The spine icons and game artwork has been updated to match the new assets on the Nexus Mods website. 
 
-![The Games page with the new artwork.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1750947482-1189992648.png)
+![The Games page with the new artwork.](./docs/changelog-assets/1f47f496823c62b291770e6eefc329d5.webp)
 
 ## More Features
 * Added a kebab menu to Library items including links to the changelog and mod page.
