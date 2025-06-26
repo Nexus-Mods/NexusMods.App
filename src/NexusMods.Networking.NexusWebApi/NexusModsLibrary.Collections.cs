@@ -237,7 +237,7 @@ public partial class NexusModsLibrary
         ICollectionRevisionFragment collectionRevisionFragment,
         CancellationToken cancellationToken)
     {
-        var gameIds = await CacheGameIds(collectionManifest, cancellationToken);
+        var gameIds = CacheGameIds(collectionManifest, cancellationToken);
 
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
@@ -287,11 +287,11 @@ public partial class NexusModsLibrary
         CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
-        var gameDomain = await _mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
+        var gameDomain = _mappingCache[collection.GameId];
 
         var apiResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
             slug: collection.Slug.Value,
-            domainName: gameDomain.Value.Value,
+            domainName: gameDomain.Value,
             viewAdultContent: true,
             cancellationToken: cancellationToken
         );
@@ -451,7 +451,7 @@ public partial class NexusModsLibrary
         return res;
     }
 
-    private async ValueTask<GameIdCache> CacheGameIds(
+    private GameIdCache CacheGameIds(
         CollectionRoot collectionRoot,
         CancellationToken cancellationToken)
     {
@@ -462,10 +462,8 @@ public partial class NexusModsLibrary
             var gameDomain = collectionMod.DomainName;
             if (gameIds.ContainsKey(gameDomain)) continue;
 
-            var gameId = await _mappingCache.TryGetIdAsync(gameDomain, cancellationToken);
-            if (!gameId.HasValue) throw new NotSupportedException($"Unable to resolve game id for domain `{gameDomain}`");
-
-            gameIds[gameDomain] = gameId.Value;
+            var gameId = _mappingCache[gameDomain];
+            gameIds[gameDomain] = gameId;
         }
 
         return gameIds;

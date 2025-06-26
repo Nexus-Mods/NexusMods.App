@@ -1,10 +1,8 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
-using DynamicData.Binding;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
@@ -12,6 +10,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Telemetry;
@@ -19,7 +18,6 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
-using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.Sorting;
@@ -32,7 +30,6 @@ using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Networking.NexusWebApi;
-using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -44,8 +41,6 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewModel
 {
-    public ReactiveCommand<Unit> SwitchViewCommand { get; }
-    public ReactiveCommand<Unit> RevisionUrlLinkCommand { get; }
     public string EmptyStateTitleText { get; }
     public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
     public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
@@ -70,8 +65,10 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
 
     public ReactiveCommand<Unit> CommandUploadRevision { get; }
+    public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
     public ReactiveCommand<Unit> CommandRenameGroup { get; }
 
+    private readonly IServiceProvider _serviceProvider;
     public LoadoutViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
@@ -79,6 +76,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         Optional<LoadoutItemGroupId> collectionGroupId = default,
         Optional<LoadoutPageSubTabs> selectedSubTab = default) : base(windowManager)
     {
+        _serviceProvider = serviceProvider;
+
         var loadoutFilter = new LoadoutFilter
         {
             LoadoutId = loadoutId,
@@ -124,9 +123,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 if (shareDialogResult != ButtonDefinitionId.From("share")) return;
 
                 var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
-                var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
-                var gameDomain = await mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
-
                 var successDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : LoadoutDialogs.ShareCollectionSuccess(CollectionName);
 
                 var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
@@ -134,11 +130,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
                 if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
 
-                var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
-
-                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
+                var uri = GetCollectionUri(collection);
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
             }, maxSequential: 1, configureAwait: false);
 
+            CommandOpenRevisionUrl = this.WhenAnyValue(vm => vm.IsCollectionUploaded).ToObservable().ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, collectionGroupId.Value);
+                if (!managedCollectionLoadoutGroup.IsValid()) return;
+
+                var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+            }, configureAwait: false);
+            
             CommandRenameGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
                 var dialog = LoadoutDialogs.RenameCollection(CollectionName);
@@ -169,14 +173,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
             CommandUploadRevision = new ReactiveCommand();
+            CommandOpenRevisionUrl = new ReactiveCommand();
             CommandRenameGroup = new ReactiveCommand();
         }
 
-        RevisionUrlLinkCommand = new ReactiveCommand<Unit>(_ => { });
-
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
-
-        SwitchViewCommand = new ReactiveCommand<Unit>(_ => { Adapter.ViewHierarchical.Value = !Adapter.ViewHierarchical.Value; });
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None);
 
@@ -362,6 +363,14 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .DisposeWith(disposables);
             }
         );
+    }
+
+    private Uri GetCollectionUri(CollectionMetadata.ReadOnly collection)
+    {
+        var mappingCache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        var gameDomain = mappingCache[collection.GameId];
+        var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+        return uri;
     }
 
     internal static async Task ToggleItemEnabledState(LoadoutItemId[] ids, IConnection connection)
