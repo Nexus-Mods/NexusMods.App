@@ -148,6 +148,9 @@ Diese Informationen werden anonym gesendet und werden niemals an Dritte weiterge
     <data name="SearchBox__Search" xml:space="preserve">
         <value>Suche</value>
     </data>
+    <data name="SearchBox__Search_Watermark" xml:space="preserve">
+        <value>Suchen...</value>
+    </data>
     <data name="TopBarActions__LOG_IN" xml:space="preserve">
         <value>Einloggen</value>
     </data>

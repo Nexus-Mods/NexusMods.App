@@ -1,6 +1,7 @@
 using Humanizer;
 using Humanizer.Bytes;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.Paths;
 using R3;
 
@@ -47,5 +48,17 @@ public sealed class SizeComponent : AFormattedValueComponent<Size>, IItemModelCo
     /// <inheritdoc/>
     public SizeComponent(Size value) : base(value, _FormatValue(value))
     {
+    }
+
+    /// <inheritdoc/>
+    public FilterResult MatchesFilter(Filter filter)
+    {
+        return filter switch
+        {
+            Filter.SizeRangeFilter sizeFilter => 
+                (Value.Value >= sizeFilter.MinSize && Value.Value <= sizeFilter.MaxSize)
+                ? FilterResult.Pass : FilterResult.Fail,
+            _ => FilterResult.Indeterminate // Default: no opinion
+        };
     }
 }

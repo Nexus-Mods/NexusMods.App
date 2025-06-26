@@ -303,6 +303,12 @@ namespace NexusMods.App.UI.Resources {
             }
         }
         
+        public static string SearchBox__Search_Watermark {
+            get {
+                return ResourceManager.GetString("SearchBox__Search_Watermark", resourceCulture);
+            }
+        }
+        
         public static string TopBarActions__LOG_IN {
             get {
                 return ResourceManager.GetString("TopBarActions__LOG_IN", resourceCulture);

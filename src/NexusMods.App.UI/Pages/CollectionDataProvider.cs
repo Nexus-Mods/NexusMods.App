@@ -98,9 +98,9 @@ public class CollectionDataProvider
     {
         var itemModel = new CompositeItemModel<EntityId>(download.Id);
 
-        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: download.FileMetadata.Name));
+        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: download.FileMetadata.Name));
         itemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader, download.FileMetadata.ModPageId, initialValue: ImagePipelines.ModPageThumbnailFallback));
-        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: download.FileMetadata.Version));
+        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(value: download.FileMetadata.Version));
 
         if (download.FileMetadata.Size.TryGet(out var size))
             itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
@@ -132,9 +132,9 @@ public class CollectionDataProvider
     {
         var itemModel = new CompositeItemModel<EntityId>(download.Id);
 
-        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: download.AsCollectionDownload().Name));
+        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: download.AsCollectionDownload().Name));
         itemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
-        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: download.Md5.ToString()));
+        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(value: download.Md5.ToString()));
         itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: download.Size));
 
         var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable().Publish(initialValue: new CollectionDownloadStatus(new CollectionDownloadStatus.NotDownloaded())).RefCount();
@@ -185,7 +185,7 @@ public class CollectionDataProvider
     {
         var itemModel = new CompositeItemModel<EntityId>(download.Id);
 
-        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: download.AsCollectionDownload().Name));
+        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: download.AsCollectionDownload().Name));
         itemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
 
         var statusObservable = _collectionDownloader.GetStatusObservable(download.AsCollectionDownload(), groupObservable).ToObservable();

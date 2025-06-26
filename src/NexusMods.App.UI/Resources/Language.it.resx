@@ -117,6 +117,9 @@ Questi dati sono raccolti in maniera anonima e non saranno mai condivisi con ter
     <data name="SearchBox__Search" xml:space="preserve">
         <value>Cerca</value>
     </data>
+    <data name="SearchBox__Search_Watermark" xml:space="preserve">
+        <value>Cerca...</value>
+    </data>
     <data name="TopBarActions__LOG_IN" xml:space="preserve">
         <value>LOGIN</value>
     </data>

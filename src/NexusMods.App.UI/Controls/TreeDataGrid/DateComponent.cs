@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
 using R3;
 
@@ -70,6 +71,18 @@ public class DateComponent : ReactiveR3Object, IItemModelComponent<DateComponent
     }
 
     public int CompareTo(DateComponent? other) => DateTimeOffset.Compare(Value.Value, other?.Value.Value ?? DateTimeOffset.UnixEpoch);
+
+    /// <inheritdoc/>
+    public FilterResult MatchesFilter(Filter filter)
+    {
+        return filter switch
+        {
+            Filter.DateRangeFilter dateFilter => 
+                (Value.Value >= dateFilter.StartDate && Value.Value <= dateFilter.EndDate)
+                ? FilterResult.Pass : FilterResult.Fail,
+            _ => FilterResult.Indeterminate // Default: no opinion
+        };
+    }
 
     private bool _isDisposed;
     protected override void Dispose(bool disposing)
