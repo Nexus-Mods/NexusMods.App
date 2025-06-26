@@ -186,8 +186,8 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         // always pass the window to the dialog so we can do things with properties of the parent window
         return windowType switch
         {
-            DialogWindowType.Modal => await dialog.ShowWindow(desktop.MainWindow, isModal: true),
-            DialogWindowType.Modeless => await dialog.ShowWindow(desktop.MainWindow, isModal: false),
+            DialogWindowType.Modal => await dialog.Show(desktop.MainWindow, true),
+            DialogWindowType.Modeless => await dialog.Show(desktop.MainWindow, false),
             DialogWindowType.Embedded => throw new NotImplementedException("Embedded window type is not implemented."),
             _ => throw new InvalidOperationException("Unknown WindowType.")
         };

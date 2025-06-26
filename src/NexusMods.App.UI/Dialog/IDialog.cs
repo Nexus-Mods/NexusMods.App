@@ -6,5 +6,5 @@ namespace NexusMods.App.UI.Dialog;
 
 public interface IDialog
 {
-    public Task<ButtonDefinitionId> ShowWindow(Window owner, bool isModal = false);
+    public Task<ButtonDefinitionId> Show(Window owner, bool isModal = true);
 }

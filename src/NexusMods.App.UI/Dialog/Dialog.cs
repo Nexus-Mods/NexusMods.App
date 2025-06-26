@@ -4,21 +4,17 @@ using NexusMods.App.UI.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 
-public class Dialog<TView, TViewModel> : IDialog
-    where TView : UserControl, IDialogView
-    where TViewModel : IDialogViewModel
+public class Dialog: IDialog
 {
-    private TView _view;
-    private TViewModel _viewModel;
+    private DialogViewModel _viewModel;
     private bool _hasUserResized = false;
 
-    public Dialog(TView view, TViewModel viewModel)
+    public Dialog(DialogViewModel viewModel)
     {
-        _view = view;
         _viewModel = viewModel;
     }
 
-    public Task<ButtonDefinitionId> ShowWindow(Window owner, bool isModal = false)
+    public Task<ButtonDefinitionId> Show(Window owner, bool isModal = false)
     {
         // Get the initial size and position of the owner window
         var ownerSize = owner.ClientSize;
@@ -26,7 +22,6 @@ public class Dialog<TView, TViewModel> : IDialog
 
         var window = new DialogWindow()
         {
-            Content = _view,
             DataContext = _viewModel,
 
             Title = _viewModel.WindowTitle,

@@ -40,7 +40,7 @@ public static class DialogFactory
     
     
     
-    public static Dialog<DialogView, DialogViewModel> CreateStandardDialog(string title, string text, DialogButtonDefinition[] buttonDefinitions)
+    public static Dialog CreateStandardDialog(string title, string text, DialogButtonDefinition[] buttonDefinitions)
     {
         // standard dialog so we can use the standard content view model
         var contentViewModel = new DialogStandardContentViewModel(text);
@@ -48,12 +48,16 @@ public static class DialogFactory
         return CreateDialog(title, buttonDefinitions, contentViewModel);
     }
     
-    public static Dialog<DialogView, DialogViewModel> CreateDialog(string title, DialogButtonDefinition[] buttonDefinitions, IViewModelInterface contentViewModel, DialogWindowSize dialogWindowSize = DialogWindowSize.Medium)
+    public static Dialog CreateDialog(
+        string title, 
+        DialogButtonDefinition[] buttonDefinitions, 
+        IViewModelInterface contentViewModel, 
+        DialogWindowSize dialogWindowSize = DialogWindowSize.Medium)
     {
         var viewModel = new DialogViewModel(title, buttonDefinitions, contentViewModel, dialogWindowSize);
-        var view = new DialogView { DataContext = viewModel };
-        
-        return new Dialog<DialogView, DialogViewModel>(view, viewModel);
+        //var view = new DialogView { DataContext = viewModel };
+
+        return new Dialog(viewModel);
     }
     
     // public static Dialog<DialogView, InputDialogViewModel, InputDialogResult> TestInputDialog =>

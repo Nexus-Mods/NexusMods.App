@@ -6,7 +6,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public static class LoadoutDialogs
 {
-    public static Dialog<DialogView, DialogViewModel> ShareCollection(string collectionName)
+    public static IDialog ShareCollection(string collectionName)
     {
          return DialogFactory.CreateDialog(
              title: "Share Your Collection on Nexus Mods",
@@ -35,7 +35,7 @@ public static class LoadoutDialogs
          );
     }
 
-    public static Dialog<DialogView, DialogViewModel> ShareCollectionSuccess(string collectionName)
+    public static IDialog ShareCollectionSuccess(string collectionName)
     {
         return DialogFactory.CreateDialog(
             title: "Share Your Collection on Nexus Mods",
@@ -64,7 +64,7 @@ public static class LoadoutDialogs
         );
     }
 
-    public static Dialog<DialogView, DialogViewModel> UpdateCollection(string collectionName)
+    public static IDialog UpdateCollection(string collectionName)
     {
         return DialogFactory.CreateDialog(
             title: "Share Your Collection on Nexus Mods",
@@ -93,7 +93,7 @@ public static class LoadoutDialogs
         );
     }
 
-    public static Dialog<DialogView, DialogViewModel> UpdateCollectionSuccess(string collectionName)
+    public static IDialog UpdateCollectionSuccess(string collectionName)
     {
         return DialogFactory.CreateDialog(
             title: "Share Your Collection on Nexus Mods",

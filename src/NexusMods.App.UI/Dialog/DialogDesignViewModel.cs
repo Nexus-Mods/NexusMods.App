@@ -5,15 +5,18 @@ using ReactiveUI;
 
 namespace NexusMods.App.UI.Dialog;
 
-public class DialogDesignViewModel: IDialogViewModel
+public class DialogDesignViewModel : IDialogViewModel
 {
     public event PropertyChangedEventHandler? PropertyChanged;
     public ViewModelActivator Activator { get; } = null!;
-    public R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> ButtonPressCommand { get; } = new ( (id, token) =>  
-    {
-        Console.WriteLine(id);
-        return ValueTask.FromResult(id);
-    });
+
+    public R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId> ButtonPressCommand { get; } = new((id, token) =>
+        {
+            Console.WriteLine(id);
+            return ValueTask.FromResult(id);
+        }
+    );
+
     public string WindowTitle { get; }
     public DialogWindowSize DialogWindowSize { get; }
     public IViewModelInterface? ContentViewModel { get; }
@@ -31,7 +34,7 @@ public class DialogDesignViewModel: IDialogViewModel
     }
 
     // create a static instance for a design view
-    public static DialogDesignViewModel StandardContent { get; } = new (
+    public static DialogDesignViewModel StandardContent { get; } = new(
         "StandardContent Dialog Content",
         [
             DialogStandardButtons.Ok,
@@ -41,14 +44,14 @@ public class DialogDesignViewModel: IDialogViewModel
             "This is a design-time dialog content view model. It is used to demonstrate the dialog's layout and functionality without requiring a full implementation of the content view model."
         )
     );
-    
+
     // create a static instance for a design view
-    public static DialogDesignViewModel CustomContent { get; } = new (
+    public static DialogDesignViewModel CustomContent { get; } = new(
         "CustomContent Dialog Content",
         [
-            DialogStandardButtons.Ok,
-            DialogStandardButtons.Cancel,
+            DialogStandardButtons.Yes,
+            DialogStandardButtons.No,
         ],
-        new CustomContentExampleViewModel("This is a custom content example view model for design-time purposes." )
+        new CustomContentExampleViewModel("This is a custom content example view model for design-time purposes.")
     );
 }

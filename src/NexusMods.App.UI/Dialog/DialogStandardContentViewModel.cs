@@ -6,6 +6,7 @@ using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Dialog;
@@ -16,7 +17,7 @@ public class DialogStandardContentViewModel : AViewModel<IDialogStandardContentV
     public string? Heading { get; }
     public IconValue? Icon { get; }
     public IMarkdownRendererViewModel? MarkdownRenderer { get; }
-    public string InputText { get; set; }
+    [Reactive] public string InputText { get; set; }
     public string InputLabel { get; set; }
     public string InputWatermark { get; set; }
 
@@ -32,23 +33,12 @@ public class DialogStandardContentViewModel : AViewModel<IDialogStandardContentV
         InputLabel = "Input Label";
         InputWatermark = "Enter text here...";
 
-        ClearInputCommand = new ReactiveCommand(
+        ClearInputCommand = new R3.ReactiveCommand(
             executeAsync: (_, cancellationToken) =>
             {
                 InputText = string.Empty;
                 return ValueTask.CompletedTask;
             }
         );
-
-        //
-        // ButtonPressCommand = new R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId>(id =>
-        //     {
-        //         Console.WriteLine(id);
-        //         Result = id;
-        //         return id;
-        //     }
-        // );
-
     }
-
 }

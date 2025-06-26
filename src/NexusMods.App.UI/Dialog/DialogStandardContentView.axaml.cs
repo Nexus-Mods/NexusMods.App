@@ -74,6 +74,12 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
                     .Subscribe(b => MarkdownContainer.IsVisible = b)
                     .DisposeWith(disposables);
 
+                // only show the input stack if not null or empty
+                this.WhenAnyValue(view => view.InputLabel!.Text)
+                    .Select(string.IsNullOrWhiteSpace)
+                    .Subscribe(b => InputStack.IsVisible = !b)
+                    .DisposeWith(disposables);
+
                 this.Bind(ViewModel,
                     vm => vm.InputText,
                     view => view.InputTextBox.Text
@@ -101,8 +107,5 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        
-        // Focus the InputTextBox when the modal loads
-        InputTextBox.AttachedToVisualTree += (s, e) => InputTextBox.Focus();
     }
 }
