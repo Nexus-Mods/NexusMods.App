@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
@@ -22,12 +21,10 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Cascade;
-using NexusMods.Cascade.Patterns;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Paths;
@@ -78,7 +75,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private ReadOnlyObservableCollection<ICollectionCardViewModel> _collections = new([]);
     public ReadOnlyObservableCollection<ICollectionCardViewModel> Collections => _collections;
 
-    private readonly ReadOnlyObservableCollection<InstallationTarget> _installationTargets;
+    private ReadOnlyObservableCollection<InstallationTarget> _installationTargets = new([]);
     public ReadOnlyObservableCollection<InstallationTarget> InstallationTargets => _installationTargets;
 
     [Reactive] public InstallationTarget? SelectedInstallationTarget { get; set; }
@@ -116,17 +113,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var game = _loadout.InstallationInstance.Game;
 
         EmptyLibrarySubtitleText = string.Format(Language.FileOriginsPageViewModel_EmptyLibrarySubtitleText, game.Name);
-
-        var installationTargetsObservable = _connection.Topology
-            .Observe(Loadout.MutableCollections)
-            .Filter(tuple => tuple.Loadout == loadoutId.Value)
-            .Transform(tuple =>
-            {
-                var group = CollectionGroup.Load(_connection.Db, tuple.CollectionGroup);
-                return new InstallationTarget(group.CollectionGroupId, group.AsLoadoutItemGroup().AsLoadoutItem().Name);
-            })
-            .AddKey(x => x.Id)
-            .SortAndBind(out _installationTargets, Comparer<InstallationTarget>.Create((a,b) => a.Id.Value.CompareTo(b.Id.Value)));
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ =>
         {
@@ -227,7 +213,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 configureAwait: false
             ).AddTo(disposables);
 
-            installationTargetsObservable.Subscribe().AddTo(disposables);
+            _connection.Topology
+                .Observe(Loadout.MutableCollections.Where(tuple => tuple.Loadout == loadoutId.Value))
+                .Transform(tuple =>
+                {
+                    var group = CollectionGroup.Load(_connection.Db, tuple.CollectionGroup);
+                    return new InstallationTarget(group.CollectionGroupId, group.AsLoadoutItemGroup().AsLoadoutItem().Name);
+                })
+                .AddKey(x => x.Id)
+                .SortAndBind(out _installationTargets, Comparer<InstallationTarget>.Create((a,b) => a.Id.Value.CompareTo(b.Id.Value)))
+                .Subscribe()
+                .AddTo(disposables);
 
             CollectionRevisionMetadata.ObserveAll(_connection)
                 .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
