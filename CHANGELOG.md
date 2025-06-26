@@ -4,7 +4,7 @@ This release includes the ability to change your storage location, new game artw
 Check out the latest [developer blog](https://www.nexusmods.com/news/15313).
 
 ## Change the Library Storage Location
-One of the most common requests we've had is to be able to change where the app stores downloaded mods. In the previous versions we had a configuration file that let users set this, but due to a bug this didn't work quite as expect. 
+One of the most common requests we've had is to be able to change where the app stores downloaded mods. In the previous versions we had a configuration file that let users set this, but due to a bug this didn't work quite as expected. 
 
 We've given the feature an overhaul by adding a new setting option to set your storage location. This is where mods, collections, and backed up game files will be saved. 
 
