@@ -167,7 +167,7 @@ public static class CollectionCreator
         Debug.Assert(group.IsValid());
 
         var gameId = group.AsLoadoutItem().Loadout.Installation.GameId;
-        var gameDomain = mappingCache.TryGetDomain(gameId, CancellationToken.None).Value;
+        var gameDomain = mappingCache[gameId];
 
         var collectionMods = new List<CollectionMod>();
 

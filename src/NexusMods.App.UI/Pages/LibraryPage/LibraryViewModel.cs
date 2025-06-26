@@ -167,8 +167,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         OpenNexusModsCommand = new ReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
             {
-                var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
-                var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain.Value);
+                var gameDomain = _gameIdMappingCache[game.GameId];
+                var gameUri = NexusModsUrlBuilder.GetGameUri(gameDomain);
                 await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Parallel,
@@ -177,8 +177,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         OpenNexusModsCollectionsCommand = new ReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>
             {
-                var gameDomain = (await _gameIdMappingCache.TryGetDomainAsync(game.GameId, cancellationToken));
-                var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain.Value);
+                var gameDomain = _gameIdMappingCache[game.GameId];
+                var gameUri = NexusModsUrlBuilder.GetBrowseCollectionsUri(gameDomain);
                 await osInterop.OpenUrl(gameUri, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Parallel,
