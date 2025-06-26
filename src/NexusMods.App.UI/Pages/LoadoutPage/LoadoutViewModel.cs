@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Binding;
@@ -30,6 +31,7 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
 using ObservableCollections;
 using OneOf;
@@ -43,6 +45,7 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewModel
 {
     public ReactiveCommand<Unit> SwitchViewCommand { get; }
+    public ReactiveCommand<Unit> RevisionUrlLinkCommand { get; }
     public string EmptyStateTitleText { get; }
     public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
     public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
@@ -51,13 +54,13 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> DeselectItemsCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
-    public ILibraryService _LibraryService;
 
     [Reactive] public string CollectionName { get; private set; }
 
     [Reactive] public int SelectionCount { get; private set; }
     [Reactive] public bool IsCollection { get; private set; }
     [Reactive] public bool IsCollectionEnabled { get; private set; }
+    [Reactive] public bool IsCollectionUploaded { get; private set; }
 
     [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
 
@@ -67,6 +70,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
 
     public ReactiveCommand<Unit> CommandUploadRevision { get; }
+    public ReactiveCommand<Unit> CommandRenameGroup { get; }
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -83,8 +87,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
-        _LibraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
 
         if (collectionGroupId.HasValue)
         {
@@ -98,6 +103,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 configureAwait: false
             );
 
+            IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
+
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
             // so we show the `sorting views here` view here instead
             var isSingleCollectionObservable = CollectionGroup.ObserveAll(connection)
@@ -110,15 +117,49 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 canEditObservable: isSingleCollectionObservable
             );
 
-            CommandUploadRevision = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            CommandUploadRevision = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
+                var shareDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollection(CollectionName) : LoadoutDialogs.ShareCollection(CollectionName);
+                var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                if (shareDialogResult != ButtonDefinitionId.From("share")) return;
+
                 var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
                 var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
                 var gameDomain = await mappingCache.TryGetDomainAsync(collection.GameId, cancellationToken);
 
+                var successDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : LoadoutDialogs.ShareCollectionSuccess(CollectionName);
+
+                var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+
+                IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
+                if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
+
                 var url = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(url, cancellationToken: cancellationToken);
             }, maxSequential: 1, configureAwait: false);
+
+            CommandRenameGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                var dialog = LoadoutDialogs.RenameCollection(CollectionName);
+                var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
+                if (result.ButtonId != ButtonDefinitionId.From("rename")) return;
+
+                var newName = result.InputText;
+                if (string.IsNullOrWhiteSpace(newName)) return;
+
+                if (CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out var collection))
+                {
+                    await nexusModsLibrary.EditCollectionName(collection, newName, CancellationToken.None);
+                }
+
+                using var tx = connection.BeginTransaction();
+                tx.Add(collectionGroupId.Value, LoadoutItem.Name, newName);
+                await tx.Commit();
+
+                CollectionName = newName;
+                TabTitle = CollectionName;
+            });
         }
         else
         {
@@ -128,7 +169,10 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
             CommandUploadRevision = new ReactiveCommand();
+            CommandRenameGroup = new ReactiveCommand();
         }
+
+        RevisionUrlLinkCommand = new ReactiveCommand<Unit>(_ => { });
 
         DeselectItemsCommand = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
 
@@ -220,9 +264,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (ids.Length == 0) return;
 
-                    var dialog = DialogFactory.CreateMessageBox(
-                        "Uninstall mod(s)",
-                        $"""
+                    var dialog = DialogFactory.CreateMessageDialog(
+                        title: "Uninstall mod(s)",
+                        text: $"""
                         This will remove the selected mod(s) from:
                         
                         {CollectionName}
@@ -230,11 +274,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         ✓ The mod(s) will stay in your Library
                         ✓ You can reinstall anytime
                         """,
+                        buttonDefinitions:
                         [
-                            DialogStandardButtons.Cancel, 
-                            new DialogButtonDefinition("Uninstall", 
+                            DialogStandardButtons.Cancel,
+                            new DialogButtonDefinition("Uninstall",
                                 ButtonDefinitionId.From("Uninstall"),
-                                ButtonAction.Accept, 
+                                ButtonAction.Accept,
                                 ButtonStyling.Default
                             )
                         ]
@@ -244,7 +289,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (result != ButtonDefinitionId.From("Uninstall")) return;
 
-                    await _LibraryService.RemoveLinkedItemsFromLoadout(ids);
+                    await libraryService.RemoveLinkedItemsFromLoadout(ids);
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,
