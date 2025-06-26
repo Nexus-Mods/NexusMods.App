@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
@@ -36,6 +37,33 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         .SubscribeWithErrorLogging(vm => vm.StorageProvider = storageProvider)
                         .AddTo(disposables);
                 }
+
+                this.WhenAnyValue(view => view.SearchTextBox.Text)
+                    .Throttle(TimeSpan.FromMilliseconds(300)) // Debounce input
+                    .DistinctUntilChanged()
+                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .Subscribe(searchText =>
+                    {
+                        if (ViewModel?.Adapter != null)
+                        {
+                            ViewModel.Adapter.Filter.Value = string.IsNullOrWhiteSpace(searchText) 
+                                ? new Filter.NoFilter()
+                                : new Filter.NameFilter(searchText ?? string.Empty, CaseSensitive: false);
+                        }
+                    })
+                    .AddTo(disposables);
+                
+                // Clear button functionality
+                SearchClearButton.Click += (_, _) =>
+                {
+                    SearchTextBox.Text = string.Empty;
+                };
+                
+                // Show/hide clear button based on text
+                this.WhenAnyValue(view => view.SearchTextBox.Text)
+                    .Select(text => !string.IsNullOrWhiteSpace(text))
+                    .BindToView(this, view => view.SearchClearButton.IsVisible)
+                    .AddTo(disposables);
 
                 this.OneWayBind(ViewModel, vm => vm.Collections, view => view.Collections.ItemsSource)
                     .AddTo(disposables);

@@ -5,6 +5,8 @@ using DynamicData;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
+using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
 using System.Reactive.Linq;
@@ -32,7 +34,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
     public BindableReactiveProperty<int> SourceCount { get; } = new(value: 0);
     public BindableReactiveProperty<IComparer<TModel>?> CustomSortComparer { get; } = new(value: null);
-
+    public R3.ReactiveProperty<Filter> Filter { get; } = new(value: new Filter.NoFilter());
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
     protected ObservableList<TModel> Roots { get; private set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
@@ -40,6 +42,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
     private readonly IDisposable _activationDisposable;
     private readonly SerialDisposable _selectionModelsSerialDisposable = new();
+    
     protected TreeDataGridAdapter()
     { 
         RootsView = Roots.CreateView(static kv => kv);
@@ -47,6 +50,14 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
         _activationDisposable = this.WhenActivated(static (self, disposables) =>
         {
+            // Set up reactive filtering on RootsView
+            self.Filter
+                .Subscribe(self, static (filter, self) =>
+                {
+                    self.ApplyFilter(filter);
+                })
+                .AddTo(disposables);
+
             self.Roots
                 .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(self, static (count, self) =>
@@ -280,6 +291,35 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
     protected abstract IObservable<IChangeSet<TModel, TKey>> GetRootsObservable(bool viewHierarchical);
     protected abstract IColumn<TModel>[] CreateColumns(bool viewHierarchical);
+    
+    /// <summary>
+    /// Applies the given filter to the <see cref="RootsView"/>.
+    /// </summary>
+    /// <param name="filter">The filter to apply</param>
+    protected void ApplyFilter(Filter filter)
+    {
+        // Reset any existing filters first
+        RootsView.ResetFilter();
+        
+        // Check if we're working with CompositeItemModel which supports filtering
+        if (typeof(TModel) == typeof(CompositeItemModel<EntityId>))
+        {
+            var filterInstance = new SynchronizedViewFilter<TModel, TModel>(
+                (model, _) => 
+                {
+                    if (model is CompositeItemModel<EntityId> compositeModel)
+                        return compositeModel.MatchesFilter(filter);
+                    return filter is Filter.NoFilter;
+                }
+            );
+            
+            RootsView.AttachFilter(filterInstance);
+        }
+        else
+        {
+            throw new Exception("Filtering is only supported for CompositeItemModel. You're cooking something sus ඞ, ngl");
+        }
+    }
 
     private bool _isDisposed;
     protected override void Dispose(bool disposing)
