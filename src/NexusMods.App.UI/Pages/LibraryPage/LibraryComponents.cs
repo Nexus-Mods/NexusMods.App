@@ -26,8 +26,8 @@ public static class LibraryColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aVersion = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
-            var bVersion = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            var aVersion = a.GetOptional<VersionComponent>(key: CurrentVersionComponentKey);
+            var bVersion = b.GetOptional<VersionComponent>(key: CurrentVersionComponentKey);
             
             var aNewVersion = a.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
             var bNewVersion = b.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
@@ -125,13 +125,13 @@ public static class LibraryComponents
 {
     public sealed class NewVersionAvailable : ReactiveR3Object, IItemModelComponent<NewVersionAvailable>, IComparable<NewVersionAvailable>
     {
-        public StringComponent CurrentVersion { get; }
+        public VersionComponent CurrentVersion { get; }
 
         private readonly BindableReactiveProperty<string> _newVersion;
         public IReadOnlyBindableReactiveProperty<string> NewVersion => _newVersion;
 
         private readonly IDisposable _activationDisposable;
-        public NewVersionAvailable(StringComponent currentVersion, string newVersion, Observable<string> newVersionObservable)
+        public NewVersionAvailable(VersionComponent currentVersion, string newVersion, Observable<string> newVersionObservable)
         {
             CurrentVersion = currentVersion;
             _newVersion = new BindableReactiveProperty<string>(value: newVersion);

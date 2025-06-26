@@ -145,7 +145,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 return max.Value.rawVersion;
             });
 
-        parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(
+        parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(
             initialValue: string.Empty,
             valueObservable: currentVersionObservable
         ));
@@ -163,7 +163,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
             componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
-                currentVersion: new StringComponent(
+                currentVersion: new VersionComponent(
                     initialValue: string.Empty,
                     valueObservable: currentUpdateVersionObservable
                 ),
@@ -221,7 +221,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: fileMetadata.Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: libraryItem.GetCreatedAt()));
-        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: fileMetadata.Version));
+        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(value: fileMetadata.Version));
 
         if (libraryItem.FileMetadata.Size.TryGet(out var size))
             itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
@@ -241,7 +241,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
             componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
-                currentVersion: new StringComponent(value: libraryItem.FileMetadata.Version),
+                currentVersion: new VersionComponent(value: libraryItem.FileMetadata.Version),
                 newVersion: initialValue,
                 newVersionObservable: valueObservable
             )

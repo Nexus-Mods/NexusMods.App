@@ -162,7 +162,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        model.Add(ComponentKey.From("version"), new StringComponent("1.2.3"));
+        model.Add(ComponentKey.From("version"), new VersionComponent("1.2.3"));
         
         var filter = new Filter.VersionFilter("1.2");
 

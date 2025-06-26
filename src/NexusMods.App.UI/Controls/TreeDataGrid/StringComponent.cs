@@ -33,13 +33,7 @@ public sealed class StringComponent : AValueComponent<string>, IItemModelCompone
     /// <inheritdoc/>
     public FilterResult MatchesFilter(Filter filter)
     {
-        return filter switch
-        {
-            Filter.VersionFilter versionFilter => Value.Value.Contains(
-                versionFilter.VersionPattern, 
-                StringComparison.OrdinalIgnoreCase)
-                ? FilterResult.Pass : FilterResult.Fail,
-            _ => FilterResult.Indeterminate // Default: no opinion
-        };
+        // Default: no opinion on any filter, as we don't know what type of string we're dealing with from context.
+        return FilterResult.Indeterminate;
     }
 }
