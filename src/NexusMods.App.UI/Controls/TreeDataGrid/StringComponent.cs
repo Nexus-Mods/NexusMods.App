@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Controls;
 /// Component for <see cref="string"/>.
 /// </summary>
 [PublicAPI]
-public class StringComponent : AValueComponent<string>, IItemModelComponent<StringComponent>, IComparable<StringComponent>
+public sealed class StringComponent : AValueComponent<string>, IItemModelComponent<StringComponent>, IComparable<StringComponent>
 {
     /// <inheritdoc/>
     public int CompareTo(StringComponent? other) => string.CompareOrdinal(Value.Value, other?.Value.Value);
@@ -31,7 +31,7 @@ public class StringComponent : AValueComponent<string>, IItemModelComponent<Stri
     public StringComponent(string value) : base(value) { }
 
     /// <inheritdoc/>
-    public virtual FilterResult MatchesFilter(Filter filter)
+    public FilterResult MatchesFilter(Filter filter)
     {
         return filter switch
         {

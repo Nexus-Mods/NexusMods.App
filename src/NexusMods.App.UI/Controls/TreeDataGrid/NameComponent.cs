@@ -8,7 +8,7 @@ namespace NexusMods.App.UI.Controls;
 /// Component for name fields that supports name-specific filtering.
 /// </summary>
 [PublicAPI]
-public sealed class NameComponent : StringComponent, IItemModelComponent<NameComponent>, IComparable<NameComponent>
+public sealed class NameComponent : AValueComponent<string>, IItemModelComponent<NameComponent>, IComparable<NameComponent>
 {
     /// <inheritdoc/>
     public NameComponent(
@@ -31,7 +31,7 @@ public sealed class NameComponent : StringComponent, IItemModelComponent<NameCom
     public int CompareTo(NameComponent? other) => string.CompareOrdinal(Value.Value, other?.Value.Value);
 
     /// <inheritdoc/>
-    public override FilterResult MatchesFilter(Filter filter)
+    public FilterResult MatchesFilter(Filter filter)
     {
         return filter switch
         {

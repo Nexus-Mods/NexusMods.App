@@ -61,7 +61,7 @@ public class BundledDataProvider : ILoadoutDataProvider
             ChildrenObservable = childrenObservable,
         };
 
-        parentItemModel.Add<NameComponent>(SharedColumns.Name.NameComponentKey, new NameComponent(value: item.AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup().AsLoadoutItem().Name));
+        parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: item.AsNexusCollectionItemLoadoutGroup().AsLoadoutItemGroup().AsLoadoutItem().Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, new ImageComponent(value: ImagePipelines.ModPageThumbnailFallback));
         parentItemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: item.GetCreatedAt()));
         parentItemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(loadoutItem));

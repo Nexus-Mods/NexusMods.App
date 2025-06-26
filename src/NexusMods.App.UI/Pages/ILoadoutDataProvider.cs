@@ -88,7 +88,7 @@ public static class LoadoutDataProviderHelper
     {
         var itemModel = new CompositeItemModel<EntityId>(loadoutItem.Id);
 
-        itemModel.Add<NameComponent>(SharedColumns.Name.NameComponentKey, new NameComponent(value: loadoutItem.Name));
+        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: loadoutItem.Name));
         itemModel.Add(SharedColumns.InstalledDate.ComponentKey, new DateComponent(value: loadoutItem.GetCreatedAt()));
         itemModel.Add(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey, new LoadoutComponents.LoadoutItemIds(itemId: loadoutItem));
 
