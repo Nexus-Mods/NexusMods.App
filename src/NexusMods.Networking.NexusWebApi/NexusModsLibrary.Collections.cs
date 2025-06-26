@@ -237,7 +237,7 @@ public partial class NexusModsLibrary
         ICollectionRevisionFragment collectionRevisionFragment,
         CancellationToken cancellationToken)
     {
-        var gameIds = await CacheGameIds(collectionManifest, cancellationToken);
+        var gameIds = CacheGameIds(collectionManifest, cancellationToken);
 
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
@@ -451,7 +451,7 @@ public partial class NexusModsLibrary
         return res;
     }
 
-    private async ValueTask<GameIdCache> CacheGameIds(
+    private GameIdCache CacheGameIds(
         CollectionRoot collectionRoot,
         CancellationToken cancellationToken)
     {
