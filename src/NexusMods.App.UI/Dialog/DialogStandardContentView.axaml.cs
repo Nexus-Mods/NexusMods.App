@@ -48,6 +48,34 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
                     )
                     .DisposeWith(disposables);
 
+                this.OneWayBind(ViewModel,
+                        vm => vm.BottomText,
+                        view => view.BottomTextTextBlock.Text
+                    )
+                    .DisposeWith(disposables);
+
+
+                this.Bind(ViewModel,
+                    vm => vm.InputText,
+                    view => view.InputTextBox.Text
+                );
+
+                this.OneWayBind(ViewModel,
+                    vm => vm.InputLabel,
+                    view => view.InputLabel.Text
+                );
+
+                this.OneWayBind(ViewModel,
+                    vm => vm.InputWatermark,
+                    view => view.InputTextBox.Watermark
+                );
+
+                this.BindCommand(ViewModel,
+                        vm => vm.ClearInputCommand,
+                        view => view.ButtonInputClear
+                    )
+                    .DisposeWith(disposables);
+
                 // HIDE CONTROLS IF NOT NEEDED
 
                 // only show the text if not null or empty
@@ -75,37 +103,17 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
                     .DisposeWith(disposables);
 
                 // only show the input stack if not null or empty
-                this.WhenAnyValue(view => view.InputLabel!.Text)
+                this.WhenAnyValue(view => view.ViewModel!.InputLabel)
                     .Select(string.IsNullOrWhiteSpace)
                     .Subscribe(b => InputStack.IsVisible = !b)
                     .DisposeWith(disposables);
 
-                this.Bind(ViewModel,
-                    vm => vm.InputText,
-                    view => view.InputTextBox.Text
-                );
-
-                this.OneWayBind(ViewModel,
-                    vm => vm.InputLabel,
-                    view => view.InputLabel.Text
-                );
-
-                this.OneWayBind(ViewModel,
-                    vm => vm.InputWatermark,
-                    view => view.InputTextBox.Watermark
-                );
-
-                this.BindCommand(ViewModel,
-                        vm => vm.ClearInputCommand,
-                        view => view.ButtonInputClear
-                    )
+                // only show the bottom text if not null or empty
+                this.WhenAnyValue(view => view.ViewModel!.BottomText)
+                    .Select(string.IsNullOrWhiteSpace)
+                    .Subscribe(b => BottomTextTextBlock.IsVisible = !b)
                     .DisposeWith(disposables);
             }
         );
-    }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
     }
 }

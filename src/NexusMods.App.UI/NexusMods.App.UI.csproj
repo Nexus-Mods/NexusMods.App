@@ -752,8 +752,8 @@
         <Compile Update="Dialog\DialogViewModel.cs">
           <DependentUpon>IDialogViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Dialog\DialogDesignViewModel.cs">
-          <DependentUpon>IDialogViewModel.cs</DependentUpon>
+        <Compile Update="Dialog\DialogStandardContentViewModel.cs">
+          <DependentUpon>IDialogStandardContentViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

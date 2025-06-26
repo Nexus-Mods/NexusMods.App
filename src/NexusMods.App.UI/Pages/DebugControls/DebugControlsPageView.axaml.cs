@@ -37,16 +37,33 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     {
         if (ViewModel is null) return;
 
-        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        Console.WriteLine($@"result: {result}");
+        try
+        {
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+            Console.WriteLine($@"result: {result}");
+        }
+        catch (Exception ex)
+        {
+            // handle exception, e.g. log it
+            Console.WriteLine($"Exception caught. Did you Alt+F4!? {ex.Message}");
+        }
+        
     }
 
     private async void ShowModeless(IDialog dialog)
     {
         if (ViewModel is null) return;
 
-        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
-        Console.WriteLine($@"result: {result}");
+        try
+        {
+            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
+            Console.WriteLine($@"result: {result}");
+        }
+        catch (Exception ex)
+        {
+            // handle exception, e.g. log it
+            Console.WriteLine($"Exception caught. Did you Alt+F4!? {ex.Message}");
+        }
     }
     
     // event handlers for button clicks

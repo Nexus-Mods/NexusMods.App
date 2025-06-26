@@ -9,8 +9,11 @@
                                 xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 mc:Ignorable="d" d:DesignWidth="400"
                                 x:Class="NexusMods.App.UI.Dialog.DialogStandardContentView">
-
-    <!-- basic content, remaining space with markdown and/or custom content -->
+    
+    <reactiveUi:ReactiveUserControl.DataContext>
+        <vm:DialogStandardContentDesignViewModel/>
+    </reactiveUi:ReactiveUserControl.DataContext>
+        <!-- basic content, remaining space with markdown and/or custom content -->
     <Grid x:Name="GenericContentContainer"
           RowDefinitions="Auto,*"
           Margin="0">
@@ -70,8 +73,9 @@
                                                  ToolTip.Tip="Copy to Clipboard" />
                     </Panel>
                 </Border>
-
-
+                <TextBlock x:Name="BottomTextTextBlock"
+                           Foreground="{StaticResource NeutralSubduedBrush}"
+                           TextWrapping="Wrap" />
             </StackPanel>
         </ScrollViewer>
 

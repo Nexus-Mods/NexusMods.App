@@ -11,8 +11,9 @@
     xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
     mc:Ignorable="d" d:DesignWidth="450"
     x:Class="NexusMods.App.UI.Dialog.DialogWindow"
-    d:DataContext="{x:Static dialog:DialogDesignViewModel.StandardContent}"
-    Background="{StaticResource SurfaceLowBrush}">
+    d:DataContext="{x:Static dialog:DesignDataContexts.StandardContent}"
+    Background="{StaticResource SurfaceLowBrush}"
+    SizeToContent="Height">
 
     <!-- Temporary styles to see modal button variations -->
     <Window.Styles>
@@ -95,7 +96,8 @@
                                      ShowLabel="False"
                                      Fill="None"
                                      Type="Tertiary"
-                                     VerticalAlignment="Center" />
+                                     VerticalAlignment="Center"
+                                     Margin="16 0 0 0" />
         </Grid>
 
         <!-- content -->
@@ -104,9 +106,11 @@
             <!-- content, buttons -->
             <Grid RowDefinitions="*, Auto" Margin="16,16,16,16">
 
-                <Border Grid.Row="0" x:Name="ContentContainer">
-                    <reactiveUi:ViewModelViewHost x:Name="ContentViewModelHost" />
-                </Border>
+                <ScrollViewer>
+                    <Border Grid.Row="0" x:Name="ContentContainer">
+                        <reactiveUi:ViewModelViewHost x:Name="ContentViewModelHost" />
+                    </Border>
+                </ScrollViewer>
 
                 <!-- buttons -->
                 <panels:FlexPanel x:Name="ButtonsFlexPanel" Grid.Row="1"
