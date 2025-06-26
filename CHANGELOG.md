@@ -1,21 +1,34 @@
 # v0.13.0 2025-06-XX
-This release includes x, y and z.
+This release includes the ability to change your storage location, new game artwork and lots of bug fixes.
 
-## Headline 1
+Check out the latest [developer blog](https://www.nexusmods.com/news/15313).
 
-## Headline 2
+## Change the Library Storage Location
+One of the most common requests we've had is to be able to change where the app stores downloaded mods. In the previous versions we had a configuration file that let users set this, but due to a bug this didn't work quite as expect. 
+
+We've given the feature an overhaul by adding a new setting option to set your storage location. This is where mods, collections, and backed up game files will be saved. 
+
+![The option in Settings to change the location of downloaded files](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1750940157-1496949943.png)
+
+This new option is available in the Settings under "General". 
+
+**Note: You must move all files to the new folder manually and restart the app to avoid issues. This step will be automated in a future build.**
+
+## New Artwork
+To match the new game artwork on the Nexus Mods website 
 
 ## More Features
 * Added a kebab menu to Library items including links to the changelog and mod page.
 * Added the ability to toggle visibility of updates in the Library.
 * Updated the game artwork used by the app to match the Nexus Mods website.
-* Added the ability to select a preferred folder for Library storage.
-* Added the ability to select a preferred collection for installing Library items. 
 
 ## Technical Changes
 * Collection and Library text strings can now be localised.
 
 ## Bug Fixes
+* Fixed an issue which would cause the app to delete and restore the entire game on apply in certain situations.
+* Fixed issues detecting changes to DLCs (e.g. Phantom Liberty, REDmod).
+* Fixed an issue where the app would fail to install certain archives due to the character encoding of the internal files being recognised. 
 * Fixes several issues with game detection for Heroic Games Launcher related to manifest parsing. 
 * Added timeouts to the background processes so it should now close correctly after 15-20 seconds if any tasks are still running, rather than staying open indefinitely. 
 * If REDmod is not installed when the app needs to run it, an error is silently added to the logs instead of showing the user a pop-up.
