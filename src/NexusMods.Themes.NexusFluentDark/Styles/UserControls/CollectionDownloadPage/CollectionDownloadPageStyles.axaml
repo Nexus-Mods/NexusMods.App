@@ -226,6 +226,7 @@
                 <Style Selector="^ > ScrollViewer > StackPanel > Expander">
                     <Setter Property="HorizontalAlignment" Value="Stretch" />
                     <Setter Property="CornerRadius" Value="0" />
+                    <Setter Property="Padding" Value="24 12" />
 
                     <!-- header -->
                     <Style Selector="^ ToggleButton#ExpanderHeader">
