@@ -47,16 +47,18 @@ public static class Services
         collection.AddGameDomainToGameIdMappingModel();
         collection.AddSingleton<IGameDomainToGameIdMappingCache>(serviceProvider =>
         {
-            if (LocalMappingCache.TryParseJsonFile(out var gameIdToDomain, out var gameDomainToId))
-            {
-                return new LocalMappingCache(gameIdToDomain, gameDomainToId);
-            }
-
-            return new GameDomainToGameIdMappingCache(
+            var fallbackCache = new GameDomainToGameIdMappingCache(
                 conn: serviceProvider.GetRequiredService<IConnection>(),
                 gqlClient: serviceProvider.GetRequiredService<INexusGraphQLClient>(),
                 logger: serviceProvider.GetRequiredService<ILogger<GameDomainToGameIdMappingCache>>()
             );
+
+            if (!LocalMappingCache.TryParseJsonFile(out var gameIdToDomain, out var gameDomainToId))
+            {
+                return fallbackCache;
+            }
+
+            return new LocalMappingCache(gameIdToDomain, gameDomainToId, fallbackCache);
         });
 
         collection

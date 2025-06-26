@@ -12,15 +12,20 @@ internal class LocalMappingCache : IGameDomainToGameIdMappingCache
 {
     private readonly FrozenDictionary<GameId, GameDomain> _gameIdToDomain;
     private readonly FrozenDictionary<GameDomain, GameId> _gameDomainToId;
+    private readonly IGameDomainToGameIdMappingCache _fallbackCache;
 
-    public LocalMappingCache(FrozenDictionary<GameId, GameDomain> gameIdToDomain, FrozenDictionary<GameDomain, GameId> gameDomainToId)
+    public LocalMappingCache(
+        FrozenDictionary<GameId, GameDomain> gameIdToDomain,
+        FrozenDictionary<GameDomain, GameId> gameDomainToId,
+        IGameDomainToGameIdMappingCache fallbackCache)
     {
         _gameIdToDomain = gameIdToDomain;
         _gameDomainToId = gameDomainToId;
+        _fallbackCache = fallbackCache;
     }
 
-    public GameDomain GetDomain(GameId id) => _gameIdToDomain[id];
-    public GameId GetId(GameDomain domain) => _gameDomainToId[domain];
+    public GameDomain GetDomain(GameId id) => _gameIdToDomain.TryGetValue(id, out var domain) ? domain : _fallbackCache[id];
+    public GameId GetId(GameDomain domain) => _gameDomainToId.TryGetValue(domain, out var id) ? id : _fallbackCache[domain];
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
