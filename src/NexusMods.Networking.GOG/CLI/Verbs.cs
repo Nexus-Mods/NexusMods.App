@@ -24,7 +24,7 @@ public static class Verbs
             .AddVerb(() => Login)
             .AddVerb(() => Index);
 
-    [Verb("gog login", "Indexes a Steam app and updates the given output folder")]
+    [Verb("gog login", "Logs into GOG")]
     private static async Task<int> Login([Injected] IClient client)
     {
         await client.Login(CancellationToken.None);
