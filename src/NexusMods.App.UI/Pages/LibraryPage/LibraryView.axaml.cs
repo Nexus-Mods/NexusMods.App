@@ -39,9 +39,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 }
 
                 this.WhenAnyValue(view => view.SearchTextBox.Text)
-                    .Throttle(TimeSpan.FromMilliseconds(300)) // Debounce input
-                    .DistinctUntilChanged()
-                    .ObserveOn(RxApp.MainThreadScheduler)
+                    .OnUI()
                     .Subscribe(searchText =>
                     {
                         if (ViewModel?.Adapter != null)
