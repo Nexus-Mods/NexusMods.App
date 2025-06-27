@@ -11,18 +11,6 @@ using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Dialog;
 
-public struct DialogParameters
-{
-    public string Text { get; set; }
-    public string Heading { get; set; }
-    public IconValue? Icon { get; set; }
-    public IMarkdownRendererViewModel? Markdown { get; set; }
-    public string InputLabel { get; set; }
-    public string InputWatermark { get; set; }
-    public string InputText { get; set; }
-    public string BottomText { get; set; }
-}
-
 public class DialogStandardContentViewModel : AViewModel<IDialogStandardContentViewModel>, IDialogStandardContentViewModel
 {
     public string Text { get; }
@@ -35,16 +23,16 @@ public class DialogStandardContentViewModel : AViewModel<IDialogStandardContentV
     public string BottomText { get; }
     public ReactiveCommand ClearInputCommand { get; set; }
 
-    public DialogStandardContentViewModel(DialogParameters dialogParameters)
+    public DialogStandardContentViewModel(StandardDialogParameters standardDialogParameters)
     {
-        Text = dialogParameters.Text;
-        Heading = dialogParameters.Heading;
-        Icon = dialogParameters.Icon;
-        MarkdownRenderer = dialogParameters.Markdown;
-        InputLabel = dialogParameters.InputLabel;
-        InputText = dialogParameters.InputText;
-        InputWatermark = dialogParameters.InputWatermark;
-        BottomText = dialogParameters.BottomText;
+        Text = standardDialogParameters.Text;
+        Heading = standardDialogParameters.Heading;
+        Icon = standardDialogParameters.Icon;
+        MarkdownRenderer = standardDialogParameters.Markdown;
+        InputLabel = standardDialogParameters.InputLabel;
+        InputText = standardDialogParameters.InputText;
+        InputWatermark = standardDialogParameters.InputWatermark;
+        BottomText = standardDialogParameters.BottomText;
 
         ClearInputCommand = new R3.ReactiveCommand(
             executeAsync: (_, cancellationToken) =>

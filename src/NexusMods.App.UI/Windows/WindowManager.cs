@@ -178,7 +178,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         tx.Commit();
     }
     
-    public async Task<ButtonDefinitionId> ShowDialog(IDialog dialog, DialogWindowType windowType)
+    public async Task<StandardDialogResult> ShowDialog(IDialog dialog, DialogWindowType windowType)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             throw new InvalidOperationException("Application lifetime is not configured properly.");

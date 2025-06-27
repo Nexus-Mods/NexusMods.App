@@ -10,17 +10,21 @@ namespace NexusMods.App.UI.Dialog;
 /// </summary>
 public static class DialogFactory
 {
-    public static Dialog CreateStandardDialog(string title, string text, DialogButtonDefinition[] buttonDefinitions)
+    public static Dialog CreateStandardDialog(string title, StandardDialogParameters standardDialogParameters, DialogButtonDefinition[] buttonDefinitions, DialogWindowSize windowSize = DialogWindowSize.Medium)
     {
-        // standard dialog so we can use the standard content view model
-        var contentViewModel = new DialogStandardContentViewModel(new DialogParameters
-        {
-            Text = text,
-        });
+        var contentViewModel = new DialogStandardContentViewModel(standardDialogParameters);
 
-        return CreateDialog(title, buttonDefinitions, contentViewModel);
+        return CreateDialog(title, buttonDefinitions, contentViewModel, windowSize);
     }
-
+    
+    /// <summary>
+    /// Creates a dialog with the specified title, button definitions, content view model, and window size.
+    /// </summary>
+    /// <param name="title"></param>
+    /// <param name="buttonDefinitions"></param>
+    /// <param name="contentViewModel"></param>
+    /// <param name="dialogWindowSize"></param>
+    /// <returns></returns>
     public static Dialog CreateDialog(
         string title,
         DialogButtonDefinition[] buttonDefinitions,

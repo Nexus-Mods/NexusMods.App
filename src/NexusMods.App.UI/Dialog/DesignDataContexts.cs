@@ -20,7 +20,7 @@ internal static class DesignDataContexts
             DialogStandardButtons.Cancel,
         ],
         new DialogStandardContentViewModel(
-            new DialogParameters()
+            new StandardDialogParameters()
             {
                 Text =
                     "This is a design-time dialog content view model. It is used to demonstrate the dialog's layout and functionality without requiring a full implementation of the content view model.",

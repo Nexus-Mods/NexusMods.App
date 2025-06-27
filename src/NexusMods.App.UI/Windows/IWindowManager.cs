@@ -68,5 +68,5 @@ public interface IWindowManager
     /// A task that represents the asynchronous operation. The task result contains the button definition ID 
     /// of the button that was clicked to close the dialog.
     /// </returns>
-    public Task<ButtonDefinitionId> ShowDialog(IDialog dialog, DialogWindowType windowType);
+    public Task<StandardDialogResult> ShowDialog(IDialog dialog, DialogWindowType windowType);
 }

@@ -14,7 +14,7 @@ public class DialogViewModel: IDialogViewModel
     public DialogWindowSize DialogWindowSize { get; }
     public IViewModelInterface? ContentViewModel { get; }
     public DialogButtonDefinition[] ButtonDefinitions { get; }
-    public ButtonDefinitionId Result { get; set; }
+    public StandardDialogResult Result { get; set; }
 
     public DialogViewModel(string title, DialogButtonDefinition[] buttonsDefinitions, IViewModelInterface contentViewModel, DialogWindowSize dialogWindowSize)
     {
@@ -27,7 +27,13 @@ public class DialogViewModel: IDialogViewModel
         ButtonPressCommand = new R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId>(id =>
             {
                 Console.WriteLine(id);
-                Result = id;
+                Result = new StandardDialogResult
+                {
+                    ButtonId = id,
+                    InputText = contentViewModel is IDialogStandardContentViewModel standardContentViewModel
+                        ? standardContentViewModel.InputText
+                        : string.Empty
+                };
                 return id;
             }
         );

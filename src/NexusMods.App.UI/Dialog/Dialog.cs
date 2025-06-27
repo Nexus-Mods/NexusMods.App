@@ -14,7 +14,7 @@ public class Dialog: IDialog
         _viewModel = viewModel;
     }
 
-    public Task<ButtonDefinitionId> Show(Window owner, bool isModal = false)
+    public Task<StandardDialogResult> Show(Window owner, bool isModal = false)
     {
         // Get the initial size and position of the owner window
         var ownerSize = owner.ClientSize;
@@ -42,7 +42,7 @@ public class Dialog: IDialog
             MinHeight = 150,
         };
 
-        var tcs = new TaskCompletionSource<ButtonDefinitionId>();
+        var tcs = new TaskCompletionSource<StandardDialogResult>();
 
         // when the window is closed, set the result and complete the task
         window.Closed += (o, args) =>

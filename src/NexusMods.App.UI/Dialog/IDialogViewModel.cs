@@ -12,5 +12,5 @@ public interface IDialogViewModel : IViewModelInterface
     public DialogWindowSize DialogWindowSize { get; }
     public IViewModelInterface? ContentViewModel { get; }
     public DialogButtonDefinition[] ButtonDefinitions { get; }
-    public ButtonDefinitionId Result { get; set; }
+    public StandardDialogResult Result { get; set; }
 }
