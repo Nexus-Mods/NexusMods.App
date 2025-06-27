@@ -1,6 +1,7 @@
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.WorkspaceSystem;
+using R3;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
@@ -8,20 +9,16 @@ public interface ILoadoutViewModel : IPageViewModelInterface
 {
     LoadoutTreeDataGridAdapter Adapter { get; }
 
-    R3.ReactiveCommand<R3.Unit> SwitchViewCommand { get; }
-    
-    R3.ReactiveCommand<R3.Unit> RevisionUrlLinkCommand { get; }
-    
-    R3.ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
+    ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
     
     string EmptyStateTitleText { get; }
 
-    R3.ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
+    ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
 
-    R3.ReactiveCommand<R3.Unit> RemoveItemCommand { get; }
+    ReactiveCommand<Unit> RemoveItemCommand { get; }
     
-    R3.ReactiveCommand<R3.Unit> CollectionToggleCommand { get; }
-    R3.ReactiveCommand<R3.Unit> DeselectItemsCommand { get; }
+    ReactiveCommand<Unit> CollectionToggleCommand { get; }
+    ReactiveCommand<Unit> DeselectItemsCommand { get; }
     
     public int SelectionCount { get; } 
     
@@ -40,5 +37,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     
     public LoadoutPageSubTabs SelectedSubTab { get; }
 
-    R3.ReactiveCommand<R3.Unit> CommandUploadRevision { get; }
+    ReactiveCommand<Unit> CommandUploadRevision { get; }
+    ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
+
+    ReactiveCommand<Unit> CommandRenameGroup { get; }
 }

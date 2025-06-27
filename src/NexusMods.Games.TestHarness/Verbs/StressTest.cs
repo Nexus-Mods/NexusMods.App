@@ -39,7 +39,7 @@ public class StressTest
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
         AdvancedManualInstallerUI.Headless = true;
 
-        var domain = (await domainToIdCache.TryGetDomainAsync(game.GameId, token)).Value.Value;
+        var domain = domainToIdCache[game.GameId].Value;
         var mods = await nexusApiClient.ModUpdatesAsync(domain, PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.V2.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 

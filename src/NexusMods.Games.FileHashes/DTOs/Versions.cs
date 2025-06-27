@@ -19,6 +19,11 @@ public class VersionContribDefinition
     /// Steam manifest ids for this version
     /// </summary>
     public string[] Steam { get; set; } = [];
+    
+    /// <summary>
+    /// Epic Games Store build ids for this version
+    /// </summary>
+    public string[] Epic { get; set; } = [];
 }
 
 
