@@ -64,6 +64,12 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.BindCommand(ViewModel, vm => vm.CommandUploadRevision, view => view.ButtonUploadCollectionRevision)
                 .AddTo(disposables);
 
+            this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonOpenRevisionUrl)
+                .AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
+                .AddTo(disposables);
+
             this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
                 .AddTo(disposables);
             

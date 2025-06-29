@@ -164,10 +164,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CommandViewOnNexusMods = new ReactiveCommand(
             executeAsync: async (_, cancellationToken) =>
             {
-                var gameDomain = await mappingCache.TryGetDomainAsync(_collection.GameId, cancellationToken);
-                if (!gameDomain.HasValue) throw new NotSupportedException($"Expected a valid game domain for `{_collection.GameId}`");
-
-                var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, _collection.Slug, revisionMetadata.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
+                var gameDomain = mappingCache[_collection.GameId];
+                var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain, _collection.Slug, revisionMetadata.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
                 await osInterop.OpenUrl(uri, logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Sequential,

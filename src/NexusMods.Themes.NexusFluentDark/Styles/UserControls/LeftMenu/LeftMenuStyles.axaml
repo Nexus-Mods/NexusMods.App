@@ -1,48 +1,92 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loadout="clr-namespace:NexusMods.App.UI.LeftMenu.Loadout;assembly=NexusMods.App.UI"
-        xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home;assembly=NexusMods.App.UI">
+        xmlns:home="clr-namespace:NexusMods.App.UI.LeftMenu.Home;assembly=NexusMods.App.UI"
+        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
     <Design.PreviewWith>
-        <Border Padding="8" Width="500" Height="500">
-            
-            <Grid ColumnDefinitions="200, 200">
-                <home:HomeLeftMenuView Grid.Column="0" >
-                    <home:HomeLeftMenuView.DataContext>
-                        <home:HomeLeftMenuDesignViewModel/>
-                    </home:HomeLeftMenuView.DataContext>
-                </home:HomeLeftMenuView>
-                
-                <loadout:LoadoutLeftMenuView Grid.Column="1">
-                    <loadout:LoadoutLeftMenuView.DataContext>
-                        <loadout:LoadoutLeftMenuDesignViewModel/>
-                    </loadout:LoadoutLeftMenuView.DataContext>
-                </loadout:LoadoutLeftMenuView>
-            </Grid>
+        <Border Padding="0">
+
+            <!-- <home:HomeLeftMenuView Grid.Column="0"> -->
+            <!--     <home:HomeLeftMenuView.DataContext> -->
+            <!--         <home:HomeLeftMenuDesignViewModel /> -->
+            <!--     </home:HomeLeftMenuView.DataContext> -->
+            <!-- </home:HomeLeftMenuView> -->
+
+            <loadout:LoadoutLeftMenuView Grid.Column="1">
+                <loadout:LoadoutLeftMenuView.DataContext>
+                    <loadout:LoadoutLeftMenuDesignViewModel />
+                </loadout:LoadoutLeftMenuView.DataContext>
+            </loadout:LoadoutLeftMenuView>
         </Border>
     </Design.PreviewWith>
-    
+
+    <Styles.Resources>
+
+        <!-- new control theme for the expander header -->
+        <ControlTheme x:Key="LeftMenuExpanderToggleButtonControlTheme" TargetType="ToggleButton"
+                      BasedOn="{StaticResource FluentExpanderToggleButtonTheme}">
+
+            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
+
+            <Style Selector="^ /template/ icons|UnifiedIcon#ExpandCollapseChevron">
+                <Setter Property="Value" Value="{x:Static icons:IconValues.ChevronUp}" />
+            </Style>
+
+            <Style Selector="^ /template/ Border#ExpandCollapseChevronBorder">
+                <Setter Property="Margin" Value="0" />
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            </Style>
+
+            <!-- PointerOver -->
+            <Style Selector="^:pointerover /template/ Border#ToggleButtonBackground">
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ Border#ExpandCollapseChevronBorder">
+                <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ icons|UnifiedIcon#ExpandCollapseChevron">
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
+            </Style>
+
+        </ControlTheme>
+
+    </Styles.Resources>
+
     <!-- HOME & LOADOUT LEFT MENU -->
     <Style Selector="
         home|HomeLeftMenuView,
         loadout|LoadoutLeftMenuView">
-        
+
+        <!-- add resources -->
+
+
         <!-- MAIN STACK -->
         <Style Selector="^ StackPanel#LeftMenuStack">
-            <Setter Property="Spacing" Value="{StaticResource Spacing-1.5}" />
 
-            <!-- SEPERATOR AND TITLE STACK -->
-            <Style Selector="^ > StackPanel">
-                <Setter Property="Margin" Value="0,4,0,4" />
-                <Style Selector="^ > Separator">
-                    <Setter Property="Margin" Value="0,0,0,12" />
-                </Style>
-                <Style Selector="^ > TextBlock">
-                    <Setter Property="Theme" Value="{StaticResource TitleXSSemiTheme}" />
-                    <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-                </Style>
+            <Style Selector="^ Separator">
+                <Setter Property="Margin" Value="0,6,0,4" />
+                <Setter Property="Height" Value="1" />
+                <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
             </Style>
+
+            <Style Selector="^ Expander">
+
+                <Style Selector="^:down ToggleButton#ExpanderHeader">
+                    <Setter Property="Theme" Value="{StaticResource LeftMenuExpanderToggleButtonControlTheme}" />
+                </Style>
+
+
+            </Style>
+
         </Style>
     </Style>
-    
-    
+
+
 </Styles>
