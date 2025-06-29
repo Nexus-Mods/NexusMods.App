@@ -781,7 +781,7 @@
 		<value>Zaktualizuj wszystko</value>
 	</data>
 	<data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
-		<value>Zainstalowane mody</value>
+		<value>Zainstalowane</value>
 	</data>
 	<data name="LeftMenu_Label_Utilities" xml:space="preserve">
 		<value>Narzędzia</value>
