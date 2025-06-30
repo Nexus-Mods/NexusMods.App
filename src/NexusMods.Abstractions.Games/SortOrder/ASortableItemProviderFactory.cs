@@ -117,25 +117,26 @@ public abstract class ASortableItemProviderFactory<TItem, TKey> : ISortableItemP
     private bool _isDisposed;
     
     /// <inheritdoc />
-    public virtual void Dispose()
+    public void Dispose()
     {
         Dispose(true);
+        System.GC.SuppressFinalize(this);
     }
-    
+
     protected virtual void Dispose(bool disposing)
     {
         if (_isDisposed) return;
-        
+
         if (disposing)
         {
             foreach (var provider in _providers.Values)
             {
                 provider.Dispose();
-                _providers.Clear();
             }
+
+            _providers.Clear();
         }
-        
+
         _isDisposed = true;
     }
-
 }
