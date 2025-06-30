@@ -16,12 +16,6 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
     {
         InitializeComponent();
         
-        InputTextBox.AttachedToVisualTree += (s, e) =>
-        {
-            // Focus the input text box when the view is attached to the visual tree
-            InputTextBox.Focus();
-        };
-
         this.WhenActivated(disposables =>
             {
                 // COMMANDS
@@ -111,7 +105,14 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
                 // only show the input stack if not null or empty
                 this.WhenAnyValue(view => view.ViewModel!.InputLabel)
                     .Select(string.IsNullOrWhiteSpace)
-                    .Subscribe(b => InputStack.IsVisible = !b)
+                    .Subscribe(b =>
+                        {
+                            InputStack.IsVisible = !b;
+                            
+                            // If the input stack is visible, focus the input text box
+                            InputTextBox.Focus();
+                        }
+                    )
                     .DisposeWith(disposables);
 
                 // only show the bottom text if not null or empty
