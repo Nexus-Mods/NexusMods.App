@@ -182,7 +182,7 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             throw new InvalidOperationException("Application lifetime is not configured properly.");
-
+        
         // always pass the window to the dialog so we can do things with properties of the parent window
         return windowType switch
         {

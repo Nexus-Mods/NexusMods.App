@@ -15,6 +15,12 @@ public partial class DialogStandardContentView : ReactiveUserControl<IDialogStan
     public DialogStandardContentView()
     {
         InitializeComponent();
+        
+        InputTextBox.AttachedToVisualTree += (s, e) =>
+        {
+            // Focus the input text box when the view is attached to the visual tree
+            InputTextBox.Focus();
+        };
 
         this.WhenActivated(disposables =>
             {

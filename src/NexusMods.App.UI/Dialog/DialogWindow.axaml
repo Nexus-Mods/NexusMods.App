@@ -11,7 +11,7 @@
     xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
     mc:Ignorable="d" d:DesignWidth="450"
     x:Class="NexusMods.App.UI.Dialog.DialogWindow"
-    d:DataContext="{x:Static dialog:DesignDataContexts.StandardContent}"
+    d:DataContext="{x:Static dialog:DesignDataContexts.StandardContentWithMarkdown}"
     Background="{StaticResource SurfaceLowBrush}"
     SizeToContent="Height">
 

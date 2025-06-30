@@ -1,7 +1,7 @@
 namespace NexusMods.App.UI.Dialog;
 
-public struct StandardDialogResult
+public record StandardDialogResult
 {
-    public ButtonDefinitionId ButtonId { get; set; }
-    public string InputText { get; set; }
+    public ButtonDefinitionId ButtonId { get; set; } = ButtonDefinitionId.From("none");
+    public string InputText { get; set; } = string.Empty;
 }

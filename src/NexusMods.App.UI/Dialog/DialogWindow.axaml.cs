@@ -141,6 +141,7 @@ public partial class DialogWindow : ReactiveWindow<IDialogViewModel>, IDisposabl
         }
 
         buttonsFlexPanel.IsVisible = true;
+
     }
     
     public void Dispose()

@@ -6,25 +6,33 @@ using NexusMods.UI.Sdk.Icons;
 namespace NexusMods.App.UI.Dialog;
 
 /// <summary>
-/// Provides a factory for creating message boxes with specified properties.
+/// A factory class for creating various types of dialogs.
 /// </summary>
 public static class DialogFactory
 {
+    /// <summary>
+    /// Creates a standard dialog with the specified title, parameters, button definitions, and window size.
+    /// </summary>
+    /// <param name="title">The title of the dialog.</param>
+    /// <param name="standardDialogParameters">The parameters for the standard dialog content.</param>
+    /// <param name="buttonDefinitions">An array of button definitions for the dialog.</param>
+    /// <param name="windowSize">The size of the dialog window. Defaults to <see cref="DialogWindowSize.Medium"/>.</param>
+    /// <returns>A <see cref="Dialog"/> instance configured with the specified parameters.</returns>
     public static Dialog CreateStandardDialog(string title, StandardDialogParameters standardDialogParameters, DialogButtonDefinition[] buttonDefinitions, DialogWindowSize windowSize = DialogWindowSize.Medium)
     {
         var contentViewModel = new DialogStandardContentViewModel(standardDialogParameters);
 
         return CreateDialog(title, buttonDefinitions, contentViewModel, windowSize);
     }
-    
+
     /// <summary>
     /// Creates a dialog with the specified title, button definitions, content view model, and window size.
     /// </summary>
-    /// <param name="title"></param>
-    /// <param name="buttonDefinitions"></param>
-    /// <param name="contentViewModel"></param>
-    /// <param name="dialogWindowSize"></param>
-    /// <returns></returns>
+    /// <param name="title">The title of the dialog.</param>
+    /// <param name="buttonDefinitions">An array of button definitions for the dialog.</param>
+    /// <param name="contentViewModel">The content view model to be displayed in the dialog.</param>
+    /// <param name="dialogWindowSize">The size of the dialog window. Defaults to <see cref="DialogWindowSize.Medium"/>.</param>
+    /// <returns>A <see cref="Dialog"/> instance configured with the specified parameters.</returns>
     public static Dialog CreateDialog(
         string title,
         DialogButtonDefinition[] buttonDefinitions,

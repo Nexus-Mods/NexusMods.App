@@ -17,7 +17,7 @@ public class DialogStandardContentDesignViewModel : AViewModel<IDialogStandardCo
     public string Text { get; } = "Sample text for design-time view.";
     public string Heading { get; } = "Sample Heading";
     public IconValue? Icon { get; } = IconValues.Cog;
-    public IMarkdownRendererViewModel? MarkdownRenderer { get; } = null;
+    public IMarkdownRendererViewModel? MarkdownRenderer { get; }
     [Reactive] public string InputText { get; set; } = "Sample input text";
     public string InputLabel { get; set; } = "Sample Input Label";
     public string InputWatermark { get; set; } = "Enter text here...";

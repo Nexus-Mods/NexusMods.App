@@ -23,6 +23,7 @@ public class DialogViewModel: IDialogViewModel
         DialogWindowSize = dialogWindowSize;
         ContentViewModel = contentViewModel;
         ButtonDefinitions = buttonsDefinitions;
+        Result = new StandardDialogResult();
         
         ButtonPressCommand = new R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId>(id =>
             {

@@ -37,32 +37,16 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     {
         if (ViewModel is null) return;
 
-        try
-        {
-            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-            Console.WriteLine($@"result: {result}");
-        }
-        catch (Exception ex)
-        {
-            // handle exception, e.g. log it
-            Console.WriteLine($"Exception caught. Did you Alt+F4!? {ex.Message}");
-        }
+        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        Console.WriteLine($@"result: {result}");
     }
 
     private async void ShowModeless(IDialog dialog)
     {
         if (ViewModel is null) return;
 
-        try
-        {
-            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
-            Console.WriteLine($@"result: {result}");
-        }
-        catch (Exception ex)
-        {
-            // handle exception, e.g. log it
-            Console.WriteLine($"Exception caught. Did you Alt+F4!? {ex.Message}");
-        }
+        var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modeless);
+        Console.WriteLine($@"result: {result}");
     }
 
     // event handlers for button clicks
@@ -87,7 +71,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                 new StandardDialogParameters()
                 {
                     Text = "This is a standard modeless dialog with OK and Cancel buttons.",
-                }, 
+                },
                 [DialogStandardButtons.Ok, DialogStandardButtons.Cancel]
             )
         );
@@ -113,41 +97,32 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
         // );
     }
 
-    private async void ShowModalExampleMarkdown_OnClick(object? sender, RoutedEventArgs e)
+    private void ShowModalExampleMarkdown_OnClick(object? sender, RoutedEventArgs e)
     {
-        // var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-        // // markdownRendererViewModel.Contents = """
-        // //     ## This is a markdown message box
-        // //     
-        // //     This is an example of a markdown message box.
-        // //     
-        // //     You can use **bold** and *italic* text.
-        // //     
-        // //     You can also use [links](https://www.nexusmods.com).
-        // //     """;
-        // markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
-        //
-        // var dialog = DialogFactory.CreateMessageDialog(
-        //     title: "Markdown Message Box",
-        //     text: "This is an example of a markdown message box.",
-        //     heading: "Lovely markdown just below",
-        //     buttonDefinitions:
-        //     [
-        //         DialogStandardButtons.Cancel,
-        //         new DialogButtonDefinition(
-        //             "This is great",
-        //             ButtonDefinitionId.From("read-markdown"),
-        //             ButtonAction.Accept,
-        //             ButtonStyling.Info
-        //         )
-        //     ],
-        //     icon: IconValues.PictogramSettings,
-        //     dialogWindowSize: DialogWindowSize.Medium,
-        //     markdownRenderer: markdownRendererViewModel
-        // );
-        //
-        // var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        // Console.WriteLine($@"result: {result}");
+        var markdownRendererViewModel = ViewModel!.ServiceProvider.GetRequiredService<IMarkdownRendererViewModel>();
+        markdownRendererViewModel.Contents = MarkdownRendererViewModel.DebugText;
+
+        ShowModal(DialogFactory.CreateStandardDialog(
+                "Markdown Message Box",
+                new StandardDialogParameters()
+                {
+                    Text = "This is an example of a markdown message box.",
+                    Heading = "Lovely markdown just below",
+                    Icon = IconValues.PictogramSettings,
+                    Markdown = markdownRendererViewModel,
+                },
+                buttonDefinitions:
+                [
+                    DialogStandardButtons.Cancel,
+                    new DialogButtonDefinition(
+                        "This is great",
+                        ButtonDefinitionId.From("read-markdown"),
+                        ButtonAction.Accept,
+                        ButtonStyling.Info
+                    ),
+                ]
+            )
+        );
     }
 
     private async void ShowModalExampleCustom_OnClick(object? sender, RoutedEventArgs e)
@@ -294,21 +269,24 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
 
     private async void ShowModalInput_OnClick(object? sender, RoutedEventArgs e)
     {
-        // try
-        // {
-        //     if (ViewModel is null) return;
-        //
-        //     var dialog = DialogFactory.TestInputDialog;
-        //
-        //     // tell windowmanager to show it
-        //     var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        //
-        //     // check viewmodel properties when dialog has been closed
-        //     Console.WriteLine($@"result: {result}");
-        // }
-        // catch
-        // {
-        //     throw; // TODO handle exception
-        // }
+        ShowModal(
+            DialogFactory.CreateStandardDialog(
+                "Name your Collection",
+                new StandardDialogParameters()
+                {
+                    Text = "This is the name that will appear in the left hand menu and on the Collections page.",
+                    InputLabel = "Collection name",
+                    InputWatermark = "e.g. My Armour Mods",
+                },
+                [
+                    DialogStandardButtons.Cancel,
+                    new DialogButtonDefinition(
+                        "Create",
+                        ButtonDefinitionId.From("create"),
+                        ButtonAction.Accept,
+                        ButtonStyling.Primary
+                    ),
+                ]
+            ));
     }
 }
