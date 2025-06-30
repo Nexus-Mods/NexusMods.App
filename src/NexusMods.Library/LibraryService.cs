@@ -281,7 +281,9 @@ public sealed class LibraryService : ILibraryService
     {
         using var tx = _connection.BeginTransaction();
         var result = await ReplaceLinkedItemsInAllLoadouts(replacements, options, tx);
-        await tx.Commit();
+        if (result == LibraryItemReplacementResult.Success)
+            await tx.Commit();
+
         return result;
     }
 }
