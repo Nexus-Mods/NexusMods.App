@@ -883,8 +883,12 @@ After asking design, we're choosing to simply open the mod page for now.
     {
         var oldItemsToRemove = new List<LibraryItem.ReadOnly>();
         
-        foreach (var (oldItem, _) in oldToNewLibraryMapping)
+        foreach (var (oldItem, newItem) in oldToNewLibraryMapping)
         {
+            // If the new item is not valid (e.g., download failed), we should not remove the old item.
+            if (!newItem.IsValid())
+                continue;
+            
             // Check if the old item is still linked to any collections
             var collectionsWithItem = _libraryService.CollectionsWithLibraryItem(oldItem, excludeReadOnlyCollections: false);
             
