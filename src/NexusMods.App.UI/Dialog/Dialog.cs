@@ -22,14 +22,6 @@ public class Dialog : IDialog
     /// <returns>A task that represents the asynchronous operation, containing the result of the dialog.</returns>
     public Task<StandardDialogResult> Show(Window owner, bool isModal = false)
     {
-        // Get the initial size and position of the owner window
-        // var ownerSize = owner.ClientSize;
-        // var ownerPosition = owner.Position; 
-        var screens = owner.Screens;
-        var screen = screens.ScreenFromVisual(owner);
-        // If we can't determine the screen height, default to 600
-        //var screenHeight = screen?.WorkingArea.Height ?? 500;
-
         var window = new DialogWindow()
         {
             DataContext = _viewModel,
@@ -63,22 +55,6 @@ public class Dialog : IDialog
         {
             window.Dispose();
             tcs.TrySetResult(_viewModel.Result);
-        };
-
-        window.Resized += (o, args) =>
-        {
-            Console.WriteLine($@"window.Resized - Position ({window.Position}) Size ({window.ClientSize}) {args.Reason}");
-        };
-        
-        window.Opened += (o, args) =>
-        {
-            Console.WriteLine($@"window.Opened - Position ({window.Position}) Size ({window.ClientSize})");
-        };
-        
-        window.Loaded += (o, args) =>
-        {
-            Console.WriteLine($@"window.Loaded - Position ({window.Position}) Size ({window.ClientSize})");
-            
         };
 
         // show the window in the taskbar if it's not modal
