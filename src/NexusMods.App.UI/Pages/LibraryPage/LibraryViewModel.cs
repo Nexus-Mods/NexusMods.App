@@ -471,9 +471,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 );
 
                 await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
-
-                // User chose to delete the downloaded files from library
-                await _libraryService.RemoveLibraryItems(successfulDownloads);
             }
             else
             {
