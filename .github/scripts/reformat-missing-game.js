@@ -31,13 +31,11 @@ async function run() {
     process.exit(0);
   }
 
-  // Example: Extract fields using RegExp (adjust as needed)
+  // Extract fields using RegExp
   const game = body.match(/### Game\s*\n([^\n]+)/i)?.[1]?.trim() || "N/A";
   const os = body.match(/### Operating System\s*\n([^\n]+)/i)?.[1]?.trim() || "N/A";
   const linuxDistro = body.match(/### Linux Distribution\s*\n([^\n]+)/i)?.[1]?.trim() || "";
   const store = body.match(/### Game Launcher\s*\n([^\n]+)/i)?.[1]?.trim() || "N/A";
-//   const otherStore = body.match(/### Other Store\s*\n([\s\S]*?)\n###/i)?.[1]?.trim() ||
-//     body.match(/### Other Store\s*\n([\s\S]*)/i)?.[1]?.trim() || "N/A";
   const logs = body.match(/### Attach Log Files\s*\n([\s\S]*)/i)?.[1]?.trim() || "N/A";
 
   // Build new issue body
@@ -94,6 +92,17 @@ ${logs}
     console.log("Comment posted successfully.");
   } else {
     console.log("No comment needed based on the responses.");
+  }
+
+  // If the user has added nonsense to the logs section, automatically flag the issue as such
+  if (!logs.includes('nexusmods.app.main') && !logs.includes('nexusmods.app.slim') && !logs.includes('Nexus Mods App log file')) {
+    console.log('Issue doesn\`t seem to contain valid logs, tagging invalid');
+    await octokit.issues.addLabels({
+        owner,
+        repo: repoName,
+        issue_number: issueNumber,
+        labels: [ 'invalid', 'needs logs' ]
+    });
   }
 }
 
