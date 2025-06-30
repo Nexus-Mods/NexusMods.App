@@ -363,14 +363,25 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             var updateButtonId = ButtonDefinitionId.From("Update");
             var cancelButtonId = ButtonDefinitionId.From("Cancel");
 
-            var dialogDesc = new StringBuilder();
-            dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1);
-            dialogDesc.AppendLine();
-            foreach (var collectionAffected in collectionsAffected)
-                dialogDesc.AppendLine(collectionAffected.Key.AsLoadoutItemGroup().AsLoadoutItem().Name);
-                
-            dialogDesc.AppendLine();
-            dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
+            var dialogDesc = new StringBuilder()
+                .AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1)
+                .AppendLine();
+            
+                var collectionsGroupedByLoadout = collectionsAffected.Select(collection => collection.Key.AsLoadoutItemGroup().AsLoadoutItem())
+                    .GroupBy(item => item.Loadout.Name)
+                    .OrderBy(loadoutGroup => loadoutGroup.Key);
+                    
+                foreach (var loadoutGroup in collectionsGroupedByLoadout)
+                {
+                    dialogDesc.AppendLine($"{loadoutGroup.Key}:");
+                    foreach (var collection in loadoutGroup)
+                    {
+                        dialogDesc.AppendLine($"{collection.Name}");
+                    }
+                    dialogDesc.AppendLine();
+                }
+
+                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
 
             var confirmDialog = DialogFactory.CreateMessageDialog(
                 title: Language.Library_Update_InstalledInMultipleCollections_Title,
@@ -448,14 +459,14 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 // We will pretend all items failed to replace, as we can't tell which
                 // ones currently failed. The replace is an atomic operation either way,
                 // so either one fails or all fail regardless.
-                var description = Language.Library_Update_ReplaceFailed_Description + "\n";
-                var modsFailedToBuildSb = new StringBuilder();
-                foreach (var failed in oldToNewLibraryMapping)
-                    modsFailedToBuildSb.AppendLine($"{failed.oldItem.Name}");
+                var description = new StringBuilder()
+                    .AppendLine(Language.Library_Update_ReplaceFailed_Description)
+                    .AppendJoin(Environment.NewLine, oldToNewLibraryMapping.Select(failed => failed.oldItem.Name))
+                    .ToString();
 
                 var errorDialog = DialogFactory.CreateMessageDialog(
                     title: Language.Library_Update_ReplaceFailed_Title,
-                    text: description + modsFailedToBuildSb.ToString(),
+                    text: description,
                     buttonDefinitions: [DialogStandardButtons.Ok]
                 );
 
@@ -466,20 +477,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             }
             else
             {
-                // Replace of all items worked, but some download failed.
-                // Let them know.
+                // Replace of all items worked, but if some download failed let them know.
                 if (downloadErrors.Count > 0)
                 {
-                    var finalDescription = new StringBuilder();
-                    finalDescription.AppendLine(Language.Library_Update_Success_Description1);
-                    finalDescription.AppendLine();
-                    foreach (var successItem in oldToNewLibraryMapping)
-                        finalDescription.AppendLine($"{successItem.oldItem.Name}");
-
-                    finalDescription.AppendLine();
-                    finalDescription.AppendLine(Language.Library_Update_Success_Description2);
-                    foreach (var downloadError in downloadErrors)
-                        finalDescription.AppendLine($"{downloadError.File.Name}");
+                    var finalDescription = new StringBuilder()
+                        .AppendLine(Language.Library_Update_Success_Description1)
+                        .AppendLine()
+                        .AppendJoin(Environment.NewLine, oldToNewLibraryMapping.Select(mapping => mapping.oldItem.Name))
+                        .AppendLine()
+                        .AppendLine(Language.Library_Update_Success_Description2)
+                        .AppendJoin(Environment.NewLine, downloadErrors.Select(error => error.File.Name))
+                        .ToString();
                         
                     var successDialog = DialogFactory.CreateMessageDialog(
                         title: Language.Library_Update_Success_Title,
