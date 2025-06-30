@@ -7,55 +7,61 @@
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="400"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.UnsupportedModPageView">
     <Design.DataContext>
         <ui:UnsupportedModPageDesignViewModel />
     </Design.DataContext>
 
+    <!-- <reactiveUi:ReactiveUserControl.Styles> -->
+    <!--      -->
+    <!--     <Style Selector="^ Grid#MainGrid"> -->
+    <!-- -->
+    <!--         <Style Selector="Border.TopPart"> -->
+    <!--             <Setter Property="Padding" Value="50,0,24,24" /> -->
+    <!--         </Style> -->
+    <!-- -->
+    <!--         <Style Selector="Border.OverlayHeaderSection"> -->
+    <!--             <Setter Property="Margin" Value="0,0,0,16" /> -->
+    <!--         </Style> -->
+    <!-- -->
+    <!--         <Style Selector="icons|UnifiedIcon#WarningIcon"> -->
+    <!--             <Setter Property="Size" Value="20" /> -->
+    <!--             <Setter Property="Margin" Value="0,0,8,8" /> -->
+    <!--         </Style> -->
+    <!-- -->
+    <!--         <Style Selector="TextBlock.ModNameTitle"> -->
+    <!--             <Setter Property="Margin" Value="0,0,0,8" /> -->
+    <!--         </Style> -->
+    <!-- -->
+    <!--         <Style Selector="TextBlock.MessageTitle"> -->
+    <!--             <Setter Property="Margin" Value="0,0,0,12" /> -->
+    <!--         </Style> -->
+    <!-- -->
+    <!--         <Style Selector="TextBlock.DescriptionText"> -->
+    <!--             <Setter Property="Margin" Value="0,0,0,4" /> -->
+    <!--         </Style> -->
+    <!-- -->
+    <!--         <Style Selector="Button.FooterButton"> -->
+    <!--             <Setter Property="Padding" Value="16, 6, 16, 6" /> -->
+    <!-- -->
+    <!--             <Style Selector="^#CancelButton"> -->
+    <!--                 <Setter Property="Margin" Value="24, 24, 0, 24" /> -->
+    <!--             </Style> -->
+    <!-- -->
+    <!--             <Style Selector="^#CancelButton"> -->
+    <!--                 <Setter Property="Margin" Value="8, 24, 24, 24" /> -->
+    <!--             </Style> -->
+    <!--         </Style> -->
+    <!-- -->
+    <!--     </Style> -->
+    <!-- -->
+    <!-- </reactiveUi:ReactiveUserControl.Styles> -->
+
     <Grid RowDefinitions="*, Auto">
-        <Grid.Styles>
 
-            <Style Selector="Border.TopPart">
-                <Setter Property="Padding" Value="24,0,24,24" />
-            </Style>
-
-            <Style Selector="Border.OverlayHeaderSection">
-                <Setter Property="Margin" Value="0,0,0,16" />
-            </Style>
-
-            <Style Selector="icons|UnifiedIcon#WarningIcon">
-                <Setter Property="Size" Value="20" />
-                <Setter Property="Margin" Value="0,0,8,8" />
-            </Style>
-
-            <Style Selector="TextBlock.ModNameTitle">
-                <Setter Property="Margin" Value="0,0,0,8" />
-            </Style>
-
-            <Style Selector="TextBlock.MessageTitle">
-                <Setter Property="Margin" Value="0,0,0,12" />
-            </Style>
-
-            <Style Selector="TextBlock.DescriptionText">
-                <Setter Property="Margin" Value="0,0,0,4" />
-            </Style>
-
-            <Style Selector="Button.FooterButton">
-                <Setter Property="Padding" Value="16, 6, 16, 6" />
-
-                <Style Selector="^#CancelButton">
-                    <Setter Property="Margin" Value="24, 24, 0, 24" />
-                </Style>
-
-                <Style Selector="^#CancelButton">
-                    <Setter Property="Margin" Value="8, 24, 24, 24" />
-                </Style>
-            </Style>
-
-        </Grid.Styles>
-
-        <Border Grid.Row="0" Classes="Rounded-t-lg High" HorizontalAlignment="Stretch">
+        <Border Grid.Row="0" HorizontalAlignment="Stretch">
+            
             <Border Classes="TopPart" x:Name="TopContentBorder">
                 <Grid RowDefinitions="Auto, *">
 
@@ -73,22 +79,22 @@
                         <StackPanel Orientation="Vertical">
 
                             <TextBlock Theme="{StaticResource HeadingMDSemiTheme}"
-                                       Classes="ModNameTitle" Text="TEMP MOD NAME"
+                                       Text="TEMP MOD NAME"
                                        x:Name="ModNameTextBlock" />
 
                             <TextBlock Theme="{StaticResource HeadingMDSemiTheme}"
-                                       Classes="MessageTitle"
+                                       
                                        Text="{x:Static resources:Language.UnsupportedTitleTextBlock_This_mod_is_not_supported}"
-                                       x:Name="UnsupportedTitleTextBlock" 
-                                       IsVisible="False"/>
+                                       x:Name="UnsupportedTitleTextBlock"
+                                       IsVisible="False" />
 
                             <TextBlock Theme="{StaticResource BodyLGNormalTheme}"
-                                       Classes="DescriptionText" TextWrapping="Wrap"
+                                       TextWrapping="Wrap"
                                        Text="{x:Static resources:Language.UnsupportedDescriptionTextBlock_This_mod_is_structured}"
                                        x:Name="UnsupportedDescriptionTextBlock" />
 
                             <TextBlock Theme="{StaticResource BodyLGNormalTheme}"
-                                       Classes="DescriptionText" TextWrapping="Wrap"
+                                       TextWrapping="Wrap"
                                        Text="{x:Static resources:Language.ExtraDescriptionTextBlock_If_you_are_confident}"
                                        x:Name="ExtraDescriptionTextBlock" />
                         </StackPanel>

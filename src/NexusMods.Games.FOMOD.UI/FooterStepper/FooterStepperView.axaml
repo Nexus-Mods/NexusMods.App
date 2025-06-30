@@ -22,8 +22,7 @@
                                      Grid.Column="0" 
                                      HorizontalAlignment="Left"
                                      Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}"
-                                     LeftIcon="{x:Static icons:IconValues.ArrowBack}"
-                                     ShowIcon="Left"/>
+                                     Fill="Weak"/>
 
             <ProgressBar x:Name="ProgressBar"
                          Grid.Column="1" Classes="Stepper" Minimum="0" Maximum="1"
@@ -33,8 +32,8 @@
                                      Grid.Column="2" 
                                      HorizontalAlignment="Left"
                                      Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}"
-                                     RightIcon="{x:Static icons:IconValues.ArrowForward}"
-                                     ShowIcon="Right"/>
+                                     Type="Primary"
+                                     Fill="Strong"/>
         </Grid>
     </Border>
 

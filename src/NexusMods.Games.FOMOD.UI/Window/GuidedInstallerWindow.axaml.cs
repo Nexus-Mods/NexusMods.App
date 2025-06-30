@@ -1,6 +1,8 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
 using ReactiveUI;
@@ -8,9 +10,15 @@ using ReactiveUI;
 namespace NexusMods.Games.FOMOD.UI;
 
 public partial class GuidedInstallerWindow : ReactiveWindow<IGuidedInstallerWindowViewModel>
-{
+{            
     public GuidedInstallerWindow()
     {
+        ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
+        ExtendClientAreaToDecorationsHint = true;
+        ExtendClientAreaTitleBarHeightHint = -1;
+        WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        CanResize = true;
+        
         InitializeComponent();
 
 #if DEBUG
@@ -20,6 +28,9 @@ public partial class GuidedInstallerWindow : ReactiveWindow<IGuidedInstallerWind
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.WindowName, view => view.Title)
+                .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.WindowName, view => view.TitleTextBlock.Text)
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.ActiveStepViewModel, view => view.StepViewHost.ViewModel)

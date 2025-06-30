@@ -8,9 +8,6 @@
                                 xmlns:modContent="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.ModContent"
                                 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.ModContent.ModContentView">
-    <Design.DataContext>
-        <modContent:ModContentDesignViewModel />
-    </Design.DataContext>
 
     
     <UserControl.Styles>

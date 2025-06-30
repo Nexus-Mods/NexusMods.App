@@ -7,32 +7,16 @@
                                 xmlns:ui="clr-namespace:NexusMods.Games.AdvancedInstaller.UI"
                                 xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:resources="clr-namespace:NexusMods.Games.AdvancedInstaller.UI.Resources"
-                                mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
+                                mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
                                 x:Class="NexusMods.Games.AdvancedInstaller.UI.AdvancedInstallerPageView">
     <Design.DataContext>
         <ui:AdvancedInstallerPageDesignViewModel />
     </Design.DataContext>
     
     <Grid RowDefinitions="*, Auto">
-        <Grid.Styles>
-
-            <Style Selector="Border.TopPart">
-                <Setter Property="Padding" Value="24,0,24,24" />
-            </Style>
-
-            <Style Selector="Border.OverlayHeaderSection">
-                <Setter Property="Margin" Value="0,0,0,16" />
-            </Style>
-
-            <Style Selector="icons|UnifiedIcon#OverlayHeaderMultiOptionIcon">
-                <Setter Property="Size" Value="20" />
-                <Setter Property="Margin" Value="0,0,8,8" />
-            </Style>
-
-        </Grid.Styles>
-
-        <Border Grid.Row="0" Classes="High RoundedTop" HorizontalAlignment="Stretch">
-            <Border Classes="High RoundedTop TopPart" x:Name="TopContentBorder">
+        
+        <Border Grid.Row="0" HorizontalAlignment="Stretch">
+            <Border x:Name="TopContentBorder">
                 <Grid RowDefinitions="Auto, *">
 
                     <Border Grid.Row="0" Classes="OverlayHeaderSection" x:Name="OverlayHeaderBorder">
@@ -40,7 +24,7 @@
 
                             <icons:UnifiedIcon Grid.Column="0" x:Name="OverlayHeaderMultiOptionIcon" Classes="Tune" />
 
-                            <TextBlock Grid.Column="1" x:Name="OverlayHeaderTextBlock" Classes="BodyLGBold"
+                            <TextBlock Grid.Column="1" x:Name="OverlayHeaderTextBlock" Theme="{StaticResource BodyLGBoldTheme}"
                                        Text="{x:Static resources:Language.OverlayHeaderText_Advanced_Installer}" />
 
                         </Grid>
@@ -52,7 +36,7 @@
             </Border>
         </Border>
 
-        <Border Grid.Row="1" Classes="Mid RoundedBottom" HorizontalAlignment="Stretch">
+        <Border Grid.Row="1" HorizontalAlignment="Stretch">
             <Border x:Name="BottomContentBorder">
 
                 <reactiveUi:ViewModelViewHost x:Name="BottomContentViewHost" />
