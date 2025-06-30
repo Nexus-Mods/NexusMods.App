@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Networking.NexusWebApi.V1Interop;
@@ -40,12 +41,26 @@ public static class Services
 
         collection.AddJWTTokenModel();
         collection.AddApiKeyModel();
-        collection.AddGameDomainToGameIdMappingModel();
-        collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
         collection.AddSingleton(TimeProvider.System);
-
         collection.AddIgnoreFileUpdateModel();
-        
+
+        collection.AddGameDomainToGameIdMappingModel();
+        collection.AddSingleton<IGameDomainToGameIdMappingCache>(serviceProvider =>
+        {
+            var fallbackCache = new GameDomainToGameIdMappingCache(
+                conn: serviceProvider.GetRequiredService<IConnection>(),
+                gqlClient: serviceProvider.GetRequiredService<INexusGraphQLClient>(),
+                logger: serviceProvider.GetRequiredService<ILogger<GameDomainToGameIdMappingCache>>()
+            );
+
+            if (!LocalMappingCache.TryParseJsonFile(out var gameIdToDomain, out var gameDomainToId))
+            {
+                return fallbackCache;
+            }
+
+            return new LocalMappingCache(gameIdToDomain, gameDomainToId, fallbackCache);
+        });
+
         collection
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()

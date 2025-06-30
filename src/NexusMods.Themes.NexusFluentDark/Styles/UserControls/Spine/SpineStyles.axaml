@@ -18,7 +18,7 @@
         <Setter Property="Width" Value="72" />
         <Setter Property="Padding" Value="0,12,0,12" />
         <Setter Property="BorderThickness" Value="0,0,1,0" />
-        <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SurfaceLowBrush}" />
 
         <Style Selector="^ panels|FlexPanel#SpineFlexPanel">
             <Setter Property="Direction" Value="Column" />

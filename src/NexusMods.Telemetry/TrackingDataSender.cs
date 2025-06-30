@@ -207,6 +207,12 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
                 AppendBytes(metadata.SafeName);
             }
 
+            if (metadata.Value.HasValue)
+            {
+                sb.Append("&e_v="); // Event value
+                AppendBytes(metadata.SafeValue);
+            }
+
             sb.Append("&h="); // The current hour (local time)
             sb.Append(metadata.CurrentTime.Hour);
             sb.Append("&m="); // The current minute (local time)

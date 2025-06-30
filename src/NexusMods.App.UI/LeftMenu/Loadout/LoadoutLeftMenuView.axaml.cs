@@ -49,8 +49,8 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
             this.OneWayBind(ViewModel, vm => vm.HasSingleCollection, view => view.LoadoutItem.IsVisible, input => !input)
                 .DisposeWith(disposables);
             
-            InstalledModsSectionText.Text = Language.LeftMenu_Label_Installed_Mods.ToUpperInvariant();
-            UtilitiesSectionText.Text = Language.LeftMenu_Label_Utilities.ToUpperInvariant();
+            InstalledModsSectionText.Text = Language.LeftMenu_Label_Installed_Mods;
+            UtilitiesSectionText.Text = Language.LeftMenu_Label_Utilities;
         });
     }
 }
