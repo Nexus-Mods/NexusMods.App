@@ -418,6 +418,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         // - I (Sewer56) have a 15.4ms ping to api.nexusmods.com
         // - A request for download link takes ~80-140ms (v1 API) + ~90-100ms to initiate download using the link. 
         //    - That includes HTTP handshake, SSL handshake, etc.
+        //    - For API requests, handshakes are cached, but not for CDN; hence roughly equivalent times.
         // - Now: `240 / x = 15.4`, solve for `x`.
         //         x = 240 / 15.4 = 15.58
         // 
