@@ -1,7 +1,4 @@
-using System.ComponentModel;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +28,6 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
-using OneOf;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -42,27 +38,24 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewModel
 {
     public string EmptyStateTitleText { get; }
-    public ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
-    public ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
-    public ReactiveCommand<Unit> RemoveItemCommand { get; }
-    public ReactiveCommand<Unit> CollectionToggleCommand { get; }
-    public ReactiveCommand<Unit> DeselectItemsCommand { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
+    [Reactive] public int ItemCount { get; private set; }
+    [Reactive] public int SelectionCount { get; private set; }
 
+    [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
+    [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
+    [Reactive] public bool HasRulesSection { get; private set; } = false;
+
+    [Reactive] public bool IsCollection { get; private set; }
+    [Reactive] public bool IsCollectionUploaded { get; private set; }
     [Reactive] public string CollectionName { get; private set; }
 
-    [Reactive] public int SelectionCount { get; private set; }
-    [Reactive] public bool IsCollection { get; private set; }
-    [Reactive] public bool IsCollectionEnabled { get; private set; }
-    [Reactive] public bool IsCollectionUploaded { get; private set; }
+    public ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
+    public ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }
 
-    [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
-
-    [Reactive] public int ItemCount { get; private set; }
-
-    [Reactive] public bool HasRulesSection { get; private set; } = false;
-    [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
+    public ReactiveCommand<Unit> CommandRemoveItem { get; }
+    public ReactiveCommand<Unit> CommandDeselectItems { get; }
 
     public ReactiveCommand<Unit> CommandUploadRevision { get; }
     public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
@@ -100,11 +93,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             TabTitle = collectionGroup.Name;
             TabIcon = IconValues.CollectionsOutline;
             IsCollection = true;
-            CollectionToggleCommand = new ReactiveCommand<Unit>(
-                async (_, _) => await ToggleCollectionGroup(collectionGroupId, !IsCollectionEnabled, _connection),
-                configureAwait: false
-            );
-
             IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
 
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
@@ -157,7 +145,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                 if (CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out var collection))
                 {
-                    await _nexusModsLibrary.EditCollectionName(collection, newName, CancellationToken.None);
+                    await _nexusModsLibrary.EditCollectionName(collection, newName, cancellationToken);
                 }
 
                 using var tx = _connection.BeginTransaction();
@@ -173,20 +161,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CollectionName = string.Empty;
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
-            CollectionToggleCommand = new ReactiveCommand<Unit>(_ => { });
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
             CommandUploadRevision = new ReactiveCommand();
             CommandOpenRevisionUrl = new ReactiveCommand();
             CommandRenameGroup = new ReactiveCommand();
         }
 
-        DeselectItemsCommand = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
+        CommandDeselectItems = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None);
 
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         EmptyStateTitleText = string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, loadout.InstallationInstance.Game.Name);
-        ViewLibraryCommand = new ReactiveCommand<NavigationInformation>(info =>
+        CommandOpenLibraryPage = new ReactiveCommand<NavigationInformation>(info =>
             {
                 var pageData = new PageData
                 {
@@ -214,7 +201,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             _ => LoadoutPageSubTabs.Mods,
         };
 
-        ViewFilesCommand = viewModFilesArgumentsSubject
+        CommandOpenFilesPage = viewModFilesArgumentsSubject
             .Select(viewModFilesArguments => viewModFilesArguments.HasValue)
             .ToReactiveCommand<NavigationInformation>(info =>
                 {
@@ -249,14 +236,13 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         model.GetObservable<LoadoutComponents.LockedEnabledState>(LoadoutColumns.EnabledState.LockedEnabledStateComponentKey)
                     );
 
-                    return R3.Observable.CombineLatest(observables)
+                    return Observable.CombineLatest(observables)
                         // if all items are readonly, or list is empty, no valid selection
                         .Select(list => !list.All(x => x.HasValue));
                 }
             );
 
-
-        RemoveItemCommand = hasValidRemoveSelection
+        CommandRemoveItem = hasValidRemoveSelection
             .ToReactiveCommand<Unit>(async (_, _) =>
                 {
                     var ids = Adapter.SelectedModels
@@ -320,46 +306,37 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 if (message.IsT1)
                 {
                     var data = message.AsT1;
-                    OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId,
-                        GetWorkspaceController(), _connection
-                    );
-                    return;
+                    OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId, GetWorkspaceController(), _connection);
                 }
             }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
 
             // Update the selection count based on the selected models
             Adapter.SelectedModels
                 .ObserveChanged()
-                .Select(_ => Adapter.SelectedModels
-                    .SelectMany(model => GetLoadoutItemIds(model))
+                .Select(Adapter, static (_, adapter) => adapter.SelectedModels
+                    .SelectMany(GetLoadoutItemIds)
                     .Distinct()
                     .Count()
                 )
                 .ObserveOnUIThreadDispatcher()
-                .Subscribe(count => SelectionCount = count);
+                .Subscribe(this, (count, self) => self.SelectionCount = count);
 
             // Compute the target group for the ViewFilesCommand
-            Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)
+            Adapter.SelectedModels
+                .ObserveCountChanged(notifyCurrentCount: true)
                 .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels.First() : null)
                 .ObserveOnThreadPool()
                 .Select(_connection, static (model, connection) =>
-                    {
-                        if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-                        return LoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
-                    }
-                )
+                {
+                    if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
+                    return LoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
+                })
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(viewModFilesArgumentsSubject.OnNext)
                 .AddTo(disposables);
 
             if (collectionGroupId.HasValue)
             {
-                LoadoutItem.Observe(_connection, collectionGroupId.Value)
-                    .Select(item => item.IsEnabled())
-                    .OnUI()
-                    .Subscribe(isEnabled => IsCollectionEnabled = isEnabled)
-                    .AddTo(disposables);
-
                 this.WhenAnyValue(x => x.IsCollectionUploaded)
                     .ToObservable()
                     .Where(isUploaded => isUploaded)
@@ -459,26 +436,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 GroupScope = collectionGroup.AsLoadoutItemGroup().LoadoutItemGroupId,
             },
         };
+
         var behavior = workspaceController.GetOpenPageBehavior(pageData, navInfo);
         workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
-
-        return;
-    }
-
-    private static async Task ToggleCollectionGroup(Optional<LoadoutItemGroupId> collectionGroupId, bool shouldEnable, IConnection connection)
-    {
-        if (!collectionGroupId.HasValue) return;
-        using var tx = connection.BeginTransaction();
-        if (shouldEnable)
-        {
-            tx.Retract(collectionGroupId.Value, LoadoutItem.Disabled, Null.Instance);
-        }
-        else
-        {
-            tx.Add(collectionGroupId.Value, LoadoutItem.Disabled, Null.Instance);
-        }
-
-        await tx.Commit();
     }
 
     private async ValueTask UpdateCollectionInfo(ManagedCollectionLoadoutGroup.ReadOnly managedCollectionLoadoutGroup, CancellationToken cancellationToken)
@@ -500,118 +460,5 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private static bool IsRequired(LoadoutItemId id, IConnection connection)
     {
         return NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(LoadoutItem.Load(connection.Db, id), out var isRequired) && isRequired;
-    }
-}
-
-public readonly record struct ToggleEnableStateMessage(LoadoutItemId[] Ids);
-
-public readonly record struct OpenCollectionMessage(LoadoutItemId[] Ids, NavigationInformation NavigationInformation);
-
-public class LoadoutTreeDataGridAdapter :
-    TreeDataGridAdapter<CompositeItemModel<EntityId>, EntityId>,
-    ITreeDataGirdMessageAdapter<OneOf<ToggleEnableStateMessage, OpenCollectionMessage>>
-{
-    public Subject<OneOf<ToggleEnableStateMessage, OpenCollectionMessage>> MessageSubject { get; } = new();
-
-    private readonly ILoadoutDataProvider[] _loadoutDataProviders;
-    private readonly LoadoutFilter _loadoutFilter;
-
-    public LoadoutTreeDataGridAdapter(IServiceProvider serviceProvider, LoadoutFilter loadoutFilter)
-    {
-        _loadoutDataProviders = serviceProvider.GetServices<ILoadoutDataProvider>().ToArray();
-        _loadoutFilter = loadoutFilter;
-    }
-
-    protected override IObservable<IChangeSet<CompositeItemModel<EntityId>, EntityId>> GetRootsObservable(bool viewHierarchical)
-    {
-        return _loadoutDataProviders.Select(x => x.ObserveLoadoutItems(_loadoutFilter)).MergeChangeSets();
-    }
-
-    protected override void BeforeModelActivationHook(CompositeItemModel<EntityId> model)
-    {
-        base.BeforeModelActivationHook(model);
-
-        model.SubscribeToComponentAndTrack<LoadoutComponents.EnabledStateToggle, LoadoutTreeDataGridAdapter>(
-            key: LoadoutColumns.EnabledState.EnabledStateToggleComponentKey,
-            state: this,
-            factory: static (self, itemModel, component) => component.CommandToggle.Subscribe((self, itemModel, component), static (_, tuple) =>
-                {
-                    var (self, itemModel, component) = tuple;
-                    var ids = GetLoadoutItemIds(itemModel).ToArray();
-
-                    self.MessageSubject.OnNext(new ToggleEnableStateMessage(ids));
-                }
-            )
-        );
-
-        model.SubscribeToComponentAndTrack<LoadoutComponents.ParentCollectionDisabled, LoadoutTreeDataGridAdapter>(
-            key: LoadoutColumns.EnabledState.ParentCollectionDisabledComponentKey,
-            state: this,
-            factory: static (self, itemModel, component) => component.ButtonCommand.Subscribe((self, itemModel, component), static (navInfo, tuple) =>
-                {
-                    var (self, itemModel, component) = tuple;
-                    var ids = GetLoadoutItemIds(itemModel).ToArray();
-
-                    self.MessageSubject.OnNext(new OpenCollectionMessage(ids, navInfo));
-                }
-            )
-        );
-
-        model.SubscribeToComponentAndTrack<LoadoutComponents.LockedEnabledState, LoadoutTreeDataGridAdapter>(
-            key: LoadoutColumns.EnabledState.LockedEnabledStateComponentKey,
-            state: this,
-            factory: static (self, itemModel, component) => component.ButtonCommand.Subscribe((self, itemModel, component), static (navInfo, tuple) =>
-                {
-                    var (self, itemModel, component) = tuple;
-                    var ids = GetLoadoutItemIds(itemModel).ToArray();
-
-                    self.MessageSubject.OnNext(new OpenCollectionMessage(ids, navInfo));
-                }
-            )
-        );
-
-        model.SubscribeToComponentAndTrack<LoadoutComponents.MixLockedAndParentDisabled, LoadoutTreeDataGridAdapter>(
-            key: LoadoutColumns.EnabledState.MixLockedAndParentDisabledComponentKey,
-            state: this,
-            factory: static (self, itemModel, component) => component.ButtonCommand.Subscribe((self, itemModel, component), static (navInfo, tuple) =>
-                {
-                    var (self, itemModel, component) = tuple;
-                    var ids = GetLoadoutItemIds(itemModel).ToArray();
-
-                    self.MessageSubject.OnNext(new OpenCollectionMessage(ids, navInfo));
-                }
-            )
-        );
-    }
-
-    private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)
-    {
-        return itemModel.Get<LoadoutComponents.LoadoutItemIds>(LoadoutColumns.EnabledState.LoadoutItemIdsComponentKey).ItemIds;
-    }
-
-    protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)
-    {
-        var nameColumn = ColumnCreator.Create<EntityId, SharedColumns.Name>();
-
-        return
-        [
-            viewHierarchical ? ITreeDataGridItemModel<CompositeItemModel<EntityId>, EntityId>.CreateExpanderColumn(nameColumn) : nameColumn,
-            ColumnCreator.Create<EntityId, SharedColumns.InstalledDate>(sortDirection: ListSortDirection.Descending),
-            ColumnCreator.Create<EntityId, LoadoutColumns.Collections>(),
-            ColumnCreator.Create<EntityId, LoadoutColumns.EnabledState>(),
-        ];
-    }
-
-    private bool _isDisposed;
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing && !_isDisposed)
-        {
-            MessageSubject.Dispose();
-            _isDisposed = true;
-        }
-
-        base.Dispose(disposing);
     }
 }

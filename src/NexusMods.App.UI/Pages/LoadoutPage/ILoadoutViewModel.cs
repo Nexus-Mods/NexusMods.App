@@ -7,38 +7,27 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public interface ILoadoutViewModel : IPageViewModelInterface
 {
-    LoadoutTreeDataGridAdapter Adapter { get; }
-
-    ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
-    
     string EmptyStateTitleText { get; }
 
-    ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
+    LoadoutTreeDataGridAdapter Adapter { get; }
+    int ItemCount { get; }
+    int SelectionCount { get; } 
 
-    ReactiveCommand<Unit> RemoveItemCommand { get; }
-    
-    ReactiveCommand<Unit> CollectionToggleCommand { get; }
-    ReactiveCommand<Unit> DeselectItemsCommand { get; }
-    
-    public int SelectionCount { get; } 
-    
-    bool IsCollection { get; }
-    
-    bool IsCollectionEnabled { get; }
-    bool IsCollectionUploaded { get; }
-    
-    string CollectionName { get; } 
-    
+    LoadoutPageSubTabs SelectedSubTab { get; }
+    bool HasRulesSection { get; }
     ISortingSelectionViewModel RulesSectionViewModel { get; }
-    
-    public int ItemCount { get; }
-    
-    public bool HasRulesSection { get; }
-    
-    public LoadoutPageSubTabs SelectedSubTab { get; }
+
+    bool IsCollection { get; }
+    bool IsCollectionUploaded { get; }
+    string CollectionName { get; } 
+
+    ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
+    ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }
+
+    ReactiveCommand<Unit> CommandRemoveItem { get; }
+    ReactiveCommand<Unit> CommandDeselectItems { get; }
 
     ReactiveCommand<Unit> CommandUploadRevision { get; }
     ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
-
     ReactiveCommand<Unit> CommandRenameGroup { get; }
 }

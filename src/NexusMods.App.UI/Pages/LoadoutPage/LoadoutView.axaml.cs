@@ -25,13 +25,13 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             // initially hidden
             ContextControlGroup.IsVisible = false;
             
-            this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
+            this.BindCommand(ViewModel, vm => vm.CommandOpenFilesPage, view => view.ViewFilesButton)
                 .AddTo(disposables);
             
-            this.BindCommand(ViewModel, vm => vm.ViewLibraryCommand, view => view.ViewLibraryButton)
+            this.BindCommand(ViewModel, vm => vm.CommandOpenLibraryPage, view => view.ViewLibraryButton)
                 .AddTo(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.RemoveItemCommand, view => view.DeleteButton)
+            this.BindCommand(ViewModel, vm => vm.CommandRemoveItem, view => view.DeleteButton)
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Adapter.Source.Value, view => view.TreeDataGrid.Source)
@@ -58,7 +58,7 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.OneWayBind(ViewModel, vm => vm.HasRulesSection, view => view.RulesTabItem.IsVisible)
                 .AddTo(disposables);
             
-            this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
+            this.BindCommand(ViewModel, vm => vm.CommandDeselectItems, view => view.DeselectItemsButton)
                 .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.CommandUploadRevision, view => view.ButtonUploadCollectionRevision)
@@ -70,9 +70,6 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                 .AddTo(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
-                .AddTo(disposables);
-            
             this.WhenAnyValue(view => view.ViewModel!.IsCollection)
                 .WhereNotNull()
                 .SubscribeWithErrorLogging(isCollection =>
