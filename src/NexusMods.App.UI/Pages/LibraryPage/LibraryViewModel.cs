@@ -304,6 +304,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
+            // Note(sewer): Per design, in the future this will expand the mod rows.
+            //              But, due to the TreeDataGrid bug, we can't do that today, yet.
             await UpdateAndReplaceForMultiModPagesFreeOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
         else
             await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
