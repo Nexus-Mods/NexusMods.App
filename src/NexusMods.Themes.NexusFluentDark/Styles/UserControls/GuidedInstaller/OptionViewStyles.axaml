@@ -11,30 +11,30 @@
 
     <!-- Style Definitions -->
 
-    <Style Selector="fomod|GuidedInstallerOptionView">
-        <Style Selector="^ icons|UnifiedIcon">
-            <Setter Property="Size" Value="18"/>
-            <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" />
-            <Setter Property="Margin" Value="0,10,10,10" />
-        </Style>
-        <Style Selector="^ TextBlock.BodyMDNormal">
-            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-            <Setter Property="Padding" Value="8,3,8,0" />
-        </Style>
-        <Style Selector="^ TextBlock.StatusDangerLighter">
-            <Setter Property="Foreground" Value="{StaticResource DangerModerateBrush}" />
-        </Style>
-        <Style Selector="^ TextBlock.Disabled">
-            <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"/>
-        </Style>
-        <Style Selector="^ CheckBox">
-            <Setter Property="Margin" Value="8,0,8,0" />
-            <Setter Property="Height" Value="24" />
-            <Setter Property="Width" Value="24" />
-        </Style>
-        <Style Selector="^ RadioButton">
-            <Setter Property="Margin" Value="8,0,8,0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-    </Style>
+    <!-- <Style Selector="fomod|GuidedInstallerOptionView"> -->
+    <!--     <Style Selector="^ icons|UnifiedIcon"> -->
+    <!--         <Setter Property="Size" Value="18"/> -->
+    <!--         <Setter Property="Foreground" Value="{StaticResource NeutralSubduedBrush}" /> -->
+    <!--         <Setter Property="Margin" Value="0,10,10,10" /> -->
+    <!--     </Style> -->
+    <!--     <Style Selector="^ TextBlock.BodyMDNormal"> -->
+    <!--         <Setter Property="TextTrimming" Value="CharacterEllipsis" /> -->
+    <!--         <Setter Property="Padding" Value="8,3,8,0" /> -->
+    <!--     </Style> -->
+    <!--     <Style Selector="^ TextBlock.StatusDangerLighter"> -->
+    <!--         <Setter Property="Foreground" Value="{StaticResource DangerModerateBrush}" /> -->
+    <!--     </Style> -->
+    <!--     <Style Selector="^ TextBlock.Disabled"> -->
+    <!--         <Setter Property="Opacity" Value="{StaticResource OpacityDisabledElement}"/> -->
+    <!--     </Style> -->
+    <!--     <Style Selector="^ CheckBox"> -->
+    <!--         <Setter Property="Margin" Value="8,0,8,0" /> -->
+    <!--         <Setter Property="Height" Value="24" /> -->
+    <!--         <Setter Property="Width" Value="24" /> -->
+    <!--     </Style> -->
+    <!--     <Style Selector="^ RadioButton"> -->
+    <!--         <Setter Property="Margin" Value="8,0,8,0" /> -->
+    <!--         <Setter Property="VerticalAlignment" Value="Center" /> -->
+    <!--     </Style> -->
+    <!-- </Style> -->
 </Styles>

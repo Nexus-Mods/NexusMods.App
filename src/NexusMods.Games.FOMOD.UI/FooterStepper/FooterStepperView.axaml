@@ -15,26 +15,25 @@
     <Design.DataContext>
         <ui:FooterStepperDesignViewModel />
     </Design.DataContext>
-    <Border Background="{StaticResource SurfaceMidBrush}" Padding="12">
-        <Grid ColumnDefinitions="Auto, *, Auto">
 
-            <controls:StandardButton x:Name="GoToPrevButton"
-                                     Grid.Column="0" 
-                                     HorizontalAlignment="Left"
-                                     Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}"
-                                     Fill="Weak"/>
+    <Grid ColumnDefinitions="Auto, *, Auto">
 
-            <ProgressBar x:Name="ProgressBar"
-                         Grid.Column="1" Classes="Stepper" Minimum="0" Maximum="1"
-                         Margin="12,0"/>
-            
-            <controls:StandardButton x:Name="GoToNextButton"
-                                     Grid.Column="2" 
-                                     HorizontalAlignment="Left"
-                                     Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}"
-                                     Type="Primary"
-                                     Fill="Strong"/>
-        </Grid>
-    </Border>
+        <controls:StandardButton x:Name="GoToPrevButton"
+                                 Grid.Column="0"
+                                 HorizontalAlignment="Left"
+                                 Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Previous}"
+                                 Fill="Weak" />
+
+        <ProgressBar x:Name="ProgressBar"
+                     Grid.Column="1" Classes="Stepper" Minimum="0" Maximum="1"
+                     Margin="24,0" />
+
+        <controls:StandardButton x:Name="GoToNextButton"
+                                 Grid.Column="2"
+                                 HorizontalAlignment="Left"
+                                 Text="{x:Static resources:Language.FooterStepperView_FooterStepperView_Next}"
+                                 Type="Primary"
+                                 Fill="Strong" />
+    </Grid>
 
 </reactiveUi:ReactiveUserControl>

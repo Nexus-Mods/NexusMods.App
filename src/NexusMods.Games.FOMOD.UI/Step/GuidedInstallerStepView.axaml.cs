@@ -14,9 +14,6 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.ModName, view => view.ModName.Text)
-                .DisposeWith(disposables);
-
             this.OneWayBind(ViewModel, vm => vm.InstallationStep!.Name, view => view.StepName.Text)
                 .DisposeWith(disposables);
 
