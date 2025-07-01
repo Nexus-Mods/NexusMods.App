@@ -10,6 +10,11 @@ public readonly struct ManifestHash : IEquatable<ManifestHash>, IComparable<Mani
     {
         _value = value;
     }
+    
+    public override string ToString()
+    {
+        return _value;
+    }
 
     public string Value => _value;
 
