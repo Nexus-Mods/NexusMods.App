@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using NexusMods.Games.AdvancedInstaller.UI.Resources;
 using ReactiveUI;
@@ -11,12 +10,6 @@ public partial class AdvancedInstallerWindowView : ReactiveWindow<IAdvancedInsta
 {
     public AdvancedInstallerWindowView()
     {
-        ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.NoChrome;
-        ExtendClientAreaToDecorationsHint = true;
-        ExtendClientAreaTitleBarHeightHint = -1;
-        WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        CanResize = true;
-        
         InitializeComponent();
 
         this.WhenActivated(disposables =>

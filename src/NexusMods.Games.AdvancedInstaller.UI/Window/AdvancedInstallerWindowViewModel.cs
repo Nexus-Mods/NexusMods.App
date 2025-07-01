@@ -43,6 +43,4 @@ public class AdvancedInstallerWindowViewModel : AViewModel<IAdvancedInstallerWin
                 .DisposeWith(disposables);
         });
     }
-
-    
 }

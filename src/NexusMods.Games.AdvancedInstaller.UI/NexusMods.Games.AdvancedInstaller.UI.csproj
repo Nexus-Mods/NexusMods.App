@@ -99,14 +99,6 @@
         <Compile Update="Content\Right\SelectLocation\TreeEntry\SelectableTreeEntryViewModel.cs">
           <DependentUpon>ISelectableTreeEntryViewModel.cs</DependentUpon>
         </Compile>
-
-        <Compile Update="Pages\AdvancedInstallerPages\AdvancedInstallerPageDesignViewModel.cs">
-          <DependentUpon>IAdvancedInstallerPageViewModel.cs</DependentUpon>
-        </Compile>
-
-        <Compile Update="Window\AdvancedInstallerWindowDesignViewModel.cs">
-          <DependentUpon>IAdvancedInstallerWindowViewModel.cs</DependentUpon>
-        </Compile>
     </ItemGroup>
 
     <ItemGroup>

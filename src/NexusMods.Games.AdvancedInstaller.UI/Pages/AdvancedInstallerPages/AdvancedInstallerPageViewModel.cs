@@ -13,7 +13,6 @@ namespace NexusMods.Games.AdvancedInstaller.UI;
 public class AdvancedInstallerPageViewModel : AViewModel<IAdvancedInstallerPageViewModel>,
     IAdvancedInstallerPageViewModel
 {
-    
     /// <summary>
     /// Constructor.
     /// </summary>
