@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reactive.Linq;
@@ -411,38 +412,21 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         // Note(sewer): There's usually just a few files in like 99% of the cases here
         //              so no need to optimize around file reuse and TemporaryFileManager.
-        var oldToNewLibraryMapping = new List<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
-        var downloadErrors = new List<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
-        var successfulDownloads = new List<LibraryItem.ReadOnly>();
+        var oldToNewLibraryMapping = new ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
+        var downloadErrors = new ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
+        var successfulDownloads = new ConcurrentBag<LibraryItem.ReadOnly>();
 
-        foreach (var (newestFile, currentFiles) in newestToCurrentMapping)
-        {
-            try
-            {
-                // Try a download.
-                await using var tempPath = _temporaryFileManager.CreateFile();
-                var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
-                var libraryFile = await _libraryService.AddDownload(job);
-                var newLibraryItem = libraryFile.AsLibraryItem();
-                successfulDownloads.Add(newLibraryItem);
-
-                // Map each current file to the new file
-                foreach (var currentFile in currentFiles)
-                {
-                    // Find existing library items for this file metadata
-                    var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
-                    foreach (var existingLibraryFile in existingLibraryItems) // Should only be one.
-                    {
-                        var currentLibraryItem = existingLibraryFile.AsLibraryItem();
-                        oldToNewLibraryMapping.Add((currentLibraryItem, newLibraryItem));
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                downloadErrors.Add((newestFile, ex));
-            }
-        }
+        // Use parallel downloads with concurrency limit
+        // The concurrency limit is set as follows:
+        // - I (Sewer56) have a 15.4ms ping to api.nexusmods.com
+        // - A request for download link takes ~80-140ms (v1 API) + ~90-100ms to initiate download using the link. 
+        //    - That includes HTTP handshake, SSL handshake, etc.
+        // - Now: `240 / x = 15.4`, solve for `x`.
+        //         x = 240 / 15.4 = 15.58
+        // 
+        // So we round that up to a nice 16 concurrency level. Should be good.
+        var concurrencyLimit = 16;
+        await ProcessDownloadsInParallel(newestToCurrentMapping, oldToNewLibraryMapping, downloadErrors, successfulDownloads, concurrencyLimit, cancellationToken);
 
         // If there's no downloads to replace, we failed to do all of them.
         if (oldToNewLibraryMapping.Count > 0)
@@ -509,6 +493,69 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
             await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
         }
+    }
+
+    private async Task ProcessDownloadsInParallel(
+        Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> newestToCurrentMapping,
+        ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping,
+        ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)> downloadErrors,
+        ConcurrentBag<LibraryItem.ReadOnly> successfulDownloads,
+        int concurrencyLimit,
+        CancellationToken cancellationToken)
+    {
+        using var semaphore = new SemaphoreSlim(concurrencyLimit);
+        var tasks = new List<Task>();
+
+        // Helper function to process a single download with error handling
+        async Task ProcessDownload(SemaphoreSlim sema, NexusModsFileMetadata.ReadOnly newestFile, List<NexusModsFileMetadata.ReadOnly> currentFiles)
+        {
+            var isTaken = false;
+            try
+            {
+                isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
+                
+                // Try a download.
+                await using var tempPath = _temporaryFileManager.CreateFile();
+                var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
+                var libraryFile = await _libraryService.AddDownload(job);
+                var newLibraryItem = libraryFile.AsLibraryItem();
+                successfulDownloads.Add(newLibraryItem);
+
+                // Map each current file to the new file
+                foreach (var currentFile in currentFiles)
+                {
+                    // Find existing library items for this file metadata
+                    var existingLibraryItems = NexusModsLibraryItem.FindByFileMetadata(_connection.Db, currentFile);
+                    foreach (var existingLibraryFile in existingLibraryItems) // Should only be one.
+                    {
+                        var currentLibraryItem = existingLibraryFile.AsLibraryItem();
+                        oldToNewLibraryMapping.Add((currentLibraryItem, newLibraryItem));
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Ignored.
+            }
+            catch (Exception ex)
+            {
+                downloadErrors.Add((newestFile, ex));
+            }
+            finally
+            {
+                if (isTaken)
+                    sema.Release();
+            }
+        }
+
+        // Create tasks for all downloads
+        foreach (var (newestFile, currentFiles) in newestToCurrentMapping)
+        {
+            tasks.Add(ProcessDownload(semaphore, newestFile, currentFiles));
+        }
+
+        // Wait for all tasks to complete
+        await Task.WhenAll(tasks);
     }
 
     private async ValueTask HandleUpdateAndKeepOldMessage(UpdateAndKeepOldMessage updateAndKeepOldMessage, CancellationToken cancellationToken)
