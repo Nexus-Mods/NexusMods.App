@@ -1,4 +1,4 @@
-# v0.13.4 2025-06-XX
+# v0.13.4 2025-07-02
 This release includes the ability to change your storage location, new game artwork and lots of bug fixes.
 
 Check out the latest [developer blog](https://www.nexusmods.com/news/15313).
