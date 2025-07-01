@@ -304,14 +304,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     {
         var isPremium = _loginManager.IsPremium;
         if (!isPremium)
-        {
             await UpdateAndReplaceForMultiModPagesFreeOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
-        }
         else
-        {
-            var updatesOnPage = updateAndReplaceMessage.Updates;
-            await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, [updatesOnPage]);
-        }
+            await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, [updateAndReplaceMessage.Updates]);
     }
 
     private async ValueTask UpdateAndReplaceForMultiModPagesFreeOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
