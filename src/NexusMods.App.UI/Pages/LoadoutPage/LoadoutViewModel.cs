@@ -71,7 +71,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
         LoadoutId loadoutId,
-        Optional<LoadoutItemGroupId> collectionGroupId = default,
+        Optional<CollectionGroupId> collectionGroupId = default,
         Optional<LoadoutPageSubTabs> selectedSubTab = default) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
@@ -79,7 +79,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         var loadoutFilter = new LoadoutFilter
         {
             LoadoutId = loadoutId,
-            CollectionGroupId = collectionGroupId,
+            CollectionGroupId = collectionGroupId.Convert(x => (LoadoutItemGroupId)x.Value),
         };
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
@@ -434,7 +434,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             Context = new LoadoutPageContext
             {
                 LoadoutId = loadoutId,
-                GroupScope = collectionGroup.AsLoadoutItemGroup().LoadoutItemGroupId,
+                GroupScope = collectionGroup.CollectionGroupId,
             },
         };
 
