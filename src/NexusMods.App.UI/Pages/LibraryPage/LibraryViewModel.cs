@@ -14,6 +14,7 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog;
@@ -411,17 +412,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         var downloadErrors = new ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
         var successfulDownloads = new ConcurrentBag<LibraryItem.ReadOnly>();
 
-        // Use parallel downloads with concurrency limit
-        // The concurrency limit is set as follows:
-        // - I (Sewer56) have a 15.4ms ping to api.nexusmods.com
-        // - A request for download link takes ~80-140ms (v1 API) + ~90-100ms to initiate download using the link. 
-        //    - That includes HTTP handshake, SSL handshake, etc.
-        //    - For API requests, handshakes are cached, but not for CDN; hence roughly equivalent times.
-        // - Now: `240 / x = 15.4`, solve for `x`.
-        //         x = 240 / 15.4 = 15.58
-        // 
-        // So we round that up to a nice 16 concurrency level. Should be good.
-        var concurrencyLimit = 16;
+        var concurrencyLimit = _serviceProvider.GetRequiredService<ISettingsManager>().Get<DownloadSettings>().MaxParallelDownloads;
         await ProcessDownloadsInParallel(newestToCurrentMapping, oldToNewLibraryMapping, downloadErrors, successfulDownloads, concurrencyLimit, cancellationToken);
 
         // If there's no downloads to replace, we failed to do all of them.
