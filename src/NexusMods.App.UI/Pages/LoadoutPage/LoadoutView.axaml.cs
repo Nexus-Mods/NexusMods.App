@@ -31,9 +31,10 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
 
                 var isCollection = vm?.IsCollection ?? false;
+                view.AllPageHeader.IsVisible = !isCollection;
+                view.Statusbar.IsVisible = isCollection;
                 view.ButtonUploadCollectionRevision.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
                 view.WritableCollectionPageHeader.IsVisible = isCollection;
-                view.AllPageHeader.IsVisible = !isCollection;
 
                 var selectedSubTab = vm?.SelectedSubTab;
                 if (selectedSubTab is not null)
@@ -86,7 +87,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                     self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
                     self.ButtonUploadCollectionRevision.Text = isCollectionUploaded ? "Upload update" : "Share";
                     self.ButtonUploadCollectionRevision.ShowIcon = isCollectionUploaded ? StandardButton.ShowIconOptions.None : StandardButton.ShowIconOptions.Left;
-                    self. ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
+                    self.ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
 
                     if (isCollectionUploaded)
                     {
