@@ -10,8 +10,7 @@ public class CustomContentExampleViewModel : AViewModel<IViewModelInterface>, IV
 {
     public bool DontAskAgain { get; set; }
     public bool ShouldEndorseDownloadedMods { get; set; }
-    //public ReactiveCommand<string, Unit> CloseWindowCommand { get; }
-    public string CustomText { get; set; }
+    public string? CustomText { get; set; }
     public ObservableCollection<string> MyItems { get; set; } = new ()
     {
         "Item 1",
@@ -24,5 +23,10 @@ public class CustomContentExampleViewModel : AViewModel<IViewModelInterface>, IV
     public CustomContentExampleViewModel(string text)
     {
         CustomText = text;
+    }
+
+    public CustomContentExampleViewModel()
+    {
+        
     }
 }
