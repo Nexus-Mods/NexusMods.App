@@ -315,13 +315,17 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     private async ValueTask UpdateAndReplaceForMultiModPagesFreeOnly(CancellationToken cancellationToken, IEnumerable<ModUpdatesOnModPage> updatesOnPageCollection)
     {
         // Show the original dialog
-        var dialog = DialogFactory.CreateOkCancelMessageBox(
+        var dialog = DialogFactory.CreateStandardDialog(
             Language.Dialog_ReplaceNotSupported_Title,
-            Language.Dialog_ReplaceNotSupported_Text
+            new StandardDialogParameters()
+            {
+                Text = Language.Dialog_ReplaceNotSupported_Text,
+            },
+            [DialogStandardButtons.Ok, DialogStandardButtons.Cancel]
         );
         
         var dialogResult = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-        if (dialogResult != DialogStandardButtons.Ok.Id)
+        if (dialogResult.ButtonId != DialogStandardButtons.Ok.Id)
         {
             // User cancelled, don't proceed
             return;
@@ -382,9 +386,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
                 dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
 
-            var confirmDialog = DialogFactory.CreateMessageDialog(
+            var confirmDialog = DialogFactory.CreateStandardDialog(
                 title: Language.Library_Update_InstalledInMultipleCollections_Title,
-                text: dialogDesc.ToString(),
+                new StandardDialogParameters()
+                {
+                    Text = dialogDesc.ToString(),
+                },
                 buttonDefinitions: [
                     new DialogButtonDefinition(
                         Language.Library_Update_InstalledInMultipleCollections_Cancel,
@@ -401,7 +408,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             );
                 
             var dialogResult = await WindowManager.ShowDialog(confirmDialog, DialogWindowType.Modal);
-            if (dialogResult != updateButtonId)
+            if (dialogResult.ButtonId != updateButtonId)
             {
                 // User cancelled, don't proceed with update
                 return;
@@ -435,9 +442,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     .AppendJoin(Environment.NewLine, oldToNewLibraryMapping.Select(failed => failed.oldItem.Name))
                     .ToString();
 
-                var errorDialog = DialogFactory.CreateMessageDialog(
+                var errorDialog = DialogFactory.CreateStandardDialog(
                     title: Language.Library_Update_ReplaceFailed_Title,
-                    text: description,
+                    new StandardDialogParameters()
+                    {
+                        Text = description,
+                    },
                     buttonDefinitions: [DialogStandardButtons.Ok]
                 );
 
@@ -457,9 +467,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                         .AppendJoin(Environment.NewLine, downloadErrors.Select(error => error.File.Name))
                         .ToString();
                         
-                    var successDialog = DialogFactory.CreateMessageDialog(
+                    var successDialog = DialogFactory.CreateStandardDialog(
                         title: Language.Library_Update_Success_Title,
-                        text: finalDescription.ToString(),
+                        new StandardDialogParameters()
+                        {
+                            Text = finalDescription, 
+                        },
                         buttonDefinitions: [DialogStandardButtons.Ok]
                     );
 
@@ -472,9 +485,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         else
         {
             // All downloads failed, show error message
-            var allFailedDialog = DialogFactory.CreateMessageDialog(
+            var allFailedDialog = DialogFactory.CreateStandardDialog(
                 title: Language.Library_Update_AllDownloadsFailed_Title,
-                text: string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count),
+                new StandardDialogParameters()
+                {
+                    Text = string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count)
+                },
                 buttonDefinitions: [DialogStandardButtons.Ok]
             );
 

@@ -1,18 +1,14 @@
 using System.Reactive.Disposables;
-using Avalonia.Controls.Chrome;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Standard;
 using NexusMods.App.UI.Dialog.Enums;
-using NexusMods.App.UI.Windows;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
-using R3;
 
 namespace NexusMods.App.UI.Pages.DebugControls;
 
@@ -24,9 +20,6 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
 
         this.WhenActivated(disposables =>
             {
-                this.OneWayBind(ViewModel, vm => vm.GenerateUnhandledException, v => v.GenerateUnhandledException.Command)
-                    .DisposeWith(disposables);
-
                 this.OneWayBind(ViewModel, vm => vm.MarkdownRenderer, v => v.MarkdownRendererViewModelViewHost.ViewModel)
                     .DisposeWith(disposables);
             }
@@ -131,60 +124,11 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
     }
    
 
-    private async void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    private async Task ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
     {
-        try
-        {
-            if (ViewModel is null) return;
-            
-            var dialog = DialogFactory.CreateMessageBox(
-                "Go Premium for one-click mod updates",
-                """
-                No browser, no manual downloads. Premium users also get:
-                
-                • Download entire collections with one click
-                • Uncapped download speeds
-                • No Ads for life, even if you unsubscribe after 1 month!
-                """,
-                "Update all your mods, or individual mods, in one click.",
-                [
-                    new DialogButtonDefinition(
-                        "Update mods manually",
-                        ButtonDefinitionId.From("update-manually"),
-                        ButtonAction.Reject),
-                    new DialogButtonDefinition(
-                        "Upgrade to Premium",
-                        ButtonDefinitionId.From("upgrade-premium"),
-                        ButtonAction.Accept,
-                        ButtonStyling.Premium)
-                ],
-                IconValues.PictogramPremium,
-                DialogWindowSize.Medium,
-                null,
-                null
-            );
-            
-            // tell windowmanager to show it
-            var result = await ViewModel.WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
-
-            // check viewmodel properties when dialog has been closed
-            Console.WriteLine($@"result: {result}");
-        }
-        catch
-        {
-            throw; // TODO handle exception
-        }
-    }
-
-
-    private async void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
-    {
-        if (ViewModel is null) return;
-
-        var osInterop = ViewModel.ServiceProvider.GetRequiredService<IOSInterop>();
-        var result = await PremiumDialog.ShowUpdatePremiumDialog(ViewModel.WindowManager, osInterop);
-
-        // check viewmodel properties when dialog has been closed
-        Console.WriteLine($@"result: {result}");
+        await PremiumDialog.ShowUpdatePremiumDialog(
+            ViewModel!.WindowManager,
+            ViewModel.ServiceProvider.GetRequiredService<IOSInterop>()
+        );
     }
 }
