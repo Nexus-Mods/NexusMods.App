@@ -195,6 +195,11 @@
                     <icons:UnifiedIcon Classes="PictogramUpload" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramSuccess" />
+                    <icons:UnifiedIcon Classes="PictogramSuccess" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramSuccess" Size="48" />
+                </WrapPanel>
+                <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical" />
@@ -765,5 +770,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.Link">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Link}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramSuccess">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramSuccess}" />
     </Style>
 </Styles>

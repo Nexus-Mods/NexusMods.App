@@ -33,11 +33,19 @@
                                        Theme="{StaticResource BodySMNormalTheme}" />
                         </Border>
 
-                        <TextBlock Grid.Row="1" VerticalAlignment="Top"
-                                   x:Name="InstallationCompleteScreenTextBlock" IsVisible="False"
-                                   Text="{x:Static resources:Language.InstallationCompleteScreenText}"
-                                   Theme="{StaticResource BodySMNormalTheme}"
-                                   Margin="0 12"/>
+                        <StackPanel Grid.Row="1" x:Name="InstallationCompleteStack" 
+                                    Spacing="12"
+                                    IsVisible="False"
+                                    Margin="0 12 0 0">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSuccess}"
+                                               Size="48"
+                                               HorizontalAlignment="Left"/>
+                            <TextBlock Text="{x:Static resources:Language.InstallationCompleteScreenText}"
+                                        Theme="{StaticResource BodySMNormalTheme}"
+                                        Foreground="{StaticResource NeutralSubduedBrush}"
+                                        TextWrapping="Wrap"/>
+                        </StackPanel>
+                        
 
                         <Grid Grid.Row="1" x:Name="GroupsGrid" ColumnDefinitions="*,12,*" Margin="0 12">
 
