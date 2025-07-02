@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -371,6 +372,7 @@ file class DebuggingHost : IHost
     public Task StopAsync(CancellationToken cancellationToken) => _inner.StopAsync(cancellationToken);
     public IServiceProvider Services => _inner.Services;
 
+    [SuppressMessage("ReSharper", "LocalizableElement")]
     public void Dispose()
     {
         // NOTE(erri120): I'm doing reflection and you can't stop me.
@@ -390,7 +392,7 @@ file class DebuggingHost : IHost
         if (fieldValue is not List<object> tempList) throw new NotSupportedException();
 
         var disposableServices = tempList.ToArray();
-        _logger.LogDebug("Disposing `{Count}` services", disposableServices.Length);
+        Log("Disposing `{0}` services", disposableServices.Length);
 
         Reloaded.Memory.Utilities.Box<bool> didDispose = false;
 
@@ -403,7 +405,7 @@ file class DebuggingHost : IHost
             bool isDisposed = didDispose;
             if (isDisposed) return;
 
-            _logger.LogWarning("Failed to dispose `{Count}` services withing `{Delay}` seconds", disposableServices.Length, delay.TotalSeconds);
+            Log("Failed to dispose `{0}` services withing `{1}` seconds", disposableServices.Length, delay.TotalSeconds);
             foreach (var disposableService in disposableServices)
             {
                 var disposableType = disposableService switch
@@ -413,7 +415,7 @@ file class DebuggingHost : IHost
                     _ => throw new NotSupportedException(),
                 };
 
-                _logger.LogDebug("Type={Type} HashCode={HashCode} DisposableType={DisposableType}", disposableService.GetType(), disposableService.GetHashCode(), disposableType);
+                Log("Type={0} HashCode={1} DisposableType={2}", disposableService.GetType(), disposableService.GetHashCode(), disposableType);
             }
 
             if (Debugger.IsAttached) Debugger.Break();
@@ -422,5 +424,11 @@ file class DebuggingHost : IHost
 
         _inner.Dispose();
         didDispose = true;
+    }
+
+    private void Log(string format, params object?[] arguments)
+    {
+        if (ApplicationConstants.IsCI) Console.WriteLine(format, arguments);
+        else _logger.LogDebug(format, arguments);
     }
 }
