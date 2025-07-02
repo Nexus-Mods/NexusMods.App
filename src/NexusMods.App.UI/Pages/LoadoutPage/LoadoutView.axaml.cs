@@ -1,4 +1,3 @@
-using AvaloniaEdit.Rendering;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
@@ -31,6 +30,11 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 view.SortingSelectionView.ViewModel = vm?.RulesSectionViewModel;
                 view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
 
+                var isCollection = vm?.IsCollection ?? false;
+                view.ButtonUploadCollectionRevision.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
+                view.WritableCollectionPageHeader.IsVisible = isCollection;
+                view.AllPageHeader.IsVisible = !isCollection;
+
                 var selectedSubTab = vm?.SelectedSubTab;
                 if (selectedSubTab is not null)
                 {
@@ -58,7 +62,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
             this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.CollectionName, view => view.WritableCollectionPageHeader.Title)
+            this.OneWayR3Bind(static view => view.BindableViewModel, static vm => vm.CollectionName, static (view, collectionName) => view.WritableCollectionPageHeader.Title = collectionName)
                 .AddTo(disposables);
 
             this.OneWayR3Bind(static view => view.BindableViewModel, static vm => vm.ItemCount, static (view, count) => view.ModsCount.Text = count.ToString())
@@ -76,39 +80,28 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
             this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                 .AddTo(disposables);
 
-            this.WhenAnyValue(view => view.ViewModel!.IsCollection)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(isCollection =>
+            this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.IsCollectionUploaded)
+                .Subscribe(this, static (isCollectionUploaded, self) =>
                 {
-                    ButtonUploadCollectionRevision.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
-                    WritableCollectionPageHeader.IsVisible = isCollection;
-                    AllPageHeader.IsVisible = !isCollection;
-                })
-                .AddTo(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.IsCollectionUploaded)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(isCollectionUploaded =>
-                {
-                    StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
-                    ButtonUploadCollectionRevision.Text = isCollectionUploaded ? "Upload update" : "Share";
-                    ButtonUploadCollectionRevision.ShowIcon = isCollectionUploaded ? StandardButton.ShowIconOptions.None : StandardButton.ShowIconOptions.Left;
-                    ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
-                    
+                    self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
+                    self.ButtonUploadCollectionRevision.Text = isCollectionUploaded ? "Upload update" : "Share";
+                    self.ButtonUploadCollectionRevision.ShowIcon = isCollectionUploaded ? StandardButton.ShowIconOptions.None : StandardButton.ShowIconOptions.Left;
+                    self. ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
+
                     if (isCollectionUploaded)
                     {
-                        StatusText.Classes.Add("Success");
-                        StatusIcon.Classes.Add("Success");
-                        StatusIcon.Value = IconValues.CollectionsOutline;
+                        self.StatusText.Classes.Add("Success");
+                        self.StatusIcon.Classes.Add("Success");
+                        self.StatusIcon.Value = IconValues.CollectionsOutline;
                     }
                     else
                     {
-                        StatusText.Classes.Remove("Success");
-                        StatusIcon.Classes.Remove("Success");
-                        StatusIcon.Value = IconValues.Info;
+                        self.StatusText.Classes.Remove("Success");
+                        self.StatusIcon.Classes.Remove("Success");
+                        self.StatusIcon.Value = IconValues.Info;
                     }
-                    
-                    StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
+
+                    self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
                 })
                 .AddTo(disposables);
 

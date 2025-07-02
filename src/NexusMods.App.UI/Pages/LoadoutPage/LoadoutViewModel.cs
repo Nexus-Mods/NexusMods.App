@@ -30,7 +30,6 @@ using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
@@ -49,9 +48,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public bool HasRulesSection { get; }
     public ISortingSelectionViewModel RulesSectionViewModel { get; }
 
-    [Reactive] public bool IsCollection { get; private set; }
-    [Reactive] public bool IsCollectionUploaded { get; private set; }
-    [Reactive] public string CollectionName { get; private set; }
+    public bool IsCollection { get; }
+    private BindableReactiveProperty<string> CollectionName { get; }
+    IReadOnlyBindableReactiveProperty<string> ILoadoutViewModel.CollectionName => CollectionName;
+    private BindableReactiveProperty<bool> IsCollectionUploaded { get; }
+    IReadOnlyBindableReactiveProperty<bool> ILoadoutViewModel.IsCollectionUploaded => IsCollectionUploaded;
 
     public ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
     public ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }
@@ -75,6 +76,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         Optional<LoadoutPageSubTabs> selectedSubTab = default) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
+        var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
+        _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
 
         var loadoutFilter = new LoadoutFilter
         {
@@ -84,18 +88,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
-        var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
-        _connection = serviceProvider.GetRequiredService<IConnection>();
-        _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
-
         if (collectionGroupId.HasValue)
         {
             var collectionGroup = LoadoutItem.Load(_connection.Db, collectionGroupId.Value);
-            CollectionName = collectionGroup.Name;
+            IsCollection = true;
             TabTitle = collectionGroup.Name;
             TabIcon = IconValues.CollectionsOutline;
-            IsCollection = true;
-            IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
+
+            CollectionName = new BindableReactiveProperty<string>(value: collectionGroup.Name);
+            IsCollectionUploaded = new BindableReactiveProperty<bool>(value: CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _));
 
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
             // so we show the `sorting views here` view here instead
@@ -109,23 +110,23 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadRevision = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
-                var shareDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollection(CollectionName) : LoadoutDialogs.ShareCollection(CollectionName);
+                var shareDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollection(CollectionName.Value) : LoadoutDialogs.ShareCollection(CollectionName.Value);
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
                 if (shareDialogResult.ButtonId != ButtonDefinitionId.From("share")) return;
 
                 var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
-                var successDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : LoadoutDialogs.ShareCollectionSuccess(CollectionName);
+                var successDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName.Value) : LoadoutDialogs.ShareCollectionSuccess(CollectionName.Value);
 
                 var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
 
-                IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
+                IsCollectionUploaded.Value = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
                 if (successDialogResult.ButtonId != ButtonDefinitionId.From("view-page")) return;
 
                 var uri = GetCollectionUri(collection);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
             }, maxSequential: 1, configureAwait: false);
 
-            CommandOpenRevisionUrl = this.WhenAnyValue(vm => vm.IsCollectionUploaded).ToObservable().ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+            CommandOpenRevisionUrl = IsCollectionUploaded.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
                 var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
                 if (!managedCollectionLoadoutGroup.IsValid()) return;
@@ -133,10 +134,10 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
             }, configureAwait: false);
-            
+
             CommandRenameGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
-                var dialog = LoadoutDialogs.RenameCollection(CollectionName);
+                var dialog = LoadoutDialogs.RenameCollection(CollectionName.Value);
                 var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
                 if (result.ButtonId != ButtonDefinitionId.From("rename")) return;
 
@@ -152,13 +153,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 tx.Add(collectionGroupId.Value, LoadoutItem.Name, newName);
                 await tx.Commit();
 
-                CollectionName = newName;
-                TabTitle = CollectionName;
+                CollectionName.Value = newName;
+                TabTitle = newName;
             });
         }
         else
         {
-            CollectionName = string.Empty;
+            CollectionName = new BindableReactiveProperty<string>(value: string.Empty);
+            IsCollectionUploaded = new BindableReactiveProperty<bool>(value: false);
+
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
@@ -338,8 +341,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             if (collectionGroupId.HasValue)
             {
-                this.WhenAnyValue(x => x.IsCollectionUploaded)
-                    .ToObservable()
+                IsCollectionUploaded
                     .Where(isUploaded => isUploaded)
                     .ObserveOnThreadPool()
                     .Select((_connection, collectionGroupId.Value), static (_, state) => ManagedCollectionLoadoutGroup.Load(state._connection.Db, state.Value))

@@ -18,8 +18,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     ISortingSelectionViewModel RulesSectionViewModel { get; }
 
     bool IsCollection { get; }
-    bool IsCollectionUploaded { get; }
-    string CollectionName { get; } 
+    IReadOnlyBindableReactiveProperty<bool> IsCollectionUploaded { get; }
+    IReadOnlyBindableReactiveProperty<string> CollectionName { get; } 
 
     ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
     ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }
