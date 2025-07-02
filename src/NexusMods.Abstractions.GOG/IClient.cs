@@ -34,5 +34,5 @@ public interface IClient
     /// Given a depot, a build, and a path, return a stream to the file. This file is seekable, and will cache and
     /// stream in data as required from the CDN.
     /// </summary>
-    public Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token);
+    public Task<Stream> GetFileStream(ProductId productId, DepotInfo depotInfo, RelativePath path, CancellationToken token);
 }

@@ -7,9 +7,11 @@
       <PackageReference Include="Polly.Core" />
       <PackageReference Include="QRCoder" />
       <PackageReference Include="SteamKit2" />
+      <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Steam\NexusMods.Abstractions.Steam.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
       <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />

@@ -31,6 +31,7 @@
         <PackageReference Include="NexusMods.Cascade" />
         <PackageReference Include="NexusMods.Cascade.SourceGenerator" />
         <PackageReference Include="NexusMods.MnemonicDB" />
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
         <PackageReference Include="Polly.Core"/>
         <PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
