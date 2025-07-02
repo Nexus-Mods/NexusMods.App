@@ -25,6 +25,7 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     IReadOnlyBindableReactiveProperty<CollectionStatus> CollectionStatus { get; }
     IReadOnlyBindableReactiveProperty<RevisionStatus> RevisionStatus { get; }
     IReadOnlyBindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
+    IReadOnlyBindableReactiveProperty<bool> HasOutstandingChanges { get; }
 
     ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
     ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }

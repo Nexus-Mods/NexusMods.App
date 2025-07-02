@@ -62,6 +62,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     IReadOnlyBindableReactiveProperty<RevisionStatus> ILoadoutViewModel.RevisionStatus => RevisionStatus;
     private BindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
     IReadOnlyBindableReactiveProperty<RevisionNumber> ILoadoutViewModel.RevisionNumber => RevisionNumber;
+    private BindableReactiveProperty<bool> HasOutstandingChanges { get; } = new(value: true); // TODO: implement this
+    IReadOnlyBindableReactiveProperty<bool> ILoadoutViewModel.HasOutstandingChanges => HasOutstandingChanges;
 
     public ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
     public ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }
