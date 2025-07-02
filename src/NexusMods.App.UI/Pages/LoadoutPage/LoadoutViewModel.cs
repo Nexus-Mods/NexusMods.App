@@ -69,6 +69,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CommandRenameGroup { get; }
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly NexusModsLibrary _nexusModsLibrary;
+    private readonly IConnection _connection;
+
     public LoadoutViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
@@ -87,26 +90,26 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         Adapter = new LoadoutTreeDataGridAdapter(serviceProvider, loadoutFilter);
 
         var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
-        var connection = serviceProvider.GetRequiredService<IConnection>();
-        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        _connection = serviceProvider.GetRequiredService<IConnection>();
+        _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
 
         if (collectionGroupId.HasValue)
         {
-            var collectionGroup = LoadoutItem.Load(connection.Db, collectionGroupId.Value);
+            var collectionGroup = LoadoutItem.Load(_connection.Db, collectionGroupId.Value);
             CollectionName = collectionGroup.Name;
             TabTitle = collectionGroup.Name;
             TabIcon = IconValues.CollectionsOutline;
             IsCollection = true;
             CollectionToggleCommand = new ReactiveCommand<Unit>(
-                async (_, _) => await ToggleCollectionGroup(collectionGroupId, !IsCollectionEnabled, connection),
+                async (_, _) => await ToggleCollectionGroup(collectionGroupId, !IsCollectionEnabled, _connection),
                 configureAwait: false
             );
 
-            IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
+            IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
 
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
             // so we show the `sorting views here` view here instead
-            var isSingleCollectionObservable = CollectionGroup.ObserveAll(connection)
+            var isSingleCollectionObservable = CollectionGroup.ObserveAll(_connection)
                 .Filter(collection => collection.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId)
                 .Transform(collection => collection.Id)
                 .QueryWhenChanged(collections => collections.Count == 1)
@@ -127,7 +130,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                 var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
 
-                IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
+                IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
                 if (successDialogResult.ButtonId != ButtonDefinitionId.From("view-page")) return;
 
                 var uri = GetCollectionUri(collection);
@@ -136,7 +139,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandOpenRevisionUrl = this.WhenAnyValue(vm => vm.IsCollectionUploaded).ToObservable().ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
-                var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, collectionGroupId.Value);
+                var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
                 if (!managedCollectionLoadoutGroup.IsValid()) return;
 
                 var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
@@ -152,12 +155,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var newName = result.InputText;
                 if (string.IsNullOrWhiteSpace(newName)) return;
 
-                if (CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out var collection))
+                if (CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out var collection))
                 {
-                    await nexusModsLibrary.EditCollectionName(collection, newName, CancellationToken.None);
+                    await _nexusModsLibrary.EditCollectionName(collection, newName, CancellationToken.None);
                 }
 
-                using var tx = connection.BeginTransaction();
+                using var tx = _connection.BeginTransaction();
                 tx.Add(collectionGroupId.Value, LoadoutItem.Name, newName);
                 await tx.Commit();
 
@@ -181,7 +184,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         var viewModFilesArgumentsSubject = new BehaviorSubject<Optional<LoadoutItemGroup.ReadOnly>>(Optional<LoadoutItemGroup.ReadOnly>.None);
 
-        var loadout = Loadout.Load(connection.Db, loadoutId);
+        var loadout = Loadout.Load(_connection.Db, loadoutId);
         EmptyStateTitleText = string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, loadout.InstallationInstance.Game.Name);
         ViewLibraryCommand = new ReactiveCommand<NavigationInformation>(info =>
             {
@@ -220,7 +223,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var isReadonly = group.Value.AsLoadoutItem()
                         .GetThisAndParents()
-                        .Any(item => IsRequired(item.LoadoutItemId, connection));
+                        .Any(item => IsRequired(item.LoadoutItemId, _connection));
 
                     var pageData = new PageData
                     {
@@ -259,7 +262,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     var ids = Adapter.SelectedModels
                         .SelectMany(static itemModel => GetLoadoutItemIds(itemModel))
                         .ToHashSet()
-                        .Where(id => !IsRequired(id, connection))
+                        .Where(id => !IsRequired(id, _connection))
                         .Select(x => (LibraryLinkedLoadoutItemId)x.Value)
                         .ToArray();
 
@@ -301,71 +304,76 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             );
 
         this.WhenActivated(disposables =>
+        {
+            Adapter.Activate().AddTo(disposables);
+
+            Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
             {
-                Adapter.Activate().AddTo(disposables);
-
-                Adapter.MessageSubject.SubscribeAwait(async (message, _) =>
-                    {
-                        // Toggle item state
-                        if (message.IsT0)
-                        {
-                            await ToggleItemEnabledState(message.AsT0.Ids, connection);
-                            return;
-                        }
-
-                        // Open collection
-                        if (message.IsT1)
-                        {
-                            var data = message.AsT1;
-                            OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId,
-                                GetWorkspaceController(), connection
-                            );
-                            return;
-                        }
-                    }, awaitOperation: AwaitOperation.Parallel, configureAwait: false
-                ).AddTo(disposables);
-
-                // Update the selection count based on the selected models
-                Adapter.SelectedModels
-                    .ObserveChanged()
-                    .Select(_ => Adapter.SelectedModels
-                        .SelectMany(model => GetLoadoutItemIds(model))
-                        .Distinct()
-                        .Count()
-                    )
-                    .ObserveOnUIThreadDispatcher()
-                    .Subscribe(count => SelectionCount = count);
-
-                // Compute the target group for the ViewFilesCommand
-                Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)
-                    .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels.First() : null)
-                    .ObserveOnThreadPool()
-                    .Select(connection, static (model, connection) =>
-                        {
-                            if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
-                            return LoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
-                        }
-                    )
-                    .ObserveOnUIThreadDispatcher()
-                    .Subscribe(viewModFilesArgumentsSubject.OnNext)
-                    .AddTo(disposables);
-
-
-                if (collectionGroupId.HasValue)
+                // Toggle item state
+                if (message.IsT0)
                 {
-                    LoadoutItem.Observe(connection, collectionGroupId.Value)
-                        .Select(item => item.IsEnabled())
-                        .OnUI()
-                        .Subscribe(isEnabled => IsCollectionEnabled = isEnabled)
-                        .AddTo(disposables);
+                    await ToggleItemEnabledState(message.AsT0.Ids, _connection);
+                    return;
                 }
 
-                LoadoutDataProviderHelper.CountAllLoadoutItems(serviceProvider, loadoutFilter)
+                // Open collection
+                if (message.IsT1)
+                {
+                    var data = message.AsT1;
+                    OpenItemCollectionPage(data.Ids, data.NavigationInformation, loadoutId,
+                        GetWorkspaceController(), _connection
+                    );
+                    return;
+                }
+            }, awaitOperation: AwaitOperation.Parallel, configureAwait: false).AddTo(disposables);
+
+            // Update the selection count based on the selected models
+            Adapter.SelectedModels
+                .ObserveChanged()
+                .Select(_ => Adapter.SelectedModels
+                    .SelectMany(model => GetLoadoutItemIds(model))
+                    .Distinct()
+                    .Count()
+                )
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(count => SelectionCount = count);
+
+            // Compute the target group for the ViewFilesCommand
+            Adapter.SelectedModels.ObserveCountChanged(notifyCurrentCount: true)
+                .Select(this, static (count, vm) => count == 1 ? vm.Adapter.SelectedModels.First() : null)
+                .ObserveOnThreadPool()
+                .Select(_connection, static (model, connection) =>
+                    {
+                        if (model is null) return Optional<LoadoutItemGroup.ReadOnly>.None;
+                        return LoadoutGroupFilesViewModel.GetViewModFilesLoadoutItemGroup(GetLoadoutItemIds(model).ToArray(), connection);
+                    }
+                )
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(viewModFilesArgumentsSubject.OnNext)
+                .AddTo(disposables);
+
+            if (collectionGroupId.HasValue)
+            {
+                LoadoutItem.Observe(_connection, collectionGroupId.Value)
+                    .Select(item => item.IsEnabled())
                     .OnUI()
-                    .Subscribe(count => ItemCount = count)
-                    .DisposeWith(disposables);
+                    .Subscribe(isEnabled => IsCollectionEnabled = isEnabled)
+                    .AddTo(disposables);
+
+                this.WhenAnyValue(x => x.IsCollectionUploaded)
+                    .ToObservable()
+                    .Where(isUploaded => isUploaded)
+                    .ObserveOnThreadPool()
+                    .Select((_connection, collectionGroupId.Value), static (_, state) => ManagedCollectionLoadoutGroup.Load(state._connection.Db, state.Value))
+                    .SubscribeAwait(this, static (group, self, cancellationToken) => self.UpdateCollectionInfo(group, cancellationToken))
+                    .AddTo(disposables);
             }
-        );
+
+            LoadoutDataProviderHelper.CountAllLoadoutItems(serviceProvider, loadoutFilter)
+                .OnUI()
+                .Subscribe(count => ItemCount = count)
+                .DisposeWith(disposables);
+        });
     }
 
     private Uri GetCollectionUri(CollectionMetadata.ReadOnly collection)
@@ -471,6 +479,17 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         }
 
         await tx.Commit();
+    }
+
+    private async ValueTask UpdateCollectionInfo(ManagedCollectionLoadoutGroup.ReadOnly managedCollectionLoadoutGroup, CancellationToken cancellationToken)
+    {
+        var lastPublishedRevisionNumber = await _nexusModsLibrary.GetLastPublishedRevisionNumber(managedCollectionLoadoutGroup.Collection, cancellationToken);
+
+        using var tx = _connection.BeginTransaction();
+        if (lastPublishedRevisionNumber.HasValue)
+        {
+            tx.Add(managedCollectionLoadoutGroup, ManagedCollectionLoadoutGroup.LastPublishedRevisionNumber, lastPublishedRevisionNumber.Value);
+        }
     }
 
     private static IEnumerable<LoadoutItemId> GetLoadoutItemIds(CompositeItemModel<EntityId> itemModel)

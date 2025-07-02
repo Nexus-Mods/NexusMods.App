@@ -127,12 +127,14 @@ public static class CollectionCreator
         if (group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup))
         {
             collection = managedCollectionLoadoutGroup.Collection;
-            await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+            var revisionNumber = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
         }
         else
         {
             collection = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
             tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
+            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
         }
 
         await tx.Commit();
