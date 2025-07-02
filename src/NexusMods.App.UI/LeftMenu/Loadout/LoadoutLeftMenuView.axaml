@@ -13,36 +13,49 @@
         <leftMenu:LoadoutLeftMenuDesignViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="*, Auto" Margin="12,0,12,12">
+    <Grid RowDefinitions="*, Auto" Margin="12 0 12 12">
 
-        <ScrollViewer>
-            <StackPanel Grid.Row="0" Orientation="Vertical" x:Name="LeftMenuStack">
+        <ScrollViewer Grid.Row="0">
+            <StackPanel x:Name="LeftMenuStack">
                 <items:LeftMenuItemView x:Name="LibraryItem" />
 
+                <!-- installed mods section -->
                 <StackPanel>
                     <Separator />
-                    <TextBlock x:Name="InstalledModsSectionText" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="True">
+                        <Expander.Header>
+                            <TextBlock x:Name="InstalledModsSectionText"
+                                       Theme="{StaticResource BodySMSemiTheme}" />
+                        </Expander.Header>
+                        <StackPanel Spacing="{StaticResource Spacing-0.5}">
+                            <items:LeftMenuItemView x:Name="LoadoutItem" />
+                            <ItemsControl x:Name="CollectionItems">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Spacing="{StaticResource Spacing-0.5}" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <items:LeftMenuItemView x:Name="NewCollection" />
+                        </StackPanel>
+                    </Expander>
                 </StackPanel>
 
-                <items:LeftMenuItemView x:Name="LoadoutItem" />
-
-                <ItemsControl x:Name="CollectionItems">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Spacing="{StaticResource Spacing-2}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                </ItemsControl>
-
-                <items:LeftMenuItemView x:Name="NewCollection" />
-
+                <!-- utilities mods section -->
                 <StackPanel>
                     <Separator />
-                    <TextBlock x:Name="UtilitiesSectionText" />
+                    <Expander HorizontalAlignment="Stretch" IsExpanded="True">
+                        <Expander.Header>
+                            <TextBlock x:Name="UtilitiesSectionText"
+                                       Theme="{StaticResource BodySMSemiTheme}" />
+                        </Expander.Header>
+                        <StackPanel Spacing="{StaticResource Spacing-0.5}">
+                            <items:LeftMenuItemView x:Name="HealthCheckItem" />
+                            <items:LeftMenuItemView x:Name="ExternalChangesItem" />
+                        </StackPanel>
+                    </Expander>
                 </StackPanel>
 
-                <items:LeftMenuItemView x:Name="HealthCheckItem" />
-                <items:LeftMenuItemView x:Name="ExternalChangesItem" />
             </StackPanel>
         </ScrollViewer>
 
