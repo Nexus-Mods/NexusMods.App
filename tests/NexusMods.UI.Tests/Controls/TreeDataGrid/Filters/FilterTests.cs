@@ -4,6 +4,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
@@ -356,6 +357,265 @@ public class FilterTests
 
         // Assert
         result.Should().BeTrue(); // Should pass through since no relevant components
+    }
+
+    // For the first tests, the most important components.
+    [Fact]
+    public void TextFilter_ShouldMatchNameComponent()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("name"), new NameComponent("TestMod"));
+        
+        var filter = new Filter.TextFilter("Test", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void TextFilter_ShouldMatchStringComponent()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("description"), new StringComponent("This is a test description"));
+        
+        var filter = new Filter.TextFilter("description", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void TextFilter_ShouldMatchVersionComponent()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("version"), new VersionComponent("1.2.3-beta"));
+        
+        var filter = new Filter.TextFilter("beta", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    // Now test TextFilter specific logic
+    [Fact]
+    public void TextFilter_ShouldMatchAnyComponentWithText()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("name"), new NameComponent("SomeMod"));
+        model.Add(ComponentKey.From("version"), new VersionComponent("1.0.0"));
+        model.Add(ComponentKey.From("description"), new StringComponent("This mod has special features"));
+        
+        var filter = new Filter.TextFilter("special", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Should match the description component
+    }
+
+    [Fact]
+    public void TextFilter_ShouldFailIfNoComponentMatches()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("name"), new NameComponent("SomeMod"));
+        model.Add(ComponentKey.From("version"), new VersionComponent("1.0.0"));
+        model.Add(ComponentKey.From("description"), new StringComponent("Basic description"));
+        
+        var filter = new Filter.TextFilter("nonexistent", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeFalse(); // No component should match
+    }
+
+    [Fact]
+    public void TextFilter_EmptyString_ShouldMatchAllItems()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("name"), new NameComponent("TestMod"));
+        model.Add(ComponentKey.From("version"), new VersionComponent("1.0.0"));
+        
+        var filter = new Filter.TextFilter("", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Empty string should match all items
+    }
+
+    // Ensure the magic 'TextFilter' works with existing logical operators.
+    [Fact]
+    public void TextFilter_WithLogicalOperators_ShouldWork()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("name"), new NameComponent("TestMod"));
+        var installAction = CreateInstallAction(isInstalled: true);
+        model.Add(ComponentKey.From("install"), installAction);
+        
+        var textFilter = new Filter.TextFilter("Test", CaseSensitive: false);
+        var installedFilter = new Filter.InstalledFilter(ShowInstalled: true, ShowNotInstalled: false);
+        var andFilter = new Filter.AndFilter(textFilter, installedFilter);
+
+        // Act
+        var result = model.MatchesFilter(andFilter);
+
+        // Assert
+        result.Should().BeTrue(); // Both text and installed filters should match
+    }
+
+    [Fact]
+    public void TextFilter_ShouldMatchSizeComponent()
+    {
+        // Arrange
+        var testSize = Size.FromLong(50 * 1024 * 1024); // 50 MiB
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("size"), new SizeComponent(testSize));
+        
+        var filter = new Filter.TextFilter("50", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Should match the formatted size "50 MiB"
+    }
+
+
+
+    // Tests for localized components.
+
+    // Note(sewer): I skipped the 'date' component because the date is formatted in the user's
+    // current UI culture. If the person working on this codebase does not use 'Arabic' 0-9 numbers 
+    // (actually Indian btw), this test will fail; and I don't want to risk that.
+    [Fact]
+    public void TextFilter_ShouldMatchInstallActionButtonText()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        var installAction = CreateInstallAction(isInstalled: false);
+        model.Add(ComponentKey.From("install"), installAction);
+        
+        var filter = new Filter.TextFilter(Language.LibraryComponents_InstallAction_ButtonText_Install, CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Should match the localized "Install" button text
+    }
+
+    [Fact]
+    public void TextFilter_ShouldMatchInstalledActionButtonText()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        var installAction = CreateInstallAction(isInstalled: true);
+        model.Add(ComponentKey.From("install"), installAction);
+        
+        var filter = new Filter.TextFilter(Language.LibraryComponents_InstallAction_ButtonText_Installed, CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Should match the localized "Installed" button text
+    }
+
+
+    [Fact]
+    public void TextFilter_ShouldMatchPartialSizeText()
+    {
+        // Arrange
+        var testSize = Size.FromLong(1024 * 1024 * 1024 + 512 * 1024 * 1024); // 1.5 GiB (1.61 GB)
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("size"), new SizeComponent(testSize));
+        
+        var filter = new Filter.TextFilter("GB", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Should match the "GB" part of the formatted size
+    }
+
+    // Tests for some unusual components; but which funny people may nonetheless want to filter by.
+    [Fact]
+    public void TextFilter_ShouldMatchNewVersionAvailable_CurrentVersion()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        var currentVersion = new VersionComponent("1.0.0");
+        var newVersionAvailable = new LibraryComponents.NewVersionAvailable(
+            currentVersion, 
+            "2.0.0", 
+            R3.Observable.Return("2.0.0"));
+        model.Add(ComponentKey.From("newVersion"), newVersionAvailable);
+        
+        var filter = new Filter.TextFilter("1.0.0", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Should match the current version "1.0.0"
+    }
+
+    [Fact]
+    public void TextFilter_ShouldMatchNewVersionAvailable_NewVersion()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        var currentVersion = new VersionComponent("1.0.0");
+        var newVersionAvailable = new LibraryComponents.NewVersionAvailable(
+            currentVersion, 
+            "2.0.0-beta", 
+            R3.Observable.Return("2.0.0-beta"));
+        model.Add(ComponentKey.From("newVersion"), newVersionAvailable);
+        
+        var filter = new Filter.TextFilter("beta", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Should match the "beta" part of the new version "2.0.0-beta"
+    }
+
+    [Fact]
+    public void TextFilter_WhitespaceString_ShouldMatchWhenTextContainsWhitespace()
+    {
+        // Arrange
+        var model = CreateTestModel();
+        model.Add(ComponentKey.From("name"), new NameComponent("Test   Mod")); // Contains multiple spaces
+        
+        var filter = new Filter.TextFilter("   ", CaseSensitive: false);
+
+        // Act
+        var result = model.MatchesFilter(filter);
+
+        // Assert
+        result.Should().BeTrue(); // Whitespace should match when the text actually contains that whitespace
     }
 
     private static CompositeItemModel<EntityId> CreateTestModel()

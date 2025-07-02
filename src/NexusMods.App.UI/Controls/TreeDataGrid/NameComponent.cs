@@ -40,6 +40,10 @@ public sealed class NameComponent : AValueComponent<string>, IItemModelComponent
                 nameFilter.SearchText, 
                 nameFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
                 ? FilterResult.Pass : FilterResult.Fail,
+            Filter.TextFilter textFilter => Value.Value.Contains(
+                textFilter.SearchText, 
+                textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                ? FilterResult.Pass : FilterResult.Fail,
             _ => FilterResult.Indeterminate // Default: no opinion
         };
     }

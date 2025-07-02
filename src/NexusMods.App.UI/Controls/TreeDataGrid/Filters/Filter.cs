@@ -12,6 +12,12 @@ public abstract record Filter
     public sealed record NameFilter(string SearchText, bool CaseSensitive = false) : Filter;
     
     /// <summary>
+    /// Filter by text content across multiple string-based components (case-insensitive substring matching by default).
+    /// This filter matches text as displayed in the UI, so implementations must match what is actually shown to the user whenever possible.
+    /// </summary>
+    public sealed record TextFilter(string SearchText, bool CaseSensitive = false) : Filter;
+    
+    /// <summary>
     /// Filter by installation status.
     /// </summary>
     public sealed record InstalledFilter(bool ShowInstalled = true, bool ShowNotInstalled = true) : Filter;

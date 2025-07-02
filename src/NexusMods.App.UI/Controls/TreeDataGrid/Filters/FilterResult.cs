@@ -22,4 +22,4 @@ public enum FilterResult
     /// The item should be filtered out.
     /// </summary>
     Fail
-} 
+}

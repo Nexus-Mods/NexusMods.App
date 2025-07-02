@@ -48,9 +48,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         {
                             ViewModel.Adapter.Filter.Value = string.IsNullOrWhiteSpace(searchText) 
                                 ? new Filter.NoFilter()
-                                : Filter.Or(
-                                    new Filter.NameFilter(searchText, CaseSensitive: false), 
-                                    new Filter.VersionFilter(searchText));
+                                : new Filter.TextFilter(searchText, CaseSensitive: false);
                         }
                     })
                     .AddTo(disposables);

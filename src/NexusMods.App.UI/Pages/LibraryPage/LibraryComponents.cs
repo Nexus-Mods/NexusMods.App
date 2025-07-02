@@ -167,6 +167,12 @@ public static class LibraryComponents
                     (NewVersion.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase) ||
                      CurrentVersion.Value.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase))
                     ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => 
+                    (NewVersion.Value.Contains(textFilter.SearchText, 
+                        textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) ||
+                     CurrentVersion.Value.Value.Contains(textFilter.SearchText, 
+                        textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                    ? FilterResult.Pass : FilterResult.Fail,
                 _ => FilterResult.Indeterminate // Default: no opinion
             };
         }
@@ -213,6 +219,10 @@ public static class LibraryComponents
                 Filter.InstalledFilter installedFilter => 
                     ((IsInstalled.Value && installedFilter.ShowInstalled) ||
                      (!IsInstalled.Value && installedFilter.ShowNotInstalled))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => ButtonText.Value.Contains(
+                    textFilter.SearchText, 
+                    textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
                     ? FilterResult.Pass : FilterResult.Fail,
                 _ => FilterResult.Indeterminate // Default: no opinion
             };
@@ -341,6 +351,10 @@ public static class LibraryComponents
             return filter switch
             {
                 Filter.UpdateAvailableFilter updateFilter => updateFilter.ShowWithUpdates
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => ButtonText.Value.Contains(
+                    textFilter.SearchText, 
+                    textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
                     ? FilterResult.Pass : FilterResult.Fail,
                 _ => FilterResult.Indeterminate // Default: no opinion
             };

@@ -47,6 +47,10 @@ public sealed class VersionComponent : AValueComponent<string>, IItemModelCompon
                 versionFilter.VersionPattern, 
                 StringComparison.OrdinalIgnoreCase)
                 ? FilterResult.Pass : FilterResult.Fail,
+            Filter.TextFilter textFilter => Value.Value.Contains(
+                textFilter.SearchText, 
+                textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                ? FilterResult.Pass : FilterResult.Fail,
             _ => FilterResult.Indeterminate // Default: no opinion
         };
     }
