@@ -436,6 +436,7 @@ public static class LibraryComponents
         public ReactiveCommand<Unit> CommandHideUpdates { get; } = new();
         public BindableReactiveProperty<bool> IsEnabled { get; }
         public BindableReactiveProperty<bool> IsHidden { get; }
+        public BindableReactiveProperty<bool> IsVisible { get; }
         public BindableReactiveProperty<string> ButtonText { get; }
         public BindableReactiveProperty<IconValue> Icon { get; }
 
@@ -445,10 +446,11 @@ public static class LibraryComponents
             return 0; // All hide updates actions are considered equal for sorting
         }
 
-        public HideUpdatesAction(Observable<bool> isHiddenObservable, Observable<int> itemCount, Observable<bool> isEnabled)
+        public HideUpdatesAction(Observable<bool> isHiddenObservable, Observable<int> itemCount, Observable<bool> isEnabled, Observable<bool> isVisible)
         {
             IsHidden = isHiddenObservable.ToBindableReactiveProperty();
             IsEnabled = isEnabled.ToBindableReactiveProperty();
+            IsVisible = isVisible.ToBindableReactiveProperty();
             
             // Button text changes based on hidden state and item count
             // We use BindableReactiveProperty on ButtonText field as UI elements bind to this.
@@ -469,7 +471,7 @@ public static class LibraryComponents
             if (!_isDisposed)
             {
                 if (disposing)
-                    Disposable.Dispose(CommandHideUpdates, IsEnabled, IsHidden, ButtonText, Icon);
+                    Disposable.Dispose(CommandHideUpdates, IsEnabled, IsHidden, IsVisible, ButtonText, Icon);
 
                 _isDisposed = true;
             }

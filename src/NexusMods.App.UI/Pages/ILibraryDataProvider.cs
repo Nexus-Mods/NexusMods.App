@@ -136,13 +136,14 @@ public static class LibraryDataProviderHelper
 
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
-        bool isEnabled = true)
+        bool isEnabled = true,
+        bool isVisible = true)
     {
         // Default the observables to simple static values for now
         var isHiddenObservable = R3.Observable.Return(false);
         var itemCountObservable = R3.Observable.Return(1);
         
-        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, Observable.Return(isEnabled)));
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, Observable.Return(isEnabled), Observable.Return(isVisible)));
     }
 
     public static void AddHideUpdatesActionComponent(
@@ -182,7 +183,9 @@ public static class LibraryDataProviderHelper
             .Select(optional => optional.HasValue)
             .ToObservable();
 
-        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable));
+        var isVisibleObservable = Observable.Return(true);
+
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable, isVisibleObservable));
     }
 
     private record struct FileUpdateDetails(int NumUpdatesHidden, int NumUpdatesShown);
@@ -242,6 +245,7 @@ public static class LibraryDataProviderHelper
             .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
             .ToObservable();
         
-        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable));
+        var isVisibleObservable = Observable.Return(true);
+        itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable, isVisibleObservable));
     }
 }
