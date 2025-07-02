@@ -30,7 +30,7 @@ public partial class GuidedInstallerWindow : ReactiveWindow<IGuidedInstallerWind
             this.OneWayBind(ViewModel, vm => vm.WindowName, view => view.Title)
                 .DisposeWith(disposables);
             
-            this.OneWayBind(ViewModel, vm => vm.WindowName, view => view.TitleTextBlock.Text)
+            this.OneWayBind(ViewModel, vm => vm.WindowName, view => view.TitleTextBlock.Text, s => $"Install Options - {s}")
                 .DisposeWith(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.ActiveStepViewModel, view => view.StepViewHost.ViewModel)
