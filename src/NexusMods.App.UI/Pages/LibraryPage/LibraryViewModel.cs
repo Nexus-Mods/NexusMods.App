@@ -407,8 +407,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             }
         }
 
-        // Note(sewer): There's usually just a few files in like 99% of the cases here
-        //              so no need to optimize around file reuse and TemporaryFileManager.
         var oldToNewLibraryMapping = new ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
         var downloadErrors = new ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
         var successfulDownloads = new ConcurrentBag<LibraryItem.ReadOnly>();
