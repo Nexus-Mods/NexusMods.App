@@ -62,7 +62,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     IReadOnlyBindableReactiveProperty<RevisionStatus> ILoadoutViewModel.RevisionStatus => RevisionStatus;
     private BindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
     IReadOnlyBindableReactiveProperty<RevisionNumber> ILoadoutViewModel.RevisionNumber => RevisionNumber;
-    private BindableReactiveProperty<bool> HasOutstandingChanges { get; } = new(value: true); // TODO: implement this
+    private BindableReactiveProperty<bool> HasOutstandingChanges { get; } = new(value: true);
     IReadOnlyBindableReactiveProperty<bool> ILoadoutViewModel.HasOutstandingChanges => HasOutstandingChanges;
 
     public ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
@@ -147,6 +147,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
 
                 IsCollectionUploaded.Value = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
+                HasOutstandingChanges.Value = false;
+
                 if (successDialogResult.ButtonId != ButtonDefinitionId.From("view-page")) return;
 
                 var uri = GetCollectionUri(collection);
@@ -388,6 +390,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         self.RevisionStatus.Value = model.ToStatus();
                         self.RevisionNumber.Value = model.CurrentRevisionNumber;
                     })
+                    .AddTo(disposables);
+
+                // NOTE(erri120): This can be improved. We don't have an easy way of knowing whether a group
+                // or any of the children changed. We have that for Loadouts but not for LoadoutGroups.
+                // This query will produce false positives but not false negatives, the latter being more
+                // important.
+                Loadout
+                    .RevisionsWithChildUpdates(_connection, loadout)
+                    .Subscribe(_ => HasOutstandingChanges.Value = true)
                     .AddTo(disposables);
             }
 
