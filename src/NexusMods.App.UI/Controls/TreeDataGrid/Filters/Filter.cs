@@ -1,6 +1,5 @@
 using NexusMods.Paths;
-
-namespace NexusMods.App.UI.Controls.TreeDataGrid.Filters;
+namespace NexusMods.App.UI.Controls.Filters;
 
 /// <summary>
 /// Base filter type using discriminated union pattern for TreeDataGrid filtering.

@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Models.TreeDataGrid;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 
 namespace NexusMods.App.UI.Controls;

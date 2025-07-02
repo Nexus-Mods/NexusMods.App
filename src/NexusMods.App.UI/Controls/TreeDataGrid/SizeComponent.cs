@@ -1,6 +1,7 @@
 using Humanizer;
 using Humanizer.Bytes;
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.Paths;
 using R3;

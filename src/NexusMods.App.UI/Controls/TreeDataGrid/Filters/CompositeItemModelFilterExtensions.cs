@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Pages.LibraryPage;
 
 namespace NexusMods.App.UI.Controls.TreeDataGrid.Filters;
