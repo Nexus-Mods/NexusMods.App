@@ -1,10 +1,10 @@
-using Avalonia.Interactivity;
-using Avalonia.ReactiveUI;
+using AvaloniaEdit.Rendering;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using R3;
 using ReactiveUI;
@@ -12,7 +12,7 @@ using ReactiveUI;
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 [UsedImplicitly]
-public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
+public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 {
     public LoadoutView()
     {
@@ -24,7 +24,25 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
         {
             // initially hidden
             ContextControlGroup.IsVisible = false;
-            
+
+            BindableViewModel.Subscribe(this, static (vm, view) =>
+            {
+                view.EmptyState.Header = vm?.EmptyStateTitleText ?? string.Empty;
+                view.SortingSelectionView.ViewModel = vm?.RulesSectionViewModel;
+                view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
+
+                var selectedSubTab = vm?.SelectedSubTab;
+                if (selectedSubTab is not null)
+                {
+                    view.RulesTabControl.SelectedItem = selectedSubTab switch
+                    {
+                        LoadoutPageSubTabs.Mods => view.ModsTabItem,
+                        LoadoutPageSubTabs.Rules => view.RulesTabItem,
+                        _ => throw new ArgumentOutOfRangeException(nameof(selectedSubTab), selectedSubTab, null)
+                    };
+                }
+            }).AddTo(disposables);
+
             this.BindCommand(ViewModel, vm => vm.CommandOpenFilesPage, view => view.ViewFilesButton)
                 .AddTo(disposables);
             
@@ -39,25 +57,13 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)
                 .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.EmptyStateTitleText, view => view.EmptyState.Header)
-                .AddTo(disposables);
-            
+
             this.OneWayBind(ViewModel, vm => vm.CollectionName, view => view.WritableCollectionPageHeader.Title)
                 .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.ViewModel)
+
+            this.OneWayR3Bind(static view => view.BindableViewModel, static vm => vm.ItemCount, static (view, count) => view.ModsCount.Text = count.ToString())
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.DataContext)
-                .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.ItemCount, view => view.ModsCount.Text)
-                .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.HasRulesSection, view => view.RulesTabItem.IsVisible)
-                .AddTo(disposables);
-            
             this.BindCommand(ViewModel, vm => vm.CommandDeselectItems, view => view.DeselectItemsButton)
                 .AddTo(disposables);
 
@@ -106,32 +112,12 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
                 })
                 .AddTo(disposables);
 
-            
-            this.WhenAnyValue( view => view.ViewModel!.SelectedSubTab)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(selectedSubTab =>
+            this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.SelectionCount)
+                .Subscribe(this, static (count, self) =>
                 {
-                    RulesTabControl.SelectedItem = selectedSubTab switch
-                    {
-                        LoadoutPageSubTabs.Mods => ModsTabItem,
-                        LoadoutPageSubTabs.Rules => RulesTabItem,
-                        _ => throw new ArgumentOutOfRangeException(nameof(selectedSubTab), selectedSubTab, null)
-                    };
+                    self.ContextControlGroup.IsVisible = count != 0;
+                    self.DeselectItemsButton.Text = count == 0 ? string.Empty : string.Format(Language.Library_DeselectItemsButton_Text, count);
                 })
-                .AddTo(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.SelectionCount)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(count =>
-                    {
-                        ContextControlGroup.IsVisible = count != 0;
-
-                        if (count != 0)
-                        {
-                            DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
-                        }
-                    }
-                )
                 .AddTo(disposables);
         });
     }

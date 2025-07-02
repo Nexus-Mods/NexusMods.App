@@ -40,12 +40,14 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public string EmptyStateTitleText { get; }
 
     public LoadoutTreeDataGridAdapter Adapter { get; }
-    [Reactive] public int ItemCount { get; private set; }
-    [Reactive] public int SelectionCount { get; private set; }
+    private BindableReactiveProperty<int> ItemCount { get; } = new();
+    IReadOnlyBindableReactiveProperty<int> ILoadoutViewModel.ItemCount => ItemCount;
+    private BindableReactiveProperty<int> SelectionCount { get; } = new();
+    IReadOnlyBindableReactiveProperty<int> ILoadoutViewModel.SelectionCount => SelectionCount;
 
-    [Reactive] public LoadoutPageSubTabs SelectedSubTab { get; private set; }
-    [Reactive] public ISortingSelectionViewModel RulesSectionViewModel { get; private set; }
-    [Reactive] public bool HasRulesSection { get; private set; } = false;
+    public LoadoutPageSubTabs SelectedSubTab { get; }
+    public bool HasRulesSection { get; }
+    public ISortingSelectionViewModel RulesSectionViewModel { get; }
 
     [Reactive] public bool IsCollection { get; private set; }
     [Reactive] public bool IsCollectionUploaded { get; private set; }
@@ -103,9 +105,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .QueryWhenChanged(collections => collections.Count == 1)
                 .ToObservable();
 
-            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId,
-                canEditObservable: isSingleCollectionObservable
-            );
+            RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, canEditObservable: isSingleCollectionObservable);
 
             CommandUploadRevision = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
@@ -193,6 +193,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             .InstallationInstance
             .GetGame()
             .SortableItemProviderFactories.Length;
+
         HasRulesSection = numSortableItemProviders > 0;
 
         SelectedSubTab = selectedSubTab switch
@@ -319,7 +320,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .Count()
                 )
                 .ObserveOnUIThreadDispatcher()
-                .Subscribe(this, (count, self) => self.SelectionCount = count);
+                .Subscribe(this, (count, self) => self.SelectionCount.Value = count);
 
             // Compute the target group for the ViewFilesCommand
             Adapter.SelectedModels
@@ -348,7 +349,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             LoadoutDataProviderHelper.CountAllLoadoutItems(serviceProvider, loadoutFilter)
                 .OnUI()
-                .Subscribe(count => ItemCount = count)
+                .Subscribe(count => ItemCount.Value = count)
                 .DisposeWith(disposables);
         });
     }

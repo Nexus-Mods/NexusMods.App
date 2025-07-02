@@ -10,8 +10,8 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     string EmptyStateTitleText { get; }
 
     LoadoutTreeDataGridAdapter Adapter { get; }
-    int ItemCount { get; }
-    int SelectionCount { get; } 
+    IReadOnlyBindableReactiveProperty<int> ItemCount { get; }
+    IReadOnlyBindableReactiveProperty<int> SelectionCount { get; } 
 
     LoadoutPageSubTabs SelectedSubTab { get; }
     bool HasRulesSection { get; }
