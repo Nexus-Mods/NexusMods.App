@@ -120,7 +120,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 var shareDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollection(CollectionName) : LoadoutDialogs.ShareCollection(CollectionName);
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
-                if (shareDialogResult != ButtonDefinitionId.From("share")) return;
+                if (shareDialogResult.ButtonId != ButtonDefinitionId.From("share")) return;
 
                 var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
                 var successDialog = IsCollectionUploaded ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName) : LoadoutDialogs.ShareCollectionSuccess(CollectionName);
@@ -128,7 +128,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
 
                 IsCollectionUploaded = CollectionCreator.IsCollectionUploaded(connection, collectionGroupId.Value, out _);
-                if (successDialogResult != ButtonDefinitionId.From("view-page")) return;
+                if (successDialogResult.ButtonId != ButtonDefinitionId.From("view-page")) return;
 
                 var uri = GetCollectionUri(collection);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
@@ -265,21 +265,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (ids.Length == 0) return;
 
-                    var dialog = DialogFactory.CreateMessageDialog(
+                    var dialog = DialogFactory.CreateStandardDialog(
                         title: "Uninstall mod(s)",
-                        text: $"""
-                        This will remove the selected mod(s) from:
-                        
-                        {CollectionName}
-                        
-                        ✓ The mod(s) will stay in your Library
-                        ✓ You can reinstall anytime
-                        """,
+                        new StandardDialogParameters()
+                        {
+                         Text = $"""
+                         This will remove the selected mod(s) from:
+                         
+                         {CollectionName}
+                         
+                         ✓ The mod(s) will stay in your Library
+                         ✓ You can reinstall anytime
+                         """,
+                        },
                         buttonDefinitions:
                         [
                             DialogStandardButtons.Cancel,
                             new DialogButtonDefinition("Uninstall",
-                                ButtonDefinitionId.From("Uninstall"),
+                                ButtonDefinitionId.From("uninstall"),
                                 ButtonAction.Accept,
                                 ButtonStyling.Default
                             )
@@ -288,7 +291,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
 
-                    if (result != ButtonDefinitionId.From("Uninstall")) return;
+                    if (result.ButtonId != ButtonDefinitionId.From("Uninstall")) return;
 
                     await libraryService.RemoveLinkedItemsFromLoadout(ids);
                 },
