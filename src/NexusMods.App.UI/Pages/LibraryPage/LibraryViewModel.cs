@@ -905,14 +905,10 @@ After asking design, we're choosing to simply open the mod page for now.
 
         // Use the efficient method directly from ModUpdateService
         var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates();
+        var allUpdates = modPagesWithUpdates.Select(pair => pair.updates).ToArray();
         
-        foreach (var (modPageId, updates) in modPagesWithUpdates)
-        {
-            // Create a minimal model for the message (we need this for future/existing infrastructure)
-            var model = new CompositeItemModel<EntityId>(modPageId);
-            var message = new UpdateAndReplaceMessage(updates, model);
-            await HandleUpdateAndReplaceMessage(message, cancellationToken);
-        }
+        if (allUpdates.Length > 0)
+            await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, allUpdates);
     }
 
     /// <summary>
