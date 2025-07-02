@@ -12,6 +12,7 @@ using R3;
 using System.Reactive.Linq;
 using Avalonia.Input;
 using DynamicData.Kernel;
+using NexusMods.App.UI.Controls.Filters;
 
 namespace NexusMods.App.UI.Controls;
 

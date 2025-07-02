@@ -55,4 +55,58 @@ public abstract record Filter
     /// No filtering - passes all items through.
     /// </summary>
     public sealed record NoFilter() : Filter;
+    
+    // Static helper methods using C# 14 params span that chain existing filter types
+    
+    /// <summary>
+    /// Creates a chained AND filter from multiple filters using C# 14 params span.
+    /// Chains filters using the existing AndFilter type: And(a,b,c) becomes AndFilter(a, AndFilter(b, c)).
+    /// </summary>
+    /// <param name="filters">The filters to combine with AND logic.</param>
+    /// <returns>A chained AND filter, or NoFilter if no filters provided, or the single filter if only one provided.</returns>
+    public static Filter And(params ReadOnlySpan<Filter> filters)
+    {
+        return filters.Length switch
+        {
+            0 => new NoFilter(),
+            1 => filters[0],
+            2 => new AndFilter(filters[0], filters[1]),
+            _ => ChainWithAnd(filters),
+        };
+    }
+
+    private static Filter ChainWithAnd(ReadOnlySpan<Filter> filters)
+    {
+        var result = filters[^1]; // Start with the last filter
+        for (var x = filters.Length - 2; x >= 0; x--)
+            result = new AndFilter(filters[x], result);
+
+        return result;
+    }
+    
+    /// <summary>
+    /// Creates a chained OR filter from multiple filters using C# 14 params span.
+    /// Chains filters using the existing OrFilter type: Or(a,b,c) becomes OrFilter(a, OrFilter(b, c)).
+    /// </summary>
+    /// <param name="filters">The filters to combine with OR logic.</param>
+    /// <returns>A chained OR filter, or NoFilter if no filters provided, or the single filter if only one provided.</returns>
+    public static Filter Or(params ReadOnlySpan<Filter> filters)
+    {
+        return filters.Length switch
+        {
+            0 => new NoFilter(),
+            1 => filters[0],
+            2 => new OrFilter(filters[0], filters[1]),
+            _ => ChainWithOr(filters),
+        };
+    }
+    
+    private static Filter ChainWithOr(ReadOnlySpan<Filter> filters)
+    {
+        var result = filters[^1]; // Start with the last filter
+        for (var x = filters.Length - 2; x >= 0; x--)
+            result = new OrFilter(filters[x], result);
+
+        return result;
+    }
 } 

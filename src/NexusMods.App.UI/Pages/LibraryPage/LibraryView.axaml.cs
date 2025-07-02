@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
@@ -47,7 +48,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         {
                             ViewModel.Adapter.Filter.Value = string.IsNullOrWhiteSpace(searchText) 
                                 ? new Filter.NoFilter()
-                                : new Filter.NameFilter(searchText ?? string.Empty, CaseSensitive: false);
+                                : Filter.Or(
+                                    new Filter.NameFilter(searchText, CaseSensitive: false), 
+                                    new Filter.VersionFilter(searchText));
                         }
                     })
                     .AddTo(disposables);
