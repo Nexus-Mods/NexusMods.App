@@ -149,7 +149,8 @@ public static class LibraryDataProviderHelper
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<Optional<ModUpdateOnPage>> unfilteredFileUpdateObservable,
-        IModUpdateFilterService filterService)
+        IModUpdateFilterService filterService,
+        Observable<bool> isVisibleObservable)
     {
         // Note(sewer):
         // Determine if the current file is hidden by checking if any of the newer
@@ -183,8 +184,6 @@ public static class LibraryDataProviderHelper
             .Select(optional => optional.HasValue)
             .ToObservable();
 
-        var isVisibleObservable = Observable.Return(true);
-
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable, isVisibleObservable));
     }
 
@@ -192,7 +191,8 @@ public static class LibraryDataProviderHelper
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
         IObservable<Optional<ModUpdatesOnModPage>> unfilteredUpdatedOnModPage,
-        IModUpdateFilterService modUpdateFilterService)
+        IModUpdateFilterService modUpdateFilterService,
+        Observable<bool> isVisibleObservable)
     {
         // Note(sewer):
         //
@@ -245,7 +245,6 @@ public static class LibraryDataProviderHelper
             .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
             .ToObservable();
         
-        var isVisibleObservable = Observable.Return(true);
         itemModel.Add(LibraryColumns.Actions.HideUpdatesComponentKey, new LibraryComponents.HideUpdatesAction(isHiddenObservable, itemCountObservable, isEnabledObservable, isVisibleObservable));
     }
 }
