@@ -428,7 +428,7 @@ file class DebuggingHost : IHost
 
     private void Log(string format, params object?[] arguments)
     {
+        _logger.LogDebug(format, arguments);
         if (ApplicationConstants.IsCI) Console.WriteLine(format, arguments);
-        else _logger.LogDebug(format, arguments);
     }
 }
