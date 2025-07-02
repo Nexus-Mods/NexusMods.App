@@ -265,16 +265,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     if (ids.Length == 0) return;
 
-                    var dialog = DialogFactory.CreateDialog(
+                    var dialog = DialogFactory.CreateStandardDialog(
                         title: "Uninstall mod(s)",
-//                         text: $"""
-//                         This will remove the selected mod(s) from:
-//                         
-//                         {CollectionName}
-//                         
-//                         ✓ The mod(s) will stay in your Library
-//                         ✓ You can reinstall anytime
-//                         """,
+                        new StandardDialogParameters()
+                        {
+                         Text = $"""
+                         This will remove the selected mod(s) from:
+                         
+                         {CollectionName}
+                         
+                         ✓ The mod(s) will stay in your Library
+                         ✓ You can reinstall anytime
+                         """,
+                        },
                         buttonDefinitions:
                         [
                             DialogStandardButtons.Cancel,
@@ -283,9 +286,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                                 ButtonAction.Accept,
                                 ButtonStyling.Default
                             )
-                        ],
-                        dialogWindowSize: DialogWindowSize.Medium,
-                        contentViewModel: null!
+                        ]
                     );
 
                     var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
