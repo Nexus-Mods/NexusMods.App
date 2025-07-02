@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -20,6 +22,9 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     bool IsCollection { get; }
     IReadOnlyBindableReactiveProperty<bool> IsCollectionUploaded { get; }
     IReadOnlyBindableReactiveProperty<string> CollectionName { get; } 
+    IReadOnlyBindableReactiveProperty<CollectionStatus> CollectionStatus { get; }
+    IReadOnlyBindableReactiveProperty<RevisionStatus> RevisionStatus { get; }
+    IReadOnlyBindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
 
     ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
     ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }

@@ -26,10 +26,12 @@ using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
+using CollectionStatus = NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus;
 using ReactiveCommand = R3.ReactiveCommand;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
@@ -53,6 +55,13 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     IReadOnlyBindableReactiveProperty<string> ILoadoutViewModel.CollectionName => CollectionName;
     private BindableReactiveProperty<bool> IsCollectionUploaded { get; }
     IReadOnlyBindableReactiveProperty<bool> ILoadoutViewModel.IsCollectionUploaded => IsCollectionUploaded;
+    
+    private BindableReactiveProperty<CollectionStatus> CollectionStatus { get; }
+    IReadOnlyBindableReactiveProperty<CollectionStatus> ILoadoutViewModel.CollectionStatus => CollectionStatus;
+    private BindableReactiveProperty<RevisionStatus> RevisionStatus { get; }
+    IReadOnlyBindableReactiveProperty<RevisionStatus> ILoadoutViewModel.RevisionStatus => RevisionStatus;
+    private BindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
+    IReadOnlyBindableReactiveProperty<RevisionNumber> ILoadoutViewModel.RevisionNumber => RevisionNumber;
 
     public ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
     public ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }
@@ -96,7 +105,23 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             TabIcon = IconValues.CollectionsOutline;
 
             CollectionName = new BindableReactiveProperty<string>(value: collectionGroup.Name);
-            IsCollectionUploaded = new BindableReactiveProperty<bool>(value: CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _));
+
+            if (ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value).IsValid())
+            {
+                IsCollectionUploaded = new BindableReactiveProperty<bool>(value: true);
+
+                var managed = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
+                CollectionStatus = new BindableReactiveProperty<CollectionStatus>(value: managed.Collection.Status.ValueOr(() => Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted));
+                RevisionStatus = new BindableReactiveProperty<RevisionStatus>(value: managed.ToStatus());
+                RevisionNumber = new BindableReactiveProperty<RevisionNumber>(value: managed.CurrentRevisionNumber);
+            }
+            else
+            {
+                IsCollectionUploaded = new BindableReactiveProperty<bool>(value: false);
+                CollectionStatus = new BindableReactiveProperty<CollectionStatus>(value: Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted);
+                RevisionStatus = new BindableReactiveProperty<RevisionStatus>(value: Abstractions.NexusModsLibrary.Models.RevisionStatus.Draft);
+                RevisionNumber = new BindableReactiveProperty<RevisionNumber>(value: Abstractions.NexusWebApi.Types.RevisionNumber.From(1));
+            }
 
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
             // so we show the `sorting views here` view here instead
@@ -161,6 +186,9 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         {
             CollectionName = new BindableReactiveProperty<string>(value: string.Empty);
             IsCollectionUploaded = new BindableReactiveProperty<bool>(value: false);
+            CollectionStatus = new BindableReactiveProperty<CollectionStatus>();
+            RevisionStatus = new BindableReactiveProperty<RevisionStatus>();
+            RevisionNumber = new BindableReactiveProperty<RevisionNumber>();
 
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
@@ -177,20 +205,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         var loadout = Loadout.Load(_connection.Db, loadoutId);
         EmptyStateTitleText = string.Format(Language.LoadoutGridViewModel_EmptyModlistTitleString, loadout.InstallationInstance.Game.Name);
         CommandOpenLibraryPage = new ReactiveCommand<NavigationInformation>(info =>
+        {
+            var pageData = new PageData
             {
-                var pageData = new PageData
+                FactoryId = LibraryPageFactory.StaticId,
+                Context = new LibraryPageContext
                 {
-                    FactoryId = LibraryPageFactory.StaticId,
-                    Context = new LibraryPageContext
-                    {
-                        LoadoutId = loadoutId,
-                    },
-                };
-                var workspaceController = GetWorkspaceController();
-                var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
-                workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
-            }
-        );
+                    LoadoutId = loadoutId,
+                },
+            };
+            var workspaceController = GetWorkspaceController();
+            var behavior = workspaceController.GetOpenPageBehavior(pageData, info);
+            workspaceController.OpenPage(workspaceController.ActiveWorkspaceId, pageData, behavior);
+        });
 
         var numSortableItemProviders = loadout
             .InstallationInstance
@@ -346,6 +373,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     .ObserveOnThreadPool()
                     .Select((_connection, collectionGroupId.Value), static (_, state) => ManagedCollectionLoadoutGroup.Load(state._connection.Db, state.Value))
                     .SubscribeAwait(this, static (group, self, cancellationToken) => self.UpdateCollectionInfo(group, cancellationToken))
+                    .AddTo(disposables);
+
+                _connection
+                    .ObserveDatoms(collectionGroupId.Value.Value)
+                    .QueryWhenChanged(_ => new ManagedCollectionLoadoutGroup.ReadOnly(_connection.Db, collectionGroupId.Value))
+                    .ToObservable()
+                    .Where(model => model.IsValid())
+                    .Subscribe(this, (model, self) =>
+                    {
+                        self.CollectionStatus.Value = model.Collection.Status.ValueOr(() => Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted);
+                        self.RevisionStatus.Value = model.ToStatus();
+                        self.RevisionNumber.Value = model.CurrentRevisionNumber;
+                    })
                     .AddTo(disposables);
             }
 
