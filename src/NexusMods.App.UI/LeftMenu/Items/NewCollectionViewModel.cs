@@ -33,7 +33,7 @@ public class NewCollectionViewModel : LeftMenuItemViewModel
             var dialog = LoadoutDialogs.CreateCollection();
             var windowManager = serviceProvider.GetRequiredService<IWindowManager>();
             var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
-            if (result.ButtonId != ButtonDefinitionId.From("create")) return;
+            if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
             var collectionGroup = await CollectionCreator.CreateNewCollectionGroup(connection, loadoutId, newName: result.InputText);
 

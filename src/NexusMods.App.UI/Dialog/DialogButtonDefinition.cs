@@ -1,4 +1,3 @@
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.UI.Sdk.Icons;
 using TransparentValueObjects;
@@ -11,6 +10,17 @@ namespace NexusMods.App.UI.Dialog;
 [ValueObject<string>]
 public readonly partial struct ButtonDefinitionId
 {
+    public static ButtonDefinitionId None => From("none");
+    
+    public static ButtonDefinitionId Accept => From("accept");
+    
+    public static ButtonDefinitionId Cancel => From("cancel");
+    
+    public static ButtonDefinitionId Close => From("close");
+    
+    public static ButtonDefinitionId CloseWindow => From("close-window");
+
+    public static ButtonDefinitionId No => From("no");
 }
 
 /// <summary>

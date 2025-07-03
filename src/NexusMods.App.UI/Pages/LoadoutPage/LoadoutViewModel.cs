@@ -139,7 +139,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 var shareDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollection(CollectionName.Value) : LoadoutDialogs.ShareCollection(CollectionName.Value);
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
-                if (shareDialogResult.ButtonId != ButtonDefinitionId.From("share")) return;
+                if (shareDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
 
                 var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
                 var successDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName.Value) : LoadoutDialogs.ShareCollectionSuccess(CollectionName.Value);
@@ -149,7 +149,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 IsCollectionUploaded.Value = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
                 HasOutstandingChanges.Value = false;
 
-                if (successDialogResult.ButtonId != ButtonDefinitionId.From("view-page")) return;
+                if (successDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
 
                 var uri = GetCollectionUri(collection);
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
@@ -168,7 +168,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 var dialog = LoadoutDialogs.RenameCollection(CollectionName.Value);
                 var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
-                if (result.ButtonId != ButtonDefinitionId.From("rename")) return;
+                if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
                 var newName = result.InputText;
                 if (string.IsNullOrWhiteSpace(newName)) return;
@@ -306,7 +306,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         [
                             DialogStandardButtons.Cancel,
                             new DialogButtonDefinition("Uninstall",
-                                ButtonDefinitionId.From("uninstall"),
+                                ButtonDefinitionId.Accept,
                                 ButtonAction.Accept,
                                 ButtonStyling.Default
                             )
@@ -315,7 +315,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     var result = await windowManager.ShowDialog(dialog, DialogWindowType.Modal);
 
-                    if (result.ButtonId != ButtonDefinitionId.From("Uninstall")) return;
+                    if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
                     await libraryService.RemoveLinkedItemsFromLoadout(ids);
                 },
