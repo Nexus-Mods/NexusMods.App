@@ -21,7 +21,7 @@ public record LoadoutPageContext : IPageFactoryContext
     /// <summary>
     /// If provided, will limit the scope of items shown to the group with the given ID.
     /// </summary>
-    public required Optional<LoadoutItemGroupId> GroupScope { get; init; }
+    public required Optional<CollectionGroupId> GroupScope { get; init; }
 
     /// <summary>
     /// If provided, will create the page with the given sub-tab selected.
@@ -71,7 +71,7 @@ public class LoadoutPageFactory : APageFactory<ILoadoutViewModel, LoadoutPageCon
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId,
-                    GroupScope = Optional<LoadoutItemGroupId>.None,
+                    GroupScope = Optional<CollectionGroupId>.None,
                 },
             },
         };
