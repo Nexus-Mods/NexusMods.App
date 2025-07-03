@@ -499,7 +499,10 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     private async ValueTask UpdateCollectionInfo(ManagedCollectionLoadoutGroup.ReadOnly managedCollectionLoadoutGroup, CancellationToken cancellationToken)
     {
-        var lastPublishedRevisionNumber = await _nexusModsLibrary.GetLastPublishedRevisionNumber(managedCollectionLoadoutGroup.Collection, cancellationToken);
+        var graphQlResult = await _nexusModsLibrary.GetLastPublishedRevisionNumber(managedCollectionLoadoutGroup.Collection, cancellationToken);
+
+        // TODO: handle errors
+        var lastPublishedRevisionNumber = graphQlResult.AssertHasData();
 
         using var tx = _connection.BeginTransaction();
         if (lastPublishedRevisionNumber.HasValue)

@@ -53,6 +53,9 @@ public interface IGraphQlResult<TData> : IGraphQlResult
     /// <summary>
     /// Asserts that the result has and returns it.
     /// </summary>
+    /// <remarks>
+    /// Should only be used if you called <see cref="IGraphQlResult.HasData"/> beforehand to guarantee that the result has data.
+    /// </remarks>
     /// <exception cref="InvalidOperationException">Thrown when the result doesn't have data.</exception>
     TData AssertHasData();
 

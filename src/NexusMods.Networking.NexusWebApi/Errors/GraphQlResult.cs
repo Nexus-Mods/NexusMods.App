@@ -57,7 +57,8 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
     /// <inheritdoc/>
     public TData AssertHasData()
     {
-        if (!HasData) throw new InvalidOperationException();
+        Debug.Assert(HasData, "Result should have data when this method is called, use TryGetData instead if you can't guarantee it");
+        if (!HasData) throw new InvalidOperationException($"Expected the result to contain data but it has {Errors.Count} errors instead");
         return _data.Value;
     }
 

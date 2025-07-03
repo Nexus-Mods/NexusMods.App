@@ -12,9 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.MnemonicDB.Abstractions.Query.SliceDescriptors;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -268,32 +266,37 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Gets the last published revision number.
     /// </summary>
-    public async ValueTask<Optional<RevisionNumber>> GetLastPublishedRevisionNumber(
+    public async ValueTask<GraphQlResult<Optional<RevisionNumber>, NotFound, CollectionDiscarded>> GetLastPublishedRevisionNumber(
         CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
-        var revisionNumbers = await GetAllRevisionNumbers(collection, cancellationToken);
-        return revisionNumbers.FirstOrOptional(static tuple => tuple.Status == RevisionStatus.Published).Convert(static tuple => tuple.Number);
+        var graphQlResult = await GetAllRevisionNumbers(collection, cancellationToken);
+        return graphQlResult.Map(static revisionNumbers => revisionNumbers.
+            FirstOrOptional(static tuple => tuple.Status == RevisionStatus.Published)
+            .Convert(static tuple => tuple.Number)
+        );
     }
 
     /// <summary>
     /// Gets all revision numbers for the given collection in descending order.
     /// </summary>
-    public async ValueTask<(RevisionNumber Number, RevisionStatus Status)[]> GetAllRevisionNumbers(
+    public async ValueTask<GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>> GetAllRevisionNumbers(
         CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
         var gameDomain = _mappingCache[collection.GameId];
 
-        var apiResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
+        var operationResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
             slug: collection.Slug.Value,
             domainName: gameDomain.Value,
             viewAdultContent: true,
             cancellationToken: cancellationToken
         );
 
-        var revisions = apiResult.Data?.Collection.Revisions;
-        if (revisions is null) throw new NotSupportedException($"API call returned no data for collection slug `{collection.Slug}`");
+        if (operationResult.TryExtractErrors(out GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        var revisions = operationData.Collection.Revisions;
 
         var revisionNumbers = revisions
             .OrderByDescending(x => x.RevisionNumber)
