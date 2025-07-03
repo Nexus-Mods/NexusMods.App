@@ -12,15 +12,7 @@ namespace NexusMods.Networking.NexusWebApi.Errors;
 public record NotFound : IGraphQlError<NotFound>
 {
     /// <inheritdoc/>
-    public string Message { get; }
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public NotFound(string message)
-    {
-        Message = message;
-    }
+    public required string Message { get; init; }
 
     /// <inheritdoc/>
     public static ErrorCode Code { get; } = ErrorCode.From("NOT_FOUND");
@@ -29,7 +21,10 @@ public record NotFound : IGraphQlError<NotFound>
     public static bool TryParse(IClientError clientError, [NotNullWhen(true)] out NotFound? error)
     {
         Debug.Assert(Code.Equals(clientError.Code));
-        error = new NotFound(clientError.Message);
+        error = new NotFound
+        {
+            Message = clientError.Message,
+        };
         return true;
     }
 }
