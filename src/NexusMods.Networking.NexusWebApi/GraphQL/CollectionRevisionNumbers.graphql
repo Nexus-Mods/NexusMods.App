@@ -7,7 +7,8 @@ query CollectionRevisionNumbers($slug: String!, $domainName: String!, $viewAdult
 
         revisions {
             id,
-            revisionNumber
+            revisionNumber,
+            ...CollectionRevisionStatusFragment
         }
     }
 }

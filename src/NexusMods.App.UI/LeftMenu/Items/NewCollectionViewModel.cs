@@ -43,7 +43,7 @@ public class NewCollectionViewModel : LeftMenuItemViewModel
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutId,
-                    GroupScope = collectionGroup.AsLoadoutItemGroup().LoadoutItemGroupId,
+                    GroupScope = collectionGroup.CollectionGroupId,
                 },
             };
 

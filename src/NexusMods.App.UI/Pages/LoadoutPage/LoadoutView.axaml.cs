@@ -1,10 +1,9 @@
-using Avalonia.Interactivity;
-using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.Collections;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using R3;
 using ReactiveUI;
@@ -12,7 +11,7 @@ using ReactiveUI;
 namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 [UsedImplicitly]
-public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
+public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 {
     public LoadoutView()
     {
@@ -24,14 +23,38 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
         {
             // initially hidden
             ContextControlGroup.IsVisible = false;
-            
-            this.BindCommand(ViewModel, vm => vm.ViewFilesCommand, view => view.ViewFilesButton)
+
+            BindableViewModel.Subscribe(this, static (vm, view) =>
+            {
+                view.EmptyState.Header = vm?.EmptyStateTitleText ?? string.Empty;
+                view.SortingSelectionView.ViewModel = vm?.RulesSectionViewModel;
+                view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
+
+                var isCollection = vm?.IsCollection ?? false;
+                view.AllPageHeader.IsVisible = !isCollection;
+                view.Statusbar.IsVisible = isCollection;
+                view.ButtonUploadCollectionRevision.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
+                view.WritableCollectionPageHeader.IsVisible = isCollection;
+
+                var selectedSubTab = vm?.SelectedSubTab;
+                if (selectedSubTab is not null)
+                {
+                    view.RulesTabControl.SelectedItem = selectedSubTab switch
+                    {
+                        LoadoutPageSubTabs.Mods => view.ModsTabItem,
+                        LoadoutPageSubTabs.Rules => view.RulesTabItem,
+                        _ => throw new ArgumentOutOfRangeException(nameof(selectedSubTab), selectedSubTab, null)
+                    };
+                }
+            }).AddTo(disposables);
+
+            this.BindCommand(ViewModel, vm => vm.CommandOpenFilesPage, view => view.ViewFilesButton)
                 .AddTo(disposables);
             
-            this.BindCommand(ViewModel, vm => vm.ViewLibraryCommand, view => view.ViewLibraryButton)
+            this.BindCommand(ViewModel, vm => vm.CommandOpenLibraryPage, view => view.ViewLibraryButton)
                 .AddTo(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.RemoveItemCommand, view => view.DeleteButton)
+            this.BindCommand(ViewModel, vm => vm.CommandRemoveItem, view => view.DeleteButton)
                 .AddTo(disposables);
 
             this.OneWayBind(ViewModel, vm => vm.Adapter.Source.Value, view => view.TreeDataGrid.Source)
@@ -39,26 +62,14 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
 
             this.OneWayBind(ViewModel, vm => vm.Adapter.IsSourceEmpty.Value, view => view.EmptyState.IsActive)
                 .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.EmptyStateTitleText, view => view.EmptyState.Header)
-                .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.CollectionName, view => view.WritableCollectionPageHeader.Title)
-                .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.ViewModel)
+
+            this.OneWayR3Bind(static view => view.BindableViewModel, static vm => vm.CollectionName, static (view, collectionName) => view.WritableCollectionPageHeader.Title = collectionName)
                 .AddTo(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.RulesSectionViewModel, view => view.SortingSelectionView.DataContext)
+            this.OneWayR3Bind(static view => view.BindableViewModel, static vm => vm.ItemCount, static (view, count) => view.ModsCount.Text = count.ToString())
                 .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.ItemCount, view => view.ModsCount.Text)
-                .AddTo(disposables);
-            
-            this.OneWayBind(ViewModel, vm => vm.HasRulesSection, view => view.RulesTabItem.IsVisible)
-                .AddTo(disposables);
-            
-            this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
+
+            this.BindCommand(ViewModel, vm => vm.CommandDeselectItems, view => view.DeselectItemsButton)
                 .AddTo(disposables);
 
             this.BindCommand(ViewModel, vm => vm.CommandUploadRevision, view => view.ButtonUploadCollectionRevision)
@@ -70,71 +81,37 @@ public partial class LoadoutView : ReactiveUserControl<ILoadoutViewModel>
             this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                 .AddTo(disposables);
 
-            this.BindCommand(ViewModel, vm => vm.DeselectItemsCommand, view => view.DeselectItemsButton)
-                .AddTo(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.IsCollection)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(isCollection =>
+            this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.IsCollectionUploaded)
+                .Subscribe(this, static (isCollectionUploaded, self) =>
                 {
-                    ButtonUploadCollectionRevision.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
-                    WritableCollectionPageHeader.IsVisible = isCollection;
-                    AllPageHeader.IsVisible = !isCollection;
-                })
-                .AddTo(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.IsCollectionUploaded)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(isCollectionUploaded =>
-                {
-                    StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
-                    ButtonUploadCollectionRevision.Text = isCollectionUploaded ? "Upload update" : "Share";
-                    ButtonUploadCollectionRevision.ShowIcon = isCollectionUploaded ? StandardButton.ShowIconOptions.None : StandardButton.ShowIconOptions.Left;
-                    ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
-                    
+                    self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
+                    self.ButtonUploadCollectionRevision.Text = isCollectionUploaded ? "Upload update" : "Share";
+                    self.ButtonUploadCollectionRevision.ShowIcon = isCollectionUploaded ? StandardButton.ShowIconOptions.None : StandardButton.ShowIconOptions.Left;
+                    self.ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
+
                     if (isCollectionUploaded)
                     {
-                        StatusText.Classes.Add("Success");
-                        StatusIcon.Classes.Add("Success");
-                        StatusIcon.Value = IconValues.CollectionsOutline;
+                        self.StatusText.Classes.Add("Success");
+                        self.StatusIcon.Classes.Add("Success");
+                        self.StatusIcon.Value = IconValues.CollectionsOutline;
                     }
                     else
                     {
-                        StatusText.Classes.Remove("Success");
-                        StatusIcon.Classes.Remove("Success");
-                        StatusIcon.Value = IconValues.Info;
+                        self.StatusText.Classes.Remove("Success");
+                        self.StatusIcon.Classes.Remove("Success");
+                        self.StatusIcon.Value = IconValues.Info;
                     }
-                    
-                    StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
+
+                    self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
                 })
                 .AddTo(disposables);
 
-            
-            this.WhenAnyValue( view => view.ViewModel!.SelectedSubTab)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(selectedSubTab =>
+            this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.SelectionCount)
+                .Subscribe(this, static (count, self) =>
                 {
-                    RulesTabControl.SelectedItem = selectedSubTab switch
-                    {
-                        LoadoutPageSubTabs.Mods => ModsTabItem,
-                        LoadoutPageSubTabs.Rules => RulesTabItem,
-                        _ => throw new ArgumentOutOfRangeException(nameof(selectedSubTab), selectedSubTab, null)
-                    };
+                    self.ContextControlGroup.IsVisible = count != 0;
+                    self.DeselectItemsButton.Text = count == 0 ? string.Empty : string.Format(Language.Library_DeselectItemsButton_Text, count);
                 })
-                .AddTo(disposables);
-            
-            this.WhenAnyValue(view => view.ViewModel!.SelectionCount)
-                .WhereNotNull()
-                .SubscribeWithErrorLogging(count =>
-                    {
-                        ContextControlGroup.IsVisible = count != 0;
-
-                        if (count != 0)
-                        {
-                            DeselectItemsButton.Text = string.Format(Language.Library_DeselectItemsButton_Text, count);
-                        }
-                    }
-                )
                 .AddTo(disposables);
         });
     }

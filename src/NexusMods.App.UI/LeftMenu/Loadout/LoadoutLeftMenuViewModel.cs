@@ -109,7 +109,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId,
-                    GroupScope = Optional<LoadoutItemGroupId>.None,
+                    GroupScope = Optional<CollectionGroupId>.None,
                 },
             }
         )
@@ -182,7 +182,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         Context = new LoadoutPageContext
                         {
                             LoadoutId = loadout,
-                            GroupScope = collection.AsLoadoutItemGroup().LoadoutItemGroupId,
+                            GroupScope = collection.CollectionGroupId,
                         },
                     };
 

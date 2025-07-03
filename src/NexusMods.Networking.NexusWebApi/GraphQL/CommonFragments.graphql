@@ -28,6 +28,11 @@ fragment ModFragment on Mod {
     uid
 }
 
+fragment CollectionRevisionStatusFragment on CollectionRevision {
+    status,
+    revisionStatus
+}
+
 fragment CollectionRevisionFragment on CollectionRevision {
     id
     assetsSizeBytes
@@ -37,8 +42,7 @@ fragment CollectionRevisionFragment on CollectionRevision {
     overallRating
     overallRatingCount
     modCount
-    status
-    revisionStatus
+    ...CollectionRevisionStatusFragment
 
     modFiles {
         id,
