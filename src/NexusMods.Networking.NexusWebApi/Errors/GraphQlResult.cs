@@ -192,7 +192,11 @@ public static class GraphQlResult
     /// <summary>
     /// Tries to extract all errors.
     /// </summary>
-    public static bool TryExtractErrors<TData, TError1>(IOperationResult operationResult, [NotNullWhen(true)] out GraphQlResult<TData, TError1>? result)
+    public static bool TryExtractErrors<TOperationData, TData, TError1>(
+        this IOperationResult<TOperationData> operationResult,
+        [NotNullWhen(true)] out GraphQlResult<TData, TError1>? result,
+        [NotNullWhen(false)] out TOperationData? operationData)
+        where TOperationData : class
         where TData : notnull
         where TError1 : IGraphQlError<TError1>
     {
@@ -200,9 +204,11 @@ public static class GraphQlResult
         if (errors.Count == 0)
         {
             result = null;
+            operationData = AssertOperationData(operationResult);
             return false;
         }
 
+        operationData = null;
         if (errors.Count == 1)
         {
             var error = errors[0];
@@ -237,7 +243,11 @@ public static class GraphQlResult
     /// <summary>
     /// Tries to extract all errors.
     /// </summary>
-    public static bool TryExtractErrors<TData, TError1, TError2>(IOperationResult operationResult, [NotNullWhen(true)] out GraphQlResult<TData, TError1, TError2>? result)
+    public static bool TryExtractErrors<TOperationData, TData, TError1, TError2>(
+        this IOperationResult<TOperationData> operationResult,
+        [NotNullWhen(true)] out GraphQlResult<TData, TError1, TError2>? result,
+        [NotNullWhen(false)] out TOperationData? operationData)
+        where TOperationData : class
         where TData : notnull
         where TError1 : IGraphQlError<TError1>
         where TError2 : IGraphQlError<TError2>
@@ -246,9 +256,11 @@ public static class GraphQlResult
         if (errors.Count == 0)
         {
             result = null;
+            operationData = AssertOperationData(operationResult);
             return false;
         }
 
+        operationData = null;
         if (errors.Count == 1)
         {
             var error = errors[0];
@@ -293,7 +305,11 @@ public static class GraphQlResult
     /// <summary>
     /// Tries to extract all errors.
     /// </summary>
-    public static bool TryExtractErrors<TData, TError1, TError2, TError3>(IOperationResult operationResult, [NotNullWhen(true)] out GraphQlResult<TData, TError1, TError2, TError3>? result)
+    public static bool TryExtractErrors<TOperationData, TData, TError1, TError2, TError3>(
+        this IOperationResult<TOperationData> operationResult,
+        [NotNullWhen(true)] out GraphQlResult<TData, TError1, TError2, TError3>? result,
+        [NotNullWhen(false)] out TOperationData? operationData)
+        where TOperationData : class
         where TData : notnull
         where TError1 : IGraphQlError<TError1>
         where TError2 : IGraphQlError<TError2>
@@ -303,9 +319,11 @@ public static class GraphQlResult
         if (errors.Count == 0)
         {
             result = null;
+            operationData = AssertOperationData(operationResult);
             return false;
         }
 
+        operationData = null;
         if (errors.Count == 1)
         {
             var error = errors[0];
@@ -355,6 +373,14 @@ public static class GraphQlResult
 
         result = new GraphQlResult<TData, TError1, TError2, TError3>(parsedErrors);
         return true;
+    }
+
+    private static TOperationData AssertOperationData<TOperationData>(IOperationResult<TOperationData> operationResult)
+        where TOperationData : class
+    {
+        var operationData = operationResult.Data;
+        if (operationData is null) throw new InvalidOperationException("Expected result to contain data but found null");
+        return operationData;
     }
 
     [DoesNotReturn]
