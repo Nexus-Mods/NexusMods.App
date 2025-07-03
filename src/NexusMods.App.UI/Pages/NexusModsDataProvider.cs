@@ -20,6 +20,7 @@ using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -204,7 +205,17 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
 
         var updatesOnPageUnfiltered = _modUpdateService.GetNewestModPageVersionObservableUnfiltered(modPage);
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService);
+        
+        // Note(sewer):
+        // Hide the button if there are no updates available for any files on this mod page
+        // BUT
+        // We have to be very careful here! We only hide if we have the latest version of the mods
+        // from the mod page! If there is an update that's hidden, we still have to show the button,
+        // else the user has no way to unhide the update.
+        var isVisibleObservable = updatesOnPageUnfiltered
+            .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
+            .ToObservable();
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService, isVisibleObservable);
 
         return parentItemModel;
     }
@@ -260,7 +271,18 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         );
 
         var newestFileUnfiltered = _modUpdateService.GetNewestFileVersionObservableUnfiltered(fileMetadata);
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService);
+        
+        // Note(sewer):
+        // Hide the button if there are no updates available for this mod.
+        // BUT
+        // We have to be very careful here! We only hide if we have the latest version of the mods
+        // from the mod page! If there is an update that's hidden, we still have to show the button,
+        // else the user has no way to unhide the update.
+        var isVisibleObservable = newestFileUnfiltered
+            .Select(optional => optional.HasValue)
+            .ToObservable();
+        
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService, isVisibleObservable);
 
         return itemModel;
     }
