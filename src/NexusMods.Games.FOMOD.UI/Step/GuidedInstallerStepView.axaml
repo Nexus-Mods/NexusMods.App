@@ -17,34 +17,42 @@
     <Grid RowDefinitions="*,Auto">
         <Border Grid.Row="0" x:Name="TopPart">
             <Grid x:Name="TopPartGrid" RowDefinitions="Auto,*">
+
                 <Border Grid.Row="0" x:Name="MultiOptionHeaderBorder">
-                    <StackPanel x:Name="MultiOptionHeaderStackPanel" Orientation="Horizontal">
-
-                        <icons:UnifiedIcon x:Name="MultiOptionHeaderIcon" Classes="Tune" />
-                        <TextBlock x:Name="MultiOptionHeaderTextBlock" Theme="{StaticResource BodyMDSemiTheme}"
-                                   Text="{x:Static resources:Language.MultiOptionHeader_Multi_Option_Mod}" />
-
-                    </StackPanel>
+                    <TextBlock x:Name="MultiOptionHeaderTextBlock" 
+                               Theme="{StaticResource BodySMNormalTheme}"
+                               Text="{x:Static resources:Language.MultiOptionHeader_Multi_Option_Mod}"
+                               IsVisible="False" />
                 </Border>
 
                 <Border Grid.Row="1" x:Name="BodyBorder">
+
                     <Grid x:Name="BodyStackPanel" RowDefinitions="Auto, *">
                         <Border Grid.Row="0" x:Name="HeadingAndSubHeadingBorder">
-                            <StackPanel x:Name="HeadingAndSubHeadingStackPanel" Classes="Spacing-1">
-
-                                <TextBlock Theme="{StaticResource BodyLGBoldTheme}" x:Name="ModName" />
-                                <TextBlock Theme="{StaticResource HeadingSMSemiTheme}" x:Name="StepName" />
-
-                            </StackPanel>
+                            <TextBlock x:Name="StepName"
+                                       Theme="{StaticResource BodySMNormalTheme}" />
                         </Border>
 
-                        <TextBlock Grid.Row="1" Classes="TopTitle" VerticalAlignment="Top"
-                                   x:Name="InstallationCompleteScreenTextBlock" IsVisible="False"
-                                   Text="{x:Static resources:Language.InstallationCompleteScreenText}" />
+                        <StackPanel Grid.Row="1" x:Name="InstallationCompleteStack" 
+                                    Spacing="12"
+                                    IsVisible="False"
+                                    Margin="0 12 0 0">
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.PictogramSuccess}"
+                                               Size="48"
+                                               HorizontalAlignment="Left"/>
+                            <TextBlock Text="{x:Static resources:Language.InstallationCompleteScreenText}"
+                                        Theme="{StaticResource BodySMNormalTheme}"
+                                        Foreground="{StaticResource NeutralSubduedBrush}"
+                                        TextWrapping="Wrap"/>
+                        </StackPanel>
+                        
 
-                        <Grid Grid.Row="1" x:Name="GroupsGrid" ColumnDefinitions="*,*">
+                        <Grid Grid.Row="1" x:Name="GroupsGrid" ColumnDefinitions="*,12,*" Margin="0 12">
 
-                            <Border Grid.Column="0" x:Name="GroupsBorder">
+                            <!-- left panel -->
+                            <Border Grid.Column="0" x:Name="GroupsBorder" Padding="12"
+                                    Background="{StaticResource BrandTranslucentDark300Brush}"
+                                    CornerRadius="4">
                                 <ScrollViewer x:Name="GroupsScrollViewer">
                                     <ItemsControl x:Name="GroupItemsControl">
                                         <ItemsControl.ItemsPanel>
@@ -56,39 +64,56 @@
                                 </ScrollViewer>
                             </Border>
 
-                            <Grid Grid.Column="1" x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
-                                <Border Grid.Row="0" x:Name="PreviewTitleBorder" BorderThickness="1"
-                                        BorderBrush="{StaticResource StrokeTranslucentModerateBrush}">
-                                    <Grid ColumnDefinitions="*, Auto, Auto">
+                            <!-- right panel -->
+                            <Border Grid.Column="2" x:Name="PreviewBorder"
+                                    BorderThickness="1"
+                                    BorderBrush="{StaticResource SurfaceHighBrush}"
+                                    CornerRadius="4">
 
-                                        <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox"
-                                                   Theme="{StaticResource BodyLGBoldTheme}"
-                                                   VerticalAlignment="Center" />
-                                        <icons:UnifiedIcon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
-                                                           Value="{x:Static icons:IconValues.Description}"
-                                                           VerticalAlignment="Center" />
-                                        <icons:UnifiedIcon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
-                                                           Value="{x:Static icons:IconValues.Image}"
-                                                           VerticalAlignment="Center" />
-                                    </Grid>
-                                </Border>
+                                <Grid x:Name="PreviewStackPanel" RowDefinitions="Auto,*">
 
-                                <Border Grid.Row="1" x:Name="PreviewContentBorder"
-                                        BorderThickness="1,0,1,1"
-                                        BorderBrush="{StaticResource StrokeTranslucentModerateBrush}">
-                                    <ScrollViewer x:Name="PreviewScrollViewer">
+                                    <!-- heading and icons -->
+                                    <Border Grid.Row="0" Padding="12 12 12 8">
+                                        <Grid ColumnDefinitions="*, Auto, Auto">
+                                            <TextBlock Grid.Column="0" x:Name="PreviewTitleTextBox"
+                                                       Theme="{StaticResource BodySMNormalTheme}"
+                                                       Foreground="{StaticResource NeutralSubduedBrush}"
+                                                       VerticalAlignment="Center"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <icons:UnifiedIcon Grid.Column="1" x:Name="PreviewHeaderImageIcon"
+                                                               Value="{x:Static icons:IconValues.ImageOutline}"
+                                                               VerticalAlignment="Center"
+                                                               Size="16"
+                                                               Foreground="{StaticResource NeutralSubduedBrush}"
+                                                               Margin="6 0 0 0" />
+                                            <icons:UnifiedIcon Grid.Column="2" x:Name="PreviewHeaderDescriptionIcon"
+                                                               Value="{x:Static icons:IconValues.FileDocumentOutline}"
+                                                               VerticalAlignment="Center"
+                                                               Size="16"
+                                                               Foreground="{StaticResource NeutralSubduedBrush}"
+                                                               Margin="6 0 0 0" />
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- image and description -->
+                                    <ScrollViewer Grid.Row="1" x:Name="PreviewScrollViewer">
                                         <StackPanel x:Name="PreviewContentsStackPanel" Orientation="Vertical"
-                                                    Classes="Spacing-2"
-                                                    VerticalAlignment="Stretch">
+                                                    VerticalAlignment="Top" Spacing="8" Margin="12 0">
+                                            <Border CornerRadius="4" BackgroundSizing="OuterBorderEdge"
+                                                    ClipToBounds="True">
+                                                <Image x:Name="HighlightedOptionImage" Stretch="UniformToFill" />
+                                            </Border>
                                             <TextBlock x:Name="HighlightedOptionDescription"
+                                                       Theme="{StaticResource BodySMNormalTheme}"
                                                        TextWrapping="Wrap"
-                                                       Text="{x:Static resources:Language.HighlightedOptionDescription_No_Extra_Details}" />
-                                            <Image Stretch="Uniform" IsVisible="False" x:Name="HighlightedOptionImage" />
+                                                       Text="{x:Static resources:Language.HighlightedOptionDescription_No_Extra_Details}"
+                                                       Foreground="{StaticResource NeutralSubduedBrush}" />
 
                                         </StackPanel>
                                     </ScrollViewer>
-                                </Border>
-                            </Grid>
+                                </Grid>
+                            </Border>
                         </Grid>
                     </Grid>
                 </Border>
@@ -96,7 +121,6 @@
         </Border>
 
         <reactiveUi:ViewModelViewHost Grid.Row="1" x:Name="FooterStepperViewHost" />
-
     </Grid>
 
 

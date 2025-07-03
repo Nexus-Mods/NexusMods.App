@@ -46,7 +46,7 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
 
     private void PopulateFromViewModel(IGuidedInstallerGroupViewModel viewModel)
     {
-        GroupName.Text = viewModel.Group.Name.ToUpperInvariant();
+        GroupName.Text = viewModel.Group.Name;
         GroupType.IsVisible = viewModel.Group.Type == OptionGroupType.AtLeastOne;
     }
 }

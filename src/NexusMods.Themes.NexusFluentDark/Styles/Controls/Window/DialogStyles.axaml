@@ -1,27 +1,8 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Design.PreviewWith>
-        <Border Padding="20">
-            <Window>
-                <Button Classes="Standard Primary">
-                    <StackPanel>
-                        <TextBlock Text="Hello World!"/>
-                    </StackPanel>
-                </Button>
-            </Window>
-        </Border>
-    </Design.PreviewWith>
 
     <!-- Style Definitions -->
 
-    <!-- Dialog WithDecorations -->
-    <Style Selector="Window.Dialog.WithDecorations">
-        <Setter Property="Background" Value="{StaticResource SurfaceHighBrush}"/>
-        <Setter Property="ExtendClientAreaChromeHints" Value="Default"/>
-        <Setter Property="Padding" Value="0,32,0,0"/>
-        <Setter Property="WindowStartupLocation" Value="CenterOwner"/>
-        <Setter Property="CanResize" Value="True"/>
-        <Setter Property="CornerRadius" Value="{StaticResource Rounded-lg}"/>
-    </Style>
+    
 </Styles>
 

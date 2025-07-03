@@ -14,9 +14,6 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, vm => vm.ModName, view => view.ModName.Text)
-                .DisposeWith(disposables);
-
             this.OneWayBind(ViewModel, vm => vm.InstallationStep!.Name, view => view.StepName.Text)
                 .DisposeWith(disposables);
 
@@ -52,12 +49,12 @@ public partial class GuidedInstallerStepView : ReactiveUserControl<IGuidedInstal
                     if (showInstallationCompleteScreen)
                     {
                         GroupsGrid.IsVisible = false;
-                        InstallationCompleteScreenTextBlock.IsVisible = true;
+                        InstallationCompleteStack.IsVisible = true;
                         StepName.Text = Language.GuidedInstallerStepView_GuidedInstallerStepView_Installation_complete;
                     }
                     else
                     {
-                        InstallationCompleteScreenTextBlock.IsVisible = false;
+                        InstallationCompleteStack.IsVisible = false;
                         GroupsGrid.IsVisible = true;
                         StepName.Text = ViewModel?.InstallationStep?.Name;
                     }

@@ -79,7 +79,7 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/file-document/
     // This is mislabeled on Figma and some places as 'description'
     public static readonly IconValue Description = new ProjektankerIcon("mdi-file-document");
-
+  
     // https://pictogrammers.com/library/mdi/icon/help-circle/
     public static readonly IconValue Help = new ProjektankerIcon("mdi-help-circle");
 
@@ -347,6 +347,9 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/image/
     public static readonly IconValue Image = new ProjektankerIcon("mdi-image");
+
+    // https://pictogrammers.com/library/mdi/icon/image-outline/
+    public static readonly IconValue ImageOutline = new ProjektankerIcon("mdi-image-outline");
 
     // https://pictogrammers.com/library/mdi/icon/tune/
     public static readonly IconValue Tune = new ProjektankerIcon("mdi-tune");
@@ -700,9 +703,14 @@ public static class IconValues
     public static readonly IconValue PictogramLibrary = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/library.svg");
     
     /// <summary>
-    /// Brand pictogram for Library
+    /// Brand pictogram for Upload
     /// </summary>
     public static readonly IconValue PictogramUpload = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/upload.svg");
+    
+    /// <summary>
+    /// Brand pictogram for Success
+    /// </summary>
+    public static readonly IconValue PictogramSuccess = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/success.svg");
 #endregion
     
 }

@@ -6,30 +6,38 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
-    mc:Ignorable="d" d:DesignWidth="544"
+    mc:Ignorable="d" d:DesignWidth="500"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerOptionView">
 
     <Design.DataContext>
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
-
-    <Border x:Name="OptionContainerBorder" Padding="8,0">
+    <Border x:Name="SelectionHighlightBorder" Padding="8">
         <Grid ColumnDefinitions="Auto, *">
             <Panel Grid.Column="0">
                 <CheckBox IsVisible="True" x:Name="CheckBox" Margin="0" />
                 <RadioButton IsVisible="True" x:Name="RadioButton" />
             </Panel>
-            <Border x:Name="SelectionHighlightBorder" Grid.Column="1" Padding="8,0,0,0">
-                <Grid ColumnDefinitions="*,Auto,Auto">
-                    <TextBlock x:Name="OptionNameTextBlock" Grid.Column="0" VerticalAlignment="Center" />
-                    <icons:UnifiedIcon x:Name="ImageIcon" Grid.Column="1"
-                                       Value="{x:Static icons:IconValues.Image}"
-                                       IsVisible="True" />
-                    <icons:UnifiedIcon x:Name="DescriptionIcon" Grid.Column="2"
-                                       Value="{x:Static icons:IconValues.Description}"
-                                       IsVisible="True" />
-                </Grid>
-            </Border>
+
+            <Grid Grid.Column="1" ColumnDefinitions="*,Auto,Auto">
+                <TextBlock x:Name="OptionNameTextBlock" Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Theme="{StaticResource BodySMNormalTheme}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="NoWrap" />
+                <icons:UnifiedIcon x:Name="ImageIcon" Grid.Column="1"
+                                   Value="{x:Static icons:IconValues.ImageOutline}"
+                                   IsVisible="True"
+                                   VerticalAlignment="Center"
+                                   Size="16"
+                                   Margin="4 0 0 0" />
+                <icons:UnifiedIcon x:Name="DescriptionIcon" Grid.Column="2"
+                                   Value="{x:Static icons:IconValues.FileDocumentOutline}"
+                                   IsVisible="True"
+                                   VerticalAlignment="Center"
+                                   Size="16"
+                                   Margin="4 0 0 0" />
+            </Grid>
         </Grid>
     </Border>
 </reactiveUi:ReactiveUserControl>

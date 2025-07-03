@@ -84,7 +84,8 @@
     <Style Selector="ProgressBar.Stepper">
         <Setter Property="ShowProgressText" Value="False" />
         <Setter Property="Height" Value="8" />
-        <Setter Property="Foreground" Value="{StaticResource InfoModerateBrush}" />
+        <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource PrimaryModerateBrush}" />
         <Setter Property="CornerRadius" Value="{StaticResource Rounded-full}" />
     </Style>
 
