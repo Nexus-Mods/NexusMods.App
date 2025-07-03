@@ -56,5 +56,8 @@
       <Compile Update="Errors\CollectionRevisionDiscarded.cs">
         <DependentUpon>IGraphQlError.cs</DependentUpon>
       </Compile>
+      <Compile Update="Errors\UnknownError.cs">
+        <DependentUpon>IGraphQlError.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

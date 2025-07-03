@@ -12,10 +12,9 @@ file static class Helper
 {
     internal static readonly IReadOnlyDictionary<ErrorCode, IGraphQlError> NoErrors = FrozenDictionary<ErrorCode, IGraphQlError>.Empty;
 
-    internal static IReadOnlyDictionary<ErrorCode, IGraphQlError> ToErrors<TError>(TError error)
-        where TError : IGraphQlError<TError>
+    internal static IReadOnlyDictionary<ErrorCode, IGraphQlError> ToErrors(IGraphQlError error)
     {
-        return new SingleValueDictionary<ErrorCode, IGraphQlError>(new KeyValuePair<ErrorCode, IGraphQlError>(TError.Code, error));
+        return new SingleValueDictionary<ErrorCode, IGraphQlError>(new KeyValuePair<ErrorCode, IGraphQlError>(error.Code, error));
     }
 }
 
@@ -219,7 +218,9 @@ public static class GraphQlResult
                 return true;
             }
 
-            ThrowUnsupported(error);
+            var unknownError = CreateUnknownError(error);
+            result = new GraphQlResult<TData, TError1>(Helper.ToErrors(unknownError));
+            return true;
         }
 
         var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
@@ -232,7 +233,8 @@ public static class GraphQlResult
             }
             else
             {
-                ThrowUnsupported(error);
+                var unknownError = CreateUnknownError(error);
+                parsedErrors[unknownError.Code] = unknownError;
             }
         }
 
@@ -277,7 +279,9 @@ public static class GraphQlResult
                 return true;
             }
 
-            ThrowUnsupported(error);
+            var unknownError = CreateUnknownError(error);
+            result = new GraphQlResult<TData, TError1, TError2>(Helper.ToErrors(unknownError));
+            return true;
         }
 
         var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
@@ -294,7 +298,8 @@ public static class GraphQlResult
             }
             else
             {
-                ThrowUnsupported(error);
+                var unknownError = CreateUnknownError(error);
+                parsedErrors[unknownError.Code] = unknownError;
             }
         }
 
@@ -346,7 +351,9 @@ public static class GraphQlResult
                 return true;
             }
 
-            ThrowUnsupported(error);
+            var unknownError = CreateUnknownError(error);
+            result = new GraphQlResult<TData, TError1, TError2, TError3>(Helper.ToErrors(unknownError));
+            return true;
         }
 
         var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
@@ -367,7 +374,8 @@ public static class GraphQlResult
             }
             else
             {
-                ThrowUnsupported(error);
+                var unknownError = CreateUnknownError(error);
+                parsedErrors[unknownError.Code] = unknownError;
             }
         }
 
@@ -383,10 +391,18 @@ public static class GraphQlResult
         return operationData;
     }
 
-    [DoesNotReturn]
-    private static void ThrowUnsupported(IClientError error)
+    private static UnknownError CreateUnknownError(IClientError error)
     {
-        Debugger.Break();
-        throw new NotSupportedException($"Unknown error: `{error.Message}` Code={error.Code} Exception={error.Exception}");
+        // NOTE(erri120): If you landed here, that means some GraphQl call returned an error
+        // that the app doesn't know about. Ideally, the error should be turned into a concrete
+        // type if possible.
+        if (Debugger.IsAttached) Debugger.Break();
+
+        return new UnknownError
+        {
+            Code = error.Code is null ? UnknownError.DefaultCode : ErrorCode.From(error.Code),
+            Message = error.Message,
+            ClientError = error,
+        };
     }
 }
