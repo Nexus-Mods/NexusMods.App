@@ -105,6 +105,17 @@ public class GraphQlResult<TData, TError1> : GraphQlResult<TData>, IGraphQlResul
     public GraphQlResult(TError1 error) : base(Helper.ToErrors(error)) { }
 
     /// <summary>
+    /// Maps data from <typeparamref name="TData"/> to <typeparamref name="TOther"/> using provided delegate.
+    /// </summary>
+    public GraphQlResult<TOther, TError1> Map<TOther>(Func<TData, TOther> func)
+        where TOther : notnull
+    {
+        if (!HasData) return new GraphQlResult<TOther, TError1>(Errors);
+        var data = func(AssertHasData());
+        return new GraphQlResult<TOther, TError1>(data);
+    }
+
+    /// <summary>
     /// Implicit conversion.
     /// </summary>
     public static implicit operator GraphQlResult<TData, TError1>(TData data) => new(data);
@@ -136,6 +147,17 @@ public class GraphQlResult<TData, TError1, TError2> : GraphQlResult<TData>, IGra
     /// Constructor.
     /// </summary>
     public GraphQlResult(TError2 error) : base(Helper.ToErrors(error)) { }
+
+    /// <summary>
+    /// Maps data from <typeparamref name="TData"/> to <typeparamref name="TOther"/> using provided delegate.
+    /// </summary>
+    public GraphQlResult<TOther, TError1, TError2> Map<TOther>(Func<TData, TOther> func)
+        where TOther : notnull
+    {
+        if (!HasData) return new GraphQlResult<TOther, TError1, TError2>(Errors);
+        var data = func(AssertHasData());
+        return new GraphQlResult<TOther, TError1, TError2>(data);
+    }
 
     /// <summary>
     /// Implicit conversion.
@@ -175,6 +197,17 @@ public class GraphQlResult<TData, TError1, TError2, TError3> : GraphQlResult<TDa
     /// Constructor.
     /// </summary>
     public GraphQlResult(TError3 error) : base(Helper.ToErrors(error)) { }
+
+    /// <summary>
+    /// Maps data from <typeparamref name="TData"/> to <typeparamref name="TOther"/> using provided delegate.
+    /// </summary>
+    public GraphQlResult<TOther, TError1, TError2, TError3> Map<TOther>(Func<TData, TOther> func)
+        where TOther : notnull
+    {
+        if (!HasData) return new GraphQlResult<TOther, TError1, TError2, TError3>(Errors);
+        var data = func(AssertHasData());
+        return new GraphQlResult<TOther, TError1, TError2, TError3>(data);
+    }
 
     /// <summary>
     /// Implicit conversion.
