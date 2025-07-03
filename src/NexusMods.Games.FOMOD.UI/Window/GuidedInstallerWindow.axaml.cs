@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI;
@@ -42,6 +43,11 @@ public partial class GuidedInstallerWindow : ReactiveWindow<IGuidedInstallerWind
                 .SubscribeWithErrorLogging(logger: default, _ => Close())
                 .DisposeWith(disposables);
         });
+    }
+
+    private void CloseButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        Close();
     }
 }
 

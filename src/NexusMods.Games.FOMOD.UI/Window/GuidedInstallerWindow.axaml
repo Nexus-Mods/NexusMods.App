@@ -47,7 +47,8 @@
                                      ShowLabel="False"
                                      Fill="None"
                                      Type="Tertiary"
-                                     VerticalAlignment="Center" />
+                                     VerticalAlignment="Center"
+                                     Click="CloseButton_OnClick"/>
         </Grid>
 
         <!-- content -->
