@@ -8,11 +8,11 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.App.UI.Controls.Navigation;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
-using NexusMods.Extensions.BCL;
+using NexusMods.Sdk;
 using NexusMods.Telemetry;
 using ReactiveUI;
 

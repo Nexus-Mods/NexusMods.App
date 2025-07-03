@@ -2,13 +2,13 @@ using DynamicData.Kernel;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.GC;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Games.TestFramework;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.FileStore;
 using Xunit.Abstractions;
 
 namespace NexusMods.DataModel.Tests;
@@ -49,7 +49,7 @@ public class FileStoreTests : ACyberpunkIsolatedGameTest<FileStoreTests>
         var dataFileBHashBefore = dataFileBBefore.Value.Hash;
         
         // Act
-        await _libraryService.RemoveItems([libraryItemA.AsLibraryFile().AsLibraryItem()], GarbageCollectorRunMode.RunSynchronously);
+        await _libraryService.RemoveLibraryItems([libraryItemA.AsLibraryFile().AsLibraryItem()], GarbageCollectorRunMode.RunSynchronously);
         
         // Assert
         // Changing A should not affect B

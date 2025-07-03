@@ -1,7 +1,7 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:fomod="clr-namespace:NexusMods.Games.FOMOD.UI;assembly=NexusMods.Games.FOMOD.UI"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
+        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
     <Design.PreviewWith>
         <Border Padding="20">
             <fomod:GuidedInstallerStepView MinHeight="672" MinWidth="1232" MaxHeight="818" MaxWidth="1500"/>

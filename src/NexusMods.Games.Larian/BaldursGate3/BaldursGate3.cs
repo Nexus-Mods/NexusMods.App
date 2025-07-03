@@ -6,8 +6,6 @@ using NexusMods.Abstractions.GameLocators.GameCapabilities;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -18,6 +16,7 @@ using NexusMods.Games.Larian.BaldursGate3.Emitters;
 using NexusMods.Games.Larian.BaldursGate3.Installers;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.Larian.BaldursGate3;
 
@@ -154,10 +153,9 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         _serviceProvider.GetRequiredService<DependencyDiagnosticEmitter>(),
     ];
 
-    // TODO: We are using Icon for both Spine and GameWidget and GameImage is unused. We should use GameImage for the GameWidget, but need to update all the games to have better images.
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.icon.png");
+        new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.thumbnail.webp");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.icon.png");
+        new EmbeddedResourceStreamFactory<BaldursGate3>("NexusMods.Games.Larian.Resources.BaldursGate3.tile.webp");
 }

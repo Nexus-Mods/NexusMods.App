@@ -25,7 +25,7 @@ using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using R3;
@@ -41,6 +41,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
     
     public ILeftMenuItemViewModel LeftMenuItemLibrary { get; }
     public ILeftMenuItemViewModel LeftMenuItemLoadout { get; }
+    public ILeftMenuItemViewModel LeftMenuItemNewCollection { get; }
     public ILeftMenuItemViewModel LeftMenuItemHealthCheck { get; }
     [Reactive] public ILeftMenuItemViewModel? LeftMenuItemExternalChanges { get; private set; }
     
@@ -118,6 +119,8 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
             ToolTip = new StringComponent(Language.LoadoutView_Title_Installed_Mods_ToolTip),
         };
 
+        LeftMenuItemNewCollection = new NewCollectionViewModel(serviceProvider, loadout, workspaceController, workspaceId);
+
         var collectionRevisionsObservable = CollectionRevisionMetadata
             .ObserveAll(conn)
             .FilterImmutable(revision => revision.Collection.GameId == game.GameId)
@@ -141,7 +144,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
                 return new LeftMenuItemWithRightIconViewModel(workspaceController, workspaceId, pageData)
                 {
-                    Text = new StringComponent(revision.Collection.Name),
+                    Text = new StringComponent(initialValue: revision.Collection.Name, CollectionMetadata.Observe(conn, revision.Collection).Select(x => x.Name)),
                     Icon = IconValues.CollectionsOutline,
                     RightIcon = IconValues.Downloading,
                 };
@@ -191,7 +194,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     collection.CollectionGroupId
                 )
                 {
-                    Text = new StringComponent(collection.AsLoadoutItemGroup().AsLoadoutItem().Name),
+                    Text = new StringComponent(initialValue: collection.AsLoadoutItemGroup().AsLoadoutItem().Name, LoadoutItem.Observe(conn, collection).Select(x => x.Name)),
                     Icon = IconValues.CollectionsOutline,
                     IsCollectionReadOnly = collection.IsReadOnly,
                 };

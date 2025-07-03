@@ -65,13 +65,13 @@ public static class SharedColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aValue = a.GetOptional<StringComponent>(StringComponentKey);
-            var bValue = b.GetOptional<StringComponent>(StringComponentKey);
+            var aValue = a.GetOptional<FileEntryComponent>(FileEntryComponentKey);
+            var bValue = b.GetOptional<FileEntryComponent>(FileEntryComponentKey);
             return aValue.Compare(bValue);
         }
 
         public const string ColumnTemplateResourceKey = Prefix + "NameWithFileIcon";
-        public static readonly ComponentKey StringComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(StringComponent));
+        public static readonly ComponentKey FileEntryComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(FileEntryComponent));
         public static readonly ComponentKey IconComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(UnifiedIconComponent));
 
         public static string GetColumnHeader() => "Name";

@@ -5,17 +5,13 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GOG;
-using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.GOG.CLI;
 
@@ -28,7 +24,7 @@ public static class Verbs
             .AddVerb(() => Login)
             .AddVerb(() => Index);
 
-    [Verb("gog login", "Indexes a Steam app and updates the given output folder")]
+    [Verb("gog login", "Logs into GOG")]
     private static async Task<int> Login([Injected] IClient client)
     {
         await client.Login(CancellationToken.None);
@@ -149,7 +145,7 @@ public static class Verbs
                                         offset += chunk.Size;
 
 
-                                        var md5 = Md5.From(MD5.HashData(sized.Span));
+                                        var md5 = Md5Value.From(MD5.HashData(sized.Span));
                                         if (!md5.Equals(chunk.Md5))
                                             throw new InvalidOperationException("MD5 mismatch");
 

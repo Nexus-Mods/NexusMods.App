@@ -2,6 +2,8 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
+using NexusMods.Sdk;
+using NexusMods.Sdk.MnemonicAttributes;
 
 namespace NexusMods.Abstractions.Loadouts;
 
@@ -23,9 +25,16 @@ public partial class SortOrder : IModelDefinition
     };
     
     /// <summary>
+    /// The parent Loadout or Collection entity that this SortOrder belongs to.
+    /// </summary>
+    public static readonly LoadoutOrCollectionAttribute ParentEntity = new(Namespace, nameof(ParentEntity))
+    {
+        IsIndexed = true,
+    };
+    
+    /// <summary>
     /// Static Guid id of this sort order type, to distinguish it from other sort orders types used by the game.
     /// E.g. RedMod Load Order and .archive load order will have two different SortOrderTypeIds. 
     /// </summary>
     public static readonly GuidAttribute SortOrderTypeId = new(Namespace, nameof(SortOrderTypeId));
-    
 }

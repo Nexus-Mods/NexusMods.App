@@ -6,8 +6,6 @@ using NexusMods.Abstractions.GameLocators.Stores.EGS;
 using NexusMods.Abstractions.GameLocators.Stores.GOG;
 using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.Games;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -18,11 +16,12 @@ using NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 using NexusMods.Games.RedEngine.ModInstallers;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
 [UsedImplicitly]
-public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
+public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
     public static GameId GameIdStatic => GameId.From(3333);
@@ -83,13 +82,13 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
     public IEnumerable<long> GogIds => new[] { 2093619782L, 1423049311 };
 
     // The Epic Games Store is not supported yet, managing the game will put the user into a state where they cannot apply a loadout. 
-    // public IEnumerable<string> EpicCatalogItemId => new[] { "5beededaad9743df90e8f07d92df153f" };
+    public IEnumerable<string> EpicCatalogItemId => new[] { "5beededaad9743df90e8f07d92df153f" };
 
     public override IStreamFactory Icon =>
-        new EmbededResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.icon.png");
+        new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.thumbnail.webp");
 
     public override IStreamFactory GameImage =>
-        new EmbededResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.game_image.jpg");
+        new EmbeddedResourceStreamFactory<Cyberpunk2077Game>("NexusMods.Games.RedEngine.Resources.Cyberpunk2077.tile.webp");
     
     public override IDiagnosticEmitter[] DiagnosticEmitters =>
     [

@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactive="http://reactiveui.net"
     xmlns:loadoutPage="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:navigation="clr-namespace:NexusMods.App.UI.Controls.Navigation"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
@@ -27,7 +27,7 @@
                 <controls:StandardButton LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                          ShowLabel="False"
                                          ShowIcon="Left"
-                                         Size="ExtraSmall"
+                                         Size="Toolbar"
                                          ToolTip.Tip="More">
 
                     <controls:StandardButton.Flyout>
@@ -41,7 +41,6 @@
                             </navigation:NavigationMenuItem>
                             <MenuItem Header="Uninstall Collection"
                                       x:Name="RemoveCollectionMenuItem"
-                                      Classes="Critical"
                                       ToolTip.Tip="Uninstall this collection from loadout. (Collection will remain in library)">
                                 <MenuItem.Icon>
                                     <icons:UnifiedIcon Size="16"
@@ -175,7 +174,8 @@
                                                 ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_StatsMods_ToolTip}">
                                         <icons:UnifiedIcon Value="{x:Static icons:IconValues.ModsOutline}" />
                                         <TextBlock x:Name="NumDownloads" />
-                                        <ToggleSwitch x:Name="CollectionToggle" Classes="ExtraSmall" />
+                                        <ToggleSwitch x:Name="CollectionToggle" Classes="ExtraSmall"
+                                                      ToolTip.Tip="{x:Static resources:Language.CollectionDownloadViewModel_Toggle_ToolTip}" />
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

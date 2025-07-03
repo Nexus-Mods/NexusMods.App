@@ -3,9 +3,9 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xD654D05310A9C461
-   - Total attributes: 202
-   - Total namespaces: 70
+   - Fingerprint: 0xD7B048D3EFE21816
+   - Total attributes: 219
+   - Total namespaces: 73
    
 ## Attributes
 | AttributeId                                                                        | Type                    | Indexed | Many  | NoHistory | 
@@ -31,6 +31,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/Files                        | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/ManifestId                   | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/Name                         | Utf8                    | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/EpicBuildIds             | Utf8                    | True    | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/EpicGameStoreBuilds      | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GOG                      | Utf8                    | True    | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GameId                   | UInt32                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GogBuilds                | Reference               | False   | True  | False     | 
@@ -111,9 +113,11 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.LoadoutOverridesGroup/OverridesFor                              | Reference               | False   | False | False     | 
 | NexusMods.Loadouts.LoadoutSnapshot/Snapshot                                        | Reference               | False   | True  | False     | 
 | NexusMods.Loadouts.SortOrder/Loadout                                               | Reference               | True    | False | False     | 
+| NexusMods.Loadouts.SortOrder/ParentEntity                                          | UInt128                 | True    | False | False     | 
 | NexusMods.Loadouts.SortOrder/SortOrderTypeId                                       | UInt128                 | False   | False | False     | 
 | NexusMods.Loadouts.SortableEntry/ParentSortOrder                                   | Reference               | True    | False | False     | 
 | NexusMods.Loadouts.SortableEntry/SortIndex                                         | Int32                   | False   | False | False     | 
+| NexusMods.ManagedCollectionLoadoutGroup/Collection                                 | Reference               | True    | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                      | Utf8                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Indexed                                            | UInt8                   | False   | False | False     | 
@@ -157,6 +161,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageResource              | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/BackgroundImageUri                   | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Category                             | Reference               | False   | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/CollectionId                         | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Endorsements                         | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/GameId                               | UInt32                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Name                                 | Utf8                    | False   | False | False     | 
@@ -165,6 +170,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionMetadata/RecentRating                         | Float32                 | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/RecentRatingCount                    | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Slug                                 | Ascii                   | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionMetadata/Status                               | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/Summary                              | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/TileImageResource                    | Reference               | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionMetadata/TileImageUri                         | Utf8                    | False   | False | False     | 
@@ -174,6 +180,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/OverallRating                | Float32                 | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/RevisionId                   | UInt64                  | True    | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/RevisionNumber               | UInt64                  | True    | False | False     | 
+| NexusMods.NexusModsLibrary.CollectionRevisionMetadata/Status                       | Int32                   | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/TotalRatings                 | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.CollectionRevisionMetadata/TotalSize                    | UInt64                  | False   | False | False     | 
 | NexusMods.NexusModsLibrary.NexusModsCollectionLibraryFile/CollectionRevisionNumber | UInt64                  | True    | False | False     | 
@@ -198,6 +205,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.NexusModsLibrary.User/AvatarUri                                          | Utf8                    | False   | False | False     | 
 | NexusMods.NexusModsLibrary.User/Name                                               | Utf8                    | True    | False | False     | 
 | NexusMods.NexusModsLibrary.User/NexusId                                            | UInt64                  | True    | False | False     | 
+| NexusMods.NexusWebApi.Filters.IgnoreFileUpdateModel/Uid                            | UInt64                  | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/Domain                             | Ascii                   | True    | False | False     | 
 | NexusMods.NexusWebApi.GameDomainToGameIdMapping/GameId                             | UInt32                  | True    | False | False     | 
 | NexusMods.RedEngine.Cyberpunk2077.RedModLoadoutGroup/RedModInfoFile                | Reference               | False   | False | False     | 
@@ -212,3 +220,12 @@ models in the app, then validate the tests to update this file.
 | NexusMods.StardewValley.SMAPIManifestLoadoutFile/ManifestFile                      | Null                    | True    | False | False     | 
 | NexusMods.StardewValley.SMAPIModDatabaseLoadoutFile/ModDatabaseFile                | Null                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPIModLoadoutItem/Manifest                               | Reference               | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/AppName                          | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildId                          | Utf8Insensitive         | True    | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildVersion                     | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/CreatedAt                        | Int64                   | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/Files                            | Reference               | False   | True  | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/ItemId                           | Utf8Insensitive         | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/LabelName                        | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/ManifestHash                     | Utf8Insensitive         | True    | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/UpdatedAt                        | Int64                   | False   | False | False     | 

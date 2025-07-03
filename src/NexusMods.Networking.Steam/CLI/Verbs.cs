@@ -2,16 +2,13 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Cli;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.DTOs;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.Steam.CLI;
 
@@ -117,9 +114,9 @@ public static class Verbs
         return 0;
     }
 
-    private static async Task<ConcurrentBag<Sha1>> LoadExistingHashes(AbsolutePath folder, JsonSerializerOptions options, CancellationToken token)
+    private static async Task<ConcurrentBag<Sha1Value>> LoadExistingHashes(AbsolutePath folder, JsonSerializerOptions options, CancellationToken token)
     {
-        var bag = new ConcurrentBag<Sha1>();
+        var bag = new ConcurrentBag<Sha1Value>();
         var hashFiles = folder.EnumerateFiles("*.json", true);
         
         await Parallel.ForEachAsync(hashFiles, token, async (file, token) =>
@@ -140,7 +137,7 @@ public static class Verbs
         return bag;
     }
 
-    private static async Task IndexManifest(ISteamSession session, IRenderer renderer, AppId appId, AbsolutePath output, Manifest manifest, JsonSerializerOptions indentedOptions, ConcurrentBag<Sha1> existingHashes, ParallelOptions options)
+    private static async Task IndexManifest(ISteamSession session, IRenderer renderer, AppId appId, AbsolutePath output, Manifest manifest, JsonSerializerOptions indentedOptions, ConcurrentBag<Sha1Value> existingHashes, ParallelOptions options)
     {
         var writeLock = new SemaphoreSlim(1, 1);
         await Parallel.ForEachAsync(manifest.Files, options, async (file, token) =>

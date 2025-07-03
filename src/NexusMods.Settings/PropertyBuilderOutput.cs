@@ -7,7 +7,7 @@ internal interface IPropertyBuilderOutput
 {
     SectionId SectionId { get; }
     string DisplayName { get; }
-    string Description { get; }
+    Func<object, string> DescriptionFactory { get; }
     Uri? Link { get; }
     bool RequiresRestart { get; }
     string? RestartMessage { get; }
@@ -37,7 +37,7 @@ internal interface IPropertyBuilderOutput<TProperty> : IPropertyBuilderOutput wh
 internal record PropertyBuilderOutput<TSettings, TProperty>(
     SectionId SectionId,
     string DisplayName,
-    string Description,
+    Func<TProperty, string> GenericDescriptionFactory,
     Uri? Link,
     bool RequiresRestart,
     string? RestartMessage,
@@ -47,6 +47,12 @@ internal record PropertyBuilderOutput<TSettings, TProperty>(
     where TSettings : class, ISettings, new()
     where TProperty : notnull
 {
+    public Func<object, string> DescriptionFactory => obj =>
+    {
+        if (obj is not TProperty property) throw new NotSupportedException();
+        return GenericDescriptionFactory(property);
+    };
+
     public TProperty CoreGetValue(SettingsManager settingsManager)
     {
         var settings = settingsManager.Get<TSettings>();

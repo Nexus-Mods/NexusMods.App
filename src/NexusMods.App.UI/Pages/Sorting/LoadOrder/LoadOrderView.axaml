@@ -4,7 +4,7 @@
                                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-                                xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                                 xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
                                 xmlns:alerts="clr-namespace:NexusMods.App.UI.Controls.Alerts"
                                 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"

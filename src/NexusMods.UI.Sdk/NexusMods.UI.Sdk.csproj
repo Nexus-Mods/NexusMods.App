@@ -36,4 +36,13 @@
         <PackageReference Include="TextMateSharp.Grammars" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="R3UserControl.cs">
+        <DependentUpon>IR3View.cs</DependentUpon>
+      </Compile>
+      <Compile Update="R3Window.cs">
+        <DependentUpon>IR3View.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

@@ -10,6 +10,8 @@ public class WineParserTests
     [InlineData("foo bar baz", "")]
     [InlineData("WINEDLLOVERRIDES=\"foo,bar,baz\" foo bar baz", "foo,bar,baz")]
     [InlineData("FOO BAR BAZ WINEDLLOVERRIDES=\"foo,bar,baz\" foo bar baz", "foo,bar,baz")]
+    [InlineData("WINEDLLOVERRIDES=foo,bar,baz=n,b %command% \"hello world\"", "foo,bar,baz=n,b")]
+    [InlineData("WINEDLLOVERRIDES=foo,bar,baz=n,b %command%", "foo,bar,baz=n,b")]
     public void Test_GetWineDllOverridesSection(string input, string expected)
     {
         var actual = WineParser.GetWineDllOverridesSection(input).ToString();

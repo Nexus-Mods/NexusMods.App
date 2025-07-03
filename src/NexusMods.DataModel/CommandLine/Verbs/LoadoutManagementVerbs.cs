@@ -4,8 +4,6 @@ using NexusMods.Abstractions.Cli;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
@@ -14,8 +12,9 @@ using NexusMods.DataModel.Undo;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.DataModel.CommandLine.Verbs;
 

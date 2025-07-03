@@ -1,9 +1,9 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.Sdk;
+using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Pages.Changelog;
 

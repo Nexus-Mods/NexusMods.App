@@ -11,7 +11,7 @@
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:developmentBuildBanner="clr-namespace:NexusMods.App.UI.Controls.DevelopmentBuildBanner"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
-    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources">
 
     <Design.DataContext>
@@ -21,8 +21,7 @@
     <Border
         Padding=" 12, 10"
         BorderThickness="0,1,0,0"
-        BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
-        Background="{StaticResource SurfaceBaseBrush}"
+        BorderBrush="{StaticResource SurfaceLowBrush}"
         CornerRadius="0">
         
         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">

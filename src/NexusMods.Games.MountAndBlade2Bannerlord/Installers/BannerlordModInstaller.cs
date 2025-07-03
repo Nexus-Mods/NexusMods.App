@@ -6,7 +6,6 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
@@ -14,8 +13,7 @@ using NexusMods.Games.MountAndBlade2Bannerlord.LauncherManager;
 using NexusMods.Games.MountAndBlade2Bannerlord.Models;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
-using static Bannerlord.LauncherManager.Constants;
+using NexusMods.Sdk.FileStore;
 using static NexusMods.Games.MountAndBlade2Bannerlord.BannerlordConstants;
 using GameStore = Bannerlord.LauncherManager.Models.GameStore;
 

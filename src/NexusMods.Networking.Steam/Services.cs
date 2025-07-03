@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Steam;
 using NexusMods.Abstractions.Steam.Values;
 using NexusMods.Networking.Steam.CLI;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.Steam;
 
@@ -37,7 +37,7 @@ public static class Services
     
     public static IServiceCollection AddSteamCli(this IServiceCollection services)
     {
-        services.AddOptionParser(s =>
+        services.AddOptionParser<AppId>(s =>
             {
                 if (uint.TryParse(s, out var parsed))
                     return (AppId.From(parsed), null);

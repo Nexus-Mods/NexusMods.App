@@ -18,7 +18,9 @@ public static class Services
             .AddMigration<_0003_FixDuplicates>()
             .AddMigration<_0004_RemoveGameFiles>()
             .AddMigration<_0005_MD5Hashes>()
-            .AddMigration<_0006_DirectDownload>();
+            .AddMigration<_0006_DirectDownload>()
+            .AddMigration<_0007_AddSortOrderParentEntity>()
+            .AddMigration<_0008_AddCollectionId>();
     }
 
     /// <summary>

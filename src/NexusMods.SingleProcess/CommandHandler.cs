@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.CommandLine.Invocation;
 using System.Reflection;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Cli;
-using NexusMods.ProxyConsole.Abstractions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.SingleProcess;
 

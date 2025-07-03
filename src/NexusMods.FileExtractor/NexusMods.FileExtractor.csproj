@@ -4,15 +4,14 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.FileExtractor\NexusMods.Abstractions.FileExtractor.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.IO\NexusMods.Abstractions.IO.csproj" />
-        <ProjectReference Include="..\NexusMods.Extensions.BCL\NexusMods.Extensions.BCL.csproj" />
         <ProjectReference Include="..\NexusMods.CrossPlatform\NexusMods.CrossPlatform.csproj" />
-        <ProjectReference Include="..\NexusMods.ProxyConsole.Abstractions\NexusMods.ProxyConsole.Abstractions.csproj" />
+        <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CliWrap" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+        <PackageReference Include="SharpZipLib" />
         <PackageReference Include="System.Linq.Async" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>

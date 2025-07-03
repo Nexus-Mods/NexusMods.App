@@ -61,7 +61,7 @@ public class MarkUsedLibraryFilesTest(IServiceProvider serviceProvider, ILibrary
         // Now delete the library item, and hopefully GC will clean up the rest.
         var libraryArchives = new[] { libraryArchive.AsLibraryFile().AsLibraryItem() };
         // ReSharper disable once RedundantArgumentDefaultValue
-        await libraryService.RemoveItems(libraryArchives, GarbageCollectorRunMode.DoNotRun);
+        await libraryService.RemoveLibraryItems(libraryArchives, GarbageCollectorRunMode.DoNotRun);
         
         gc = CreateGC(archiveLocation);
         AssertAllLoadoutItemsAre(used: false, reason: "LoadoutFile with hash {0} should not be marked as used after Loadout AND Library deletion.", gc, loadout);

@@ -10,8 +10,7 @@ using NexusMods.Games.AdvancedInstaller.UI;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 using NexusMods.StandardGameLocators;
 using StrawberryShake;
 using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
@@ -40,7 +39,7 @@ public class StressTest
         var manualLocator = gameLocators.OfType<ManuallyAddedLocator>().First();
         AdvancedManualInstallerUI.Headless = true;
 
-        var domain = (await domainToIdCache.TryGetDomainAsync(game.GameId, token)).Value.Value;
+        var domain = domainToIdCache[game.GameId].Value;
         var mods = await nexusApiClient.ModUpdatesAsync(domain, PastTime.Day, token);
         var results = new List<(string FileName, ModId ModId, Abstractions.NexusWebApi.Types.V2.FileId FileId, Hash Hash, bool Passed, Exception? exception)>();
 

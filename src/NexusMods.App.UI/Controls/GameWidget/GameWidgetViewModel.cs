@@ -8,7 +8,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
-using NexusMods.Icons;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -78,8 +78,8 @@ public class GameWidgetViewModel : AViewModel<IGameWidgetViewModel>, IGameWidget
     {
         try
         {
-            var stream = await ((IGame)source.Game).Icon.GetStreamAsync();
-            return new Bitmap(stream);
+            var stream = await ((IGame)source.Game).GameImage.GetStreamAsync();
+            return Bitmap.DecodeToWidth(stream, (int) ImageSizes.GameTile.Width);
         }
         catch (Exception ex)
         {

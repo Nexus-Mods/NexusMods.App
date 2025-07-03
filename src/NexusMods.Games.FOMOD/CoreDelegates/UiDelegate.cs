@@ -1,13 +1,10 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.GuidedInstallers.ValueObjects;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
-using NexusMods.Extensions.BCL;
 using NexusMods.Paths;
-using NexusMods.Paths.Trees;
-using NexusMods.Paths.Trees.Traits;
+using NexusMods.Sdk.Threading;
 using GroupId = NexusMods.Abstractions.GuidedInstallers.ValueObjects.GroupId;
 using Option = NexusMods.Abstractions.GuidedInstallers.Option;
 using OptionGroup = NexusMods.Abstractions.GuidedInstallers.OptionGroup;
@@ -64,7 +61,7 @@ public sealed class UiDelegates : FomodInstaller.Interface.ui.IUIDelegates, IDis
     private const long Ready = 0;
     private const long WaitingForCallback = 1;
 
-    public Dictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>? CurrentFomodArchiveFiles;
+    public IReadOnlyDictionary<RelativePath, LibraryArchiveFileEntry.ReadOnly>? CurrentFomodArchiveFiles;
 
     public UiDelegates(
         ILogger<UiDelegates> logger,

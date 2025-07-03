@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Resources;
+using NexusMods.Collections;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Loadout;
@@ -14,6 +15,8 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
     {
         InitializeComponent();
 
+        NewCollection.IsVisible = CollectionCreator.IsFeatureEnabled;
+
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.ApplyControlViewModel, view => view.ApplyControlViewHost.ViewModel)
@@ -24,7 +27,10 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
             
             this.OneWayBind(ViewModel, vm => vm.LeftMenuItemLoadout, view => view.LoadoutItem.ViewModel)
                 .DisposeWith(disposables);
-            
+
+            this.OneWayBind(ViewModel, vm => vm.LeftMenuItemNewCollection, view => view.NewCollection.ViewModel)
+                .DisposeWith(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.LeftMenuItemHealthCheck, view => view.HealthCheckItem.ViewModel)
                 .DisposeWith(disposables);
             
@@ -37,14 +43,14 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
                 .DisposeWith(disposables);
 
             this.WhenAnyValue(x => x.ViewModel!.LeftMenuCollectionItems)
-                .BindTo(this, x => x.MenuItemsControl.ItemsSource)
+                .BindTo(this, x => x.CollectionItems.ItemsSource)
                 .DisposeWith(disposables);
             
             this.OneWayBind(ViewModel, vm => vm.HasSingleCollection, view => view.LoadoutItem.IsVisible, input => !input)
                 .DisposeWith(disposables);
             
-            InstalledModsSectionText.Text = Language.LeftMenu_Label_Installed_Mods.ToUpperInvariant();
-            UtilitiesSectionText.Text = Language.LeftMenu_Label_Utilities.ToUpperInvariant();
+            InstalledModsSectionText.Text = Language.LeftMenu_Label_Installed_Mods;
+            UtilitiesSectionText.Text = Language.LeftMenu_Label_Utilities;
         });
     }
 }

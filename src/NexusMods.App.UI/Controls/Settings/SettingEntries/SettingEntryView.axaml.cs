@@ -21,6 +21,8 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
                 .Do(PopulateFromViewModel)
                 .Subscribe()
                 .DisposeWith(disposables);
+            
+
 
             this.WhenAnyValue(x =>
                     x.ViewModel!.InteractionControlViewModel.ValueContainer.HasChanged,
@@ -28,6 +30,9 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
                     (hasChanged, requiresRestart) => requiresRestart && hasChanged
                 )
                 .BindToView(this, view => view.RequiresRestartBanner.IsVisible)
+                .DisposeWith(disposables);
+            
+            this.OneWayBind(ViewModel, vm => vm.DescriptionMarkdownRenderer, v => v.DescriptionMarkdownRendererViewModelViewHost.ViewModel)
                 .DisposeWith(disposables);
         });
     }
@@ -39,7 +44,6 @@ public partial class SettingEntryView : ReactiveUserControl<ISettingEntryViewMod
         InteractionControl.ViewModel = viewModel.InteractionControlViewModel;
 
         EntryName.Text = descriptor.DisplayName;
-        EntryDescription.Text = descriptor.Description;
 
         LinkViewModel.ViewModel = viewModel.LinkRenderer;
         LinkViewModel.IsVisible = viewModel.LinkRenderer is not null;

@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk;
 using StrawberryShake;
-namespace NexusMods.Networking.NexusWebApi.V1Interop;
 
+namespace NexusMods.Networking.NexusWebApi.V1Interop;
 
 /// <summary>
 /// Caches the mapping between <see cref="GameDomain"/> and <see cref="GameId"/> values for fast lookup.
@@ -30,7 +30,18 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    public GameDomain GetDomain(GameId id)
+    {
+        var domain = TryGetDomain(id, CancellationToken.None);
+        return domain.Value;
+    }
+
+    public GameId GetId(GameDomain domain)
+    {
+        var id = TryGetId(domain, CancellationToken.None);
+        return id.Value;
+    }
+
     public ValueTask<Optional<GameId>> TryGetIdAsync(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         // Check if we have a value in the DB
@@ -44,7 +55,6 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc />
     public ValueTask<Optional<GameDomain>> TryGetDomainAsync(GameId gameId, CancellationToken cancellationToken)
     {
         var found = GameDomainToGameIdMapping.FindByGameId(_conn.Db, gameId);
@@ -57,7 +67,6 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc />
     public Optional<GameId> TryGetId(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         // Check cache synchronously
@@ -79,7 +88,6 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc />
     public Optional<GameDomain> TryGetDomain(GameId gameId, CancellationToken cancellationToken)
     {
         // Check cache synchronously
@@ -148,8 +156,7 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc/>
-    public async ValueTask InsertAsync(GameDomain gameDomain, GameId gameId)
+    private async ValueTask InsertAsync(GameDomain gameDomain, GameId gameId)
     {
         // Note(sewer): In theory, there's a race condition in here if multiple threads
         //              try to insert at once. However that should not be a concern here,

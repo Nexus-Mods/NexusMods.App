@@ -8,10 +8,12 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
+using NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Icons;
+using NexusMods.CrossPlatform.Process;
+using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -94,11 +96,13 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
         var valueContainer = descriptor.SettingsPropertyValueContainer;
         var interactionControl = valueContainer.Match<ISettingInteractionControl>(
             f0: booleanContainer => new SettingToggleViewModel(booleanContainer),
-            f1: singleValueMultipleChoiceContainer => new SettingComboBoxViewModel(singleValueMultipleChoiceContainer)
+            f1: singleValueMultipleChoiceContainer => new SettingComboBoxViewModel(singleValueMultipleChoiceContainer),
+            f2: configPathContainer => new SettingPathsViewModel(_serviceProvider.GetRequiredService<IOSInterop>(), configPathContainer)
         );
 
+        var markdownRenderer = _serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
         var linkRenderer = descriptor.Link is null ? null : _serviceProvider.GetRequiredService<IMarkdownRendererViewModel>();
-        var res = new SettingEntryViewModel(descriptor, interactionControl, linkRenderer);
+        var res = new SettingEntryViewModel(descriptor, interactionControl, markdownRenderer, linkRenderer);
         return res;
     }
 }

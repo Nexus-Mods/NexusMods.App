@@ -7,8 +7,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.CLI.Types;
-using NexusMods.ProxyConsole.Abstractions;
-using NexusMods.ProxyConsole.Abstractions.VerbDefinitions;
+using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.SingleProcess;
 
@@ -118,20 +117,17 @@ public class CommandLineConfigurator
         return (rootCommand, injectedTypes.ToArray());
     }
 
-    private Option MakeOption<T>(OptionDefinition optionDefinition)
+    private Option MakeOption<T>(OptionDefinition optionDefinition) where T : notnull
     {
         var aliases = new[] { "-" + optionDefinition.ShortName, "--" + optionDefinition.LongName };
 
         ParseArgument<T> parser = result =>
         {
             var service = _provider.GetService<IOptionParser<T>>();
-            if (service == null)
-                return default!;
-            if (service.TryParse(result.Tokens.Single().Value, out var itm, out var error))
-                return itm;
+            if (service is null) return default!;
+            if (service.TryParse(result.Tokens.Single().Value, out var itm, out var error)) return itm;
             result.ErrorMessage = error;
             return default!;
-
         };
 
         var option = new Option<T>(aliases, parser, false, optionDefinition.HelpText);

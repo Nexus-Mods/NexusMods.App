@@ -1,14 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.Abstractions.Jobs;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
-using NexusMods.Abstractions.Serialization.ExpressionGenerator;
-using NexusMods.App.BuildInfo;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NexusMods.Networking.NexusWebApi.V1Interop;
+using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -43,15 +41,32 @@ public static class Services
 
         collection.AddJWTTokenModel();
         collection.AddApiKeyModel();
-        collection.AddGameDomainToGameIdMappingModel();
-        collection.AddAllSingleton<IGameDomainToGameIdMappingCache, GameDomainToGameIdMappingCache>();
         collection.AddSingleton(TimeProvider.System);
-        
+        collection.AddIgnoreFileUpdateModel();
+
+        collection.AddGameDomainToGameIdMappingModel();
+        collection.AddSingleton<IGameDomainToGameIdMappingCache>(serviceProvider =>
+        {
+            var fallbackCache = new GameDomainToGameIdMappingCache(
+                conn: serviceProvider.GetRequiredService<IConnection>(),
+                gqlClient: serviceProvider.GetRequiredService<INexusGraphQLClient>(),
+                logger: serviceProvider.GetRequiredService<ILogger<GameDomainToGameIdMappingCache>>()
+            );
+
+            if (!LocalMappingCache.TryParseJsonFile(out var gameIdToDomain, out var gameDomainToId))
+            {
+                return fallbackCache;
+            }
+
+            return new LocalMappingCache(gameIdToDomain, gameDomainToId, fallbackCache);
+        });
+
         collection
             .AddNexusModsLibraryModels()
             .AddSingleton<NexusModsLibrary>()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()
+            .AddSingleton<IModUpdateFilterService, ModUpdateFilterService>()
             .AddAllSingleton<IModUpdateService, ModUpdateService>()
             .AddHostedService<HandlerRegistration>()
             .AddNexusApiVerbs();
@@ -60,8 +75,11 @@ public static class Services
             .AddNexusGraphQLClient()
             .ConfigureHttpClient((serviceProvider, httpClient) =>
             {
-                httpClient.BaseAddress = new Uri("https://api.nexusmods.com/v2/graphql");
-                httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(ApplicationConstants.UserAgent);
+                httpClient.BaseAddress = ClientConfig.GraphQlEndpoint;
+                httpClient.DefaultRequestHeaders.UserAgent.Add(ApplicationConstants.UserAgent);
+
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationName, ApplicationConstants.UserAgent.ApplicationName);
+                httpClient.DefaultRequestHeaders.Add(BaseHttpMessageFactory.HeaderApplicationVersion, ApplicationConstants.UserAgent.ApplicationVersion);
 
                 var authenticationHeaderValue = serviceProvider.GetRequiredService<IHttpMessageFactory>().GetAuthenticationHeaderValue();
                 if (authenticationHeaderValue is null) return;

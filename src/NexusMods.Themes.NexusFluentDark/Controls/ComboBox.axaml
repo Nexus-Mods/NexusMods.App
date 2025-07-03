@@ -1,33 +1,37 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="using:System"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons">
-  <Design.PreviewWith>
-    <Border Padding="20">
-      <StackPanel Spacing="10">
-        <ComboBox PlaceholderText="Select an item">
-          <ComboBoxItem>Item 1</ComboBoxItem>
-          <ComboBoxItem>Item 2</ComboBoxItem>
-        </ComboBox>
-        <ComboBox IsEnabled="False"
-                  Width="200"
-                  SelectedIndex="1"
-                  HorizontalContentAlignment="Center">
-          <ComboBoxItem>Item 1</ComboBoxItem>
-          <ComboBoxItem>Item 2</ComboBoxItem>
-        </ComboBox>
-        <ComboBox PlaceholderText="Error">
-          <DataValidationErrors.Error>
-            <sys:Exception>
-              <x:Arguments>
-                <x:String>Error</x:String>
-              </x:Arguments>
-            </sys:Exception>
-          </DataValidationErrors.Error>
-        </ComboBox>
-      </StackPanel>
-    </Border>
-  </Design.PreviewWith>
+                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="10">
+                <ComboBox PlaceholderText="Select an item">
+                    <ComboBoxItem>Item 1</ComboBoxItem>
+                    <ComboBoxItem>Item 2</ComboBoxItem>
+                </ComboBox>
+                <ComboBox PlaceholderText="Toolbar" Height="24" Padding="8 0 0 0">
+                    <ComboBoxItem>Item 1</ComboBoxItem>
+                    <ComboBoxItem>Item 2</ComboBoxItem>
+                </ComboBox>
+                <ComboBox IsEnabled="False"
+                          Width="200"
+                          SelectedIndex="1"
+                          HorizontalContentAlignment="Center">
+                    <ComboBoxItem>Item 1</ComboBoxItem>
+                    <ComboBoxItem>Item 2</ComboBoxItem>
+                </ComboBox>
+                <ComboBox PlaceholderText="Error">
+                    <DataValidationErrors.Error>
+                        <sys:Exception>
+                            <x:Arguments>
+                                <x:String>Error</x:String>
+                            </x:Arguments>
+                        </sys:Exception>
+                    </DataValidationErrors.Error>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
 
     <!-- Resources for ComboBox.axaml -->
 
@@ -118,185 +122,186 @@
                     ResourceKey="StrokeTranslucentModerateBrush" />
     <StaticResource x:Key="ComboBoxItemBorderBrushSelectedDisabled"
                     ResourceKey="StrokeTranslucentModerateBrush" />
-    
-  <Thickness x:Key="ComboBoxTopHeaderMargin">0,0,0,4</Thickness>
-  <x:Int32 x:Key="ComboBoxPopupMaxNumberOfItems">15</x:Int32>
-  <x:Int32 x:Key="ComboBoxPopupMaxNumberOfItemsThatCanBeShownOnOneSide">7</x:Int32>
 
-  <Thickness x:Key="ComboBoxPadding">8,5,0,5</Thickness>
-  <Thickness x:Key="ComboBoxEditableTextPadding">11,5,32,6</Thickness>
-  <!-- <x:Double x:Key="ComboBoxMinHeight">28</x:Double> -->
+    <Thickness x:Key="ComboBoxTopHeaderMargin">0,0,0,4</Thickness>
+    <x:Int32 x:Key="ComboBoxPopupMaxNumberOfItems">15</x:Int32>
+    <x:Int32 x:Key="ComboBoxPopupMaxNumberOfItemsThatCanBeShownOnOneSide">7</x:Int32>
 
-  <ControlTheme x:Key="{x:Type ComboBox}" TargetType="ComboBox">
-    <Setter Property="Padding" Value="{StaticResource ComboBoxPadding}" />
-    <Setter Property="FocusAdorner" Value="{x:Null}" />
-    <Setter Property="MaxDropDownHeight" Value="504" />
-    <Setter Property="Foreground" Value="{StaticResource ComboBoxForeground}" />
-    <Setter Property="Background" Value="{StaticResource ComboBoxBackground}" />
-    <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrush}" />
-    <Setter Property="BorderThickness" Value="{StaticResource ComboBoxBorderThemeThickness}" />
-    <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
-    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-    <!-- <Setter Property="MinHeight" Value="{StaticResource ComboBoxMinHeight}" /> -->
-    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalAlignment" Value="Left" />
-    <Setter Property="VerticalAlignment" Value="Top" />
-    <Setter Property="PlaceholderForeground" Value="{StaticResource ComboBoxPlaceHolderForeground}" />
-    <Setter Property="Template">
-      <ControlTemplate>
-        <DataValidationErrors>
-          <Grid ColumnDefinitions="*,32">
-            <Border x:Name="Background"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Background="{TemplateBinding Background}"
-                    BorderBrush="{TemplateBinding BorderBrush}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="{TemplateBinding CornerRadius}"
-                    MinWidth="{StaticResource ComboBoxThemeMinWidth}" />
-            <Border x:Name="HighlightBackground"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Background="{StaticResource ComboBoxBackgroundUnfocused}"
-                    BorderBrush="{StaticResource ComboBoxBackgroundBorderBrushUnfocused}"
-                    BorderThickness="{TemplateBinding BorderThickness}"
-                    CornerRadius="{TemplateBinding CornerRadius}"
-                    IsVisible="False"/>
-            <TextBlock x:Name="PlaceholderTextBlock"
-                       Grid.Column="0"
-                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                       Margin="{TemplateBinding Padding}"
-                       Text="{TemplateBinding PlaceholderText}"
-                       Foreground="{TemplateBinding PlaceholderForeground}"
-                       IsVisible="{TemplateBinding SelectionBoxItem, Converter={x:Static ObjectConverters.IsNull}}" />
-            <ContentControl x:Name="ContentPresenter"
-                            Content="{TemplateBinding SelectionBoxItem}"
-                            Grid.Column="0"
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
-            </ContentControl>
+    <Thickness x:Key="ComboBoxPadding">8,5,0,5</Thickness>
+    <Thickness x:Key="ComboBoxEditableTextPadding">11,5,32,6</Thickness>
+    <!-- <x:Double x:Key="ComboBoxMinHeight">28</x:Double> -->
 
-            <Border x:Name="DropDownOverlay"
-                    Grid.Column="1"
-                    Background="Transparent"
-                    Margin="0,1,1,1"
-                    Width="30"
-                    IsVisible="False"
-                    HorizontalAlignment="Right" />
+    <ControlTheme x:Key="{x:Type ComboBox}" TargetType="ComboBox">
+        <Setter Property="Padding" Value="{StaticResource ComboBoxPadding}" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+        <Setter Property="MaxDropDownHeight" Value="504" />
+        <Setter Property="Foreground" Value="{StaticResource ComboBoxForeground}" />
+        <Setter Property="Background" Value="{StaticResource ComboBoxBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource ComboBoxBorderThemeThickness}" />
+        <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <!-- <Setter Property="MinHeight" Value="{StaticResource ComboBoxMinHeight}" /> -->
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="PlaceholderForeground" Value="{StaticResource ComboBoxPlaceHolderForeground}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DataValidationErrors>
+                    <Grid ColumnDefinitions="*,32">
+                        <Border x:Name="Background"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                MinWidth="{StaticResource ComboBoxThemeMinWidth}" />
+                        <Border x:Name="HighlightBackground"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Background="{StaticResource ComboBoxBackgroundUnfocused}"
+                                BorderBrush="{StaticResource ComboBoxBackgroundBorderBrushUnfocused}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                IsVisible="False" />
+                        <TextBlock x:Name="PlaceholderTextBlock"
+                                   Grid.Column="0"
+                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                   Margin="{TemplateBinding Padding}"
+                                   Text="{TemplateBinding PlaceholderText}"
+                                   Foreground="{TemplateBinding PlaceholderForeground}"
+                                   IsVisible="{TemplateBinding SelectionBoxItem, Converter={x:Static ObjectConverters.IsNull}}" />
+                        <ContentControl x:Name="ContentPresenter"
+                                        Content="{TemplateBinding SelectionBoxItem}"
+                                        Grid.Column="0"
+                                        Margin="{TemplateBinding Padding}"
+                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                        </ContentControl>
 
-            <!-- replaced PathIcon with our UnifiedIcon -->
-            <icons:UnifiedIcon x:Name="DropDownGlyph" Grid.Column="1" 
-                               Size="20" 
-                               Value="{x:Static icons:IconValues.ChevronDown}"
-                               Margin="0,0,4,0"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Foreground="{StaticResource ComboBoxDropDownGlyphForeground}" />
+                        <Border x:Name="DropDownOverlay"
+                                Grid.Column="1"
+                                Background="Transparent"
+                                Margin="0,1,1,1"
+                                Width="30"
+                                IsVisible="False"
+                                HorizontalAlignment="Right" />
 
-            <Popup Name="PART_Popup"
-                   WindowManagerAddShadowHint="False"
-                   IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
-                   MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
-                   MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                   PlacementTarget="Background"
-                   IsLightDismissEnabled="True"
-                   InheritsTransform="True">
-              <Border x:Name="PopupBorder"
-                      Background="{StaticResource ComboBoxDropDownBackground}"
-                      BorderBrush="{StaticResource ComboBoxDropDownBorderBrush}"
-                      BorderThickness="{StaticResource ComboBoxDropdownBorderThickness}"
-                      Padding="{StaticResource ComboBoxDropdownBorderPadding}"
-                      HorizontalAlignment="Stretch"
-                      CornerRadius="{StaticResource OverlayCornerRadius}">
-                <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                              VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                              IsDeferredScrollingEnabled="{TemplateBinding (ScrollViewer.IsDeferredScrollingEnabled)}">
-                  <ItemsPresenter Name="PART_ItemsPresenter"
-                                  Margin="{StaticResource ComboBoxDropdownContentMargin}"
-                                  ItemsPanel="{TemplateBinding ItemsPanel}" />
-                </ScrollViewer>
-              </Border>
-            </Popup>
-          </Grid>
-        </DataValidationErrors>
-      </ControlTemplate>
-    </Setter>
+                        <!-- replaced PathIcon with our UnifiedIcon -->
+                        <icons:UnifiedIcon x:Name="DropDownGlyph" Grid.Column="1"
+                                           Size="20"
+                                           Value="{x:Static icons:IconValues.ChevronDown}"
+                                           Margin="0,0,4,0"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           Foreground="{StaticResource ComboBoxDropDownGlyphForeground}" />
 
-    <!--  PointerOver State  -->
-    <Style Selector="^:pointerover /template/ Border#Background">
-      <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundPointerOver}" />
-      <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushPointerOver}" />
-    </Style>
+                        <Popup Name="PART_Popup"
+                               WindowManagerAddShadowHint="False"
+                               IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
+                               MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                               MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                               PlacementTarget="Background"
+                               IsLightDismissEnabled="True"
+                               InheritsTransform="True">
+                            <Border x:Name="PopupBorder"
+                                    Background="{StaticResource ComboBoxDropDownBackground}"
+                                    BorderBrush="{StaticResource ComboBoxDropDownBorderBrush}"
+                                    BorderThickness="{StaticResource ComboBoxDropdownBorderThickness}"
+                                    Padding="{StaticResource ComboBoxDropdownBorderPadding}"
+                                    HorizontalAlignment="Stretch"
+                                    CornerRadius="{StaticResource OverlayCornerRadius}">
+                                <ScrollViewer
+                                    HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                    VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                                    IsDeferredScrollingEnabled="{TemplateBinding (ScrollViewer.IsDeferredScrollingEnabled)}">
+                                    <ItemsPresenter Name="PART_ItemsPresenter"
+                                                    Margin="{StaticResource ComboBoxDropdownContentMargin}"
+                                                    ItemsPanel="{TemplateBinding ItemsPanel}" />
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                </DataValidationErrors>
+            </ControlTemplate>
+        </Setter>
 
-    <!--  Pressed State  -->
-    <Style Selector="^:pressed /template/ Border#Background">
-      <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundPressed}" />
-      <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushPressed}" />
-    </Style>
+        <!--  PointerOver State  -->
+        <Style Selector="^:pointerover /template/ Border#Background">
+            <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushPointerOver}" />
+        </Style>
 
-    <!-- Error State -->
-    <Style Selector="^:error /template/ Border#Background">
-      <Setter Property="BorderBrush" Value="{StaticResource SystemControlErrorTextForegroundBrush}" />
-    </Style>
+        <!--  Pressed State  -->
+        <Style Selector="^:pressed /template/ Border#Background">
+            <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushPressed}" />
+        </Style>
 
-    <!--  Focus Pressed State  -->
-    <Style Selector="^:focused:pressed">
-      <Style Selector="^ /template/ ContentControl#ContentPresenter">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundFocusedPressed}" />
-      </Style>
-      <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxPlaceHolderForegroundFocusedPressed}" />
-      </Style>
-      <Style Selector="^ /template/ icons|UnifiedIcon#DropDownGlyph">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxDropDownGlyphForegroundFocusedPressed}" />
-      </Style>
-    </Style>
+        <!-- Error State -->
+        <Style Selector="^:error /template/ Border#Background">
+            <Setter Property="BorderBrush" Value="{StaticResource SystemControlErrorTextForegroundBrush}" />
+        </Style>
 
-    <!--  Focused State  -->
-    <Style Selector="^:focus-visible">
-      <Style Selector="^ /template/ Border#HighlightBackground">
-        <Setter Property="IsVisible" Value="True" />
-        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBackgroundBorderBrushFocused}" />
-      </Style>
-      <Style Selector="^ /template/ ContentControl#ContentPresenter">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundFocused}" />
-      </Style>
-      <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundFocused}" />
-      </Style>
-      <Style Selector="^ /template/ icons|UnifiedIcon#DropDownGlyph">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxDropDownGlyphForegroundFocused}" />
-      </Style>
-    </Style>
+        <!--  Focus Pressed State  -->
+        <Style Selector="^:focused:pressed">
+            <Style Selector="^ /template/ ContentControl#ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundFocusedPressed}" />
+            </Style>
+            <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxPlaceHolderForegroundFocusedPressed}" />
+            </Style>
+            <Style Selector="^ /template/ icons|UnifiedIcon#DropDownGlyph">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxDropDownGlyphForegroundFocusedPressed}" />
+            </Style>
+        </Style>
 
-    <!--  Disabled State  -->
-    <Style Selector="^:disabled">
-      <Style Selector="^ /template/ Border#Background">
-        <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundDisabled}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushDisabled}" />
-      </Style>
-      <Style Selector="^ /template/ ContentControl#ContentPresenter">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundDisabled}" />
-      </Style>
-      <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundDisabled}" />
-      </Style>
-      <Style Selector="^ /template/ icons|UnifiedIcon#DropDownGlyph">
-        <Setter Property="Foreground" Value="{StaticResource ComboBoxDropDownGlyphForegroundDisabled}" />
-      </Style>
-    </Style>
-    
-    <!--  DropDownOpen State  -->
-    <Style Selector="^:dropdownopen /template/ Border#Background">
-        <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundPressed}" />
-        <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushPressed}" />
-    </Style>
-    
-  </ControlTheme>
+        <!--  Focused State  -->
+        <Style Selector="^:focus-visible">
+            <Style Selector="^ /template/ Border#HighlightBackground">
+                <Setter Property="IsVisible" Value="True" />
+                <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBackgroundBorderBrushFocused}" />
+            </Style>
+            <Style Selector="^ /template/ ContentControl#ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundFocused}" />
+            </Style>
+            <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundFocused}" />
+            </Style>
+            <Style Selector="^ /template/ icons|UnifiedIcon#DropDownGlyph">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxDropDownGlyphForegroundFocused}" />
+            </Style>
+        </Style>
+
+        <!--  Disabled State  -->
+        <Style Selector="^:disabled">
+            <Style Selector="^ /template/ Border#Background">
+                <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundDisabled}" />
+                <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ ContentControl#ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ TextBlock#PlaceholderTextBlock">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxForegroundDisabled}" />
+            </Style>
+            <Style Selector="^ /template/ icons|UnifiedIcon#DropDownGlyph">
+                <Setter Property="Foreground" Value="{StaticResource ComboBoxDropDownGlyphForegroundDisabled}" />
+            </Style>
+        </Style>
+
+        <!--  DropDownOpen State  -->
+        <Style Selector="^:dropdownopen /template/ Border#Background">
+            <Setter Property="Background" Value="{StaticResource ComboBoxBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ComboBoxBorderBrushPressed}" />
+        </Style>
+
+    </ControlTheme>
 
 </ResourceDictionary>

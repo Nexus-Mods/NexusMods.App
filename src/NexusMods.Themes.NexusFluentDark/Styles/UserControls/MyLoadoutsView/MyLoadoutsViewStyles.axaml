@@ -3,7 +3,7 @@
         xmlns:myLoadouts="clr-namespace:NexusMods.App.UI.Pages.MyLoadouts;assembly=NexusMods.App.UI"
         xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
         xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
-        xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
+        xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
         >
     <Design.PreviewWith>
         <Border Padding="16" Classes="Low" Width="800" Height="600">
@@ -42,14 +42,14 @@
         </Style>
 
         <Style Selector="^ Border#GameSectionBorder">
-            <Setter Property="Padding" Value="0,24,0,0" />
+            <Setter Property="Padding" Value="0,12,0,0" />
             <Setter Property="BorderThickness" Value="0,1,0,0" />
             <Setter Property="BorderBrush" Value="{DynamicResource StrokeTranslucentWeakBrush}" />
         </Style>
 
         <Style Selector="^ panels|FlexPanel#GameSectionFlexPanel">
             <Setter Property="Direction" Value="Column" />
-            <Setter Property="RowSpacing" Value="24" />
+            <Setter Property="RowSpacing" Value="12" />
             <Setter Property="AlignItems" Value="FlexStart" />
         </Style>
 
@@ -70,8 +70,8 @@
         
         <Style Selector="^ panels|FlexPanel#CardsFlexPanel">
             <Setter Property="Wrap" Value="Wrap" />
-            <Setter Property="ColumnSpacing" Value="24" />
-            <Setter Property="RowSpacing" Value="24" />
+            <Setter Property="ColumnSpacing" Value="12" />
+            <Setter Property="RowSpacing" Value="12" />
             <Setter Property="AlignContent" Value="FlexStart" />
         </Style>
     </Style>

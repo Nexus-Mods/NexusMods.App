@@ -1,0 +1,123 @@
+<reactiveUi:ReactiveWindow
+    x:TypeArguments="dialog:IDialogViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+    xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
+    mc:Ignorable="d" d:DesignWidth="450"
+    x:Class="NexusMods.App.UI.Dialog.DialogWindow"
+    d:DataContext="{x:Static dialog:DesignDataContexts.StandardContentWithMarkdown}"
+    Background="{StaticResource SurfaceLowBrush}"
+    SizeToContent="Height">
+
+    <!-- Temporary styles to see modal button variations -->
+    <Window.Styles>
+        <Style Selector="controls|StandardButton">
+            <Style Selector="^ /template/ TextBlock#PART_Label">
+                <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
+            </Style>
+
+            <Style Selector="^.Default">
+                <Setter Property="Background" Value="{StaticResource NeutralStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource NeutralSubduedBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.Danger">
+                <Setter Property="Background" Value="{StaticResource DangerStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource DangerSubduedBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.Info">
+                <Setter Property="Background" Value="{StaticResource InfoStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource InfoSubduedBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.Premium">
+                <Setter Property="Background" Value="{StaticResource PremiumStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
+                </Style>
+            </Style>
+
+            <Style Selector="^.Primary">
+                <Setter Property="Background" Value="{StaticResource PrimaryStrongBrush}" />
+                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
+                <Style Selector="^:pointerover">
+                    <Setter Property="Background" Value="{StaticResource PrimarySubduedBrush}" />
+                </Style>
+                <Style Selector="^:pressed">
+                    <Setter Property="Background" Value="{StaticResource PrimaryWeakBrush}" />
+                </Style>
+            </Style>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- titlebar -->
+        <Grid x:Name="Titlebar" Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              Margin="16,16,16,0">
+
+            <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
+                custom titlebar dragging -->
+            <TextBlock Grid.Column="0" x:Name="TitleTextBlock"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodySMSemiTheme}"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Close"
+                       IsHitTestVisible="False"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis" />
+
+            <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
+                                     DockPanel.Dock="Right"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                     ShowIcon="IconOnly"
+                                     ShowLabel="False"
+                                     Fill="None"
+                                     Type="Tertiary"
+                                     VerticalAlignment="Center"
+                                     Margin="16 0 0 0" />
+        </Grid>
+
+        <!-- content -->
+        <Border x:Name="ContentBorder" Grid.Row="1">
+
+            <!-- content, buttons -->
+            <Grid RowDefinitions="*, Auto" Margin="16,16,16,16">
+
+                <ScrollViewer>
+                    <Border Grid.Row="0" x:Name="ContentContainer">
+                        <reactiveUi:ViewModelViewHost x:Name="ContentViewModelHost" />
+                    </Border>
+                </ScrollViewer>
+
+                <!-- buttons -->
+                <panels:FlexPanel x:Name="ButtonsFlexPanel" Grid.Row="1"
+                                  ColumnSpacing="8" Margin="0 16 0 0" />
+            </Grid>
+
+        </Border>
+    </Grid>
+
+</reactiveUi:ReactiveWindow>

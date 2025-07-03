@@ -43,6 +43,8 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
         /// This property allows for Markdown.
         /// </remarks>
         IWithLinkStep WithDescription(string description);
+
+        IWithLinkStep WithDescription(Func<TProperty, string> descriptionFactory);
     }
 
     public interface IWithLinkStep : IConfigureValueContainerStep
@@ -60,6 +62,8 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
             TProperty[] allowedValues,
             Func<TProperty, string> valueToDisplayString
         );
+
+        IRequiresRestartStep UseConfigurablePathsContainer();
     }
 
     /// <summary>

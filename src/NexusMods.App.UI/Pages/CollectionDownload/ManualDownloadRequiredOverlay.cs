@@ -10,9 +10,9 @@ using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Sdk;
 using R3;
 using ReactiveUI.Fody.Helpers;
 
@@ -73,10 +73,10 @@ public class ManualDownloadRequiredOverlayViewModel : AOverlayViewModel<IManualD
 
         HasInstructions = downloadEntity.AsCollectionDownload().Instructions.HasValue;
         Instructions = downloadEntity.AsCollectionDownload().Instructions.ValueOr(string.Empty);
-        
-        var gameDomain =  mappingCache.TryGetDomain(downloadEntity.AsCollectionDownload().CollectionRevision.Collection.GameId, CancellationToken.None);
+
+        var gameDomain = mappingCache[downloadEntity.AsCollectionDownload().CollectionRevision.Collection.GameId];
         var revision = downloadEntity.AsCollectionDownload().CollectionRevision;
-        var revisionBugsUri = NexusModsUrlBuilder.GetCollectionBugsUri(gameDomain.Value, revision.Collection.Slug, revision.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
+        var revisionBugsUri = NexusModsUrlBuilder.GetCollectionBugsUri(gameDomain, revision.Collection.Slug, revision.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
 
         CommandCancel = new ReactiveCommand(_ => { base.Close(); });
 

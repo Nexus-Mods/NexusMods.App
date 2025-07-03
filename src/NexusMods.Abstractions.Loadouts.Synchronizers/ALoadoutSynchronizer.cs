@@ -11,15 +11,12 @@ using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
 using NexusMods.Abstractions.Loadouts.Sorting;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
-using NexusMods.Extensions.BCL;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Hashing.xxHash3.Paths;
 using NexusMods.MnemonicDB.Abstractions;
@@ -28,6 +25,9 @@ using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -505,12 +505,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (newLocatorIds.Length != metadataLocatorIds.Length)
             Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while reprocessing game updates", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
-
-        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds).Count();
-        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds).Count();
-
+        
+        var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
+        var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
+        
         // No reason to change the loadout if the version is the same
-        if (locatorRemovals == 0 && locatorAdditions == 0)
+        if (locatorsToAdd.Length == 0 && locatorsToRemove.Length == 0)
             return loadout;
 
         // Make a lookup set of the new files
@@ -560,9 +560,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         loadout = loadout.Rebase();
-        foreach (var id in loadout.LocatorIds) 
+        
+
+        
+        foreach (var id in locatorsToRemove) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
-        foreach (var id in newLocatorIds)
+        foreach (var id in locatorsToAdd)
             tx.Add(loadout, Loadout.LocatorIds, id);
         
         var result = await tx.Commit();
@@ -1082,6 +1085,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     GamePath = path,
                 };
                 diffs.Add(KeyValuePair.Create(path, entry));
+            }
+            else if (actions.HasFlag(Actions.WarnOfUnableToExtract))
+            {
+                entry = new DiskDiffEntry
+                {
+                    Hash = node.Loadout.Hash,
+                    Size = node.Loadout.Size,
+                    ChangeType = FileChangeType.Added,
+                    GamePath = path,
+                };
             }
             else if (actions.HasFlag(Actions.ExtractToDisk))
             {

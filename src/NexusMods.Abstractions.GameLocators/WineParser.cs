@@ -123,9 +123,14 @@ public static class WineParser
 
         var span = input[(index + prefix.Length)..];
 
-        span = span[1..];
-        index = span.IndexOf('"');
-        span = span[..index];
+        var whitespaceIndex = span.IndexOf(' ');
+        if (whitespaceIndex != -1)
+            span = span[..whitespaceIndex];
+
+        if (span.StartsWith('"'))
+            span = span[1..];
+        if (span.EndsWith('"'))
+            span = span[..^1];
 
         return span;
     }

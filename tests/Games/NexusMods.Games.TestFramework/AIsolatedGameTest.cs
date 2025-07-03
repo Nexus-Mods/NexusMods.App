@@ -1,5 +1,4 @@
 using System.IO.Compression;
-using System.Security.Cryptography;
 using System.Text;
 using DynamicData.Kernel;
 using FluentAssertions;
@@ -13,8 +12,6 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.GuidedInstallers;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
@@ -22,7 +19,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.App.BuildInfo;
 using NexusMods.DataModel;
 using NexusMods.Games.FOMOD;
 using NexusMods.Hashing.xxHash3;
@@ -32,6 +28,9 @@ using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Models;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 using NexusMods.StandardGameLocators.TestHelpers;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
@@ -127,7 +126,8 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         Optional<LoadoutItemGroupId> parent = default, ILibraryItemInstaller? installer = null)
     {
         var libraryFile = await DownloadModFromNexusMods(modId, fileId);
-        return await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+        var result = await LibraryService.InstallItem(libraryFile.AsLibraryItem(), loadoutId, parent: parent, installer: installer);
+        return result.LoadoutItemGroup!.Value; // You can't attach external transaction in this context, so this is always valid.
     }
 
     public async Task<LibraryArchive.ReadOnly> RegisterLocalArchive(AbsolutePath file)
@@ -544,9 +544,19 @@ public abstract class AIsolatedGameTest<TTest, TGame> : IAsyncLifetime where TGa
         }
     }
 
-    public async Task DisposeAsync()
+    public Task DisposeAsync()
     {
-        await _host.StopAsync();
-        _host.Dispose();
+        _ = Task.Run(async () =>
+        {
+            // NOTE(erri120): forcing this method to complete within max 10 seconds
+            await _host.StopAsync(cancellationToken: new CancellationToken(canceled: true)).WaitAsync(timeout: TimeSpan.FromSeconds(1));
+            if (_host is IAsyncDisposable asyncDisposable) await asyncDisposable.DisposeAsync().AsTask().WaitAsync(timeout: TimeSpan.FromSeconds(5));
+            else
+            {
+                await Task.Run(() => _host.Dispose()).WaitAsync(timeout: TimeSpan.FromSeconds(5));
+            }
+        });
+
+        return Task.CompletedTask;
     }
 }

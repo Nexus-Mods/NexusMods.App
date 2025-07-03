@@ -18,7 +18,6 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.CrossPlatform.Process;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
@@ -27,6 +26,7 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using OneOf;
 using Reloaded.Memory.Extensions;
 
@@ -194,8 +194,8 @@ public class CollectionDownloader
         }
         else
         {
-            var domain = await _mappingCache.TryGetDomainAsync(download.FileUid.GameId, cancellationToken);
-            await _osInterop.OpenUrl(NexusModsUrlBuilder.GetFileDownloadUri(domain.Value, download.ModUid.ModId, download.FileUid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignCollections), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
+            var domain = _mappingCache[download.FileUid.GameId];
+            await _osInterop.OpenUrl(NexusModsUrlBuilder.GetFileDownloadUri(domain, download.ModUid.ModId, download.FileUid.FileId, useNxmLink: true, campaign: NexusModsUrlBuilder.CampaignCollections), logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
         }
     }
 
@@ -301,7 +301,7 @@ public class CollectionDownloader
         {
             if (download.TryGetAsCollectionDownloadNexusMods(out var nexusModsDownload))
             {
-                var domain = _mappingCache.TryGetDomain(nexusModsDownload.FileUid.GameId, CancellationToken.None).Value;
+                var domain = _mappingCache[nexusModsDownload.FileUid.GameId];
                 var uri = NexusModsUrlBuilder.GetFileDownloadUri(domain, nexusModsDownload.ModUid.ModId, nexusModsDownload.FileUid.FileId, useNxmLink: false, source: null);
                 results.Add((download, uri));
             } else if (download.TryGetAsCollectionDownloadExternal(out var externalDownload))

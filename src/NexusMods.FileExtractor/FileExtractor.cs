@@ -1,12 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.FileExtractor.Extractors;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.FileExtractor;
 
@@ -81,7 +79,7 @@ public class FileExtractor : IFileExtractor
             }
         }
 
-        throw new FileExtractionException($"No Extractors found for file {sFn.Name}");
+        throw new FileExtractionException($"No Extractors found for file {sFn.FileName}");
     }
 
     /// <inheritdoc/>

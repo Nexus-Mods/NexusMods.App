@@ -3,15 +3,15 @@ using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NexusMods.Abstractions.EpicGameStore.Models;
+using NexusMods.Abstractions.EpicGameStore.Values;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
-using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Steam.Values;
-using NexusMods.Extensions.BCL;
 using NexusMods.Games.FileHashes.DTOs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
@@ -19,6 +19,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
+using NexusMods.Sdk;
+using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 
 namespace NexusMods.Games.FileHashes;
 
@@ -39,7 +41,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
     private readonly ILogger<FileHashesService> _logger;
 
-    private record ConnectedDb(IDb Db, Connection Connection, DatomStore Store, Backend Backend, DateTimeOffset Timestamp, AbsolutePath Path);
+    private record ConnectedDb(IDb Db, Connection Connection, DatomStore Store, MnemonicDB.Storage.RocksDbBackend.Backend Backend, DateTimeOffset Timestamp, AbsolutePath Path);
 
     public FileHashesService(ILogger<FileHashesService> logger, ISettingsManager settingsManager, IFileSystem fileSystem, HttpClient httpClient, JsonSerializerOptions jsonSerializerOptions, IServiceProvider provider)
     {
@@ -80,7 +82,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 return existing;
 
             _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", path, timestamp);
-            var backend = new Backend(readOnly: true);
+            var backend = new MnemonicDB.Storage.RocksDbBackend.Backend(readOnly: true);
             var settings = new DatomStoreSettings
             {
                 Path = path,
@@ -278,6 +280,30 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 }
             }
         }
+        else if (gameStore == GameStore.EGS)
+        {
+            foreach (var manifestId in locatorIds)
+            {
+                var egManifestId = ManifestHash.FromUnsanitized(manifestId.Value);
+                
+                if (!EpicGameStoreBuild.FindByManifestHash(Current, egManifestId).TryGetFirst(out var firstManifest))
+                {
+                    _logger.LogWarning("No EGS manifest found for {ManifestId}", egManifestId.Value);
+                    continue;
+                }
+                
+                foreach (var file in firstManifest.Files)
+                {
+                    yield return new GameFileRecord
+                    {
+                        Path = (LocationId.Game, file.Path),
+                        Size = file.Hash.Size,
+                        MinimalHash = file.Hash.MinimalHash,
+                        Hash = file.Hash.XxHash3,
+                    };
+                }
+            }
+        }
         else
         {
             throw new NotSupportedException("No way to get game files for: " + gameStore);
@@ -385,6 +411,30 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
                 return false;
             }
         }
+        else if (gameStore == GameStore.EGS)
+        {
+            var versionsByManifestHash = VersionDefinition.All(_currentDb!.Db)
+                .SelectMany(version =>
+                    {
+                        if (VersionDefinition.EpicGameStoreBuildsIds.IsIn(version)) 
+                            return version.EpicGameStoreBuilds.Select(build => (Version: version, Build: build));
+                        return [];
+                    }
+                )
+                .ToLookup(row => row.Build.ManifestHash);
+
+            var builds = locatorIds
+                .Select(locatorString => ManifestHash.FromUnsanitized(locatorString.Value))
+                .SelectMany(manifestHash => versionsByManifestHash[manifestHash].Select(row => (row.Version, manifestHash)));
+
+            if (builds.TryGetFirst(out var build))
+            {
+                versionDefinition = build.Version;
+                return true;
+            }
+
+            return false;
+        }
         else
         {
             _logger.LogDebug("No way to get game version for: {Store}", gameStore);
@@ -397,32 +447,14 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     /// <inheritdoc />
     public bool TryGetLocatorIdsForVanityVersion(GameStore gameStore, VanityVersion version, out LocatorId[] commonIds)
     {
-        if (gameStore == GameStore.GOG)
+        if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
         {
-            if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
-            {
-                commonIds = [];
-                return false;
-            }
+            commonIds = [];
+            return false;
+        }
 
-            commonIds = GetLocatorIdsForVersionDefinition(gameStore, versionDef);
-            return true;
-        }
-        else if (gameStore == GameStore.Steam)
-        {
-            if (!VersionDefinition.FindByName(Current, version.Value).TryGetFirst(out var versionDef))
-            {
-                commonIds = [];
-                return false;
-            }
-
-            commonIds = GetLocatorIdsForVersionDefinition(gameStore, versionDef);
-            return true;
-        }
-        else
-        {
-            throw new NotSupportedException("No way to get common IDs for: " + gameStore);
-        }
+        commonIds = GetLocatorIdsForVersionDefinition(gameStore, versionDef);
+        return true;
     }
 
     public LocatorId[] GetLocatorIdsForVersionDefinition(GameStore gameStore, VersionDefinition.ReadOnly versionDefinition)
@@ -435,6 +467,11 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         if (gameStore == GameStore.Steam)
         {
             return versionDefinition.SteamManifests.Select(manifest => LocatorId.From(manifest.ManifestId.ToString())).ToArray();
+        }
+        
+        if (gameStore == GameStore.EGS)
+        {
+            return versionDefinition.EpicGameStoreBuilds.Select(build => LocatorId.From(build.ManifestHash.Value)).ToArray();
         }
 
         throw new NotSupportedException("No way to get common IDs for: " + gameStore);

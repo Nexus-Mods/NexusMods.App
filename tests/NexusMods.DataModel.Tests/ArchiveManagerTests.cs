@@ -1,9 +1,8 @@
 using FluentAssertions;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.DataModel.Tests;
 

@@ -14,10 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Extensions.DependencyInjection;
 using NexusMods.Games.StardewValley;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.StandardGameLocators.TestHelpers.StubbedGames;
 
 namespace NexusMods.StandardGameLocators.TestHelpers;
@@ -102,7 +102,7 @@ public static class Services
 
         coll.AddSingleton<AHandler<EGSGame, EGSGameId>>(s =>
             new StubbedGameLocator<EGSGame, EGSGameId>(s.GetRequiredService<TemporaryFileManager>(),
-                tfm => new EGSGame(EGSGameId.From("epic-game-id"), "Stubbed Game", tfm.CreateFolder("epic_game").Path),
+                tfm => new EGSGame(EGSGameId.From("epic-game-id"), "Stubbed Game", tfm.CreateFolder("epic_game").Path, ["manfiestHash1", "manifestHash2"]),
                 game => game.CatalogItemId));
 
         coll.AddSingleton<AHandler<OriginGame, OriginGameId>>(s =>

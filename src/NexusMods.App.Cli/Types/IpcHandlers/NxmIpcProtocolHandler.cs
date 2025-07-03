@@ -8,12 +8,12 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.Extensions.BCL;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.CLI.Types.IpcHandlers;
 
@@ -108,7 +108,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     private async Task HandleCollectionUrl(NXMCollectionUrl collectionUrl)
     {
         var domain = GameDomain.From(collectionUrl.Game);
-        var gameId = (await _cache.TryGetIdAsync(domain, CancellationToken.None)).Value.Value;
+        var gameId = _cache[domain];
         var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
         var library = _serviceProvider.GetRequiredService<ILibraryService>();
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();
