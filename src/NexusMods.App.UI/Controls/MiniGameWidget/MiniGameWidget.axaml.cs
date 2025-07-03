@@ -28,16 +28,9 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
                 this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                     .DisposeWith(d);
 
-                this.OneWayBind(ViewModel, vm => vm.IsFound, v => v.IsFoundTextBlock.IsVisible)
+                this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.ButtonGameNotFound)
                     .DisposeWith(d);
-
-                this.OneWayBind(ViewModel,
-                        vm => vm.IsFound,
-                        v => v.NotFoundTextBlock.IsVisible,
-                        isFound => !isFound
-                    )
-                    .DisposeWith(d);
-
+                
                 this.WhenAnyValue(view => view.ViewModel!.GameInstallations)
                     .Subscribe(installations =>
                         {
@@ -45,7 +38,6 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
                                 return;
                             
                             var tooltip = string.Join(", ", installations.Select(installation => installation.Store.ToString()));
-                            ToolTip.SetTip(IsFoundTextBlock, tooltip);
                         }
                     )
                     .DisposeWith(d);

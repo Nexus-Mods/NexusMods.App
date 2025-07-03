@@ -44,7 +44,6 @@ namespace NexusMods.App.UI.Pages.MyGames;
 public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewModel
 {
     private const string TrelloPublicRoadmapUrl = "https://trello.com/b/gPzMuIr3/nexus-mods-app-roadmap";
-    private const string MissingGamesUrl = "https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=GameNotFound.yaml";
 
     private readonly ILibraryService _libraryService;
     private readonly CollectionDownloader _collectionDownloader;
@@ -54,7 +53,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private ReadOnlyObservableCollection<IMiniGameWidgetViewModel> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _installedGames = new([]);
 
-    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenRoadmapCommand { get; }
     public ReadOnlyObservableCollection<IGameWidgetViewModel> InstalledGames => _installedGames;
     public ReadOnlyObservableCollection<IMiniGameWidgetViewModel> SupportedGames => _supportedGames;
@@ -83,11 +81,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
         var provider = serviceProvider;
         _windowManager = windowManager;
-
-        GiveFeedbackCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await osInterop.OpenUrl(new Uri(MissingGamesUrl));
-        });
 
         OpenRoadmapCommand = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -193,8 +186,11 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                         if (experimentalSettings.EnableAllGames) return true;
                         return experimentalSettings.SupportedGames.Contains(game.GameId);
                     })
-                    .Cast<IGame>();
+                    .Cast<IGame>()
+                    .Where(game => _installedGames.All(install => install.Installation.GetGame().GameId != game.GameId)); // Exclude found games
 
+                
+                
                 var miniGameWidgetViewModels = supportedGamesAsIGame
                     .Select(game =>
                         {
