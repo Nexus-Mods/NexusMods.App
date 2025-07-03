@@ -77,6 +77,11 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
 
     /// <inheritdoc/>
     public override string ToString() => $"HasData = {HasData} ({_data}) ErrorsCount = {Errors.Count}";
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData>(TData data) => new(data);
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -99,6 +104,11 @@ public class GraphQlResult<TData, TError1> : GraphQlResult<TData>, IGraphQlResul
     /// Constructor.
     /// </summary>
     public GraphQlResult(TError1 error) : base(Helper.ToErrors(error)) { }
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData, TError1>(TData data) => new(data);
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -127,6 +137,11 @@ public class GraphQlResult<TData, TError1, TError2> : GraphQlResult<TData>, IGra
     /// Constructor.
     /// </summary>
     public GraphQlResult(TError2 error) : base(Helper.ToErrors(error)) { }
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData, TError1, TError2>(TData data) => new(data);
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -161,6 +176,11 @@ public class GraphQlResult<TData, TError1, TError2, TError3> : GraphQlResult<TDa
     /// Constructor.
     /// </summary>
     public GraphQlResult(TError3 error) : base(Helper.ToErrors(error)) { }
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData, TError1, TError2, TError3>(TData data) => new(data);
 }
 
 /// <summary>
