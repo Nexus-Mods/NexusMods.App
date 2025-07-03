@@ -44,5 +44,20 @@
       <Compile Update="V1Interop\GameMetadata.cs">
         <DependentUpon>LocalMappingCache.cs</DependentUpon>
       </Compile>
+      <Compile Update="Errors\GraphQlResult.cs">
+        <DependentUpon>IGraphQlResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Errors\NotFound.cs">
+        <DependentUpon>IGraphQlError.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Errors\CollectionDiscarded.cs">
+        <DependentUpon>IGraphQlError.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Errors\CollectionRevisionDiscarded.cs">
+        <DependentUpon>IGraphQlError.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Errors\UnknownError.cs">
+        <DependentUpon>IGraphQlError.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
