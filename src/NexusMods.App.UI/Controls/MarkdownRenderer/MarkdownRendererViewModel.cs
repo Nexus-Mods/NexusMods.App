@@ -38,8 +38,6 @@ public class MarkdownRendererViewModel : AViewModel<IMarkdownRendererViewModel>,
 
     public MarkdownRendererViewModel()
     {
-        DesignerUtils.AssertInDesigner();
-
         _logger = NullLogger.Instance;
         _httpClient = new HttpClient();
         _remoteImagePipeline = ImagePipelines.CreateMarkdownRendererRemoteImagePipeline(_httpClient);
