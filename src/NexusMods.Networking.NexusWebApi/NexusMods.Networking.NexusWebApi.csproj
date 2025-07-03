@@ -44,5 +44,8 @@
       <Compile Update="V1Interop\GameMetadata.cs">
         <DependentUpon>LocalMappingCache.cs</DependentUpon>
       </Compile>
+      <Compile Update="Errors\GraphQlResult.cs">
+        <DependentUpon>IGraphQlResult.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
