@@ -89,7 +89,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, localFile.AsLibraryFile().AsLibraryItem(), linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel, isEnabled: false);
         LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel, isEnabled: false);
-        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, isEnabled: false);
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, isEnabled: false, isVisible: false);
     }
 
     private IObservable<IChangeSet<LocalFile.ReadOnly, EntityId>> FilterLoadoutItems(LoadoutFilter loadoutFilter)

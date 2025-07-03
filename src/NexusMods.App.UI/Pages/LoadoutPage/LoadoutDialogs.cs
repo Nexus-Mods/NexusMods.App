@@ -20,7 +20,7 @@ public static class LoadoutDialogs
                 DialogStandardButtons.Cancel,
                 new DialogButtonDefinition(
                     "Create",
-                    ButtonDefinitionId.From("create"),
+                    ButtonDefinitionId.Accept,
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
@@ -43,7 +43,7 @@ public static class LoadoutDialogs
                 DialogStandardButtons.Cancel,
                 new DialogButtonDefinition(
                     "Rename",
-                    ButtonDefinitionId.From("rename"),
+                    ButtonDefinitionId.Accept,
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
@@ -67,12 +67,12 @@ public static class LoadoutDialogs
             [
                 new DialogButtonDefinition(
                     "Cancel",
-                    ButtonDefinitionId.From("cancel"),
+                    ButtonDefinitionId.Cancel,
                     ButtonAction.Reject
                 ),
                 new DialogButtonDefinition(
                     "Share to Nexus Mods",
-                    ButtonDefinitionId.From("share"),
+                    ButtonDefinitionId.Accept,
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
@@ -97,8 +97,8 @@ public static class LoadoutDialogs
                 Icon = IconValues.PictogramCelebrate,
             },
             [
-                new DialogButtonDefinition("Close", ButtonDefinitionId.From("close"), ButtonAction.Reject),
-                new DialogButtonDefinition("View page", ButtonDefinitionId.From("view-page"), ButtonAction.Accept,
+                new DialogButtonDefinition("Close", ButtonDefinitionId.Close, ButtonAction.Reject),
+                new DialogButtonDefinition("View page", ButtonDefinitionId.Accept, ButtonAction.Accept,
                     ButtonStyling.Default, IconValues.OpenInNew
                 ),
             ]
@@ -121,12 +121,12 @@ public static class LoadoutDialogs
             [
                 new DialogButtonDefinition(
                     "Cancel",
-                    ButtonDefinitionId.From("cancel"),
+                    ButtonDefinitionId.Cancel,
                     ButtonAction.Reject
                 ),
                 new DialogButtonDefinition(
                     "Share to Nexus Mods",
-                    ButtonDefinitionId.From("share"),
+                    ButtonDefinitionId.Accept,
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
@@ -146,8 +146,8 @@ public static class LoadoutDialogs
                 Icon = IconValues.PictogramCelebrate,
             },
             [
-                new DialogButtonDefinition("Close", ButtonDefinitionId.From("close"), ButtonAction.Reject),
-                new DialogButtonDefinition("View page", ButtonDefinitionId.From("view-page"), ButtonAction.Accept,
+                new DialogButtonDefinition("Close", ButtonDefinitionId.Close, ButtonAction.Reject),
+                new DialogButtonDefinition("View page", ButtonDefinitionId.Accept, ButtonAction.Accept,
                     ButtonStyling.Default, IconValues.OpenInNew
                 ),
             ]

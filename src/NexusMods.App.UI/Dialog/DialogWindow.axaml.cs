@@ -17,7 +17,7 @@ namespace NexusMods.App.UI.Dialog;
 public partial class DialogWindow : ReactiveWindow<IDialogViewModel>, IDisposable
 {
     // this is what is returned when the window close button is clicked
-    private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.From("window-close");
+    private readonly ButtonDefinitionId _closeButtonResult = ButtonDefinitionId.CloseWindow;
     
     private SerialDisposable _serialDisposable;
         
