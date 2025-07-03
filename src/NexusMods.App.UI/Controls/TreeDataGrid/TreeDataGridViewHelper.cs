@@ -1,6 +1,4 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.ReactiveUI;
 using NexusMods.Abstractions.UI;
 using R3;
@@ -15,7 +13,7 @@ public static class TreeDataGridViewHelper
     /// </summary>
     public static void SetupTreeDataGridAdapter<TView, TViewModel, TItemModel, TKey>(
         TView view,
-        TreeDataGrid treeDataGrid,
+        Avalonia.Controls.TreeDataGrid treeDataGrid,
         Func<TViewModel, TreeDataGridAdapter<TItemModel, TKey>> getAdapter,
         bool enableDragAndDrop = false)
         where TView : ReactiveUserControl<TViewModel>

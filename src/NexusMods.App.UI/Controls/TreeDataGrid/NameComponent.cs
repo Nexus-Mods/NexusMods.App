@@ -6,41 +6,45 @@ using R3;
 namespace NexusMods.App.UI.Controls;
 
 /// <summary>
-/// Component for <see cref="string"/>.
+/// Component for name fields that supports name-specific filtering.
 /// </summary>
 [PublicAPI]
-public sealed class StringComponent : AValueComponent<string>, IItemModelComponent<StringComponent>, IComparable<StringComponent>
+public sealed class NameComponent : AValueComponent<string>, IItemModelComponent<NameComponent>, IComparable<NameComponent>
 {
     /// <inheritdoc/>
-    public int CompareTo(StringComponent? other) => string.CompareOrdinal(Value.Value, other?.Value.Value);
-
-    /// <inheritdoc/>
-    public StringComponent(
+    public NameComponent(
         string initialValue,
         IObservable<string> valueObservable,
         bool subscribeWhenCreated = false,
         bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread) { }
 
     /// <inheritdoc/>
-    public StringComponent(
+    public NameComponent(
         string initialValue,
         Observable<string> valueObservable,
         bool subscribeWhenCreated = false,
         bool observeOutsideUiThread = false) : base(initialValue, valueObservable, subscribeWhenCreated, observeOutsideUiThread) { }
 
     /// <inheritdoc/>
-    public StringComponent(string value) : base(value) { }
+    public NameComponent(string value) : base(value) { }
+
+    /// <inheritdoc/>
+    public int CompareTo(NameComponent? other) => string.CompareOrdinal(Value.Value, other?.Value.Value);
 
     /// <inheritdoc/>
     public FilterResult MatchesFilter(Filter filter)
     {
         return filter switch
         {
+            Filter.NameFilter nameFilter => Value.Value.Contains(
+                nameFilter.SearchText, 
+                nameFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                ? FilterResult.Pass : FilterResult.Fail,
             Filter.TextFilter textFilter => Value.Value.Contains(
                 textFilter.SearchText, 
                 textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
                 ? FilterResult.Pass : FilterResult.Fail,
-            _ => FilterResult.Indeterminate // Default: no opinion on other filters
+            _ => FilterResult.Indeterminate // Default: no opinion
         };
     }
-}
+} 
