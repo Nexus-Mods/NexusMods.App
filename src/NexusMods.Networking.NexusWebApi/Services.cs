@@ -45,13 +45,10 @@ public static class Services
         collection.AddIgnoreFileUpdateModel();
 
         collection.AddGameDomainToGameIdMappingModel();
+        collection.AddSingleton<GameDomainToGameIdMappingCache>();
         collection.AddSingleton<IGameDomainToGameIdMappingCache>(serviceProvider =>
         {
-            var fallbackCache = new GameDomainToGameIdMappingCache(
-                conn: serviceProvider.GetRequiredService<IConnection>(),
-                gqlClient: serviceProvider.GetRequiredService<INexusGraphQLClient>(),
-                logger: serviceProvider.GetRequiredService<ILogger<GameDomainToGameIdMappingCache>>()
-            );
+            var fallbackCache = serviceProvider.GetRequiredService<GameDomainToGameIdMappingCache>();
 
             if (!LocalMappingCache.TryParseJsonFile(out var gameIdToDomain, out var gameDomainToId))
             {

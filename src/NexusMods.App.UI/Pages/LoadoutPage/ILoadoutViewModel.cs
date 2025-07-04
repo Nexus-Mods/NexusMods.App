@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.WorkspaceSystem;
@@ -7,38 +9,31 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public interface ILoadoutViewModel : IPageViewModelInterface
 {
-    LoadoutTreeDataGridAdapter Adapter { get; }
-
-    ReactiveCommand<NavigationInformation> ViewLibraryCommand { get; }
-    
     string EmptyStateTitleText { get; }
 
-    ReactiveCommand<NavigationInformation> ViewFilesCommand { get; }
+    LoadoutTreeDataGridAdapter Adapter { get; }
+    IReadOnlyBindableReactiveProperty<int> ItemCount { get; }
+    IReadOnlyBindableReactiveProperty<int> SelectionCount { get; } 
 
-    ReactiveCommand<Unit> RemoveItemCommand { get; }
-    
-    ReactiveCommand<Unit> CollectionToggleCommand { get; }
-    ReactiveCommand<Unit> DeselectItemsCommand { get; }
-    
-    public int SelectionCount { get; } 
-    
-    bool IsCollection { get; }
-    
-    bool IsCollectionEnabled { get; }
-    bool IsCollectionUploaded { get; }
-    
-    string CollectionName { get; } 
-    
+    LoadoutPageSubTabs SelectedSubTab { get; }
+    bool HasRulesSection { get; }
     ISortingSelectionViewModel RulesSectionViewModel { get; }
-    
-    public int ItemCount { get; }
-    
-    public bool HasRulesSection { get; }
-    
-    public LoadoutPageSubTabs SelectedSubTab { get; }
+
+    bool IsCollection { get; }
+    IReadOnlyBindableReactiveProperty<bool> IsCollectionUploaded { get; }
+    IReadOnlyBindableReactiveProperty<string> CollectionName { get; } 
+    IReadOnlyBindableReactiveProperty<CollectionStatus> CollectionStatus { get; }
+    IReadOnlyBindableReactiveProperty<RevisionStatus> RevisionStatus { get; }
+    IReadOnlyBindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
+    IReadOnlyBindableReactiveProperty<bool> HasOutstandingChanges { get; }
+
+    ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
+    ReactiveCommand<NavigationInformation> CommandOpenFilesPage { get; }
+
+    ReactiveCommand<Unit> CommandRemoveItem { get; }
+    ReactiveCommand<Unit> CommandDeselectItems { get; }
 
     ReactiveCommand<Unit> CommandUploadRevision { get; }
     ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
-
     ReactiveCommand<Unit> CommandRenameGroup { get; }
 }

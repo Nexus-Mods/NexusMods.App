@@ -5,8 +5,11 @@
                                 xmlns:reactiveUi="http://reactiveui.net"
                                 xmlns:dialog="clr-namespace:NexusMods.App.UI.Dialog"
                                 mc:Ignorable="d"
-                                x:Class="NexusMods.App.UI.Dialog.CustomContentExampleView"
-                                d:DataContext="{x:Static dialog:DesignDataContexts.CustomContentExampleDesignViewModel}">
+                                x:Class="NexusMods.App.UI.Dialog.CustomContentExampleView">
+    
+    <reactiveUi:ReactiveUserControl.DataContext>
+        <dialog:CustomContentExampleViewModel/>
+    </reactiveUi:ReactiveUserControl.DataContext>
     
     <Border Padding="0">
         <StackPanel Spacing="8">
@@ -18,11 +21,9 @@
                 <TextBlock Text="Easy in app mod updates," Foreground="{StaticResource NeutralStrongBrush}"/>
                 <TextBlock Text=" no more manual downloads."/>
             </StackPanel>
-            
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Uncapped downloads speeds" Foreground="{StaticResource NeutralStrongBrush}"/>
             </StackPanel>
-            
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="No Ads for life," Foreground="{StaticResource NeutralStrongBrush}"/>
                 <TextBlock Text=" even if you cancel!"/>
@@ -32,7 +33,6 @@
             <ComboBox PlaceholderText="Choose something..."
                       ItemsSource="{Binding MyItems}"
                       SelectedItem="{Binding MySelectedItem}"/>
-
         </StackPanel>
     </Border>
     

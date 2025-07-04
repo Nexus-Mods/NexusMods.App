@@ -1,3 +1,50 @@
+# v0.13.4 2025-07-02
+This release includes the ability to change your storage location, new game artwork and lots of bug fixes.
+
+Check out the latest [developer blog](https://www.nexusmods.com/news/15313).
+
+## Change the Library Storage Location
+One of the most common requests we've had is to be able to change where the app stores downloaded mods. In the previous versions we had a configuration file that let users set this, but due to a bug this didn't work quite as expected. 
+
+We've given the feature an overhaul by adding a new setting option to set your storage location. This is where mods, collections, and backed up game files will be saved. 
+
+![The option in Settings to change the location of downloaded files](./docs/changelog-assets/0901d03b5c7ac22a405c3d92353349c9.webp)
+
+This new option is available in the Settings under "General". 
+
+**Note: You must move all files to the new folder manually and restart the app to avoid issues. This step will be automated in a future release.**
+
+## New Artwork
+The spine icons and game artwork has been updated to match the new assets on the Nexus Mods website. 
+
+![The Games page with the new artwork.](./docs/changelog-assets/1f47f496823c62b291770e6eefc329d5.webp)
+
+## More Features
+* Added a kebab menu to Library items including links to the changelog and mod page.
+* Added the ability to toggle visibility of updates in the Library.
+
+## Technical Changes
+* Collection and Library text strings can now be localised.
+
+## Bug Fixes
+* Fixed an issue which would cause the app to delete and restore the entire game on apply in certain situations.
+* Fixed issues detecting changes to DLCs (e.g. Phantom Liberty, REDmod).
+* Fixed an issue where the app would fail to install certain archives due to the character encoding of the internal files not being recognised. 
+* Fixes several issues with game detection for Heroic Games Launcher related to manifest parsing. 
+* Added timeouts to the background processes so the app should now close correctly after 15-20 seconds if any tasks are still running, rather than staying open indefinitely. 
+* If REDmod is not installed when the app needs to run it, an error is silently added to the logs instead of showing the user a pop-up.
+* Fixed an error caused by the app attempting to compile REDmods but there are none installed. 
+* Fixed an error parsing WINE overrides on Linux for Cyberpunk 2077. 
+* Fixed a false positive with the "Missing packages" diagnostic for Cyberpunk 2077 on Linux caused by the app looking in the wrong location. 
+
+## Known Issues
+* When deleting a mod from the Library, the confirmation pop-up will not correctly show which collections depend on that mod.
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+
+
+
 # v0.12.3 - 2025-06-10
 This release includes UI improvements, performance optimisations, and bug fixes. 
 

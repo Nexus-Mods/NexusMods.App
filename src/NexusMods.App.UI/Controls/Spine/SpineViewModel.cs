@@ -256,7 +256,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutId,
-                    GroupScope = Optional<LoadoutItemGroupId>.None,
+                    GroupScope = Optional<CollectionGroupId>.None,
                 }
             },
             () => new LoadoutContext
