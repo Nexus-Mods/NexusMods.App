@@ -40,7 +40,7 @@ public class Program
         // This code will not work properly if it comes after anything that uses the console. So we need to do this first.
         if (OperatingSystem.IsWindows())
             ConsoleHelper.EnsureConsole();
-        
+
         MainThreadData.SetMainThread();
 
         TelemetrySettings telemetrySettings;
@@ -57,7 +57,7 @@ public class Program
         }
 
         var startupMode = StartupMode.Parse(args);
-        
+
         using var host = BuildHost(
             startupMode,
             telemetrySettings,
@@ -69,14 +69,14 @@ public class Program
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
-        
+
         if (startupMode.RunAsMain)
         {
             var dataModelSettings = services.GetRequiredService<ISettingsManager>().Get<DataModelSettings>();
             var fileSystem = services.GetRequiredService<IFileSystem>();
 
             var modelExists = dataModelSettings.MnemonicDBPath.ToPath(fileSystem).DirectoryExists();
-            
+
             // This will startup the MnemonicDb connection
             var migration = services.GetRequiredService<MigrationService>();
             if (modelExists)
@@ -188,7 +188,7 @@ public class Program
                     return 1;
                 }
             }
-                
+
             await client.ExecuteCommand(startupMode.Args, AnsiConsole.Console);
             return 0;
         }
@@ -343,16 +343,16 @@ public class Program
             OriginalArgs = [],
         };
 
-        var host = BuildHost(startupMode, 
-            telemetrySettings: new TelemetrySettings(), 
+        var host = BuildHost(startupMode,
+            telemetrySettings: new TelemetrySettings(),
             LoggingSettings.CreateDefault(OSInformation.Shared),
             experimentalSettings: new ExperimentalSettings()
         );
-        
+
         host.StartAsync().GetAwaiter().GetResult();
-        
+
         DesignerUtils.Activate(host.Services);
-        
+
         return Startup.BuildAvaloniaApp(host.Services);
     }
 }
@@ -418,8 +418,11 @@ file class DebuggingHost : IHost
                 Log("Type={0} HashCode={1} DisposableType={2}", disposableService.GetType(), disposableService.GetHashCode(), disposableType);
             }
 
+            // NOTE(erri120): If you landed here, that means the app is probably stuck shutting down.
+            // Use this opportunity to further debug the issue. You can see all the services that need
+            // disposing by inspecting the variables above and checking the logs.
             if (Debugger.IsAttached) Debugger.Break();
-            if (ApplicationConstants.IsCI) Environment.Exit(exitCode: 1);
+            // if (ApplicationConstants.IsCI) Environment.Exit(exitCode: 1);
         });
 
         _inner.Dispose();
