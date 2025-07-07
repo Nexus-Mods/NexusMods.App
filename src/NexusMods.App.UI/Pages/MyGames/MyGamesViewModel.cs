@@ -213,13 +213,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
 
                 var comingSoonMiniGameWidget = provider.GetRequiredService<IComingSoonMiniGameWidgetViewModel>();
 
-                var supportedGames = new ObservableCollection<IViewModelInterface>(miniGameWidgetViewModels) {
+                // create a new ReadOnlyObservableCollection from miniGameWidgetViewModels and comingSoonMiniGameWidget
+                _supportedGames = new ReadOnlyObservableCollection<IViewModelInterface>(
+                    new ObservableCollection<IViewModelInterface>(miniGameWidgetViewModels) {
                     // Add the coming soon widget to the end of the list
                     comingSoonMiniGameWidget,
-                };
-
-                // create a new ReadOnlyObservableCollection from miniGameWidgetViewModels and comingSoonMiniGameWidget
-                _supportedGames = new ReadOnlyObservableCollection<IViewModelInterface>(supportedGames);
+                });
             }
         );
     }
