@@ -363,51 +363,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         // If there is more than 1 non-readonly affected collection, show confirmation dialog
         if (affectedCollectionCount >= 2)
         {
-            var updateButtonId = ButtonDefinitionId.From("Update");
-            var cancelButtonId = ButtonDefinitionId.From("Cancel");
-
-            var dialogDesc = new StringBuilder()
-                .AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1)
-                .AppendLine();
-            
-                var collectionsGroupedByLoadout = collectionsAffected.Select(collection => collection.Key.AsLoadoutItemGroup().AsLoadoutItem())
-                    .GroupBy(item => item.Loadout.Name)
-                    .OrderBy(loadoutGroup => loadoutGroup.Key);
-                    
-                foreach (var loadoutGroup in collectionsGroupedByLoadout)
-                {
-                    dialogDesc.AppendLine($"{loadoutGroup.Key}:");
-                    foreach (var collection in loadoutGroup)
-                    {
-                        dialogDesc.AppendLine($"{collection.Name}");
-                    }
-                    dialogDesc.AppendLine();
-                }
-
-                dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
-
-            var confirmDialog = DialogFactory.CreateStandardDialog(
-                title: Language.Library_Update_InstalledInMultipleCollections_Title,
-                new StandardDialogParameters()
-                {
-                    Text = dialogDesc.ToString(),
-                },
-                buttonDefinitions: [
-                    new DialogButtonDefinition(
-                        Language.Library_Update_InstalledInMultipleCollections_Cancel,
-                        cancelButtonId,
-                        ButtonAction.Reject
-                    ),
-                    new DialogButtonDefinition(
-                        string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedCollectionCount),
-                        updateButtonId,
-                        ButtonAction.Accept,
-                        ButtonStyling.Primary
-                    )
-                ]
-            );
-                
-            var dialogResult = await WindowManager.ShowDialog(confirmDialog, DialogWindowType.Modal);
+            (ButtonDefinitionId updateButtonId, StandardDialogResult dialogResult) = await ShowInstalledInMultipleCollectionsDialog(collectionsAffected, affectedCollectionCount);
             if (dialogResult.ButtonId != updateButtonId)
             {
                 // User cancelled, don't proceed with update
@@ -456,48 +412,118 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             else
             {
                 // Replace of all items worked, but if some download failed let them know.
-                if (downloadErrors.Count > 0)
-                {
-                    var finalDescription = new StringBuilder()
-                        .AppendLine(Language.Library_Update_Success_Description1)
-                        .AppendLine()
-                        .AppendJoin(Environment.NewLine, oldToNewLibraryMapping.Select(mapping => mapping.oldItem.Name))
-                        .AppendLine()
-                        .AppendLine(Language.Library_Update_Success_Description2)
-                        .AppendJoin(Environment.NewLine, downloadErrors.Select(error => error.File.Name))
-                        .ToString();
-                        
-                    var successDialog = DialogFactory.CreateStandardDialog(
-                        title: Language.Library_Update_Success_Title,
-                        new StandardDialogParameters()
-                        {
-                            Text = finalDescription, 
-                        },
-                        buttonDefinitions: [DialogStandardButtons.Ok]
-                    );
-
-                    await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
-                }
-
+                await ShowModsPartiallyUpdatedDialog(oldToNewLibraryMapping, downloadErrors);
                 await RemoveOldLibraryItemsIfNotInReadOnlyCollections(oldToNewLibraryMapping);
             }
         }
         else
         {
-            // All downloads failed, show error message
-            var allFailedDialog = DialogFactory.CreateStandardDialog(
-                title: Language.Library_Update_AllDownloadsFailed_Title,
-                new StandardDialogParameters()
-                {
-                    Text = string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count)
-                },
-                buttonDefinitions: [DialogStandardButtons.Ok]
-            );
-
-            await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
+            await ShowAllDownloadsFailedDialog(downloadErrors);
         }
     }
 
+    private async Task ShowAllDownloadsFailedDialog(ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)> downloadErrors)
+    {
+        var allFailedDialog = DialogFactory.CreateStandardDialog(
+            title: Language.Library_Update_AllDownloadsFailed_Title,
+            new StandardDialogParameters()
+            {
+                Text = string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count)
+            },
+            buttonDefinitions: [DialogStandardButtons.Ok]
+        );
+
+        await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
+    }
+
+    private async Task ShowModsPartiallyUpdatedDialog(ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping, ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)> downloadErrors)
+    {
+        if (downloadErrors.Count <= 0)
+            return;
+
+        var finalDescription = new StringBuilder()
+            .AppendLine(Language.Library_Update_Success_Description1) // The following updates were successful.
+            .AppendLine()
+            .AppendJoin(Environment.NewLine, oldToNewLibraryMapping.Select(mapping => mapping.oldItem.Name))
+            .AppendLine()
+            .AppendLine(Language.Library_Update_Success_Description2) // The following updates failed.
+            .AppendJoin(Environment.NewLine, downloadErrors.Select(error => error.File.Name))
+            .ToString();
+
+        var successDialog = DialogFactory.CreateStandardDialog(
+            title: Language.Library_Update_Success_Title,
+            new StandardDialogParameters()
+            {
+                Text = finalDescription,
+            },
+            buttonDefinitions: [DialogStandardButtons.Ok]
+        );
+
+        await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+    }
+
+    private async Task<(ButtonDefinitionId updateButtonId, StandardDialogResult dialogResult)> ShowInstalledInMultipleCollectionsDialog(IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> collectionsAffected, int affectedCollectionCount)
+    {
+        var updateButtonId = ButtonDefinitionId.From("Update");
+        var cancelButtonId = ButtonDefinitionId.From("Cancel");
+
+        var dialogDesc = new StringBuilder()
+            .AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description1)
+            .AppendLine();
+
+        var collectionsGroupedByLoadout = collectionsAffected.Select(collection => collection.Key.AsLoadoutItemGroup().AsLoadoutItem())
+            .GroupBy(item => item.Loadout.Name)
+            .OrderBy(loadoutGroup => loadoutGroup.Key);
+
+        foreach (var loadoutGroup in collectionsGroupedByLoadout)
+        {
+            dialogDesc.AppendLine($"{loadoutGroup.Key}:");
+            foreach (var collection in loadoutGroup)
+            {
+                dialogDesc.AppendLine($"{collection.Name}");
+            }
+            dialogDesc.AppendLine();
+        }
+
+        dialogDesc.AppendLine(Language.Library_Update_InstalledInMultipleCollections_Description2);
+
+        var confirmDialog = DialogFactory.CreateStandardDialog(
+            title: Language.Library_Update_InstalledInMultipleCollections_Title,
+            new StandardDialogParameters()
+            {
+                Text = dialogDesc.ToString(),
+            },
+            buttonDefinitions: [
+                new DialogButtonDefinition(
+                        Language.Library_Update_InstalledInMultipleCollections_Cancel,
+                        cancelButtonId,
+                        ButtonAction.Reject
+                    ),
+                    new DialogButtonDefinition(
+                        string.Format(Language.Library_Update_InstalledInMultipleCollections_Ok, affectedCollectionCount),
+                        updateButtonId,
+                        ButtonAction.Accept,
+                        ButtonStyling.Primary
+                    )
+            ]
+        );
+
+        var dialogResult = await WindowManager.ShowDialog(confirmDialog, DialogWindowType.Modal);
+        return (updateButtonId, dialogResult);
+    }
+
+    /// <summary>
+    /// This downloads a list of mods marked by <see cref="newestToCurrentMapping"/>.
+    /// Every mod is installed separately into the library (as a separate transaction).
+    /// Any mods which fail to download, are returned via <paramref name="downloadErrors"/>.
+    /// </summary>
+    /// <param name="newestToCurrentMapping"></param>
+    /// <param name="oldToNewLibraryMapping"></param>
+    /// <param name="downloadErrors"></param>
+    /// <param name="successfulDownloads"></param>
+    /// <param name="concurrencyLimit"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     private async Task ProcessDownloadsInParallel(
         Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> newestToCurrentMapping,
         ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping,
@@ -516,7 +542,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             try
             {
                 isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
-                
+
                 // Try a download.
                 await using var tempPath = _temporaryFileManager.CreateFile();
                 var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
