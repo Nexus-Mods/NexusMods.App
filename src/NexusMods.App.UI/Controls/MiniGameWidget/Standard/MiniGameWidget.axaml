@@ -20,10 +20,11 @@
             Padding="12"
             Width="194">
 
-        <StackPanel Spacing="8">
+        
+        <Grid RowDefinitions="Auto, *, Auto">
 
             <!-- Thumbnail -->
-            <Panel HorizontalAlignment="Left">
+            <Panel Grid.Row="0" HorizontalAlignment="Left" Margin="0 0 0 8">
                 <Image x:Name="GameImage"
                        Width="48"
                        Height="48">
@@ -39,7 +40,7 @@
             </Panel>
 
             <!-- Details -->
-            <StackPanel Spacing="4">
+            <StackPanel Grid.Row="1" Spacing="4" Margin="0 0 0 8">
                 <TextBlock x:Name="NameTextBlock"
                            Text="Stardew Valley"
                            Theme="{StaticResource BodyMDSemiTheme}"
@@ -76,11 +77,11 @@
             </StackPanel>
 
             <!-- Buttons -->
-            <controls:StandardButton x:Name="ButtonGameNotFound"
+            <controls:StandardButton Grid.Row="2" x:Name="ButtonGameNotFound"
                                      LeftIcon="{x:Static icons:IconValues.OpenInNew }"
                                      ShowIcon="Left"
                                      Text="Game not found" />
-        </StackPanel>
+        </Grid>
     </Border>
 
 </reactiveUi:ReactiveUserControl>

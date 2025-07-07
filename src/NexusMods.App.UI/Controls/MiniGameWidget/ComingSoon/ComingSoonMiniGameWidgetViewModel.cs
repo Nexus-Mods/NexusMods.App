@@ -1,16 +1,9 @@
 using System.Reactive;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
 using NexusMods.CrossPlatform.Process;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
 
 namespace NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
 

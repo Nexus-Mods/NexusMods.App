@@ -19,13 +19,14 @@
             Padding="12"
             Width="194">
 
-        <StackPanel Spacing="8">
+        <Grid RowDefinitions="Auto, *, Auto">
 
             <!-- Thumbnail -->
-            <Panel HorizontalAlignment="Left">
+            <Panel Grid.Row="0" HorizontalAlignment="Left" Margin="0 0 0 8">
                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Game}"
                                    Width="48"
-                                   Height="48"/>
+                                   Height="48"
+                                   Foreground="{StaticResource NeutralStrongBrush}"/>
                 <Border x:Name="ThumbnailBorder"
                         CornerRadius="8"
                         BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
@@ -34,20 +35,20 @@
             </Panel>
 
             <!-- Details -->
-            <StackPanel Spacing="4">
+            <StackPanel Grid.Row="1" Spacing="4" Margin="0 0 0 8">
                 <TextBlock x:Name="NameTextBlock"
                            Text="More games coming soon..."
                            Theme="{StaticResource BodyMDSemiTheme}"
                            Foreground="{StaticResource NeutralModerateBrush}"
-                           TextWrapping="Wrap"/>
+                           TextWrapping="Wrap" />
             </StackPanel>
 
             <!-- Buttons -->
-            <controls:StandardButton x:Name="ButtonViewRoadmap"
+            <controls:StandardButton Grid.Row="2" x:Name="ButtonViewRoadmap"
                                      LeftIcon="{x:Static icons:IconValues.OpenInNew }"
                                      ShowIcon="Left"
                                      Text="View roadmap" />
-        </StackPanel>
+        </Grid>
     </Border>
 
 </reactiveUi:ReactiveUserControl>
