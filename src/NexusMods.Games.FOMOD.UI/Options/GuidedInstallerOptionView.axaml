@@ -12,6 +12,13 @@
     <Design.DataContext>
         <ui:GuidedInstallerOptionDesignViewModel />
     </Design.DataContext>
+
+    <reactiveUi:ReactiveUserControl.Styles>
+        <Style Selector="TextBlock#OptionNameTextBlock.StatusDangerLighter">
+            <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+        </Style>
+    </reactiveUi:ReactiveUserControl.Styles>
+
     <Border x:Name="SelectionHighlightBorder" Padding="8">
         <Grid ColumnDefinitions="Auto, *">
             <Panel Grid.Column="0">

@@ -14,7 +14,7 @@ public class GuidedInstallerOptionDesignViewModel : GuidedInstallerOptionViewMod
             Id = GroupId.From(Guid.NewGuid()),
             Name = "Group",
             Options = [],
-            Type = OptionGroupType.ExactlyOne,
+            Type = OptionGroupType.AtLeastOne,
         };
     }
 

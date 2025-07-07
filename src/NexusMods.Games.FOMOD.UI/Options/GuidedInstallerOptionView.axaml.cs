@@ -54,10 +54,6 @@ public partial class GuidedInstallerOptionView : ReactiveUserControl<IGuidedInst
     private void PopulateFromViewModel(IGuidedInstallerOptionViewModel viewModel, bool useRadioButton)
     {
         OptionNameTextBlock.Text = viewModel.Option.Name;
-        if (!viewModel.IsEnabled)
-        {
-            //OptionNameTextBlock.Classes.Add("Disabled");
-        }
 
         if (useRadioButton)
         {

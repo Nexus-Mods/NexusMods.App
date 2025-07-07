@@ -15,21 +15,40 @@
     </Design.DataContext>
 
     <reactiveUi:ReactiveUserControl.Styles>
+
+        <Style Selector="StackPanel#GroupViewContainer">
+            <Setter Property="Margin" Value="0 0 0 8" />
+            
+            <Style Selector="^ Border#GroupNameBorder">
+                <Setter Property="Margin" Value="0 0 0 8" />
+                
+                <Style Selector="^ TextBlock#GroupTypeTextBlock.StatusDangerLighter">
+                    <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+                </Style>
+            </Style>
+        </Style>
+
+        
+
+        
+
+
         <Style Selector="ListBox#OptionsListBox">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
-            
+
             <Style Selector="^ ListBoxItem">
                 <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
                 <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
                 <Setter Property="CornerRadius" Value="2" />
                 <Setter Property="BorderThickness" Value="1" />
-                
+                <Setter Property="Padding" Value="0 0 0 0" />
+
                 <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                     <Setter Property="Background" Value="{StaticResource SurfaceTranslucentLowBrush}" />
                 </Style>
-                
+
                 <!--  Selected State  -->
                 <Style Selector="^:selected">
 
@@ -40,13 +59,6 @@
                         <Setter Property="BackgroundSizing" Value="OuterBorderEdge" />
                         <Setter Property="BorderThickness" Value="1" />
                     </Style>
-
-                    <!--  Selected PointerOver State  -->
-                    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-                        <!-- <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListAccentMediumBrush}" /> -->
-                        <!-- <Setter Property="Foreground" Value="{DynamicResource SystemControlHighlightAltBaseHighBrush}" /> -->
-                    </Style>
-
                 </Style>
             </Style>
         </Style>
@@ -57,9 +69,9 @@
 
         <Border x:Name="GroupNameBorder">
             <StackPanel>
-                <TextBlock x:Name="GroupName"
+                <TextBlock x:Name="GroupNameTextBlock"
                            Theme="{StaticResource BodySMNormalTheme}" />
-                <TextBlock x:Name="GroupType"
+                <TextBlock x:Name="GroupTypeTextBlock"
                            Theme="{StaticResource BodySMNormalTheme}"
                            Text="{x:Static resources:Language.GuidedInstallerGroupView_SelectAtLeastOne}" />
             </StackPanel>

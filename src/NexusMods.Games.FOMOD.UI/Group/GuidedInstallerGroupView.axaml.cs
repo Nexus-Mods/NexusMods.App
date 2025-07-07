@@ -27,11 +27,11 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
                 {
                     if (isValid)
                     {
-                        GroupType.Classes.Remove("StatusDangerLighter");
+                        GroupTypeTextBlock.Classes.Remove("StatusDangerLighter");
                     }
                     else
                     {
-                        GroupType.Classes.Add("StatusDangerLighter");
+                        GroupTypeTextBlock.Classes.Add("StatusDangerLighter");
                     }
                 })
                 .DisposeWith(disposables);
@@ -46,7 +46,7 @@ public partial class GuidedInstallerGroupView : ReactiveUserControl<IGuidedInsta
 
     private void PopulateFromViewModel(IGuidedInstallerGroupViewModel viewModel)
     {
-        GroupName.Text = viewModel.Group.Name;
-        GroupType.IsVisible = viewModel.Group.Type == OptionGroupType.AtLeastOne;
+        GroupNameTextBlock.Text = viewModel.Group.Name;
+        GroupTypeTextBlock.IsVisible = viewModel.Group.Type == OptionGroupType.AtLeastOne;
     }
 }
