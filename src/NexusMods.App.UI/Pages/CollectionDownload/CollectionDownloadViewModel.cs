@@ -359,8 +359,10 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 .ObserveOnThreadPool()
                 .SelectAwait((revision, cancellationToken) => nexusModsLibrary.GetLastPublishedRevisionNumber(revision.Collection, cancellationToken))
                 .ObserveOnUIThreadDispatcher()
-                .Subscribe(this, static (lastPublishedRevisionNumber, self) =>
+                .Subscribe(this, static (graphQlResult, self) =>
                 {
+                    // TODO: handle errors
+                    var lastPublishedRevisionNumber = graphQlResult.AssertHasData();
                     if (!lastPublishedRevisionNumber.HasValue)
                     {
                         self.IsUpdateAvailable.Value = false;

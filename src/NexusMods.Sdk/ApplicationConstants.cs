@@ -18,6 +18,11 @@ public static class ApplicationConstants
     public static readonly bool IsDebug;
 
     /// <summary>
+    /// Whether the application is running in a CI environment.
+    /// </summary>
+    public static readonly bool IsCI;
+
+    /// <summary>
     /// The version of the commit the app was build from.
     /// </summary>
     public static readonly Version Version;
@@ -51,6 +56,11 @@ public static class ApplicationConstants
 #else
                 false;
 #endif
+        }
+
+        if (EnvironmentVariables.TryGetBoolean(name: "CI", out var isCI))
+        {
+            IsCI = isCI;
         }
 
         var currentAssembly = typeof(ApplicationConstants).Assembly;
