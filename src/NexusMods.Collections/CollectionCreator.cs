@@ -14,6 +14,7 @@ using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
@@ -29,7 +30,7 @@ public static class CollectionCreator
 {
     // TODO: remove for GA
     public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
-    
+
     public static bool IsCollectionUploaded(IConnection connection, CollectionGroupId groupId, out CollectionMetadata.ReadOnly collection)
     {
         var group = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
@@ -42,7 +43,7 @@ public static class CollectionCreator
         collection = group.Collection;
         return true;
     }
-    
+
     private static string GenerateNewCollectionName(string[] allNames)
     {
         const string defaultValue = "My new collection";
@@ -90,7 +91,7 @@ public static class CollectionCreator
         return result.Remap(group);
     }
 
-    public static async ValueTask<CollectionMetadata.ReadOnly> UploadDraftRevision(
+    private static async ValueTask<(IStreamFactory, CollectionRoot)> PrepareForUpload(
         IServiceProvider serviceProvider,
         CollectionGroupId groupId,
         CancellationToken cancellationToken)
@@ -120,21 +121,88 @@ public static class CollectionCreator
         await using var archiveFile = temporaryFileManager.CreateFile(ext: Extension.FromPath(".zip"));
         var streamFactory = await CreateArchive(archiveFile, jsonSerializerOptions, collectionManifest, cancellationToken);
 
+        return (streamFactory, collectionManifest);
+    }
+
+    public static async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ChangeCollectionStatus(
+        IServiceProvider serviceProvider,
+        ManagedCollectionLoadoutGroupId groupId,
+        Abstractions.NexusModsLibrary.Models.CollectionStatus newStatus,
+        CancellationToken cancellationToken)
+    {
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+
+        var managedGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
+        var collection = managedGroup.Collection;
+
+        if (collection.Status == newStatus) return newStatus;
+
+        var result = await nexusModsLibrary.ChangeCollectionStatus(
+            collection.CollectionId,
+            newStatus: newStatus,
+            cancellationToken: cancellationToken
+        );
+
+        if (result.HasErrors) return result;
         using var tx = connection.BeginTransaction();
 
-        CollectionMetadata.ReadOnly collection;
-        if (group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup))
+        tx.Add(collection.Id, CollectionMetadata.Status, result.AssertHasData());
+
+        await tx.Commit();
+        return result;
+    }
+
+    /// <summary>
+    /// Creates a new collection.
+    /// </summary>
+    public static async ValueTask<CollectionMetadata.ReadOnly> CreateCollection(
+        IServiceProvider serviceProvider,
+        CollectionGroupId groupId,
+        Abstractions.NexusModsLibrary.Models.CollectionStatus initialCollectionStatus = default,
+        CancellationToken cancellationToken = default)
+    {
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+
+        var (streamFactory, collectionManifest) = await PrepareForUpload(serviceProvider, groupId, cancellationToken);
+
+        var group = CollectionGroup.Load(connection.Db, groupId);
+        using var tx = connection.BeginTransaction();
+
+        var collection = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
+
+        await tx.Commit();
+
+        if (initialCollectionStatus is not Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted)
         {
-            collection = managedCollectionLoadoutGroup.Collection;
-            var revisionNumber = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
-            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
+            await ChangeCollectionStatus(serviceProvider, groupId.Value, newStatus: initialCollectionStatus, cancellationToken);
         }
-        else
-        {
-            collection = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
-            tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
-            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
-        }
+
+        return CollectionMetadata.Load(connection.Db, collection.Id);
+    }
+
+    /// <summary>
+    /// Uploads a draft revision.
+    /// </summary>
+    public static async ValueTask<CollectionMetadata.ReadOnly> UploadDraftRevision(
+        IServiceProvider serviceProvider,
+        ManagedCollectionLoadoutGroupId groupId,
+        CancellationToken cancellationToken)
+    {
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+
+        var (streamFactory, collectionManifest) = await PrepareForUpload(serviceProvider, groupId.Value, cancellationToken);
+
+        var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
+        using var tx = connection.BeginTransaction();
+
+        var collection = managedCollectionLoadoutGroup.Collection;
+        var revisionNumber = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
 
         await tx.Commit();
         return collection;
@@ -182,7 +250,8 @@ public static class CollectionCreator
             if (libraryItem.TryGetAsNexusModsLibraryItem(out var nexusModsLibraryItem))
             {
                 collectionMod = ToCollectionMod(nexusModsLibraryItem, libraryFile);
-            } else if (libraryItem.TryGetAsDownloadedFile(out downloadedFile))
+            }
+            else if (libraryItem.TryGetAsDownloadedFile(out downloadedFile))
             {
                 collectionMod = ToCollectionMod(gameDomain, downloadedFile);
             }

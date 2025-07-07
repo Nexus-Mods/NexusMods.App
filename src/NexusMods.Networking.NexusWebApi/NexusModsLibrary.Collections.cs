@@ -150,16 +150,16 @@ public partial class NexusModsLibrary
         return new NoData();
     }
 
-    public ValueTask<GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>> ChangeCollectionStatus(
+    public ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ChangeCollectionStatus(
         CollectionId collectionId,
-        CollectionStatus newStatus,
+        Abstractions.NexusModsLibrary.Models.CollectionStatus newStatus,
         CancellationToken cancellationToken)
     {
-        if (newStatus is CollectionStatus.Listed)
+        if (newStatus is Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed)
         {
             return ListCollection(collectionId, cancellationToken);
         }
-        else if (newStatus is CollectionStatus.Unlisted)
+        else if (newStatus is Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted)
         {
             return UnlistCollection(collectionId, cancellationToken);
         }
@@ -169,7 +169,7 @@ public partial class NexusModsLibrary
         }
     }
 
-    private async ValueTask<GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>> ListCollection(
+    private async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ListCollection(
         CollectionId collectionId,
         CancellationToken cancellationToken)
     {
@@ -178,14 +178,14 @@ public partial class NexusModsLibrary
             cancellationToken: cancellationToken
         );
 
-        if (operationResult.TryExtractErrors(out GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+        if (operationResult.TryExtractErrors(out GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
             return resultWithErrors;
 
         Debug.Assert(operationData.ListCollection?.Success ?? false);
-        return CollectionStatus.Listed;
+        return Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed;
     }
 
-    private async ValueTask<GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>> UnlistCollection(
+    private async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> UnlistCollection(
         CollectionId collectionId,
         CancellationToken cancellationToken)
     {
@@ -194,11 +194,11 @@ public partial class NexusModsLibrary
             cancellationToken: cancellationToken
         );
 
-        if (operationResult.TryExtractErrors(out GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+        if (operationResult.TryExtractErrors(out GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
             return resultWithErrors;
 
         Debug.Assert(operationData.UnlistCollection?.Success ?? false);
-        return CollectionStatus.Unlisted;
+        return Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
     }
 
     private static CollectionPayload ManifestToPayload(CollectionRoot manifest)

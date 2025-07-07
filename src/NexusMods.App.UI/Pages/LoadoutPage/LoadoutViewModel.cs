@@ -55,7 +55,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     IReadOnlyBindableReactiveProperty<string> ILoadoutViewModel.CollectionName => CollectionName;
     private BindableReactiveProperty<bool> IsCollectionUploaded { get; }
     IReadOnlyBindableReactiveProperty<bool> ILoadoutViewModel.IsCollectionUploaded => IsCollectionUploaded;
-    
+
     private BindableReactiveProperty<CollectionStatus> CollectionStatus { get; }
     IReadOnlyBindableReactiveProperty<CollectionStatus> ILoadoutViewModel.CollectionStatus => CollectionStatus;
     private BindableReactiveProperty<RevisionStatus> RevisionStatus { get; }
@@ -141,7 +141,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
                 if (shareDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
 
-                var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
+                var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                 var successDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName.Value) : LoadoutDialogs.ShareCollectionSuccess(CollectionName.Value);
 
                 var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
@@ -293,7 +293,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         title: "Uninstall mod(s)",
                         new StandardDialogParameters()
                         {
-                         Text = $"""
+                            Text = $"""
                          This will remove the selected mod(s) from:
                          
                          {CollectionName}
