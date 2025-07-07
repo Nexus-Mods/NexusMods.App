@@ -1,3 +1,4 @@
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.Paths;
 namespace NexusMods.App.UI.Controls.Filters;
 
@@ -7,15 +8,44 @@ namespace NexusMods.App.UI.Controls.Filters;
 public abstract record Filter
 {
     /// <summary>
+    /// Tests a value against the filter
+    /// </summary>
+    public virtual FilterResult Match<T>(T value)
+    {
+        return FilterResult.Indeterminate;
+    }
+
+    /// <summary>
     /// Filter by name/text content (case-insensitive substring matching by default).
     /// </summary>
-    public sealed record NameFilter(string SearchText, bool CaseSensitive = false) : Filter;
-    
+    public sealed record NameFilter(string SearchText, bool CaseSensitive = false) : Filter
+    {
+        public override FilterResult Match<T>(T value)
+        {
+            if (value is not string s)
+                return FilterResult.Indeterminate;
+            return s.Contains(SearchText, CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                ? FilterResult.Pass : FilterResult.Fail;
+        }
+    }
+
     /// <summary>
     /// Filter by text content across multiple string-based components (case-insensitive substring matching by default).
     /// This filter matches text as displayed in the UI, so implementations must match what is actually shown to the user whenever possible.
     /// </summary>
-    public sealed record TextFilter(string SearchText, bool CaseSensitive = false) : Filter;
+    public sealed record TextFilter(string SearchText, bool CaseSensitive = false) : Filter
+    {
+        public override FilterResult Match<T>(T value)
+        {
+            var strVal = value?.ToString();
+
+            if (strVal is null)
+                return FilterResult.Indeterminate;
+            
+            return strVal.Contains(SearchText, CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) ?
+                FilterResult.Pass : FilterResult.Fail;
+        }
+    }
     
     /// <summary>
     /// Filter by installation status.
@@ -26,21 +56,45 @@ public abstract record Filter
     /// Filter by update availability.
     /// </summary>
     public sealed record UpdateAvailableFilter(bool ShowWithUpdates = true, bool ShowWithoutUpdates = true) : Filter;
-    
+
     /// <summary>
     /// Filter by version pattern.
     /// </summary>
-    public sealed record VersionFilter(string VersionPattern) : Filter;
-    
+    public sealed record VersionFilter(string VersionPattern) : Filter
+    {
+        public override FilterResult Match<T>(T value)
+        {
+            if (value is string s)
+                return s.Contains(VersionPattern, StringComparison.OrdinalIgnoreCase) ? FilterResult.Pass : FilterResult.Fail;
+            return FilterResult.Indeterminate;
+        }
+    }
+
     /// <summary>
     /// Filter by date range.
     /// </summary>
-    public sealed record DateRangeFilter(DateTimeOffset StartDate, DateTimeOffset EndDate) : Filter;
-    
+    public sealed record DateRangeFilter(DateTimeOffset StartDate, DateTimeOffset EndDate) : Filter
+    {
+        public override FilterResult Match<T>(T value)
+        {
+            if (value is not DateTimeOffset date)
+                return FilterResult.Indeterminate;
+            return date >= StartDate && date <= EndDate ? FilterResult.Pass : FilterResult.Fail;
+        }
+    }
+
     /// <summary>
     /// Filter by size range.
     /// </summary>
-    public sealed record SizeRangeFilter(Size MinSize, Size MaxSize) : Filter;
+    public sealed record SizeRangeFilter(Size MinSize, Size MaxSize) : Filter
+    {
+        public override FilterResult Match<T>(T value)
+        {
+            if (value is not Size size)
+                return FilterResult.Indeterminate;
+            return size >= MinSize && size <= MaxSize ? FilterResult.Pass : FilterResult.Fail;
+        }
+    }
     
     /// <summary>
     /// Logical AND of two filters (both must match).

@@ -30,21 +30,4 @@ public sealed class NameComponent : AValueComponent<string>, IItemModelComponent
 
     /// <inheritdoc/>
     public int CompareTo(NameComponent? other) => string.CompareOrdinal(Value.Value, other?.Value.Value);
-
-    /// <inheritdoc/>
-    public FilterResult MatchesFilter(Filter filter)
-    {
-        return filter switch
-        {
-            Filter.NameFilter nameFilter => Value.Value.Contains(
-                nameFilter.SearchText, 
-                nameFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
-                ? FilterResult.Pass : FilterResult.Fail,
-            Filter.TextFilter textFilter => Value.Value.Contains(
-                textFilter.SearchText, 
-                textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
-                ? FilterResult.Pass : FilterResult.Fail,
-            _ => FilterResult.Indeterminate // Default: no opinion
-        };
-    }
 } 

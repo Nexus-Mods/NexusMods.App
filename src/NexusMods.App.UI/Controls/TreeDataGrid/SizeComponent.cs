@@ -50,20 +50,4 @@ public sealed class SizeComponent : AFormattedValueComponent<Size>, IItemModelCo
     public SizeComponent(Size value) : base(value, _FormatValue(value))
     {
     }
-
-    /// <inheritdoc/>
-    public FilterResult MatchesFilter(Filter filter)
-    {
-        return filter switch
-        {
-            Filter.SizeRangeFilter sizeFilter => 
-                (Value.Value >= sizeFilter.MinSize && Value.Value <= sizeFilter.MaxSize)
-                ? FilterResult.Pass : FilterResult.Fail,
-            Filter.TextFilter textFilter => FormattedValue.Value.Contains(
-                textFilter.SearchText, 
-                textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
-                ? FilterResult.Pass : FilterResult.Fail,
-            _ => FilterResult.Indeterminate // Default: no opinion
-        };
-    }
 }

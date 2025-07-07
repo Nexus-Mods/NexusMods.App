@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.App.UI.Controls.Filters;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
@@ -27,6 +29,14 @@ public abstract class AValueComponent<T> : ReactiveR3Object, IItemModelComponent
     /// <param name="observeOutsideUiThread">Observes outside of the UI thread. Debug only, eliminated by the JIT in release.</param>
     protected AValueComponent(T initialValue, IObservable<T> valueObservable, bool subscribeWhenCreated = false, bool observeOutsideUiThread = false) : this(initialValue, valueObservable.ToObservable(), subscribeWhenCreated, observeOutsideUiThread) { }
 
+    /// <summary>
+    /// Returns the result of applying the given filter to this component's value
+    /// </summary>
+    public FilterResult MatchesFilter(Filter filter)
+    {
+        return filter.Match(Value.Value);
+    }
+    
     /// <summary>
     /// Constructor.
     /// </summary>
