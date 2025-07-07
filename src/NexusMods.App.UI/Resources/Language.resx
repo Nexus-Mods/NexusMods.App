@@ -1043,6 +1043,22 @@ Click **OK** to visit the mod page for manual update.</value>
     <data name="Library_Update_ReplaceFailed_Description" xml:space="preserve">
         <value>The following updates failed:</value>
     </data>
+    <data name="Library_Update_UpdateInstallationFailed_Title" xml:space="preserve">
+        <value>Update Installation Failed</value>
+    </data>
+    <data name="Library_Update_UpdateInstallationFailed_Description" xml:space="preserve">
+        <value>The following mod updates couldn't be installed:
+
+{0}
+
+Keep the downloaded files in your library in case you want to retry the installation later?</value>
+    </data>
+    <data name="Library_Update_UpdateInstallationFailed_DeleteFiles" xml:space="preserve">
+        <value>Delete Failed Updates</value>
+    </data>
+    <data name="Library_Update_UpdateInstallationFailed_KeepFiles" xml:space="preserve">
+        <value>Keep Failed Updates</value>
+    </data>
     <data name="Library_Update_AllDownloadsFailed_Title" xml:space="preserve">
         <value>All Downloads Failed</value>
     </data>

@@ -389,25 +389,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
             if (result != LibraryItemReplacementResult.Success)
             {
-                // Replace operation failed, show error dialog with options
-                // We will pretend all items failed to replace, as we can't tell which
-                // ones currently failed. The replace is an atomic operation either way,
-                // so either one fails or all fail regardless.
-                var description = new StringBuilder()
-                    .AppendLine(Language.Library_Update_ReplaceFailed_Description)
-                    .AppendJoin(Environment.NewLine, oldToNewLibraryMapping.Select(failed => failed.oldItem.Name))
-                    .ToString();
-
-                var errorDialog = DialogFactory.CreateStandardDialog(
-                    title: Language.Library_Update_ReplaceFailed_Title,
-                    new StandardDialogParameters()
-                    {
-                        Text = description,
-                    },
-                    buttonDefinitions: [DialogStandardButtons.Ok]
-                );
-
-                await WindowManager.ShowDialog(errorDialog, DialogWindowType.Modal);
+                await HandleUpdateInstallationFailure(oldToNewLibraryMapping);
             }
             else
             {
@@ -420,6 +402,69 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         {
             await ShowAllDownloadsFailedDialog(downloadErrors);
         }
+    }
+    
+    /// <summary>
+    /// Shows a dialog asking the user whether to keep or delete failed update files.
+    /// If the user chooses to delete, removes the new library items that failed to install.
+    /// </summary>
+    /// <param name="oldToNewLibraryMapping">The mapping of old library items to their new replacements that failed to install.</param>
+    private async ValueTask HandleUpdateInstallationFailure(
+        IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping)
+    {
+        var failedItems = oldToNewLibraryMapping.ToArray();
+        var modNames = string.Join(Environment.NewLine, failedItems.Select(failed => failed.oldItem.Name));
+        var description = string.Format(Language.Library_Update_UpdateInstallationFailed_Description, modNames);
+
+        var deleteButtonId = ButtonDefinitionId.From("Delete");
+        var keepButtonId = ButtonDefinitionId.From("Keep");
+
+        var dialog = DialogFactory.CreateStandardDialog(
+            title: Language.Library_Update_UpdateInstallationFailed_Title,
+            new StandardDialogParameters()
+            {
+                Text = description,
+            },
+            buttonDefinitions: [
+                new DialogButtonDefinition(
+                    Language.Library_Update_UpdateInstallationFailed_DeleteFiles,
+                    deleteButtonId,
+                    ButtonAction.Accept,
+                    ButtonStyling.Destructive
+                ),
+                new DialogButtonDefinition(
+                    Language.Library_Update_UpdateInstallationFailed_KeepFiles,
+                    keepButtonId,
+                    ButtonAction.Reject,
+                    ButtonStyling.None
+                )
+            ]
+        );
+
+        var result = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        if (result.ButtonId == deleteButtonId)
+        {
+            // User chose to delete the failed update files
+            await RemoveFailedUpdateFiles(failedItems);
+        }
+
+        // If user chose to keep, do nothing - the downloaded files remain in the library
+    }
+
+    /// <summary>
+    /// Removes the new library items that failed to install, keeping only the original files.
+    /// </summary>
+    /// <param name="failedItems">The mapping of old to new library items where the new items failed to install.</param>
+    private async ValueTask RemoveFailedUpdateFiles(
+        IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> failedItems)
+    {
+        var newItemsToRemove = failedItems
+            .Select(failed => failed.newItem)
+            .Where(newItem => newItem.IsValid())
+            .ToArray();
+
+        if (newItemsToRemove.Length > 0)
+            await _libraryService.RemoveLibraryItems(newItemsToRemove);
     }
 
     private async Task ShowAllDownloadsFailedDialog(ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)> downloadErrors)
