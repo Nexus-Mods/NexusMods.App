@@ -29,6 +29,9 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Settings;
+using NexusMods.Abstractions.UI;
+using NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
+using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.ManageGameWarning;
@@ -50,12 +53,12 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
     private readonly IWindowManager _windowManager;
     private readonly IJobMonitor _jobMonitor;
 
-    private ReadOnlyObservableCollection<IMiniGameWidgetViewModel> _supportedGames = new([]);
+    private ReadOnlyObservableCollection<IViewModelInterface> _supportedGames = new([]);
     private ReadOnlyObservableCollection<IGameWidgetViewModel> _installedGames = new([]);
 
     public ReactiveCommand<Unit, Unit> OpenRoadmapCommand { get; }
     public ReadOnlyObservableCollection<IGameWidgetViewModel> InstalledGames => _installedGames;
-    public ReadOnlyObservableCollection<IMiniGameWidgetViewModel> SupportedGames => _supportedGames;
+    public ReadOnlyObservableCollection<IViewModelInterface> SupportedGames => _supportedGames;
 
     public MyGamesViewModel(
         IWindowManager windowManager,
@@ -188,7 +191,6 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     })
                     .Cast<IGame>()
                     .Where(game => _installedGames.All(install => install.Installation.GetGame().GameId != game.GameId)); // Exclude found games
-
                 
                 
                 var miniGameWidgetViewModels = supportedGamesAsIGame
@@ -209,7 +211,15 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                     .OrderByDescending(vm => vm.IsFound)
                     .ToList();
 
-                _supportedGames = new ReadOnlyObservableCollection<IMiniGameWidgetViewModel>(new ObservableCollection<IMiniGameWidgetViewModel>(miniGameWidgetViewModels));
+                var comingSoonMiniGameWidget = provider.GetRequiredService<IComingSoonMiniGameWidgetViewModel>();
+
+                var supportedGames = new ObservableCollection<IViewModelInterface>(miniGameWidgetViewModels) {
+                    // Add the coming soon widget to the end of the list
+                    comingSoonMiniGameWidget,
+                };
+
+                // create a new ReadOnlyObservableCollection from miniGameWidgetViewModels and comingSoonMiniGameWidget
+                _supportedGames = new ReadOnlyObservableCollection<IViewModelInterface>(supportedGames);
             }
         );
     }

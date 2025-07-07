@@ -11,12 +11,12 @@ using NexusMods.CrossPlatform.Process;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Controls.MiniGameWidget;
+namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 
 public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMiniGameWidgetViewModel
 {
     private readonly ILogger<MiniGameWidgetViewModel> _logger;
-    private const string MissingGamesUrl = "https://github.com/Nexus-Mods/NexusMods.App/issues/new?template=GameNotFound.yaml";
+    private const string MissingGamesUrl = "https://nexus-mods.github.io/NexusMods.App/users/games/CompatibleGames/";
 
     public MiniGameWidgetViewModel(ILogger<MiniGameWidgetViewModel> logger, 
         IOSInterop osInterop,

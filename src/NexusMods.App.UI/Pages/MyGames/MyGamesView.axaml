@@ -16,7 +16,9 @@
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:panels="clr-namespace:Avalonia.Labs.Panels;assembly=Avalonia.Labs.Panels"
-    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader">
+    xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
+    xmlns:standard="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget.Standard"
+    xmlns:ui="clr-namespace:NexusMods.Abstractions.UI;assembly=NexusMods.Abstractions.UI">
 
     <Design.DataContext>
         <myGames:MyGamesDesignViewModel />
@@ -129,21 +131,12 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="miniGameWidget:IMiniGameWidgetViewModel">
+                                <DataTemplate DataType="ui:IViewModelInterface">
                                     <reactiveUi:ViewModelViewHost ViewModel="{CompiledBinding .}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </controls:EmptyState>
-
-                    <controls:StandardButton x:Name="OpenRoadmapButton"
-                                             Text="More games coming soon"
-                                             Fill="Weak"
-                                             Type="Tertiary"
-                                             Size="Small"
-                                             ShowIcon="None"
-                                             RightIcon="{x:Static icons:IconValues.OpenInNew}"
-                                             Margin="0, 0, 0, 0" />
 
                 </StackPanel>
             </Border>

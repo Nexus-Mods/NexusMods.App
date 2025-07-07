@@ -7,7 +7,7 @@ using NexusMods.Abstractions.UI;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Controls.MiniGameWidget;
+namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 
 public class MiniGameWidgetDesignViewModel : AViewModel<IMiniGameWidgetViewModel>, IMiniGameWidgetViewModel
 {

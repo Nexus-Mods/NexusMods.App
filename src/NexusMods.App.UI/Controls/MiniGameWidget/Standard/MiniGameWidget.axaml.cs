@@ -1,18 +1,9 @@
+using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Media.Imaging;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.GameLocators;
-using NexusMods.App.UI.Controls.Alerts;
-using NexusMods.App.UI.Extensions;
-using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
-using SkiaSharp;
 
-namespace NexusMods.App.UI.Controls.MiniGameWidget;
+namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 
 public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewModel>
 {
@@ -25,10 +16,10 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
                 this.OneWayBind(ViewModel, vm => vm.Image, v => v.GameImage.Source)
                     .DisposeWith(d);
 
-                this.OneWayBind(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
+                this.OneWayBind<IMiniGameWidgetViewModel, MiniGameWidget, string, string?>(ViewModel, vm => vm.Name, v => v.NameTextBlock.Text)
                     .DisposeWith(d);
 
-                this.BindCommand(ViewModel, vm => vm.GiveFeedbackCommand, view => view.ButtonGameNotFound)
+                this.BindCommand<MiniGameWidget, IMiniGameWidgetViewModel, ReactiveCommand<Unit, Unit>, StandardButton>(ViewModel, vm => vm.GiveFeedbackCommand, view => view.ButtonGameNotFound)
                     .DisposeWith(d);
                 
                 this.WhenAnyValue(view => view.ViewModel!.GameInstallations)

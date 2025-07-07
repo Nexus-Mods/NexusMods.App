@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reactive;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.GameWidget;
 using NexusMods.App.UI.Controls.MiniGameWidget;
+using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 using NexusMods.App.UI.WorkspaceSystem;
 using ReactiveUI;
 
@@ -13,6 +15,6 @@ public interface IMyGamesViewModel : IPageViewModelInterface
     
     public ReadOnlyObservableCollection<IGameWidgetViewModel> InstalledGames { get; }
     
-    public ReadOnlyObservableCollection<IMiniGameWidgetViewModel> SupportedGames { get; }
+    public ReadOnlyObservableCollection<IViewModelInterface> SupportedGames { get; }
 
 }

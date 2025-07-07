@@ -616,21 +616,11 @@
         <Compile Update="Pages\LoadOrder\Prototype\LoadOrderViewModel.cs">
           <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
         </Compile>
-        <Compile Update="Controls\MiniGameWidget\MiniGameWidget.axaml.cs">
-          <DependentUpon>MiniGameWidget.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Controls\GameWidget\GameWidgetDesignViewModel.cs">
           <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Controls\GameWidget\GameWidgetViewModel.cs">
           <DependentUpon>IGameWidgetViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\MiniGameWidget\MiniGameWidgetDesignViewModel.cs">
-          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Controls\MiniGameWidget\MiniGameWidgetViewModel.cs">
-          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
         </Compile>
         <Compile Update="Pages\Sorting\Prototype\LoadOrderViewModel.cs">
           <DependentUpon>ILoadOrderViewModel.cs</DependentUpon>
@@ -754,6 +744,26 @@
         </Compile>
         <Compile Update="Dialog\DialogStandardContentViewModel.cs">
           <DependentUpon>IDialogStandardContentViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\Standard\MiniGameWidget.axaml.cs">
+          <DependentUpon>MiniGameWidget.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\Standard\MiniGameWidgetDesignViewModel.cs">
+          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\Standard\MiniGameWidgetViewModel.cs">
+          <DependentUpon>IMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\ComingSoon\ComingSoonMiniGameWidget.axaml.cs">
+          <DependentUpon>MiniGameWidget.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\ComingSoon\ComingSoonMiniGameWidgetViewModel.cs">
+          <DependentUpon>IComingSoonMiniGameWidgetViewModel.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Controls\MiniGameWidget\ComingSoon\ComingSoonMiniGameWidgetDesignViewModel.cs">
+          <DependentUpon>IComingSoonMiniGameWidgetViewModel.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

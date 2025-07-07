@@ -5,7 +5,7 @@ using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.UI;
 using ReactiveUI;
 
-namespace NexusMods.App.UI.Controls.MiniGameWidget;
+namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 
 public interface IMiniGameWidgetViewModel : IViewModelInterface
 {
