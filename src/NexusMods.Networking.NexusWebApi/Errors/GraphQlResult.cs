@@ -19,6 +19,11 @@ file static class Helper
 }
 
 /// <summary>
+/// Represents no data.
+/// </summary>
+public record NoData;
+
+/// <summary>
 /// Represents a GraphQl result.
 /// </summary>
 [PublicAPI]

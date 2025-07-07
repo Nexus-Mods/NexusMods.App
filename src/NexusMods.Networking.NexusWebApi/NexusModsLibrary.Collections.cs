@@ -134,6 +134,73 @@ public partial class NexusModsLibrary
         return collection;
     }
 
+    public async ValueTask<GraphQlResult<NoData, NotFound, CollectionDiscarded>> PublishRevision(
+        RevisionId revisionId,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.PublishRevision.ExecuteAsync(
+            revisionId: revisionId.Value.ToString(),
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<NoData, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.PublishRevision?.Success ?? false);
+        return new NoData();
+    }
+
+    public ValueTask<GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>> ChangeCollectionStatus(
+        CollectionId collectionId,
+        CollectionStatus newStatus,
+        CancellationToken cancellationToken)
+    {
+        if (newStatus is CollectionStatus.Listed)
+        {
+            return ListCollection(collectionId, cancellationToken);
+        }
+        else if (newStatus is CollectionStatus.Unlisted)
+        {
+            return UnlistCollection(collectionId, cancellationToken);
+        }
+        else
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    private async ValueTask<GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>> ListCollection(
+        CollectionId collectionId,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.ListCollection.ExecuteAsync(
+            collectionId: (int)collectionId.Value,
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.ListCollection?.Success ?? false);
+        return CollectionStatus.Listed;
+    }
+
+    private async ValueTask<GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>> UnlistCollection(
+        CollectionId collectionId,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.UnlistCollection.ExecuteAsync(
+            collectionId: collectionId.Value.ToString(),
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.UnlistCollection?.Success ?? false);
+        return CollectionStatus.Unlisted;
+    }
+
     private static CollectionPayload ManifestToPayload(CollectionRoot manifest)
     {
         return new CollectionPayload
@@ -199,7 +266,7 @@ public partial class NexusModsLibrary
             };
         }
     }
-    
+
     /// <summary>
     /// Gets or adds the provided collection revision.
     /// </summary>
