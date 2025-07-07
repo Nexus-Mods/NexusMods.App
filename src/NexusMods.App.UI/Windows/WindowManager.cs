@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DynamicData;
@@ -177,16 +178,16 @@ internal sealed class WindowManager : ReactiveObject, IWindowManager
         tx.Commit();
     }
     
-    public async Task<TResult> ShowDialog<TResult>(IDialog<TResult> dialog, DialogWindowType windowType)
+    public async Task<StandardDialogResult> ShowDialog(IDialog dialog, DialogWindowType windowType)
     {
         if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: not null } desktop)
             throw new InvalidOperationException("Application lifetime is not configured properly.");
-
+        
         // always pass the window to the dialog so we can do things with properties of the parent window
         return windowType switch
         {
-            DialogWindowType.Modal => await dialog.ShowWindow(desktop.MainWindow, isModal: true),
-            DialogWindowType.Modeless => await dialog.ShowWindow(desktop.MainWindow, isModal: false),
+            DialogWindowType.Modal => await dialog.Show(desktop.MainWindow, true),
+            DialogWindowType.Modeless => await dialog.Show(desktop.MainWindow, false),
             DialogWindowType.Embedded => throw new NotImplementedException("Embedded window type is not implemented."),
             _ => throw new InvalidOperationException("Unknown WindowType.")
         };

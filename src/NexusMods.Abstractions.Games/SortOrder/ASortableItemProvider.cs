@@ -3,6 +3,7 @@ using DynamicData;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Sdk.Threading;
 
 namespace NexusMods.Abstractions.Games;
 
@@ -22,7 +23,7 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     /// Async semaphore for serializing changes to the sort order
     /// </summary>
     protected readonly SemaphoreSlim Semaphore = new(1, 1);
-    
+
     /// <summary>
     /// Source cache of the sortable items used to expose the latest sort order
     /// </summary>
@@ -72,51 +73,42 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     /// <Inheritdoc />
     public virtual async Task SetRelativePosition(TItem sortableItem, int delta, CancellationToken token)
     {
-        var hasEntered = await Semaphore.WaitAsync(SemaphoreTimeout, token);
-        if (!hasEntered) throw new TimeoutException($"Timed out waiting for semaphore in SetRelativePosition");
-        
-        try
+        using var disposableSemaphore = await Semaphore.WaitAsyncDisposable(SemaphoreTimeout, token);
+        if (!disposableSemaphore.HasEntered) throw new TimeoutException($"Timed out waiting for semaphore in SetRelativePosition");
+
+        // Get a stagingList of the items in the order
+        var stagingList = OrderCache.Items
+            .OrderBy(item => item.SortIndex)
+            .ToList();
+
+        // Get the current index of the item relative to the full list
+        var currentIndex = stagingList.IndexOf(sortableItem);
+
+        // Get the new index of the group relative to the full list
+        var newIndex = currentIndex + delta;
+
+        // Ensure the new index is within the bounds of the list
+        newIndex = Math.Clamp(newIndex, 0, stagingList.Count - 1);
+        if (newIndex == currentIndex) return;
+
+        // Move the item in the list
+        stagingList.RemoveAt(currentIndex);
+        stagingList.Insert(newIndex, sortableItem);
+
+        // Update the sort index of all items
+        for (var i = 0; i < stagingList.Count; i++)
         {
-            // Get a stagingList of the items in the order
-            var stagingList = OrderCache.Items
-                .OrderBy(item => item.SortIndex)
-                .ToList();
-
-            // Get the current index of the item relative to the full list
-            var currentIndex = stagingList.IndexOf(sortableItem);
-
-            // Get the new index of the group relative to the full list
-            var newIndex = currentIndex + delta;
-
-            // Ensure the new index is within the bounds of the list
-            newIndex = Math.Clamp(newIndex, 0, stagingList.Count - 1);
-            if (newIndex == currentIndex) return;
-
-            // Move the item in the list
-            stagingList.RemoveAt(currentIndex);
-            stagingList.Insert(newIndex, sortableItem);
-            
-            // Update the sort index of all items
-            for (var i = 0; i < stagingList.Count; i++)
-            {
-                stagingList[i].SortIndex = i;
-            }
-            
-            if (token.IsCancellationRequested) return;
-            
-            await PersistSortOrder(stagingList, SortOrderEntityId, token);
-
-            OrderCache.Edit(innerCache =>
-                {
-                    innerCache.Clear();
-                    innerCache.AddOrUpdate(stagingList);
-                }
-            );
+            stagingList[i].SortIndex = i;
         }
-        finally
+   
+        if (token.IsCancellationRequested) return;
+        await PersistSortOrder(stagingList, SortOrderEntityId, token);
+
+        OrderCache.Edit(innerCache =>
         {
-            Semaphore.Release();
-        }
+            innerCache.Clear();
+            innerCache.AddOrUpdate(stagingList);
+        });
     }
 
     /// <Inheritdoc />
@@ -126,62 +118,52 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
         TargetRelativePosition relativePosition,
         CancellationToken token)
     {
-        var hasEntered = await Semaphore.WaitAsync(SemaphoreTimeout, token);
-        if (!hasEntered) throw new TimeoutException($"Timed out waiting for semaphore in MoveItemsTo");
-        
-        try
-        {
-            // Sort the source items to move by their sort index
-            var sortedSourceItems = sourceItems
-                .OrderBy(item => item.SortIndex)
-                .ToArray();
-            
-            // Get current ordering from cache
-            var stagingList = OrderCache.Items
-                .OrderBy(item => item.SortIndex)
-                .ToList();
-            
-            // Determine target insertion position
-            var targetItemIndex = stagingList.IndexOf(targetItem);
-            var targetIndex = relativePosition == TargetRelativePosition.BeforeTarget ? targetItemIndex : targetItemIndex + 1;
+        using var disposableSemaphore = await Semaphore.WaitAsyncDisposable(SemaphoreTimeout, token);
+        if (!disposableSemaphore.HasEntered) throw new TimeoutException($"Timed out waiting for semaphore in MoveItemsTo");
 
-            var insertPositionIndex = targetIndex;
-            
-            // Adjust the insert position index to account for any items before the target index that are also being moved
-            foreach (var item in sortedSourceItems)
-            {
-                if (!(item.SortIndex < targetIndex))
-                    break;
-                insertPositionIndex--;
-            }
-            
-            // Remove items from the staging list and insert them at the new adjusted position
-            stagingList.Remove(sortedSourceItems);
-            stagingList.InsertRange(insertPositionIndex, sortedSourceItems);
-            
-            // Update the sort index of all items
-            for (var i = 0; i < stagingList.Count; i++)
-            {
-                stagingList[i].SortIndex = i;
-            }
-            
-            if (token.IsCancellationRequested) return;
-            
-            // Update the database
-            await PersistSortOrder(stagingList, SortOrderEntityId, token);
-            
-            // Update the public cache
-            OrderCache.Edit(innerCache =>
-                {
-                    innerCache.Clear();
-                    innerCache.AddOrUpdate(stagingList);
-                }
-            );
-        }
-        finally
+        // Sort the source items to move by their sort index
+        var sortedSourceItems = sourceItems
+            .OrderBy(item => item.SortIndex)
+            .ToArray();
+
+        // Get current ordering from cache
+        var stagingList = OrderCache.Items
+            .OrderBy(item => item.SortIndex)
+            .ToList();
+
+        // Determine target insertion position
+        var targetItemIndex = stagingList.IndexOf(targetItem);
+        var targetIndex = relativePosition == TargetRelativePosition.BeforeTarget ? targetItemIndex : targetItemIndex + 1;
+
+        var insertPositionIndex = targetIndex;
+
+        // Adjust the insert position index to account for any items before the target index that are also being moved
+        foreach (var item in sortedSourceItems)
         {
-            Semaphore.Release();
+            if (!(item.SortIndex < targetIndex)) break;
+            insertPositionIndex--;
         }
+
+        // Remove items from the staging list and insert them at the new adjusted position
+        stagingList.Remove(sortedSourceItems);
+        stagingList.InsertRange(insertPositionIndex, sortedSourceItems);
+
+        // Update the sort index of all items
+        for (var i = 0; i < stagingList.Count; i++)
+        {
+            stagingList[i].SortIndex = i;
+        }
+
+        if (token.IsCancellationRequested) return;
+        // Update the database
+        await PersistSortOrder(stagingList, SortOrderEntityId, token);
+
+        // Update the public cache
+        OrderCache.Edit(innerCache =>
+        {
+            innerCache.Clear();
+            innerCache.AddOrUpdate(stagingList);
+        });
     }
 
     /// <inheritdoc />
@@ -236,6 +218,7 @@ public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemP
     public virtual void Dispose()
     {
         Dispose(true);
+        System.GC.SuppressFinalize(this);
     }
     
     /// <summary>

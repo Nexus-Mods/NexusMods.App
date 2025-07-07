@@ -6,39 +6,87 @@ namespace NexusMods.App.UI.Pages.LoadoutPage;
 
 public static class LoadoutDialogs
 {
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> ShareCollection(string collectionName)
+    public static IDialog CreateCollection()
     {
-        return DialogFactory.CreateMessageDialog(
-            title: "Share Your Collection on Nexus Mods",
-            text: $"""
-                    Upload "{collectionName}" to Nexus Mods to share it with friends or, if you choose, with the entire Nexus Mods community.
-                    
-                    Your collection will be added as a private draft until you publish it.
-                    """,
-            buttonDefinitions:
+        return DialogFactory.CreateStandardDialog(
+            "Name your Collection",
+            new StandardDialogParameters()
+            {
+                Text = "This is the name that will appear in the left hand menu and on the Collections page.",
+                InputLabel = "Collection name",
+                InputWatermark = "e.g. My Armour Mods",
+            },
+            [
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition(
+                    "Create",
+                    ButtonDefinitionId.Accept,
+                    ButtonAction.Accept,
+                    ButtonStyling.Primary
+                ),
+            ]
+        );
+    }
+
+    public static IDialog RenameCollection(string collectionName)
+    {
+        return DialogFactory.CreateStandardDialog(
+            $"Rename your collection \"{collectionName}\"",
+            new StandardDialogParameters()
+            {
+                Text = $"Rename your existing collection \"{collectionName}\" to something else.",
+                InputLabel = "New collection name",
+                InputWatermark = "e.g. My Armour Mods",
+                InputText = collectionName,
+            },
+            [
+                DialogStandardButtons.Cancel,
+                new DialogButtonDefinition(
+                    "Rename",
+                    ButtonDefinitionId.Accept,
+                    ButtonAction.Accept,
+                    ButtonStyling.Primary
+                ),
+            ]
+        );
+    }
+
+    public static IDialog ShareCollection(string collectionName)
+    {
+        return DialogFactory.CreateStandardDialog(
+            "Share Your Collection on Nexus Mods",
+            new StandardDialogParameters()
+            {
+                Text = $"""
+                      Upload "{collectionName}" to Nexus Mods to share it with friends or, if you choose, with the entire Nexus Mods community.
+                      
+                      Your collection will be added as a private draft until you publish it.
+                      """,
+                Icon = IconValues.PictogramUpload,
+            },
             [
                 new DialogButtonDefinition(
                     "Cancel",
-                    ButtonDefinitionId.From("cancel"),
+                    ButtonDefinitionId.Cancel,
                     ButtonAction.Reject
                 ),
                 new DialogButtonDefinition(
                     "Share to Nexus Mods",
-                    ButtonDefinitionId.From("share"),
+                    ButtonDefinitionId.Accept,
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
-            ],
-            icon: IconValues.PictogramUpload,
-            dialogWindowSize: DialogWindowSize.Medium
+            ]
         );
     }
 
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> ShareCollectionSuccess(string collectionName)
+    public static IDialog ShareCollectionSuccess(string collectionName)
     {
-        return DialogFactory.CreateMessageDialog(
-            title: "Your Collection Has Been Added as a Draft",
-            text: """
+        return DialogFactory.CreateStandardDialog(
+            "Your Collection Has Been Added as a Draft",
+            new StandardDialogParameters()
+            {
+                Text = $"""
                     Click View Page to edit details and optionally publish your collection as either:
                     
                     • Listed – Anyone can discover this collection on Nexus Mods.
@@ -46,55 +94,63 @@ public static class LoadoutDialogs
                     
                     You can change the visibility at any time in your collection settings on the Nexus Mods page.
                     """,
-            buttonDefinitions:
+                Icon = IconValues.PictogramCelebrate,
+            },
             [
-                new DialogButtonDefinition("Close", ButtonDefinitionId.From("close"), ButtonAction.Reject),
-                new DialogButtonDefinition("View page", ButtonDefinitionId.From("view-page"), ButtonAction.Accept,
+                new DialogButtonDefinition("Close", ButtonDefinitionId.Close, ButtonAction.Reject),
+                new DialogButtonDefinition("View page", ButtonDefinitionId.Accept, ButtonAction.Accept,
                     ButtonStyling.Default, IconValues.OpenInNew
                 ),
-            ],
-            icon: IconValues.PictogramCelebrate,
-            dialogWindowSize: DialogWindowSize.Medium
+            ]
         );
     }
 
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> UpdateCollection(string collectionName)
+    public static IDialog UpdateCollection(string collectionName)
     {
-        return DialogFactory.CreateMessageDialog(
-            title: "Update Your Collection on Nexus Mods",
-            text: $"""
-                    Upload an update of "{collectionName}" to Nexus Mods.
-                    
-                    Your update will be uploaded as a new revision of the collection.
-                    """,
-            buttonDefinitions:
+        return DialogFactory.CreateStandardDialog(
+            "Share Your Collection on Nexus Mods",
+            new StandardDialogParameters()
+            {
+                Text = $"""
+                     Upload "{collectionName}" to Nexus Mods to share it with friends or, if you choose, with the entire Nexus Mods community.
+                     
+                     Your collection will be added as a private draft until you publish it.
+                     """,
+                Icon = IconValues.PictogramUpload,
+            },
             [
-                new DialogButtonDefinition("Cancel", ButtonDefinitionId.From("cancel"), ButtonAction.Reject),
-                new DialogButtonDefinition("Share to Nexus Mods", ButtonDefinitionId.From("share"), ButtonAction.Accept,
+                new DialogButtonDefinition(
+                    "Cancel",
+                    ButtonDefinitionId.Cancel,
+                    ButtonAction.Reject
+                ),
+                new DialogButtonDefinition(
+                    "Share to Nexus Mods",
+                    ButtonDefinitionId.Accept,
+                    ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
-            ],
-            icon: IconValues.PictogramUpload,
-            dialogWindowSize: DialogWindowSize.Medium
+            ]
         );
     }
 
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> UpdateCollectionSuccess(string collectionName)
+    public static IDialog UpdateCollectionSuccess(string collectionName)
     {
-        return DialogFactory.CreateMessageDialog(
-            title: "Your Collection Has Been Updated",
-            text: $"""
+        return DialogFactory.CreateStandardDialog(
+            "Your Collection Has Been Updated",
+            new StandardDialogParameters()
+            {
+                Text = $"""
                     You have successfully uploaded a new revision of "{collectionName}".
                     """,
-            buttonDefinitions:
+                Icon = IconValues.PictogramCelebrate,
+            },
             [
-                new DialogButtonDefinition("Close", ButtonDefinitionId.From("close"), ButtonAction.Reject),
-                new DialogButtonDefinition("View page", ButtonDefinitionId.From("view-page"), ButtonAction.Accept,
+                new DialogButtonDefinition("Close", ButtonDefinitionId.Close, ButtonAction.Reject),
+                new DialogButtonDefinition("View page", ButtonDefinitionId.Accept, ButtonAction.Accept,
                     ButtonStyling.Default, IconValues.OpenInNew
                 ),
-            ],
-            icon: IconValues.PictogramCelebrate,
-            dialogWindowSize: DialogWindowSize.Medium
+            ]
         );
     }
 }

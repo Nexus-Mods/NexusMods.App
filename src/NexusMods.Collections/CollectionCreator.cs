@@ -6,7 +6,6 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
-using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -31,11 +30,17 @@ public static class CollectionCreator
     // TODO: remove for GA
     public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
     
-    public static bool IsCollectionUploaded(IConnection connection, LoadoutItemGroupId groupId)
+    public static bool IsCollectionUploaded(IConnection connection, CollectionGroupId groupId, out CollectionMetadata.ReadOnly collection)
     {
-        var group = CollectionGroup.Load(connection.Db, groupId);
-        
-        return group.IsValid() && group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup);
+        var group = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
+        if (!group.IsValid())
+        {
+            collection = default(CollectionMetadata.ReadOnly);
+            return false;
+        }
+
+        collection = group.Collection;
+        return true;
     }
     
     private static string GenerateNewCollectionName(string[] allNames)
@@ -57,10 +62,13 @@ public static class CollectionCreator
     /// <summary>
     /// Creates a new collection group in the loadout.
     /// </summary>
-    public static async ValueTask<CollectionGroup.ReadOnly> CreateNewCollectionGroup(IConnection connection, LoadoutId loadoutId)
+    public static async ValueTask<CollectionGroup.ReadOnly> CreateNewCollectionGroup(IConnection connection, LoadoutId loadoutId, string newName)
     {
-        var names = (await Loadout.Load(connection.Db, loadoutId).MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
-        var newName = GenerateNewCollectionName(names);
+        if (string.IsNullOrWhiteSpace(newName))
+        {
+            var names = (await Loadout.Load(connection.Db, loadoutId).MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
+            newName = GenerateNewCollectionName(names);
+        }
 
         using var tx = connection.BeginTransaction();
 
@@ -84,7 +92,7 @@ public static class CollectionCreator
 
     public static async ValueTask<CollectionMetadata.ReadOnly> UploadDraftRevision(
         IServiceProvider serviceProvider,
-        LoadoutItemGroupId groupId,
+        CollectionGroupId groupId,
         CancellationToken cancellationToken)
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
@@ -95,23 +103,10 @@ public static class CollectionCreator
         var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
 
         var userInfo = loginManager.UserInfo;
-        if (userInfo is null) throw new NotImplementedException();
+        if (userInfo is null) throw new NotSupportedException("User has to be logged in!");
 
         var users = User.FindByNexusId(connection.Db, userInfo.UserId.Value);
-        if (!users.TryGetFirst(out var user))
-        {
-            using var tx1 = connection.BeginTransaction();
-
-            var newUser = new User.New(tx1)
-            {
-                Name = userInfo.Name,
-                AvatarUri = userInfo.AvatarUrl ?? new Uri("https://example.org"),
-                NexusId = userInfo.UserId.Value,
-            };
-
-            var result = await tx1.Commit();
-            user = result.Remap(newUser);
-        }
+        if (!users.TryGetFirst(out var user)) throw new NotSupportedException("User has to be logged in!");
 
         var group = CollectionGroup.Load(connection.Db, groupId);
         Debug.Assert(group.IsValid());
@@ -131,12 +126,14 @@ public static class CollectionCreator
         if (group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup))
         {
             collection = managedCollectionLoadoutGroup.Collection;
-            await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+            var revisionNumber = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
         }
         else
         {
             collection = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
             tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
+            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
         }
 
         await tx.Commit();
@@ -171,7 +168,7 @@ public static class CollectionCreator
         Debug.Assert(group.IsValid());
 
         var gameId = group.AsLoadoutItem().Loadout.Installation.GameId;
-        var gameDomain = mappingCache.TryGetDomain(gameId, CancellationToken.None).Value;
+        var gameDomain = mappingCache[gameId];
 
         var collectionMods = new List<CollectionMod>();
 

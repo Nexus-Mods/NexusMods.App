@@ -28,6 +28,7 @@
         <MergeResourceInclude Source="/Controls/CheckBox.axaml"/>
         <MergeResourceInclude Source="/Controls/RadioButton.axaml"/>
         <MergeResourceInclude Source="/Controls/TextBox.axaml"/>
+        <MergeResourceInclude Source="/Controls/Expander.axaml"/>
         
         <!-- custom controls (standalone components, primarily to match Figma components 
         and to replace Avalonia controls) -->

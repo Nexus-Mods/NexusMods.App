@@ -10,6 +10,12 @@ public class Build
     [JsonPropertyName("appName")]
     public string AppName { get; set; } = string.Empty;
     
+    /// <summary>
+    /// The manifest hash of the build.
+    /// </summary>
+    [JsonPropertyName("hash")]
+    public string ManifestHash { get; set; } = string.Empty;
+    
     [JsonPropertyName("labelName")]
     public string LabelName { get; set; } = string.Empty;
     

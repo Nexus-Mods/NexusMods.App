@@ -18,23 +18,21 @@ public class NexusApiClient : INexusApiClient
     private readonly ILogger<NexusApiClient> _logger;
     private readonly IHttpMessageFactory _factory;
     private readonly HttpClient _httpClient;
-    private readonly NexusGraphQLClient _graphQLClient;
+    private readonly NexusGraphQLClient _graphQlClient;
 
     /// <summary>
-    /// Creates a <see cref="NexusApiClient"/> responsible for providing easy access to the Nexus API.
+    /// Constructor.
     /// </summary>
-    /// <param name="logger">Logs actions performed by the client.</param>
-    /// <param name="factory">Injects API key into the messages.</param>
-    /// <param name="httpClient">Client used to issue HTTP requests.</param>
-    /// <remarks>
-    ///    This class is usually instantiated using the Microsoft DI Container.
-    /// </remarks>
-    public NexusApiClient(ILogger<NexusApiClient> logger, IHttpMessageFactory factory, HttpClient httpClient, NexusGraphQLClient graphQLClient)
+    public NexusApiClient(
+        ILogger<NexusApiClient> logger,
+        IHttpMessageFactory factory,
+        HttpClient httpClient,
+        NexusGraphQLClient graphQlClient)
     {
         _logger = logger;
         _factory = factory;
         _httpClient = httpClient;
-        _graphQLClient = graphQLClient;
+        _graphQlClient = graphQlClient;
     }
 
     /// <summary>
@@ -43,18 +41,16 @@ public class NexusApiClient : INexusApiClient
     /// <param name="token">Can be used to cancel this task.</param>
     public async Task<Response<ValidateInfo>> Validate(CancellationToken token = default)
     {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri("https://api.nexusmods.com/v1/users/validate.json"));
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"{ClientConfig.LegacyApiEndpoint}/users/validate.json"));
         return await SendAsync<ValidateInfo>(msg, token);
     }
-
-    private static readonly Uri OAuthUserInfoUri = new("https://users.nexusmods.com/oauth/userinfo");
 
     /// <summary>
     /// Retrieves information about the current user when logged in via OAuth.
     /// </summary>
     public async Task<Response<OAuthUserInfo>> GetOAuthUserInfo(CancellationToken cancellationToken = default)
     {
-        var msg = await _factory.Create(HttpMethod.Get, OAuthUserInfoUri);
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"{ClientConfig.UsersUrl}/oauth/userinfo"));
         return await SendAsync<OAuthUserInfo>(msg, cancellationToken);
     }
 
@@ -80,7 +76,7 @@ public class NexusApiClient : INexusApiClient
     public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, CancellationToken token = default)
     {
         var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
+            $"{ClientConfig.LegacyApiEndpoint}/games/{domain}/mods/{modId}/files/{fileId}/download_link.json"));
 
         return await SendAsyncArray<DownloadLink>(msg, token);
     }
@@ -107,8 +103,7 @@ public class NexusApiClient : INexusApiClient
     /// </remarks>
     public async Task<Response<DownloadLink[]>> DownloadLinksAsync(string domain, ModId modId, FileId fileId, NXMKey key, DateTime expireTime, CancellationToken token = default)
     {
-        var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/{modId}/files/{fileId}/download_link.json?key={key}&expires={new DateTimeOffset(expireTime).ToUnixTimeSeconds()}"));
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"{ClientConfig.LegacyApiEndpoint}/games/{domain}/mods/{modId}/files/{fileId}/download_link.json?key={key}&expires={new DateTimeOffset(expireTime).ToUnixTimeSeconds()}"));
         return await SendAsyncArray<DownloadLink>(msg, token);
     }
 
@@ -117,10 +112,10 @@ public class NexusApiClient : INexusApiClient
     /// </summary>
     public async Task<Response<CollectionDownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug slug, RevisionNumber revision, bool viewAdultContent = true, CancellationToken token = default)
     {
-        var linksLocation = await _graphQLClient.CollectionDownloadLink.ExecuteAsync(slug.Value, (int)revision.Value, viewAdultContent, token);
+        var linksLocation = await _graphQlClient.CollectionDownloadLink.ExecuteAsync(slug.Value, (int)revision.Value, viewAdultContent, token);
         OperationResultExtension.EnsureNoErrors(linksLocation);
-        
-        var msg = await _factory.Create(HttpMethod.Get, new Uri($"https://api.nexusmods.com" +linksLocation.Data!.CollectionRevision.DownloadLink));
+
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"{ClientConfig.ApiUrl}{linksLocation.Data!.CollectionRevision.DownloadLink}"));
         return await SendAsync<CollectionDownloadLinks>(msg, token);
     }
 
@@ -144,9 +139,7 @@ public class NexusApiClient : INexusApiClient
             _ => throw new ArgumentOutOfRangeException(nameof(time), time, null)
         };
 
-        var msg = await _factory.Create(HttpMethod.Get, new Uri(
-            $"https://api.nexusmods.com/v1/games/{domain}/mods/updated.json?period={timeString}"));
-
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"{ClientConfig.LegacyApiEndpoint}/games/{domain}/mods/updated.json?period={timeString}"));
         return await SendAsyncArray<ModUpdate>(msg, token: token);
     }
 

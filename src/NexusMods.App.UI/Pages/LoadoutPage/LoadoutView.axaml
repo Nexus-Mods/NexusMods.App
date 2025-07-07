@@ -48,7 +48,7 @@
 
                     <!-- STATUSBAR -->
 
-                    <controls:Statusbar Grid.Row="0">
+                    <controls:Statusbar Grid.Row="0" x:Name="Statusbar">
                         <StackPanel>
                                 
                             <controls:StandardButton Size="Toolbar"
@@ -71,7 +71,7 @@
                                             </MenuItem.Header>
                                         </MenuItem>
 
-                                        <MenuItem>
+                                        <MenuItem x:Name="MenuItemRenameCollection">
                                             <MenuItem.Icon>
                                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
                                             </MenuItem.Icon>

@@ -2,6 +2,7 @@ namespace NexusMods.App.UI.Dialog.Enums;
 
 /// <summary>
 /// Represents the action that a button can have in a dialog.
+/// Used for associating buttons with keyboard actions such as Enter or Esc.
 /// </summary>
 public enum ButtonAction
 {

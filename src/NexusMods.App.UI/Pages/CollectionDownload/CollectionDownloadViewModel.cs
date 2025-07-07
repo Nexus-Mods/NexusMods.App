@@ -164,10 +164,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CommandViewOnNexusMods = new ReactiveCommand(
             executeAsync: async (_, cancellationToken) =>
             {
-                var gameDomain = await mappingCache.TryGetDomainAsync(_collection.GameId, cancellationToken);
-                if (!gameDomain.HasValue) throw new NotSupportedException($"Expected a valid game domain for `{_collection.GameId}`");
-
-                var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain.Value, _collection.Slug, revisionMetadata.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
+                var gameDomain = mappingCache[_collection.GameId];
+                var uri = NexusModsUrlBuilder.GetCollectionUri(gameDomain, _collection.Slug, revisionMetadata.RevisionNumber, campaign: NexusModsUrlBuilder.CampaignCollections);
                 await osInterop.OpenUrl(uri, logOutput: false, fireAndForget: true, cancellationToken: cancellationToken);
             },
             awaitOperation: AwaitOperation.Sequential,
@@ -359,12 +357,22 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
             R3.Observable.Return(_revision)
                 .ObserveOnThreadPool()
-                .SelectAwait((revision, cancellationToken) => nexusModsLibrary.GetNewerRevisionNumbers(revision, cancellationToken))
+                .SelectAwait((revision, cancellationToken) => nexusModsLibrary.GetLastPublishedRevisionNumber(revision.Collection, cancellationToken))
                 .ObserveOnUIThreadDispatcher()
-                .Subscribe(this, static (newerRevisions, self) =>
+                .Subscribe(this, static (lastPublishedRevisionNumber, self) =>
                 {
-                    self.IsUpdateAvailable.Value = newerRevisions.Length > 0;
-                    self.NewestRevisionNumber.Value = newerRevisions.FirstOrOptional(_ => true);
+                    if (!lastPublishedRevisionNumber.HasValue)
+                    {
+                        self.IsUpdateAvailable.Value = false;
+                        self.NewestRevisionNumber.Value = Optional<RevisionNumber>.None;
+                    }
+                    else
+                    {
+                        var isUpdateAvailable = lastPublishedRevisionNumber.Value > self._revision.RevisionNumber;
+
+                        self.IsUpdateAvailable.Value = isUpdateAvailable;
+                        self.NewestRevisionNumber.Value = isUpdateAvailable ? lastPublishedRevisionNumber : Optional<RevisionNumber>.None;
+                    }
                 }).AddTo(disposables);
 
             R3.Observable.Return(collectionJsonFile)

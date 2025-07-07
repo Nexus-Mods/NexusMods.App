@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0x5B0193762822F0C3
-   - Total attributes: 216
+   - Fingerprint: 0x2F39E452AF165FA1
+   - Total attributes: 221
    - Total namespaces: 73
    
 ## Attributes
@@ -31,6 +31,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/Files                        | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/ManifestId                   | UInt64                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.SteamManifest/Name                         | Utf8                    | True    | False | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/EpicBuildIds             | Utf8                    | True    | True  | False     | 
+| NexusMods.Abstractions.Games.FileHashes.VersionDefinition/EpicGameStoreBuilds      | Reference               | False   | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GOG                      | Utf8                    | True    | True  | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GameId                   | UInt32                  | True    | False | False     | 
 | NexusMods.Abstractions.Games.FileHashes.VersionDefinition/GogBuilds                | Reference               | False   | True  | False     | 
@@ -116,6 +118,8 @@ models in the app, then validate the tests to update this file.
 | NexusMods.Loadouts.SortableEntry/ParentSortOrder                                   | Reference               | True    | False | False     | 
 | NexusMods.Loadouts.SortableEntry/SortIndex                                         | Int32                   | False   | False | False     | 
 | NexusMods.ManagedCollectionLoadoutGroup/Collection                                 | Reference               | True    | False | False     | 
+| NexusMods.ManagedCollectionLoadoutGroup/CurrentRevisionNumber                      | UInt64                  | False   | False | False     | 
+| NexusMods.ManagedCollectionLoadoutGroup/LastPublishedRevisionNumber                | UInt64                  | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                      | Utf8                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Indexed                                            | UInt8                   | False   | False | False     | 
@@ -219,10 +223,11 @@ models in the app, then validate the tests to update this file.
 | NexusMods.StardewValley.SMAPIModDatabaseLoadoutFile/ModDatabaseFile                | Null                    | False   | False | False     | 
 | NexusMods.StardewValley.SMAPIModLoadoutItem/Manifest                               | Reference               | False   | False | False     | 
 | NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/AppName                          | Utf8                    | False   | False | False     | 
-| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildId                          | Utf8Insensitive         | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildId                          | Utf8Insensitive         | True    | False | False     | 
 | NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/BuildVersion                     | Utf8                    | False   | False | False     | 
 | NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/CreatedAt                        | Int64                   | False   | False | False     | 
 | NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/Files                            | Reference               | False   | True  | False     | 
 | NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/ItemId                           | Utf8Insensitive         | False   | False | False     | 
 | NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/LabelName                        | Utf8                    | False   | False | False     | 
+| NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/ManifestHash                     | Utf8Insensitive         | True    | False | False     | 
 | NexusMods.Stores.EpicGameStore.EpicGameStoreBuild/UpdatedAt                        | Int64                   | False   | False | False     | 
