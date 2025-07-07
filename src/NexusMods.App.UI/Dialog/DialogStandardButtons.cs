@@ -1,4 +1,3 @@
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
@@ -13,7 +12,7 @@ public static class DialogStandardButtons
     /// </summary>
     public static readonly DialogButtonDefinition Ok = new(
         Text: "OK",
-        Id: ButtonDefinitionId.From("ok"),
+        Id: ButtonDefinitionId.Accept,
         ButtonAction: ButtonAction.Accept,
         ButtonStyling: ButtonStyling.Primary
     );
@@ -23,7 +22,7 @@ public static class DialogStandardButtons
     /// </summary>
     public static readonly DialogButtonDefinition Yes = new(
         Text: "Yes",
-        Id: ButtonDefinitionId.From("yes"),
+        Id: ButtonDefinitionId.Accept,
         ButtonAction: ButtonAction.Accept,
         ButtonStyling: ButtonStyling.Default
     );
@@ -33,7 +32,7 @@ public static class DialogStandardButtons
     /// </summary>
     public static readonly DialogButtonDefinition No = new(
         Text: "No",
-        Id: ButtonDefinitionId.From("no"),
+        Id: ButtonDefinitionId.No,
         ButtonAction: ButtonAction.Reject
     );
     
@@ -42,7 +41,7 @@ public static class DialogStandardButtons
     /// </summary>
     public static readonly DialogButtonDefinition Cancel = new(
         Text: "Cancel",
-        Id: ButtonDefinitionId.From("cancel"),
+        Id: ButtonDefinitionId.Cancel,
         ButtonAction: ButtonAction.Reject
     );
 }

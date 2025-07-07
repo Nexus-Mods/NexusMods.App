@@ -212,7 +212,8 @@
                                         <DataTemplate DataType="{x:Type local:LibraryComponents+HideUpdatesAction}">
                                             <MenuItem Header="{CompiledBinding ButtonText.Value}"
                                                       Command="{CompiledBinding CommandHideUpdates}"
-                                                      IsEnabled="{CompiledBinding IsEnabled.Value}">
+                                                      IsEnabled="{CompiledBinding IsEnabled.Value}"
+                                                      IsVisible="{CompiledBinding IsVisible.Value}">
                                                 <MenuItem.Icon>
                                                     <icons:UnifiedIcon Value="{CompiledBinding Icon.Value}" />
                                                 </MenuItem.Icon>

@@ -91,7 +91,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     DialogStandardButtons.Cancel,
                     new DialogButtonDefinition(
                         "This is great",
-                        ButtonDefinitionId.From("read-markdown"),
+                        ButtonDefinitionId.Accept,
                         ButtonAction.Accept,
                         ButtonStyling.Info
                     ),
@@ -115,7 +115,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     DialogStandardButtons.Cancel,
                     new DialogButtonDefinition(
                         "Create",
-                        ButtonDefinitionId.From("create"),
+                        ButtonDefinitionId.Accept,
                         ButtonAction.Accept,
                         ButtonStyling.Primary
                     ),

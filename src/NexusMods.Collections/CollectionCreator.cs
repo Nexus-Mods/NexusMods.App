@@ -6,7 +6,6 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
-using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -31,7 +30,7 @@ public static class CollectionCreator
     // TODO: remove for GA
     public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
     
-    public static bool IsCollectionUploaded(IConnection connection, LoadoutItemGroupId groupId, out CollectionMetadata.ReadOnly collection)
+    public static bool IsCollectionUploaded(IConnection connection, CollectionGroupId groupId, out CollectionMetadata.ReadOnly collection)
     {
         var group = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
         if (!group.IsValid())
@@ -93,7 +92,7 @@ public static class CollectionCreator
 
     public static async ValueTask<CollectionMetadata.ReadOnly> UploadDraftRevision(
         IServiceProvider serviceProvider,
-        LoadoutItemGroupId groupId,
+        CollectionGroupId groupId,
         CancellationToken cancellationToken)
     {
         var connection = serviceProvider.GetRequiredService<IConnection>();
@@ -127,12 +126,14 @@ public static class CollectionCreator
         if (group.TryGetAsManagedCollectionLoadoutGroup(out var managedCollectionLoadoutGroup))
         {
             collection = managedCollectionLoadoutGroup.Collection;
-            await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+            var revisionNumber = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
         }
         else
         {
             collection = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
             tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
+            tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
         }
 
         await tx.Commit();
