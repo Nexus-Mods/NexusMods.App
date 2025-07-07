@@ -11,6 +11,7 @@ using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.DataModel.CommandLine.Verbs;
 using NexusMods.DataModel.Diagnostics;
 using NexusMods.DataModel.JsonConverters;
+using NexusMods.DataModel.QueryFunctions;
 using NexusMods.DataModel.SchemaVersions;
 using NexusMods.DataModel.Settings;
 using NexusMods.DataModel.Sorting;
@@ -81,6 +82,8 @@ public static class Services
         coll.AddAttributeCollection(typeof(ArchivedFileContainer));
         coll.AddAttributeCollection(typeof(ArchivedFile));
         coll.AddAllSingleton<IFileStore, NxFileStore>();
+        coll.AddSingleton<IQueryFunction, LoadStringFile>();
+        coll.AddSingleton<IQueryFunction, GameRegistryTable>();
         
         coll.AddAllSingleton<IToolManager, ToolManager>();
 

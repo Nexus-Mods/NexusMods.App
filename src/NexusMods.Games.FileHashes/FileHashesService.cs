@@ -89,7 +89,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             };
 
             var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
-            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true);
+            var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true, name: "file-hashes");
             var connectedDb = new ConnectedDb(connection.Db, connection, store, backend, timestamp, path);
 
             _databases[path] = connectedDb;
