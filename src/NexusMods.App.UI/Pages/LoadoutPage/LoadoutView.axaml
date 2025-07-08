@@ -21,12 +21,13 @@
         <Panel Grid.Row="0" Margin="24 24 24 0">
             <pageHeader:PageHeader x:Name="WritableCollectionPageHeader"
                                    Icon="{x:Static icons:IconValues.PictogramCollection3D}"
-                                   Description="Your private collection of installed mods." />
+                                   Description="Collection"
+                                   Theme="{StaticResource LocalCollectionPageHeader}" />
 
             <pageHeader:PageHeader x:Name="AllPageHeader"
                                    Icon="{x:Static icons:IconValues.PictogramPlaylistAdd}"
                                    Title="All"
-                                   Description="A combined view of all your installed mods from all collections." />
+                                   Description="A combined view of all your installed mods from all collections."/>
         </Panel>
 
         <!-- tabs -->
@@ -100,18 +101,25 @@
                                                      ShowIcon="Left"
                                                      ShowLabel="False"/>
                             
+                            <controls:StandardButton x:Name="ButtonDiscardChanges"
+                                                     Text="Discard changes"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
+                                                     Type="Tertiary" />
+                            
                             <controls:StandardButton x:Name="ButtonUploadCollectionRevision"
-                                                     Text="Share"
+                                                     Text="Upload draft"
                                                      Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
-                                                     LeftIcon="{x:Static icons:IconValues.ExportVariant}"
-                                                     ShowIcon="Left" />
+                                                     LeftIcon="{x:Static icons:IconValues.Upload}"
+                                                     ShowIcon="Left"
+                                                     Classes="Suggestion"/>
                         </StackPanel>
 
                         <StackPanel x:Name="StatusStack" Orientation="Horizontal">
-                            <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.Info}" />
-                            <TextBlock x:Name="StatusText" Text="Status" />
+                            <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.Pencil}" Classes="Suggestion"  />
+                            <TextBlock x:Name="StatusText" Text="Revision 2 (Draft)" Classes="Suggestion" />
                         </StackPanel>
                     </controls:Statusbar>
 
