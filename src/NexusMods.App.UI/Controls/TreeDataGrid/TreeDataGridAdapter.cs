@@ -5,7 +5,6 @@ using DynamicData;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
-using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;

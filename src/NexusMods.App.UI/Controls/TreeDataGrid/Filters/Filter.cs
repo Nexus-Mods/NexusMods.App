@@ -9,6 +9,9 @@ namespace NexusMods.App.UI.Controls.Filters;
 public abstract record Filter
 {
 
+    /// <summary>
+    /// Returns true if the item model matches the filter, false otherwise.
+    /// </summary>
     public virtual bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel) where TKey : notnull
     {
         // Default implementation: if any component matches the filter, the row matches
@@ -19,7 +22,29 @@ public abstract record Filter
                 return true;
         }
 
-        return itemModel.ChildrenMatchFilter(this); // Check if any child matches the filter
+        return this.MatchesChildren(itemModel); // Check if any child matches the filter
+    }
+
+    /// <summary>
+    /// Returns true if any of the children matches the given filter, false otherwise.
+    /// </summary>
+    /// <remarks>
+    /// This method forces all children models to be initialized and loaded, these will then stay loaded.
+    /// This can result in a performance impact if many children are present.
+    /// </remarks>
+    private bool MatchesChildren<TKey>(CompositeItemModel<TKey> parentModel) where TKey : notnull
+    {
+        // This loads all the children and keeps them loaded even if they are not expanded, 
+        // which is necessary for filtering, but may have a performance impact.
+        foreach (var childModel in parentModel.InitAndGetChildren())
+        {
+            if (this.MatchesRow(childModel))
+            {
+                // If any child matches, the parent matches
+                return true;
+            }
+        }
+        return false; // No children matched
     }
 
     /// <summary>
@@ -81,7 +106,7 @@ public abstract record Filter
             if (parentMatches)
                 return true; // If parent matches, no need to check children
 
-            return itemModel.ChildrenMatchFilter(this); // Check if any child matches the filter
+            return this.MatchesChildren(itemModel); // Check if any child matches the filter
         }
     }
 
@@ -105,7 +130,7 @@ public abstract record Filter
                 }
             }
 
-            return itemModel.ChildrenMatchFilter(this); // Check if any child matches the filter
+            return this.MatchesChildren(itemModel); // Check if any child matches the filter
         }
     }
 
