@@ -14,6 +14,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
+using static NexusMods.App.UI.Controls.Filters.Filter;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -47,7 +48,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         if (ViewModel?.Adapter != null)
                         {
                             ViewModel.Adapter.Filter.Value = string.IsNullOrWhiteSpace(searchText) 
-                                ? new Filter.NoFilter()
+                                ? NoFilter.Instance
                                 : new Filter.TextFilter(searchText, CaseSensitive: false);
                         }
                     })

@@ -8,6 +8,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using static NexusMods.App.UI.Controls.Filters.Filter;
 
 namespace NexusMods.UI.Tests.Controls.TreeDataGrid.Filters;
 
@@ -18,7 +19,7 @@ public class FilterTests
     {
         // Arrange
         var model = CreateTestModel();
-        var filter = new Filter.NoFilter();
+        var filter = NoFilter.Instance;
 
         // Act
         var result = filter.MatchesRow(model);

@@ -51,33 +51,33 @@ public abstract record Filter
     /// Filter by name/text content (case-insensitive substring matching by default).
     /// </summary>
     public sealed record NameFilter(string SearchText, bool CaseSensitive = false) : Filter;
-    
+
     /// <summary>
     /// Filter by text content across multiple string-based components (case-insensitive substring matching by default).
     /// This filter matches text as displayed in the UI, so implementations must match what is actually shown to the user whenever possible.
     /// </summary>
     public sealed record TextFilter(string SearchText, bool CaseSensitive = false) : Filter;
-    
+
     /// <summary>
     /// Filter by installation status.
     /// </summary>
     public sealed record InstalledFilter(bool ShowInstalled = true, bool ShowNotInstalled = true) : Filter;
-    
+
     /// <summary>
     /// Filter by update availability.
     /// </summary>
     public sealed record UpdateAvailableFilter(bool ShowWithUpdates = true, bool ShowWithoutUpdates = true) : Filter;
-    
+
     /// <summary>
     /// Filter by version pattern.
     /// </summary>
     public sealed record VersionFilter(string VersionPattern) : Filter;
-    
+
     /// <summary>
     /// Filter by date range.
     /// </summary>
     public sealed record DateRangeFilter(DateTimeOffset StartDate, DateTimeOffset EndDate) : Filter;
-    
+
     /// <summary>
     /// Filter by size range.
     /// </summary>
@@ -91,7 +91,7 @@ public abstract record Filter
         public override bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel)
         {
             if (Filters.Length == 0)
-                return new NoFilter().MatchesRow(itemModel);
+                return NoFilter.Instance.MatchesRow(itemModel);
 
             // If all of the inner filters match, the AND filter matches
             var parentMatches = true;
@@ -119,8 +119,8 @@ public abstract record Filter
         {
             // No filters means no filtering, pass all items
             if (Filters.Length == 0)
-                return new NoFilter().MatchesRow(itemModel); 
-            
+                return NoFilter.Instance.MatchesRow(itemModel);
+
             // If any of the inner filters match, the OR filter matches
             foreach (var filter in Filters)
             {
@@ -152,6 +152,8 @@ public abstract record Filter
     public sealed record NoFilter() : Filter
     {
         public override bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel) => true;
+        public static NoFilter Instance { get; } = new NoFilter();
     }
+
 
 } 
