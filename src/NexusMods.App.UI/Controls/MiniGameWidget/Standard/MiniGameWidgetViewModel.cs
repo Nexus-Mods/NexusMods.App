@@ -1,3 +1,4 @@
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia.Media.Imaging;
@@ -6,19 +7,23 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
+using NexusMods.CrossPlatform.Process;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Controls.MiniGameWidget;
+namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 
 public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMiniGameWidgetViewModel
 {
     private readonly ILogger<MiniGameWidgetViewModel> _logger;
+    private const string MissingGamesUrl = "https://nexus-mods.github.io/NexusMods.App/users/games/CompatibleGames/";
 
-    public MiniGameWidgetViewModel(ILogger<MiniGameWidgetViewModel> logger, ISettingsManager settingsManager)
+    public MiniGameWidgetViewModel(ILogger<MiniGameWidgetViewModel> logger, 
+        IOSInterop osInterop,
+        ISettingsManager settingsManager)
     {
         _logger = logger;
-
+        
         _image = this
             .WhenAnyValue(vm => vm.Game)
             .Where(game => game is not null)
@@ -26,6 +31,8 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
             .SelectMany(LoadImage)
             .WhereNotNull()
             .ToProperty(this, vm => vm.Image, scheduler: RxApp.MainThreadScheduler);
+
+        GiveFeedbackCommand = ReactiveCommand.CreateFromTask(async () => { await osInterop.OpenUrl(new Uri(MissingGamesUrl)); });
 
         this.WhenActivated(disposables =>
             {
@@ -46,7 +53,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
         try
         {
             var iconStream = await game.Icon.GetStreamAsync();
-            return Bitmap.DecodeToWidth(iconStream, (int) ImageSizes.GameThumbnail.Width);
+            return Bitmap.DecodeToWidth(iconStream, (int)ImageSizes.GameThumbnail.Width);
         }
         catch (Exception ex)
         {
@@ -60,7 +67,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
     [Reactive] public string Name { get; set; } = "";
     public bool IsFound { get; set; }
     public Bitmap Image => _image.Value;
-    
-    private readonly ObservableAsPropertyHelper<Bitmap> _image;
+    public ReactiveCommand<Unit, Unit> GiveFeedbackCommand { get; }
 
+    private readonly ObservableAsPropertyHelper<Bitmap> _image;
 }

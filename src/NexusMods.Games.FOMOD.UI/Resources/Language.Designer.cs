@@ -160,7 +160,7 @@ namespace NexusMods.Games.FOMOD.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You can change these options anytime by reinstalling this mod..
+        ///   Looks up a localized string similar to Your mod has been successfully installed with the selected options. /// ///If you ever want to change your choices, simply reinstall the mod. Your settings can be adjusted at any time..
         /// </summary>
         public static string InstallationCompleteScreenText {
             get {

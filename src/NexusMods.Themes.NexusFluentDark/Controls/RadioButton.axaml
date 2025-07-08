@@ -53,16 +53,16 @@
                      Color="{StaticResource SurfaceLow}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
-    <StaticResource x:Key="RadioButtonCheckGlyphFill" ResourceKey="InfoModerateBrush" />
-    <StaticResource x:Key="RadioButtonCheckGlyphFillPointerOver" ResourceKey="InfoModerateBrush" />
-    <StaticResource x:Key="RadioButtonCheckGlyphFillPressed" ResourceKey="InfoModerateBrush" />
-    <StaticResource x:Key="RadioButtonCheckGlyphFillDisabled" ResourceKey="PrimaryModerateBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphFill" ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphFillPointerOver" ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphFillPressed" ResourceKey="NeutralSubduedBrush" />
+    <StaticResource x:Key="RadioButtonCheckGlyphFillDisabled" ResourceKey="NeutralSubduedBrush" />
 
     <StaticResource x:Key="RadioButtonCheckGlyphStroke" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphStrokePointerOver" ResourceKey="SurfaceTransparentBrush" />
     <StaticResource x:Key="RadioButtonCheckGlyphStrokePressed" ResourceKey="SurfaceTransparentBrush" />
     <SolidColorBrush x:Key="RadioButtonCheckGlyphStrokeDisabled"
-                     Color="{StaticResource InfoModerate}"
+                     Color="{StaticResource NeutralModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
 
@@ -108,8 +108,8 @@
 
                             <Ellipse
                                 Name="CheckGlyph"
-                                Width="12"
-                                Height="12"
+                                Width="10"
+                                Height="10"
                                 Fill="{StaticResource RadioButtonCheckGlyphFill}"
                                 Opacity="0"
                                 Stroke="{StaticResource RadioButtonCheckGlyphStroke}"
