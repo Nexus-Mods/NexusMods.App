@@ -43,7 +43,7 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
                             GogGrid.IsVisible = game is IGogGame;
                             SteamGrid.IsVisible = game is ISteamGame;
                             EpicGrid.IsVisible = game is IEpicGame;
-                            XboxGrid.IsVisible = game is IXboxGame;
+                            // XboxGrid.IsVisible = game is IXboxGame; // not used until we go to official xbox support
                         }
                     )
                     .DisposeWith(d);

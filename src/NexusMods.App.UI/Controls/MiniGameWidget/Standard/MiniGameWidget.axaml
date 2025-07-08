@@ -88,7 +88,8 @@
                 </Grid>
                 
                 <!-- XBOX -->
-                <Grid x:Name="XboxGrid" ColumnDefinitions="Auto, *">
+                <!-- hidden until Xbox support is implemented officially -->
+                <Grid x:Name="XboxGrid" ColumnDefinitions="Auto, *" IsVisible="False">
                     <icons:UnifiedIcon Grid.Column="0"
                                        Value="{x:Static icons:IconValues.Xbox}"
                                        Size="16"
