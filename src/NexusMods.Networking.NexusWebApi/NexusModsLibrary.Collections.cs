@@ -12,9 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.MnemonicDB.Abstractions.Query.SliceDescriptors;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -80,7 +78,7 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
     /// </summary>
-    public async ValueTask UploadDraftRevision(
+    public async ValueTask<RevisionNumber> UploadDraftRevision(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
@@ -100,6 +98,8 @@ public partial class NexusModsLibrary
 
         var data = result.Data?.CreateOrUpdateRevision!;
         if (!data.Success) throw new NotImplementedException();
+
+        return RevisionNumber.From((ulong)data.Revision.RevisionNumber);
     }
 
     /// <summary>
@@ -262,47 +262,53 @@ public partial class NexusModsLibrary
 
         return revisionMetadata.Rebase(_connection.Db);
     }
-    
+
     /// <summary>
-    /// Gets all revision numbers that are newer than the current revision.
+    /// Gets the last published revision number.
     /// </summary>
-    public async ValueTask<RevisionNumber[]> GetNewerRevisionNumbers(
-        CollectionRevisionMetadata.ReadOnly currentRevision,
+    public async ValueTask<GraphQlResult<Optional<RevisionNumber>, NotFound, CollectionDiscarded>> GetLastPublishedRevisionNumber(
+        CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
-        var revisionNumbers = await GetAllRevisionNumbers(currentRevision.Collection, cancellationToken);
-
-        var currentValue = currentRevision.RevisionNumber.Value;
-        var newer = revisionNumbers
-            .TakeWhile(other => other.Value > currentValue)
-            .ToArray();
-
-        return newer;
+        var graphQlResult = await GetAllRevisionNumbers(collection, cancellationToken);
+        return graphQlResult.Map(static revisionNumbers => revisionNumbers.
+            FirstOrOptional(static tuple => tuple.Status == RevisionStatus.Published)
+            .Convert(static tuple => tuple.Number)
+        );
     }
 
     /// <summary>
     /// Gets all revision numbers for the given collection in descending order.
     /// </summary>
-    public async ValueTask<RevisionNumber[]> GetAllRevisionNumbers(
+    public async ValueTask<GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>> GetAllRevisionNumbers(
         CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
         var gameDomain = _mappingCache[collection.GameId];
 
-        var apiResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
+        var operationResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
             slug: collection.Slug.Value,
             domainName: gameDomain.Value,
             viewAdultContent: true,
             cancellationToken: cancellationToken
         );
 
-        var revisions = apiResult.Data?.Collection.Revisions;
-        if (revisions is null) throw new NotSupportedException($"API call returned no data for collection slug `{collection.Slug}`");
+        if (operationResult.TryExtractErrors(out GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        var revisions = operationData.Collection.Revisions;
 
         var revisionNumbers = revisions
-            .Select(static x => x.RevisionNumber)
-            .OrderDescending()
-            .Select(static number => RevisionNumber.From((ulong)number))
+            .OrderByDescending(x => x.RevisionNumber)
+            .Select(data =>
+            {
+                var revisionNumber = RevisionNumber.From((ulong)data.RevisionNumber);
+                var status = ToStatus(_logger, data);
+                if (!status.HasValue) return Optional<(RevisionNumber, RevisionStatus)>.None;
+                return (revisionNumber, status.Value);
+            })
+            .Where(x => x.HasValue)
+            .Select(x => x.Value)
             .ToArray();
 
         return revisionNumbers;
@@ -611,7 +617,7 @@ public partial class NexusModsLibrary
         };
     }
 
-    private static Optional<RevisionStatus> ToStatus(ILogger logger, ICollectionRevisionFragment revisionFragment)
+    private static Optional<RevisionStatus> ToStatus(ILogger logger, ICollectionRevisionStatusFragment revisionFragment)
     {
         // NOTE(erri120): no idea why the revision fragment has two strings for the status
         Debug.Assert(revisionFragment.Status.Equals(revisionFragment.RevisionStatus, StringComparison.OrdinalIgnoreCase), $"weird things happening: {revisionFragment.Status} != {revisionFragment.RevisionStatus}");

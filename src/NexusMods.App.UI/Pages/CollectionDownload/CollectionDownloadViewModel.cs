@@ -357,12 +357,24 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
             R3.Observable.Return(_revision)
                 .ObserveOnThreadPool()
-                .SelectAwait((revision, cancellationToken) => nexusModsLibrary.GetNewerRevisionNumbers(revision, cancellationToken))
+                .SelectAwait((revision, cancellationToken) => nexusModsLibrary.GetLastPublishedRevisionNumber(revision.Collection, cancellationToken))
                 .ObserveOnUIThreadDispatcher()
-                .Subscribe(this, static (newerRevisions, self) =>
+                .Subscribe(this, static (graphQlResult, self) =>
                 {
-                    self.IsUpdateAvailable.Value = newerRevisions.Length > 0;
-                    self.NewestRevisionNumber.Value = newerRevisions.FirstOrOptional(_ => true);
+                    // TODO: handle errors
+                    var lastPublishedRevisionNumber = graphQlResult.AssertHasData();
+                    if (!lastPublishedRevisionNumber.HasValue)
+                    {
+                        self.IsUpdateAvailable.Value = false;
+                        self.NewestRevisionNumber.Value = Optional<RevisionNumber>.None;
+                    }
+                    else
+                    {
+                        var isUpdateAvailable = lastPublishedRevisionNumber.Value > self._revision.RevisionNumber;
+
+                        self.IsUpdateAvailable.Value = isUpdateAvailable;
+                        self.NewestRevisionNumber.Value = isUpdateAvailable ? lastPublishedRevisionNumber : Optional<RevisionNumber>.None;
+                    }
                 }).AddTo(disposables);
 
             R3.Observable.Return(collectionJsonFile)

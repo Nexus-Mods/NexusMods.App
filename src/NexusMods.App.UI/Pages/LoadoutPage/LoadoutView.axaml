@@ -48,7 +48,7 @@
 
                     <!-- STATUSBAR -->
 
-                    <controls:Statusbar Grid.Row="0">
+                    <controls:Statusbar Grid.Row="0" x:Name="Statusbar">
                         <StackPanel>
                                 
                             <controls:StandardButton Size="Toolbar"

@@ -11,6 +11,7 @@ using R3;
 using System.Reactive.Linq;
 using Avalonia.Input;
 using DynamicData.Kernel;
+using System.Diagnostics;
 using NexusMods.App.UI.Controls.Filters;
 using static NexusMods.App.UI.Controls.Filters.Filter;
 
@@ -24,7 +25,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     where TKey : notnull
 {
     public Subject<(TModel model, bool isActivating)> ModelActivationSubject { get; } = new();
-    
+
     public Subject<(TModel[] sourceModels, TreeDataGridRowDragStartedEventArgs e)> RowDragStartedSubject { get; } = new();
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDragOverSubject { get; } = new();
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDropSubject { get; } = new();
@@ -71,6 +72,10 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
             self.ModelActivationSubject.Subscribe(self, static (input, self) =>
             {
                 var (model, isActivating) = input;
+
+                // TODO: figure out why disposed models are trying to get activated
+                Debug.Assert(!model.IsDisposed);
+                if (model.IsDisposed) return;
 
                 // NOTE(erri120): This is only necessary for child rows since root rows are handled directly.
                 if (isActivating && !model.IsActivated)
@@ -148,7 +153,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 .Switch()
                 .Subscribe()
                 .AddTo(disposables);
-            
+
             self.CustomSortComparer
                 .AsObservable()
                 .ObserveOnUIThreadDispatcher()
@@ -192,21 +197,21 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         }
         RowDragStartedSubject.OnNext((sourceModels, e));
     }
-    
+
     public virtual void OnRowDragOver(object? sender, TreeDataGridRowDragEventArgs e)
     {
         // extract the target model from the event args
         if (e.TargetRow.Model is not TModel targetModel) return;
-        
+
         // extract the source models from the event args
         var dataObject = e.Inner.Data as DataObject;
         if (dataObject?.Get("TreeDataGridDragInfo") is not DragInfo dragInfo) return;
 
         var source = dragInfo.Source;
         var indices = dragInfo.Indexes;
-        
+
         var sourceModels = new List<TModel>();
-        
+
         foreach (var modelIndex in indices)
         {
             var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
@@ -217,7 +222,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
         RowDragOverSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
-    
+
     /// <summary>
     /// Called when one or more dragged rows are dropped.
     /// This is only called if <see cref="TreeDataGridViewHelper.SetupTreeDataGridAdapter"/> enableDragAndDrop parameter is set to true.
@@ -227,19 +232,19 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         // NOTE(Al12rs): This is important in case the source is read-only, otherwise TreeDataGrid will attempt to
         // move the items, updating the source collection, throwing an exception in the process.
         e.Handled = true;
-        
+
         // extract the target model from the event args
         if (e.TargetRow.Model is not TModel targetModel) return;
-        
+
         // extract the source models from the event args
         var dataObject = e.Inner.Data as DataObject;
         if (dataObject?.Get("TreeDataGridDragInfo") is not DragInfo dragInfo) return;
 
         var source = dragInfo.Source;
         var indices = dragInfo.Indexes;
-        
+
         var sourceModels = new List<TModel>();
-        
+
         foreach (var modelIndex in indices)
         {
             var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
@@ -247,7 +252,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
             if (row.Model is not TModel model) continue;
             sourceModels.Add(model);
         }
-        
+
         RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
 
@@ -288,7 +293,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         }
     }
 
-    protected virtual void BeforeModelActivationHook(TModel model) {}
+    protected virtual void BeforeModelActivationHook(TModel model) { }
 
     protected abstract IObservable<IChangeSet<TModel, TKey>> GetRootsObservable(bool viewHierarchical);
     protected abstract IColumn<TModel>[] CreateColumns(bool viewHierarchical);

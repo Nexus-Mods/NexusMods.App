@@ -6,133 +6,43 @@ using NexusMods.UI.Sdk.Icons;
 namespace NexusMods.App.UI.Dialog;
 
 /// <summary>
-/// Provides a factory for creating message boxes with specified properties.
+/// A factory class for creating various types of dialogs.
 /// </summary>
 public static class DialogFactory
 {
-    public static Dialog<DialogView, InputDialogViewModel, InputDialogResult> TestInputDialog =>
-        CreateInputDialog(
-            "Name your Collection",
-            [
-                DialogStandardButtons.Cancel,
-                new DialogButtonDefinition(
-                    "Create", 
-                    ButtonDefinitionId.From("create"), 
-                    ButtonAction.Accept,
-                    ButtonStyling.Primary
-                ),
-            ],
-            text: "This is the name that will appear in the left hand menu and on the Collections page.",
-            inputLabel: "Collection name",
-            inputWatermark: "e.g. My Armour Mods",
-            dialogWindowSize: DialogWindowSize.Medium
-        );
-
-    /*
-     * STANDARD MESSAGE BOX INCLUDING BUTTONS
-     */
-
     /// <summary>
-    /// Creates a standard "Ok/Cancel" message box with the specified title and text.
+    /// Creates a standard dialog with the specified title, parameters, button definitions, and window size.
     /// </summary>
-    /// <param name="title">The title of the message box.</param>
-    /// <param name="text">The main content or message displayed in the message box.</param>
-    /// <returns>
-    /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
-    /// </returns>
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> CreateOkCancelMessageBox(string title, string text)
+    /// <param name="title">The title of the dialog.</param>
+    /// <param name="standardDialogParameters">The parameters for the standard dialog content.</param>
+    /// <param name="buttonDefinitions">An array of button definitions for the dialog.</param>
+    /// <param name="windowSize">The size of the dialog window. Defaults to <see cref="DialogWindowSize.Medium"/>.</param>
+    /// <returns>A <see cref="Dialog"/> instance configured with the specified parameters.</returns>
+    public static Dialog CreateStandardDialog(string title, StandardDialogParameters standardDialogParameters, DialogButtonDefinition[] buttonDefinitions, DialogWindowSize windowSize = DialogWindowSize.Medium)
     {
-        return CreateMessageDialog(
-            title: title,
-            buttonDefinitions: [
-                DialogStandardButtons.Ok,
-                DialogStandardButtons.Cancel,
-            ],
-            text: text
-        );
+        var contentViewModel = new DialogStandardContentViewModel(standardDialogParameters);
+
+        return CreateDialog(title, buttonDefinitions, contentViewModel, windowSize);
     }
 
     /// <summary>
-    /// Creates a standard "Yes/No" message box with the specified title and text.
+    /// Creates a dialog with the specified title, button definitions, content view model, and window size.
     /// </summary>
-    /// <param name="title">The title of the message box.</param>
-    /// <param name="text">The main content or message displayed in the message box.</param>
-    /// <returns>
-    /// A <see cref="Dialog{TView,TViewModel,T}"/> instance containing the View and ViewModel for the message box.
-    /// </returns>
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> CreateYesNoMessageBox(string title, string text)
-    {
-        return CreateMessageDialog(
-            title: title,
-            buttonDefinitions: [
-                DialogStandardButtons.Yes,
-                DialogStandardButtons.No,
-            ],
-            text: text
-        );
-    }
-
-
-
-    public static Dialog<DialogView, InputDialogViewModel, InputDialogResult> CreateInputDialog(
+    /// <param name="title">The title of the dialog.</param>
+    /// <param name="buttonDefinitions">An array of button definitions for the dialog.</param>
+    /// <param name="contentViewModel">The content view model to be displayed in the dialog.</param>
+    /// <param name="dialogWindowSize">The size of the dialog window. Defaults to <see cref="DialogWindowSize.Medium"/>.</param>
+    /// <returns>A <see cref="Dialog"/> instance configured with the specified parameters.</returns>
+    public static Dialog CreateDialog(
         string title,
         DialogButtonDefinition[] buttonDefinitions,
-        string? text = null,
-        string? inputText = null,
-        string? inputLabel = null,
-        string? inputWatermark = null,
-        IconValue? icon = null,
-        DialogWindowSize dialogWindowSize = DialogWindowSize.Small,
-        string? heading = null,
-        IMarkdownRendererViewModel? markdownRenderer = null,
-        IViewModelInterface? contentViewModel = null)
+        IViewModelInterface contentViewModel,
+        DialogWindowSize dialogWindowSize = DialogWindowSize.Medium)
     {
-        var viewModel = new InputDialogViewModel(
-            new DialogBaseModel(
-                title,
-                buttonDefinitions,
-                text,
-                heading,
-                icon,
-                dialogWindowSize,
-                markdownRenderer,
-                contentViewModel
-            ),
-            inputText,
-            inputLabel,
-            inputWatermark
+        var viewModel = new DialogViewModel(title, buttonDefinitions, contentViewModel,
+            dialogWindowSize
         );
 
-        var view = new DialogView { DataContext = viewModel };
-
-        return new Dialog<DialogView, InputDialogViewModel, InputDialogResult>(view, viewModel);
-    }
-
-    public static Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId> CreateMessageDialog(
-        string title,
-        DialogButtonDefinition[] buttonDefinitions,
-        string? text = null,
-        IconValue? icon = null,
-        DialogWindowSize dialogWindowSize = DialogWindowSize.Small,
-        string? heading = null,
-        IMarkdownRendererViewModel? markdownRenderer = null,
-        IViewModelInterface? contentViewModel = null)
-    {
-        var viewModel = new MessageDialogViewModel(
-            new DialogBaseModel(
-                title,
-                buttonDefinitions,
-                text,
-                heading,
-                icon,
-                dialogWindowSize,
-                markdownRenderer,
-                contentViewModel
-            )
-        );
-
-        var view = new DialogView { DataContext = viewModel };
-
-        return new Dialog<DialogView, MessageDialogViewModel, ButtonDefinitionId>(view, viewModel);
+        return new Dialog(viewModel);
     }
 }
