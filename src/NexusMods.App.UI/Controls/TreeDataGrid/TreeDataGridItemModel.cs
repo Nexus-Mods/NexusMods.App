@@ -5,6 +5,7 @@ using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.App.UI.Controls.Filters;
 using ObservableCollections;
 using R3;
 using Observable = System.Reactive.Linq.Observable;
@@ -63,7 +64,7 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
 
     public IObservable<IChangeSet<TModel, TKey>> ChildrenObservable { get; init; }
 
-    private ObservableList<TModel> _children = [];
+    protected ObservableList<TModel> _children = [];
     private readonly INotifyCollectionChangedSynchronizedViewList<TModel> _childrenView;
 
     private readonly BehaviorSubject<bool> _childrenCollectionInitialization = new(initialValue: false);

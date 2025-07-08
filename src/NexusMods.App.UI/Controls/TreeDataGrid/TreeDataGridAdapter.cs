@@ -309,7 +309,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 (model, _) => 
                 {
                     if (model is CompositeItemModel<EntityId> compositeModel)
-                        return compositeModel.MatchesFilter(filter);
+                        return filter.MatchesRow(compositeModel);
                     return filter is Filter.NoFilter;
                 }
             );

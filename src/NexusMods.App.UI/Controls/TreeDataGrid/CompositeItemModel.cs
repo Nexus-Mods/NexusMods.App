@@ -5,6 +5,7 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.App.UI.Controls.Filters;
 using NexusMods.App.UI.Converters;
 using ObservableCollections;
 using R3;
@@ -285,6 +286,31 @@ public sealed class CompositeItemModel<TKey> : TreeDataGridItemModel<CompositeIt
             // Note(Al12rs): We need UI bindings to StyleFlags to be notified when the contents of the collection change
             RaisePropertyChanged(new PropertyChangedEventArgs(nameof(StyleFlags)));
         } 
+    }
+
+    /// <summary>
+    /// Returns true if any of the children matches the given filter, false otherwise.
+    /// </summary>
+    /// <remarks>
+    /// This method currently only works correctly if the item is expanded, otherwise the children data might not be available.
+    /// </remarks>
+    public bool ChildrenMatchFilter(Filter filter)
+    {
+        // NOTE(Al12rs): the contents of children are not guaranteed to be accurate.
+        // The children observable is only subscribed while the parent is expanded, 
+        // meaning that there is no way to get the children models data while the parent is collapsed. 
+        // Trying to access <see cref="Children"/> would trigger the subscription, 
+        // which would then keep the children models in memory and cause issues with activation and deactivation.
+        // So at the moment, filtering only considers child items correctly if the parent is expanded, which sucks.
+        foreach (var childModel in _children)
+        {
+            if (filter.MatchesRow(childModel))
+            {
+                return true; // If any child matches, the filter matches
+            }
+        }
+
+        return false; // If no children matched, the filter fails
     }
 
     /// <summary>

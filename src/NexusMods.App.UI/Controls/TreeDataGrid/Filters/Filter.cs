@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.Paths;
 namespace NexusMods.App.UI.Controls.Filters;
 
@@ -6,6 +8,20 @@ namespace NexusMods.App.UI.Controls.Filters;
 /// </summary>
 public abstract record Filter
 {
+
+    public virtual bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel) where TKey : notnull
+    {
+        // Default implementation: if any component matches the filter, the row matches
+        foreach (var (_, component) in itemModel.Components)
+        {
+            var result = component.MatchesFilter(this);
+            if (result == FilterResult.Pass)
+                return true;
+        }
+
+        return itemModel.ChildrenMatchFilter(this); // Check if any child matches the filter
+    }
+
     /// <summary>
     /// Filter by name/text content (case-insensitive substring matching by default).
     /// </summary>
@@ -41,78 +57,76 @@ public abstract record Filter
     /// Filter by size range.
     /// </summary>
     public sealed record SizeRangeFilter(Size MinSize, Size MaxSize) : Filter;
-    
+
     /// <summary>
     /// Logical AND of two filters (both must match).
     /// </summary>
-    public sealed record AndFilter(Filter Left, Filter Right) : Filter;
-    
+    public sealed record AndFilter([Required, MinLength(2)] params Filter[] Filters) : Filter
+    {
+        public override bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel)
+        {
+            if (Filters.Length == 0)
+                return new NoFilter().MatchesRow(itemModel);
+
+            // If all of the inner filters match, the AND filter matches
+            var parentMatches = true;
+            foreach (var filter in Filters)
+            {
+                if (!filter.MatchesRow(itemModel))
+                {
+                    parentMatches = false; // If any filter fails, the AND filter fails
+                    break;
+                }
+            }
+            if (parentMatches)
+                return true; // If parent matches, no need to check children
+
+            return itemModel.ChildrenMatchFilter(this); // Check if any child matches the filter
+        }
+    }
+
     /// <summary>
     /// Logical OR of two filters (either can match).
     /// </summary>
-    public sealed record OrFilter(Filter Left, Filter Right) : Filter;
-    
+    public sealed record OrFilter([Required, MinLength(2)] params Filter[] Filters) : Filter
+    {
+        public override bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel)
+        {
+            // No filters means no filtering, pass all items
+            if (Filters.Length == 0)
+                return new NoFilter().MatchesRow(itemModel); 
+            
+            // If any of the inner filters match, the OR filter matches
+            foreach (var filter in Filters)
+            {
+                if (filter.MatchesRow(itemModel))
+                {
+                    return true;
+                }
+            }
+
+            return itemModel.ChildrenMatchFilter(this); // Check if any child matches the filter
+        }
+    }
+
     /// <summary>
     /// Logical NOT of a filter (inverts the result).
     /// </summary>
-    public sealed record NotFilter(Filter Inner) : Filter;
-    
+    public sealed record NotFilter(Filter Inner) : Filter
+    {
+        public override bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel)
+        {
+            // Invert the result of the inner filter
+            return !Inner.MatchesRow(itemModel);
+        }
+    }
+
     /// <summary>
     /// No filtering - passes all items through.
     /// </summary>
-    public sealed record NoFilter() : Filter;
-    
-    // Static helper methods using C# 14 params span that chain existing filter types
-    
-    /// <summary>
-    /// Creates a chained AND filter from multiple filters using C# 14 params span.
-    /// Chains filters using the existing AndFilter type: And(a,b,c) becomes AndFilter(a, AndFilter(b, c)).
-    /// </summary>
-    /// <param name="filters">The filters to combine with AND logic.</param>
-    /// <returns>A chained AND filter, or NoFilter if no filters provided, or the single filter if only one provided.</returns>
-    public static Filter And(params ReadOnlySpan<Filter> filters)
+    public sealed record NoFilter() : Filter
     {
-        return filters.Length switch
-        {
-            0 => new NoFilter(),
-            1 => filters[0],
-            2 => new AndFilter(filters[0], filters[1]),
-            _ => ChainWithAnd(filters),
-        };
+        public override bool MatchesRow<TKey>(CompositeItemModel<TKey> itemModel) => true;
     }
 
-    private static Filter ChainWithAnd(ReadOnlySpan<Filter> filters)
-    {
-        var result = filters[^1]; // Start with the last filter
-        for (var x = filters.Length - 2; x >= 0; x--)
-            result = new AndFilter(filters[x], result);
-
-        return result;
-    }
-    
-    /// <summary>
-    /// Creates a chained OR filter from multiple filters using C# 14 params span.
-    /// Chains filters using the existing OrFilter type: Or(a,b,c) becomes OrFilter(a, OrFilter(b, c)).
-    /// </summary>
-    /// <param name="filters">The filters to combine with OR logic.</param>
-    /// <returns>A chained OR filter, or NoFilter if no filters provided, or the single filter if only one provided.</returns>
-    public static Filter Or(params ReadOnlySpan<Filter> filters)
-    {
-        return filters.Length switch
-        {
-            0 => new NoFilter(),
-            1 => filters[0],
-            2 => new OrFilter(filters[0], filters[1]),
-            _ => ChainWithOr(filters),
-        };
-    }
-    
-    private static Filter ChainWithOr(ReadOnlySpan<Filter> filters)
-    {
-        var result = filters[^1]; // Start with the last filter
-        for (var x = filters.Length - 2; x >= 0; x--)
-            result = new OrFilter(filters[x], result);
-
-        return result;
-    }
 } 

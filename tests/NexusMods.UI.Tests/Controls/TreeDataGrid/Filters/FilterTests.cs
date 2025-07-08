@@ -21,7 +21,7 @@ public class FilterTests
         var filter = new Filter.NoFilter();
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -37,7 +37,7 @@ public class FilterTests
         var filter = new Filter.NameFilter("TestMod", CaseSensitive: true);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -53,7 +53,7 @@ public class FilterTests
         var filter = new Filter.NameFilter("testmod", CaseSensitive: true);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeFalse();
@@ -69,7 +69,7 @@ public class FilterTests
         var filter = new Filter.NameFilter("testmod", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -85,7 +85,7 @@ public class FilterTests
         var filter = new Filter.NameFilter("Test", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -102,7 +102,7 @@ public class FilterTests
         var filter = new Filter.InstalledFilter(ShowInstalled: true, ShowNotInstalled: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -119,7 +119,7 @@ public class FilterTests
         var filter = new Filter.InstalledFilter(ShowInstalled: false, ShowNotInstalled: true);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -136,7 +136,7 @@ public class FilterTests
         var filter = new Filter.InstalledFilter(ShowInstalled: true, ShowNotInstalled: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeFalse();
@@ -153,7 +153,7 @@ public class FilterTests
         var filter = new Filter.UpdateAvailableFilter(ShowWithUpdates: true, ShowWithoutUpdates: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -169,7 +169,7 @@ public class FilterTests
         var filter = new Filter.VersionFilter("1.2");
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -188,7 +188,7 @@ public class FilterTests
         var filter = new Filter.DateRangeFilter(startDate, endDate);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -207,7 +207,7 @@ public class FilterTests
         var filter = new Filter.DateRangeFilter(startDate, endDate);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeFalse();
@@ -226,7 +226,7 @@ public class FilterTests
         var filter = new Filter.SizeRangeFilter(minSize, maxSize);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -245,7 +245,7 @@ public class FilterTests
         var filter = new Filter.SizeRangeFilter(minSize, maxSize);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeFalse();
@@ -265,7 +265,7 @@ public class FilterTests
         var andFilter = new Filter.AndFilter(nameFilter, installedFilter);
 
         // Act
-        var result = model.MatchesFilter(andFilter);
+        var result = andFilter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -285,7 +285,7 @@ public class FilterTests
         var andFilter = new Filter.AndFilter(nameFilter, installedFilter);
 
         // Act
-        var result = model.MatchesFilter(andFilter);
+        var result = andFilter.MatchesRow(model);
 
         // Assert
         result.Should().BeFalse();
@@ -305,7 +305,7 @@ public class FilterTests
         var orFilter = new Filter.OrFilter(nameFilter, installedFilter);
 
         // Act
-        var result = model.MatchesFilter(orFilter);
+        var result = orFilter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -322,7 +322,7 @@ public class FilterTests
         var notFilter = new Filter.NotFilter(nameFilter);
 
         // Act
-        var result = model.MatchesFilter(notFilter);
+        var result = notFilter.MatchesRow(model);
 
         // Assert
         result.Should().BeFalse();
@@ -339,7 +339,7 @@ public class FilterTests
         var nameFilter = new Filter.NameFilter("Test", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(nameFilter);
+        var result = nameFilter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should pass through since no relevant components
@@ -353,7 +353,7 @@ public class FilterTests
         var nameFilter = new Filter.NameFilter("Test", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(nameFilter);
+        var result = nameFilter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should pass through since no relevant components
@@ -370,7 +370,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("Test", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -386,7 +386,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("description", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -402,7 +402,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("beta", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue();
@@ -421,7 +421,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("special", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should match the description component
@@ -439,7 +439,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("nonexistent", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeFalse(); // No component should match
@@ -456,7 +456,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Empty string should match all items
@@ -477,7 +477,7 @@ public class FilterTests
         var andFilter = new Filter.AndFilter(textFilter, installedFilter);
 
         // Act
-        var result = model.MatchesFilter(andFilter);
+        var result = andFilter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Both text and installed filters should match
@@ -494,7 +494,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("50", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should match the formatted size "50 MiB"
@@ -518,7 +518,7 @@ public class FilterTests
         var filter = new Filter.TextFilter(Language.LibraryComponents_InstallAction_ButtonText_Install, CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should match the localized "Install" button text
@@ -535,7 +535,7 @@ public class FilterTests
         var filter = new Filter.TextFilter(Language.LibraryComponents_InstallAction_ButtonText_Installed, CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should match the localized "Installed" button text
@@ -553,7 +553,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("GB", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should match the "GB" part of the formatted size
@@ -575,7 +575,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("1.0.0", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should match the current version "1.0.0"
@@ -596,7 +596,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("beta", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Should match the "beta" part of the new version "2.0.0-beta"
@@ -612,7 +612,7 @@ public class FilterTests
         var filter = new Filter.TextFilter("   ", CaseSensitive: false);
 
         // Act
-        var result = model.MatchesFilter(filter);
+        var result = filter.MatchesRow(model);
 
         // Assert
         result.Should().BeTrue(); // Whitespace should match when the text actually contains that whitespace
