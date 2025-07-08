@@ -23,7 +23,7 @@ public class MiniGameWidgetViewModel : AViewModel<IMiniGameWidgetViewModel>, IMi
         ISettingsManager settingsManager)
     {
         _logger = logger;
-
+        
         _image = this
             .WhenAnyValue(vm => vm.Game)
             .Where(game => game is not null)

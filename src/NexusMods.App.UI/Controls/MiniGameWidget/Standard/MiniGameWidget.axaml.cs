@@ -3,6 +3,10 @@ using System.Reactive.Disposables;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.GameLocators.Stores.EGS;
+using NexusMods.Abstractions.GameLocators.Stores.GOG;
+using NexusMods.Abstractions.GameLocators.Stores.Steam;
+using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.Controls.MiniGameWidget.Standard;
@@ -33,13 +37,13 @@ public partial class MiniGameWidget : ReactiveUserControl<IMiniGameWidgetViewMod
                 this.BindCommand<MiniGameWidget, IMiniGameWidgetViewModel, ReactiveCommand<Unit, Unit>, StandardButton>(ViewModel, vm => vm.GiveFeedbackCommand, view => view.ButtonGameNotFound)
                     .DisposeWith(d);
 
-                this.WhenAnyValue(view => view.ViewModel!.GameInstallations)
-                    .Subscribe(installations =>
+                this.WhenAnyValue(view => view.ViewModel!.Game)
+                    .Subscribe(game =>
                         {
-                            if (installations is null)
-                                return;
-
-                            var tooltip = string.Join(", ", installations.Select(installation => installation.Store.ToString()));
+                            GogGrid.IsVisible = game is IGogGame;
+                            SteamGrid.IsVisible = game is ISteamGame;
+                            EpicGrid.IsVisible = game is IEpicGame;
+                            XboxGrid.IsVisible = game is IXboxGame;
                         }
                     )
                     .DisposeWith(d);
