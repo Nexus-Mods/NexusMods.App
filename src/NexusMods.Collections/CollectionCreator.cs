@@ -170,9 +170,10 @@ public static class CollectionCreator
         var group = CollectionGroup.Load(connection.Db, groupId);
         using var tx = connection.BeginTransaction();
 
-        var collection = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
+        var (collection, revisionId) = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, revisionId);
 
         await tx.Commit();
 
@@ -184,10 +185,32 @@ public static class CollectionCreator
         return CollectionMetadata.Load(connection.Db, collection.Id);
     }
 
-    /// <summary>
-    /// Uploads a draft revision.
-    /// </summary>
-    public static async ValueTask<CollectionMetadata.ReadOnly> UploadDraftRevision(
+    public static async ValueTask<CollectionMetadata.ReadOnly> UploadAndPublishRevision(
+        IServiceProvider serviceProvider,
+        ManagedCollectionLoadoutGroupId groupId,
+        CancellationToken cancellationToken)
+    {
+        var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        var connection = serviceProvider.GetRequiredService<IConnection>();
+
+        var managedGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
+
+        var (collection, revisionId) = await UploadDraftRevision(serviceProvider, groupId, cancellationToken);
+        var result = await nexusModsLibrary.PublishRevision(revisionId, cancellationToken);
+
+        // TODO: handle result
+        _ = result.AssertHasData();
+
+        using var tx = connection.BeginTransaction();
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.LastPublishedRevisionNumber, managedGroup.CurrentRevisionNumber);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(managedGroup.CurrentRevisionNumber.Value + 1));
+        tx.Retract(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, managedGroup.CurrentRevisionId);
+
+        await tx.Commit();
+        return collection;
+    }
+
+    public static async ValueTask<(CollectionMetadata.ReadOnly, RevisionId)> UploadDraftRevision(
         IServiceProvider serviceProvider,
         ManagedCollectionLoadoutGroupId groupId,
         CancellationToken cancellationToken)
@@ -198,14 +221,15 @@ public static class CollectionCreator
         var (streamFactory, collectionManifest) = await PrepareForUpload(serviceProvider, groupId.Value, cancellationToken);
 
         var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
-        using var tx = connection.BeginTransaction();
-
         var collection = managedCollectionLoadoutGroup.Collection;
-        var revisionNumber = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+        var (revisionNumber, revisionId) = await nexusModsLibrary.UploadDraftRevision(collection, streamFactory, collectionManifest, cancellationToken);
+
+        using var tx = connection.BeginTransaction();
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, revisionId);
 
         await tx.Commit();
-        return collection;
+        return (collection, revisionId);
     }
 
     private static async ValueTask<IStreamFactory> CreateArchive(

@@ -32,6 +32,12 @@ public partial class ManagedCollectionLoadoutGroup : IModelDefinition
     public static readonly RevisionNumberAttribute CurrentRevisionNumber = new(Namespace, nameof(CurrentRevisionNumber));
 
     /// <summary>
+    /// The ID of the current revision. Only available if the
+    /// current revision has been uploaded.
+    /// </summary>
+    public static readonly RevisionIdAttribute CurrentRevisionId = new(Namespace, nameof(CurrentRevisionId));
+
+    /// <summary>
     /// Creates a <see cref="RevisionStatus"/>.
     /// </summary>
     public static RevisionStatus ToStatus(RevisionNumber currentRevisionNumber, Optional<RevisionNumber> lastPublishedRevision)

@@ -78,7 +78,7 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
     /// </summary>
-    public async ValueTask<RevisionNumber> UploadDraftRevision(
+    public async ValueTask<(RevisionNumber, RevisionId)> UploadDraftRevision(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
@@ -97,15 +97,17 @@ public partial class NexusModsLibrary
         result.EnsureNoErrors();
 
         var data = result.Data?.CreateOrUpdateRevision!;
-        if (!data.Success) throw new NotImplementedException();
+        Debug.Assert(data.Success);
 
-        return RevisionNumber.From((ulong)data.Revision.RevisionNumber);
+        var revisionNumber = RevisionNumber.From((ulong)data.Revision.RevisionNumber);
+        var revisionId = RevisionId.From((ulong)data.Revision.Id);
+        return (revisionNumber, revisionId);
     }
 
     /// <summary>
     /// Uploads a new collection to Nexus Mods and adds it to the app.
     /// </summary>
-    public async ValueTask<CollectionMetadata.ReadOnly> CreateCollection(
+    public async ValueTask<(CollectionMetadata.ReadOnly, RevisionId)> CreateCollection(
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
         CancellationToken cancellationToken)
@@ -122,7 +124,7 @@ public partial class NexusModsLibrary
         result.EnsureNoErrors();
 
         var data = result.Data?.CreateCollection!;
-        if (!data.Success) throw new NotImplementedException();
+        Debug.Assert(data.Success);
 
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
@@ -131,7 +133,8 @@ public partial class NexusModsLibrary
         var commitResult = await tx.Commit();
 
         var collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
-        return collection;
+        var revisionId = RevisionId.From((ulong)data.Revision.Id);
+        return (collection, revisionId);
     }
 
     public async ValueTask<GraphQlResult<NoData, NotFound, CollectionDiscarded>> PublishRevision(
