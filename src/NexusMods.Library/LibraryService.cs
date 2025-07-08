@@ -222,6 +222,16 @@ public sealed class LibraryService : ILibraryService
         RemoveLinkedItemsFromAllLoadouts(libraryItems, tx);
         await tx.Commit();
     }
+
+    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(
+        LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options)
+    {
+        using var tx = _connection.BeginTransaction();
+        var result = await ReplaceLinkedItemsInAllLoadouts(oldItem, newItem, options, tx);
+        await tx.Commit();
+        return result;
+    }
+
     public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx)
     {
         try

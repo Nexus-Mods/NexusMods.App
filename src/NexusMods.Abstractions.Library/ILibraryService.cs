@@ -163,6 +163,17 @@ public interface ILibraryService
     ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx);
 
     /// <summary>
+    /// Replaces linked loadout items across all loadouts with installations of a different library item.   
+    /// </summary>
+    /// <param name="oldItem">The library item whose linked loadout items should be replaced.</param>
+    /// <param name="newItem">The replacement library item from which to install the new linked loadout items from.</param>
+    /// <param name="options">Options controlling how to replace the linked loadout items.</param>
+    /// <returns>
+    ///     A result indicating success or failure of the replacement operation.
+    /// </returns>
+    ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options);
+    
+    /// <summary>
     /// Replaces multiple sets of linked loadout items across all loadouts with new versions.
     /// </summary>
     /// <param name="replacements">The pairs of library items (old and new) whose linked loadout items should be replaced.</param>

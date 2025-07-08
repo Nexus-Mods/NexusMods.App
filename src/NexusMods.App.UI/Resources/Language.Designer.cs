@@ -1621,26 +1621,6 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All {0} download(s) failed. No mods were updated.
-        ///
-        ///Please check your internet connection and try again..
-        /// </summary>
-        public static string Library_Update_AllDownloadsFailed_Description {
-            get {
-                return ResourceManager.GetString("Library_Update_AllDownloadsFailed_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All Downloads Failed.
-        /// </summary>
-        public static string Library_Update_AllDownloadsFailed_Title {
-            get {
-                return ResourceManager.GetString("Library_Update_AllDownloadsFailed_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Library_Update_InstalledInMultipleCollections_Cancel {
@@ -1686,56 +1666,49 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following updates failed:.
+        ///   Looks up a localized string similar to The following mod updates couldn’t be downloaded:
+        ///
+        ///{0}.
         /// </summary>
-        public static string Library_Update_ReplaceFailed_Description {
+        public static string Library_Update_SomeDownloadsFailed_Description {
             get {
-                return ResourceManager.GetString("Library_Update_ReplaceFailed_Description", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Updates.
+        ///   Looks up a localized string similar to Cancel.
         /// </summary>
-        public static string Library_Update_ReplaceFailed_Title {
+        public static string Library_Update_SomeDownloadsFailed_Option_Cancel {
             get {
-                return ResourceManager.GetString("Library_Update_ReplaceFailed_Title", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Option_Cancel", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following updates were successful:.
+        ///   Looks up a localized string similar to Retry failed downloads.
         /// </summary>
-        public static string Library_Update_Success_Description1 {
+        public static string Library_Update_SomeDownloadsFailed_Option_Retry {
             get {
-                return ResourceManager.GetString("Library_Update_Success_Description1", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Option_Retry", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The following updates failed:.
+        ///   Looks up a localized string similar to Some Mod Updates Failed to Download.
         /// </summary>
-        public static string Library_Update_Success_Description2 {
+        public static string Library_Update_SomeDownloadsFailed_Title {
             get {
-                return ResourceManager.GetString("Library_Update_Success_Description2", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Title", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Updates.
+        ///   Looks up a localized string similar to Delete failed updates.
         /// </summary>
-        public static string Library_Update_Success_Title {
+        public static string Library_Update_SomeInstallsFailed_DeleteFiles {
             get {
-                return ResourceManager.GetString("Library_Update_Success_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Delete Failed Updates.
-        /// </summary>
-        public static string Library_Update_UpdateInstallationFailed_DeleteFiles {
-            get {
-                return ResourceManager.GetString("Library_Update_UpdateInstallationFailed_DeleteFiles", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_DeleteFiles", resourceCulture);
             }
         }
         
@@ -1746,27 +1719,27 @@ namespace NexusMods.App.UI.Resources {
         ///
         ///Keep the downloaded files in your library in case you want to retry the installation later?.
         /// </summary>
-        public static string Library_Update_UpdateInstallationFailed_Description {
+        public static string Library_Update_SomeInstallsFailed_Description {
             get {
-                return ResourceManager.GetString("Library_Update_UpdateInstallationFailed_Description", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Keep Failed Updates.
+        ///   Looks up a localized string similar to Keep failed updates.
         /// </summary>
-        public static string Library_Update_UpdateInstallationFailed_KeepFiles {
+        public static string Library_Update_SomeInstallsFailed_KeepFiles {
             get {
-                return ResourceManager.GetString("Library_Update_UpdateInstallationFailed_KeepFiles", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_KeepFiles", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update Installation Failed.
+        ///   Looks up a localized string similar to Some Mod Updates Failed to Install.
         /// </summary>
-        public static string Library_Update_UpdateInstallationFailed_Title {
+        public static string Library_Update_SomeInstallsFailed_Title {
             get {
-                return ResourceManager.GetString("Library_Update_UpdateInstallationFailed_Title", resourceCulture);
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_Title", resourceCulture);
             }
         }
         

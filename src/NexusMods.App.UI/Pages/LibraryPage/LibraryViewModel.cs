@@ -341,6 +341,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         foreach (var updatesOnPage in updatesOnPageCollection)
             updatesOnPage.NewestToCurrentFileMapping(newestToCurrentMapping);
         
+        await UpdateAndReplaceForNewestToCurrentMappingPremiumOnly(cancellationToken, newestToCurrentMapping);
+    }
+
+    private async ValueTask UpdateAndReplaceForNewestToCurrentMappingPremiumOnly(CancellationToken cancellationToken, Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> newestToCurrentMapping)
+    {
         var libraryItemsToUpdate = new List<LibraryItem.ReadOnly>();
         foreach (var (_, currentFiles) in newestToCurrentMapping)
         {
@@ -371,140 +376,103 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             }
         }
 
-        var oldToNewLibraryMapping = new ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)>();
-        var downloadErrors = new ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)>();
-        var successfulDownloads = new ConcurrentBag<LibraryItem.ReadOnly>();
-
         var concurrencyLimit = _serviceProvider.GetRequiredService<ISettingsManager>().Get<DownloadSettings>().MaxParallelDownloads;
-        await ProcessDownloadsInParallel(newestToCurrentMapping, oldToNewLibraryMapping, downloadErrors, successfulDownloads, concurrencyLimit, cancellationToken);
+        var results = await ProcessDownloadsInParallel(newestToCurrentMapping, concurrencyLimit, cancellationToken);
 
-        // If there's no downloads to replace, we failed to do all of them.
-        if (oldToNewLibraryMapping.Count > 0)
-        {
-            var options = new ReplaceLibraryItemsOptions
-            {
-                IgnoreReadOnlyCollections = true,
-            };
+        // Some (but not all) downloads failed, so show relevant dialog.
+        if (results.DownloadErrors.Count > 0)
+            await ShowSomeDownloadsFailedDialog(results.DownloadErrors, newestToCurrentMapping, cancellationToken);
 
-            var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(oldToNewLibraryMapping, options);
-            if (result != LibraryItemReplacementResult.Success)
-            {
-                await HandleUpdateInstallationFailure(oldToNewLibraryMapping);
-            }
-            else
-            {
-                // Replace of all items worked, but if some download failed let them know.
-                await ShowModsPartiallyUpdatedDialog(oldToNewLibraryMapping, downloadErrors);
-                await RemoveOldLibraryItemsIfNotInReadOnlyCollections(oldToNewLibraryMapping);
-            }
-        }
-        else
-        {
-            await ShowAllDownloadsFailedDialog(downloadErrors);
-        }
+        // Some installs failed, ask if they want to keep old files
+        if (results.LibraryItemReplacementResults.Count(x => x.InstallResult != LibraryItemReplacementResult.Success) > 0)
+            await ShowSomeInstallsFailedDialog(results.LibraryItemReplacementResults);
+
+        // Remove all old library items where the install failed.
+        var successfullyInstalledItems = results.LibraryItemReplacementResults.Where(x => x.InstallResult == LibraryItemReplacementResult.Success);
+        await RemoveOldLibraryItemsIfNotInReadOnlyCollections(successfullyInstalledItems);
     }
     
-    /// <summary>
-    /// Shows a dialog asking the user whether to keep or delete failed update files.
-    /// If the user chooses to delete, removes the new library items that failed to install.
-    /// </summary>
-    /// <param name="oldToNewLibraryMapping">The mapping of old library items to their new replacements that failed to install.</param>
-    private async ValueTask HandleUpdateInstallationFailure(
-        IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping)
+    private async Task ShowSomeDownloadsFailedDialog(
+        ConcurrentBag<DownloadError> downloadErrors,
+        Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> newestToCurrentMapping,
+        CancellationToken ct)
     {
-        var failedItems = oldToNewLibraryMapping.ToArray();
-        var modNames = string.Join(Environment.NewLine, failedItems.Select(failed => failed.oldItem.Name));
-        var description = string.Format(Language.Library_Update_UpdateInstallationFailed_Description, modNames);
+        var modsWhichFailed = new StringBuilder();
+        foreach (var err in downloadErrors)
+            modsWhichFailed.AppendLine(err.File.Name);
+
+        var cancelFailedDownloads = new DialogButtonDefinition(
+            Text: Language.Library_Update_SomeDownloadsFailed_Option_Cancel,
+            Id: ButtonDefinitionId.Cancel,
+            ButtonAction: ButtonAction.Reject,
+            ButtonStyling: ButtonStyling.None
+        );
+        var retryFailedDownloads = new DialogButtonDefinition(
+            Text: Language.Library_Update_SomeDownloadsFailed_Option_Retry,
+            Id: ButtonDefinitionId.Accept,
+            ButtonAction: ButtonAction.Accept,
+            ButtonStyling: ButtonStyling.Primary
+        );
+
+        var allFailedDialog = DialogFactory.CreateStandardDialog(
+            title: Language.Library_Update_SomeDownloadsFailed_Title,
+            new StandardDialogParameters()
+            {
+                Text = string.Format(Language.Library_Update_SomeDownloadsFailed_Description, modsWhichFailed),
+            },
+            buttonDefinitions: [cancelFailedDownloads, retryFailedDownloads]
+        );
+
+        var result = await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
+        if (result.ButtonId == retryFailedDownloads.Id)
+        {
+            var downloadErrorsTable = downloadErrors.Select(x => x.File).ToHashSet();
+            var failedDownloads = newestToCurrentMapping.Where(x => downloadErrorsTable.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value);
+            await UpdateAndReplaceForNewestToCurrentMappingPremiumOnly(ct, failedDownloads);
+        }
+    }
+
+    private async Task ShowSomeInstallsFailedDialog(ConcurrentBag<DownloadedProcessingResult> libraryItemReplacementResults)
+    {
+        var failedToInstallItems = new List<LibraryItem.ReadOnly>();
+        foreach (var replaceResult in libraryItemReplacementResults)
+        {
+            if (replaceResult.InstallResult != LibraryItemReplacementResult.Success)
+                failedToInstallItems.Add(replaceResult.NewItem);
+        }
+
+        var modNames = string.Join(Environment.NewLine, failedToInstallItems.Select(failed => failed.Name));
+        var description = string.Format(Language.Library_Update_SomeInstallsFailed_Description, modNames);
 
         var deleteButtonId = ButtonDefinitionId.From("Delete");
         var keepButtonId = ButtonDefinitionId.From("Keep");
 
         var dialog = DialogFactory.CreateStandardDialog(
-            title: Language.Library_Update_UpdateInstallationFailed_Title,
+            title: Language.Library_Update_SomeInstallsFailed_Title,
             new StandardDialogParameters()
             {
                 Text = description,
             },
             buttonDefinitions: [
                 new DialogButtonDefinition(
-                    Language.Library_Update_UpdateInstallationFailed_DeleteFiles,
+                    Language.Library_Update_SomeInstallsFailed_DeleteFiles,
                     deleteButtonId,
                     ButtonAction.Accept,
                     ButtonStyling.Destructive
                 ),
                 new DialogButtonDefinition(
-                    Language.Library_Update_UpdateInstallationFailed_KeepFiles,
+                    Language.Library_Update_SomeInstallsFailed_KeepFiles,
                     keepButtonId,
                     ButtonAction.Reject,
-                    ButtonStyling.None
+                    ButtonStyling.Primary
                 )
             ]
         );
 
         var result = await WindowManager.ShowDialog(dialog, DialogWindowType.Modal);
+        // User chose to delete the failed update files
         if (result.ButtonId == deleteButtonId)
-        {
-            // User chose to delete the failed update files
-            await RemoveFailedUpdateFiles(failedItems);
-        }
-
-        // If user chose to keep, do nothing - the downloaded files remain in the library
-    }
-
-    /// <summary>
-    /// Removes the new library items that failed to install, keeping only the original files.
-    /// </summary>
-    /// <param name="failedItems">The mapping of old to new library items where the new items failed to install.</param>
-    private async ValueTask RemoveFailedUpdateFiles(
-        IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> failedItems)
-    {
-        var newItemsToRemove = failedItems
-            .Select(failed => failed.newItem)
-            .Where(newItem => newItem.IsValid())
-            .ToArray();
-
-        if (newItemsToRemove.Length > 0)
-            await _libraryService.RemoveLibraryItems(newItemsToRemove);
-    }
-
-    private async Task ShowAllDownloadsFailedDialog(ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)> downloadErrors)
-    {
-        var allFailedDialog = DialogFactory.CreateStandardDialog(
-            title: Language.Library_Update_AllDownloadsFailed_Title,
-            new StandardDialogParameters()
-            {
-                Text = string.Format(Language.Library_Update_AllDownloadsFailed_Description, downloadErrors.Count)
-            },
-            buttonDefinitions: [DialogStandardButtons.Ok]
-        );
-
-        await WindowManager.ShowDialog(allFailedDialog, DialogWindowType.Modal);
-    }
-
-    private async Task ShowModsPartiallyUpdatedDialog(ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping, ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)> downloadErrors)
-    {
-        if (downloadErrors.Count <= 0)
-            return;
-
-        var finalDescription = new StringBuilder()
-            .AppendLine(Language.Library_Update_Success_Description1) // The following updates were successful.
-            .AppendLine()
-            .AppendJoin(Environment.NewLine, oldToNewLibraryMapping.Select(mapping => mapping.oldItem.Name))
-            .AppendLine()
-            .AppendLine(Language.Library_Update_Success_Description2) // The following updates failed.
-            .AppendJoin(Environment.NewLine, downloadErrors.Select(error => error.File.Name))
-            .ToString();
-
-        var successDialog = DialogFactory.CreateStandardDialog(
-            title: Language.Library_Update_Success_Title,
-            new StandardDialogParameters()
-            {
-                Text = finalDescription,
-            },
-            buttonDefinitions: [DialogStandardButtons.Ok]
-        );
-
-        await WindowManager.ShowDialog(successDialog, DialogWindowType.Modal);
+            await _libraryService.RemoveLibraryItems(failedToInstallItems);
     }
 
     private async Task<(ButtonDefinitionId updateButtonId, StandardDialogResult dialogResult)> ShowInstalledInMultipleCollectionsDialog(IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> collectionsAffected, int affectedCollectionCount)
@@ -524,9 +492,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
         {
             dialogDesc.AppendLine($"{loadoutGroup.Key}:");
             foreach (var collection in loadoutGroup)
-            {
                 dialogDesc.AppendLine($"{collection.Name}");
-            }
+            
             dialogDesc.AppendLine();
         }
 
@@ -560,23 +527,19 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     /// <summary>
     /// This downloads a list of mods marked by <see cref="newestToCurrentMapping"/>.
     /// Every mod is installed separately into the library (as a separate transaction).
-    /// Any mods which fail to download, are returned via <paramref name="downloadErrors"/>.
     /// </summary>
-    /// <param name="newestToCurrentMapping"></param>
-    /// <param name="oldToNewLibraryMapping"></param>
-    /// <param name="downloadErrors"></param>
-    /// <param name="successfulDownloads"></param>
-    /// <param name="concurrencyLimit"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private async Task ProcessDownloadsInParallel(
+    /// <param name="newestToCurrentMapping">The items to process.</param>
+    /// <param name="concurrencyLimit">Amount of items to process at the same time.</param>
+    /// <param name="cancellationToken">The token that can be used to cancel this operation.</param>
+    /// <returns>A struct containing all the processing results including successful downloads, errors, and mappings.</returns>
+    private async Task<DownloadProcessingResults> ProcessDownloadsInParallel(
         Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> newestToCurrentMapping,
-        ConcurrentBag<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping,
-        ConcurrentBag<(NexusModsFileMetadata.ReadOnly File, Exception Error)> downloadErrors,
-        ConcurrentBag<LibraryItem.ReadOnly> successfulDownloads,
         int concurrencyLimit,
         CancellationToken cancellationToken)
     {
+        var libraryItemReplacementResults = new ConcurrentBag<DownloadedProcessingResult>();
+        var downloadErrors = new ConcurrentBag<DownloadError>();
+
         using var semaphore = new SemaphoreSlim(concurrencyLimit);
         var tasks = new List<Task>();
 
@@ -593,7 +556,6 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 var job = await _nexusModsLibrary.CreateDownloadJob(tempPath, newestFile, cancellationToken: cancellationToken);
                 var libraryFile = await _libraryService.AddDownload(job);
                 var newLibraryItem = libraryFile.AsLibraryItem();
-                successfulDownloads.Add(newLibraryItem);
 
                 // Map each current file to the new file
                 foreach (var currentFile in currentFiles)
@@ -603,7 +565,16 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     foreach (var existingLibraryFile in existingLibraryItems) // Should only be one.
                     {
                         var currentLibraryItem = existingLibraryFile.AsLibraryItem();
-                        oldToNewLibraryMapping.Add((currentLibraryItem, newLibraryItem));
+
+                        // Try to install the item right away
+                        var options = new ReplaceLibraryItemOptions { IgnoreReadOnlyCollections = true };
+                        var result = await _libraryService.ReplaceLinkedItemsInAllLoadouts(currentLibraryItem, newLibraryItem, options);
+                        libraryItemReplacementResults.Add(new DownloadedProcessingResult()
+                        {
+                            OldItem = currentLibraryItem,
+                            NewItem = newLibraryItem,
+                            InstallResult = result,
+                        });
                     }
                 }
             }
@@ -613,7 +584,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             }
             catch (Exception ex)
             {
-                downloadErrors.Add((newestFile, ex));
+                downloadErrors.Add(new DownloadError()
+                {
+                    File = newestFile,
+                    Error = ex,
+                });
             }
             finally
             {
@@ -630,6 +605,11 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
 
         // Wait for all tasks to complete
         await Task.WhenAll(tasks);
+
+        return new DownloadProcessingResults(
+            libraryItemReplacementResults,
+            downloadErrors
+        );
     }
 
     private async ValueTask HandleUpdateAndKeepOldMessage(UpdateAndKeepOldMessage updateAndKeepOldMessage, CancellationToken cancellationToken)
@@ -988,28 +968,30 @@ After asking design, we're choosing to simply open the mod page for now.
     }
 
     /// <summary>
-    /// Removes old library items that are not installed in any read-only collections.
-    /// This helps keep the library clean by removing outdated versions that are only in modifiable collections.
-    /// Items that are still installed in read-only collections are preserved.
+    /// Removes old library items that are not installed in any read-only (e.g. Nexus) collections.
+    /// This ensures collections 'remain' installed.
+    /// 
+    /// Old items where the new library item is invalid (e.g. Replace Failed), are preserved;
+    /// cleaning those up happens in <see cref="ShowSomeInstallsFailedDialog"/> in partial fail scenarios.
     /// </summary>
     /// <param name="oldToNewLibraryMapping">The mapping of old library items to their new replacements.</param>
-    private async ValueTask RemoveOldLibraryItemsIfNotInReadOnlyCollections(IEnumerable<(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem)> oldToNewLibraryMapping)
+    private async ValueTask RemoveOldLibraryItemsIfNotInReadOnlyCollections(IEnumerable<DownloadedProcessingResult> oldToNewLibraryMapping)
     {
         var oldItemsToRemove = new List<LibraryItem.ReadOnly>();
         
-        foreach (var (oldItem, newItem) in oldToNewLibraryMapping)
+        foreach (var item in oldToNewLibraryMapping)
         {
-            // If the new item is not valid (e.g., download failed), we should not remove the old item.
-            if (!newItem.IsValid())
+            // If the new item is not valid (e.g. replace failed), and user chose to 'delete new files' we skip it.
+            if (!item.NewItem.IsValid())
                 continue;
             
             // Check if the old item is still linked to any collections
-            var collectionsWithItem = _libraryService.CollectionsWithLibraryItem(oldItem, excludeReadOnlyCollections: false);
+            var collectionsWithItem = _libraryService.CollectionsWithLibraryItem(item.OldItem, excludeReadOnlyCollections: false);
             
             // Only remove if the item is NOT in any read-only collections (i.e., only in modifiable collections or no collections)
             var hasReadOnlyCollections = collectionsWithItem.Any(x => x.collection.IsReadOnly);
             if (!hasReadOnlyCollections)
-                oldItemsToRemove.Add(oldItem);
+                oldItemsToRemove.Add(item.OldItem);
         }
 
         if (oldItemsToRemove.Count > 0)
@@ -1165,4 +1147,58 @@ public class LibraryTreeDataGridAdapter :
 
         base.Dispose(disposing);
     }
+}
+
+/// <summary>
+/// Results from processing downloads in parallel.
+/// </summary>
+/// <param name="LibraryItemReplacementResults">
+///     Mapping of all the old mods to new mods; along with their replacement result.
+///     This excludes items where downloads failed.
+/// </param>
+/// <param name="DownloadErrors">Items which failed to download.</param>
+public readonly record struct DownloadProcessingResults(
+    ConcurrentBag<DownloadedProcessingResult> LibraryItemReplacementResults,
+    ConcurrentBag<DownloadError> DownloadErrors
+);
+
+/// <summary>
+/// The result of downloading and installing a given old->new mod tuple.
+/// </summary>
+public struct DownloadedProcessingResult
+{
+    /// <summary>
+    /// The old version of the mod.
+    /// </summary>
+    public LibraryItem.ReadOnly OldItem;
+
+    /// <summary>
+    /// The new version of the mod that was downloaded.
+    /// </summary>
+    /// <remarks>
+    ///     This item may be invalid if the user decides to delete the file when <see cref="InstallResult"/>
+    ///     is not success.
+    /// </remarks>
+    public LibraryItem.ReadOnly NewItem;
+    
+    /// <summary>
+    /// The install result for <see cref="NewItem"/>.
+    /// </summary>
+    public LibraryItemReplacementResult InstallResult;
+}
+
+/// <summary>
+/// An error which happened when downloading a new version of a library item.
+/// </summary>
+public struct DownloadError
+{
+    /// <summary>
+    /// The file which we tried to download.
+    /// </summary>
+    public NexusModsFileMetadata.ReadOnly File;
+    
+    /// <summary>
+    /// The error which occurred during the download or installation of the file.
+    /// </summary>
+    public Exception Error;
 }
