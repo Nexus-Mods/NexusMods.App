@@ -56,9 +56,6 @@
     <StyleInclude Source="/Styles/UserControls/Diagnostics/DiagnosticEntryStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/EmptyState/EmptyStateStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/GameWidget/GameWidgetStyles.axaml" />
-    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/GroupViewStyles.axaml" />
-    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/OptionViewStyles.axaml" />
-    <StyleInclude Source="/Styles/UserControls/GuidedInstaller/StepViewStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/LoadoutBadge/LoadoutBadgeStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/LoadoutCards/LoadoutCardStyles.axaml" />
     <StyleInclude Source="/Styles/UserControls/LoginDialog/LoginDialogStyles.axaml" />

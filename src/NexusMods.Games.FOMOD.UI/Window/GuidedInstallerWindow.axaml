@@ -5,16 +5,58 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:reactiveUi="http://reactiveui.net"
     xmlns:ui="clr-namespace:NexusMods.Games.FOMOD.UI"
-    mc:Ignorable="d" d:DesignWidth="1232" d:DesignHeight="672"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
     x:Class="NexusMods.Games.FOMOD.UI.GuidedInstallerWindow"
     x:TypeArguments="ui:IGuidedInstallerWindowViewModel"
-    Title="GuidedInstallerWindow"
-    MinHeight="672" MinWidth="1232">
+    Title="GuidedInstallerWindow">
 
     <Design.DataContext>
         <ui:GuidedInstallerWindowDesignViewModel />
     </Design.DataContext>
+    
+    <reactiveUi:ReactiveWindow.Styles>
+        <Style Selector="Window">
+            <Setter Property="Background" Value="{StaticResource SurfaceLowBrush}" />
+        </Style>
+    </reactiveUi:ReactiveWindow.Styles>
 
-    <reactiveUi:ViewModelViewHost x:Name="StepViewHost" />
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- titlebar -->
+        <Grid x:Name="Titlebar" Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              Margin="16,16,16,0">
+
+            <!-- has to have IsHitTestVisible="False" so the mouse events are passed through to the OS for 
+                custom titlebar dragging -->
+            <TextBlock Grid.Column="0" x:Name="TitleTextBlock"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodySMSemiTheme}"
+                       VerticalAlignment="Center"
+                       ToolTip.Tip="Close"
+                       IsHitTestVisible="False"
+                       TextWrapping="NoWrap"
+                       TextTrimming="CharacterEllipsis" />
+
+            <controls:StandardButton Grid.Column="1" x:Name="CloseButton"
+                                     DockPanel.Dock="Right"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"
+                                     ShowIcon="IconOnly"
+                                     ShowLabel="False"
+                                     Fill="None"
+                                     Type="Tertiary"
+                                     VerticalAlignment="Center"
+                                     Click="CloseButton_OnClick"/>
+        </Grid>
+
+        <!-- content -->
+        <Border x:Name="ContentBorder" Grid.Row="1" Padding="16">
+            
+            <reactiveUi:ViewModelViewHost x:Name="StepViewHost" />
+            
+        </Border>
+    </Grid>
 
 </reactiveUi:ReactiveWindow>
