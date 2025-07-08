@@ -17,6 +17,7 @@ using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -135,10 +136,35 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, canEditObservable: isSingleCollectionObservable);
 
-            CommandUploadRevision = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            CommandUploadRevision = Adapter.IsSourceEmpty.Select(b => !b).ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
-                var shareDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollection(CollectionName.Value) : LoadoutDialogs.ShareCollection(CollectionName.Value);
+                // convert CollectionStatus.Value enum to bool
+
+                var isListed = CollectionStatus.Value == Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed;
+
+                var shareViewModel = new DialogShareCollectionViewModel(isListed);
+                
+                var shareDialog = DialogFactory.CreateDialog("Choose How to Share Your Collection",
+                    [
+                        new DialogButtonDefinition(
+                            "Cancel",
+                            ButtonDefinitionId.Cancel,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "Publish",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        ),
+                    ],
+                    shareViewModel,
+                    DialogWindowSize.Medium,
+                    false
+                );
+                
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                
                 if (shareDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
 
                 var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
