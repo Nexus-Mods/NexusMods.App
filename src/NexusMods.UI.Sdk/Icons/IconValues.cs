@@ -322,8 +322,14 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/update/
     public static readonly IconValue Update = new ProjektankerIcon("mdi-update");
     
+    // https://pictogrammers.com/library/mdi/icon/upload/
+    public static readonly IconValue Upload = new ProjektankerIcon("mdi-upload");
+    
     // https://pictogrammers.com/library/mdi/icon/export-variant/
     public static readonly IconValue ExportVariant = new ProjektankerIcon("mdi-export-variant");
+    
+    // https://pictogrammers.com/library/mdi/icon/pencil/
+    public static readonly IconValue Pencil = new ProjektankerIcon("mdi-pencil");
 
 #endregion
 

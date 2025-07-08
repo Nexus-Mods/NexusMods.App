@@ -1,0 +1,54 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="vm:DialogShareCollectionViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:vm="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage.Dialogs"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+                                mc:Ignorable="d" d:DesignWidth="500"
+                                x:Class="NexusMods.App.UI.Pages.LoadoutPage.Dialogs.DialogShareCollectionView">
+
+    <StackPanel Spacing="16">
+        <StackPanel Spacing="4">
+            <icons:UnifiedIcon x:Name="Icon"
+                               Value="{x:Static icons:IconValues.PictogramUpload}"
+                               HorizontalAlignment="Left"
+                               Size="48"
+                               IsHitTestVisible="False" />
+            <TextBlock x:Name="HeaderTextBlock"
+                       Text="Choose How to Share Your Collection"
+                       Foreground="{StaticResource NeutralStrongBrush}"
+                       Theme="{StaticResource BodyMDSemiTheme}"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <RadioButton x:Name="RadioVisibilityUnlisted" GroupName="Visibility" IsChecked="True">
+            <StackPanel>
+                <TextBlock Text="Unlisted - Recommended for Sharing with Friends"
+                           TextWrapping="Wrap"
+                           Theme="{StaticResource BodySMSemiTheme}"
+                           Foreground="{StaticResource NeutralStrongBrush}"/>
+                <TextBlock
+                    Text="Only people with a direct link can view this collection. It won’t appear in search results or be featured on Nexus Mods."
+                    TextWrapping="Wrap"
+                    Foreground="{StaticResource NeutralSubduedBrush}"/>
+            </StackPanel>
+        </RadioButton>
+        <RadioButton x:Name="RadioVisibilityListed" GroupName="Visibility">
+            <StackPanel>
+                <TextBlock Text="Listed - Publicly Visible on Nexus Mods"
+                           TextWrapping="Wrap"
+                           Theme="{StaticResource BodySMSemiTheme}"
+                           Foreground="{StaticResource NeutralStrongBrush}" />
+                <TextBlock
+                    Text="Anyone can discover this collection on Nexus Mods. It will appear in search results and may be featured."
+                    TextWrapping="Wrap"
+                    Foreground="{StaticResource NeutralSubduedBrush}" />
+            </StackPanel>
+        </RadioButton>
+        <TextBlock Text="You can change the visibility at any time in your collection settings."
+                   TextWrapping="Wrap" />
+    </StackPanel>
+
+</reactiveUi:ReactiveUserControl>

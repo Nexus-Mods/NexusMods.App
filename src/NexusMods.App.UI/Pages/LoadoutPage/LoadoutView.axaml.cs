@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
@@ -111,6 +112,13 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 {
                     self.ContextControlGroup.IsVisible = count != 0;
                     self.DeselectItemsButton.Text = count == 0 ? string.Empty : string.Format(Language.Library_DeselectItemsButton_Text, count);
+                })
+                .AddTo(disposables);
+            
+            this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.Adapter.IsSourceEmpty)
+                .Subscribe(this, static (b, view) =>
+                {
+                    ToolTip.SetTip(view.ButtonUploadCollectionRevision, b ? "You can't share this collection until it has at least one installed mod." : null);
                 })
                 .AddTo(disposables);
         });
