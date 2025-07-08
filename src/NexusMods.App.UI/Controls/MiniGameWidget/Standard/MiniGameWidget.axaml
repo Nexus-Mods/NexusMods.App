@@ -1,0 +1,113 @@
+﻿<reactiveUi:ReactiveUserControl
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.MiniGameWidget.Standard.MiniGameWidget"
+    x:TypeArguments="standard:IMiniGameWidgetViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:miniGameWidget="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget.Standard"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:standard="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget.Standard"
+    d:DataContext="{x:Static standard:MiniGameWidgetDesignViewModel.Instance}">
+
+    <Border x:Name="MiniGameWidgetBorder"
+            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12"
+            Width="194">
+        
+        <Grid RowDefinitions="Auto, *, Auto">
+
+            <!-- Thumbnail -->
+            <Panel Grid.Row="0" HorizontalAlignment="Left" Margin="0 0 0 8">
+                <Image x:Name="GameImage"
+                       Width="48"
+                       Height="48">
+                    <Image.Clip>
+                        <RectangleGeometry Rect="0 0 48 48" RadiusX="8" RadiusY="8" />
+                    </Image.Clip>
+                </Image>
+                <Border x:Name="ThumbnailBorder"
+                        CornerRadius="8"
+                        BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+                        BorderThickness="1">
+                </Border>
+            </Panel>
+
+            <!-- Details -->
+            <StackPanel Grid.Row="1" Spacing="4" Margin="0 0 0 8">
+                <TextBlock x:Name="NameTextBlock"
+                           Text="Stardew Valley"
+                           Theme="{StaticResource BodyMDSemiTheme}"
+                           Foreground="{StaticResource NeutralModerateBrush}"
+                           TextTrimming="CharacterEllipsis"/>
+
+                <!-- Game stores supported -->
+
+                <!-- STEAM -->
+                <Grid x:Name="SteamGrid" ColumnDefinitions="Auto, *">
+                    <icons:UnifiedIcon Grid.Column="0"
+                                       Value="{x:Static icons:IconValues.Steam}"
+                                       Size="16"
+                                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                    <TextBlock Grid.Column="1"
+                               Text="Steam supported"
+                               Theme="{StaticResource BodyMDNormalTheme}"
+                               Foreground="{StaticResource NeutralSubduedBrush}"
+                               Margin="4,0,0,0" />
+                </Grid>
+
+                <!-- GOG -->
+                <Grid x:Name="GogGrid"  ColumnDefinitions="Auto, *">
+                    <icons:UnifiedIcon Grid.Column="0"
+                                       Value="{x:Static icons:IconValues.GOG}"
+                                       Size="16"
+                                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                    <TextBlock Grid.Column="1"
+                               Text="GOG supported"
+                               Theme="{StaticResource BodyMDNormalTheme}"
+                               Foreground="{StaticResource NeutralSubduedBrush}"
+                               Margin="4,0,0,0" />
+                </Grid>
+                
+                <!-- EPIC -->
+                <Grid x:Name="EpicGrid" ColumnDefinitions="Auto, *">
+                    <icons:UnifiedIcon Grid.Column="0"
+                                       Value="{x:Static icons:IconValues.Epic}"
+                                       Size="16"
+                                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                    <TextBlock Grid.Column="1"
+                               Text="Epic supported"
+                               Theme="{StaticResource BodyMDNormalTheme}"
+                               Foreground="{StaticResource NeutralSubduedBrush}"
+                               Margin="4,0,0,0" />
+                </Grid>
+                
+                <!-- XBOX -->
+                <!-- hidden until Xbox support is implemented officially -->
+                <Grid x:Name="XboxGrid" ColumnDefinitions="Auto, *" IsVisible="False">
+                    <icons:UnifiedIcon Grid.Column="0"
+                                       Value="{x:Static icons:IconValues.Xbox}"
+                                       Size="16"
+                                       Foreground="{StaticResource NeutralSubduedBrush}" />
+                    <TextBlock Grid.Column="1"
+                               Text="Xbox supported"
+                               Theme="{StaticResource BodyMDNormalTheme}"
+                               Foreground="{StaticResource NeutralSubduedBrush}"
+                               Margin="4,0,0,0" />
+                </Grid>
+            </StackPanel>
+
+            <!-- Buttons -->
+            <controls:StandardButton Grid.Row="2" x:Name="ButtonGameNotFound"
+                                     LeftIcon="{x:Static icons:IconValues.OpenInNew }"
+                                     ShowIcon="Left"
+                                     Text="Game not found" />
+        </Grid>
+    </Border>
+
+</reactiveUi:ReactiveUserControl>
