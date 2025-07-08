@@ -141,6 +141,8 @@
                     <icons:UnifiedIcon Classes="WindowMinimize" />
                     <icons:UnifiedIcon Classes="WindowRestore" />
                     <icons:UnifiedIcon Classes="Link" />
+                    <icons:UnifiedIcon Classes="Upload" />
+                    <icons:UnifiedIcon Classes="Pencil" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -712,6 +714,12 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.FolderUploadOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderUploadOutline}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Upload">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Upload}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Pencil">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Pencil}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.TrayArrowDown">
         <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
