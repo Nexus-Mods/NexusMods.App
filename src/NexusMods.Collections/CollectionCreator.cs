@@ -204,7 +204,8 @@ public static class CollectionCreator
         using var tx = connection.BeginTransaction();
         tx.Add(groupId, ManagedCollectionLoadoutGroup.LastPublishedRevisionNumber, managedGroup.CurrentRevisionNumber);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(managedGroup.CurrentRevisionNumber.Value + 1));
-        tx.Retract(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, managedGroup.CurrentRevisionId);
+        if (managedGroup.CurrentRevisionId.HasValue)
+            tx.Retract(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, managedGroup.CurrentRevisionId.Value);
 
         await tx.Commit();
         return collection;
