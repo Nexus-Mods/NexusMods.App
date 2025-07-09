@@ -175,6 +175,7 @@ public static class CollectionCreator
         tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, revisionId);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, DateTimeOffset.UtcNow);
 
         await tx.Commit();
 
@@ -205,6 +206,7 @@ public static class CollectionCreator
         using var tx = connection.BeginTransaction();
         tx.Add(groupId, ManagedCollectionLoadoutGroup.LastPublishedRevisionNumber, managedGroup.CurrentRevisionNumber);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(managedGroup.CurrentRevisionNumber.Value + 1));
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, DateTimeOffset.UtcNow);
         if (managedGroup.CurrentRevisionId.HasValue)
             tx.Retract(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, managedGroup.CurrentRevisionId.Value);
 
@@ -230,6 +232,7 @@ public static class CollectionCreator
         using var tx = connection.BeginTransaction();
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, revisionNumber);
         tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, revisionId);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, DateTimeOffset.UtcNow);
 
         await tx.Commit();
         return (collection, revisionId);
