@@ -91,7 +91,7 @@ public static class CollectionCreator
         return result.Remap(group);
     }
 
-    private static async ValueTask<(IStreamFactory, CollectionRoot)> PrepareForUpload(
+    private static async ValueTask<(IStreamFactory, TemporaryPath, CollectionRoot)> PrepareForUpload(
         IServiceProvider serviceProvider,
         CollectionGroupId groupId,
         CancellationToken cancellationToken)
@@ -118,10 +118,10 @@ public static class CollectionCreator
             author: user
         );
 
-        await using var archiveFile = temporaryFileManager.CreateFile(ext: Extension.FromPath(".zip"));
+        var archiveFile = temporaryFileManager.CreateFile(ext: Extension.FromPath(".zip"));
         var streamFactory = await CreateArchive(archiveFile, jsonSerializerOptions, collectionManifest, cancellationToken);
 
-        return (streamFactory, collectionManifest);
+        return (streamFactory, archiveFile, collectionManifest);
     }
 
     public static async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ChangeCollectionStatus(
@@ -165,7 +165,8 @@ public static class CollectionCreator
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
 
-        var (streamFactory, collectionManifest) = await PrepareForUpload(serviceProvider, groupId, cancellationToken);
+        var (streamFactory, archiveFile, collectionManifest) = await PrepareForUpload(serviceProvider, groupId, cancellationToken);
+        await using var _ = archiveFile;
 
         var group = CollectionGroup.Load(connection.Db, groupId);
         using var tx = connection.BeginTransaction();
@@ -219,7 +220,8 @@ public static class CollectionCreator
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
 
-        var (streamFactory, collectionManifest) = await PrepareForUpload(serviceProvider, groupId.Value, cancellationToken);
+        var (streamFactory, archiveFile, collectionManifest) = await PrepareForUpload(serviceProvider, groupId.Value, cancellationToken);
+        await using var _ = archiveFile;
 
         var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
         var collection = managedCollectionLoadoutGroup.Collection;
