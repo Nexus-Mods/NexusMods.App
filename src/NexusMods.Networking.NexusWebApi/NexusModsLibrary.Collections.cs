@@ -137,7 +137,37 @@ public partial class NexusModsLibrary
         return (collection, revisionId);
     }
 
-    public async ValueTask<GraphQlResult<NoData, NotFound, CollectionDiscarded>> PublishRevision(
+    private async ValueTask<GraphQlResult<ulong, NotFound>> GetDefaultCategoryId(GameId gameId, CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.Categories.ExecuteAsync(
+            gameId: (int)gameId.Value,
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<ulong, NotFound>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        var categories = (operationData.Categories ?? []).Where(static c => c.Approved && c.DiscardedAt != default).ToArray();
+
+        return 0;
+    }
+
+    private async ValueTask<GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>> PrefillCollectionMetadata(
+        CollectionMetadata.ReadOnly collection,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = _gqlClient.AddRequiredCollectionMetadata.ExecuteAsync(
+            collectionId: (int)collection.CollectionId.Value,
+            categoryId: "0", // TODO:
+            description: "Add description here",
+            summary: "Add summary here",
+            cancellationToken: cancellationToken
+        );
+
+        return new NoData();
+    }
+
+    public async ValueTask<GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>> PublishRevision(
         RevisionId revisionId,
         CancellationToken cancellationToken)
     {
@@ -146,7 +176,7 @@ public partial class NexusModsLibrary
             cancellationToken: cancellationToken
         );
 
-        if (operationResult.TryExtractErrors(out GraphQlResult<NoData, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+        if (operationResult.TryExtractErrors(out GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
             return resultWithErrors;
 
         Debug.Assert(operationData.PublishRevision?.Success ?? false);
