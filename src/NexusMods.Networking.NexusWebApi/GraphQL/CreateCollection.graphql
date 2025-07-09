@@ -58,8 +58,21 @@ mutation EditCollectionSummary($collectionId: Int!, $summary: String!) {
     }
 }
 
-mutation PublishRevision($revisionId: ID!, $collectionStatus: CollectionStatus!) {
-    publishRevision(revisionId: $revisionId, collectionStatus: $collectionStatus) {
+mutation PublishRevision($revisionId: ID!) {
+    publishRevision(revisionId: $revisionId) {
         success
     }
 }
+
+mutation ListCollection($collectionId: Int!) {
+    listCollection(collectionId: $collectionId) {
+        success
+    }
+}
+
+mutation UnlistCollection($collectionId: ID!) {
+    unlistCollection(collectionId: $collectionId) {
+        success
+    }
+}
+
