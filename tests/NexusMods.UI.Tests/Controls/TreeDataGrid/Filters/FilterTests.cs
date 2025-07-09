@@ -347,7 +347,7 @@ public class FilterTests
     }
 
     [Fact]
-    public void Filter_WithNoRelevantComponents_ShouldPassThrough()
+    public void Filter_WithNoRelevantComponents_ShouldFail()
     {
         // Arrange
         var model = CreateTestModel(); // Empty model
@@ -357,7 +357,7 @@ public class FilterTests
         var result = nameFilter.MatchesRow(model);
 
         // Assert
-        result.Should().BeTrue(); // Should pass through since no relevant components
+        result.Should().BeFalse(); 
     }
 
     // For the first tests, the most important components.
