@@ -1,16 +1,20 @@
 using System.Globalization;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Filters;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
 using ReactiveUI;
+using static NexusMods.App.UI.Controls.Filters.Filter;
 
 namespace NexusMods.App.UI.Pages.LibraryPage;
 
@@ -36,6 +40,49 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         .SubscribeWithErrorLogging(vm => vm.StorageProvider = storageProvider)
                         .AddTo(disposables);
                 }
+
+                this.WhenAnyValue(view => view.SearchTextBox.Text)
+                    .OnUI()
+                    .Subscribe(searchText =>
+                    {
+                        if (ViewModel?.Adapter != null)
+                        {
+                            ViewModel.Adapter.Filter.Value = string.IsNullOrWhiteSpace(searchText) 
+                                ? NoFilter.Instance
+                                : new Filter.TextFilter(searchText, CaseSensitive: false);
+                        }
+                    })
+                    .AddTo(disposables);
+                
+                // Clear button functionality
+                SearchClearButton.Click += (_, _) =>
+                {
+                    SearchTextBox.Text = string.Empty;
+                };
+                
+                // Show/hide clear button based on text
+                this.WhenAnyValue(view => view.SearchTextBox.Text)
+                    .Select(text => !string.IsNullOrWhiteSpace(text))
+                    .BindToView(this, view => view.SearchClearButton.IsVisible)
+                    .AddTo(disposables);
+
+                // Handle focus when search panel visibility changes
+                this.WhenAnyValue(view => view.SearchPanel.IsVisible)
+                    .Skip(1) // Skip the initial value to avoid focusing on startup
+                    .Subscribe(isVisible =>
+                    {
+                        if (isVisible)
+                        {
+                            // Focus the textbox when the search panel becomes visible
+                            SearchTextBox.Focus();
+                        }
+                        else
+                        {
+                            // When unfocused, with CTRL+F, user should be able to scroll with keyboard.
+                            // But I don't know how to restore the focus yet (and it would take longer to find out)
+                        }
+                    })
+                    .AddTo(disposables);
 
                 this.OneWayBind(ViewModel, vm => vm.Collections, view => view.Collections.ItemsSource)
                     .AddTo(disposables);
@@ -122,4 +169,20 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             }
         );
     }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        // Handle Ctrl+F to toggle search panel
+        if (e.Key == Key.F && e.KeyModifiers.HasFlag(KeyModifiers.Control))
+        {
+            ToggleSearchPanelVisibility();
+            e.Handled = true; // Prevent the event from bubbling up
+            return;
+        }
+
+        base.OnKeyDown(e);
+    }
+
+    private void SearchButton_OnClick(object? sender, RoutedEventArgs e) => ToggleSearchPanelVisibility();
+    private void ToggleSearchPanelVisibility() => SearchPanel.IsVisible = !SearchPanel.IsVisible;
 }

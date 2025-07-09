@@ -80,10 +80,10 @@
                 </controls:ComponentTemplate>
 
                 <!-- Current version -->
-                <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                <controls:ComponentTemplate x:TypeArguments="controls:VersionComponent"
                                             ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type controls:StringComponent}">
+                        <DataTemplate DataType="{x:Type controls:VersionComponent}">
                             <TextBlock Text="{CompiledBinding Value.Value}" />
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>

@@ -169,7 +169,8 @@
             <Setter Property="Padding" Value="8,0" />
         </Style>
         
+        <Style Selector="^ ItemsControl">
+            <Setter Property="Theme" Value="{StaticResource ToolbarControlGroup}" />
+        </Style>
     </Style>
-    
-    
 </Styles>
