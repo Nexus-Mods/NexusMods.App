@@ -5,7 +5,7 @@ It is possible to change where the app stores backed up files and downloaded mod
 !!! warning "Follow these instructions carefully"
     The process to move these files currently requires some specific actions and mistakes can lead to a corrupted setup. If you're not sure at any point, please ask on our [Discord](https://discord.gg/NexusMods) or [Forums](https://forums.nexusmods.com/forum/9052-nexus-mods-app/).
 
-## Open the Downloads Folder
+## Find Your Current Library Folder
 You can find the current storage location in the app's **Settings** under "Storage Location" option. 
 
 ### If You Have Changed the Storage Location
@@ -52,13 +52,23 @@ xdg-open file://$HOME/.local/state/NexusMods.App/DataModel/Archives
 
 ## Moving the Archives
 
-The final step is move all the archives to the new folder. 
+The final step is to move all the archives to the new folder. 
 
 !!! danger "`.nx` Files Only"
     When moving the downloads, you should only be moving the `.nx` archive files. Any other files or folders should remain in place. 
 
 1. Open the new folder in the File Explorer. 
 2. Cut and paste all `.nx` files from the old location to the new one.
-3. Allow this process to complete.
+3. Wait for this process to complete before continuing.
 
 Once all archives are in the new location, the app can be used as normal. 
+
+## Troubleshooting
+
+**Can't Find AppData**
+
+On Windows, the `AppData` folder is hidden by default. You can show hidden folders in File Explorer by selecting **View -> Show -> Hidden items**.
+
+**Other Issues**
+
+If you cannot find your files or the app does not detect your mods after moving them, double-check that you have moved only the `.nx` files to the correct folder and that the app’s Settings points to the new location. If you need help, ask on our [Discord](https://discord.gg/NexusMods) or [Forums](https://forums.nexusmods.com/forum/9052-nexus-mods-app/).
