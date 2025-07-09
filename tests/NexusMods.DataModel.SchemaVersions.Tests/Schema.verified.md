@@ -3,8 +3,8 @@ This schema is written to a markdown file for both documentation and validation 
 models in the app, then validate the tests to update this file. 
 
 ## Statistics
-   - Fingerprint: 0xABACCC7549748145
-   - Total attributes: 222
+   - Fingerprint: 0xF9D4846646602295
+   - Total attributes: 223
    - Total namespaces: 73
    
 ## Attributes
@@ -121,6 +121,7 @@ models in the app, then validate the tests to update this file.
 | NexusMods.ManagedCollectionLoadoutGroup/CurrentRevisionId                          | UInt64                  | False   | False | False     | 
 | NexusMods.ManagedCollectionLoadoutGroup/CurrentRevisionNumber                      | UInt64                  | False   | False | False     | 
 | NexusMods.ManagedCollectionLoadoutGroup/LastPublishedRevisionNumber                | UInt64                  | False   | False | False     | 
+| NexusMods.ManagedCollectionLoadoutGroup/LastUploadDate                             | Int64                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Cardinality                                        | UInt8                   | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Documentation                                      | Utf8                    | False   | False | False     | 
 | NexusMods.MnemonicDB.DatomStore/Indexed                                            | UInt8                   | False   | False | False     | 
