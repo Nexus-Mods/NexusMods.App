@@ -52,7 +52,6 @@
                     <controls:Statusbar Grid.Row="0" x:Name="Statusbar">
 
                         <StackPanel>
-
                             <controls:StandardButton Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
@@ -100,10 +99,11 @@
                                                      ShowIcon="Left"
                                                      ShowLabel="False" />
                         </StackPanel>
-                        
-                        <Separator />
-                        
-                        <StackPanel>
+
+                        <!-- share and visibility buttons -->
+                        <StackPanel Spacing="8">
+                            <Separator />
+
                             <controls:StandardButton x:Name="ButtonShareCollection"
                                                      Text="Share"
                                                      Size="Toolbar"
@@ -128,47 +128,48 @@
                                                          ShowIcon="Left"
                                                          ShowLabel="False" />
                             </StackPanel>
-
-                            <SplitButton x:Name="SplitButtonPublishCollection" Classes="StandardSplitButton ExtraSmall">
-                                <StackPanel Orientation="Horizontal" Spacing="4">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}" />
-                                    <TextBlock Text="Publish" />
-                                </StackPanel>
-                                <SplitButton.Flyout>
-                                    <MenuFlyout>
-                                        <MenuItem x:Name="MenuItemUploadDraft" Header="Upload changes as draft">
-                                            <MenuItem.Icon>
-                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                        <MenuItem x:Name="MenuItemDiscardChanges" Header="Discard changes">
-                                            <MenuItem.Icon>
-                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" />
-                                            </MenuItem.Icon>
-                                        </MenuItem>
-                                    </MenuFlyout>
-                                </SplitButton.Flyout>
-                            </SplitButton>
                         </StackPanel>
 
-                        <Separator />
+                       
 
-                        <StackPanel x:Name="StatusStack" Orientation="Horizontal" Spacing="8">
+                        <StackPanel x:Name="IsUploadedStack" Orientation="Horizontal" Spacing="8">
+                            <!-- publish button -->
+                                <Separator />
+                                <SplitButton x:Name="SplitButtonPublishCollection"
+                                             Classes="StandardSplitButton ExtraSmall">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}" />
+                                        <TextBlock Text="Publish" />
+                                    </StackPanel>
+                                    <SplitButton.Flyout>
+                                        <MenuFlyout>
+                                            <MenuItem x:Name="MenuItemUploadDraft" Header="Upload changes as draft">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem x:Name="MenuItemDiscardChanges" Header="Discard changes">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </MenuFlyout>
+                                    </SplitButton.Flyout>
+                                </SplitButton>
+                            
                             <TextBlock x:Name="RevisionText" Text="Revision 1"
                                        Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
-                            <controls:Divider />
-                            <StackPanel x:Name="PublishedStatusStack" Orientation="Horizontal" Spacing="4">
-                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}" />
-                                <TextBlock Text="Published" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <controls:Divider />
+                                <StackPanel x:Name="PublishedStatusStack" Orientation="Horizontal" Spacing="4">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}"
+                                                       Foreground="{StaticResource SuccessStrongBrush}" />
+                                    <TextBlock Text="Published"
+                                               Foreground="{StaticResource SuccessStrongBrush}" />
+                                </StackPanel>
+                                <TextBlock x:Name="LastUploadedText" Text="1 min ago"
+                                           Foreground="{StaticResource NeutralSubduedBrush}" />
                             </StackPanel>
-                            <StackPanel x:Name="HasChangesStack" Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="Draft" 
-                                           Theme="{StaticResource BodySMSemiTheme}"
-                                           Foreground="{StaticResource NeutralStrongBrush}"  />
-                                <TextBlock Text="Not uploaded" Foreground="{StaticResource NeutralSubduedBrush}"  />
-                            </StackPanel>
-                            <TextBlock x:Name="TimeDateText" Text="1 min ago"
-                                       Foreground="{StaticResource NeutralSubduedBrush}" />
                         </StackPanel>
                     </controls:Statusbar>
 

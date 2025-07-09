@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using DynamicData.Binding;
+using Humanizer;
+using Humanizer.Localisation;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
@@ -75,6 +77,16 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                     .AddTo(disposables);
                 
                 this.OneWayR3Bind(static view => view.BindableViewModel, 
+                        static vm => vm.LastUploadedDate, 
+                        static (view, lastUploaded) =>
+                        {
+                            view.LastUploadedText.Text = $"{(DateTimeOffset.Now - lastUploaded).Humanize()} ago";
+                            ToolTip.SetTip(view.LastUploadedText, lastUploaded.ToString("F"));
+                        }
+                    )
+                    .AddTo(disposables);
+                
+                this.OneWayR3Bind(static view => view.BindableViewModel, 
                         static vm => vm.RevisionNumber, 
                         static (view, revision) => view.RevisionText.Text = $"Revision {revision.ToString()}")
                     .AddTo(disposables);
@@ -96,7 +108,10 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 
                 this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                     .AddTo(disposables);
-
+                
+                this.BindCommand(ViewModel, vm => vm.CommandChangeVisibility, view => view.ButtonChangeVisibility)
+                    .AddTo(disposables);
+                
                 this.ObserveViewModelProperty(static view => view.BindableViewModel, 
                         static vm => vm.IsCollectionUploaded)
                     .Subscribe(this, static (isCollectionUploaded, self) =>
@@ -104,6 +119,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                             self.ButtonShareCollection.IsVisible = !isCollectionUploaded;
                             self.SplitButtonPublishCollection.IsVisible = isCollectionUploaded;
                             self.VisibilityButtonStack.IsVisible = isCollectionUploaded;
+                            self.IsUploadedStack.IsVisible = isCollectionUploaded;
                         }
                     ).AddTo(disposables);
                 

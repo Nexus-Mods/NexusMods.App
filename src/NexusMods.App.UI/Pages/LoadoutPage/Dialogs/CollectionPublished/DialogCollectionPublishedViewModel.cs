@@ -15,6 +15,7 @@ public interface IDialogCollectionPublishedViewModel : IViewModelInterface
     CollectionStatus CollectionStatus { get; }
     Uri CollectionUrl { get; }
     ReactiveCommand<Unit> CommandCopyUrl { get; }
+    bool FirstPublish { get;  }
 }
 
 public class DialogCollectionPublishedViewModel : AViewModel<IDialogCollectionPublishedViewModel>, IDialogCollectionPublishedViewModel
@@ -23,12 +24,14 @@ public class DialogCollectionPublishedViewModel : AViewModel<IDialogCollectionPu
     public CollectionStatus CollectionStatus { get; set; }
     public Uri CollectionUrl { get; }
     public ReactiveCommand<Unit> CommandCopyUrl { get; }
+    public bool FirstPublish { get; }
 
-    public DialogCollectionPublishedViewModel(string collectionName, CollectionStatus collectionStatus, Uri collectionUrl)
+    public DialogCollectionPublishedViewModel(string collectionName, CollectionStatus collectionStatus, Uri collectionUrl, bool firstPublish = false)
     {
         CollectionName = collectionName;
         CollectionUrl = collectionUrl;
         CollectionStatus = collectionStatus;
+        FirstPublish = firstPublish;
 
         CommandCopyUrl = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
         {

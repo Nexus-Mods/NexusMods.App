@@ -23,6 +23,7 @@ public static class R3Extensions
     {
         return view
             .ObserveViewModelProperty(viewModelSelector, vmPropertySelector)
+            .ObserveOnUIThreadDispatcher()
             .Subscribe((view, updater), static (itemCount, state) => state.updater(state.view, itemCount));
     }
 

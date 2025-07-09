@@ -39,4 +39,5 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     ReactiveCommand<Unit> CommandUploadDraftRevision { get; }
     ReactiveCommand<Unit> CommandUploadAndPublishRevision { get; }
     ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
+    ReactiveCommand<Unit> CommandChangeVisibility { get; }
 }

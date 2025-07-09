@@ -16,32 +16,46 @@ public partial class DialogCollectionPublishedView : ReactiveUserControl<IDialog
     public DialogCollectionPublishedView()
     {
         InitializeComponent();
-        
-        this.WhenActivated(disposables =>
-        {
-            this.WhenAnyValue(view => view.ViewModel!.CollectionStatus)
-                .Subscribe(status =>
-                {
-                    TextDescription.Text = status switch
-                    {
-                        CollectionStatus.Listed => $"\"{ViewModel!.CollectionName}\" has been published as unlisted. Only people with the link can view it.",
-                        CollectionStatus.Unlisted => $"\"{ViewModel!.CollectionName}\" has been published as listed. It will appear in search results and may be featured.",
-                    };
-                })
-                .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, 
-                    vm => vm.CollectionUrl, 
-                    view => view.TextBoxUrl.Text, 
-                    uri => uri.AbsoluteUri
-                )
-                .DisposeWith(disposables);
-            
-            this.BindCommand(ViewModel, 
-                    vm => vm.CommandCopyUrl, 
-                    v => v.ButtonCopyToClipboard)
-                .DisposeWith(disposables);
-        });
+        this.WhenActivated(disposables =>
+            {
+                this.WhenAnyValue(view => view.ViewModel!.CollectionStatus,
+                        view => view.ViewModel!.FirstPublish
+                    )
+                    .Subscribe(tuple =>
+                        {
+                            var (status, firstPublish) = tuple;
+
+                            if (firstPublish)
+                            {
+                                TextDescription.Text = status == CollectionStatus.Listed
+                                    ? $"\"{ViewModel!.CollectionName}\" has been published as unlisted. Only people with the link can view it."
+                                    : $"\"{ViewModel!.CollectionName}\" has been published as listed. It will appear in search results and may be featured.";
+
+                                TextHelp.Text = "You can change the visibility of your collection at any time in the collection settings.";
+                            }
+                            else
+                            {
+                                TextDescription.Text = $"\"{ViewModel!.CollectionName}\" has been published.";
+                                TextHelp.Text = "We recommend you update this revision's changelog so users can find out what's new.";
+                            }
+                        }
+                    )
+                    .DisposeWith(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.CollectionUrl,
+                        view => view.TextBoxUrl.Text,
+                        uri => uri.AbsoluteUri
+                    )
+                    .DisposeWith(disposables);
+
+                this.BindCommand(ViewModel,
+                        vm => vm.CommandCopyUrl,
+                        v => v.ButtonCopyToClipboard
+                    )
+                    .DisposeWith(disposables);
+            }
+        );
     }
 }
-

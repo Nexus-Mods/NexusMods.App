@@ -1,4 +1,7 @@
 using System.Reactive.Disposables;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input.Platform;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,6 +84,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CommandUploadDraftRevision { get; }
     public ReactiveCommand<Unit> CommandUploadAndPublishRevision { get; }
     public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
+    public ReactiveCommand<Unit> CommandChangeVisibility { get; }
 
     private readonly IServiceProvider _serviceProvider;
     private readonly NexusModsLibrary _nexusModsLibrary;
@@ -190,7 +194,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var collectionPublishedViewModel = new DialogCollectionPublishedViewModel(
                     collection.Name,
                     collection.Status.Value,
-                    collectionUriWithoutQuery.Uri
+                    collectionUriWithoutQuery.Uri,
+                    true
                 );
                 
                 var collectionPublishedDialog = DialogFactory.CreateDialog("Your Collection is Now Published!",
@@ -230,7 +235,55 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             {
                 _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                 HasOutstandingChanges.Value = false;
+                
+                var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
+                if (!managedCollectionLoadoutGroup.IsValid()) return;
+                
+                // strip out querystring from uri so we don't show it in the UI
+                var collectionUriWithoutQuery = new UriBuilder(GetCollectionUri(managedCollectionLoadoutGroup.Collection))
+                {
+                    Query = string.Empty,
+                };
+                
+                // pass in current collection status and collection url
+                var collectionPublishedViewModel = new DialogCollectionPublishedViewModel(
+                    managedCollectionLoadoutGroup.Collection.Name,
+                    managedCollectionLoadoutGroup.Collection.Status.Value,
+                    collectionUriWithoutQuery.Uri
+                );
+                
+                var collectionPublishedDialog = DialogFactory.CreateDialog($"Revision {RevisionNumber} is Now Published!",
+                    [
+                        new DialogButtonDefinition(
+                            "Close",
+                            ButtonDefinitionId.Close,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "Update Changelog",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary,
+                            IconValues.OpenInNew
+                        ),
+                    ],
+                    collectionPublishedViewModel
+                );
+                
+                var collectionPublishedResult = await windowManager.ShowDialog(collectionPublishedDialog, DialogWindowType.Modal);
+                
+                if (collectionPublishedResult.ButtonId != ButtonDefinitionId.Accept) return;
+                
+                // open up changelog URL in browser
+                var uri = GetCollectionChangelogUri(managedCollectionLoadoutGroup.Collection);
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                
             }, maxSequential: 1, configureAwait: false);
+            
+            CommandChangeVisibility = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            {
+                
+            }, configureAwait: false);
 
             CommandOpenRevisionUrl = IsCollectionUploaded.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
@@ -238,7 +291,10 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 if (!managedCollectionLoadoutGroup.IsValid()) return;
 
                 var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
-                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                
+                // copy to clipboard instead of opening the URL directly
+                await GetClipboard().SetTextAsync(uri.AbsoluteUri);
+                
             }, configureAwait: false);
 
             CommandRenameGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
@@ -280,6 +336,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CommandUploadDraftRevision = new ReactiveCommand();
             CommandUploadAndPublishRevision = new ReactiveCommand();
             CommandOpenRevisionUrl = new ReactiveCommand();
+            CommandChangeVisibility = new ReactiveCommand();
         }
 
         CommandDeselectItems = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
@@ -489,7 +546,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .DisposeWith(disposables);
         });
     }
-
+    
+    private Uri GetCollectionChangelogUri(CollectionMetadata.ReadOnly collection)
+    {
+        var mappingCache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        var gameDomain = mappingCache[collection.GameId];
+        var uri = NexusModsUrlBuilder.GetCollectionChangelogUri(gameDomain, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+        return uri;
+    }
+    
     private Uri GetCollectionUri(CollectionMetadata.ReadOnly collection)
     {
         var mappingCache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
@@ -600,5 +665,14 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private static bool IsRequired(LoadoutItemId id, IConnection connection)
     {
         return NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(LoadoutItem.Load(connection.Db, id), out var isRequired) && isRequired;
+    }
+    
+    private static IClipboard GetClipboard() {
+
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window }) {
+            return window.Clipboard!;
+        }
+
+        return null!;
     }
 }

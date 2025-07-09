@@ -30,11 +30,10 @@
             </Panel>
         </StackPanel>
 
-        <TextBlock
-            Text="You can change the visibility at any time in your collection settings."
-            FontStyle="Italic"
-            Foreground="{StaticResource NeutralSubduedBrush}"
-            TextWrapping="Wrap" />
+        <TextBlock x:Name="TextHelp"
+                   Text="You can change the visibility at any time in your collection settings."
+                   Foreground="{StaticResource NeutralSubduedBrush}"
+                   TextWrapping="Wrap" />
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>
