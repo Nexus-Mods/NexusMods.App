@@ -42,7 +42,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     IPropertyUIBuilder<TSettings, TProperty>,
     IPropertyUIBuilder<TSettings, TProperty>.IWithDisplayNameStep,
     IPropertyUIBuilder<TSettings, TProperty>.IWithDescriptionStep,
-    IPropertyUIBuilder<TSettings, TProperty>.IWithLinkStep,
+    IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep,
     IPropertyUIBuilder<TSettings, TProperty>.IRequiresRestartStep
     where TSettings : class, ISettings, new()
     where TProperty : notnull
@@ -50,6 +50,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
     private SectionId _sectionId = SectionId.DefaultValue;
     private string _displayName = string.Empty;
     private Func<TProperty, string> _descriptionFactory = _ => string.Empty;
+    private Func<TProperty, ValidationResult>? _validator;
     private Uri? _link = null;
     private bool _requiresRestart;
     private string? _restartMessage;
@@ -66,6 +67,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         _requiresRestart,
         _restartMessage,
         _factory!,
+        _validator,
         selectorFunc,
         propertySetterDelegate
     );
@@ -82,21 +84,27 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
         return this;
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IWithLinkStep WithDescription(string description)
+    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep WithDescription(string description)
     {
         _descriptionFactory = _ => description;
         return this;
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IWithLinkStep WithDescription(Func<TProperty, string> descriptionFactory)
+    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep WithDescription(Func<TProperty, string> descriptionFactory)
     {
         _descriptionFactory = descriptionFactory;
         return this;
     }
 
-    public IPropertyUIBuilder<TSettings, TProperty>.IConfigureValueContainerStep WithLink(Uri link)
+    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep WithLink(Uri link)
     {
         _link = link;
+        return this;
+    }
+
+    public IPropertyUIBuilder<TSettings, TProperty>.IOptionalStep WithValidation(Func<TProperty, ValidationResult> validator)
+    {
+        _validator = validator;
         return this;
     }
 
@@ -150,7 +158,7 @@ internal class PropertyUIBuilder<TSettings, TProperty> :
 
         return this;
     }
-    
+
     private class ConfigurablePathsContainerFactory : ISettingsPropertyValueContainerFactory
     {
         public SettingsPropertyValueContainer Create(object currentValue, object defaultValue, IPropertyBuilderOutput propertyBuilderOutput)
