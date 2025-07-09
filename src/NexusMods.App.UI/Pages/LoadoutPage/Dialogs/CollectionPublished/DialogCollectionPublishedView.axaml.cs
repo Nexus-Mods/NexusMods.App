@@ -24,13 +24,22 @@ public partial class DialogCollectionPublishedView : ReactiveUserControl<IDialog
                 {
                     TextDescription.Text = status switch
                     {
-                        CollectionStatus.Listed => $"{ViewModel!.CollectionName} has been published as unlisted. Only people with the link can view it.",
-                        CollectionStatus.Unlisted => $"{ViewModel!.CollectionName} has been published as listed. It will appear in search results and may be featured.",
+                        CollectionStatus.Listed => $"\"{ViewModel!.CollectionName}\" has been published as unlisted. Only people with the link can view it.",
+                        CollectionStatus.Unlisted => $"\"{ViewModel!.CollectionName}\" has been published as listed. It will appear in search results and may be featured.",
                     };
                 })
                 .DisposeWith(disposables);
 
-            this.OneWayBind(ViewModel, vm => vm.CollectionUrl, view => view.TextBoxUrl.Text, url => url.AbsoluteUri)
+            this.OneWayBind(ViewModel, 
+                    vm => vm.CollectionUrl, 
+                    view => view.TextBoxUrl.Text, 
+                    uri => uri.AbsoluteUri
+                )
+                .DisposeWith(disposables);
+            
+            this.BindCommand(ViewModel, 
+                    vm => vm.CommandCopyUrl, 
+                    v => v.ButtonCopyToClipboard)
                 .DisposeWith(disposables);
         });
     }

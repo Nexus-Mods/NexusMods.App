@@ -46,6 +46,7 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
 using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished;
 using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
@@ -214,6 +215,8 @@ public static class Services
             .AddViewModel<DialogStandardContentViewModel, IDialogStandardContentViewModel>()
             .AddView<DialogShareCollectionView, IDialogShareCollectionViewModel>()
             .AddViewModel<DialogShareCollectionViewModel, IDialogShareCollectionViewModel>()
+            .AddView<DialogCollectionPublishedView, IDialogCollectionPublishedViewModel>()
+            .AddViewModel<DialogCollectionPublishedViewModel, IDialogCollectionPublishedViewModel>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()

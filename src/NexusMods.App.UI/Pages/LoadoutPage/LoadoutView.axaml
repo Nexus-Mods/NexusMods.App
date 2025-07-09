@@ -50,6 +50,7 @@
                     <!-- STATUSBAR -->
 
                     <controls:Statusbar Grid.Row="0" x:Name="Statusbar">
+
                         <StackPanel>
 
                             <controls:StandardButton Size="Toolbar"
@@ -58,10 +59,8 @@
                                                      LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                                      ShowIcon="Left"
                                                      ShowLabel="False">
-
                                 <controls:StandardButton.Flyout>
                                     <MenuFlyout>
-
                                         <!-- not used yet as we don't show local collections in Library -> Collections tab yet -->
                                         <MenuItem IsVisible="False">
                                             <MenuItem.Icon>
@@ -93,14 +92,18 @@
                                 </controls:StandardButton.Flyout>
                             </controls:StandardButton>
 
-                            <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
+                            <controls:StandardButton x:Name="ButtonRefresh"
                                                      Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
-                                                     LeftIcon="{x:Static icons:IconValues.Link}"
+                                                     LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                      ShowIcon="Left"
                                                      ShowLabel="False" />
-
+                        </StackPanel>
+                        
+                        <Separator />
+                        
+                        <StackPanel>
                             <controls:StandardButton x:Name="ButtonShareCollection"
                                                      Text="Share"
                                                      Size="Toolbar"
@@ -108,10 +111,27 @@
                                                      Type="Tertiary"
                                                      LeftIcon="{x:Static icons:IconValues.Upload}"
                                                      ShowIcon="Left" />
-                            
+
+                            <StackPanel x:Name="VisibilityButtonStack" Orientation="Horizontal">
+                                <controls:StandardButton x:Name="ButtonChangeVisibility"
+                                                         Text="Visibility"
+                                                         Size="Toolbar"
+                                                         Fill="Weak"
+                                                         Type="Tertiary"
+                                                         LeftIcon="{x:Static icons:IconValues.Lock}"
+                                                         ShowIcon="Left" />
+                                <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
+                                                         Size="Toolbar"
+                                                         Fill="Weak"
+                                                         Type="Tertiary"
+                                                         LeftIcon="{x:Static icons:IconValues.Link}"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False" />
+                            </StackPanel>
+
                             <SplitButton x:Name="SplitButtonPublishCollection" Classes="StandardSplitButton ExtraSmall">
-                                <StackPanel Orientation="Horizontal">
-                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}" />
                                     <TextBlock Text="Publish" />
                                 </StackPanel>
                                 <SplitButton.Flyout>
@@ -131,9 +151,18 @@
                             </SplitButton>
                         </StackPanel>
 
-                        <StackPanel x:Name="StatusStack" Orientation="Horizontal">
-                            <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.Pencil}" />
-                            <TextBlock x:Name="StatusText" Text="Revision 2 (Draft)" />
+                        <Separator />
+
+                        <StackPanel x:Name="StatusStack" Orientation="Horizontal" Spacing="8">
+                            <TextBlock x:Name="RevisionText" Text="Revision 1"
+                                       Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
+                            <controls:Divider />
+                            <StackPanel x:Name="PublishedStatusStack" Orientation="Horizontal" Spacing="4">
+                                <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.CloudUpload}" />
+                                <TextBlock x:Name="StatusText" Text="Published" />
+                            </StackPanel>
+                            <TextBlock x:Name="TimeDateText" Text="1 min ago"
+                                       Foreground="{StaticResource NeutralSubduedBrush}" />
                         </StackPanel>
                     </controls:Statusbar>
 

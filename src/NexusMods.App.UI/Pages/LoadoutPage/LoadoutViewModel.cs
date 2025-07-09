@@ -174,14 +174,19 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialCollectionStatus, cancellationToken);
                 
                 IsCollectionUploaded.Value = true;
-                
                 // now we have uploaded the collection, we can show the success dialog
+                
+                // strip out querystring from uri so we don't show it in the UI
+                var collectionUriWithoutQuery = new UriBuilder(GetCollectionUri(collection))
+                {
+                    Query = string.Empty,
+                };
                 
                 // pass in current collection status and collection url
                 var collectionPublishedViewModel = new DialogCollectionPublishedViewModel(
                     collection.Name,
                     collection.Status.Value,
-                    GetCollectionUri(collection)
+                    collectionUriWithoutQuery.Uri
                 );
                 
                 var collectionPublishedDialog = DialogFactory.CreateDialog("Your Collection is Now Published!",

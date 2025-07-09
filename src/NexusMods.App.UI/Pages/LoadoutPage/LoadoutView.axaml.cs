@@ -32,9 +32,11 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
 
                         var isCollection = vm?.IsCollection ?? false;
-                        //view.AllPageHeader.IsVisible = !isCollection;
-                        //view.Statusbar.IsVisible = isCollection;
-                        //view.ButtonShareCollection.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
+                        
+                        view.AllPageHeader.IsVisible = !isCollection;
+                        view.Statusbar.IsVisible = isCollection;
+                        
+                        view.ButtonShareCollection.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
                         view.WritableCollectionPageHeader.IsVisible = isCollection;
 
                         var selectedSubTab = vm?.SelectedSubTab;
@@ -70,6 +72,11 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 
                 this.OneWayR3Bind(static view => view.BindableViewModel, static vm => vm.ItemCount, static (view, count) => view.ModsCount.Text = count.ToString())
                     .AddTo(disposables);
+                
+                this.OneWayR3Bind(static view => view.BindableViewModel, 
+                        static vm => vm.RevisionNumber, 
+                        static (view, revision) => view.RevisionText.Text = $"Revision {revision.ToString()}")
+                    .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.CommandDeselectItems, view => view.DeselectItemsButton)
                     .AddTo(disposables);
@@ -89,26 +96,16 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                     .AddTo(disposables);
 
-                this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.IsCollectionUploaded)
+                this.ObserveViewModelProperty(static view => view.BindableViewModel, 
+                        static vm => vm.IsCollectionUploaded)
                     .Subscribe(this, static (isCollectionUploaded, self) =>
                         {
                             self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
-                            self.ButtonOpenRevisionUrl.IsVisible = isCollectionUploaded;
-
-                            if (isCollectionUploaded)
-                            {
-                                self.StatusText.Classes.Add("Success");
-                                self.StatusIcon.Classes.Add("Success");
-                                self.StatusIcon.Value = IconValues.CollectionsOutline;
-                            }
-                            else
-                            {
-                                self.StatusText.Classes.Remove("Success");
-                                self.StatusIcon.Classes.Remove("Success");
-                                self.StatusIcon.Value = IconValues.Info;
-                            }
-
-                            self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
+                            
+                            self.ButtonShareCollection.IsVisible = !isCollectionUploaded;
+                            self.SplitButtonPublishCollection.IsVisible = isCollectionUploaded;
+                            self.VisibilityButtonStack.IsVisible = isCollectionUploaded;
+                            self.PublishedStatusStack.IsVisible = isCollectionUploaded;
                         }
                     ).AddTo(disposables);
 

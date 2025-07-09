@@ -11,25 +11,30 @@
                                 x:Class="NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished.DialogCollectionPublishedView">
 
     <StackPanel Spacing="16">
-        <TextBlock Text="'My new collection' has been published as unlisted. Only people with the link can view it."
+        <TextBlock x:Name="TextDescription"
+                   Text="'My new collection' has been published as unlisted. Only people with the link can view it."
                    TextWrapping="Wrap"
                    Foreground="{StaticResource NeutralSubduedBrush}" />
-        <StackPanel>
+        <StackPanel Spacing="4">
             <TextBlock Text="Share this link" />
             <Panel>
-                <TextBox  x:Name="TextBoxUrl" IsReadOnly="True" Text="https://nexusmods.com" />
-                <controls:StandardButton ShowIcon="IconOnly"
+                <TextBox x:Name="TextBoxUrl"
+                         IsReadOnly="True"
+                         Text="https://www.nexusmods.com/games/stardewvalley/collections/maidgk"
+                         Padding="4 4 28 0" />
+                <controls:StandardButton x:Name="ButtonCopyToClipboard"
+                                         ShowIcon="IconOnly"
                                          LeftIcon="{x:Static icons:IconValues.Copy}"
                                          HorizontalAlignment="Right"
                                          Margin="0 0 6 0" />
             </Panel>
         </StackPanel>
 
-        <TextBlock x:Name="TextDescription"
-                   Text="You can change the visibility at any time in your collection settings."
-                   FontStyle="Italic"
-                   Foreground="{StaticResource NeutralSubduedBrush}"
-                   TextWrapping="Wrap" />
+        <TextBlock
+            Text="You can change the visibility at any time in your collection settings."
+            FontStyle="Italic"
+            Foreground="{StaticResource NeutralSubduedBrush}"
+            TextWrapping="Wrap" />
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>

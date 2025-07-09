@@ -330,6 +330,9 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/pencil/
     public static readonly IconValue Pencil = new ProjektankerIcon("mdi-pencil");
+    
+    // https://pictogrammers.com/library/mdi/icon/cloud-upload-outline/
+    public static readonly IconValue CloudUpload = new ProjektankerIcon("mdi-cloud-upload-outline");
 
 #endregion
 
