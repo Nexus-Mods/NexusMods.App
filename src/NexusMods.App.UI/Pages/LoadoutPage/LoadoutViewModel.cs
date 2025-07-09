@@ -55,7 +55,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     IReadOnlyBindableReactiveProperty<string> ILoadoutViewModel.CollectionName => CollectionName;
     private BindableReactiveProperty<bool> IsCollectionUploaded { get; }
     IReadOnlyBindableReactiveProperty<bool> ILoadoutViewModel.IsCollectionUploaded => IsCollectionUploaded;
-    
+
     private BindableReactiveProperty<CollectionStatus> CollectionStatus { get; }
     IReadOnlyBindableReactiveProperty<CollectionStatus> ILoadoutViewModel.CollectionStatus => CollectionStatus;
     private BindableReactiveProperty<RevisionStatus> RevisionStatus { get; }
@@ -71,9 +71,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CommandRemoveItem { get; }
     public ReactiveCommand<Unit> CommandDeselectItems { get; }
 
-    public ReactiveCommand<Unit> CommandUploadRevision { get; }
-    public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
     public ReactiveCommand<Unit> CommandRenameGroup { get; }
+    public ReactiveCommand<Unit> CommandShareCollection { get; }
+    public ReactiveCommand<Unit> CommandUploadRevision { get; }
+    public ReactiveCommand<Unit> CommandPublishRevision { get; }
+    public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
 
     private readonly IServiceProvider _serviceProvider;
     private readonly NexusModsLibrary _nexusModsLibrary;
@@ -135,24 +137,28 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, canEditObservable: isSingleCollectionObservable);
 
-            CommandUploadRevision = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            CommandShareCollection = IsCollectionUploaded.Select(static b => !b).ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
-                var shareDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollection(CollectionName.Value) : LoadoutDialogs.ShareCollection(CollectionName.Value);
+                var shareDialog = LoadoutDialogs.ShareCollection(CollectionName.Value);
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
                 if (shareDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
 
-                var collection = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value, cancellationToken);
-                var successDialog = IsCollectionUploaded.Value ? LoadoutDialogs.UpdateCollectionSuccess(CollectionName.Value) : LoadoutDialogs.ShareCollectionSuccess(CollectionName.Value);
+                // TODO: get initial collection status from result
+                var initialStatus = Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
+                var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialStatus, cancellationToken);
+                IsCollectionUploaded.Value = true;
+            });
 
-                var successDialogResult = await windowManager.ShowDialog(successDialog, DialogWindowType.Modal);
-
-                IsCollectionUploaded.Value = CollectionCreator.IsCollectionUploaded(_connection, collectionGroupId.Value, out _);
+            CommandUploadRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            {
+                _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                 HasOutstandingChanges.Value = false;
+            }, maxSequential: 1, configureAwait: false);
 
-                if (successDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
-
-                var uri = GetCollectionUri(collection);
-                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+            CommandPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            {
+                _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
+                HasOutstandingChanges.Value = false;
             }, maxSequential: 1, configureAwait: false);
 
             CommandOpenRevisionUrl = IsCollectionUploaded.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
@@ -197,9 +203,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
-            CommandUploadRevision = new ReactiveCommand();
-            CommandOpenRevisionUrl = new ReactiveCommand();
             CommandRenameGroup = new ReactiveCommand();
+            CommandShareCollection = new ReactiveCommand();
+            CommandUploadRevision = new ReactiveCommand();
+            CommandPublishRevision = new ReactiveCommand();
+            CommandOpenRevisionUrl = new ReactiveCommand();
         }
 
         CommandDeselectItems = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
@@ -293,7 +301,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         title: "Uninstall mod(s)",
                         new StandardDialogParameters()
                         {
-                         Text = $"""
+                            Text = $"""
                          This will remove the selected mod(s) from:
                          
                          {CollectionName}
