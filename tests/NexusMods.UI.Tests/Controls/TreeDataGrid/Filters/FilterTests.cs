@@ -330,7 +330,7 @@ public class FilterTests
     }
 
     [Fact]
-    public void Filter_WithIrrelevantComponents_ShouldPassThrough()
+    public void Filter_WithIrrelevantComponents_ShouldFail()
     {
         // Arrange
         var model = CreateTestModel();
@@ -343,7 +343,7 @@ public class FilterTests
         var result = nameFilter.MatchesRow(model);
 
         // Assert
-        result.Should().BeTrue(); // Should pass through since no relevant components
+        result.Should().BeFalse();
     }
 
     [Fact]
