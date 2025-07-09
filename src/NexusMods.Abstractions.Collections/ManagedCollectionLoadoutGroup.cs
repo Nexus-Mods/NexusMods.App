@@ -38,6 +38,11 @@ public partial class ManagedCollectionLoadoutGroup : IModelDefinition
     public static readonly RevisionIdAttribute CurrentRevisionId = new(Namespace, nameof(CurrentRevisionId)) { IsOptional = true };
 
     /// <summary>
+    /// Date when revision was last uploaded.
+    /// </summary>
+    public static readonly TimestampAttribute LastUploadDate = new(Namespace, nameof(LastUploadDate));
+
+    /// <summary>
     /// Creates a <see cref="RevisionStatus"/>.
     /// </summary>
     public static RevisionStatus ToStatus(RevisionNumber currentRevisionNumber, Optional<RevisionNumber> lastPublishedRevision)
