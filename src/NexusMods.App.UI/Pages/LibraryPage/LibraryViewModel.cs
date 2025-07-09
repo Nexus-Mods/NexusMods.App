@@ -522,7 +522,7 @@ public class LibraryTreeDataGridAdapter :
     private readonly IConnection _connection;
 
     public Subject<OneOf<InstallMessage, UpdateMessage, ViewChangelogMessage, ViewModPageMessage, HideUpdatesMessage>> MessageSubject { get; } = new();
-
+    
     public LibraryTreeDataGridAdapter(IServiceProvider serviceProvider, LibraryFilter libraryFilter)
     {
         _libraryFilter = libraryFilter;

@@ -38,6 +38,7 @@
                     <icons:UnifiedIcon Classes="PlayCircleOutline" />
                     <icons:UnifiedIcon Classes="PlayCircleFilled" />
                     <icons:UnifiedIcon Classes="Image" />
+                    <icons:UnifiedIcon Classes="ImageOutline" />
                     <icons:UnifiedIcon Classes="Description" />
                     <icons:UnifiedIcon Classes="Tune" />
                     <icons:UnifiedIcon Classes="ArrowLeft" />
@@ -196,6 +197,11 @@
                     <icons:UnifiedIcon Classes="PictogramUpload" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramSuccess" />
+                    <icons:UnifiedIcon Classes="PictogramSuccess" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramSuccess" Size="48" />
+                </WrapPanel>
+                <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Warning" />
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Critical" />
@@ -311,7 +317,11 @@
     <Style Selector="icons|UnifiedIcon.Image">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Image}" />
     </Style>
-
+    
+    <Style Selector="icons|UnifiedIcon.ImageOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ImageOutline}" />
+    </Style>
+    
     <Style Selector="icons|UnifiedIcon.Description">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Description}" />
     </Style>
@@ -768,5 +778,8 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.Link">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Link}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramSuccess">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramSuccess}" />
     </Style>
 </Styles>

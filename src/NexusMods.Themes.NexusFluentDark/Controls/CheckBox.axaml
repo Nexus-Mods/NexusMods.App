@@ -66,7 +66,7 @@
 
     <!-- the box -->
     <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUnchecked"
-                    ResourceKey="NeutralModerateBrush" />
+                    ResourceKey="NeutralSubduedBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPointerOver"
                     ResourceKey="NeutralModerateBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundStrokeUncheckedPressed"
@@ -98,9 +98,9 @@
                      Color="{StaticResource SurfaceLow}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
-    <StaticResource x:Key="CheckBoxCheckBackgroundFillChecked" ResourceKey="NeutralTranslucentStrongBrush" />
+    <StaticResource x:Key="CheckBoxCheckBackgroundFillChecked" ResourceKey="NeutralSubduedBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver"
-                    ResourceKey="NeutralTranslucentStrongBrush" />
+                    ResourceKey="NeutralSubduedBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundFillCheckedPressed"
                     ResourceKey="NeutralTranslucentStrongBrush" />
     <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedDisabled"
@@ -108,7 +108,7 @@
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
     <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminate"
-                    ResourceKey="NeutralTranslucentStrongBrush" />
+                    ResourceKey="NeutralSubduedBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePointerOver"
                     ResourceKey="NeutralTranslucentStrongBrush" />
     <StaticResource x:Key="CheckBoxCheckBackgroundFillIndeterminatePressed"

@@ -176,7 +176,7 @@
 
                     <controls:Toolbar Grid.Row="1" Margin="24,12, 24, 0">
                         <!-- selection related button group -->
-                        <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl x:Name="ContextControlGroup">
 
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"

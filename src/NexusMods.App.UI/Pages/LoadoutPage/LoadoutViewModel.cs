@@ -65,6 +65,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     IReadOnlyBindableReactiveProperty<RevisionStatus> ILoadoutViewModel.RevisionStatus => RevisionStatus;
     private BindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
     IReadOnlyBindableReactiveProperty<RevisionNumber> ILoadoutViewModel.RevisionNumber => RevisionNumber;
+    private BindableReactiveProperty<DateTimeOffset> LastUploadedDate { get; }
+    IReadOnlyBindableReactiveProperty<DateTimeOffset> ILoadoutViewModel.LastUploadedDate => LastUploadedDate;
     private BindableReactiveProperty<bool> HasOutstandingChanges { get; } = new(value: true);
     IReadOnlyBindableReactiveProperty<bool> ILoadoutViewModel.HasOutstandingChanges => HasOutstandingChanges;
 
@@ -121,6 +123,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 CollectionStatus = new BindableReactiveProperty<CollectionStatus>(value: managed.Collection.Status.ValueOr(() => Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted));
                 RevisionStatus = new BindableReactiveProperty<RevisionStatus>(value: managed.ToStatus());
                 RevisionNumber = new BindableReactiveProperty<RevisionNumber>(value: managed.CurrentRevisionNumber);
+                LastUploadedDate = new BindableReactiveProperty<DateTimeOffset>(value: managed.LastUploadDate);
             }
             else
             {
@@ -128,6 +131,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 CollectionStatus = new BindableReactiveProperty<CollectionStatus>(value: Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted);
                 RevisionStatus = new BindableReactiveProperty<RevisionStatus>(value: Abstractions.NexusModsLibrary.Models.RevisionStatus.Draft);
                 RevisionNumber = new BindableReactiveProperty<RevisionNumber>(value: Abstractions.NexusWebApi.Types.RevisionNumber.From(1));
+                LastUploadedDate = new BindableReactiveProperty<DateTimeOffset>(value: DateTimeOffset.UtcNow);
             }
 
             // If there are no other collections in the loadout, this is the `My Mods` collection and `All` view is hidden,
@@ -266,6 +270,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CollectionStatus = new BindableReactiveProperty<CollectionStatus>();
             RevisionStatus = new BindableReactiveProperty<RevisionStatus>();
             RevisionNumber = new BindableReactiveProperty<RevisionNumber>();
+            LastUploadedDate = new BindableReactiveProperty<DateTimeOffset>();
 
             TabTitle = Language.LoadoutViewPageTitle;
             TabIcon = IconValues.FormatAlignJustify;
@@ -464,6 +469,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         self.CollectionStatus.Value = model.Collection.Status.ValueOr(() => Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted);
                         self.RevisionStatus.Value = model.ToStatus();
                         self.RevisionNumber.Value = model.CurrentRevisionNumber;
+                        self.LastUploadedDate.Value = model.LastUploadDate;
                     })
                     .AddTo(disposables);
 
