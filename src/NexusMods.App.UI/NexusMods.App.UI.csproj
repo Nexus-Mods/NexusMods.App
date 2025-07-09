@@ -755,6 +755,10 @@
         <Compile Update="Dialog\DialogStandardContentViewModel.cs">
           <DependentUpon>IDialogStandardContentViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\LoadoutPage\Dialogs\ShareCollection\DialogShareCollectionView.axaml.cs">
+          <DependentUpon>DialogShareCollectionView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

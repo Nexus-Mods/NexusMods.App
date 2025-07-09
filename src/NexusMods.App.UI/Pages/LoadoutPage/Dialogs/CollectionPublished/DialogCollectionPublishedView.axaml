@@ -1,0 +1,35 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="collectionPublished:DialogCollectionPublishedViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:collectionPublished="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                mc:Ignorable="d" d:DesignWidth="500"
+                                x:Class="NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished.DialogCollectionPublishedView">
+
+    <StackPanel Spacing="16">
+        <TextBlock Text="'My new collection' has been published as unlisted. Only people with the link can view it."
+                   TextWrapping="Wrap"
+                   Foreground="{StaticResource NeutralSubduedBrush}" />
+        <StackPanel>
+            <TextBlock Text="Share this link" />
+            <Panel>
+                <TextBox  x:Name="TextBoxUrl" IsReadOnly="True" Text="https://nexusmods.com" />
+                <controls:StandardButton ShowIcon="IconOnly"
+                                         LeftIcon="{x:Static icons:IconValues.Copy}"
+                                         HorizontalAlignment="Right"
+                                         Margin="0 0 6 0" />
+            </Panel>
+        </StackPanel>
+
+        <TextBlock x:Name="TextDescription"
+                   Text="You can change the visibility at any time in your collection settings."
+                   FontStyle="Italic"
+                   Foreground="{StaticResource NeutralSubduedBrush}"
+                   TextWrapping="Wrap" />
+    </StackPanel>
+
+</reactiveUi:ReactiveUserControl>

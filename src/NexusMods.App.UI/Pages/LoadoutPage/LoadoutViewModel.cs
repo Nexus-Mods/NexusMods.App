@@ -18,6 +18,8 @@ using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -74,8 +76,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public ReactiveCommand<Unit> CommandRenameGroup { get; }
     public ReactiveCommand<Unit> CommandShareCollection { get; }
-    public ReactiveCommand<Unit> CommandUploadRevision { get; }
-    public ReactiveCommand<Unit> CommandPublishRevision { get; }
+    public ReactiveCommand<Unit> CommandUploadDraftRevision { get; }
+    public ReactiveCommand<Unit> CommandUploadAndPublishRevision { get; }
     public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
 
     private readonly IServiceProvider _serviceProvider;
@@ -138,13 +140,10 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, canEditObservable: isSingleCollectionObservable);
 
-            CommandUploadRevision = Adapter.IsSourceEmpty.Select(b => !b).ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            CommandShareCollection = Adapter.IsSourceEmpty.Select(b => !b).ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
-                // convert CollectionStatus.Value enum to bool
-
-                var isListed = CollectionStatus.Value == Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed;
-
-                var shareViewModel = new DialogShareCollectionViewModel(isListed);
+                // pass in current collection status
+                var shareViewModel = new DialogShareCollectionViewModel(CollectionStatus.Value == Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed);
                 
                 var shareDialog = DialogFactory.CreateDialog("Choose How to Share Your Collection",
                     [
@@ -160,28 +159,65 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                             ButtonStyling.Primary
                         ),
                     ],
-                    shareViewModel,
-                    DialogWindowSize.Medium,
-                    false
+                    shareViewModel
                 );
                 
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
                 
                 if (shareDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
-
-                // TODO: get initial collection status from result
-                var initialStatus = Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
-                var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialStatus, cancellationToken);
+                
+                // Publish has been clicked, so we upload the collection with the new IsListed status
+                var initialCollectionStatus = shareViewModel.IsListed
+                    ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
+                    : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
+                
+                var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialCollectionStatus, cancellationToken);
+                
                 IsCollectionUploaded.Value = true;
+                
+                // now we have uploaded the collection, we can show the success dialog
+                
+                // pass in current collection status and collection url
+                var collectionPublishedViewModel = new DialogCollectionPublishedViewModel(
+                    collection.Name,
+                    collection.Status.Value,
+                    GetCollectionUri(collection)
+                );
+                
+                var collectionPublishedDialog = DialogFactory.CreateDialog("Your Collection is Now Published!",
+                    [
+                        new DialogButtonDefinition(
+                            "Close",
+                            ButtonDefinitionId.Close,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "View Page",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Default,
+                            IconValues.OpenInNew
+                        ),
+                    ],
+                    collectionPublishedViewModel
+                );
+                
+                var collectionPublishedResult = await windowManager.ShowDialog(collectionPublishedDialog, DialogWindowType.Modal);
+                
+                if (collectionPublishedResult.ButtonId != ButtonDefinitionId.Accept) return;
+
+                var uri = GetCollectionUri(collection);
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                
             });
 
-            CommandUploadRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            CommandUploadDraftRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
                 _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                 HasOutstandingChanges.Value = false;
             }, maxSequential: 1, configureAwait: false);
 
-            CommandPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            CommandUploadAndPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
                 _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                 HasOutstandingChanges.Value = false;
@@ -231,8 +267,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
             CommandRenameGroup = new ReactiveCommand();
             CommandShareCollection = new ReactiveCommand();
-            CommandUploadRevision = new ReactiveCommand();
-            CommandPublishRevision = new ReactiveCommand();
+            CommandUploadDraftRevision = new ReactiveCommand();
+            CommandUploadAndPublishRevision = new ReactiveCommand();
             CommandOpenRevisionUrl = new ReactiveCommand();
         }
 

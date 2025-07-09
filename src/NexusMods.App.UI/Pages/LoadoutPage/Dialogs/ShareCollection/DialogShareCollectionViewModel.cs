@@ -1,7 +1,7 @@
 using NexusMods.Abstractions.UI;
 using ReactiveUI.Fody.Helpers;
 
-namespace NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
+namespace NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection;
 
 public interface IDialogShareCollectionViewModel: IViewModelInterface
 {
@@ -12,8 +12,8 @@ public class DialogShareCollectionViewModel : AViewModel<IDialogShareCollectionV
 {
     [Reactive] public bool IsListed { get; set; }
 
-    public DialogShareCollectionViewModel(bool isListed)
+    public DialogShareCollectionViewModel(bool isVisible)
     {
-        IsListed = isListed;
+        IsListed = isVisible;
     }
 }

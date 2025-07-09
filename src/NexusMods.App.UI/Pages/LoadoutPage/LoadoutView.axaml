@@ -27,7 +27,7 @@
             <pageHeader:PageHeader x:Name="AllPageHeader"
                                    Icon="{x:Static icons:IconValues.PictogramPlaylistAdd}"
                                    Title="All"
-                                   Description="A combined view of all your installed mods from all collections."/>
+                                   Description="A combined view of all your installed mods from all collections." />
         </Panel>
 
         <!-- tabs -->
@@ -51,7 +51,7 @@
 
                     <controls:Statusbar Grid.Row="0" x:Name="Statusbar">
                         <StackPanel>
-                                
+
                             <controls:StandardButton Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
@@ -99,27 +99,41 @@
                                                      Type="Tertiary"
                                                      LeftIcon="{x:Static icons:IconValues.Link}"
                                                      ShowIcon="Left"
-                                                     ShowLabel="False"/>
-                            
-                            <controls:StandardButton x:Name="ButtonDiscardChanges"
-                                                     Text="Discard changes"
-                                                     Size="Toolbar"
-                                                     Fill="Weak"
-                                                     Type="Tertiary" />
-                            
-                            <controls:StandardButton x:Name="ButtonUploadCollectionRevision"
-                                                     Text="Upload draft"
+                                                     ShowLabel="False" />
+
+                            <controls:StandardButton x:Name="ButtonShareCollection"
+                                                     Text="Share"
                                                      Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
                                                      LeftIcon="{x:Static icons:IconValues.Upload}"
-                                                     ShowIcon="Left"
-                                                     Classes="Suggestion"/>
+                                                     ShowIcon="Left" />
+                            
+                            <SplitButton x:Name="SplitButtonPublishCollection" Classes="StandardSplitButton ExtraSmall">
+                                <StackPanel Orientation="Horizontal">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
+                                    <TextBlock Text="Publish" />
+                                </StackPanel>
+                                <SplitButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="MenuItemUploadDraft" Header="Upload changes as draft">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem x:Name="MenuItemDiscardChanges" Header="Discard changes">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
                         </StackPanel>
 
                         <StackPanel x:Name="StatusStack" Orientation="Horizontal">
-                            <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.Pencil}" Classes="Suggestion"  />
-                            <TextBlock x:Name="StatusText" Text="Revision 2 (Draft)" Classes="Suggestion" />
+                            <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.Pencil}" />
+                            <TextBlock x:Name="StatusText" Text="Revision 2 (Draft)" />
                         </StackPanel>
                     </controls:Statusbar>
 
@@ -178,7 +192,7 @@
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
                                       Classes="MainListsStyling"
-                                      Margin="0 8 0 0"/>
+                                      Margin="0 8 0 0" />
                     </controls:EmptyState>
                 </Grid>
             </TabItem>
