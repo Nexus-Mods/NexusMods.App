@@ -158,8 +158,14 @@
                                        Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
                             <controls:Divider />
                             <StackPanel x:Name="PublishedStatusStack" Orientation="Horizontal" Spacing="4">
-                                <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.CloudUpload}" />
-                                <TextBlock x:Name="StatusText" Text="Published" />
+                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}" />
+                                <TextBlock Text="Published" />
+                            </StackPanel>
+                            <StackPanel x:Name="HasChangesStack" Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="Draft" 
+                                           Theme="{StaticResource BodySMSemiTheme}"
+                                           Foreground="{StaticResource NeutralStrongBrush}"  />
+                                <TextBlock Text="Not uploaded" Foreground="{StaticResource NeutralSubduedBrush}"  />
                             </StackPanel>
                             <TextBlock x:Name="TimeDateText" Text="1 min ago"
                                        Foreground="{StaticResource NeutralSubduedBrush}" />

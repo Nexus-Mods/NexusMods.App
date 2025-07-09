@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using DynamicData.Binding;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
@@ -31,7 +32,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         view.SortingSelectionView.ViewModel = vm?.RulesSectionViewModel;
                         view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
 
-                        var isCollection = vm?.IsCollection ?? false;
+                        var isCollection = vm?.IsCollection ?? true;
                         
                         view.AllPageHeader.IsVisible = !isCollection;
                         view.Statusbar.IsVisible = isCollection;
@@ -100,15 +101,12 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         static vm => vm.IsCollectionUploaded)
                     .Subscribe(this, static (isCollectionUploaded, self) =>
                         {
-                            self.StatusText.Text = isCollectionUploaded ? "Uploaded" : "Not Uploaded";
-                            
                             self.ButtonShareCollection.IsVisible = !isCollectionUploaded;
                             self.SplitButtonPublishCollection.IsVisible = isCollectionUploaded;
                             self.VisibilityButtonStack.IsVisible = isCollectionUploaded;
-                            self.PublishedStatusStack.IsVisible = isCollectionUploaded;
                         }
                     ).AddTo(disposables);
-
+                
                 this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.SelectionCount)
                     .Subscribe(this, static (count, self) =>
                         {
