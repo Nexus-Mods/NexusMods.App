@@ -94,3 +94,11 @@ mutation AddRequiredCollectionMetadata($collectionId: Int!, $categoryId: ID!, $d
         }
     }
 }
+
+mutation AddHeaderImageToCollection($collectionId: ID!, $image: UploadImageInput!) {
+    addHeaderImageToCollection(collectionId: $collectionId, image: $image) {
+        image {
+            id
+        }
+    }
+}
