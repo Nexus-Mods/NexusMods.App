@@ -75,6 +75,8 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
     
     [Reactive] public bool HasAnyUpdatesAvailable { get; private set; }
 
+    [Reactive] public bool IsUpdatingAll { get; private set; }
+
     [Reactive] public IStorageProvider? StorageProvider { get; set; }
 
     private readonly IServiceProvider _serviceProvider;
@@ -139,9 +141,15 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             awaitOperation: AwaitOperation.Switch
         );
 
-        UpdateAllCommand = new ReactiveCommand<Unit>(
+        // Create an observable that determines when UpdateAll can execute
+        var canUpdateAll = this.WhenAnyValue(vm => vm.IsUpdatingAll)
+            .ToObservable()
+            .Select(isUpdating => !isUpdating);
+
+        UpdateAllCommand = canUpdateAll.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => UpdateAllItems(cancellationToken),
-            awaitOperation: AwaitOperation.Parallel,
+            awaitOperation: AwaitOperation.Sequential,
+            initialCanExecute: true,
             configureAwait: false
         );
 
@@ -950,21 +958,29 @@ After asking design, we're choosing to simply open the mod page for now.
 
     private async ValueTask UpdateAllItems(CancellationToken cancellationToken)
     {
-        var isPremium = _loginManager.IsPremium;
-
-        if (!isPremium)
+        IsUpdatingAll = true;
+        try
         {
-            var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
-            await PremiumDialog.ShowUpdatePremiumDialog(WindowManager, osInterop);
-            return;
-        }
+            var isPremium = _loginManager.IsPremium;
 
-        // Use the efficient method directly from ModUpdateService
-        var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates();
-        var allUpdates = modPagesWithUpdates.Select(pair => pair.updates).ToArray();
-        
-        if (allUpdates.Length > 0)
-            await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, allUpdates);
+            if (!isPremium)
+            {
+                var osInterop = _serviceProvider.GetRequiredService<IOSInterop>();
+                await PremiumDialog.ShowUpdatePremiumDialog(WindowManager, osInterop);
+                return;
+            }
+
+            // Use the efficient method directly from ModUpdateService
+            var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates();
+            var allUpdates = modPagesWithUpdates.Select(pair => pair.updates).ToArray();
+            
+            if (allUpdates.Length > 0)
+                await UpdateAndReplaceForMultiModPagesPremiumOnly(cancellationToken, allUpdates);
+        }
+        finally
+        {
+            IsUpdatingAll = false;
+        }
     }
 
     /// <summary>
