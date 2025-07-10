@@ -184,6 +184,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialCollectionStatus, cancellationToken);
                 
                 IsCollectionUploaded.Value = true;
+                HasOutstandingChanges.Value = false;
+
                 // now we have uploaded the collection, we can show the success dialog
                 
                 // strip out querystring from uri so we don't show it in the UI

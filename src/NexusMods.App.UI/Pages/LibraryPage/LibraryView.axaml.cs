@@ -58,6 +58,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 SearchClearButton.Click += (_, _) =>
                 {
                     SearchTextBox.Text = string.Empty;
+                    // Also collapse the search panel
+                    SearchPanel.IsVisible = false; 
                 };
                 
                 // Show/hide clear button based on text
