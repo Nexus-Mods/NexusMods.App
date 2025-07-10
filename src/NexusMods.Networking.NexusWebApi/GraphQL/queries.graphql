@@ -9,3 +9,15 @@ query QueryGlobalCategories() {
         ...Category
     }
 }
+
+query RequestCollectionRevisionUploadUrl {
+    collectionRevisionUploadUrl {
+        ...PresignedUrl
+    }
+}
+
+query RequestMediaUploadUrl($mimeType: String!) {
+    requestMediaUploadUrl(mimeType: $mimeType) {
+        ...PresignedUrl
+    }
+}

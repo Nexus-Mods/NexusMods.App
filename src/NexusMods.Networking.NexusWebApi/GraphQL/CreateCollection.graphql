@@ -4,12 +4,6 @@ query GetCollectionRevisionUploadUrl {
     }
 }
 
-query RequestMediaUploadUrl($mimeType: String!) {
-    requestMediaUploadUrl(mimeType: $mimeType) {
-        ...PresignedUrl
-    }
-}
-
 mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
     createCollection(collectionData: $payload, uuid: $uuid) {
         success
