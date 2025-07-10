@@ -13,7 +13,7 @@ public interface ILoadoutViewModel : IPageViewModelInterface
 
     LoadoutTreeDataGridAdapter Adapter { get; }
     IReadOnlyBindableReactiveProperty<int> ItemCount { get; }
-    IReadOnlyBindableReactiveProperty<int> SelectionCount { get; } 
+    IReadOnlyBindableReactiveProperty<int> SelectionCount { get; }
 
     LoadoutPageSubTabs SelectedSubTab { get; }
     bool HasRulesSection { get; }
@@ -21,10 +21,11 @@ public interface ILoadoutViewModel : IPageViewModelInterface
 
     bool IsCollection { get; }
     IReadOnlyBindableReactiveProperty<bool> IsCollectionUploaded { get; }
-    IReadOnlyBindableReactiveProperty<string> CollectionName { get; } 
+    IReadOnlyBindableReactiveProperty<string> CollectionName { get; }
     IReadOnlyBindableReactiveProperty<CollectionStatus> CollectionStatus { get; }
     IReadOnlyBindableReactiveProperty<RevisionStatus> RevisionStatus { get; }
     IReadOnlyBindableReactiveProperty<RevisionNumber> RevisionNumber { get; }
+    IReadOnlyBindableReactiveProperty<DateTimeOffset> LastUploadedDate { get; }
     IReadOnlyBindableReactiveProperty<bool> HasOutstandingChanges { get; }
 
     ReactiveCommand<NavigationInformation> CommandOpenLibraryPage { get; }
@@ -33,7 +34,9 @@ public interface ILoadoutViewModel : IPageViewModelInterface
     ReactiveCommand<Unit> CommandRemoveItem { get; }
     ReactiveCommand<Unit> CommandDeselectItems { get; }
 
-    ReactiveCommand<Unit> CommandUploadRevision { get; }
-    ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
     ReactiveCommand<Unit> CommandRenameGroup { get; }
+    ReactiveCommand<Unit> CommandShareCollection { get; }
+    ReactiveCommand<Unit> CommandUploadRevision { get; }
+    ReactiveCommand<Unit> CommandPublishRevision { get; }
+    ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
 }

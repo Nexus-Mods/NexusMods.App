@@ -104,7 +104,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             ChildrenObservable = childrenObservable,
         };
 
-        parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+        parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: modPage.Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
         // Size: sum of library files
@@ -146,7 +146,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 return max.Value.rawVersion;
             });
 
-        parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(
+        parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(
             initialValue: string.Empty,
             valueObservable: currentVersionObservable
         ));
@@ -164,7 +164,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
             componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
-                currentVersion: new StringComponent(
+                currentVersion: new VersionComponent(
                     initialValue: string.Empty,
                     valueObservable: currentUpdateVersionObservable
                 ),
@@ -230,9 +230,9 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         var itemModel = new CompositeItemModel<EntityId>(libraryItem.Id);
 
-        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: fileMetadata.Name));
+        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: fileMetadata.Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: libraryItem.GetCreatedAt()));
-        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: fileMetadata.Version));
+        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(value: fileMetadata.Version));
 
         if (libraryItem.FileMetadata.Size.TryGet(out var size))
             itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
@@ -252,7 +252,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
             componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
-                currentVersion: new StringComponent(value: libraryItem.FileMetadata.Version),
+                currentVersion: new VersionComponent(value: libraryItem.FileMetadata.Version),
                 newVersion: initialValue,
                 newVersionObservable: valueObservable
             )
@@ -324,7 +324,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 ChildrenObservable = childrenObservable,
             };
 
-            parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+            parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: modPage.Name));
             parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
             LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);

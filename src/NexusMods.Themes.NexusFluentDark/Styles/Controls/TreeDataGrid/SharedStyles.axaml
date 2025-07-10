@@ -63,7 +63,7 @@
         </Style>
 
         <!-- name -->
-        <Style Selector="^ Border.SharedColumn_Name_StringComponent TextBlock">
+        <Style Selector="^ Border.SharedColumn_Name_NameComponent TextBlock">
             <Setter Property="Foreground" Value="{StaticResource NeutralModerateBrush}" />
         </Style>
 
