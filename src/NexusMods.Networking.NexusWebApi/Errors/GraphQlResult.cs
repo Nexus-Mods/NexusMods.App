@@ -250,6 +250,45 @@ public static class GraphQlResult
     /// <summary>
     /// Tries to extract all errors.
     /// </summary>
+    public static bool TryExtractErrors<TOperationData, TData>(
+        this IOperationResult<TOperationData> operationResult,
+        [NotNullWhen(true)] out GraphQlResult<TData>? result,
+        [NotNullWhen(false)] out TOperationData? operationData)
+        where TOperationData : class
+        where TData : notnull
+    {
+        var errors = operationResult.Errors;
+        if (errors.Count == 0)
+        {
+            result = null;
+            operationData = AssertOperationData(operationResult);
+            return false;
+        }
+
+        operationData = null;
+        if (errors.Count == 1)
+        {
+            var error = errors[0];
+            var unknownError = CreateUnknownError(error);
+            result = new GraphQlResult<TData>(Helper.ToErrors(unknownError));
+            return true;
+        }
+
+        var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
+
+        foreach (var error in errors)
+        {
+            var unknownError = CreateUnknownError(error);
+            parsedErrors[unknownError.Code] = unknownError;
+        }
+
+        result = new GraphQlResult<TData>(parsedErrors);
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to extract all errors.
+    /// </summary>
     public static bool TryExtractErrors<TOperationData, TData, TError1>(
         this IOperationResult<TOperationData> operationResult,
         [NotNullWhen(true)] out GraphQlResult<TData, TError1>? result,
