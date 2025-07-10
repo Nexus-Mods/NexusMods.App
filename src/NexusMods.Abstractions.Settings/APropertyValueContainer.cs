@@ -14,7 +14,9 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     private T _currentValue;
     private bool _hasChanged;
     private bool _isDefault;
+    private ValidationResult _validationResult;
     private readonly Action<ISettingsManager, T> _updaterFunc;
+    private readonly Func<T, ValidationResult> _validator;
 
     /// <summary>
     /// Gets the equality comparer.
@@ -28,6 +30,7 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
         T value,
         T defaultValue,
         Action<ISettingsManager, T> updaterFunc,
+        Func<T, ValidationResult>? validator = null,
         IEqualityComparer<T>? equalityComparer = null)
     {
         DefaultValue = defaultValue;
@@ -36,11 +39,15 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
         _currentValue = value;
 
         _updaterFunc = updaterFunc;
+        _validator = validator ?? DefaultValidator;
         EqualityComparer = equalityComparer ?? EqualityComparer<T>.Default;
 
         _hasChanged = false;
         _isDefault = EqualityComparer.Equals(value, defaultValue);
+        _validationResult = _validator.Invoke(value);
     }
+
+    private static ValidationResult DefaultValidator(T value) => Settings.ValidationResult.CreateSuccessful();
 
     /// <summary>
     /// Gets the default value.
@@ -77,6 +84,13 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
         private set => SetAndRaise(ref _hasChanged, value);
     }
 
+    /// <inheritdoc/>
+    public ValidationResult ValidationResult
+    {
+        get => _validationResult;
+        private set => SetAndRaise(ref _validationResult, value);
+    }
+
     /// <summary>
     /// Gets whether <see cref="CurrentValue"/> equals <see cref="DefaultValue"/>.
     /// </summary>
@@ -89,6 +103,11 @@ public abstract class APropertyValueContainer<T> : AbstractNotifyPropertyChanged
     /// <inheritdoc/>
     protected override void OnPropertyChanged(string? propertyName = null)
     {
+        if (propertyName is nameof(CurrentValue))
+        {
+            ValidationResult = _validator.Invoke(CurrentValue);
+        }
+
         if (propertyName is nameof(CurrentValue) or nameof(PreviousValue))
         {
             HasChanged = !EqualityComparer.Equals(PreviousValue, CurrentValue);

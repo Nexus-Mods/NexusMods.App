@@ -17,6 +17,7 @@ internal interface IPropertyBuilderOutput
     object GetValue(SettingsManager settingsManager);
     object GetDefaultValue(SettingsManager settingsManager);
     void Update(ISettingsManager settingsManager, object newValue);
+    ValidationResult Validate(object value);
 }
 
 internal interface IPropertyBuilderOutput<TProperty> : IPropertyBuilderOutput where TProperty : notnull
@@ -29,9 +30,16 @@ internal interface IPropertyBuilderOutput<TProperty> : IPropertyBuilderOutput wh
         CoreUpdate(settingsManager, (TProperty)newValue);
     }
 
+    ValidationResult IPropertyBuilderOutput.Validate(object value)
+    {
+        Debug.Assert(value.GetType() == typeof(TProperty));
+        return CoreValidate((TProperty)value);
+    }
+
     TProperty CoreGetValue(SettingsManager settingsManager);
     TProperty CoreGetDefaultValue(SettingsManager settingsManager);
     void CoreUpdate(ISettingsManager settingsManager, TProperty value);
+    ValidationResult CoreValidate(TProperty value);
 }
 
 internal record PropertyBuilderOutput<TSettings, TProperty>(
@@ -42,6 +50,7 @@ internal record PropertyBuilderOutput<TSettings, TProperty>(
     bool RequiresRestart,
     string? RestartMessage,
     ISettingsPropertyValueContainerFactory Factory,
+    Func<TProperty, ValidationResult>? Validator,
     Func<TSettings, TProperty> SelectorFunc,
     Delegate PropertySetterDelegate) : IPropertyBuilderOutput<TProperty>
     where TSettings : class, ISettings, new()
@@ -73,5 +82,11 @@ internal record PropertyBuilderOutput<TSettings, TProperty>(
             PropertySetterDelegate.DynamicInvoke([settings, newValue]);
             return settings;
         });
+    }
+
+    public ValidationResult CoreValidate(TProperty value)
+    {
+        if (Validator is null) return ValidationResult.CreateSuccessful();
+        return Validator.Invoke(value);
     }
 }
