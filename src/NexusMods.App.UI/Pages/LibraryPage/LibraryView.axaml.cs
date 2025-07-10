@@ -64,16 +64,8 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 // Clear button functionality
                 SearchClearButton.Click += (_, _) =>
                 {
-                    SearchTextBox.Text = string.Empty;
-                    // Also collapse the search panel
-                    SearchPanel.IsVisible = false;
+                    ClearSearch();
                 };
-
-                // Show/hide clear button based on text
-                this.WhenAnyValue(view => view.SearchTextBox.Text)
-                    .Select(text => !string.IsNullOrWhiteSpace(text))
-                    .BindToView(this, view => view.SearchClearButton.IsVisible)
-                    .AddTo(disposables);
 
                 // Handle focus when search panel visibility changes
                 this.WhenAnyValue(view => view.SearchPanel.IsVisible)
@@ -179,12 +171,26 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         );
     }
 
+    private void ClearSearch()
+    {
+        SearchTextBox.Text = string.Empty;
+        // Also collapse the search panel
+        SearchPanel.IsVisible = false;
+    }
+
     protected override void OnKeyDown(KeyEventArgs e)
     {
         // Handle Ctrl+F to toggle search panel
         if (e.Key == Key.F && e.KeyModifiers.HasFlag(KeyModifiers.Control))
         {
             ToggleSearchPanelVisibility();
+            e.Handled = true; // Prevent the event from bubbling up
+            return;
+        }
+
+        if (e.Key == Key.Escape && SearchPanel.IsVisible)
+        {
+            ClearSearch();
             e.Handled = true; // Prevent the event from bubbling up
             return;
         }
