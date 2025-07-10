@@ -1,4 +1,3 @@
-
 fragment UserFragment on User {
   name
   avatar
@@ -103,4 +102,13 @@ fragment CollectionFragment on Collection {
 fragment PresignedUrl on PresignedUrl {
     url,
     uuid
+}
+
+fragment Category on Category {
+    id,
+    parentId,
+    name,
+    description,
+    approved,
+    discardedAt
 }
