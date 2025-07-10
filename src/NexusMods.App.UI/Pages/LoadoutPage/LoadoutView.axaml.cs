@@ -95,7 +95,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         static vm => vm.LastUploadedDate, 
                         static (view, lastUploaded) =>
                         {
-                            view.LastUploadedText.Text = $"{(DateTimeOffset.Now - lastUploaded).Humanize()} ago";
+                            view.LastUploadedText.Text = $"{(DateTimeOffset.Now - lastUploaded).Humanize(minUnit: TimeUnit.Second)} ago";
                             ToolTip.SetTip(view.LastUploadedText, lastUploaded.ToString("F"));
                         }
                     )
@@ -155,6 +155,8 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         }
                     )
                     .AddTo(disposables);
+                
+                
             }
         );
     }

@@ -102,3 +102,11 @@ mutation AddHeaderImageToCollection($collectionId: ID!, $image: UploadImageInput
         }
     }
 }
+
+mutation AddTileImageToCollection($collectionId: ID!, $image: UploadImageInput!) {
+    addTileImageToCollection(collectionId: $collectionId, image: $image) {
+        image {
+            id
+        }
+    }
+}

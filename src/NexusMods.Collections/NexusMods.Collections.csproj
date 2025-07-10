@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="default-collection-image.webp" />
+      <EmbeddedResource Include="default-collection-image.webp" />
     </ItemGroup>
 
 </Project>

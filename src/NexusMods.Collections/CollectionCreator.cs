@@ -174,7 +174,7 @@ public static class CollectionCreator
         var (collection, revisionId) = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
         var uploadTime = DateTimeOffset.UtcNow;
 
-        var defaultImageStreamFactory = new EmbeddedResourceStreamFactory<CollectionCreator>("NexusMods.Collections.default-collection-image.webp");
+        var defaultImageStreamFactory = new EmbeddedResourceStreamFactory<CollectionDownloader>("NexusMods.Collections.default-collection-image.webp");
         var defaultImageMimeType = "image/webp";
 
         var prefillResult = await nexusModsLibrary.PrefillCollectionMetadata(collection, defaultImageStreamFactory, defaultImageMimeType, cancellationToken);

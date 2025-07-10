@@ -96,6 +96,7 @@ public static class R3Extensions
         where TViewModel : class, INotifyPropertyChanged
     {
         return viewModelSelector(view)
+            .ObserveOnUIThreadDispatcher()
             .WhereNotNull()
             .Select(vmPropertySelector)
             .SelectMany(reactiveProperty => reactiveProperty.AsObservable());

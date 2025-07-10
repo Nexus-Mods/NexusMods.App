@@ -22,6 +22,7 @@ using StrawberryShake;
 using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
 namespace NexusMods.Networking.NexusWebApi;
+
 using GameIdCache = Dictionary<GameDomain, GameId>;
 using ResolvedEntitiesLookup = Dictionary<UidForFile, ValueTuple<NexusModsModPageMetadataId, NexusModsFileMetadataId>>;
 using ModAndDownload = (Mod Mod, CollectionDownload.ReadOnly Download);
@@ -31,11 +32,12 @@ public partial class NexusModsLibrary
     private async ValueTask UploadToPresignedUrl(
         IStreamFactory streamFactory,
         PresignedUploadUrl presignedUploadUrl,
+        string mediaType,
         CancellationToken cancellationToken)
     {
         await using var stream = await streamFactory.GetStreamAsync();
         using HttpContent httpContent = new StreamContent(stream);
-        httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+        httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse(mediaType);
 
         var response = await _httpClient.PutAsync(presignedUploadUrl, httpContent, cancellationToken: cancellationToken);
         if (response.IsSuccessStatusCode) return;
@@ -61,7 +63,7 @@ public partial class NexusModsLibrary
             return resultWithErrors;
 
         var presignedUploadUrl = PresignedUploadUrl.FromApi(operationData.RequestMediaUploadUrl);
-        await UploadToPresignedUrl(streamFactory, presignedUploadUrl, cancellationToken);
+        await UploadToPresignedUrl(streamFactory, presignedUploadUrl, mimeType, cancellationToken);
         return presignedUploadUrl;
     }
 
@@ -71,7 +73,7 @@ public partial class NexusModsLibrary
         result.EnsureNoErrors();
 
         var presignedUploadUrl = PresignedUploadUrl.FromApi(result.Data?.CollectionRevisionUploadUrl!);
-        await UploadToPresignedUrl(archiveStreamFactory, presignedUploadUrl, cancellationToken);
+        await UploadToPresignedUrl(archiveStreamFactory, presignedUploadUrl, "application/octet-stream", cancellationToken);
         return presignedUploadUrl;
     }
 
@@ -186,7 +188,7 @@ public partial class NexusModsLibrary
         return categories.First().Id;
     }
 
-    private async ValueTask<GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>> PrefillCollectionMetadata(
+    public async ValueTask<GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>> PrefillCollectionMetadata(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory defaultImageStreamFactory,
         string defaultImageMimeType,
@@ -211,7 +213,7 @@ public partial class NexusModsLibrary
         var uploadDefaultImageResult = await UploadMedia(defaultImageStreamFactory, defaultImageMimeType, cancellationToken);
         if (uploadDefaultImageResult.HasErrors) return new GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>(uploadDefaultImageResult.Errors);
 
-        var imageOperationResult = await _gqlClient.AddHeaderImageToCollection.ExecuteAsync(
+        var imageOperationResult = await _gqlClient.AddTileImageToCollection.ExecuteAsync(
             collectionId: collection.CollectionId.Value.ToString(),
             image: new UploadImageInput
             {

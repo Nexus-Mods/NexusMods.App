@@ -257,7 +257,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     collectionUriWithoutQuery.Uri
                 );
                 
-                var collectionPublishedDialog = DialogFactory.CreateDialog($"Revision {RevisionNumber} is Now Published!",
+                var collectionPublishedDialog = DialogFactory.CreateDialog($"Revision {managedCollectionLoadoutGroup.Collection.Revisions.Count} is Now Published!",
                     [
                         new DialogButtonDefinition(
                             "Close",
