@@ -58,7 +58,8 @@
                                                          ShowLabel="False"
                                                          LeftIcon="{x:Static icons:IconValues.Search}"
                                                          DockPanel.Dock="Left"
-                                                         Click="SearchButton_OnClick"/>
+                                                         Click="SearchButton_OnClick"
+                                                         ToolTip.Tip="Search (Ctrl+F)"/>
                                 <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188" IsVisible="False">
                                     <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="{x:Static resources:Language.SearchBox__Search_Watermark}" Padding="4 2 24 2"
                                              Margin="4 0 0 0"/>
