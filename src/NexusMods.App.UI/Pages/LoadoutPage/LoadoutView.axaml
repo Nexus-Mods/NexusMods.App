@@ -118,7 +118,7 @@
                                                          Size="Toolbar"
                                                          Fill="Weak"
                                                          Type="Tertiary"
-                                                         LeftIcon="{x:Static icons:IconValues.Lock}"
+                                                         LeftIcon="{x:Static icons:IconValues.VisibilityUnlisted}"
                                                          ShowIcon="Left" />
                                 <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
                                                          Size="Toolbar"
@@ -126,7 +126,8 @@
                                                          Type="Tertiary"
                                                          LeftIcon="{x:Static icons:IconValues.Link}"
                                                          ShowIcon="Left"
-                                                         ShowLabel="False" />
+                                                         ShowLabel="False"
+                                                         Click="ButtonOpenRevisionUrl_OnClick"/>
                             </StackPanel>
                         </StackPanel>
 

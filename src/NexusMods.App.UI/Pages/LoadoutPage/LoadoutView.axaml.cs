@@ -1,8 +1,11 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Threading;
 using DynamicData.Binding;
 using Humanizer;
 using Humanizer.Localisation;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Resources;
 using NexusMods.Collections;
@@ -77,6 +80,18 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                     .AddTo(disposables);
                 
                 this.OneWayR3Bind(static view => view.BindableViewModel, 
+                        static vm => vm.CollectionStatus, 
+                        static (view, status) =>
+                        {
+                            view.ButtonChangeVisibility.LeftIcon = status switch
+                            {
+                                CollectionStatus.Unlisted => IconValues.VisibilityUnlisted,
+                                CollectionStatus.Listed => IconValues.VisibilityListed
+                            };
+                        })
+                    .AddTo(disposables);
+                
+                this.OneWayR3Bind(static view => view.BindableViewModel, 
                         static vm => vm.LastUploadedDate, 
                         static (view, lastUploaded) =>
                         {
@@ -142,5 +157,38 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                     .AddTo(disposables);
             }
         );
+    }
+    
+    private static void ShowTooltipFor(Control target, string text, TimeSpan duration)
+    {
+        // get current tip
+        var tip = ToolTip.GetTip(target);
+        
+        // set the new tip
+        ToolTip.SetTip(target, text);
+        
+        // force open it
+        ToolTip.SetIsOpen(target, true);  // :contentReference[oaicite:0]{index=0}
+
+        // schedule its closure
+        var timer = new DispatcherTimer
+        {
+            Interval = duration
+        };
+        
+        // stop the timer and close it when it ticks
+        timer.Tick += (s, e) =>
+        {
+            timer.Stop();
+            ToolTip.SetIsOpen(target, false);
+            ToolTip.SetTip(target, tip); // restore the original tip
+        };
+        
+        timer.Start();
+    }
+
+    private void ButtonOpenRevisionUrl_OnClick(object? sender, RoutedEventArgs e)
+    {
+        ShowTooltipFor(ButtonOpenRevisionUrl, "Link copied", TimeSpan.FromSeconds(2));
     }
 }

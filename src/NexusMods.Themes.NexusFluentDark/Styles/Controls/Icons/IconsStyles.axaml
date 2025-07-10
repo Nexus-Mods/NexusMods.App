@@ -144,6 +144,8 @@
                     <icons:UnifiedIcon Classes="Link" />
                     <icons:UnifiedIcon Classes="Upload" />
                     <icons:UnifiedIcon Classes="Pencil" />
+                    <icons:UnifiedIcon Classes="VisibilityListed" />
+                    <icons:UnifiedIcon Classes="VisibilityUnlisted" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -781,5 +783,11 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramSuccess">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramSuccess}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.VisibilityListed">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityListed}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.VisibilityUnlisted">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityUnlisted}" />
     </Style>
 </Styles>

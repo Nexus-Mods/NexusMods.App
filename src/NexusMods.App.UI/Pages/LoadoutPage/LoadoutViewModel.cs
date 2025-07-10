@@ -1,7 +1,9 @@
 using System.Reactive.Disposables;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input.Platform;
+using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -213,7 +215,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                             IconValues.OpenInNew
                         ),
                     ],
-                    collectionPublishedViewModel
+                    collectionPublishedViewModel,
+                DialogWindowSize.Small
                 );
                 
                 var collectionPublishedResult = await windowManager.ShowDialog(collectionPublishedDialog, DialogWindowType.Modal);
@@ -267,7 +270,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                             IconValues.OpenInNew
                         ),
                     ],
-                    collectionPublishedViewModel
+                    collectionPublishedViewModel,
+                    DialogWindowSize.Small
                 );
                 
                 var collectionPublishedResult = await windowManager.ShowDialog(collectionPublishedDialog, DialogWindowType.Modal);
@@ -282,6 +286,51 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             
             CommandChangeVisibility = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
+                // pass in current collection status
+                var shareViewModel = new DialogShareCollectionViewModel(CollectionStatus.Value == Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed);
+                
+                var shareDialog = DialogFactory.CreateDialog("Visibility Settings for Your Collection",
+                    [
+                        new DialogButtonDefinition(
+                            "Cancel",
+                            ButtonDefinitionId.Cancel,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "View Page",
+                            ButtonDefinitionId.From("view-page"),
+                            ButtonAction.None,
+                            ButtonStyling.Default,
+                            IconValues.OpenInNew
+                        ),
+                        new DialogButtonDefinition(
+                            "Save Changes",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        ),
+                    ],
+                    shareViewModel
+                );
+                
+                var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                
+                if (shareDialogResult.ButtonId == ButtonDefinitionId.Cancel) return;
+                
+                // save the changes to the collection
+                CollectionStatus.Value = shareViewModel.IsListed
+                    ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
+                    : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
+                
+                if (shareDialogResult.ButtonId == ButtonDefinitionId.From("view-page"))
+                {
+                    // open up collection URL in browser
+                    var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
+                    if (!managedCollectionLoadoutGroup.IsValid()) return;
+
+                    var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
+                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                }
                 
             }, configureAwait: false);
 
@@ -675,4 +724,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
         return null!;
     }
+    
+    
 }
