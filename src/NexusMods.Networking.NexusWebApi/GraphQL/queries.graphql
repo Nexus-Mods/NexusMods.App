@@ -1,0 +1,11 @@
+query QueryGameCategories($gameId: Int!) {
+    categories(gameId: $gameId, global: true) {
+        ...Category
+    }
+}
+
+query QueryGlobalCategories() {
+    categories(global: true) {
+        ...Category
+    }
+}
