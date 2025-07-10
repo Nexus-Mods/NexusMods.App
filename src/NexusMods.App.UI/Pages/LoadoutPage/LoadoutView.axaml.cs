@@ -96,7 +96,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         static (view, lastUploaded) =>
                         {
                             view.LastUploadedText.Text = $"{(DateTimeOffset.Now - lastUploaded).Humanize(minUnit: TimeUnit.Second)} ago";
-                            ToolTip.SetTip(view.LastUploadedText, lastUploaded.ToString("F"));
+                            ToolTip.SetTip(view.LastUploadedText, lastUploaded.ToLocalTime().ToString("F"));
                         }
                     )
                     .AddTo(disposables);
