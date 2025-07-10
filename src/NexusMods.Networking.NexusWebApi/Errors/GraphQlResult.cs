@@ -87,6 +87,11 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
     /// Implicit conversion.
     /// </summary>
     public static implicit operator GraphQlResult<TData>(TData data) => new(data);
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -125,6 +130,11 @@ public class GraphQlResult<TData, TError1> : GraphQlResult<TData>, IGraphQlResul
     /// Implicit conversion.
     /// </summary>
     public static implicit operator GraphQlResult<TData, TError1>(TData data) => new(data);
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData, TError1>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -169,6 +179,11 @@ public class GraphQlResult<TData, TError1, TError2> : GraphQlResult<TData>, IGra
     /// Implicit conversion.
     /// </summary>
     public static implicit operator GraphQlResult<TData, TError1, TError2>(TData data) => new(data);
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData, TError1, TError2>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -219,6 +234,11 @@ public class GraphQlResult<TData, TError1, TError2, TError3> : GraphQlResult<TDa
     /// Implicit conversion.
     /// </summary>
     public static implicit operator GraphQlResult<TData, TError1, TError2, TError3>(TData data) => new(data);
+
+    /// <summary>
+    /// Implicit conversion.
+    /// </summary>
+    public static implicit operator GraphQlResult<TData, TError1, TError2, TError3>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
 }
 
 /// <summary>
