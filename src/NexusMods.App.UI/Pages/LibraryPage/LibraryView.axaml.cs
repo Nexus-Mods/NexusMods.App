@@ -76,6 +76,9 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         {
                             // Focus the textbox when the search panel becomes visible
                             SearchTextBox.Focus();
+
+                            // Tracking
+                            ViewModel?.Adapter?.OnOpenSearchPanel("Library");
                         }
                         else
                         {

@@ -14,6 +14,7 @@ using DynamicData.Kernel;
 using System.Diagnostics;
 using NexusMods.App.UI.Controls.Filters;
 using static NexusMods.App.UI.Controls.Filters.Filter;
+using NexusMods.Telemetry;
 
 namespace NexusMods.App.UI.Controls;
 
@@ -36,7 +37,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
     public BindableReactiveProperty<int> SourceCount { get; } = new(value: 0);
     public BindableReactiveProperty<IComparer<TModel>?> CustomSortComparer { get; } = new(value: null);
-    public R3.ReactiveProperty<Filter> Filter { get; } = new(value: NoFilter.Instance);
+    public ReactiveProperty<Filter> Filter { get; } = new(value: NoFilter.Instance);
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
     protected ObservableList<TModel> Roots { get; private set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
@@ -182,6 +183,10 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         });
     }
 
+    public void OnOpenSearchPanel(string pageName)
+    {
+        Tracking.AddEvent(Events.Search.OpenSearch, new EventMetadata(name: pageName));
+    }
     public void ClearSelection() => _selectionModel?.Clear();
 
     /// <summary>
