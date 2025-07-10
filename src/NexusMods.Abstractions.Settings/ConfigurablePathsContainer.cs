@@ -8,10 +8,10 @@ namespace NexusMods.Abstractions.Settings;
 [PublicAPI]
 public class ConfigurablePathsContainer : APropertyValueContainer<ConfigurablePath[]>
 {
-    public ConfigurablePathsContainer(ConfigurablePath[] value, ConfigurablePath[] defaultValue, Action<ISettingsManager, ConfigurablePath[]> updaterFunc, IEqualityComparer<ConfigurablePath[]>? equalityComparer = null) 
-        : base(value, defaultValue, updaterFunc,
-        equalityComparer
-    )
-    {
-    }
+    public ConfigurablePathsContainer(
+            ConfigurablePath[] value,
+            ConfigurablePath[] defaultValue,
+            Action<ISettingsManager, ConfigurablePath[]> updaterFunc,
+            IEqualityComparer<ConfigurablePath[]>? equalityComparer = null)
+        : base(value, defaultValue, updaterFunc, equalityComparer: equalityComparer) { }
 }
