@@ -118,7 +118,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 this.BindCommand(ViewModel, vm => vm.CommandUploadDraftRevision, view => view.MenuItemUploadDraft)
                     .AddTo(disposables);
                 
-                this.BindCommand(ViewModel, vm => vm.CommandCopyRevisionUrl, view => view.ButtonCopyRevisionUrl)
+                this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonOpenRevisionUrl)
                     .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
@@ -193,10 +193,5 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
         };
         
         timer.Start();
-    }
-
-    private void ButtonCopyRevisionUrl_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ShowTooltipFor(ButtonCopyRevisionUrl, "Link copied", TimeSpan.FromSeconds(2));
     }
 }

@@ -108,7 +108,7 @@
                                             </MenuItem.Header>
                                         </MenuItem>
 
-                                        <MenuItem Classes="Critical">
+                                        <MenuItem x:Name="MenuItemDeleteCollection" Classes="Critical">
                                             <MenuItem.Icon>
                                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteForever}" />
                                             </MenuItem.Icon>
@@ -141,7 +141,7 @@
                                                      LeftIcon="{x:Static icons:IconValues.Upload}"
                                                      ShowIcon="Left" />
 
-                            <StackPanel x:Name="VisibilityButtonStack" Orientation="Horizontal">
+                            <StackPanel x:Name="VisibilityButtonStack" Orientation="Horizontal" Spacing="8">
                                 <controls:StandardButton x:Name="ButtonChangeVisibility"
                                                          Text="Visibility"
                                                          Size="Toolbar"
@@ -149,14 +149,13 @@
                                                          Type="Tertiary"
                                                          LeftIcon="{x:Static icons:IconValues.VisibilityUnlisted}"
                                                          ShowIcon="Left" />
-                                <controls:StandardButton x:Name="ButtonCopyRevisionUrl"
+                                <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
                                                          Size="Toolbar"
                                                          Fill="Weak"
                                                          Type="Tertiary"
-                                                         LeftIcon="{x:Static icons:IconValues.Link}"
+                                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
                                                          ShowIcon="Left"
-                                                         ShowLabel="False"
-                                                         Click="ButtonCopyRevisionUrl_OnClick" />
+                                                         ShowLabel="False" />
                             </StackPanel>
                         </StackPanel>
 

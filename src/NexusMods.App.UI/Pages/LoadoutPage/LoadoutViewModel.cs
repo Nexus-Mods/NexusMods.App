@@ -300,13 +300,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                             ButtonAction.Reject
                         ),
                         new DialogButtonDefinition(
-                            "View Page",
-                            ButtonDefinitionId.From("view-page"),
-                            ButtonAction.None,
-                            ButtonStyling.Default,
-                            IconValues.OpenInNew
-                        ),
-                        new DialogButtonDefinition(
                             "Save Changes",
                             ButtonDefinitionId.Accept,
                             ButtonAction.Accept,
@@ -326,16 +319,6 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
                 
                 _ = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value, cancellationToken);
-                
-                if (shareDialogResult.ButtonId == ButtonDefinitionId.From("view-page"))
-                {
-                    // open up collection URL in browser
-                    var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
-                    if (!managedCollectionLoadoutGroup.IsValid()) return;
-
-                    var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
-                    await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
-                }
                 
             }, configureAwait: false);
 
