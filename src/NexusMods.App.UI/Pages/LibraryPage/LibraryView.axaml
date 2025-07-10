@@ -15,7 +15,9 @@
     xmlns:loadouts="clr-namespace:NexusMods.Abstractions.Loadouts;assembly=NexusMods.Abstractions.Loadouts"
     xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
-    x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
+    x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView"
+    Background="{StaticResource SurfaceTransparentBrush}">
+    <!-- Background set to ensure that clicks anywhere on the page are correctly registered and bring focus to it -->
 
     <Grid RowDefinitions="Auto, *">
 
@@ -45,8 +47,6 @@
                     <controls:Toolbar Margin="24,12, 24, 0">
 
                         <!-- search button group -->
-                        <!-- leave in for now, it won't be long before we have a search component -->
-
                         <ItemsControl>
                             <DockPanel>
                                 <controls:StandardButton x:Name="SearchButton"

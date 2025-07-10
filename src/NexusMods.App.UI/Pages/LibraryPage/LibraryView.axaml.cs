@@ -21,6 +21,13 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 [UsedImplicitly]
 public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 {
+
+    static LibraryView()
+    {
+        // Allo focus on the LibraryView for keyboard shortcuts purposes
+        FocusableProperty.OverrideDefaultValue(typeof(LibraryView), true); 
+    }
+
     public LibraryView()
     {
         InitializeComponent();
@@ -47,21 +54,21 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     {
                         if (ViewModel?.Adapter != null)
                         {
-                            ViewModel.Adapter.Filter.Value = string.IsNullOrWhiteSpace(searchText) 
+                            ViewModel.Adapter.Filter.Value = string.IsNullOrWhiteSpace(searchText)
                                 ? NoFilter.Instance
                                 : new Filter.TextFilter(searchText, CaseSensitive: false);
                         }
                     })
                     .AddTo(disposables);
-                
+
                 // Clear button functionality
                 SearchClearButton.Click += (_, _) =>
                 {
                     SearchTextBox.Text = string.Empty;
                     // Also collapse the search panel
-                    SearchPanel.IsVisible = false; 
+                    SearchPanel.IsVisible = false;
                 };
-                
+
                 // Show/hide clear button based on text
                 this.WhenAnyValue(view => view.SearchTextBox.Text)
                     .Select(text => !string.IsNullOrWhiteSpace(text))
