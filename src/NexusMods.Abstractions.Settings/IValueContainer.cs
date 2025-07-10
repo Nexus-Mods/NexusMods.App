@@ -19,6 +19,11 @@ public interface IValueContainer
     bool HasChanged { get; }
 
     /// <summary>
+    /// Gets the validation result.
+    /// </summary>
+    ValidationResult ValidationResult { get; }
+
+    /// <summary>
     /// Updates the value in the settings manager.
     /// </summary>
     void Update(ISettingsManager settingsManager);

@@ -42,14 +42,21 @@ public interface IPropertyUIBuilder<TSettings, TProperty>
         /// <remarks>
         /// This property allows for Markdown.
         /// </remarks>
-        IWithLinkStep WithDescription(string description);
+        IOptionalStep WithDescription(string description);
 
-        IWithLinkStep WithDescription(Func<TProperty, string> descriptionFactory);
+        IOptionalStep WithDescription(Func<TProperty, string> descriptionFactory);
+    }
+
+    public interface IOptionalStep : IValidationStep, IWithLinkStep;
+
+    public interface IValidationStep : IConfigureValueContainerStep
+    {
+        IOptionalStep WithValidation(Func<TProperty, ValidationResult> validator);
     }
 
     public interface IWithLinkStep : IConfigureValueContainerStep
     {
-        IConfigureValueContainerStep WithLink(Uri link);
+        IOptionalStep WithLink(Uri link);
     }
 
     [PublicAPI]
