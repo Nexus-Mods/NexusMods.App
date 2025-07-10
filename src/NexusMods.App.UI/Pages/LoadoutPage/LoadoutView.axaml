@@ -19,10 +19,29 @@
 
         <!-- different page header if it's a collection (i.e. My Mods) or if it's just All mods -->
         <Panel Grid.Row="0" Margin="24 24 24 0">
-            <pageHeader:PageHeader x:Name="WritableCollectionPageHeader"
-                                   Icon="{x:Static icons:IconValues.PictogramCollection3D}"
-                                   Description="Collection"
-                                   Theme="{StaticResource LocalCollectionPageHeader}" />
+            
+            <DockPanel x:Name="WritableCollectionPageHeader">
+                <Border Width="60"
+                        Height="60"
+                        Margin="0,0,8,0"
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Top">
+                    <icons:UnifiedIcon Size="60" x:Name="Icon" Value="{x:Static icons:IconValues.PictogramCollection3D}" />
+                </Border>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock x:Name="DescriptionTextBlock"
+                               Theme="{StaticResource BodyMDSemiTheme}"
+                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                               TextWrapping="Wrap"
+                               Text="Collection"/>
+                    <TextBlock x:Name="TitleTextBlock"
+                               Theme="{StaticResource HeadingMDSemiTheme}"
+                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </DockPanel>
 
             <pageHeader:PageHeader x:Name="AllPageHeader"
                                    Icon="{x:Static icons:IconValues.PictogramPlaylistAdd}"

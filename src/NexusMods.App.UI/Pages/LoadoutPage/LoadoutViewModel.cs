@@ -322,6 +322,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
                     : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
                 
+                _ = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value, cancellationToken);
+                
                 if (shareDialogResult.ButtonId == ButtonDefinitionId.From("view-page"))
                 {
                     // open up collection URL in browser
