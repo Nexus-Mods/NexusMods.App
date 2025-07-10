@@ -411,7 +411,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Text: Language.Library_Update_SomeDownloadsFailed_Option_Retry,
             Id: ButtonDefinitionId.Accept,
             ButtonAction: ButtonAction.Accept,
-            ButtonStyling: ButtonStyling.Primary
+            ButtonStyling: ButtonStyling.Default
         );
 
         var allFailedDialog = DialogFactory.CreateStandardDialog(
