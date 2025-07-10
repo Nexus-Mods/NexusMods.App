@@ -86,6 +86,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CommandUploadDraftRevision { get; }
     public ReactiveCommand<Unit> CommandUploadAndPublishRevision { get; }
     public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
+    public ReactiveCommand<Unit> CommandCopyRevisionUrl { get; }
     public ReactiveCommand<Unit> CommandChangeVisibility { get; }
 
     private readonly IServiceProvider _serviceProvider;
@@ -257,7 +258,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     collectionUriWithoutQuery.Uri
                 );
                 
-                var collectionPublishedDialog = DialogFactory.CreateDialog($"Revision {managedCollectionLoadoutGroup.Collection.Revisions.Count} is Now Published!",
+                var collectionPublishedDialog = DialogFactory.CreateDialog($"Revision {managedCollectionLoadoutGroup.LastPublishedRevisionNumber.Value} is Now Published!",
                     [
                         new DialogButtonDefinition(
                             "Close",
@@ -345,6 +346,18 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                 var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
                 
+                // open collection URL in browser
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                
+            }, configureAwait: false);
+            
+            CommandCopyRevisionUrl = IsCollectionUploaded.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
+                if (!managedCollectionLoadoutGroup.IsValid()) return;
+
+                var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
+                
                 // copy to clipboard instead of opening the URL directly
                 await GetClipboard().SetTextAsync(uri.AbsoluteUri);
                 
@@ -389,6 +402,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CommandUploadDraftRevision = new ReactiveCommand();
             CommandUploadAndPublishRevision = new ReactiveCommand();
             CommandOpenRevisionUrl = new ReactiveCommand();
+            CommandCopyRevisionUrl = new ReactiveCommand();
             CommandChangeVisibility = new ReactiveCommand();
         }
 

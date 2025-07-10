@@ -118,13 +118,16 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 this.BindCommand(ViewModel, vm => vm.CommandUploadDraftRevision, view => view.MenuItemUploadDraft)
                     .AddTo(disposables);
                 
-                this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonOpenRevisionUrl)
+                this.BindCommand(ViewModel, vm => vm.CommandCopyRevisionUrl, view => view.ButtonCopyRevisionUrl)
                     .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                     .AddTo(disposables);
                 
                 this.BindCommand(ViewModel, vm => vm.CommandChangeVisibility, view => view.ButtonChangeVisibility)
+                    .AddTo(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonAddTileImage)
                     .AddTo(disposables);
                 
                 this.ObserveViewModelProperty(static view => view.BindableViewModel, 
@@ -135,6 +138,9 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                             self.SplitButtonPublishCollection.IsVisible = isCollectionUploaded;
                             self.VisibilityButtonStack.IsVisible = isCollectionUploaded;
                             self.IsUploadedStack.IsVisible = isCollectionUploaded;
+
+                            self.ButtonAddTileImage.IsVisible = isCollectionUploaded;
+                            self.UnpublishedHeaderBorder.IsVisible = !isCollectionUploaded;
                         }
                     ).AddTo(disposables);
                 
@@ -189,8 +195,8 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
         timer.Start();
     }
 
-    private void ButtonOpenRevisionUrl_OnClick(object? sender, RoutedEventArgs e)
+    private void ButtonCopyRevisionUrl_OnClick(object? sender, RoutedEventArgs e)
     {
-        ShowTooltipFor(ButtonOpenRevisionUrl, "Link copied", TimeSpan.FromSeconds(2));
+        ShowTooltipFor(ButtonCopyRevisionUrl, "Link copied", TimeSpan.FromSeconds(2));
     }
 }

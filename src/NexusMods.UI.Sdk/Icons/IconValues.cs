@@ -366,7 +366,8 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/palette/
     public static readonly IconValue ColorLens = new ProjektankerIcon("mdi-palette");
     
-    
+    // https://pictogrammers.com/library/mdi/icon/camera-plus/
+    public static readonly IconValue CameraPlus = new ProjektankerIcon("mdi-camera-plus");
 
 #endregion
 

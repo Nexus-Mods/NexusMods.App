@@ -21,7 +21,15 @@
         <Panel Grid.Row="0" Margin="24 24 24 0">
 
             <DockPanel x:Name="WritableCollectionPageHeader">
-                <Border Width="60"
+                <Button x:Name="ButtonAddTileImage"
+                        Margin="0 0 12 0"
+                        Width="48"
+                        Height="60"
+                        Background="{StaticResource SurfaceTranslucentMidBrush}">
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CameraPlus}"/>
+                </Button>
+                <Border x:Name="UnpublishedHeaderBorder"
+                        Width="60"
                         Height="60"
                         Margin="0,0,8,0"
                         DockPanel.Dock="Left"
@@ -40,7 +48,8 @@
                                Theme="{StaticResource HeadingMDSemiTheme}"
                                Foreground="{StaticResource NeutralTranslucentModerateBrush}"
                                VerticalAlignment="Center"
-                               TextWrapping="Wrap" />
+                               TextWrapping="Wrap"
+                               Text="Collection Name" />
                 </StackPanel>
             </DockPanel>
 
@@ -53,7 +62,7 @@
         <!-- tabs -->
 
         <!-- Temp top margin as we don't have a proper PageHeader on this view yet -->
-        <TabControl Grid.Row="2" x:Name="RulesTabControl" Margin="0 12 0 0">
+        <TabControl Grid.Row="2" x:Name="RulesTabControl" Margin="0 24 0 0">
             <!-- mods tab -->
             <TabItem x:Name="ModsTabItem">
                 <TabItem.Header>
@@ -140,14 +149,14 @@
                                                          Type="Tertiary"
                                                          LeftIcon="{x:Static icons:IconValues.VisibilityUnlisted}"
                                                          ShowIcon="Left" />
-                                <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
+                                <controls:StandardButton x:Name="ButtonCopyRevisionUrl"
                                                          Size="Toolbar"
                                                          Fill="Weak"
                                                          Type="Tertiary"
                                                          LeftIcon="{x:Static icons:IconValues.Link}"
                                                          ShowIcon="Left"
                                                          ShowLabel="False"
-                                                         Click="ButtonOpenRevisionUrl_OnClick" />
+                                                         Click="ButtonCopyRevisionUrl_OnClick" />
                             </StackPanel>
                         </StackPanel>
 
@@ -168,7 +177,8 @@
                                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
                                             </MenuItem.Icon>
                                         </MenuItem>
-                                        <MenuItem x:Name="MenuItemDiscardChanges" Header="Discard changes" IsVisible="False">
+                                        <MenuItem x:Name="MenuItemDiscardChanges" Header="Discard changes"
+                                                  IsVisible="False">
                                             <MenuItem.Icon>
                                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" />
                                             </MenuItem.Icon>
@@ -190,12 +200,13 @@
                                         <TextBlock Text="Published"
                                                    Foreground="{StaticResource SuccessStrongBrush}" />
                                     </StackPanel>
-                                    
+
                                     <TextBlock x:Name="LastUploadedText" Text="1 min ago"
                                                Foreground="{StaticResource NeutralSubduedBrush}" />
                                 </StackPanel>
 
-                                <StackPanel x:Name="HasChangesStatusStack" Orientation="Horizontal" Spacing="8" IsVisible="False">
+                                <StackPanel x:Name="HasChangesStatusStack" Orientation="Horizontal" Spacing="8"
+                                            IsVisible="False">
                                     <TextBlock Text="Draft"
                                                Foreground="{StaticResource NeutralStrongBrush}" />
                                     <TextBlock Text="Not uploaded"
