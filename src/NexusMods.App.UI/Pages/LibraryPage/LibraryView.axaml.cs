@@ -85,6 +85,12 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         count => count > 0)
                     .AddTo(disposables);
 
+                this.OneWayBind(ViewModel,
+                        vm => vm.IsUpdatingAll,
+                        view => view.UpdateButton.IsEnabled,
+                        isUpdating => !isUpdating)
+                    .AddTo(disposables);
+
                 // Bind menu item headers to show real-time counts
                 this.OneWayBind(ViewModel,
                         vm => vm.UpdatableSelectionCount,

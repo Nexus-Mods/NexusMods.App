@@ -32,6 +32,7 @@ public interface ILibraryViewModel : IPageViewModelInterface
     public int SelectionCount { get; } 
     public int UpdatableSelectionCount { get; }
     public bool HasAnyUpdatesAvailable { get; }
+    public bool IsUpdatingAll { get; }
     ReactiveCommand<Unit> OpenFilePickerCommand { get; }
     ReactiveCommand<Unit> OpenNexusModsCommand { get; }
     ReactiveCommand<Unit> OpenNexusModsCollectionsCommand { get; }
