@@ -464,7 +464,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     Language.Library_Update_SomeInstallsFailed_KeepFiles,
                     keepButtonId,
                     ButtonAction.Reject,
-                    ButtonStyling.Primary
+                    ButtonStyling.None
                 )
             ]
         );
