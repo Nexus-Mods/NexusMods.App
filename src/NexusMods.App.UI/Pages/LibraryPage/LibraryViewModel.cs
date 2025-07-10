@@ -982,8 +982,14 @@ After asking design, we're choosing to simply open the mod page for now.
                 return;
             }
 
-            // Use the efficient method directly from ModUpdateService
-            var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates();
+            // Filter mod pages to only those for the current game
+            var currentGameId = _loadout.InstallationInstance.Game.GameId;
+            var modPagesWithUpdates = _modUpdateService.GetAllModPagesWithUpdates()
+                .Where(pair => 
+                {
+                    var modPage = NexusModsModPageMetadata.Load(_connection.Db, pair.modPageId);
+                    return modPage.IsValid() && modPage.Uid.GameId.Equals(currentGameId);
+                });
             var allUpdates = modPagesWithUpdates.Select(pair => pair.updates).ToArray();
             
             if (allUpdates.Length > 0)
