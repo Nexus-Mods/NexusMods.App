@@ -175,14 +175,26 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             .ObserveCountChanged()
             .Select(_ => GetSelectedModelsWithUpdates().Any());
 
-        UpdateSelectedItemsCommand = hasUpdatableSelection.ToReactiveCommand<Unit>(
+        var canUpdateSelected = R3.Observable.CombineLatest(
+            hasUpdatableSelection,
+            this.WhenAnyValue(vm => vm.IsUpdatingAll).ToObservable(),
+            (hasUpdates, isUpdatingAll) => hasUpdates && !isUpdatingAll
+        );
+
+        UpdateSelectedItemsCommand = canUpdateSelected.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => UpdateSelectedItems(cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: false,
             configureAwait: false
         );
 
-        UpdateAndKeepOldSelectedItemsCommand = hasUpdatableSelection.ToReactiveCommand<Unit>(
+        var canUpdateAndKeepOldSelected = R3.Observable.CombineLatest(
+            hasUpdatableSelection,
+            this.WhenAnyValue(vm => vm.IsUpdatingAll).ToObservable(),
+            (hasUpdates, isUpdatingAll) => hasUpdates && !isUpdatingAll
+        );
+
+        UpdateAndKeepOldSelectedItemsCommand = canUpdateAndKeepOldSelected.ToReactiveCommand<Unit>(
             executeAsync: (_, cancellationToken) => UpdateAndKeepOldSelectedItems(cancellationToken),
             awaitOperation: AwaitOperation.Parallel,
             initialCanExecute: false,
