@@ -35,6 +35,7 @@ using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.StandardGameLocators;
 using NexusMods.Telemetry;
+using NexusMods.Discord;
 
 namespace NexusMods.App;
 
@@ -102,7 +103,9 @@ public static class Services
                 .AddSteamCli()
                 .AddGOG()
                 .AddFileHashes()
-                .AddGitHubApi();
+                .AddGitHubApi()
+                .AddDiscordRPC();
+            
 
             if (!startupMode.IsAvaloniaDesigner)
                 services.AddSingleProcess(Mode.Main);
