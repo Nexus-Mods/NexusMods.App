@@ -151,6 +151,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 var initialStatus = Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
                 var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialStatus, cancellationToken);
                 IsCollectionUploaded.Value = true;
+                HasOutstandingChanges.Value = false;
             });
 
             CommandUploadRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
