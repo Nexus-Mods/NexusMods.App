@@ -19,9 +19,39 @@
 
         <!-- different page header if it's a collection (i.e. My Mods) or if it's just All mods -->
         <Panel Grid.Row="0" Margin="24 24 24 0">
-            <pageHeader:PageHeader x:Name="WritableCollectionPageHeader"
-                                   Icon="{x:Static icons:IconValues.PictogramCollection3D}"
-                                   Description="Your private collection of installed mods." />
+
+            <DockPanel x:Name="WritableCollectionPageHeader">
+                <Button x:Name="ButtonAddTileImage"
+                        Margin="0 0 12 0"
+                        Width="48"
+                        Height="60"
+                        Background="{StaticResource SurfaceTranslucentMidBrush}">
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CameraPlus}"/>
+                </Button>
+                <Border x:Name="UnpublishedHeaderBorder"
+                        Width="60"
+                        Height="60"
+                        Margin="0,0,8,0"
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Top">
+                    <icons:UnifiedIcon Size="60" x:Name="Icon"
+                                       Value="{x:Static icons:IconValues.PictogramCollection3D}" />
+                </Border>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock x:Name="DescriptionTextBlock"
+                               Theme="{StaticResource BodyMDSemiTheme}"
+                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                               TextWrapping="Wrap"
+                               Text="Collection" />
+                    <TextBlock x:Name="TitleTextBlock"
+                               Theme="{StaticResource HeadingMDSemiTheme}"
+                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Text="Collection Name" />
+                </StackPanel>
+            </DockPanel>
 
             <pageHeader:PageHeader x:Name="AllPageHeader"
                                    Icon="{x:Static icons:IconValues.PictogramPlaylistAdd}"
@@ -32,7 +62,7 @@
         <!-- tabs -->
 
         <!-- Temp top margin as we don't have a proper PageHeader on this view yet -->
-        <TabControl Grid.Row="2" x:Name="RulesTabControl" Margin="0 12 0 0">
+        <TabControl Grid.Row="2" x:Name="RulesTabControl" Margin="0 24 0 0">
             <!-- mods tab -->
             <TabItem x:Name="ModsTabItem">
                 <TabItem.Header>
@@ -49,18 +79,16 @@
                     <!-- STATUSBAR -->
 
                     <controls:Statusbar Grid.Row="0" x:Name="Statusbar">
+
                         <StackPanel>
-                                
                             <controls:StandardButton Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
                                                      LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                                      ShowIcon="Left"
                                                      ShowLabel="False">
-
                                 <controls:StandardButton.Flyout>
                                     <MenuFlyout>
-
                                         <!-- not used yet as we don't show local collections in Library -> Collections tab yet -->
                                         <MenuItem IsVisible="False">
                                             <MenuItem.Icon>
@@ -80,7 +108,7 @@
                                             </MenuItem.Header>
                                         </MenuItem>
 
-                                        <MenuItem Classes="Critical">
+                                        <MenuItem x:Name="MenuItemDeleteCollection" Classes="Critical">
                                             <MenuItem.Icon>
                                                 <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteForever}" />
                                             </MenuItem.Icon>
@@ -92,26 +120,98 @@
                                 </controls:StandardButton.Flyout>
                             </controls:StandardButton>
 
-                            <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
+                            <controls:StandardButton x:Name="ButtonRefresh"
                                                      Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
-                                                     LeftIcon="{x:Static icons:IconValues.Link}"
+                                                     LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                      ShowIcon="Left"
-                                                     ShowLabel="False"/>
-                            
-                            <controls:StandardButton x:Name="ButtonUploadCollectionRevision"
+                                                     ShowLabel="False" />
+                        </StackPanel>
+
+                        <!-- share and visibility buttons -->
+                        <StackPanel Spacing="8">
+                            <Separator />
+
+                            <controls:StandardButton x:Name="ButtonShareCollection"
                                                      Text="Share"
                                                      Size="Toolbar"
                                                      Fill="Weak"
                                                      Type="Tertiary"
-                                                     LeftIcon="{x:Static icons:IconValues.ExportVariant}"
+                                                     LeftIcon="{x:Static icons:IconValues.Upload}"
                                                      ShowIcon="Left" />
+
+                            <StackPanel x:Name="VisibilityButtonStack" Orientation="Horizontal" Spacing="8">
+                                <controls:StandardButton x:Name="ButtonChangeVisibility"
+                                                         Text="Visibility"
+                                                         Size="Toolbar"
+                                                         Fill="Weak"
+                                                         Type="Tertiary"
+                                                         LeftIcon="{x:Static icons:IconValues.VisibilityUnlisted}"
+                                                         ShowIcon="Left" />
+                                <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
+                                                         Size="Toolbar"
+                                                         Fill="Weak"
+                                                         Type="Tertiary"
+                                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False" />
+                            </StackPanel>
                         </StackPanel>
 
-                        <StackPanel x:Name="StatusStack" Orientation="Horizontal">
-                            <icons:UnifiedIcon x:Name="StatusIcon" Value="{x:Static icons:IconValues.Info}" />
-                            <TextBlock x:Name="StatusText" Text="Status" />
+
+                        <StackPanel x:Name="IsUploadedStack" Orientation="Horizontal" Spacing="8">
+                            <!-- publish button -->
+                            <Separator />
+                            <SplitButton x:Name="SplitButtonPublishCollection"
+                                         Classes="StandardSplitButton ExtraSmall">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}" />
+                                    <TextBlock Text="Publish" />
+                                </StackPanel>
+                                <SplitButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="MenuItemUploadDraft" Header="Upload changes as draft">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem x:Name="MenuItemDiscardChanges" Header="Discard changes"
+                                                  IsVisible="False">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
+
+                            <TextBlock x:Name="RevisionText" Text="Revision 1"
+                                       Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <controls:Divider />
+
+                                <StackPanel x:Name="PublishedStatusStack" Orientation="Horizontal" Spacing="8">
+
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}"
+                                                           Foreground="{StaticResource SuccessStrongBrush}" />
+                                        <TextBlock Text="Published"
+                                                   Foreground="{StaticResource SuccessStrongBrush}" />
+                                    </StackPanel>
+
+                                    <TextBlock x:Name="LastUploadedText" Text="1 min ago"
+                                               Foreground="{StaticResource NeutralSubduedBrush}" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="HasChangesStatusStack" Orientation="Horizontal" Spacing="8"
+                                            IsVisible="False">
+                                    <TextBlock Text="Draft"
+                                               Foreground="{StaticResource NeutralStrongBrush}" />
+                                    <TextBlock Text="Not uploaded"
+                                               Foreground="{StaticResource NeutralSubduedBrush}" />
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
                     </controls:Statusbar>
 
@@ -170,7 +270,7 @@
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
                                       Classes="MainListsStyling"
-                                      Margin="0 8 0 0"/>
+                                      Margin="0 8 0 0" />
                     </controls:EmptyState>
                 </Grid>
             </TabItem>

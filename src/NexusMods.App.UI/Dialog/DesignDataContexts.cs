@@ -26,7 +26,8 @@ internal static class DesignDataContexts
                 BottomText = "Bottom text can be used to provide additional information or context.",
             }
         ),
-        DialogWindowSize.Medium
+        DialogWindowSize.Medium,
+        true
     );
     
     // create a content view model for a dialog that includes a markdown renderer
@@ -54,17 +55,8 @@ internal static class DesignDataContexts
                 },
             }
         ),
-        DialogWindowSize.Medium
+        DialogWindowSize.Medium,
+        true
     );
 
-    // create a static instance for a design view
-    public static DialogViewModel CustomContent { get; } = new(
-        "CustomContent Dialog Content",
-        [
-            DialogStandardButtons.Yes,
-            DialogStandardButtons.No,
-        ],
-        new CustomContentExampleViewModel("This is a custom content example view model for design-time purposes."),
-        DialogWindowSize.Medium
-    );
 }

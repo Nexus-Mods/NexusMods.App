@@ -1,4 +1,9 @@
 using System.Reactive.Disposables;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input.Platform;
+using Avalonia.Threading;
 using DynamicData;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +22,9 @@ using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection;
 using NexusMods.App.UI.Pages.Sorting;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
@@ -75,9 +83,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
     public ReactiveCommand<Unit> CommandRenameGroup { get; }
     public ReactiveCommand<Unit> CommandShareCollection { get; }
-    public ReactiveCommand<Unit> CommandUploadRevision { get; }
-    public ReactiveCommand<Unit> CommandPublishRevision { get; }
+    public ReactiveCommand<Unit> CommandUploadDraftRevision { get; }
+    public ReactiveCommand<Unit> CommandUploadAndPublishRevision { get; }
     public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
+    public ReactiveCommand<Unit> CommandCopyRevisionUrl { get; }
+    public ReactiveCommand<Unit> CommandChangeVisibility { get; }
 
     private readonly IServiceProvider _serviceProvider;
     private readonly NexusModsLibrary _nexusModsLibrary;
@@ -141,29 +151,176 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, canEditObservable: isSingleCollectionObservable);
 
-            CommandShareCollection = IsCollectionUploaded.Select(static b => !b).ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+            CommandShareCollection = Adapter.IsSourceEmpty.Select(b => !b).ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
-                var shareDialog = LoadoutDialogs.ShareCollection(CollectionName.Value);
+                // pass in current collection status
+                var shareViewModel = new DialogShareCollectionViewModel(CollectionStatus.Value == Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed);
+                
+                var shareDialog = DialogFactory.CreateDialog("Choose How to Share Your Collection",
+                    [
+                        new DialogButtonDefinition(
+                            "Cancel",
+                            ButtonDefinitionId.Cancel,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "Publish",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        ),
+                    ],
+                    shareViewModel
+                );
+                
                 var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                
                 if (shareDialogResult.ButtonId != ButtonDefinitionId.Accept) return;
-
-                // TODO: get initial collection status from result
-                var initialStatus = Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
-                var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialStatus, cancellationToken);
+                
+                // Publish has been clicked, so we upload the collection with the new IsListed status
+                var initialCollectionStatus = shareViewModel.IsListed
+                    ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
+                    : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
+                
+                var collection = await CollectionCreator.CreateCollection(serviceProvider, collectionGroupId.Value, initialCollectionStatus, cancellationToken);
+                
                 IsCollectionUploaded.Value = true;
+                HasOutstandingChanges.Value = false;
+
+                // now we have uploaded the collection, we can show the success dialog
+                
+                // strip out querystring from uri so we don't show it in the UI
+                var collectionUriWithoutQuery = new UriBuilder(GetCollectionUri(collection))
+                {
+                    Query = string.Empty,
+                };
+                
+                // pass in current collection status and collection url
+                var collectionPublishedViewModel = new DialogCollectionPublishedViewModel(
+                    collection.Name,
+                    collection.Status.Value,
+                    collectionUriWithoutQuery.Uri,
+                    true
+                );
+                
+                var collectionPublishedDialog = DialogFactory.CreateDialog("Your Collection is Now Published!",
+                    [
+                        new DialogButtonDefinition(
+                            "Close",
+                            ButtonDefinitionId.Close,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "View Page",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Default,
+                            IconValues.OpenInNew
+                        ),
+                    ],
+                    collectionPublishedViewModel,
+                DialogWindowSize.Small
+                );
+                
+                var collectionPublishedResult = await windowManager.ShowDialog(collectionPublishedDialog, DialogWindowType.Modal);
+                
+                if (collectionPublishedResult.ButtonId != ButtonDefinitionId.Accept) return;
+
+                var uri = GetCollectionUri(collection);
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                
             });
 
-            CommandUploadRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            CommandUploadDraftRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
                 _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                 HasOutstandingChanges.Value = false;
             }, maxSequential: 1, configureAwait: false);
 
-            CommandPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            CommandUploadAndPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
             {
                 _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                 HasOutstandingChanges.Value = false;
+                
+                var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
+                if (!managedCollectionLoadoutGroup.IsValid()) return;
+                
+                // strip out querystring from uri so we don't show it in the UI
+                var collectionUriWithoutQuery = new UriBuilder(GetCollectionUri(managedCollectionLoadoutGroup.Collection))
+                {
+                    Query = string.Empty,
+                };
+                
+                // pass in current collection status and collection url
+                var collectionPublishedViewModel = new DialogCollectionPublishedViewModel(
+                    managedCollectionLoadoutGroup.Collection.Name,
+                    managedCollectionLoadoutGroup.Collection.Status.Value,
+                    collectionUriWithoutQuery.Uri
+                );
+                
+                var collectionPublishedDialog = DialogFactory.CreateDialog($"Revision {managedCollectionLoadoutGroup.LastPublishedRevisionNumber.Value} is Now Published!",
+                    [
+                        new DialogButtonDefinition(
+                            "Close",
+                            ButtonDefinitionId.Close,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "Update Changelog",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary,
+                            IconValues.OpenInNew
+                        ),
+                    ],
+                    collectionPublishedViewModel,
+                    DialogWindowSize.Small
+                );
+                
+                var collectionPublishedResult = await windowManager.ShowDialog(collectionPublishedDialog, DialogWindowType.Modal);
+                
+                if (collectionPublishedResult.ButtonId != ButtonDefinitionId.Accept) return;
+                
+                // open up changelog URL in browser
+                var uri = GetCollectionChangelogUri(managedCollectionLoadoutGroup.Collection);
+                await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                
             }, maxSequential: 1, configureAwait: false);
+            
+            CommandChangeVisibility = new ReactiveCommand<Unit>(async (unit, cancellationToken) =>
+            {
+                // pass in current collection status
+                var shareViewModel = new DialogShareCollectionViewModel(CollectionStatus.Value == Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed);
+                
+                var shareDialog = DialogFactory.CreateDialog("Visibility Settings for Your Collection",
+                    [
+                        new DialogButtonDefinition(
+                            "Cancel",
+                            ButtonDefinitionId.Cancel,
+                            ButtonAction.Reject
+                        ),
+                        new DialogButtonDefinition(
+                            "Save Changes",
+                            ButtonDefinitionId.Accept,
+                            ButtonAction.Accept,
+                            ButtonStyling.Primary
+                        ),
+                    ],
+                    shareViewModel
+                );
+                
+                var shareDialogResult = await windowManager.ShowDialog(shareDialog, DialogWindowType.Modal);
+                
+                if (shareDialogResult.ButtonId == ButtonDefinitionId.Cancel) return;
+                
+                // save the changes to the collection
+                CollectionStatus.Value = shareViewModel.IsListed
+                    ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
+                    : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
+                
+                _ = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value, cancellationToken);
+                
+            }, configureAwait: false);
 
             CommandOpenRevisionUrl = IsCollectionUploaded.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
@@ -171,7 +328,22 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 if (!managedCollectionLoadoutGroup.IsValid()) return;
 
                 var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
+                
+                // open collection URL in browser
                 await serviceProvider.GetRequiredService<IOSInterop>().OpenUrl(uri, cancellationToken: cancellationToken);
+                
+            }, configureAwait: false);
+            
+            CommandCopyRevisionUrl = IsCollectionUploaded.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                var managedCollectionLoadoutGroup = ManagedCollectionLoadoutGroup.Load(_connection.Db, collectionGroupId.Value);
+                if (!managedCollectionLoadoutGroup.IsValid()) return;
+
+                var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
+                
+                // copy to clipboard instead of opening the URL directly
+                await GetClipboard().SetTextAsync(uri.AbsoluteUri);
+                
             }, configureAwait: false);
 
             CommandRenameGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
@@ -210,9 +382,11 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             RulesSectionViewModel = new SortingSelectionViewModel(serviceProvider, windowManager, loadoutId, Optional<Observable<bool>>.None);
             CommandRenameGroup = new ReactiveCommand();
             CommandShareCollection = new ReactiveCommand();
-            CommandUploadRevision = new ReactiveCommand();
-            CommandPublishRevision = new ReactiveCommand();
+            CommandUploadDraftRevision = new ReactiveCommand();
+            CommandUploadAndPublishRevision = new ReactiveCommand();
             CommandOpenRevisionUrl = new ReactiveCommand();
+            CommandCopyRevisionUrl = new ReactiveCommand();
+            CommandChangeVisibility = new ReactiveCommand();
         }
 
         CommandDeselectItems = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
@@ -422,7 +596,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .DisposeWith(disposables);
         });
     }
-
+    
+    private Uri GetCollectionChangelogUri(CollectionMetadata.ReadOnly collection)
+    {
+        var mappingCache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        var gameDomain = mappingCache[collection.GameId];
+        var uri = NexusModsUrlBuilder.GetCollectionChangelogUri(gameDomain, collection.Slug, revisionNumber: new Optional<RevisionNumber>());
+        return uri;
+    }
+    
     private Uri GetCollectionUri(CollectionMetadata.ReadOnly collection)
     {
         var mappingCache = _serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
@@ -534,4 +716,15 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     {
         return NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(LoadoutItem.Load(connection.Db, id), out var isRequired) && isRequired;
     }
+    
+    private static IClipboard GetClipboard() {
+
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window }) {
+            return window.Clipboard!;
+        }
+
+        return null!;
+    }
+    
+    
 }

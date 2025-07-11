@@ -82,7 +82,7 @@
                 custom titlebar dragging -->
             <TextBlock Grid.Column="0" x:Name="TitleTextBlock"
                        Foreground="{StaticResource NeutralStrongBrush}"
-                       Theme="{StaticResource BodySMSemiTheme}"
+                       Theme="{StaticResource BodyMDSemiTheme}"
                        VerticalAlignment="Center"
                        ToolTip.Tip="Close"
                        IsHitTestVisible="False"
@@ -94,6 +94,7 @@
                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                      ShowIcon="IconOnly"
                                      ShowLabel="False"
+                                     Size="Medium"
                                      Fill="None"
                                      Type="Tertiary"
                                      VerticalAlignment="Center"

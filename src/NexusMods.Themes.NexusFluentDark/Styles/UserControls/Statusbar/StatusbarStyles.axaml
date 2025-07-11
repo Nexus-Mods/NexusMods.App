@@ -103,7 +103,7 @@
     <!-- Add Styles Here -->
     <Style Selector="controls|Statusbar">
 
-        <Style Selector="^ > Separator">
+        <Style Selector="^ Separator">
             <Setter Property="Background" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="Margin" Value="2,0" />
             <Setter Property="Height" Value="{Binding $parent}" />

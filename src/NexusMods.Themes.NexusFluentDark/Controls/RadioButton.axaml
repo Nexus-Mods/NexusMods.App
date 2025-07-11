@@ -84,8 +84,8 @@
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
                     CornerRadius="{TemplateBinding CornerRadius}">
-                    <Grid ColumnDefinitions="20,*">
-                        <Grid Height="20" VerticalAlignment="Top">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Grid x:Name="GlyphGrid" Height="20" VerticalAlignment="Top">
 
                             <Ellipse
                                 Name="OuterEllipse"

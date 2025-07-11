@@ -12,5 +12,6 @@ public interface IDialogViewModel : IViewModelInterface
     public DialogWindowSize DialogWindowSize { get; }
     public IViewModelInterface? ContentViewModel { get; }
     public DialogButtonDefinition[] ButtonDefinitions { get; }
+    public bool ShowChrome { get; set; }
     public StandardDialogResult Result { get; set; }
 }

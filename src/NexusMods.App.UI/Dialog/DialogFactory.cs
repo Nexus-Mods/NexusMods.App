@@ -32,15 +32,17 @@ public static class DialogFactory
     /// <param name="buttonDefinitions">An array of button definitions for the dialog.</param>
     /// <param name="contentViewModel">The content view model to be displayed in the dialog.</param>
     /// <param name="dialogWindowSize">The size of the dialog window. Defaults to <see cref="DialogWindowSize.Medium"/>.</param>
+    /// <param name="showChrome">Show titlebar and close button. Defaults to true.</param>
     /// <returns>A <see cref="Dialog"/> instance configured with the specified parameters.</returns>
     public static Dialog CreateDialog(
         string title,
         DialogButtonDefinition[] buttonDefinitions,
         IViewModelInterface contentViewModel,
-        DialogWindowSize dialogWindowSize = DialogWindowSize.Medium)
+        DialogWindowSize dialogWindowSize = DialogWindowSize.Medium,
+        bool showChrome = true)
     {
         var viewModel = new DialogViewModel(title, buttonDefinitions, contentViewModel,
-            dialogWindowSize
+            dialogWindowSize, showChrome
         );
 
         return new Dialog(viewModel);

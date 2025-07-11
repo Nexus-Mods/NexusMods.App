@@ -325,6 +325,7 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="RenderTransform" Value="none" />
+        <Setter Property="ToolTip.ShowOnDisabled" Value="True" />
 
         <Setter Property="Template">
             <ControlTemplate>

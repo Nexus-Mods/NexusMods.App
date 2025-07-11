@@ -1,5 +1,6 @@
 using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Pages.LoadoutPage;
@@ -24,7 +25,8 @@ public static class LoadoutDialogs
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
-            ]
+            ],
+            DialogWindowSize.Small
         );
     }
 
@@ -47,38 +49,12 @@ public static class LoadoutDialogs
                     ButtonAction.Accept,
                     ButtonStyling.Primary
                 ),
-            ]
+            ],
+            DialogWindowSize.Small
         );
     }
 
-    public static IDialog ShareCollection(string collectionName)
-    {
-        return DialogFactory.CreateStandardDialog(
-            "Share Your Collection on Nexus Mods",
-            new StandardDialogParameters()
-            {
-                Text = $"""
-                      Upload "{collectionName}" to Nexus Mods to share it with friends or, if you choose, with the entire Nexus Mods community.
-                      
-                      Your collection will be added as a private draft until you publish it.
-                      """,
-                Icon = IconValues.PictogramUpload,
-            },
-            [
-                new DialogButtonDefinition(
-                    "Cancel",
-                    ButtonDefinitionId.Cancel,
-                    ButtonAction.Reject
-                ),
-                new DialogButtonDefinition(
-                    "Share to Nexus Mods",
-                    ButtonDefinitionId.Accept,
-                    ButtonAction.Accept,
-                    ButtonStyling.Primary
-                ),
-            ]
-        );
-    }
+    
 
     public static IDialog ShareCollectionSuccess(string collectionName)
     {
