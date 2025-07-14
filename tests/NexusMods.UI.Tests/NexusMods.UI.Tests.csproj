@@ -10,8 +10,9 @@
         <PackageReference Include="Noggog.CSharpExt" />
         <PackageReference Include="ReactiveUI.Fody" />
         <PackageReference Include="Avalonia.Headless" />
+        <PackageReference Include="System.Linq.Async" />
         <PackageReference Include="Verify.Xunit" />
-        <PackageReference Include="Verify.ImageMagick"/>
+        <PackageReference Include="Verify.ImageMagick" />
     </ItemGroup>
 
     <ItemGroup>
