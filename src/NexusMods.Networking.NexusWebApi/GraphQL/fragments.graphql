@@ -4,35 +4,12 @@ fragment UserFragment on User {
   memberId  
 }
 
-fragment ModFileFragment on ModFile {
-    name,
-    modId,
-    version,
-    sizeInBytes,
-    date,
-    # This contains fileId and gameId
-    uid
-}
-
-fragment ModFragment on Mod {
-    modId
-    name
-    game {
-        domainName
-        id
-    }
-    thumbnailUrl
-    pictureUrl
-    updatedAt,
-    uid
-}
-
-fragment CollectionRevisionStatusFragment on CollectionRevision {
+fragment CollectionRevisionStatus on CollectionRevision {
     status,
     revisionStatus
 }
 
-fragment CollectionRevisionFragment on CollectionRevision {
+fragment CollectionRevision on CollectionRevision {
     id
     assetsSizeBytes
     revisionNumber
@@ -41,7 +18,7 @@ fragment CollectionRevisionFragment on CollectionRevision {
     overallRating
     overallRatingCount
     modCount
-    ...CollectionRevisionStatusFragment
+    ...CollectionRevisionStatus
 
     modFiles {
         id,
@@ -49,9 +26,9 @@ fragment CollectionRevisionFragment on CollectionRevision {
         gameId,
         fileId,
         file {
-            ...ModFileFragment
+            ...ModFile
             mod {
-                ...ModFragment
+                ...Mod
             }
         }
         updatePolicy,
@@ -111,4 +88,26 @@ fragment Category on Category {
     description,
     approved,
     discardedAt
+}
+
+fragment Mod on Mod {
+    modId
+    name
+    game {
+        domainName
+        id
+    }
+    thumbnailUrl
+    pictureUrl
+    updatedAt
+    uid
+}
+
+fragment ModFile on ModFile {
+    name,
+    modId,
+    version,
+    sizeInBytes,
+    date,
+    uid
 }

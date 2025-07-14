@@ -26,6 +26,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly ILogger<ModUpdateService> _logger;
     private readonly NexusGraphQLClient _gqlClient;
+    private readonly IGraphQlClient _graphQlClient;
     private readonly TimeProvider _timeProvider;
     private readonly IModUpdateFilterService _filterService;
     
@@ -43,6 +44,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
         IGameDomainToGameIdMappingCache gameIdMappingCache,
         ILogger<ModUpdateService> logger,
         NexusGraphQLClient gqlClient,
+        IGraphQlClient graphQlClient,
         TimeProvider timeProvider,
         IModUpdateFilterService filterService)
     {
@@ -52,6 +54,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
         _logger = logger;
         _gqlClient = gqlClient;
         _timeProvider = timeProvider;
+        _graphQlClient = graphQlClient;
 
         // Note(sewer): Technically speaking, the user can supply a custom filter that is not attached
         // to `IgnoreFileUpdate` (IModUpdateFilterService) when calling APIs such as 
@@ -161,6 +164,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 tx,
                 _logger,
                 _gqlClient,
+                _graphQlClient,
                 updateCheckResult,
                 token);
             await tx.Commit();

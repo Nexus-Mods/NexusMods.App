@@ -67,7 +67,8 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
         // Fetch updated content for mod pages.
         using var tx = Connection.BeginTransaction();
         var gqlClient = ServiceProvider.GetRequiredService<NexusGraphQLClient>();
-        await RunUpdateCheck.UpdateModFilesForOutdatedPages(Connection.Db, tx, Logger, gqlClient, updates, CancellationToken.None);
+        var graphQlClient = ServiceProvider.GetRequiredService<IGraphQlClient>();
+        await RunUpdateCheck.UpdateModFilesForOutdatedPages(Connection.Db, tx, Logger, gqlClient, graphQlClient, updates, CancellationToken.None);
         await tx.Commit();
 
         // Get the collection of newer mods, there should at least be 43 at time of

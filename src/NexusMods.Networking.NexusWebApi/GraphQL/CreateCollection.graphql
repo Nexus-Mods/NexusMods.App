@@ -1,9 +1,3 @@
-query GetCollectionRevisionUploadUrl {
-    collectionRevisionUploadUrl {
-        ...PresignedUrl
-    }
-}
-
 mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
     createCollection(collectionData: $payload, uuid: $uuid) {
         success
@@ -11,7 +5,7 @@ mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
             ...CollectionFragment
         }
         revision {
-            ...CollectionRevisionFragment
+            ...CollectionRevision
         }
     }
 }
@@ -20,7 +14,7 @@ mutation CreateOrUpdateRevision($payload: CollectionPayload!, $collectionId: Int
     createOrUpdateRevision(collectionData: $payload, collectionId: $collectionId, uuid: $uuid) {
         success
         revision {
-            ...CollectionRevisionFragment
+            ...CollectionRevision
         }
     }
 }
