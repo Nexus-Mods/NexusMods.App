@@ -62,7 +62,7 @@
                                    Theme="{StaticResource BodySMSemiTheme}"
                                    Foreground="{StaticResource NeutralStrongBrush}" />
                         <TextBlock
-                            Text="Only people with a direct link can view this collection. It won’t appear in search results or be featured on Nexus Mods."
+                            Text="Only people with the link can view. Not shown in search or featured."
                             TextWrapping="Wrap"
                             Foreground="{StaticResource NeutralSubduedBrush}" />
                     </StackPanel>
@@ -82,7 +82,7 @@
                                    Theme="{StaticResource BodySMSemiTheme}"
                                    Foreground="{StaticResource NeutralStrongBrush}" />
                         <TextBlock
-                            Text="Anyone can discover this collection on Nexus Mods. It will appear in search results and may be featured."
+                            Text="Anyone can find this in search or see it featured on Nexus Mods."
                             TextWrapping="Wrap"
                             Foreground="{StaticResource NeutralSubduedBrush}" />
                     </StackPanel>
