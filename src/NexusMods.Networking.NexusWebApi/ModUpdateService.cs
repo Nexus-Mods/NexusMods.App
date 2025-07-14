@@ -7,9 +7,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
-using System.Reactive;
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -25,7 +23,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly INexusApiClient _nexusApiClient;
     private readonly IGameDomainToGameIdMappingCache _gameIdMappingCache;
     private readonly ILogger<ModUpdateService> _logger;
-    private readonly NexusGraphQLClient _gqlClient;
     private readonly IGraphQlClient _graphQlClient;
     private readonly TimeProvider _timeProvider;
     private readonly IModUpdateFilterService _filterService;
@@ -43,7 +40,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
         INexusApiClient nexusApiClient,
         IGameDomainToGameIdMappingCache gameIdMappingCache,
         ILogger<ModUpdateService> logger,
-        NexusGraphQLClient gqlClient,
         IGraphQlClient graphQlClient,
         TimeProvider timeProvider,
         IModUpdateFilterService filterService)
@@ -52,7 +48,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
         _nexusApiClient = nexusApiClient;
         _gameIdMappingCache = gameIdMappingCache;
         _logger = logger;
-        _gqlClient = gqlClient;
         _timeProvider = timeProvider;
         _graphQlClient = graphQlClient;
 
@@ -163,7 +158,6 @@ public class ModUpdateService : IModUpdateService, IDisposable
                 _connection.Db,
                 tx,
                 _logger,
-                _gqlClient,
                 _graphQlClient,
                 updateCheckResult,
                 token);

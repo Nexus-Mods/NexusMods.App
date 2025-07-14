@@ -47,7 +47,6 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
             ServiceProvider.GetRequiredService<INexusApiClient>(),
             ServiceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>(),
             ServiceProvider.GetRequiredService<ILogger<ModUpdateService>>(),
-            ServiceProvider.GetRequiredService<NexusGraphQLClient>(),
             ServiceProvider.GetRequiredService<IGraphQlClient>(),
             _timeProvider,
             _filterService);
