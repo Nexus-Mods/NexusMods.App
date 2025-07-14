@@ -1,20 +1,16 @@
-using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using NexusMods.Sdk.Collections;
 using StrawberryShake;
 
 namespace NexusMods.Networking.NexusWebApi.Errors;
 
 file static class Helper
 {
-    internal static readonly IReadOnlyDictionary<ErrorCode, IGraphQlError> NoErrors = FrozenDictionary<ErrorCode, IGraphQlError>.Empty;
-
-    internal static IReadOnlyDictionary<ErrorCode, IGraphQlError> ToErrors(IGraphQlError error)
+    internal static KeyValuePair<ErrorCode, IGraphQlError>[] ToErrors(IGraphQlError error)
     {
-        return new SingleValueDictionary<ErrorCode, IGraphQlError>(new KeyValuePair<ErrorCode, IGraphQlError>(error.Code, error));
+        return [new KeyValuePair<ErrorCode, IGraphQlError>(error.Code, error)];
     }
 }
 
@@ -33,7 +29,7 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
     private readonly Optional<TData> _data;
 
     /// <inheritdoc/>
-    public IReadOnlyDictionary<ErrorCode, IGraphQlError> Errors { get; }
+    public KeyValuePair<ErrorCode, IGraphQlError>[] Errors { get; }
 
     /// <summary>
     /// Constructor.
@@ -41,13 +37,13 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
     public GraphQlResult(TData data)
     {
         _data = data;
-        Errors = Helper.NoErrors;
+        Errors = [];
     }
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    public GraphQlResult(IReadOnlyDictionary<ErrorCode, IGraphQlError> errors)
+    public GraphQlResult(KeyValuePair<ErrorCode, IGraphQlError>[] errors)
     {
         _data = Optional<TData>.None;
         Errors = errors;
@@ -57,13 +53,13 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
     public bool HasData => _data.HasValue;
 
     /// <inheritdoc/>
-    public bool HasErrors => Errors.Count > 0;
+    public bool HasErrors => Errors.Length > 0;
 
     /// <inheritdoc/>
     public TData AssertHasData()
     {
         Debug.Assert(HasData, "Result should have data when this method is called, use TryGetData instead if you can't guarantee it");
-        if (!HasData) throw new InvalidOperationException($"Expected the result to contain data but it has {Errors.Count} errors instead");
+        if (!HasData) throw new InvalidOperationException($"Expected the result to contain data but it has {Errors.Length} errors instead");
         return _data.Value;
     }
 
@@ -81,7 +77,7 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
     }
 
     /// <inheritdoc/>
-    public override string ToString() => $"HasData = {HasData} ({_data}) ErrorsCount = {Errors.Count}";
+    public override string ToString() => $"HasData = {HasData} ({_data}) ErrorsCount = {Errors.Length}";
 
     /// <summary>
     /// Implicit conversion.
@@ -91,7 +87,7 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
     /// <summary>
     /// Implicit conversion.
     /// </summary>
-    public static implicit operator GraphQlResult<TData>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
+    public static implicit operator GraphQlResult<TData>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors);
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -108,7 +104,7 @@ public class GraphQlResult<TData, TError1> : GraphQlResult<TData>, IGraphQlResul
     /// <summary>
     /// Constructor.
     /// </summary>
-    public GraphQlResult(IReadOnlyDictionary<ErrorCode, IGraphQlError> errors) : base(errors) { }
+    public GraphQlResult(KeyValuePair<ErrorCode, IGraphQlError>[] errors) : base(errors) { }
 
     /// <summary>
     /// Constructor.
@@ -134,7 +130,7 @@ public class GraphQlResult<TData, TError1> : GraphQlResult<TData>, IGraphQlResul
     /// <summary>
     /// Implicit conversion.
     /// </summary>
-    public static implicit operator GraphQlResult<TData, TError1>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
+    public static implicit operator GraphQlResult<TData, TError1>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors);
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -152,7 +148,7 @@ public class GraphQlResult<TData, TError1, TError2> : GraphQlResult<TData>, IGra
     /// <summary>
     /// Constructor.
     /// </summary>
-    public GraphQlResult(IReadOnlyDictionary<ErrorCode, IGraphQlError> errors) : base(errors) { }
+    public GraphQlResult(KeyValuePair<ErrorCode, IGraphQlError>[] errors) : base(errors) { }
 
     /// <summary>
     /// Constructor.
@@ -183,7 +179,7 @@ public class GraphQlResult<TData, TError1, TError2> : GraphQlResult<TData>, IGra
     /// <summary>
     /// Implicit conversion.
     /// </summary>
-    public static implicit operator GraphQlResult<TData, TError1, TError2>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
+    public static implicit operator GraphQlResult<TData, TError1, TError2>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors);
 }
 
 /// <inheritdoc cref="GraphQlResult{TData}"/>
@@ -202,7 +198,7 @@ public class GraphQlResult<TData, TError1, TError2, TError3> : GraphQlResult<TDa
     /// <summary>
     /// Constructor.
     /// </summary>
-    public GraphQlResult(IReadOnlyDictionary<ErrorCode, IGraphQlError> errors) : base(errors) { }
+    public GraphQlResult(KeyValuePair<ErrorCode, IGraphQlError>[] errors) : base(errors) { }
 
     /// <summary>
     /// Constructor.
@@ -238,7 +234,7 @@ public class GraphQlResult<TData, TError1, TError2, TError3> : GraphQlResult<TDa
     /// <summary>
     /// Implicit conversion.
     /// </summary>
-    public static implicit operator GraphQlResult<TData, TError1, TError2, TError3>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors.ToDictionary());
+    public static implicit operator GraphQlResult<TData, TError1, TError2, TError3>(KeyValuePair<ErrorCode, IGraphQlError>[] errors) => new(errors);
 }
 
 /// <summary>
@@ -274,16 +270,36 @@ public static class GraphQlResult
             return true;
         }
 
-        var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
-
-        foreach (var error in errors)
+        var parsedErrors = new KeyValuePair<ErrorCode, IGraphQlError>[errors.Count];
+        for (var i = 0; i < errors.Count; i++)
         {
+            var error = errors[i];
             var unknownError = CreateUnknownError(error);
-            parsedErrors[unknownError.Code] = unknownError;
+            parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(unknownError.Code, unknownError);
         }
 
         result = new GraphQlResult<TData>(parsedErrors);
         return true;
+    }
+
+    /// <summary>
+    /// Transforms the operation result to a result.
+    /// </summary>
+    public static GraphQlResult<TOutput> Transform<TOperationData, TQueryData, TOutput>(
+        this IOperationResult<TOperationData> operationResult,
+        Func<TOperationData, TQueryData?> selectorFunc,
+        Func<TQueryData, TOutput> transformerFunc)
+        where TOperationData : class
+        where TOutput : notnull
+    {
+        if (operationResult.TryExtractErrors(out GraphQlResult<TOutput>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        var queryData = selectorFunc(operationData);
+        Debug.Assert(queryData is not null);
+        if (queryData is null) throw new InvalidOperationException("Expected query data to be non-null");
+
+        return transformerFunc(queryData);
     }
 
     /// <summary>
@@ -321,23 +337,49 @@ public static class GraphQlResult
             return true;
         }
 
-        var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
-
-        foreach (var error in errors)
+        var parsedErrors = new KeyValuePair<ErrorCode, IGraphQlError>[errors.Count];
+        for (var i = 0; i < errors.Count; i++)
         {
+            var error = errors[i];
             if (TError1.Matches(error) && TError1.TryParse(error, out var error1))
             {
-                parsedErrors[TError1.Code] = error1;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(TError1.Code, error1);
             }
             else
             {
                 var unknownError = CreateUnknownError(error);
-                parsedErrors[unknownError.Code] = unknownError;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(unknownError.Code, unknownError);
             }
         }
 
         result = new GraphQlResult<TData, TError1>(parsedErrors);
         return true;
+    }
+
+    /// <summary>
+    /// Transforms the operation result to a result.
+    /// </summary>
+    public static GraphQlResult<TOutput, TError1> Transform<TOperationData, TQueryData, TOutput, TError1>(
+        this IOperationResult<TOperationData> operationResult,
+        out GraphQlResult<TOutput, TError1> result,
+        Func<TOperationData, TQueryData?> selectorFunc,
+        Func<TQueryData, TOutput> transformerFunc)
+        where TOperationData : class
+        where TOutput : notnull
+        where TError1 : IGraphQlError<TError1>
+    {
+        if (operationResult.TryExtractErrors(out GraphQlResult<TOutput, TError1>? resultWithErrors, out var operationData))
+        {
+            result = resultWithErrors;
+            return result;
+        }
+
+        var queryData = selectorFunc(operationData);
+        Debug.Assert(queryData is not null);
+        if (queryData is null) throw new InvalidOperationException("Expected query data to be non-null");
+
+        result = transformerFunc(queryData);
+        return result;
     }
 
     /// <summary>
@@ -382,27 +424,54 @@ public static class GraphQlResult
             return true;
         }
 
-        var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
-
-        foreach (var error in errors)
+        var parsedErrors = new KeyValuePair<ErrorCode, IGraphQlError>[errors.Count];
+        for (var i = 0; i < errors.Count; i++)
         {
+            var error = errors[i];
             if (TError1.Matches(error) && TError1.TryParse(error, out var error1))
             {
-                parsedErrors[TError1.Code] = error1;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(TError1.Code, error1);
             }
             else if (TError2.Matches(error) && TError2.TryParse(error, out var error2))
             {
-                parsedErrors[TError2.Code] = error2;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(TError2.Code, error2);
             }
             else
             {
                 var unknownError = CreateUnknownError(error);
-                parsedErrors[unknownError.Code] = unknownError;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(unknownError.Code, unknownError);
             }
         }
 
         result = new GraphQlResult<TData, TError1, TError2>(parsedErrors);
         return true;
+    }
+
+    /// <summary>
+    /// Transforms the operation result to a result.
+    /// </summary>
+    public static GraphQlResult<TOutput, TError1, TError2> Transform<TOperationData, TQueryData, TOutput, TError1, TError2>(
+        this IOperationResult<TOperationData> operationResult,
+        out GraphQlResult<TOutput, TError1, TError2> result,
+        Func<TOperationData, TQueryData?> selectorFunc,
+        Func<TQueryData, TOutput> transformerFunc)
+        where TOperationData : class
+        where TOutput : notnull
+        where TError1 : IGraphQlError<TError1>
+        where TError2 : IGraphQlError<TError2>
+    {
+        if (operationResult.TryExtractErrors(out GraphQlResult<TOutput, TError1, TError2>? resultWithErrors, out var operationData))
+        {
+            result = resultWithErrors;
+            return result;
+        }
+
+        var queryData = selectorFunc(operationData);
+        Debug.Assert(queryData is not null);
+        if (queryData is null) throw new InvalidOperationException("Expected query data to be non-null");
+
+        result = transformerFunc(queryData);
+        return result;
     }
 
     /// <summary>
@@ -454,31 +523,59 @@ public static class GraphQlResult
             return true;
         }
 
-        var parsedErrors = new Dictionary<ErrorCode, IGraphQlError>();
-
-        foreach (var error in errors)
+        var parsedErrors = new KeyValuePair<ErrorCode, IGraphQlError>[errors.Count];
+        for (var i = 0; i < errors.Count; i++)
         {
+            var error = errors[i];
             if (TError1.Matches(error) && TError1.TryParse(error, out var error1))
             {
-                parsedErrors[TError1.Code] = error1;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(TError1.Code, error1);
             }
             else if (TError2.Matches(error) && TError2.TryParse(error, out var error2))
             {
-                parsedErrors[TError2.Code] = error2;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(TError2.Code, error2);
             }
             else if (TError3.Matches(error) && TError3.TryParse(error, out var error3))
             {
-                parsedErrors[TError3.Code] = error3;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(TError3.Code, error3);
             }
             else
             {
                 var unknownError = CreateUnknownError(error);
-                parsedErrors[unknownError.Code] = unknownError;
+                parsedErrors[i] = new KeyValuePair<ErrorCode, IGraphQlError>(unknownError.Code, unknownError);
             }
         }
 
         result = new GraphQlResult<TData, TError1, TError2, TError3>(parsedErrors);
         return true;
+    }
+
+    /// <summary>
+    /// Transforms the operation result to a result.
+    /// </summary>
+    public static GraphQlResult<TOutput, TError1, TError2, TError3> Transform<TOperationData, TQueryData, TOutput, TError1, TError2, TError3>(
+        this IOperationResult<TOperationData> operationResult,
+        out GraphQlResult<TOutput, TError1, TError2, TError3> result,
+        Func<TOperationData, TQueryData?> selectorFunc,
+        Func<TQueryData, TOutput> transformerFunc)
+        where TOperationData : class
+        where TOutput : notnull
+        where TError1 : IGraphQlError<TError1>
+        where TError2 : IGraphQlError<TError2>
+        where TError3 : IGraphQlError<TError3>
+    {
+        if (operationResult.TryExtractErrors(out GraphQlResult<TOutput, TError1, TError2, TError3>? resultWithErrors, out var operationData))
+        {
+            result = resultWithErrors;
+            return result;
+        }
+
+        var queryData = selectorFunc(operationData);
+        Debug.Assert(queryData is not null);
+        if (queryData is null) throw new InvalidOperationException("Expected query data to be non-null");
+
+        result = transformerFunc(queryData);
+        return result;
     }
 
     private static TOperationData AssertOperationData<TOperationData>(IOperationResult<TOperationData> operationResult)
