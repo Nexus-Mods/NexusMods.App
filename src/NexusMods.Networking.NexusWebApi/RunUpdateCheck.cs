@@ -49,7 +49,6 @@ public static class RunUpdateCheck
         IDb db,
         ITransaction tx,
         ILogger logger,
-        INexusGraphQLClient gqlClient,
         IGraphQlClient graphQlClient,
         PerFeedCacheUpdaterResult<PageMetadataMixin> result,
         CancellationToken cancellationToken)
