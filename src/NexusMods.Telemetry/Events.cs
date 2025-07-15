@@ -58,4 +58,10 @@ public static class Events
         public static readonly EventDefinition ViewAppLogs   = new(Category, Action: "View app logs");
         public static readonly EventDefinition GiveFeedback  = new(Category, Action: "Give feedback");
     }
+    
+    public static class Search
+    {
+        private const string Category = "Search";
+        public static readonly EventDefinition OpenSearch = new(Category, Action: "TreeDataGrid Search");
+    }
 }
