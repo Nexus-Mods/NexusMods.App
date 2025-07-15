@@ -6,7 +6,6 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Networking.NexusWebApi.Errors;
-using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -179,7 +178,7 @@ internal partial class GraphQlClient : IGraphQlClient
 
         return operationResult.Transform(out GraphQlResult<string, NotFound> _, static result => result.CollectionRevision, static revision => revision.DownloadLink);
     }
-    
+
     private T ExpectOne<T>(IReadOnlyList<T> list)
     {
         Debug.Assert(list.Count != 0, "expect result to contain at least one item");
@@ -187,10 +186,10 @@ internal partial class GraphQlClient : IGraphQlClient
         if (list.Count == 1) return list[0];
         if (list.Count == 0) throw new InvalidOperationException("Expected result to contain at least one item");
 
-        _logger.LogWarning("API returned {Count} items, expected a single item", list.Count);
+        _logger.LogWarning("API returned {Count} items of type `{Type}`, expected a single item", list.Count, typeof(T));
         return list[0];
     }
-    
+
     private Optional<RevisionStatus> ToStatus(ICollectionRevisionStatus revisionFragment)
     {
         // NOTE(erri120): no idea why the revision fragment has two strings for the status
