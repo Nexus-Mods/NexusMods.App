@@ -75,6 +75,8 @@ public partial class Loadout : IModelDefinition
 
     public partial struct ReadOnly
     {
+        public ILocatableGame LocatableGame => InstallationInstance.Game;
+
         /// <summary>
         /// Get the game installation for this loadout.
         /// </summary>
