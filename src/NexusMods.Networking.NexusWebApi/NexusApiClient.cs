@@ -7,7 +7,6 @@ using NexusMods.Abstractions.NexusWebApi.DTOs.Interfaces;
 using NexusMods.Abstractions.NexusWebApi.DTOs.OAuth;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using OperationResultExtension = StrawberryShake.OperationResultExtensions;
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
@@ -18,7 +17,7 @@ public class NexusApiClient : INexusApiClient
     private readonly ILogger<NexusApiClient> _logger;
     private readonly IHttpMessageFactory _factory;
     private readonly HttpClient _httpClient;
-    private readonly NexusGraphQLClient _graphQlClient;
+    private readonly IGraphQlClient _graphQlClient;
 
     /// <summary>
     /// Constructor.
@@ -27,7 +26,7 @@ public class NexusApiClient : INexusApiClient
         ILogger<NexusApiClient> logger,
         IHttpMessageFactory factory,
         HttpClient httpClient,
-        NexusGraphQLClient graphQlClient)
+        IGraphQlClient graphQlClient)
     {
         _logger = logger;
         _factory = factory;
@@ -112,10 +111,11 @@ public class NexusApiClient : INexusApiClient
     /// </summary>
     public async Task<Response<CollectionDownloadLinks>> CollectionDownloadLinksAsync(CollectionSlug slug, RevisionNumber revision, bool viewAdultContent = true, CancellationToken token = default)
     {
-        var linksLocation = await _graphQlClient.CollectionDownloadLink.ExecuteAsync(slug.Value, (int)revision.Value, viewAdultContent, token);
-        OperationResultExtension.EnsureNoErrors(linksLocation);
+        var result = await _graphQlClient.QueryCollectionRevisionDownloadLink(slug, revision, cancellationToken: token);
+        // TODO: handle errors
+        var link = result.AssertHasData();
 
-        var msg = await _factory.Create(HttpMethod.Get, new Uri($"{ClientConfig.ApiUrl}{linksLocation.Data!.CollectionRevision.DownloadLink}"));
+        var msg = await _factory.Create(HttpMethod.Get, new Uri($"{ClientConfig.ApiUrl}{link}"));
         return await SendAsync<CollectionDownloadLinks>(msg, token);
     }
 

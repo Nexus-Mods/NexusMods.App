@@ -1,8 +1,0 @@
-# Gets the download link for a collection.
-query CollectionDownloadLink($slug: String!, $revision: Int!, $viewAdultContent: Boolean!)
-{
-    collectionRevision(slug: $slug, revision: $revision, viewAdultContent: $viewAdultContent)
-    {
-        downloadLink
-    }
-}

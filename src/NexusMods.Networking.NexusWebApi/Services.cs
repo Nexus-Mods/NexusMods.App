@@ -60,6 +60,7 @@ public static class Services
 
         collection
             .AddNexusModsLibraryModels()
+            .AddSingleton<IGraphQlClient, GraphQlClient>()
             .AddSingleton<NexusModsLibrary>()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()

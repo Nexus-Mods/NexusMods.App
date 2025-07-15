@@ -18,8 +18,6 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
-using StrawberryShake;
-using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
 namespace NexusMods.Networking.NexusWebApi;
 using GameIdCache = Dictionary<GameDomain, GameId>;
@@ -30,10 +28,9 @@ public partial class NexusModsLibrary
 {
     private async ValueTask<PresignedUploadUrl> UploadCollectionArchive(IStreamFactory archiveStreamFactory, CancellationToken cancellationToken)
     {
-        var result = await _gqlClient.GetCollectionRevisionUploadUrl.ExecuteAsync(cancellationToken: cancellationToken);
-        result.EnsureNoErrors();
-
-        var presignedUploadUrl = PresignedUploadUrl.FromApi(result.Data?.CollectionRevisionUploadUrl!);
+        var result = await _graphQlClient.RequestCollectionRevisionUploadUrl(cancellationToken: cancellationToken);
+        // TODO: handle errors
+        var presignedUploadUrl = result.AssertHasData();
 
         await using var stream = await archiveStreamFactory.GetStreamAsync();
         using HttpContent httpContent = new StreamContent(stream);
@@ -54,21 +51,19 @@ public partial class NexusModsLibrary
     /// </summary>
     public async ValueTask<CollectionMetadata.ReadOnly> EditCollectionName(CollectionMetadata.ReadOnly collection, string newName, CancellationToken cancellationToken)
     {
-        var result = await _gqlClient.EditCollectionName.ExecuteAsync(
-            collectionId: (int)collection.CollectionId.Value,
-            name: newName,
+        var result = await _graphQlClient.RenameCollection(
+            collectionId: collection.CollectionId,
+            newName: newName,
             cancellationToken: cancellationToken
         );
 
-        result.EnsureNoErrors();
-
-        var data = result.Data?.EditCollection!;
-        if (!data.Success) throw new NotImplementedException();
+        // TODO: handle errors
+        var returnedCollection = result.AssertHasData();
 
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
 
-        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var collectionEntityId = UpdateCollectionInfo(db, tx, returnedCollection);
         var commitResult = await tx.Commit();
 
         collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
@@ -79,7 +74,7 @@ public partial class NexusModsLibrary
     /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
     /// </summary>
     public async ValueTask<(RevisionNumber, RevisionId)> UploadDraftRevision(
-        CollectionMetadata.ReadOnly collection,
+        CollectionMetadata.ReadOnly collectionMetadata,
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
         CancellationToken cancellationToken)
@@ -87,20 +82,18 @@ public partial class NexusModsLibrary
         var payload = ManifestToPayload(collectionManifest);
         var presignedUploadUrl = await UploadCollectionArchive(archiveStreamFactory, cancellationToken: cancellationToken);
 
-        var result = await _gqlClient.CreateOrUpdateRevision.ExecuteAsync(
+        var result = await _graphQlClient.CreateOrUpdateRevision(
+            collectionId: collectionMetadata.CollectionId,
             payload: payload,
-            collectionId: (int)collection.CollectionId.Value,
-            uuid: presignedUploadUrl.UUID,
+            presignedUploadUrl: presignedUploadUrl,
             cancellationToken: cancellationToken
         );
 
-        result.EnsureNoErrors();
+        // TODO: handle errors
+        var (collection, revision) = result.AssertHasData();
 
-        var data = result.Data?.CreateOrUpdateRevision!;
-        Debug.Assert(data.Success);
-
-        var revisionNumber = RevisionNumber.From((ulong)data.Revision.RevisionNumber);
-        var revisionId = RevisionId.From((ulong)data.Revision.Id);
+        var revisionNumber = RevisionNumber.From((ulong)revision.RevisionNumber);
+        var revisionId = RevisionId.From((ulong)revision.Id);
         return (revisionNumber, revisionId);
     }
 
@@ -115,93 +108,35 @@ public partial class NexusModsLibrary
         var payload = ManifestToPayload(collectionManifest);
         var presignedUploadUrl = await UploadCollectionArchive(archiveStreamFactory, cancellationToken: cancellationToken);
 
-        var result = await _gqlClient.CreateCollection.ExecuteAsync(
-            payload: payload,
-            uuid: presignedUploadUrl.UUID,
-            cancellationToken: cancellationToken
-        );
+        var result = await _graphQlClient.CreateCollection(payload, presignedUploadUrl, cancellationToken);
 
-        result.EnsureNoErrors();
-
-        var data = result.Data?.CreateCollection!;
-        Debug.Assert(data.Success);
+        // TODO: handle errors
+        var (collection, revision) = result.AssertHasData();
 
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
 
-        var collectionEntityId = UpdateCollectionInfo(db, tx, data.Collection);
+        var collectionEntityId = UpdateCollectionInfo(db, tx, collection);
         var commitResult = await tx.Commit();
 
-        var collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
-        var revisionId = RevisionId.From((ulong)data.Revision.Id);
-        return (collection, revisionId);
+        var collectionMetadata = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
+        var revisionId = RevisionId.From((ulong)revision.Id);
+        return (collectionMetadata, revisionId);
     }
 
-    public async ValueTask<GraphQlResult<NoData, NotFound, CollectionDiscarded>> PublishRevision(
+    public ValueTask<GraphQlResult<NoData, NotFound, Invalid>> PublishRevision(
         RevisionId revisionId,
         CancellationToken cancellationToken)
     {
-        var operationResult = await _gqlClient.PublishRevision.ExecuteAsync(
-            revisionId: revisionId.Value.ToString(),
-            cancellationToken: cancellationToken
-        );
-
-        if (operationResult.TryExtractErrors(out GraphQlResult<NoData, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
-            return resultWithErrors;
-
-        Debug.Assert(operationData.PublishRevision?.Success ?? false);
-        return new NoData();
+        return _graphQlClient.PublishRevision(revisionId, cancellationToken);
     }
 
-    public ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ChangeCollectionStatus(
+    public ValueTask<GraphQlResult<NoData, NotFound>> ChangeCollectionStatus(
         CollectionId collectionId,
         Abstractions.NexusModsLibrary.Models.CollectionStatus newStatus,
         CancellationToken cancellationToken)
     {
-        if (newStatus is Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed)
-        {
-            return ListCollection(collectionId, cancellationToken);
-        }
-        else if (newStatus is Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted)
-        {
-            return UnlistCollection(collectionId, cancellationToken);
-        }
-        else
-        {
-            throw new NotSupportedException();
-        }
-    }
-
-    private async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ListCollection(
-        CollectionId collectionId,
-        CancellationToken cancellationToken)
-    {
-        var operationResult = await _gqlClient.ListCollection.ExecuteAsync(
-            collectionId: (int)collectionId.Value,
-            cancellationToken: cancellationToken
-        );
-
-        if (operationResult.TryExtractErrors(out GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
-            return resultWithErrors;
-
-        Debug.Assert(operationData.ListCollection?.Success ?? false);
-        return Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed;
-    }
-
-    private async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> UnlistCollection(
-        CollectionId collectionId,
-        CancellationToken cancellationToken)
-    {
-        var operationResult = await _gqlClient.UnlistCollection.ExecuteAsync(
-            collectionId: collectionId.Value.ToString(),
-            cancellationToken: cancellationToken
-        );
-
-        if (operationResult.TryExtractErrors(out GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
-            return resultWithErrors;
-
-        Debug.Assert(operationData.UnlistCollection?.Success ?? false);
-        return Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
+        return _graphQlClient.ChangeCollectionStatus(collectionId, newStatus, cancellationToken);
     }
 
     private static CollectionPayload ManifestToPayload(CollectionRoot manifest)
@@ -287,24 +222,23 @@ public partial class NexusModsLibrary
 
         var collectionRoot = await ParseCollectionJsonFile(collectionLibraryFile, cancellationToken);
 
-        var apiResult = await _gqlClient.CollectionRevisionInfo.ExecuteAsync(
-            slug: slug.Value,
-            revisionNumber: (int)revisionNumber.Value,
-            viewAdultContent: true,
+        var graphQlResult = await _graphQlClient.QueryCollectionRevision(
+            collectionSlug: slug,
+            revisionNumber: revisionNumber,
             cancellationToken: cancellationToken
         );
 
-        var collectionRevisionInfo = apiResult.Data?.CollectionRevision;
-        if (collectionRevisionInfo is null) throw new NotSupportedException($"API call returned no data for collection slug `{slug}` revision `{revisionNumber}`");
+        // TODO: handle errors
+        var collectionRevision = graphQlResult.AssertHasData();
 
-        var revisionMetadata = await AddCollectionToDatabase(collectionRoot, collectionRevisionInfo.Collection, collectionRevisionInfo, cancellationToken);
+        var revisionMetadata = await AddCollectionToDatabase(collectionRoot, collectionRevision.Collection, collectionRevision, cancellationToken);
         return revisionMetadata;
     }
 
     private async ValueTask<CollectionRevisionMetadata.ReadOnly> AddCollectionToDatabase(
         CollectionRoot collectionManifest,
-        ICollectionFragment collectionFragment,
-        ICollectionRevisionFragment collectionRevisionFragment,
+        ICollection collectionFragment,
+        ICollectionRevision collectionRevisionFragment,
         CancellationToken cancellationToken)
     {
         var gameIds = CacheGameIds(collectionManifest, cancellationToken);
@@ -336,52 +270,20 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Gets the last published revision number.
     /// </summary>
-    public async ValueTask<GraphQlResult<Optional<RevisionNumber>, NotFound, CollectionDiscarded>> GetLastPublishedRevisionNumber(
+    public async ValueTask<GraphQlResult<Optional<RevisionNumber>, NotFound>> GetLastPublishedRevisionNumber(
         CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
-        var graphQlResult = await GetAllRevisionNumbers(collection, cancellationToken);
-        return graphQlResult.Map(static revisionNumbers => revisionNumbers.
-            FirstOrOptional(static tuple => tuple.Status == RevisionStatus.Published)
-            .Convert(static tuple => tuple.Number)
-        );
-    }
-
-    /// <summary>
-    /// Gets all revision numbers for the given collection in descending order.
-    /// </summary>
-    public async ValueTask<GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>> GetAllRevisionNumbers(
-        CollectionMetadata.ReadOnly collection,
-        CancellationToken cancellationToken)
-    {
-        var gameDomain = _mappingCache[collection.GameId];
-
-        var operationResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
-            slug: collection.Slug.Value,
-            domainName: gameDomain.Value,
-            viewAdultContent: true,
+        var graphQlResult = await _graphQlClient.QueryCollectionRevisionNumbers(
+            collectionSlug: collection.Slug,
+            gameDomain: _mappingCache[collection.GameId],
             cancellationToken: cancellationToken
         );
 
-        if (operationResult.TryExtractErrors(out GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
-            return resultWithErrors;
-
-        var revisions = operationData.Collection.Revisions;
-
-        var revisionNumbers = revisions
-            .OrderByDescending(x => x.RevisionNumber)
-            .Select(data =>
-            {
-                var revisionNumber = RevisionNumber.From((ulong)data.RevisionNumber);
-                var status = ToStatus(_logger, data);
-                if (!status.HasValue) return Optional<(RevisionNumber, RevisionStatus)>.None;
-                return (revisionNumber, status.Value);
-            })
-            .Where(x => x.HasValue)
-            .Select(x => x.Value)
-            .ToArray();
-
-        return revisionNumbers;
+        return graphQlResult.Map(static revisionNumbers => revisionNumbers
+            .FirstOrOptional(static tuple => tuple.Status == RevisionStatus.Published)
+            .Convert(static tuple => tuple.Number)
+        );
     }
 
     private static void AddCollectionDownloadRules(
@@ -483,7 +385,7 @@ public partial class NexusModsLibrary
         ITransaction tx,
         CollectionRoot collectionRoot,
         GameIdCache gameIds,
-        ICollectionRevisionFragment collectionRevision)
+        ICollectionRevision collectionRevision)
     {
         var res = new ResolvedEntitiesLookup();
         var modPageIds = new Dictionary<UidForMod, EntityId>();
@@ -549,7 +451,7 @@ public partial class NexusModsLibrary
         IDb db,
         ITransaction tx,
         CollectionRevisionMetadataId collectionRevisionEntityId,
-        ICollectionRevisionFragment revisionInfo,
+        ICollectionRevision revisionInfo,
         CollectionRoot collectionRoot,
         GameIdCache gameIds,
         ResolvedEntitiesLookup resolvedEntitiesLookup)
@@ -651,7 +553,7 @@ public partial class NexusModsLibrary
         IDb db,
         ITransaction tx,
         EntityId collectionEntityId,
-        ICollectionRevisionFragment revisionInfo)
+        ICollectionRevision revisionInfo)
     {
         var revisionId = RevisionId.From((ulong)revisionInfo.Id);
         var resolver = GraphQLResolver.Create(db, tx, CollectionRevisionMetadata.RevisionId, revisionId);
@@ -676,7 +578,7 @@ public partial class NexusModsLibrary
         return resolver.Id;
     }
 
-    private static Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus> ToStatus(ICollectionFragment collectionFragment)
+    private static Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus> ToStatus(ICollection collectionFragment)
     {
         if (collectionFragment.CollectionStatus is null) return Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus>.None;
         return collectionFragment.CollectionStatus.Value switch
@@ -687,7 +589,7 @@ public partial class NexusModsLibrary
         };
     }
 
-    private static Optional<RevisionStatus> ToStatus(ILogger logger, ICollectionRevisionStatusFragment revisionFragment)
+    private static Optional<RevisionStatus> ToStatus(ILogger logger, ICollectionRevisionStatus revisionFragment)
     {
         // NOTE(erri120): no idea why the revision fragment has two strings for the status
         Debug.Assert(revisionFragment.Status.Equals(revisionFragment.RevisionStatus, StringComparison.OrdinalIgnoreCase), $"weird things happening: {revisionFragment.Status} != {revisionFragment.RevisionStatus}");
@@ -703,7 +605,7 @@ public partial class NexusModsLibrary
     private static EntityId UpdateCollectionInfo(
         IDb db,
         ITransaction tx,
-        ICollectionFragment collectionInfo)
+        ICollection collectionInfo)
     {
         var id = CollectionId.From((ulong)collectionInfo.Id);
         var slug = CollectionSlug.From(collectionInfo.Slug);
