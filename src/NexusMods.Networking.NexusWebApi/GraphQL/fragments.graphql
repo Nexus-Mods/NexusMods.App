@@ -1,92 +1,22 @@
-fragment UserFragment on User {
-  name
-  avatar
-  memberId  
-}
-
-fragment CollectionRevisionStatus on CollectionRevision {
-    status,
-    revisionStatus
-}
-
-fragment CollectionRevision on CollectionRevision {
-    id
-    assetsSizeBytes
-    revisionNumber
-    adultContent
-    totalSize
-    overallRating
-    overallRatingCount
-    modCount
-    ...CollectionRevisionStatus
-
-    modFiles {
-        id,
-        optional,
-        gameId,
-        fileId,
-        file {
-            ...ModFile
-            mod {
-                ...Mod
-            }
-        }
-        updatePolicy,
-        version,
-    }
-
-    collection {
-        ...CollectionFragment
-    }
-}
-
-fragment CategoryFragment on Category {
-    id
+fragment User on User {
     name
-}
-
-fragment CollectionFragment on Collection {
-    id
-    slug
-    name
-    collectionStatus
-    summary
-    endorsements
-    totalDownloads
-    overallRating
-    overallRatingCount
-    recentRating
-    recentRatingCount
-    category {
-        ...CategoryFragment
-    }
-    tileImage {
-        thumbnailUrl(size: small)
-    }
-    headerImage {
-        url
-    }
-    user {
-        ...UserFragment
-    }
-    game {
-        id
-        name
-        domainName
-    }
+    avatar
+    memberId
+    membershipRoles
+    roles
 }
 
 fragment PresignedUrl on PresignedUrl {
-    url,
+    url
     uuid
 }
 
 fragment Category on Category {
-    id,
-    parentId,
-    name,
-    description,
-    approved,
+    id
+    parentId
+    name
+    description
+    approved
     discardedAt
 }
 
@@ -104,10 +34,77 @@ fragment Mod on Mod {
 }
 
 fragment ModFile on ModFile {
-    name,
-    modId,
-    version,
-    sizeInBytes,
-    date,
+    name
+    modId
+    version
+    sizeInBytes
+    date
     uid
+}
+
+fragment Collection on Collection {
+    id
+    slug
+    name
+    collectionStatus
+    summary
+    endorsements
+    totalDownloads
+    overallRating
+    overallRatingCount
+    recentRating
+    recentRatingCount
+    category {
+        ...Category
+    }
+    tileImage {
+        thumbnailUrl(size: small)
+    }
+    headerImage {
+        url
+    }
+    user {
+        ...User
+    }
+    game {
+        id
+        name
+        domainName
+    }
+}
+
+fragment CollectionRevision on CollectionRevision {
+    id
+    assetsSizeBytes
+    revisionNumber
+    adultContent
+    totalSize
+    overallRating
+    overallRatingCount
+    modCount
+    ...CollectionRevisionStatus
+
+    modFiles {
+        id
+        optional
+        gameId
+        fileId
+        file {
+            ...ModFile
+            mod {
+                ...Mod
+            }
+        }
+        updatePolicy
+        version
+    }
+
+    collection {
+        ...Collection
+    }
+}
+
+fragment CollectionRevisionStatus on CollectionRevision {
+    status
+    revisionStatus
 }
