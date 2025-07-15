@@ -1,3 +1,32 @@
+# v0.14.0 2025-07-XX
+This release includes support for games installed via Epic Games on Windows, adds search to the Library and enables creating collections. 
+
+## Cyberpunk 2077 Gets More Epic
+
+
+## Library Search
+
+
+## Create Collections
+
+
+## More Features
+
+
+## Technical Changes
+* Added validation to app settings, to prevent bad values being saved.
+* Collection metadata will now refresh each time the page is loaded in the app. 
+
+## Bug Fixes
+
+
+## Known Issues
+* When deleting a mod from the Library, the confirmation pop-up will not correctly show which collections depend on that mod.
+* The sort order for some columns does not work as expected.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+
+
 # v0.13.4 2025-07-02
 This release includes the ability to change your storage location, new game artwork and lots of bug fixes.
 
