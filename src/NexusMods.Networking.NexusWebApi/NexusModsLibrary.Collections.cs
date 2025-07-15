@@ -404,7 +404,7 @@ public partial class NexusModsLibrary
 
     private async ValueTask<CollectionRevisionMetadata.ReadOnly> AddCollectionToDatabase(
         CollectionRoot collectionManifest,
-        ICollectionFragment collectionFragment,
+        ICollection collectionFragment,
         ICollectionRevision collectionRevisionFragment,
         CancellationToken cancellationToken)
     {
@@ -745,7 +745,7 @@ public partial class NexusModsLibrary
         return resolver.Id;
     }
 
-    private static Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus> ToStatus(ICollectionFragment collectionFragment)
+    private static Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus> ToStatus(ICollection collectionFragment)
     {
         if (collectionFragment.CollectionStatus is null) return Optional<NexusMods.Abstractions.NexusModsLibrary.Models.CollectionStatus>.None;
         return collectionFragment.CollectionStatus.Value switch
@@ -772,7 +772,7 @@ public partial class NexusModsLibrary
     private static EntityId UpdateCollectionInfo(
         IDb db,
         ITransaction tx,
-        ICollectionFragment collectionInfo)
+        ICollection collectionInfo)
     {
         var id = CollectionId.From((ulong)collectionInfo.Id);
         var slug = CollectionSlug.From(collectionInfo.Slug);

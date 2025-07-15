@@ -18,7 +18,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves a category.
     /// </summary>
-    public static EntityId Resolve(this ICategoryFragment category, IDb db, ITransaction tx)
+    public static EntityId Resolve(this ICategory category, IDb db, ITransaction tx)
     {
         var resolver = GraphQLResolver.Create(db, tx, CollectionCategory.NexusId, (ulong)category.Id);
         resolver.Add(CollectionCategory.Name, category.Name);
@@ -28,7 +28,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves the IUserFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static EntityId Resolve(this IUserFragment userFragment, IDb db, ITransaction tx)
+    public static EntityId Resolve(this IUser userFragment, IDb db, ITransaction tx)
     {
         var userResolver = GraphQLResolver.Create(db, tx, User.NexusId, (ulong)userFragment.MemberId);
         userResolver.Add(User.Name, userFragment.Name);

@@ -24,7 +24,7 @@ mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
     createCollection(collectionData: $payload, uuid: $uuid) {
         success
         collection {
-            ...CollectionFragment
+            ...Collection
         }
         revision {
             ...CollectionRevision
@@ -45,7 +45,7 @@ mutation EditCollectionName($collectionId: Int!, $name: String!) {
     editCollection(collectionId: $collectionId, name: $name) {
         success,
         collection {
-            ...CollectionFragment
+            ...Collection
         }
     }
 }
@@ -54,7 +54,7 @@ mutation EditCollectionDescription($collectionId: Int!, $description: String!) {
     editCollection(collectionId: $collectionId, description: $description) {
         success,
         collection {
-            ...CollectionFragment
+            ...Collection
         }
     }
 }
@@ -63,7 +63,7 @@ mutation EditCollectionSummary($collectionId: Int!, $summary: String!) {
     editCollection(collectionId: $collectionId, summary: $summary) {
         success,
         collection {
-            ...CollectionFragment
+            ...Collection
         }
     }
 }
