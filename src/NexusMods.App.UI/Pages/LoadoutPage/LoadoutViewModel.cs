@@ -92,6 +92,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly IServiceProvider _serviceProvider;
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly IConnection _connection;
+    private readonly IAvaloniaInterop _avaloniaInterop;
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -104,6 +105,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         var libraryService = serviceProvider.GetRequiredService<ILibraryService>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
+        _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
 
         var loadoutFilter = new LoadoutFilter
         {
@@ -347,7 +349,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     var uri = GetCollectionUri(managedCollectionLoadoutGroup.Collection);
 
                     // copy to clipboard instead of opening the URL directly
-                    await GetClipboard().SetTextAsync(uri.AbsoluteUri);
+                    await _avaloniaInterop.SetClipboardTextAsync(uri.AbsoluteUri);
                 }, configureAwait: false
             );
 
@@ -732,13 +734,13 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         return NexusCollectionItemLoadoutGroup.IsRequired.TryGetValue(LoadoutItem.Load(connection.Db, id), out var isRequired) && isRequired;
     }
 
-    private static IClipboard GetClipboard()
-    {
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window })
-        {
-            return window.Clipboard!;
-        }
-
-        return null!;
-    }
+    // private static IClipboard GetClipboard()
+    // {
+    //     if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window })
+    //     {
+    //         return window.Clipboard!;
+    //     }
+    //
+    //     return null!;
+    // }
 }
