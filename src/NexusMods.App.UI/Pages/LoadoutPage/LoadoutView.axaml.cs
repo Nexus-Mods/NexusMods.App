@@ -167,6 +167,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
         );
     }
     
+    // no longer needed since button launches page and not copy link, but it's useful code
     private static void ShowTooltipFor(Control target, string text, TimeSpan duration)
     {
         // get current tip
@@ -176,7 +177,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
         ToolTip.SetTip(target, text);
         
         // force open it
-        ToolTip.SetIsOpen(target, true);  // :contentReference[oaicite:0]{index=0}
+        ToolTip.SetIsOpen(target, true);
 
         // schedule its closure
         var timer = new DispatcherTimer
