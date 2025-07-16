@@ -4,7 +4,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Sdk;
 
-namespace NexusMods.App.UI;
+namespace NexusMods.App.UI.Settings;
 
 /// <summary>
 /// Settings that give access to experimental features in the UI.
@@ -15,6 +15,9 @@ public record ExperimentalSettings : ISettings
     /// Enables games that are not enabled by default.
     /// </summary>
     public bool EnableAllGames { get; [UsedImplicitly] set; } = ApplicationConstants.IsDebug;
+
+    // TODO: remove for GA
+    public bool EnableCollectionSharing { get; [UsedImplicitly] set; }
 
     [JsonIgnore]
     public readonly GameId[] SupportedGames =
@@ -34,6 +37,12 @@ public record ExperimentalSettings : ISettings
                     .WithDescription("Allows you to manage unsupported games.")
                     .UseBooleanContainer()
                     .RequiresRestart()
+                )
+                .AddPropertyToUI(x => x.EnableCollectionSharing, b => b
+                    .AddToSection(Sections.Experimental)
+                    .WithDisplayName("Enable sharing collections")
+                    .WithDescription("Allows uploading of collections")
+                    .UseBooleanContainer()
                 )
             );
     }

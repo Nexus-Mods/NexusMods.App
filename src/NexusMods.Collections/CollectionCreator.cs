@@ -28,9 +28,6 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
-    // TODO: remove for GA
-    public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
-
     public static bool IsCollectionUploaded(IConnection connection, CollectionGroupId groupId, out CollectionMetadata.ReadOnly collection)
     {
         var group = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
