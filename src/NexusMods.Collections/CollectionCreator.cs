@@ -172,10 +172,25 @@ public static class CollectionCreator
         using var tx = connection.BeginTransaction();
 
         var (collection, revisionId) = await nexusModsLibrary.CreateCollection(streamFactory, collectionManifest, cancellationToken);
+        var uploadTime = DateTimeOffset.UtcNow;
+
+        var defaultImageStreamFactory = new EmbeddedResourceStreamFactory<CollectionDownloader>("NexusMods.Collections.default-collection-image.webp");
+        var defaultImageMimeType = "image/webp";
+
+        var prefillResult = await nexusModsLibrary.PrefillCollectionMetadata(collection, defaultImageStreamFactory, defaultImageMimeType, cancellationToken);
+
+        // TODO: handle result
+        prefillResult.AssertHasData();
+
+        var result = await nexusModsLibrary.PublishRevision(revisionId, cancellationToken);
+
+        // TODO: handle result
+        result.AssertHasData();
+
         tx.Add(groupId, ManagedCollectionLoadoutGroup.Collection, collection);
-        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(1));
-        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionId, revisionId);
-        tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, DateTimeOffset.UtcNow);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.CurrentRevisionNumber, RevisionNumber.From(2));
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, uploadTime);
+        tx.Add(groupId, ManagedCollectionLoadoutGroup.LastPublishedRevisionNumber, RevisionNumber.From(1));
 
         await tx.Commit();
 

@@ -36,7 +36,9 @@ public interface ILoadoutViewModel : IPageViewModelInterface
 
     ReactiveCommand<Unit> CommandRenameGroup { get; }
     ReactiveCommand<Unit> CommandShareCollection { get; }
-    ReactiveCommand<Unit> CommandUploadRevision { get; }
-    ReactiveCommand<Unit> CommandPublishRevision { get; }
+    ReactiveCommand<Unit> CommandUploadDraftRevision { get; }
+    ReactiveCommand<Unit> CommandUploadAndPublishRevision { get; }
     ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
+    ReactiveCommand<Unit> CommandCopyRevisionUrl { get; }
+    ReactiveCommand<Unit> CommandChangeVisibility { get; }
 }
