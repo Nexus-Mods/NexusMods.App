@@ -20,7 +20,6 @@
             <Panel>
                 <TextBox x:Name="TextBoxUrl"
                          IsReadOnly="True"
-                         Text="https://www.nexusmods.com/games/stardewvalley/collections/maidgk"
                          Padding="4 4 28 0" />
                 <controls:StandardButton x:Name="ButtonCopyToClipboard"
                                          ShowIcon="IconOnly"

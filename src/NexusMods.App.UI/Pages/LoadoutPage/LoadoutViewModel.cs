@@ -206,6 +206,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         collection.Name,
                         collection.Status.Value,
                         collectionUriWithoutQuery.Uri,
+                        serviceProvider,
                         true
                     );
 
@@ -261,7 +262,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     var collectionPublishedViewModel = new DialogCollectionPublishedViewModel(
                         managedCollectionLoadoutGroup.Collection.Name,
                         managedCollectionLoadoutGroup.Collection.Status.Value,
-                        collectionUriWithoutQuery.Uri
+                        collectionUriWithoutQuery.Uri,
+                        serviceProvider
                     );
 
                     var collectionPublishedDialog = DialogFactory.CreateDialog($"Revision {managedCollectionLoadoutGroup.LastPublishedRevisionNumber.Value} is Now Published!",

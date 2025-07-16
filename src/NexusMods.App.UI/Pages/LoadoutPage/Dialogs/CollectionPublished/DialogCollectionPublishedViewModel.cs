@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input.Platform;
 using Avalonia.VisualTree;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.UI;
 using R3;
@@ -25,26 +26,21 @@ public class DialogCollectionPublishedViewModel : AViewModel<IDialogCollectionPu
     public Uri CollectionUrl { get; }
     public ReactiveCommand<Unit> CommandCopyUrl { get; }
     public bool FirstPublish { get; }
+    
+    private readonly IAvaloniaInterop _avaloniaInterop;
 
-    public DialogCollectionPublishedViewModel(string collectionName, CollectionStatus collectionStatus, Uri collectionUrl, bool firstPublish = false)
+    public DialogCollectionPublishedViewModel(string collectionName, CollectionStatus collectionStatus, Uri collectionUrl, IServiceProvider serviceProvider, bool firstPublish = false)
     {
         CollectionName = collectionName;
         CollectionUrl = collectionUrl;
         CollectionStatus = collectionStatus;
         FirstPublish = firstPublish;
-
+        
+        _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+        
         CommandCopyUrl = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
         {
-            await GetClipboard().SetTextAsync(CollectionUrl.AbsoluteUri);
+            await _avaloniaInterop.SetClipboardTextAsync(CollectionUrl.AbsoluteUri);
         });
-    }
-    
-    private IClipboard GetClipboard() {
-
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } window }) {
-            return window.Clipboard!;
-        }
-
-        return null!;
     }
 }

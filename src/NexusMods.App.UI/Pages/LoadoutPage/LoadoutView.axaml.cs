@@ -38,10 +38,10 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
 
                         var isCollection = vm?.IsCollection ?? true;
-                        
+
                         view.AllPageHeader.IsVisible = !isCollection;
                         view.Statusbar.IsVisible = isCollection;
-                        
+
                         view.ButtonShareCollection.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
                         view.WritableCollectionPageHeader.IsVisible = isCollection;
 
@@ -78,9 +78,9 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 
                 this.OneWayR3Bind(static view => view.BindableViewModel, static vm => vm.ItemCount, static (view, count) => view.ModsCount.Text = count.ToString())
                     .AddTo(disposables);
-                
-                this.OneWayR3Bind(static view => view.BindableViewModel, 
-                        static vm => vm.CollectionStatus, 
+
+                this.OneWayR3Bind(static view => view.BindableViewModel,
+                        static vm => vm.CollectionStatus,
                         static (view, status) =>
                         {
                             view.ButtonChangeVisibility.LeftIcon = status switch
@@ -88,11 +88,12 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                                 CollectionStatus.Unlisted => IconValues.VisibilityUnlisted,
                                 CollectionStatus.Listed => IconValues.VisibilityListed
                             };
-                        })
+                        }
+                    )
                     .AddTo(disposables);
-                
-                this.OneWayR3Bind(static view => view.BindableViewModel, 
-                        static vm => vm.LastUploadedDate, 
+
+                this.OneWayR3Bind(static view => view.BindableViewModel,
+                        static vm => vm.LastUploadedDate,
                         static (view, lastUploaded) =>
                         {
                             view.LastUploadedText.Text = $"{(DateTimeOffset.Now - lastUploaded).Humanize(minUnit: TimeUnit.Second)} ago";
@@ -100,10 +101,11 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         }
                     )
                     .AddTo(disposables);
-                
-                this.OneWayR3Bind(static view => view.BindableViewModel, 
-                        static vm => vm.RevisionNumber, 
-                        static (view, revision) => view.RevisionText.Text = $"Revision {revision.ToString()}")
+
+                this.OneWayR3Bind(static view => view.BindableViewModel,
+                        static vm => vm.RevisionNumber,
+                        static (view, revision) => view.RevisionText.Text = $"Revision {revision.ToString()}"
+                    )
                     .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.CommandDeselectItems, view => view.DeselectItemsButton)
@@ -111,27 +113,28 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 
                 this.BindCommand(ViewModel, vm => vm.CommandShareCollection, view => view.ButtonShareCollection)
                     .AddTo(disposables);
-                
+
                 this.BindCommand(ViewModel, vm => vm.CommandUploadAndPublishRevision, view => view.SplitButtonPublishCollection)
                     .AddTo(disposables);
-                
+
                 this.BindCommand(ViewModel, vm => vm.CommandUploadDraftRevision, view => view.MenuItemUploadDraft)
                     .AddTo(disposables);
-                
+
                 this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonOpenRevisionUrl)
                     .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                     .AddTo(disposables);
-                
+
                 this.BindCommand(ViewModel, vm => vm.CommandChangeVisibility, view => view.ButtonChangeVisibility)
                     .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonAddTileImage)
                     .AddTo(disposables);
-                
-                this.ObserveViewModelProperty(static view => view.BindableViewModel, 
-                        static vm => vm.IsCollectionUploaded)
+
+                this.ObserveViewModelProperty(static view => view.BindableViewModel,
+                        static vm => vm.IsCollectionUploaded
+                    )
                     .Subscribe(this, static (isCollectionUploaded, self) =>
                         {
                             self.ButtonShareCollection.IsVisible = !isCollectionUploaded;
@@ -143,7 +146,7 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                             self.UnpublishedHeaderBorder.IsVisible = !isCollectionUploaded;
                         }
                     ).AddTo(disposables);
-                
+
                 this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.SelectionCount)
                     .Subscribe(this, static (count, self) =>
                         {
@@ -155,44 +158,10 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 
                 this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.Adapter.IsSourceEmpty)
                     .Subscribe(this,
-                        static (b, view) =>
-                        {
-                            ToolTip.SetTip(view.ButtonShareCollection, b ? "You can't share this collection until it has at least one installed mod." : null);
-                        }
+                        static (b, view) => { ToolTip.SetTip(view.ButtonShareCollection, b ? "You can't share this collection until it has at least one installed mod." : null); }
                     )
                     .AddTo(disposables);
-                
-                
             }
         );
-    }
-    
-    // no longer needed since button launches page and not copy link, but it's useful code
-    private static void ShowTooltipFor(Control target, string text, TimeSpan duration)
-    {
-        // get current tip
-        var tip = ToolTip.GetTip(target);
-        
-        // set the new tip
-        ToolTip.SetTip(target, text);
-        
-        // force open it
-        ToolTip.SetIsOpen(target, true);
-
-        // schedule its closure
-        var timer = new DispatcherTimer
-        {
-            Interval = duration
-        };
-        
-        // stop the timer and close it when it ticks
-        timer.Tick += (s, e) =>
-        {
-            timer.Stop();
-            ToolTip.SetIsOpen(target, false);
-            ToolTip.SetTip(target, tip); // restore the original tip
-        };
-        
-        timer.Start();
     }
 }

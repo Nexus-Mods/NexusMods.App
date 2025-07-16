@@ -33,8 +33,6 @@ internal class AvaloniaInterop : IAvaloniaInterop
         _clipboard = clipboard;
     }
     
-    // a function to set the clipboard text
-    
     public async Task SetClipboardTextAsync(string text)
     {
         var clipboard = _clipboard;

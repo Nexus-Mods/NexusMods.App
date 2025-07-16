@@ -24,7 +24,7 @@
             <Style Selector="^ Grid#GlyphGrid">
                 <Setter Property="Margin" Value="0" />
             </Style>
-            
+
             <!--  PointerOver State  -->
             <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
                 <Setter Property="Foreground" Value="{StaticResource RadioButtonForegroundPointerOver}" />
@@ -34,7 +34,7 @@
                 <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
                 <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             </Style>
-            
+
             <!--  Checked State  -->
             <Style Selector="^:checked Border#RootBorder">
                 <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
@@ -57,12 +57,14 @@
                                        Margin="0 0 8 0"
                                        Size="20" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Unlisted - Recommended for Sharing with Friends"
+                        <TextBlock x:Name="UnlistedTitleText"
+                                   Text="UnlistedTitleText"
                                    TextWrapping="Wrap"
                                    Theme="{StaticResource BodySMSemiTheme}"
                                    Foreground="{StaticResource NeutralStrongBrush}" />
                         <TextBlock
-                            Text="Only people with the link can view. Not shown in search or featured."
+                            x:Name="UnlistedExplanationText"
+                            Text="UnlistedExplanationText"
                             TextWrapping="Wrap"
                             Foreground="{StaticResource NeutralSubduedBrush}" />
                     </StackPanel>
@@ -77,22 +79,25 @@
                                        Margin="0 0 8 0"
                                        Size="20" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Listed - Publicly Visible on Nexus Mods"
+                        <TextBlock x:Name="ListedTitleText" Text="ListedTitleText"
                                    TextWrapping="Wrap"
                                    Theme="{StaticResource BodySMSemiTheme}"
                                    Foreground="{StaticResource NeutralStrongBrush}" />
                         <TextBlock
-                            Text="Anyone can find this in search or see it featured on Nexus Mods."
+                            x:Name="ListedExplanationText"
+                            Text="ListedExplanationText"
                             TextWrapping="Wrap"
                             Foreground="{StaticResource NeutralSubduedBrush}" />
                     </StackPanel>
                 </Grid>
             </RadioButton>
         </StackPanel>
-        <TextBlock Text="You can change the visibility at any time in your collection settings."
-                   TextWrapping="Wrap"
-                   FontStyle="Italic"
-                   Foreground="{StaticResource NeutralSubduedBrush}"/>
+        <TextBlock
+            x:Name="ChangeVisibilityText"
+            Text="ChangeVisibilityText"
+            TextWrapping="Wrap"
+            FontStyle="Italic"
+            Foreground="{StaticResource NeutralSubduedBrush}" />
     </StackPanel>
 
 </reactiveUi:ReactiveUserControl>
