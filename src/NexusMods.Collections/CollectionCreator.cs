@@ -19,6 +19,7 @@ using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
+using NexusMods.Telemetry;
 using CollectionMod = NexusMods.Abstractions.Collections.Json.Mod;
 using ModSource = NexusMods.Abstractions.Collections.Json.ModSource;
 using Size = NexusMods.Paths.Size;
@@ -28,9 +29,6 @@ namespace NexusMods.Collections;
 
 public static class CollectionCreator
 {
-    // TODO: remove for GA
-    public static bool IsFeatureEnabled => ApplicationConstants.IsDebug;
-
     public static bool IsCollectionUploaded(IConnection connection, CollectionGroupId groupId, out CollectionMetadata.ReadOnly collection)
     {
         var group = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
@@ -65,9 +63,11 @@ public static class CollectionCreator
     /// </summary>
     public static async ValueTask<CollectionGroup.ReadOnly> CreateNewCollectionGroup(IConnection connection, LoadoutId loadoutId, string newName)
     {
+        var loadout = Loadout.Load(connection.Db, loadoutId);
+
         if (string.IsNullOrWhiteSpace(newName))
         {
-            var names = (await Loadout.Load(connection.Db, loadoutId).MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
+            var names = (await loadout.MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
             newName = GenerateNewCollectionName(names);
         }
 
@@ -88,6 +88,8 @@ public static class CollectionCreator
         };
 
         var result = await tx.Commit();
+
+        Tracking.AddEvent(Events.Collections.CreateLocalCollection, new EventMetadata(name: $"{loadout.LocatableGame.Name} - {newName}"));
         return result.Remap(group);
     }
 
@@ -199,6 +201,7 @@ public static class CollectionCreator
             await ChangeCollectionStatus(serviceProvider, groupId.Value, newStatus: initialCollectionStatus, cancellationToken);
         }
 
+        Tracking.AddEvent(Events.Collections.ShareCollection, EventMetadata.Create(name: $"{collection.Slug}", value: collectionManifest.Mods.Length));
         return CollectionMetadata.Load(connection.Db, collection.Id);
     }
 
@@ -250,6 +253,8 @@ public static class CollectionCreator
         tx.Add(groupId, ManagedCollectionLoadoutGroup.LastUploadDate, DateTimeOffset.UtcNow);
 
         await tx.Commit();
+
+        Tracking.AddEvent(Events.Collections.UploadRevision, EventMetadata.Create(name: $"{collection.Slug}", value: collectionManifest.Mods.Length));
         return (collection, revisionId);
     }
 

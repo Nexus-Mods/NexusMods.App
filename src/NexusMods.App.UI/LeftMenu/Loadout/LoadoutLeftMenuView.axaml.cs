@@ -15,8 +15,6 @@ public partial class LoadoutLeftMenuView : ReactiveUserControl<ILoadoutLeftMenuV
     {
         InitializeComponent();
 
-        NewCollection.IsVisible = CollectionCreator.IsFeatureEnabled;
-
         this.WhenActivated(disposables =>
         {
             this.OneWayBind(ViewModel, vm => vm.ApplyControlViewModel, view => view.ApplyControlViewHost.ViewModel)

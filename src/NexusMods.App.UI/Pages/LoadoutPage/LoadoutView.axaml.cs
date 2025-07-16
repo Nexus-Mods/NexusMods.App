@@ -38,11 +38,12 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         view.RulesTabItem.IsVisible = vm?.HasRulesSection ?? false;
 
                         var isCollection = vm?.IsCollection ?? true;
+                        var enableCollectionSharing = vm?.EnableCollectionSharing ?? false;
 
                         view.AllPageHeader.IsVisible = !isCollection;
-                        view.Statusbar.IsVisible = isCollection;
+                        view.Statusbar.IsVisible = isCollection && enableCollectionSharing;
 
-                        view.ButtonShareCollection.IsVisible = isCollection && CollectionCreator.IsFeatureEnabled;
+                        view.ButtonShareCollection.IsVisible = isCollection;
                         view.WritableCollectionPageHeader.IsVisible = isCollection;
 
                         var selectedSubTab = vm?.SelectedSubTab;

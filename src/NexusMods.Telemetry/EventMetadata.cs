@@ -50,7 +50,9 @@ public readonly struct EventMetadata
     /// <summary>
     /// Constructor.
     /// </summary>
-    public EventMetadata(string? name, Optional<double> value = default, TimeProvider? timeProvider = null)
+    public EventMetadata(string? name, TimeProvider? timeProvider = null) : this(name, value: Optional<double>.None, timeProvider: timeProvider) { }
+
+    private EventMetadata(string? name, Optional<double> value = default, TimeProvider? timeProvider = null)
     {
         Name = name;
         Value = value;
