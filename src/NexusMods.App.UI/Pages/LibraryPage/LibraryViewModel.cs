@@ -221,7 +221,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                     return new InstallationTarget(group.CollectionGroupId, group.AsLoadoutItemGroup().AsLoadoutItem().Name);
                 })
                 .AddKey(x => x.Id)
-                .SortAndBind(out _installationTargets, Comparer<InstallationTarget>.Create((a,b) => a.Id.Value.CompareTo(b.Id.Value)))
+                .SortAndBind(out _installationTargets, Comparer<InstallationTarget>.Create((a, b) => b.Id.Value.CompareTo(a.Id.Value)))
                 .Subscribe()
                 .AddTo(disposables);
 
