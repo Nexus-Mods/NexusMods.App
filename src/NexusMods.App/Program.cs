@@ -12,6 +12,7 @@ using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
