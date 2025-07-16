@@ -1,0 +1,103 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="shareCollection:DialogShareCollectionView"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+                                xmlns:shareCollection="clr-namespace:NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection"
+                                mc:Ignorable="d" d:DesignWidth="400"
+                                x:Class="NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection.DialogShareCollectionView">
+
+    <reactiveUi:ReactiveUserControl.Styles>
+
+        <Style Selector="RadioButton">
+
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+
+            <Style Selector="^ Border#RootBorder">
+                <Setter Property="Padding" Value="16" />
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            </Style>
+
+            <Style Selector="^ Grid#GlyphGrid">
+                <Setter Property="Margin" Value="0" />
+            </Style>
+
+            <!--  PointerOver State  -->
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Foreground" Value="{StaticResource RadioButtonForegroundPointerOver}" />
+            </Style>
+
+            <Style Selector="^:pointerover /template/ Border#RootBorder">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            </Style>
+
+            <!--  Checked State  -->
+            <Style Selector="^:checked Border#RootBorder">
+                <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+                <Setter Property="BorderBrush" Value="{StaticResource PrimaryModerateBrush}" />
+            </Style>
+        </Style>
+
+    </reactiveUi:ReactiveUserControl.Styles>
+
+    <StackPanel Spacing="16">
+        <StackPanel Spacing="8">
+            <RadioButton x:Name="RadioVisibilityUnlisted"
+                         GroupName="Visibility"
+                         IsChecked="True"
+                         HorizontalAlignment="Stretch">
+                <Grid ColumnDefinitions="Auto,*">
+                    <icons:UnifiedIcon Grid.Column="0"
+                                       Value="{x:Static icons:IconValues.VisibilityUnlisted}"
+                                       VerticalAlignment="Top"
+                                       Margin="0 0 8 0"
+                                       Size="20" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock x:Name="UnlistedTitleText"
+                                   Text="UnlistedTitleText"
+                                   TextWrapping="Wrap"
+                                   Theme="{StaticResource BodySMSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}" />
+                        <TextBlock
+                            x:Name="UnlistedExplanationText"
+                            Text="UnlistedExplanationText"
+                            TextWrapping="Wrap"
+                            Foreground="{StaticResource NeutralSubduedBrush}" />
+                    </StackPanel>
+                </Grid>
+            </RadioButton>
+            <RadioButton x:Name="RadioVisibilityListed" GroupName="Visibility"
+                         HorizontalAlignment="Stretch">
+                <Grid ColumnDefinitions="Auto,*">
+                    <icons:UnifiedIcon Grid.Column="0"
+                                       Value="{x:Static icons:IconValues.VisibilityListed}"
+                                       VerticalAlignment="Top"
+                                       Margin="0 0 8 0"
+                                       Size="20" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock x:Name="ListedTitleText" Text="ListedTitleText"
+                                   TextWrapping="Wrap"
+                                   Theme="{StaticResource BodySMSemiTheme}"
+                                   Foreground="{StaticResource NeutralStrongBrush}" />
+                        <TextBlock
+                            x:Name="ListedExplanationText"
+                            Text="ListedExplanationText"
+                            TextWrapping="Wrap"
+                            Foreground="{StaticResource NeutralSubduedBrush}" />
+                    </StackPanel>
+                </Grid>
+            </RadioButton>
+        </StackPanel>
+        <TextBlock
+            x:Name="ChangeVisibilityText"
+            Text="ChangeVisibilityText"
+            TextWrapping="Wrap"
+            FontStyle="Italic"
+            Foreground="{StaticResource NeutralSubduedBrush}" />
+    </StackPanel>
+
+</reactiveUi:ReactiveUserControl>
