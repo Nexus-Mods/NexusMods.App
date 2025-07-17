@@ -4,6 +4,8 @@ using Avalonia.Controls.Models.TreeDataGrid;
 using Avalonia.Platform.Storage;
 using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
@@ -461,7 +463,16 @@ After asking design, we're choosing to simply open the mod page for now.
         CancellationToken cancellationToken,
         bool useAdvancedInstaller = false)
     {
-        await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
+        try
+        {
+            await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
+        }
+        catch (OperationCanceledException)
+        {
+            // User cancelled the installation - this is expected behavior, don't show error
+            var logger = _serviceProvider.GetRequiredService<ILogger<LibraryViewModel>>();
+            logger.LogInformation("Installation of {LibraryItem} was cancelled by user", libraryItem.Name);
+        }
     }
 
     private async ValueTask RemoveSelectedItems(CancellationToken cancellationToken)
