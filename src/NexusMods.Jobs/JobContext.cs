@@ -43,6 +43,11 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
             SetStatus(JobStatus.Completed);
             _tcs.TrySetResult(_result.Value);
         }
+        catch (OperationCanceledException)
+        {
+            SetStatus(JobStatus.Cancelled);
+            _tcs.TrySetCanceled();
+        }
         catch (Exception ex)
         {
             SetStatus(JobStatus.Failed);
@@ -64,9 +69,11 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     public IObservable<Optional<Percent>> ObservableProgress => _progress;
     public Optional<double> RateOfProgress { get; private set; }
     public IObservable<Optional<double>> ObservableRateOfProgress => _rateOfProgress;
+    public bool CanBeCancelled => Status.IsActive();
 
     public Task YieldAsync()
     {
+        CancellationToken.ThrowIfCancellationRequested();
         return Task.CompletedTask;
     }
 
@@ -118,6 +125,8 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     {
         return _tcs.Task;
     }
+    
+    public void Cancel() => Group.Cancel();
 
     public async ValueTask DisposeAsync()
     {
