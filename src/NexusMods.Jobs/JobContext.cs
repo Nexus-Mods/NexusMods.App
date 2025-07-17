@@ -99,6 +99,12 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         _rateOfProgress.OnNext(rate);
     }
 
+    public void CancelAndThrow(string message)
+    {
+        Cancel();
+        throw new OperationCanceledException(message);
+    }
+
     public Task WaitAsync(CancellationToken cancellationToken = default)
     {
         return _tcs.Task;
