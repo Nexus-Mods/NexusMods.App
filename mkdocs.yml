@@ -112,6 +112,7 @@ nav:
         - UI Coding Guidelines: developers/development-guidelines/UICodingGuidelines.md
         - UI Styling Guidelines: developers/development-guidelines/UIStylingGuidelines.md
         - Using Workspaces: developers/development-guidelines/UsingWorkspaces.md
+        - Jobs System: developers/development-guidelines/JobsSystem.md
         - Diagnostics: developers/development-guidelines/Diagnostics.md
         - Processes:
           - Release Process: developers/development-guidelines/Processes/ReleaseProcess.md
