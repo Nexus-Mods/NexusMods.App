@@ -80,7 +80,7 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
         if (result == null)
         {
             if (Installer is AdvancedManualInstaller)
-                throw new OperationCanceledException($"Advanced installer was cancelled by user for `{LibraryItem.Name}` (`{LibraryItem.Id}`)");
+                throw new InvalidOperationException($"Advanced installer did not succeed for `{LibraryItem.Name}` (`{LibraryItem.Id}`)");
 
             var fallbackInstaller = FallbackInstaller ?? AdvancedManualInstaller.Create(ServiceProvider);
             result = await ExecuteInstallersAsync([fallbackInstaller], loadout, context);

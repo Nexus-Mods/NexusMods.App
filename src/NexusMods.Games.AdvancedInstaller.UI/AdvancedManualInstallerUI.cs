@@ -46,7 +46,7 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
         var tree = LibraryArchiveTree.Create(libraryArchive);
         var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(loadoutGroup.GetLoadoutItem(transaction).Name, tree, loadout);
 
-        if (!shouldInstall) return new NotSupported(Reason: "The user chose to abort the installation");
+        if (!shouldInstall) throw new OperationCanceledException("The user chose to abort the installation");
 
         deploymentData.CreateLoadoutItems(tree, loadout, loadoutGroup, transaction);
         return new Success();
