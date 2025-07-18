@@ -13,6 +13,7 @@ public static class ServiceExtensions
             .AddSettings<AlertSettings>()
             .AddSettings<BehaviorSettings>()
             .AddSettings<UpdaterSettings>()
-            .AddSettings<WelcomeSettings>();
+            .AddSettings<WelcomeSettings>()
+            .AddSettings<DiscordSettings>();
     }
 }

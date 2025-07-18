@@ -2,7 +2,10 @@ using System.Collections.ObjectModel;
 using DiscordRPC;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NexusMods.App.UI.Settings;
+using NexusMods.Abstractions.Settings;
 using NexusMods.Sdk;
+using ReactiveUI;
 
 namespace NexusMods.Discord
 {
@@ -11,6 +14,9 @@ namespace NexusMods.Discord
         private readonly DiscordRpcClient _client;
         private readonly string _applicationId = "1393166557101691101";
         private readonly ILogger<DiscordRpcService> _logger;
+        private readonly ISettingsManager _settings;
+        private bool _isEnabled;
+        // Temporary for testing
         private CancellationTokenSource? _periodicUpdateTokenSource;
         private string _lastGameName = "";
 
@@ -22,14 +28,25 @@ namespace NexusMods.Discord
             }
         );
 
-        public DiscordRpcService(ILogger<DiscordRpcService> logger)
+        public DiscordRpcService(ILogger<DiscordRpcService> logger, ISettingsManager settingsManager)
         {
             _client = new DiscordRpcClient(_applicationId);
             _logger = logger;
+            _settings = settingsManager;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            var settings = _settings.Get<DiscordSettings>();
+            _isEnabled = settings.EnableRichPresence;
+
+            if (!_isEnabled)
+            {
+                _logger.LogInformation("Discord RPC is disabled in settings and was not started.");
+                return Task.CompletedTask; 
+            }
+            
+            
             _client.OnReady += (_, e) =>
             {
                 _logger.LogDebug($"Connected to Discord as {e.User.Username}");
@@ -137,6 +154,8 @@ namespace NexusMods.Discord
 
         public void SetGamePresence(string gameName, string gameDomain, int modCount)
         {
+            if (!_isEnabled) return;
+            
             var largeImageKey = "nexusmods_logo";
             
             if (_assetKeys.TryGetValue(gameDomain, out var gameArtKey))
@@ -163,4 +182,9 @@ namespace NexusMods.Discord
             _logger.LogInformation("Discord presence cleared.");
         }
     }
+}
+
+public interface IDiscordRpcService
+{
+    void SetGamePresence(string gameName, string gameDomain, int modCount);
 }
