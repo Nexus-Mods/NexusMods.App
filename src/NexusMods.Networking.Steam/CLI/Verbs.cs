@@ -81,10 +81,12 @@ public static class Verbs
                 {
                     await Parallel.ForEachAsync(depot.Manifests, options, async (manifestInfo, token) =>
                     {
+                        if (depot.OsList.Length == 1 && depot.OsList[0] != "windows")
+                            return;
                         var manifest = await steamSession.GetManifestContents(steamAppId, depot.DepotId, manifestInfo.Value.ManifestId,
                             manifestInfo.Key, token
                         );
-
+                        
                         var manifestPath = output / "stores" / "steam" / "manifests" / (manifest.ManifestId + ".json").ToRelativePath();
                         {
                             manifestPath.Parent.CreateDirectory();

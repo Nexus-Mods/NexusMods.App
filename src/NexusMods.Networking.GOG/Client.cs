@@ -82,8 +82,11 @@ internal class Client : IClient
         _blockCache = new FastCache<Md5Value, Memory<byte>>();
         
         _pipeline = new ResiliencePipelineBuilder()
-            .AddRetry(new RetryStrategyOptions())
-            .AddTimeout(TimeSpan.FromSeconds(10))
+            .AddRetry(new RetryStrategyOptions()
+            {
+                MaxRetryAttempts = 10,
+            })
+            .AddTimeout(TimeSpan.FromSeconds(60))
             .Build();
     }
     

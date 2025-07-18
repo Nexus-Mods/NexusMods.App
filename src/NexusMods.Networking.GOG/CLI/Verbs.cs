@@ -53,6 +53,8 @@ public static class Verbs
             {
                 await foreach (var os in Enum.GetValues<OS>().WithProgress(renderer, "Operating Systems Builds").WithCancellation(token))
                 {
+                    if (os != OS.windows)
+                        continue;
                     var builds = await client.GetBuilds(ProductId.From((ulong)productId), os, token);
 
                     await foreach (var build in builds.WithProgress(renderer, $"{os} Builds").WithCancellation(token))

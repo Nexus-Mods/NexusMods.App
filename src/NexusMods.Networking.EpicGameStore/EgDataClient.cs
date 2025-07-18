@@ -6,7 +6,7 @@ namespace NexusMods.Networking.EpicGameStore;
 public class EgDataClient
 {
     private readonly HttpClient _httpClient;
-    private const string BaseUrl = "https://api-gcp.egdata.app/";
+    private const string BaseUrl = "https://api.egdata.app/";
 
     public EgDataClient(HttpClient httpClient)
     {
