@@ -55,6 +55,17 @@ public partial class DialogWindow : ReactiveWindow<IDialogViewModel>, IDisposabl
                     .DisposeWith(disposables);
                 
                 GenerateButtons();
+               
+                
+                this.WhenAnyValue(view => view.ViewModel!.ShowChrome)
+                    .Subscribe(showChrome =>
+                    {
+                        Titlebar.IsVisible = showChrome;
+                    })
+                    .DisposeWith(disposables);
+                {
+                    
+                }
             }
         );
         

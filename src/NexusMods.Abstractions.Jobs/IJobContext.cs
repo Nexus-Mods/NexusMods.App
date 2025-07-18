@@ -44,6 +44,13 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     /// Set the progress of the job as a rate of units per second
     /// </summary>
     void SetRateOfProgress(double rate);
+
+    /// <summary>
+    /// Explicitly cancel this job with a message. This will cancel the job and throw an <see cref="OperationCanceledException"/>.
+    /// </summary>
+    /// <param name="message">The cancellation message</param>
+    /// <returns>This method never returns - it always throws</returns>
+    void CancelAndThrow(string message);
 }
 
 /// <summary>

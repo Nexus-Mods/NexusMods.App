@@ -29,15 +29,15 @@ public class Dialog : IDialog
             Title = _viewModel.WindowTitle,
             Width = _viewModel.DialogWindowSize switch
             {
-                DialogWindowSize.Small => 400,
-                DialogWindowSize.Medium => 600,
+                DialogWindowSize.Small => 320,
+                DialogWindowSize.Medium => 480,
                 DialogWindowSize.Large => 800
             },
             MaxHeight = _viewModel.DialogWindowSize switch
             {
-                DialogWindowSize.Small => 320,
-                DialogWindowSize.Medium => 500,
-                DialogWindowSize.Large => 600
+                DialogWindowSize.Small => 360,
+                DialogWindowSize.Medium => 540,
+                DialogWindowSize.Large => 540
             },
             CanResize = true,
             SizeToContent = SizeToContent.Height, // Height is set by Avalonia based on content, we set the width above

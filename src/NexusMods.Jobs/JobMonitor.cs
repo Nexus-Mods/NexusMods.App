@@ -93,4 +93,22 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         );
         return new JobTask<TJobType, TResultType>(ctx);
     }
+    
+    public void Cancel(JobId jobId)
+    {
+        var job = _allJobs.Lookup(jobId);
+        if (job.HasValue)
+            job.Value.Cancel();
+    }
+    
+    public void CancelGroup(IJobGroup group) => group.Cancel();
+
+    public void CancelAll()
+    {
+        foreach (var job in _allJobs.Items)
+        {
+            if (job.Status.IsActive())
+                job.Cancel();
+        }
+    }
 }
