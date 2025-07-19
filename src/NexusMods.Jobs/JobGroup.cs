@@ -8,6 +8,8 @@ public class JobGroup : IJobGroup
 {
     private readonly CancellationTokenSource _token;
     private readonly JobMonitor _monitor;
+    public bool IsCancelled => _token.Token.IsCancellationRequested;
+    
     public JobGroup(JobMonitor monitor)
     {
         _token = new CancellationTokenSource();
@@ -32,4 +34,5 @@ public class JobGroup : IJobGroup
 
     public int Count => Jobs.Count;
     public CancellationToken CancellationToken => _token.Token;
+    public void Cancel() => _token.Cancel();
 }

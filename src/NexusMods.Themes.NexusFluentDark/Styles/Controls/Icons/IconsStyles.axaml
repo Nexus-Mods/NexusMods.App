@@ -142,6 +142,10 @@
                     <icons:UnifiedIcon Classes="WindowMinimize" />
                     <icons:UnifiedIcon Classes="WindowRestore" />
                     <icons:UnifiedIcon Classes="Link" />
+                    <icons:UnifiedIcon Classes="Upload" />
+                    <icons:UnifiedIcon Classes="Pencil" />
+                    <icons:UnifiedIcon Classes="VisibilityListed" />
+                    <icons:UnifiedIcon Classes="VisibilityUnlisted" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -723,6 +727,12 @@
     <Style Selector="icons|UnifiedIcon.FolderUploadOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderUploadOutline}" />
     </Style>
+    <Style Selector="icons|UnifiedIcon.Upload">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Upload}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Pencil">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Pencil}" />
+    </Style>
     <Style Selector="icons|UnifiedIcon.TrayArrowDown">
         <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
     </Style>
@@ -773,5 +783,11 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramSuccess">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramSuccess}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.VisibilityListed">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityListed}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.VisibilityUnlisted">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityUnlisted}" />
     </Style>
 </Styles>

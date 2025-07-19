@@ -36,6 +36,7 @@ using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.ManageGameWarning;
 using NexusMods.App.UI.Pages.LibraryPage;
+using NexusMods.App.UI.Settings;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.Paths;

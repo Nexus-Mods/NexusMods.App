@@ -46,7 +46,16 @@ public class AdvancedManualInstallerUI : ALibraryArchiveInstaller, IAdvancedInst
         var tree = LibraryArchiveTree.Create(libraryArchive);
         var (shouldInstall, deploymentData) = await GetDeploymentDataAsync(loadoutGroup.GetLoadoutItem(transaction).Name, tree, loadout);
 
-        if (!shouldInstall) return new NotSupported(Reason: "The user chose to abort the installation");
+        // Note(sewer): Normally cancellation flows through CancellationTokenSource.Cancel() -> CancellationToken -> OperationCanceledException.
+        //              Here we only have the CancellationToken (not the source), and the UI action itself is the cancellation signal.
+        //
+        //              The user closing the dialog IS the cancellation event in this context, so we throw directly rather than
+        //              waiting for an external token source to signal cancellation.
+        //
+        //              Note: Because this is an installer, the caller will catch this OperationCanceledException and call
+        //              context.CancelAndThrow() to properly handle the cancellation through the job framework. So for consistency,
+        //              the token will be correctly signaled as canceled.
+        if (!shouldInstall) throw new OperationCanceledException("The user chose to abort the installation");
 
         deploymentData.CreateLoadoutItems(tree, loadout, loadoutGroup, transaction);
         return new Success();

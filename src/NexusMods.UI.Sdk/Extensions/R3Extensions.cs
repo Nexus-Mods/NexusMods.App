@@ -23,6 +23,7 @@ public static class R3Extensions
     {
         return view
             .ObserveViewModelProperty(viewModelSelector, vmPropertySelector)
+            .ObserveOnUIThreadDispatcher()
             .Subscribe((view, updater), static (itemCount, state) => state.updater(state.view, itemCount));
     }
 
@@ -95,6 +96,7 @@ public static class R3Extensions
         where TViewModel : class, INotifyPropertyChanged
     {
         return viewModelSelector(view)
+            .ObserveOnUIThreadDispatcher()
             .WhereNotNull()
             .Select(vmPropertySelector)
             .SelectMany(reactiveProperty => reactiveProperty.AsObservable());

@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia.Input.Platform;
 using Avalonia.Platform.Storage;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +45,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
     public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
     public ReactiveUI.ReactiveCommand<IStorageProvider, System.Reactive.Unit> RegisterStorageProvider { get; }
+    public ReactiveUI.ReactiveCommand<IClipboard, System.Reactive.Unit> RegisterClipboard { get; }
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
@@ -76,6 +78,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
 
         BringWindowToFront = ReactiveCommand.Create(() => settingsManager.Get<BehaviorSettings>().BringWindowToFront);
         RegisterStorageProvider = ReactiveCommand.Create<IStorageProvider>(storageProvider => avaloniaInterop.RegisterStorageProvider(storageProvider));
+        RegisterClipboard = ReactiveCommand.Create<IClipboard>(clipboard => avaloniaInterop.RegisterClipboard(clipboard));
 
         this.WhenActivated(d =>
         {

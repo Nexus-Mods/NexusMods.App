@@ -55,6 +55,16 @@ public interface IJob
     /// Get the definition of the job
     /// </summary>
     public IJobDefinition Definition { get; }
+    
+    /// <summary>
+    /// Cancels this job
+    /// </summary>
+    void Cancel();
+    
+    /// <summary>
+    /// Gets whether this job can be cancelled
+    /// </summary>
+    bool CanBeCancelled { get; }
 }
 
 /// <summary>

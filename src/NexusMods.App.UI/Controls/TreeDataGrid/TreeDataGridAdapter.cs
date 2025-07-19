@@ -311,25 +311,18 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     {
         // Reset any existing filters first
         RootsView.ResetFilter();
-        
-        // Check if we're working with CompositeItemModel which supports filtering
-        if (typeof(TModel) == typeof(CompositeItemModel<EntityId>))
+
+        if (filter is NoFilter) return;
+        if (typeof(TModel) != typeof(CompositeItemModel<TKey>)) throw new NotSupportedException($"Filtering is only supported on composite item models and not {typeof(TModel)}");
+
+        var filterInstance = new SynchronizedViewFilter<TModel, TModel>((model, _) => 
         {
-            var filterInstance = new SynchronizedViewFilter<TModel, TModel>(
-                (model, _) => 
-                {
-                    if (model is CompositeItemModel<EntityId> compositeModel)
-                        return filter.MatchesRow(compositeModel);
-                    return filter is Filter.NoFilter;
-                }
-            );
-            
-            RootsView.AttachFilter(filterInstance);
-        }
-        else
-        {
-            throw new Exception("Filtering is only supported for CompositeItemModel. You're cooking something sus ඞ, ngl");
-        }
+            if (model is CompositeItemModel<TKey> compositeModel)
+                return filter.MatchesRow(compositeModel);
+            return filter is NoFilter;
+        });
+
+        RootsView.AttachFilter(filterInstance);
     }
 
     private bool _isDisposed;

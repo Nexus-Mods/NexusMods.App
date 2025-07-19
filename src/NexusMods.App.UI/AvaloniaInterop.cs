@@ -1,3 +1,4 @@
+using Avalonia.Input.Platform;
 using Avalonia.Platform.Storage;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Extensions;
@@ -9,17 +10,43 @@ namespace NexusMods.App.UI;
 public interface IAvaloniaInterop
 {
     void RegisterStorageProvider(IStorageProvider storageProvider);
-
+    void RegisterClipboard(IClipboard clipboardProvider);
+    
     Task<AbsolutePath[]> OpenFilePickerAsync(FilePickerOpenOptions filePickerOpenOptions);
+    Task SetClipboardTextAsync(string text);
 }
+
+
 
 internal class AvaloniaInterop : IAvaloniaInterop
 {
     private IStorageProvider? _storageProvider;
+    private IClipboard? _clipboard;
 
     public void RegisterStorageProvider(IStorageProvider storageProvider)
     {
         _storageProvider = storageProvider;
+    }
+
+    public void RegisterClipboard(IClipboard clipboard)
+    {
+        _clipboard = clipboard;
+    }
+    
+    public async Task SetClipboardTextAsync(string text)
+    {
+        var clipboard = _clipboard;
+        if (clipboard is null) throw new InvalidOperationException("No clipboard registered!");
+
+        try
+        {
+            await clipboard.SetTextAsync(text);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception or handle it as needed
+            throw new InvalidOperationException("Failed to set clipboard text.", ex);
+        }
     }
 
     public async Task<AbsolutePath[]> OpenFilePickerAsync(FilePickerOpenOptions filePickerOpenOptions)

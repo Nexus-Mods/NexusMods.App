@@ -13,6 +13,11 @@
                     Title="A lovely new title" 
                     Description="What a delightfully medium length description for this control" 
                     Icon="{x:Static icons:IconValues.PictogramGame3D}" />
+                <pageHeader:PageHeader 
+                    Title="My new collection" 
+                    Description="Collection" 
+                    Icon="{x:Static icons:IconValues.PictogramCollection3D}"
+                    Theme="{StaticResource LocalCollection}"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -38,6 +43,34 @@
                         <TextBlock x:Name="DescriptionTextBlock"
                                    Theme="{StaticResource BodyMDNormalTheme}"
                                    Foreground="{StaticResource NeutralStrongBrush}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+    <ControlTheme x:Key="LocalCollectionPageHeader" TargetType="pageHeader:PageHeader">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel>
+                    <Border Width="60"
+                            Height="60"
+                            Margin="0,0,8,0"
+                            DockPanel.Dock="Left"
+                            VerticalAlignment="Top">
+                        <icons:UnifiedIcon Size="60" x:Name="Icon" />
+                    </Border>
+
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                        <TextBlock x:Name="DescriptionTextBlock"
+                                   Theme="{StaticResource BodyMDSemiTheme}"
+                                   Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock x:Name="TitleTextBlock"
+                                   Theme="{StaticResource HeadingMDSemiTheme}"
+                                   Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                                   VerticalAlignment="Center"
                                    TextWrapping="Wrap" />
                     </StackPanel>
                 </DockPanel>
