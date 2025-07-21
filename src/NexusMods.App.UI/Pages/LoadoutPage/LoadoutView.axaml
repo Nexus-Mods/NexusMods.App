@@ -10,6 +10,7 @@
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:search="clr-namespace:NexusMods.App.UI.Controls.Search"
     xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -218,6 +219,10 @@
                     <!-- TOOLBAR (starts off hidden) -->
 
                     <controls:Toolbar Grid.Row="1" Margin="24,12, 24, 0">
+                        <search:SearchControl x:Name="SearchControl"
+                                              PageName="Loadout"
+                                              ButtonSize="Toolbar" />
+
                         <!-- selection related button group -->
                         <ItemsControl x:Name="ContextControlGroup">
 

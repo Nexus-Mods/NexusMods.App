@@ -15,13 +15,14 @@ using System.Diagnostics;
 using NexusMods.App.UI.Controls.Filters;
 using static NexusMods.App.UI.Controls.Filters.Filter;
 using NexusMods.Telemetry;
+using NexusMods.App.UI.Controls.Search;
 
 namespace NexusMods.App.UI.Controls;
 
 /// <summary>
 /// Adapter class for working with <see cref="TreeDataGrid"/>.
 /// </summary>
-public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
+public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISearchableAdapter
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {

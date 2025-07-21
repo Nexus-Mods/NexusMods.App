@@ -1,6 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using DynamicData.Binding;
 using Humanizer;
 using Humanizer.Localisation;
@@ -28,6 +28,12 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 
         this.WhenActivated(disposables =>
             {
+                SearchControl.AttachKeyboardHandlers(this, disposables);
+
+                // Bind search adapter
+                this.OneWayBind(ViewModel, vm => vm.Adapter, view => view.SearchControl.Adapter)
+                    .AddTo(disposables);
+
                 // initially hidden
                 ContextControlGroup.IsVisible = false;
 
