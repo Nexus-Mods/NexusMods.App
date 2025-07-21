@@ -14,6 +14,7 @@
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     xmlns:loadouts="clr-namespace:NexusMods.Abstractions.Loadouts;assembly=NexusMods.Abstractions.Loadouts"
     xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
+    xmlns:search="clr-namespace:NexusMods.App.UI.Controls.Search"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView"
     Background="{StaticResource SurfaceTransparentBrush}">
@@ -46,34 +47,10 @@
                     <!-- toolbar component -->
                     <controls:Toolbar Margin="24,12, 24, 0">
 
-                        <!-- search button group -->
                         <ItemsControl>
-                            <DockPanel>
-                                <controls:StandardButton x:Name="SearchButton"
-                                                         Text="x selected"
-                                                         Type="Tertiary"
-                                                         Size="Toolbar"
-                                                         Fill="WeakAlt"
-                                                         ShowIcon="Left"
-                                                         ShowLabel="False"
-                                                         LeftIcon="{x:Static icons:IconValues.Search}"
-                                                         DockPanel.Dock="Left"
-                                                         Click="SearchButton_OnClick"
-                                                         ToolTip.Tip="Search (Ctrl+F)"/>
-                                <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188" IsVisible="False">
-                                    <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="{x:Static resources:Language.SearchBox__Search_Watermark}" Padding="4 2 24 2"
-                                             Margin="4 0 0 0"/>
-                                    <controls:StandardButton x:Name="SearchClearButton"
-                                                             Margin="0 0 4 0"
-                                                             HorizontalAlignment="Right"
-                                                             Type="Tertiary"
-                                                             Size="Toolbar"
-                                                             Fill="None"
-                                                             ShowIcon="IconOnly"
-                                                             ShowLabel="False"
-                                                             LeftIcon="{x:Static icons:IconValues.Close}"/>
-                                </Panel>
-                            </DockPanel>
+                            <search:SearchControl x:Name="SearchControl"
+                                                  PageName="Library"
+                                                  ButtonSize="Toolbar" />
                         </ItemsControl>
 
                         <!-- selection related button group -->
