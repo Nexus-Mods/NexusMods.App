@@ -119,18 +119,10 @@
                                     </MenuFlyout>
                                 </controls:StandardButton.Flyout>
                             </controls:StandardButton>
-
-                            <controls:StandardButton x:Name="ButtonRefresh"
-                                                     Size="Toolbar"
-                                                     Fill="Weak"
-                                                     Type="Tertiary"
-                                                     LeftIcon="{x:Static icons:IconValues.Refresh}"
-                                                     ShowIcon="Left"
-                                                     ShowLabel="False" />
                         </StackPanel>
 
                         <!-- share and visibility buttons -->
-                        <StackPanel Spacing="8">
+                        <StackPanel x:Name="PanelShare" Spacing="8">
                             <Separator />
 
                             <controls:StandardButton x:Name="ButtonShareCollection"
@@ -159,8 +151,7 @@
                             </StackPanel>
                         </StackPanel>
 
-
-                        <StackPanel x:Name="IsUploadedStack" Orientation="Horizontal" Spacing="8">
+                        <StackPanel x:Name="PanelPublish" Orientation="Horizontal" Spacing="8">
                             <!-- publish button -->
                             <Separator />
                             <SplitButton x:Name="SplitButtonPublishCollection"
