@@ -386,7 +386,14 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 }
             );
 
-            CommandDeleteGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            var canDelete = CollectionGroup
+                .ObserveAll(_connection)
+                .FilterImmutable(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId)
+                .QueryWhenChanged(query => query.Count)
+                .ToObservable()
+                .Select(count => count > 1);
+
+            CommandDeleteGroup = canDelete.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
                 await CollectionCreator.DeleteCollectionGroup(connection: _connection, managedCollectionGroup: collectionGroupId.Value, cancellationToken: cancellationToken);
                 CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
