@@ -13,12 +13,11 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Errors;
+using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.IO;
-using StrawberryShake;
-using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -45,23 +44,21 @@ public partial class NexusModsLibrary
         _logger.LogError("Failed to upload file, response code={ResponseCode}, response reason=`{ResponseReason}`, response message=`{ResponseMessage}`", response.StatusCode, response.ReasonPhrase, responseMessage);
 
         response.EnsureSuccessStatusCode();
-        return;
     }
 
-    private async ValueTask<GraphQlResult<PresignedUploadUrl, Invalid>> UploadMedia(
+    private async ValueTask<GraphQlResult<PresignedUploadUrl>> UploadMedia(
         IStreamFactory streamFactory,
         string mimeType,
         CancellationToken cancellationToken)
     {
-        var operationResult = await _gqlClient.RequestMediaUploadUrl.ExecuteAsync(
-            mimeType: mimeType,
-            cancellationToken: cancellationToken
+        var result = await _graphQlClient.RequestMediaUploadUrl(
+            mimeType,
+            cancellationToken
         );
 
-        if (operationResult.TryExtractErrors(out GraphQlResult<PresignedUploadUrl, Invalid>? resultWithErrors, out var operationData))
-            return resultWithErrors;
+        if (result.HasErrors) return result;
+        var presignedUploadUrl = result.AssertHasData();
 
-        var presignedUploadUrl = PresignedUploadUrl.FromApi(operationData.RequestMediaUploadUrl);
         await UploadToPresignedUrl(streamFactory, presignedUploadUrl, mimeType, cancellationToken);
         return presignedUploadUrl;
     }
@@ -164,68 +161,58 @@ public partial class NexusModsLibrary
         return (collectionMetadata, revisionId);
     }
 
-    private async ValueTask<GraphQlResult<int, NotFound>> GetDefaultCategoryId(GameId gameId, CancellationToken cancellationToken)
+    private async ValueTask<GraphQlResult<Optional<ICategory>, NotFound>> GetDefaultCategoryForCollections(GameId gameId, CancellationToken cancellationToken)
     {
-        // NOTE(erri120): Default category until the user can select it or we remove validation on the backend.
+        // NOTE(erri120): Default category until the user can select it, or we remove validation on the backend.
         const string defaultCategoryName = "Miscellaneous";
 
-        var operationResult = await _gqlClient.Categories.ExecuteAsync(
-            gameId: (int)gameId.Value,
-            cancellationToken: cancellationToken
-        );
+        var result = await _graphQlClient.QueryGameCategories(gameId, cancellationToken);
+        return result.Map<Optional<ICategory>>(static categories =>
+        {
+            var found = categories
+                .Where(static c => c is { Approved: true, DiscardedAt: null })
+                .OrderBy(static c => c.Id)
+                .TryGetFirst(static c => c.Name.Equals(defaultCategoryName, StringComparison.OrdinalIgnoreCase), out var defaultCategory);
 
-        if (operationResult.TryExtractErrors(out GraphQlResult<int, NotFound>? resultWithErrors, out var operationData))
-            return resultWithErrors;
-
-        var categories = (operationData.Categories ?? [])
-            .Where(static c => c.Approved && !c.DiscardedAt.HasValue)
-            .OrderBy(static c => c.Id)
-            .ToArray();
-
-        if (categories.TryGetFirst(c => c.Name.Equals(defaultCategoryName, StringComparison.OrdinalIgnoreCase), out var defaultCategory))
-            return defaultCategory.Id;
-        return categories.First().Id;
+            if (found) return Optional<ICategory>.Create(defaultCategory);
+            return Optional<ICategory>.Create(categories.FirstOrDefault());
+        });
     }
 
-    public async ValueTask<GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>> PrefillCollectionMetadata(
+    public async ValueTask<GraphQlResult<NoData>> PrefillCollectionMetadata(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory defaultImageStreamFactory,
         string defaultImageMimeType,
         CancellationToken cancellationToken)
     {
-        var defaultCategoryResult = await GetDefaultCategoryId(collection.GameId, cancellationToken);
-        if (defaultCategoryResult.HasErrors) return new GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>(defaultCategoryResult.Errors);
+        var defaultCategoryResult = await GetDefaultCategoryForCollections(collection.GameId, cancellationToken);
+        if (defaultCategoryResult.HasErrors) return defaultCategoryResult.Errors;
 
-        var metadataOperationResult = await _gqlClient.AddRequiredCollectionMetadata.ExecuteAsync(
-            collectionId: (int)collection.CollectionId.Value,
-            categoryId: defaultCategoryResult.AssertHasData().ToString(),
-            description: "Add description here",
-            summary: "Add summary here",
+        var optionalDefaultCategory = defaultCategoryResult.AssertHasData();
+        if (!optionalDefaultCategory.HasValue) throw new NotSupportedException($"Game `{collection.GameId}` has no default category!");
+
+        var result = await _graphQlClient.AddRequiredCollectionMetadata(
+            collectionId: collection.CollectionId,
+            category: optionalDefaultCategory.Value,
+            summary: "Created with the Nexus Mods app.",
+            description: $"Created with the Nexus Mods app v{ApplicationConstants.Version.ToSafeString(maxFieldCount: 3)}.",
             cancellationToken: cancellationToken
         );
 
-        if (metadataOperationResult.TryExtractErrors(out GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>? resultWithErrors, out _))
-            return resultWithErrors;
+        if (result.HasErrors) return result.Errors;
 
-        // TODO: consider refreshing the collection metadata
+        // TODO: update the local collection metadata
+        var uploadMediaResult = await UploadMedia(defaultImageStreamFactory, defaultImageMimeType, cancellationToken);
+        if (uploadMediaResult.HasErrors) return uploadMediaResult.Errors;
 
-        var uploadDefaultImageResult = await UploadMedia(defaultImageStreamFactory, defaultImageMimeType, cancellationToken);
-        if (uploadDefaultImageResult.HasErrors) return new GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>(uploadDefaultImageResult.Errors);
-
-        var imageOperationResult = await _gqlClient.AddTileImageToCollection.ExecuteAsync(
-            collectionId: collection.CollectionId.Value.ToString(),
-            image: new UploadImageInput
-            {
-                Id = uploadDefaultImageResult.AssertHasData().UUID,
-                ContentType = defaultImageMimeType,
-            },
+        var addTileImageResult = await _graphQlClient.AddTileImageToCollection(
+            collectionId: collection.CollectionId,
+            presignedUploadUrl: uploadMediaResult.AssertHasData(),
+            mimeType: defaultImageMimeType,
             cancellationToken: cancellationToken
         );
 
-        if (imageOperationResult.TryExtractErrors(out GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>? imageErrors, out _))
-            return imageErrors;
-
-        return new NoData();
+        return addTileImageResult.Map(static _ => new NoData());
     }
 
     public ValueTask<GraphQlResult<NoData, NotFound, Invalid>> PublishRevision(

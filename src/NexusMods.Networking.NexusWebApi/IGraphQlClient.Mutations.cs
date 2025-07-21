@@ -38,6 +38,25 @@ public partial interface IGraphQlClient
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Adds the collection metadata required for publishing.
+    /// </summary>
+    ValueTask<GraphQlResult<ICollection, NotFound>> AddRequiredCollectionMetadata(
+        CollectionId collectionId,
+        ICategory category,
+        string summary,
+        string description,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Adds a tile image to the collection.
+    /// </summary>
+    ValueTask<GraphQlResult<NoData, NotFound>> AddTileImageToCollection(
+        CollectionId collectionId,
+        PresignedUploadUrl presignedUploadUrl,
+        string mimeType,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Publishes the revision.
     /// </summary>
     ValueTask<GraphQlResult<NoData, NotFound, Invalid>> PublishRevision(

@@ -30,7 +30,6 @@ public partial class NexusModsLibrary
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
-    private readonly NexusGraphQLClient _gqlClient;
     private readonly IGraphQlClient _graphQlClient;
     private readonly HttpClient _httpClient;
     private readonly TemporaryFileManager _temporaryFileManager;
@@ -48,7 +47,6 @@ public partial class NexusModsLibrary
         _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
-        _gqlClient = serviceProvider.GetRequiredService<NexusGraphQLClient>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         _fileStore = serviceProvider.GetRequiredService<IFileStore>();
         _jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();

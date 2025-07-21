@@ -19,6 +19,23 @@ mutation RenameCollection($collectionId: Int!, $newName: String!) {
     }
 }
 
+mutation AddRequiredCollectionMetadata($collectionId: Int!, $categoryId: ID!, $summary: String!, $description: String!) {
+    editCollection(collectionId: $collectionId, categoryId: $categoryId, summary: $summary, description: $description) {
+        success,
+        collection {
+            ...Collection
+        }
+    }
+}
+
+mutation AddTileImageToCollection($collectionId: ID!, $image: UploadImageInput!){
+    addTileImageToCollection(collectionId: $collectionId, image: $image) {
+        image {
+            id
+        }
+    }
+}
+
 mutation ChangeCollectionStatusToListed($collectionId: Int!) {
     listCollection(collectionId: $collectionId) {
         success

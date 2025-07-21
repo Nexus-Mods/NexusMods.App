@@ -64,6 +64,47 @@ internal partial class GraphQlClient
         );
     }
 
+    public async ValueTask<GraphQlResult<ICollection, NotFound>> AddRequiredCollectionMetadata(
+        CollectionId collectionId,
+        ICategory category,
+        string summary,
+        string description,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _client.AddRequiredCollectionMetadata.ExecuteAsync(
+            collectionId: (int)collectionId.Value,
+            categoryId: category.Id.ToString(),
+            summary: summary,
+            description: description,
+            cancellationToken
+        );
+
+        return operationResult.Transform(
+            out GraphQlResult<ICollection, NotFound> _,
+            static result => result.EditCollection,
+            edit => RequiresSuccess(edit, static edit => edit.Success, static edit => edit.Collection)
+        );
+    }
+
+    public async ValueTask<GraphQlResult<NoData, NotFound>> AddTileImageToCollection(
+        CollectionId collectionId,
+        PresignedUploadUrl presignedUploadUrl,
+        string mimeType,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _client.AddTileImageToCollection.ExecuteAsync(
+            collectionId: collectionId.ToString(),
+            image: new UploadImageInput
+            {
+                Id = presignedUploadUrl.UUID,
+                ContentType = mimeType,
+            },
+            cancellationToken: cancellationToken
+        );
+
+        return operationResult.Transform(out GraphQlResult<NoData, NotFound> _, static result => result.AddTileImageToCollection, static _ => new NoData());
+    }
+    
     public async ValueTask<GraphQlResult<NoData, NotFound, Invalid>> PublishRevision(
         RevisionId revisionId,
         CancellationToken cancellationToken)
