@@ -12,11 +12,20 @@ using Disposable = System.Reactive.Disposables.Disposable;
 
 namespace NexusMods.App.UI.Controls.Search;
 
+/// <remarks>
+/// Note(sewer):
+/// This represents a standalone control which implements a search button, search box
+/// and a clear button.
+///
+/// Since this is not a full view, or a component you would arbitrarily render,
+/// we are not using <see cref="ReactiveUserControl"/> here. Same way you wouldn't
+/// make a <see cref="ReactiveUserControl"/>  for a Button or a TextBox.
+/// </remarks>
 [UsedImplicitly]
 public partial class SearchControl : UserControl
 {
     /// <summary>
-    /// The adapter that supports search functionality.
+    /// The <see cref="TreeDataGridAdapter{TModel,TKey}"/> that supports search functionality.
     /// </summary>
     public static readonly StyledProperty<ISearchableAdapter?> AdapterProperty =
         AvaloniaProperty.Register<SearchControl, ISearchableAdapter?>(nameof(Adapter));
@@ -70,6 +79,9 @@ public partial class SearchControl : UserControl
 
     private void SetupBindings()
     {
+        // Note(sewer): The SearchControl subscribes to self here.
+        // So there is no risk of event leaks, as the lifetime of self equals self.
+
         // Setup search text binding
         this.WhenAnyValue(x => x.SearchTextBox.Text)
             .OnUI()
@@ -131,7 +143,7 @@ public partial class SearchControl : UserControl
     {
         control.KeyDown += OnKeyDown;
 
-        // Add disposal logic to auto remove the event handler
+        // Auto remove the event handler
         Disposable.Create(control, ctrl => ctrl.KeyDown -= OnKeyDown)
             .AddTo(disposables);
     }
