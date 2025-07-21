@@ -32,4 +32,19 @@ public interface IJobMonitor
     /// All the jobs the monitor knows about
     /// </summary>
     ReadOnlyObservableCollection<IJob> Jobs { get; }
+    
+    /// <summary>
+    /// Cancels a specific job by its ID
+    /// </summary>
+    void Cancel(JobId jobId);
+    
+    /// <summary>
+    /// Cancels all jobs in the specified group
+    /// </summary>
+    void CancelGroup(IJobGroup group);
+    
+    /// <summary>
+    /// Cancels all active jobs
+    /// </summary>
+    void CancelAll();
 }
