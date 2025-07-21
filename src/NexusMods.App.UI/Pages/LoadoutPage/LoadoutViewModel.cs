@@ -90,6 +90,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     public ReactiveCommand<Unit> CommandOpenRevisionUrl { get; }
     public ReactiveCommand<Unit> CommandCopyRevisionUrl { get; }
     public ReactiveCommand<Unit> CommandChangeVisibility { get; }
+    public ReactiveCommand<Unit> CommandDeleteGroup { get; }
 
     public bool EnableCollectionSharing { get; }
 
@@ -384,6 +385,12 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     TabTitle = newName;
                 }
             );
+
+            CommandDeleteGroup = new ReactiveCommand<Unit>(async (_, cancellationToken) =>
+            {
+                await CollectionCreator.DeleteCollectionGroup(connection: _connection, managedCollectionGroup: collectionGroupId.Value, cancellationToken: cancellationToken);
+                CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
+            });
         }
         else
         {
@@ -406,6 +413,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
             CommandOpenRevisionUrl = new ReactiveCommand();
             CommandCopyRevisionUrl = new ReactiveCommand();
             CommandChangeVisibility = new ReactiveCommand();
+            CommandDeleteGroup = new ReactiveCommand();
         }
 
         CommandDeselectItems = new ReactiveCommand<Unit>(_ => { Adapter.ClearSelection(); });
