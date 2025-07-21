@@ -10,6 +10,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Collections;
@@ -23,13 +24,13 @@ using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NSubstitute;
-using StrawberryShake;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
@@ -57,23 +58,12 @@ public abstract class ALegacyDatabaseTest
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
         
-        var mock = Substitute.For<INexusGraphQLClient>();
-        mock.CollectionSlugToId.ExecuteAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns((x) =>
+        var mock = Substitute.For<IGraphQlClient>();
+        mock.QueryCollectionId(Arg.Any<CollectionSlug>(), Arg.Any<CancellationToken>()).Returns((x) =>
         {
-            var slug = x.Arg<string>();
-            var id = slug.xxHash3AsUtf8().Value;
-
-            var data = Substitute.For<ICollectionSlugToId_Collection>();
-            data.Id.Returns((int)id);
-            data.Slug.Returns(slug);
-
-            var innerResult = Substitute.For<ICollectionSlugToIdResult>();
-            innerResult.Collection.Returns(data);
-
-            var result = Substitute.For<IOperationResult<ICollectionSlugToIdResult>>();
-            result.Data.Returns(innerResult);
-
-            return Task.FromResult(result);
+            var slug = x.Arg<CollectionSlug>();
+            var id = slug.Value.xxHash3AsUtf8().Value;
+            return new GraphQlResult<CollectionId, NotFound>(CollectionId.From(id));
         });
 
         return services

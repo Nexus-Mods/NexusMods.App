@@ -43,7 +43,7 @@ public static class FragmentExtensions
     /// <param name="db">Provides DB access.</param>
     /// <param name="tx">The current transaction for inserting items into database.,</param>
     /// <param name="modPageEid">ID of the mod page entity.</param>
-    public static EntityId Resolve(this IModFileFragment modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
+    public static EntityId Resolve(this IModFile modFileFragment, IDb db, ITransaction tx, EntityId modPageEid)
     {
         var nexusFileResolver = GraphQLResolver.Create(db, tx, NexusModsFileMetadata.Uid, UidForFile.FromV2Api(modFileFragment.Uid));
         nexusFileResolver.Add(NexusModsFileMetadata.ModPageId, modPageEid);
@@ -67,7 +67,7 @@ public static class FragmentExtensions
     /// <summary>
     /// Resolves the IModFragment to an entity in the database, inserting or updating as necessary.
     /// </summary>
-    public static EntityId Resolve(this IModFragment modFragment, IDb db, ITransaction tx, bool setFilesTimestamp = false)
+    public static EntityId Resolve(this IMod modFragment, IDb db, ITransaction tx, bool setFilesTimestamp = false)
     {
         var nexusModResolver = GraphQLResolver.Create(db, tx, NexusModsModPageMetadata.Uid, UidForMod.FromV2Api(modFragment.Uid));
         nexusModResolver.Add(NexusModsModPageMetadata.Name, modFragment.Name);

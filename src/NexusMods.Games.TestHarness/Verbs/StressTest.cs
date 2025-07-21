@@ -52,10 +52,10 @@ public class StressTest
             {
                 await renderer.Text("Processing {0}", mod.ModId);
 
-                IOperationResult<IModFilesResult> files;
+                IOperationResult<IQueryModFilesResult> files;
                 try
                 {
-                    files = await nexusGqlClient.ModFiles.ExecuteAsync(mod.ModId.ToString(), game.GameId.ToString(), token);
+                    files = await nexusGqlClient.QueryModFiles.ExecuteAsync(mod.ModId.ToString(), game.GameId.ToString(), token);
                     files.EnsureNoErrors();
                 }
                 catch (HttpRequestException ex)

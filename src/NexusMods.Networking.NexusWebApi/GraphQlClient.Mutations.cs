@@ -1,3 +1,3 @@
 namespace NexusMods.Networking.NexusWebApi;
 
-public partial class GraphQlClient { }
+internal partial class GraphQlClient { }
