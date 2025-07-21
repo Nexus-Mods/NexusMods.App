@@ -219,9 +219,11 @@
                     <!-- TOOLBAR (starts off hidden) -->
 
                     <controls:Toolbar Grid.Row="1" Margin="24,12, 24, 0">
-                        <search:SearchControl x:Name="SearchControl"
-                                              PageName="Loadout"
-                                              ButtonSize="Toolbar" />
+                        <ItemsControl>
+                            <search:SearchControl x:Name="SearchControl"
+                                                  PageName="Loadout"
+                                                  ButtonSize="Toolbar" />
+                        </ItemsControl>
 
                         <!-- selection related button group -->
                         <ItemsControl x:Name="ContextControlGroup">

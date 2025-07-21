@@ -15,32 +15,31 @@
     x:Class="NexusMods.App.UI.Pages.LoadoutGroupFilesPage.LoadoutGroupFilesView">
 
     <Grid RowDefinitions="Auto, *">
-        <Border Grid.Row="0" Classes="Toolbar">
-            <Grid ColumnDefinitions="*, Auto">
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <navigation:NavigationControl x:Name="OpenEditorMenuItem"
-                                                  Text="Edit File"
-                                                  LeftIcon="{x:Static icons:IconValues.FileEdit}"
-                                                  ShowIcon="Left"
-                                                  Size="Small"
-                                                  Type="Tertiary"
-                                                  Fill="WeakAlt"/>
-                    
-                    <controls:StandardButton x:Name="RemoveButton" 
-                                             Text="Delete"
-                                             LeftIcon="{x:Static icons:IconValues.DeleteForever}"
-                                             ShowIcon="Left"
-                                             Size="Small"
-                                             Type="Tertiary"
-                                             Fill="WeakAlt"/>
-                </StackPanel>
-
-                <search:SearchControl Grid.Column="1"
-                                      x:Name="SearchControl"
+        <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
+            <ItemsControl>
+                <search:SearchControl x:Name="SearchControl"
                                       PageName="LoadoutGroupFiles"
-                                      ButtonSize="Small" />
-            </Grid>
-        </Border>
+                                      ButtonSize="Toolbar" />
+            </ItemsControl>
+            
+            <ItemsControl>
+                <navigation:NavigationControl x:Name="OpenEditorMenuItem"
+                                              Text="Edit File"
+                                              LeftIcon="{x:Static icons:IconValues.FileEdit}"
+                                              ShowIcon="Left"
+                                              Size="Toolbar"
+                                              Type="Tertiary"
+                                              Fill="WeakAlt"/>
+                
+                <controls:StandardButton x:Name="RemoveButton" 
+                                         Text="Delete"
+                                         LeftIcon="{x:Static icons:IconValues.DeleteForever}"
+                                         ShowIcon="Left"
+                                         Size="Toolbar"
+                                         Type="Tertiary"
+                                         Fill="WeakAlt"/>
+            </ItemsControl>
+        </controls:Toolbar>
 
         <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
                       ShowColumnHeaders="True"
