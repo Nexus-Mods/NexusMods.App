@@ -53,5 +53,40 @@ public partial class GraphQlClient
         Debug.Assert(operationData?.Categories is not null);
         return operationData.Categories.ToArray();
     }
+
+    /// <summary>
+    /// Requests a presigned upload URL for collection revisions.
+    /// </summary>
+    public async ValueTask<GraphQlResult<PresignedUploadUrl>> RequestCollectionRevisionUploadUrl(CancellationToken cancellationToken)
+    {
+        var operationResult = await _client.RequestCollectionRevisionUploadUrl.ExecuteAsync(
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<PresignedUploadUrl>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.CollectionRevisionUploadUrl is not null);
+        return PresignedUploadUrl.FromApi(operationData.CollectionRevisionUploadUrl!);
+    }
+
+    /// <summary>
+    /// Requests a presigned upload URL for media files.
+    /// </summary>
+    public async ValueTask<GraphQlResult<PresignedUploadUrl>> RequestMedaiUploadUrl(
+        string mimeType,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _client.RequestMediaUploadUrl.ExecuteAsync(
+            mimeType: mimeType,
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<PresignedUploadUrl>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.RequestMediaUploadUrl is not null);
+        return PresignedUploadUrl.FromApi(operationData.RequestMediaUploadUrl!);
+    }
 }
 
