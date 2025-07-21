@@ -4,12 +4,6 @@ query GetCollectionRevisionUploadUrl {
     }
 }
 
-query RequestMediaUploadUrl($mimeType: String!) {
-    requestMediaUploadUrl(mimeType: $mimeType) {
-        ...PresignedUrl
-    }
-}
-
 query categories($gameId: Int!) {
     categories(gameId: $gameId, global: true) {
         id,
@@ -17,27 +11,6 @@ query categories($gameId: Int!) {
         name,
         approved,
         discardedAt
-    }
-}
-
-mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
-    createCollection(collectionData: $payload, uuid: $uuid) {
-        success
-        collection {
-            ...Collection
-        }
-        revision {
-            ...CollectionRevision
-        }
-    }
-}
-
-mutation CreateOrUpdateRevision($payload: CollectionPayload!, $collectionId: Int!, $uuid: String!) {
-    createOrUpdateRevision(collectionData: $payload, collectionId: $collectionId, uuid: $uuid) {
-        success
-        revision {
-            ...CollectionRevision
-        }
     }
 }
 
@@ -68,12 +41,6 @@ mutation EditCollectionSummary($collectionId: Int!, $summary: String!) {
     }
 }
 
-mutation PublishRevision($revisionId: ID!) {
-    publishRevision(revisionId: $revisionId) {
-        success
-    }
-}
-
 mutation ListCollection($collectionId: Int!) {
     listCollection(collectionId: $collectionId) {
         success
@@ -90,7 +57,7 @@ mutation AddRequiredCollectionMetadata($collectionId: Int!, $categoryId: ID!, $d
     editCollection(collectionId: $collectionId, categoryId: $categoryId, description: $description, summary: $summary) {
         success,
         collection {
-            ...CollectionFragment
+            ...Collection
         }
     }
 }

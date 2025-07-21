@@ -146,13 +146,13 @@ public static class CollectionCreator
             cancellationToken: cancellationToken
         );
 
-        if (result.HasErrors) return result;
+        if (result.HasErrors) return newStatus;
         using var tx = connection.BeginTransaction();
 
-        tx.Add(collection.Id, CollectionMetadata.Status, result.AssertHasData());
+        tx.Add(collection.Id, CollectionMetadata.Status, newStatus);
 
         await tx.Commit();
-        return result;
+        return newStatus;
     }
 
     /// <summary>
