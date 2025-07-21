@@ -39,7 +39,7 @@ public class SteamLocator : AGameLocator<SteamGame, AppId, ISteamGame, SteamLoca
     }
 
     /// <inheritdoc />
-    protected override IGameLocatorResultMetadata CreateMetadata(SteamGame game)
+    protected override IGameLocatorResultMetadata CreateMetadata(SteamGame game, IEnumerable<SteamGame> otherFoundGames)
     {
         var winePrefixDirectoryPath = game.GetProtonPrefix()?.ProtonDirectory.Combine("pfx");
         var linuxCompatibilityDataProvider = winePrefixDirectoryPath is not null ? new LinuxCompatibilityDataProvider(game, winePrefixDirectoryPath.Value) : null;
