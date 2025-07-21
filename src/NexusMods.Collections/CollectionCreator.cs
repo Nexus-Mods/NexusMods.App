@@ -66,7 +66,31 @@ public static class CollectionCreator
     {
         using var tx = connection.BeginTransaction();
 
-        tx.Delete(managedCollectionGroup, recursive: true);
+        var groups = new Queue<LoadoutItemGroupId>();
+        groups.Enqueue(managedCollectionGroup.Value);
+
+        while (groups.TryDequeue(out var groupId))
+        {
+            var group = LoadoutItemGroup.Load(connection.Db, groupId);
+            foreach (var datom in group)
+            {
+                datom.Retract(tx);
+            }
+
+            foreach (var child in group.Children)
+            {
+                if (child.IsLoadoutItemGroup())
+                {
+                    groups.Enqueue(child.Id);
+                    continue;
+                }
+
+                foreach (var datom in child)
+                {
+                    datom.Retract(tx);
+                }
+            }
+        }
 
         await tx.Commit();
     }
