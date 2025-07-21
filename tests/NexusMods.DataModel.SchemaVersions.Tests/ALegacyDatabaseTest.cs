@@ -31,6 +31,8 @@ using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
 using NSubstitute;
+using NSubstitute.Core.Arguments;
+using NSubstitute.Core.DependencyInjection;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
@@ -57,11 +59,11 @@ public abstract class ALegacyDatabaseTest
         
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
-        
+
         var mock = Substitute.For<IGraphQlClient>();
-        mock.QueryCollectionId(Arg.Any<CollectionSlug>(), Arg.Any<CancellationToken>()).Returns((x) =>
+        mock.QueryCollectionId(CollectionSlug.DefaultValue, CancellationToken.None).ReturnsForAnyArgs(callInfo =>
         {
-            var slug = x.Arg<CollectionSlug>();
+            var slug = callInfo.Arg<CollectionSlug>();
             var id = slug.Value.xxHash3AsUtf8().Value;
             return new GraphQlResult<CollectionId, NotFound>(CollectionId.From(id));
         });

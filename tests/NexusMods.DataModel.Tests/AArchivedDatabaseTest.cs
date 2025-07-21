@@ -63,9 +63,9 @@ public abstract class AArchivedDatabaseTest
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
         
         var mock = Substitute.For<IGraphQlClient>();
-        mock.QueryCollectionId(Arg.Any<CollectionSlug>(), Arg.Any<CancellationToken>()).Returns((x) =>
+        mock.QueryCollectionId(CollectionSlug.DefaultValue, CancellationToken.None).ReturnsForAnyArgs(callInfo =>
         {
-            var slug = x.Arg<CollectionSlug>();
+            var slug = callInfo.Arg<CollectionSlug>();
             var id = slug.Value.xxHash3AsUtf8().Value;
             return new GraphQlResult<CollectionId, NotFound>(CollectionId.From(id));
         });

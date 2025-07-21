@@ -22,8 +22,8 @@ public class TestsFor_0008_AddCollectionId(ITestOutputHelper helper) : ALegacyDa
         foreach (var entity in entities)
         {
             CollectionMetadata.CollectionId.Contains(entity).Should().BeTrue();
-            var expected = (int)entity.Slug.Value.xxHash3AsUtf8().Value;
-            entity.CollectionId.Value.Should().Be((ulong)expected);
+            var expected = entity.Slug.Value.xxHash3AsUtf8().Value;
+            entity.CollectionId.Value.Should().Be(expected);
         }
     }
 }
