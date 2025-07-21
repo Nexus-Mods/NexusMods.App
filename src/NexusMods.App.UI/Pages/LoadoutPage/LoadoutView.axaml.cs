@@ -127,6 +127,9 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                     .AddTo(disposables);
 
+                this.BindCommand(ViewModel, vm => vm.CommandDeleteGroup, view => view.MenuItemDeleteCollection)
+                    .AddTo(disposables);
+
                 this.BindCommand(ViewModel, vm => vm.CommandChangeVisibility, view => view.ButtonChangeVisibility)
                     .AddTo(disposables);
 

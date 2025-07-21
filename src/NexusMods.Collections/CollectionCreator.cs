@@ -13,6 +13,7 @@ using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Paths;
@@ -58,6 +59,18 @@ public static class CollectionCreator
         string TemplatedName() => string.Format(template, ++count);
     }
 
+    public static async ValueTask DeleteCollectionGroup(
+        IConnection connection,
+        CollectionGroupId managedCollectionGroup,
+        CancellationToken cancellationToken)
+    {
+        using var tx = connection.BeginTransaction();
+
+        tx.Delete(managedCollectionGroup, recursive: true);
+
+        await tx.Commit();
+    }
+    
     /// <summary>
     /// Creates a new collection group in the loadout.
     /// </summary>
