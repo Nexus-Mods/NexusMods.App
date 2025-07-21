@@ -41,7 +41,9 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         var enableCollectionSharing = vm?.EnableCollectionSharing ?? false;
 
                         view.AllPageHeader.IsVisible = !isCollection;
-                        view.Statusbar.IsVisible = isCollection && enableCollectionSharing;
+                        view.Statusbar.IsVisible = isCollection;
+                        view.PanelShare.IsVisible = isCollection && enableCollectionSharing;
+                        view.PanelPublish.IsVisible = isCollection && enableCollectionSharing;
 
                         view.ButtonShareCollection.IsVisible = isCollection;
                         view.WritableCollectionPageHeader.IsVisible = isCollection;
@@ -136,15 +138,15 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonAddTileImage)
                     .AddTo(disposables);
 
-                this.ObserveViewModelProperty(static view => view.BindableViewModel,
-                        static vm => vm.IsCollectionUploaded
-                    )
+                this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.IsCollectionUploaded)
                     .Subscribe(this, static (isCollectionUploaded, self) =>
                         {
+                            var enableCollectionSharing = self.BindableViewModel.Value?.EnableCollectionSharing ?? false;
+
                             self.ButtonShareCollection.IsVisible = !isCollectionUploaded;
                             self.SplitButtonPublishCollection.IsVisible = isCollectionUploaded;
                             self.VisibilityButtonStack.IsVisible = isCollectionUploaded;
-                            self.IsUploadedStack.IsVisible = isCollectionUploaded;
+                            self.PanelPublish.IsVisible = isCollectionUploaded && enableCollectionSharing;
 
                             self.ButtonAddTileImage.IsVisible = isCollectionUploaded;
                             self.UnpublishedHeaderBorder.IsVisible = !isCollectionUploaded;
