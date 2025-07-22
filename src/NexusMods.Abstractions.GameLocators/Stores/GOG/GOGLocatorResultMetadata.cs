@@ -18,11 +18,19 @@ public record GOGLocatorResultMetadata : IGameLocatorResultMetadata
     /// </summary>
     public required ulong BuildId { get; init; }
     
+    /// <summary>
+    /// BuildIds of other installed DLC
+    /// </summary>
+    public required ulong[] DLCBuildIds { get; init; }
+    
     /// <inheritdoc/>
     public ILinuxCompatibilityDataProvider? LinuxCompatibilityDataProvider { get; init; }
 
     /// <inheritdoc />
-    public IEnumerable<LocatorId> ToLocatorIds() => [LocatorId.From(BuildId.ToString())];
+    public IEnumerable<LocatorId> ToLocatorIds() => [
+        LocatorId.From(BuildId.ToString()), 
+        ..DLCBuildIds.Select(x => LocatorId.From(x.ToString())),
+    ];
 }
 
 [PublicAPI]

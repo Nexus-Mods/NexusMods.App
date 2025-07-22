@@ -24,14 +24,20 @@ public class GogLocator : AGameLocator<GOGGame, GOGGameId, IGogGame, GogLocator>
     protected override AbsolutePath Path(GOGGame record) => record.Path;
 
     /// <inheritdoc/>
-    protected override IGameLocatorResultMetadata CreateMetadata(GOGGame game) => CreateMetadataCore(game);
+    protected override IGameLocatorResultMetadata CreateMetadata(GOGGame game, IEnumerable<GOGGame> otherFoundGames) => CreateMetadataCore(game, otherFoundGames);
 
-    internal static IGameLocatorResultMetadata CreateMetadataCore(GOGGame game)
+    internal static IGameLocatorResultMetadata CreateMetadataCore(GOGGame game, IEnumerable<GOGGame> otherFoundGames)
     {
+        var dlcIds = otherFoundGames
+            .Where(g => g.ParentGameId == game.Id)
+            .Select(g => (ulong)g.Id.Value)
+            .ToArray();
+        
         return new GOGLocatorResultMetadata
         {
             Id = game.Id.Value,
             BuildId = game.BuildId,
+            DLCBuildIds = dlcIds,
         };
     }
 }
