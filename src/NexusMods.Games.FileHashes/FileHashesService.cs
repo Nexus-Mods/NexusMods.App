@@ -33,6 +33,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly Dictionary<AbsolutePath, ConnectedDb> _databases;
     private readonly IServiceProvider _provider;
+    private readonly AbsolutePath _hashDatabaseLocation;
 
     /// <summary>
     /// The currently connected database (if any)
@@ -52,8 +53,9 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         _settings = settingsManager.Get<FileHashesServiceSettings>();
         _databases = new Dictionary<AbsolutePath, ConnectedDb>();
         _provider = provider;
-        
-        _settings.HashDatabaseLocation.ToPath(_fileSystem).CreateDirectory();
+
+        _hashDatabaseLocation = _settings.HashDatabaseLocation.ToPath(_fileSystem);
+        _hashDatabaseLocation.CreateDirectory();
  
         // Delete any old databases that are not the latest
         // we only delete at startup to avoid race conditions, but 
@@ -104,8 +106,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     
     private IEnumerable<(DateTimeOffset PublishTime, AbsolutePath Path)> ExistingDBs()
     {
-        return _settings.HashDatabaseLocation
-            .ToPath(_fileSystem)
+        return _hashDatabaseLocation
             .EnumerateDirectories(recursive: false)
             .Where(d => !d.FileName.EndsWith("_tmp"))
             .Select(d =>
@@ -153,10 +154,9 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     private async Task CheckForUpdateCore(bool forceUpdate)
     {
         using var _ = await _lock.LockAsync();
-        var gameHashesReleaseFileName = GameHashesReleaseFileName;
         if (!forceUpdate)
         {
-            if (gameHashesReleaseFileName.FileExists && gameHashesReleaseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
+            if (GameHashesReleaseFileName.FileExists && GameHashesReleaseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
             {
                 _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
                 var latest = ExistingDBs().FirstOrDefault();
@@ -168,52 +168,66 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             }
         }
 
-        var release = await GetRelease(gameHashesReleaseFileName);
+        var release = await GetRelease(GameHashesReleaseFileName);
         
         _logger.LogTrace("Checking for new hash database release");
 
         var existingReleases = ExistingDBs().ToList();
+        if (existingReleases.Any(r => r.PublishTime == release.CreatedAt)) return;
 
-        if (existingReleases.Any(r => r.PublishTime == release.CreatedAt))
-            return;
-
-        var guid = Guid.NewGuid().ToString();
-        var tempZipPath = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{guid}.{release.CreatedAt.ToUnixTimeSeconds()}.zip";
-        
+        AbsolutePath databasePath;
+        try
         {
-            // download the database
-            await using var stream = await _httpClient.GetStreamAsync(_settings.GameHashesDbUrl);
-            await using var fileStream = tempZipPath.Create();
-            await stream.CopyToAsync(fileStream);
+            await using var httpStream = await _httpClient.GetStreamAsync(_settings.GameHashesDbUrl);
+            databasePath = await AddDatabase(httpStream, release.CreatedAt, cancellationToken: CancellationToken.None);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to add database from {Url}", _settings.GameHashesDbUrl);
+            return;
         }
 
-        var tempDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / $"{guid}_{release.CreatedAt.ToUnixTimeSeconds()}_tmp";
+        _currentDb = OpenDb(release.CreatedAt, databasePath);
+    }
+
+    private async ValueTask<AbsolutePath> AddDatabase(
+        Stream archiveStream,
+        DateTimeOffset databaseCreationTime,
+        CancellationToken cancellationToken)
+    {
+        var name = $"{Guid.NewGuid()}.{databaseCreationTime.ToUnixTimeSeconds()}";
+
+        await using var archivePath = new TemporaryPath(_fileSystem, _hashDatabaseLocation / $"{name}.zip");
+        await using (var fileStream = archivePath.Path.Create())
         {
-            // extract it 
-            tempDir.CreateDirectory();
-            using var archive = new ZipArchive(tempZipPath.Read(), ZipArchiveMode.Read, leaveOpen: false);
-            foreach (var file in archive.Entries)
+            await archiveStream.CopyToAsync(fileStream, cancellationToken: cancellationToken);
+        }
+
+        await using var extractionDirectory = new TemporaryPath(_fileSystem, _hashDatabaseLocation / $"{name}_tmp");
+        await using (var fileStream = archivePath.Path.Read())
+        using (var zipArchive = new ZipArchive(fileStream, ZipArchiveMode.Read))
+        {
+            foreach (var fileEntry in zipArchive.Entries)
             {
-                var filePath = tempDir.Combine(file.FullName);
-                filePath.Parent.CreateDirectory();
-                await using var entryStream = file.Open();
-                await using var fileStream = filePath.Create();
-                await entryStream.CopyToAsync(fileStream);
+                var destinationPath = extractionDirectory.Path.Combine(fileEntry.FullName);
+                destinationPath.Parent.CreateDirectory();
+
+                await using var entryStream = fileEntry.Open();
+                await using var outputStream = destinationPath.Create();
+                await entryStream.CopyToAsync(outputStream, cancellationToken: cancellationToken);
             }
         }
 
-        // rename the temp folder
-        var finalDir = _settings.HashDatabaseLocation.ToPath(_fileSystem) / (guid + "_" + release.CreatedAt.ToUnixTimeSeconds());
-        Directory.Move(tempDir.ToString(), finalDir.ToString());
+        var finalDirectory = _hashDatabaseLocation / name;
+        Directory.Move(
+            sourceDirName: extractionDirectory.Path.ToNativeSeparators(OSInformation.Shared),
+            destDirName: finalDirectory.ToNativeSeparators(OSInformation.Shared)
+        );
 
-        // delete the temp files
-        tempZipPath.Delete();
-        
-        // open the new database
-        _currentDb = OpenDb(release.CreatedAt, finalDir);
+        return finalDirectory;
     }
 
-    private AbsolutePath GameHashesReleaseFileName => _settings.HashDatabaseLocation.ToPath(_fileSystem) / _settings.ReleaseFilePath;
+    private AbsolutePath GameHashesReleaseFileName => _hashDatabaseLocation / _settings.ReleaseFilePath;
 
     /// <inheritdoc />
     public async ValueTask<IDb> GetFileHashesDb()
@@ -396,10 +410,10 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             
             var wasFound = VersionDefinition.All(_currentDb!.Db)
                 .Select(version =>
-                    {
-                        var matchingIdCount = steamManifests.Count(g => version.SteamManifestsIds.Contains(g));
-                        return (matchingIdCount, version);
-                    })
+                {
+                    var matchingIdCount = steamManifests.Count(g => version.SteamManifestsIds.Contains(g));
+                    return (matchingIdCount, version);
+                })
                 .Where(row => row.matchingIdCount > 0)
                 .OrderByDescending(row => row.matchingIdCount)
                 .Select(t => t.version)
