@@ -8,9 +8,9 @@ namespace NexusMods.Abstractions.Jobs;
 public interface IJobTask
 {
     /// <summary>
-    /// Gets the unique identifier for this job.
+    /// Gets the job instance that this task represents.
     /// </summary>
-    JobId JobId { get; }
+    IJob JobInstance { get; }
 }
 
 /// <summary>

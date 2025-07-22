@@ -101,7 +101,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
             job.Value.Cancel();
     }
     
-    public void Cancel(IJobTask jobTask) => Cancel(jobTask.JobId);
+    public void Cancel(IJobTask jobTask) => jobTask.JobInstance.Cancel();
 
     public void CancelGroup(IJobGroup group) => group.Cancel();
 

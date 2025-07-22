@@ -60,7 +60,7 @@ public readonly struct Percent : IEquatable<Percent>, IComparable<Percent>
     }
 
     /// <inheritdoc/>
-    public override bool Equals(object? obj) => Value.Equals(obj);
+    public override bool Equals(object? obj) => obj is Percent other && Equals(other);
 
     /// <inheritdoc/>
     public bool Equals(Percent other) => Value.Equals(other.Value);
