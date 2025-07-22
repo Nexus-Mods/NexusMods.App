@@ -100,7 +100,7 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
         foreach (var id in Ids(tg))
         {
             if (!_cachedGames.TryGetValue(id, out var found)) continue;
-            yield return new GameLocatorResult(Path(found), GetMappedFileSystem(found), Store, CreateMetadata(found));
+            yield return new GameLocatorResult(Path(found), GetMappedFileSystem(found), Store, CreateMetadata(found, _cachedGames.Values));
         }
     }
 
@@ -128,7 +128,9 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     /// <summary>
     /// Creates <see cref="IGameLocatorResultMetadata"/> for the specific result.
     /// </summary>
-    /// <param name="game"></param>
+    /// <param name="game">the game data that was find by the GameFinder library</param>
+    /// <param name="otherFoundGames">all the other games found in the same store by the GameFinder library, this is most often
+    /// used to locate DLC installed into the game folder along with the game</param>
     /// <returns></returns>
-    protected abstract IGameLocatorResultMetadata CreateMetadata(TGameType game);
+    protected abstract IGameLocatorResultMetadata CreateMetadata(TGameType game, IEnumerable<TGameType> otherFoundGames);
 }

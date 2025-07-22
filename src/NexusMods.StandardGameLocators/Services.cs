@@ -122,7 +122,7 @@ public static class Services
                                 CreateDelegateFor<GOGGame, IGogGame>(
                                     (foundGame, requestedGame) => requestedGame.GogIds.Any(x => foundGame.Id.Equals(x)),
                                     game => new GameLocatorResult(game.Path, game.Path.FileSystem, GameStore.GOG,
-                                        GogLocator.CreateMetadataCore(game)
+                                        GogLocator.CreateMetadataCore(game, [])
                                     )
                                 ),
                                 CreateDelegateFor<EGSGame, IEpicGame>(

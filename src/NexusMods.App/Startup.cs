@@ -43,7 +43,7 @@ public class Startup
         _logger = provider.GetRequiredService<ILogger<Startup>>();
         
         var logger = provider.GetRequiredService<ILogger<Startup>>();
-        logger.LogInformation("Version: {Version} Commit: {CommitHash}", ApplicationConstants.Version, ApplicationConstants.CommitHash);
+        logger.LogInformation("Version: {Version} Commit: {CommitHash} Build Date: {BuildDate}", ApplicationConstants.Version, ApplicationConstants.CommitHash, ApplicationConstants.BuildDate);
 
         var builder = BuildAvaloniaApp(provider);
         
