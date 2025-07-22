@@ -151,7 +151,6 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         if (existingDatabases.TryGetFirst(out var latestDatabase))
         {
             _currentDb = OpenDb(latestDatabase);
-            return;
         }
 
         Task.Run(async () => await CheckForUpdateCore(forceUpdate: false, cancellationToken: CancellationToken.None));
