@@ -1,22 +1,24 @@
+using FluentAssertions;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using Xunit;
 // ReSharper disable LocalizableElement
 
 namespace Examples.Jobs.BestPractices;
 
 [PublicAPI]
-public static class CancellationExample
+public class CancellationExample(IJobMonitor jobMonitor, TemporaryFileManager temporaryFileManager)
 {
-    public static async Task DemonstrateStandardCancellation(IServiceProvider serviceProvider)
+    [Fact]
+    public async Task DemonstrateStandardCancellation()
     {
-        var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
+        await using var tempFile = temporaryFileManager.CreateFile();
         
         var job = new CancellableDownloadJob
         {
             DownloadUrl = new Uri("https://example.com/file.zip"),
-            Destination = default(AbsolutePath),
+            Destination = tempFile.Path,
         };
         
         var jobTask = jobMonitor.Begin<CancellableDownloadJob, AbsolutePath>(job);
@@ -27,7 +29,8 @@ public static class CancellationExample
         // jobMonitor.CancelAll();
         // TODO: I will fix this in upcoming PR. This has been broken, due to missing abstractions. - Sewer
         
-        _ = await jobTask;
+        var result = await jobTask;
+        result.Should().Be(job.Destination);
     }
 }
 
@@ -59,7 +62,6 @@ public record CancellableDownloadJob : IJobDefinitionWithStart<CancellableDownlo
         // Handle resource cleanup within job execution logic before completion.
         // Job system doesn't dispose IDisposable jobs automatically.
         // The 'using' statements above handle cleanup automatically.
-
         return context.Definition.Destination;
     }
 }

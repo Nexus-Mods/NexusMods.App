@@ -1,22 +1,30 @@
+using FluentAssertions;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using Xunit;
 // ReSharper disable UnusedParameter.Local
 namespace Examples.Jobs;
 
+// When running more complex jobs, you will want to make dedicated job objects.
+// For self-contained jobs, use `IJobDefinitionWithStart`.
+
 [PublicAPI]
-public static class SelfExecutingJobExample
+public class SelfExecutingJobExample(IJobMonitor jobMonitor, TemporaryFileManager temporaryFileManager)
 {
-    public static async Task<ProcessResult?> RunExample(IServiceProvider serviceProvider, AbsolutePath somePath)
+    [Fact]
+    public async Task RunExample()
     {
-        var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-        
+        await using var tempFile = temporaryFileManager.CreateFile();
+        var somePath = tempFile.Path;
+
         // Usage
         var job = new ProcessFileJob { FilePath = somePath };
         var jobTask = jobMonitor.Begin<ProcessFileJob, ProcessResult>(job);
         var result = await jobTask;
-        return result;
+        
+        result.Should().NotBeNull();
+        result!.Success.Should().BeTrue();
     }
 }
 
@@ -29,27 +37,27 @@ public record ProcessResult(bool Success);
 public record ProcessFileJob : IJobDefinitionWithStart<ProcessFileJob, ProcessResult>
 {
     public required AbsolutePath FilePath { get; init; }
-    
+
     public async ValueTask<ProcessResult> StartAsync(IJobContext<ProcessFileJob> context)
     {
         // Access job definition properties
         var filePath = context.Definition.FilePath;
-        
+
         // Report progress
         context.SetPercent(Size.Zero, Size.From(100));
-        
+
         // Process file
         var result = await ProcessFileAsync(filePath, context.CancellationToken);
-        
+
         context.SetPercent(Size.From(100), Size.From(100));
         return result;
     }
-    
+
     private static async Task<ProcessResult> ProcessFileAsync(AbsolutePath filePath, CancellationToken cancellationToken)
     {
         // Simulate file processing work
-        await Task.Delay(2000, cancellationToken);
-        
+        await Task.Delay(100, cancellationToken);
+        // Here you would implement the actual file processing logic
         return new ProcessResult(Success: true);
     }
 }

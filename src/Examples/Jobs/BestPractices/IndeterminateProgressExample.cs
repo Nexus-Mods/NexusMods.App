@@ -1,19 +1,19 @@
+using FluentAssertions;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using Xunit;
 // ReSharper disable LocalizableElement
 namespace Examples.Jobs.BestPractices;
 
 // For indeterminate progress (unknown total work), use Size.One as maximum to avoid division by zero.
 
 [PublicAPI]
-public static class IndeterminateProgressExample
+public class IndeterminateProgressExample(IJobMonitor jobMonitor)
 {
-    public static async Task DemonstrateIndeterminateProgress(IServiceProvider serviceProvider)
+    [Fact]
+    public async Task DemonstrateIndeterminateProgress()
     {
-        var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-
         // For jobs where total work is unknown, use Size.One to avoid division by zero
         var jobDefinition = new MyJobDefinition { InputData = "processing unknown amount" };
 
@@ -27,7 +27,7 @@ public static class IndeterminateProgressExample
             // Process items as they come
             for (var x = 0; x < 10; x++)
             {
-                await Task.Delay(200, context.CancellationToken);
+                await Task.Delay(10, context.CancellationToken);
                 processed++;
 
                 // Show progress as fraction of known work so far
@@ -42,7 +42,8 @@ public static class IndeterminateProgressExample
         });
 
         // Result
-        _ = await jobTask; // Item count.
+        var result = await jobTask; // Item count.
+        result.Should().Be(10);
     }
 }
 

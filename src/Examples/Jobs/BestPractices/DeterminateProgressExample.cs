@@ -1,7 +1,8 @@
+using FluentAssertions;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using Xunit;
 // ReSharper disable LocalizableElement
 namespace Examples.Jobs.BestPractices;
 
@@ -9,23 +10,24 @@ namespace Examples.Jobs.BestPractices;
 // Report both progress percentage and rate when applicable using SetRateOfProgress().
 
 [PublicAPI]
-public static class DeterminateProgressExample
+public class DeterminateProgressExample(IJobMonitor jobMonitor, TemporaryFileManager temporaryFileManager)
 {
-    public static async Task DemonstrateProgressReporting(IServiceProvider serviceProvider)
+    [Fact]
+    public async Task DemonstrateProgressReporting()
     {
-        var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-
+        await using var tempFile = temporaryFileManager.CreateFile();
         var job = new ProgressTrackingDownloadJob
         {
             Uri = new Uri("https://example.com/largefile.zip"),
-            Destination = default(AbsolutePath),
+            Destination = tempFile.Path,
         };
 
         var jobTask = jobMonitor.Begin<ProgressTrackingDownloadJob, AbsolutePath>(job);
 
         // You can observe progress through the job system
         // The job will report progress via SetPercent and SetRateOfProgress
-        _ = await jobTask;
+        var result = await jobTask;
+        result.Should().Be(job.Destination);
     }
 }
 
@@ -49,7 +51,7 @@ public record ProgressTrackingDownloadJob : IJobDefinitionWithStart<ProgressTrac
         while (downloadedBytes < totalBytes)
         {
             // Simulate download chunk
-            await Task.Delay(100, context.CancellationToken);
+            await Task.Delay(8, context.CancellationToken);
             
             var bytesToDownload = chunkSize.Value <= (totalBytes - downloadedBytes).Value 
                 ? chunkSize 

@@ -1,29 +1,31 @@
+using FluentAssertions;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using Xunit;
 // ReSharper disable LocalizableElement
 
 namespace Examples.Jobs.BestPractices;
 
 [PublicAPI]
-public static class InteractiveCancellationExample
+public class InteractiveCancellationExample(IJobMonitor jobMonitor)
 {
-    public static async Task DemonstrateSelfCancellation(IServiceProvider serviceProvider)
+    [Fact]
+    public async Task DemonstrateSelfCancellation()
     {
-        var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-
         var job = new InteractiveInstallJob { ItemName = "TestMod" };
         var jobTask = jobMonitor.Begin<InteractiveInstallJob, bool>(job);
-        
+
         try
         {
             var result = await jobTask;
-            Console.WriteLine($"Installation completed: {result}");
+            // Most likely outcome (80% chance in simulation)
+            result.Should().BeTrue();
         }
-        catch (OperationCanceledException ex)
+        catch (OperationCanceledException)
         {
-            Console.WriteLine($"Installation cancelled: {ex.Message}");
+            // Also valid outcome (20% chance in simulation)
+            true.Should().BeTrue("Job was cancelled as expected");
         }
     }
 }
@@ -44,12 +46,12 @@ public record InteractiveInstallJob : IJobDefinitionWithStart<InteractiveInstall
                 // Self-cancellation: The job cancels itself based on user input
                 context.CancelAndThrow("The user chose to abort the installation");
             }
-            
+
             // Continue with installation
             context.SetPercent(Size.From(50), Size.From(100));
             await Task.Delay(1000, context.CancellationToken);
             context.SetPercent(Size.From(100), Size.From(100));
-            
+
             return true;
         }
         catch (OperationCanceledException ex)

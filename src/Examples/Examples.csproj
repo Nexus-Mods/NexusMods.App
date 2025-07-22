@@ -12,10 +12,19 @@
         <PackageReference Include="Avalonia.Controls.DataGrid" />
         <PackageReference Include="Avalonia.Svg.Skia" />
         <PackageReference Include="Projektanker.Icons.Avalonia.MaterialDesign" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Xunit.DependencyInjection" />
+        <PackageReference Include="NexusMods.Paths" />
+        <PackageReference Include="Microsoft.Extensions.Logging" />
     </ItemGroup>
     
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
+        <ProjectReference Include="..\NexusMods.Jobs\NexusMods.Jobs.csproj" />
+        <ProjectReference Include="..\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
         <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.App\NexusMods.App.csproj" />

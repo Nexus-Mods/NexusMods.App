@@ -1,26 +1,24 @@
+using FluentAssertions;
 using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
+using Xunit;
+
 namespace Examples.Jobs;
 
-// Simple job definitions are used when you want to handle the execution logic
-// in the same method where you call Begin(). The job definition serves as context/data,
-// while the actual work is done in the lambda callback right where you need it.
+// Simple job definitions (using the `Begin` method with a lambda) are used when you
+// want to handle the execution logic in the same method where you call `Begin`.
 
-// Use records, as jobs should not mutate their own parameters.
-public record MyJobDefinition : IJobDefinition<string>
-{
-    public string InputData { get; init; } = "";
-}
+// This can be useful when there's not much code to be executed, but you still
+// want to offload the work to the job system.
 
 [PublicAPI]
-public static class SimpleJobDefinitionExample
+public class SimpleJobDefinitionExample(IJobMonitor jobMonitor)
 {
-    public static async Task<string> RunExample(IServiceProvider serviceProvider)
+    [Fact]
+    public async Task RunExample()
     {
-        var jobMonitor = serviceProvider.GetRequiredService<IJobMonitor>();
-        var jobDefinition = new MyJobDefinition { InputData = "test" };
+        var jobDefinition = new MySimpleJobDefinition { InputData = "test" };
 
         var jobTask = jobMonitor.Begin(jobDefinition, async (context) =>
         {
@@ -31,7 +29,7 @@ public static class SimpleJobDefinitionExample
             context.SetPercent(Size.Zero, Size.From(100));
 
             // Do some work with the data
-            await Task.Delay(1000, context.CancellationToken);
+            await Task.Delay(100, context.CancellationToken);
             context.SetPercent(Size.From(50), Size.From(100));
 
             // Call YieldAsync() around expensive operations
@@ -39,13 +37,20 @@ public static class SimpleJobDefinitionExample
             await context.YieldAsync();
 
             // Complete work
-            await Task.Delay(1000, context.CancellationToken);
+            await Task.Delay(100, context.CancellationToken);
             context.SetPercent(Size.From(100), Size.From(100));
 
             return $"Job completed with: {data}";
         });
 
         // Wait for result
-        return await jobTask;
+        var result = await jobTask;
+        result.Should().Be("Job completed with: test");
     }
+}
+
+// Use records, as jobs should not mutate their own parameters.
+public record MySimpleJobDefinition : IJobDefinition<string>
+{
+    public string InputData { get; init; } = "";
 }
