@@ -22,7 +22,7 @@ using NexusMods.Sdk.IO;
 namespace NexusMods.Games.RedEngine.Cyberpunk2077;
 
 [UsedImplicitly]
-public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame, IEpicGame
+public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
 {
     public static readonly GameDomain StaticDomain = GameDomain.From("cyberpunk2077");
     public static GameId GameIdStatic => GameId.From(3333);
