@@ -17,7 +17,7 @@ public class HeroicGogLocator : IGameLocator
     private readonly ILogger _logger;
 
     private readonly HeroicGOGHandler _handler;
-    private IReadOnlyDictionary<GOGGameId, GOGGame>? _cachedGames;
+    private IReadOnlyDictionary<GOGGameId, HeroicGOGGame>? _cachedGames;
 
     /// <summary>
     /// Constructor.
@@ -78,6 +78,8 @@ public class HeroicGogLocator : IGameLocator
                     Id = id,
                     BuildId = found.BuildId,
                     LinuxCompatibilityDataProvider = linuxCompatibilityDataProvider,
+                    // TODO: FIX THIS
+                    DLCBuildIds = [],
                 }
             );
         }
