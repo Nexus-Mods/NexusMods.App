@@ -388,7 +388,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             var canDelete = CollectionGroup
                 .ObserveAll(_connection)
-                .FilterImmutable(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId)
+                .FilterImmutable(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId && !group.IsReadOnly)
                 .QueryWhenChanged(query => query.Count)
                 .ToObservable()
                 .Select(count => count > 1);
