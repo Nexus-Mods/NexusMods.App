@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Text.Json;
 using DynamicData.Kernel;
@@ -43,7 +44,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
     private readonly ILogger<FileHashesService> _logger;
 
-    private record ConnectedDb(IDb Db, Connection Connection, DatomStore Store, MnemonicDB.Storage.RocksDbBackend.Backend Backend, DateTimeOffset Timestamp, AbsolutePath Path);
+    private record ConnectedDb(IDb Db, DatomStore Store, Backend Backend, DatabaseInfo DatabaseInfo);
 
     public FileHashesService(ILogger<FileHashesService> logger, ISettingsManager settingsManager, IFileSystem fileSystem, HttpClient httpClient, JsonSerializerOptions jsonSerializerOptions, IServiceProvider provider)
     {
@@ -57,78 +58,55 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
 
         _hashDatabaseLocation = _settings.HashDatabaseLocation.ToPath(_fileSystem);
         _hashDatabaseLocation.CreateDirectory();
- 
-        // Delete any old databases that are not the latest
-        // we only delete at startup to avoid race conditions, but 
-        // the db doesn't update often so this is fine
-        foreach (var (_, path) in ExistingDBs().Skip(1))
-        {
-            path.DeleteDirectory(true);
-        }
-        
-        // Open the latest database
-        var latest = ExistingDBs().FirstOrDefault();
-        if (latest.Path != default(AbsolutePath))
-        {
-            _currentDb = OpenDb(latest.PublishTime, latest.Path);
-        }
-        
-        // Trigger an update
-        Task.Run(() => Task.FromResult(CheckForUpdate()));
+
+        Startup();
     }
 
-    private ConnectedDb OpenDb(DateTimeOffset timestamp, AbsolutePath path)
+    private ConnectedDb OpenDb(DatabaseInfo databaseInfo)
     {
         try
         {
-            if (_databases.TryGetValue(path, out var existing))
+            if (_databases.TryGetValue(databaseInfo.Path, out var existing))
                 return existing;
 
-            _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", path, timestamp);
-            var backend = new MnemonicDB.Storage.RocksDbBackend.Backend(readOnly: true);
+            _logger.LogInformation("Opening hash database at {Path} for {Timestamp}", databaseInfo.Path, databaseInfo.CreationTime);
+            var backend = new Backend(readOnly: true);
             var settings = new DatomStoreSettings
             {
-                Path = path,
+                Path = databaseInfo.Path,
             };
 
             var store = new DatomStore(_provider.GetRequiredService<ILogger<DatomStore>>(), settings, backend);
             var connection = new Connection(_provider.GetRequiredService<ILogger<Connection>>(), store, _provider, [], readOnlyMode: true);
-            var connectedDb = new ConnectedDb(connection.Db, connection, store, backend, timestamp, path);
+            var connectedDb = new ConnectedDb(connection.Db, store, backend, databaseInfo);
 
-            _databases[path] = connectedDb;
+            _databases[databaseInfo.Path] = connectedDb;
             return connectedDb;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error opening database at {Path}", path);
+            _logger.LogError(ex, "Error opening database at {Path}", databaseInfo.Path);
             throw;
         }
     }
-    
-    private IEnumerable<(DateTimeOffset PublishTime, AbsolutePath Path)> ExistingDBs()
+
+    private record struct DatabaseInfo(AbsolutePath Path, DateTimeOffset CreationTime);
+
+    private IEnumerable<DatabaseInfo> ExistingDBs()
     {
         return _hashDatabaseLocation
             .EnumerateDirectories(recursive: false)
             .Where(d => !d.FileName.EndsWith("_tmp"))
-            .Select(d =>
+            .Select(path =>
             {
                 // Format is "{guid}_{timestamp}"
-                var parts = d.FileName.Split('_');
-                if (parts.Length != 2 || !ulong.TryParse(parts[1], out var timestamp))
-                    return default((DateTimeOffset, AbsolutePath));
-                return (DateTimeOffset.FromUnixTimeSeconds((long)timestamp), d);
+                var parts = path.FileName.Split('_');
+                if (parts.Length != 2 || !ulong.TryParse(parts[1], out var timestamp)) return Optional<DatabaseInfo>.None;
+                return new DatabaseInfo(Path: path, CreationTime: DateTimeOffset.FromUnixTimeSeconds((long)timestamp));
             })
-            .Where(v => v != default((DateTimeOffset, AbsolutePath)))
-            .OrderByDescending(v => v.Item1);
-    }
-
-    private async Task<Manifest> GetRelease(AbsolutePath storagePath)
-    {
-        await using var stream = await _httpClient.GetStreamAsync(_settings.GithubManifestUrl);
-        await using var diskPath = storagePath.Create();
-        await stream.CopyToAsync(diskPath);
-        diskPath.Position = 0;
-        return (await JsonSerializer.DeserializeAsync<Manifest>(diskPath, _jsonSerializerOptions))!;
+            .Where(static optional => optional.HasValue)
+            .Select(static optional => optional.Value)
+            .OrderByDescending(static databaseInfo => databaseInfo.CreationTime);
     }
 
     /// <inheritdoc />
@@ -152,68 +130,151 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
             .ToList();
     }
 
-    private async Task CheckForUpdateCore(bool forceUpdate)
+    private bool ShouldCheckForUpdate()
     {
-        using var _ = await _lock.LockAsync();
+        if (!GameHashesReleaseFileName.FileExists) return true;
+        var lastUpdated = GameHashesReleaseFileName.FileInfo.LastWriteTimeUtc;
+        var diff = DateTime.UtcNow - lastUpdated;
+        return diff >= _settings.HashDatabaseUpdateInterval;
+    }
 
-        if (!ExistingDBs().Any(_ => true))
+    private void Startup()
+    {
+        var existingDatabases = ExistingDBs().ToArray();
+
+        // Cleanup old databases
+        foreach (var databaseInfo in existingDatabases.Skip(1))
         {
-            try
-            {
-                var (path, creationTime) = await AddEmbeddedDatabase(cancellationToken: CancellationToken.None);
-                _currentDb = OpenDb(creationTime, path);
-                return;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Failed to add embedded database");
-            }
+            databaseInfo.Path.DeleteDirectory(true);
         }
 
-        if (!forceUpdate)
+        if (existingDatabases.TryGetFirst(out var latestDatabase))
         {
-            if (GameHashesReleaseFileName.FileExists && GameHashesReleaseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
-            {
-                _logger.LogTrace("Skipping update check due a check limit of {CheckIterval}", _settings.HashDatabaseUpdateInterval);
-                var latest = ExistingDBs().FirstOrDefault();
-                if (latest.Path != default(AbsolutePath))
-                {
-                    _currentDb = OpenDb(latest.PublishTime, latest.Path);
-                    return;
-                }
-            }
-        }
-
-        var release = await GetRelease(GameHashesReleaseFileName);
-        
-        _logger.LogTrace("Checking for new hash database release");
-
-        var existingReleases = ExistingDBs().ToList();
-        if (existingReleases.Any(r => r.PublishTime == release.CreatedAt)) return;
-
-        AbsolutePath databasePath;
-        try
-        {
-            await using var httpStream = await _httpClient.GetStreamAsync(_settings.GameHashesDbUrl);
-            databasePath = await AddDatabase(httpStream, release.CreatedAt, cancellationToken: CancellationToken.None);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed to add database from {Url}", _settings.GameHashesDbUrl);
+            _currentDb = OpenDb(latestDatabase);
             return;
         }
 
-        _currentDb = OpenDb(release.CreatedAt, databasePath);
+        Task.Run(async () => await CheckForUpdateCore(forceUpdate: false, cancellationToken: CancellationToken.None));
     }
 
-    private async ValueTask<(AbsolutePath, DateTimeOffset)> AddEmbeddedDatabase(CancellationToken cancellationToken)
+    private async Task CheckForUpdateCore(bool forceUpdate, CancellationToken cancellationToken = default)
     {
-        var streamFactory = new EmbeddedResourceStreamFactory<FileHashesService>(resourceName: "games_hashes_db.zip");
-        await using var archiveStream = await streamFactory.GetStreamAsync();
-        var creationTime = ApplicationConstants.BuildDate;
+        using var _ = await _lock.LockAsync();
 
-        var path = await AddDatabase(archiveStream, creationTime, cancellationToken);
-        return (path, creationTime);
+        var existingDatabases = ExistingDBs().ToArray();
+        var shouldCheckForUpdate = forceUpdate || existingDatabases.Length == 0 || ShouldCheckForUpdate();
+
+        if (!shouldCheckForUpdate && existingDatabases.TryGetFirst(out var latestDatabase))
+        {
+            _currentDb = OpenDb(latestDatabase);
+            return;
+        }
+
+        Manifest? latestReleaseManifest = null;
+        if (shouldCheckForUpdate)
+        {
+            latestReleaseManifest = await FetchLatestReleaseManifest(GameHashesReleaseFileName, cancellationToken: cancellationToken);
+        }
+
+        if (existingDatabases.Length == 0)
+        {
+            var embeddedDatabaseInfo = await AddEmbeddedDatabase(cancellationToken: cancellationToken);
+            if (latestReleaseManifest is null)
+            {
+                if (!embeddedDatabaseInfo.HasValue)
+                {
+                    _logger.LogError("Failed to add embedded game hashes database and failed to fetch latest release manifest, game hashes functionality will be unavailable");
+                    return;
+                }
+
+                _logger.LogWarning("Failed to fetch latest release manifest, defaulting to embedded game hashes database which may be out-of-date");
+                _currentDb = OpenDb(embeddedDatabaseInfo.Value);
+                return;
+            }
+
+            Debug.Assert(latestReleaseManifest is not null, "should've returned if we didn't have a manifest");
+            if (embeddedDatabaseInfo.HasValue)
+            {
+                existingDatabases = ExistingDBs().ToArray();
+                Debug.Assert(existingDatabases.Length == 1);
+            }
+        }
+
+        if (latestReleaseManifest is null && existingDatabases.Length == 0)
+        {
+            _logger.LogError("Failed to fetch the latest release manifest and failed to use the embedded database, game hashes functionality will be unavailable");
+            return;
+        }
+
+        if (latestReleaseManifest is null || existingDatabases[0].CreationTime >= latestReleaseManifest.CreatedAt)
+        {
+            _currentDb = OpenDb(existingDatabases[0]);
+            return;
+        }
+
+        _logger.LogInformation("Fetching latest games hashes database");
+        var releaseDatabaseInfo = await AddReleaseDatabase(latestReleaseManifest, cancellationToken);
+        if (!releaseDatabaseInfo.HasValue) return;
+
+        _currentDb = OpenDb(releaseDatabaseInfo.Value);
+    }
+
+    private async ValueTask<Manifest?> FetchLatestReleaseManifest(AbsolutePath storagePath, CancellationToken cancellationToken)
+    {
+        const int defaultTimeout = 15;
+
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        cts.CancelAfter(delay: TimeSpan.FromSeconds(defaultTimeout));
+
+        try
+        {
+            await using var fileStream = storagePath.Create();
+            await using (var httpStream = await _httpClient.GetStreamAsync(_settings.GithubManifestUrl, cancellationToken: cts.Token))
+            {
+                await httpStream.CopyToAsync(fileStream, cancellationToken: cts.Token);
+            }
+
+            fileStream.Position = 0;
+            return await JsonSerializer.DeserializeAsync<Manifest>(fileStream, _jsonSerializerOptions, cancellationToken: cts.Token);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to fetch latest release manifest from `{Url}`", _settings.GithubManifestUrl);
+            return null;
+        }
+    }
+
+    private async ValueTask<Optional<DatabaseInfo>> AddEmbeddedDatabase(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var streamFactory = new EmbeddedResourceStreamFactory<FileHashesService>(resourceName: "games_hashes_db.zip");
+            await using var archiveStream = await streamFactory.GetStreamAsync();
+            var creationTime = ApplicationConstants.BuildDate;
+
+            var path = await AddDatabase(archiveStream, creationTime, cancellationToken);
+            return new DatabaseInfo(path, creationTime);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to add embedded database");
+            return Optional<DatabaseInfo>.None;
+        }
+    }
+
+    private async ValueTask<Optional<DatabaseInfo>> AddReleaseDatabase(Manifest releaseManifest, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var httpStream = await _httpClient.GetStreamAsync(_settings.GameHashesDbUrl, cancellationToken: cancellationToken);
+            var path = await AddDatabase(httpStream, releaseManifest.CreatedAt, cancellationToken: cancellationToken);
+            return new DatabaseInfo(path, releaseManifest.CreatedAt);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to add release database from {Url}", _settings.GameHashesDbUrl);
+            return Optional<DatabaseInfo>.None;
+        }
     }
 
     private async ValueTask<AbsolutePath> AddDatabase(
@@ -221,7 +282,7 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         DateTimeOffset databaseCreationTime,
         CancellationToken cancellationToken)
     {
-        var name = $"{Guid.NewGuid()}.{databaseCreationTime.ToUnixTimeSeconds()}";
+        var name = $"{Guid.NewGuid()}_{databaseCreationTime.ToUnixTimeSeconds()}";
 
         await using var archivePath = new TemporaryPath(_fileSystem, _hashDatabaseLocation / $"{name}.zip");
         await using (var fileStream = archivePath.Path.Create())

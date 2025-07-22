@@ -37,7 +37,7 @@ public static class Verbs
         [Injected] IFileHashesService fileHashesService,
         [Injected] CancellationToken token)
     {
-        await fileHashesService.CheckForUpdate(true);
+        await fileHashesService.CheckForUpdate(forceUpdate: true);
 
         var db = await fileHashesService.GetFileHashesDb();
 
