@@ -3,7 +3,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.ReactiveUI;
+using AvaloniaEdit.Search;
 using JetBrains.Annotations;
+using NexusMods.Telemetry;
 using R3;
 using ReactiveUI;
 using static NexusMods.App.UI.Controls.Filters.Filter;
@@ -18,7 +21,7 @@ namespace NexusMods.App.UI.Controls.Search;
 /// and a clear button.
 ///
 /// Since this is not a full view, or a component you would arbitrarily render,
-/// we are not using <see cref="ReactiveUserControl"/> here. Same way you wouldn't
+/// we are not using <see cref="ReactiveUserControl{TViewModel}"/> here. Same way you wouldn't
 /// make a <see cref="ReactiveUserControl"/>  for a Button or a TextBox.
 /// </remarks>
 [UsedImplicitly]
@@ -102,7 +105,7 @@ public partial class SearchControl : UserControl
                     SearchTextBox.Focus();
 
                     // Tracking
-                    Adapter?.OnOpenSearchPanel(PageName);
+                    Tracking.AddEvent(Events.Search.OpenSearch, new EventMetadata(name: PageName));
                 }
             });
     }

@@ -184,10 +184,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
         });
     }
 
-    public void OnOpenSearchPanel(string pageName)
-    {
-        Tracking.AddEvent(Events.Search.OpenSearch, new EventMetadata(name: pageName));
-    }
     public void ClearSelection() => _selectionModel?.Clear();
 
     /// <summary>
