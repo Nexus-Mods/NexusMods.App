@@ -12,6 +12,9 @@ public class WindowHost : IAsyncDisposable
     private readonly MainWindowViewModel _viewModel;
     private readonly ILogger<WindowHost> _logger;
 
+    public MainWindow Window => _window;
+    public MainWindowViewModel ViewModel => _viewModel;
+
     public WindowHost(MainWindow window, MainWindowViewModel viewModel, ILogger<WindowHost> logger)
     {
         _window = window;
