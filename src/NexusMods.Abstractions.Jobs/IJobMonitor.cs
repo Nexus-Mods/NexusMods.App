@@ -39,6 +39,11 @@ public interface IJobMonitor
     void Cancel(JobId jobId);
     
     /// <summary>
+    /// Cancels a specific job by its task
+    /// </summary>
+    void Cancel(IJobTask jobTask);
+    
+    /// <summary>
     /// Cancels all jobs in the specified group
     /// </summary>
     void CancelGroup(IJobGroup group);

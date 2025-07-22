@@ -3,11 +3,22 @@ using System.Runtime.CompilerServices;
 namespace NexusMods.Abstractions.Jobs;
 
 /// <summary>
+/// A non-generic base interface for job tasks.
+/// </summary>
+public interface IJobTask
+{
+    /// <summary>
+    /// Gets the unique identifier for this job.
+    /// </summary>
+    JobId JobId { get; }
+}
+
+/// <summary>
 /// A task-like object that represents a job and an eventual result.
 /// </summary>
 /// <typeparam name="TJobType">The type of the job</typeparam>
 /// <typeparam name="TResultType">The eventual return type of the job</typeparam>
-public interface IJobTask<out TJobType, TResultType>
+public interface IJobTask<out TJobType, TResultType> : IJobTask
     where TJobType : IJobDefinition<TResultType>
     where TResultType : notnull
 {
