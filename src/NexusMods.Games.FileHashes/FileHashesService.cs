@@ -20,6 +20,7 @@ using NexusMods.MnemonicDB.Storage;
 using NexusMods.MnemonicDB.Storage.RocksDbBackend;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.IO;
 using BuildId = NexusMods.Abstractions.GOG.Values.BuildId;
 
 namespace NexusMods.Games.FileHashes;
@@ -154,6 +155,21 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
     private async Task CheckForUpdateCore(bool forceUpdate)
     {
         using var _ = await _lock.LockAsync();
+
+        if (!ExistingDBs().Any(_ => true))
+        {
+            try
+            {
+                var (path, creationTime) = await AddEmbeddedDatabase(cancellationToken: CancellationToken.None);
+                _currentDb = OpenDb(creationTime, path);
+                return;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to add embedded database");
+            }
+        }
+
         if (!forceUpdate)
         {
             if (GameHashesReleaseFileName.FileExists && GameHashesReleaseFileName.FileInfo.LastWriteTimeUtc + _settings.HashDatabaseUpdateInterval > DateTime.UtcNow)
@@ -188,6 +204,16 @@ internal sealed class FileHashesService : IFileHashesService, IDisposable
         }
 
         _currentDb = OpenDb(release.CreatedAt, databasePath);
+    }
+
+    private async ValueTask<(AbsolutePath, DateTimeOffset)> AddEmbeddedDatabase(CancellationToken cancellationToken)
+    {
+        var streamFactory = new EmbeddedResourceStreamFactory<FileHashesService>(resourceName: "games_hashes_db.zip");
+        await using var archiveStream = await streamFactory.GetStreamAsync();
+        var creationTime = ApplicationConstants.BuildDate;
+
+        var path = await AddDatabase(archiveStream, creationTime, cancellationToken);
+        return (path, creationTime);
     }
 
     private async ValueTask<AbsolutePath> AddDatabase(
