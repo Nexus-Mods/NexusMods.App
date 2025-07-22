@@ -41,11 +41,9 @@ public record InteractiveInstallJob : IJobDefinitionWithStart<InteractiveInstall
             // Simulate interaction with an external component that may cancel
             var shouldInstall = await SimulateUserInteraction(context.CancellationToken);
             
+            // Self-cancellation: The job cancels itself based on user input
             if (!shouldInstall)
-            {
-                // Self-cancellation: The job cancels itself based on user input
                 context.CancelAndThrow("The user chose to abort the installation");
-            }
 
             // Continue with installation
             context.SetPercent(Size.From(50), Size.From(100));
