@@ -30,8 +30,8 @@ public partial class SearchControl : UserControl
     /// <summary>
     /// The <see cref="TreeDataGridAdapter{TModel,TKey}"/> that supports search functionality.
     /// </summary>
-    public static readonly StyledProperty<ISearchableAdapter?> AdapterProperty =
-        AvaloniaProperty.Register<SearchControl, ISearchableAdapter?>(nameof(Adapter));
+    public static readonly StyledProperty<ISearchableTreeDataGridAdapter?> AdapterProperty =
+        AvaloniaProperty.Register<SearchControl, ISearchableTreeDataGridAdapter?>(nameof(Adapter));
 
     /// <summary>
     /// The name of the page for telemetry tracking.
@@ -45,7 +45,7 @@ public partial class SearchControl : UserControl
     public static readonly StyledProperty<StandardButton.Sizes> ButtonSizeProperty =
         AvaloniaProperty.Register<SearchControl, StandardButton.Sizes>(nameof(ButtonSize), defaultValue: StandardButton.Sizes.Toolbar);
 
-    public ISearchableAdapter? Adapter
+    public ISearchableTreeDataGridAdapter? Adapter
     {
         get => GetValue(AdapterProperty);
         set => SetValue(AdapterProperty, value);
