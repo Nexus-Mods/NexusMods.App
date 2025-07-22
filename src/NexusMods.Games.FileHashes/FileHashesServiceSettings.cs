@@ -16,7 +16,7 @@ public record FileHashesServiceSettings : ISettings
     /// <summary>
     /// Only checks GitHub for updates this often, in order to avoid API rate limits.
     /// </summary>
-    public TimeSpan HashDatabaseUpdateInterval { get; init; } = TimeSpan.FromHours(6);
+    public TimeSpan HashDatabaseUpdateInterval { get; init; } = TimeSpan.FromMinutes(30);
     
     /// <summary>
     /// The URL to the Github API to get the latest release.

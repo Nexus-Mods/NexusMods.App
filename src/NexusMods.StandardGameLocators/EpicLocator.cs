@@ -24,7 +24,7 @@ public class EpicLocator : AGameLocator<EGSGame, EGSGameId, IEpicGame, EpicLocat
     protected override AbsolutePath Path(EGSGame record) => record.InstallLocation;
 
     /// <inheritdoc />
-    protected override IGameLocatorResultMetadata CreateMetadata(EGSGame game) => CreateMetadataCore(game);
+    protected override IGameLocatorResultMetadata CreateMetadata(EGSGame game, IEnumerable<EGSGame> otherFoundGames) => CreateMetadataCore(game);
 
     internal static IGameLocatorResultMetadata CreateMetadataCore(EGSGame game)
     {

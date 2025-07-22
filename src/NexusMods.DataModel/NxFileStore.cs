@@ -183,7 +183,7 @@ public class NxFileStore : IFileStore
             }
             else
             {
-                throw new MissingArchiveException(file.Hash);
+                throw new MissingArchiveException(file.Hash, file.Dest);
             }
         });
 
