@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -78,6 +79,8 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var diagnosticEmitters = loadout.InstallationInstance.GetGame().DiagnosticEmitters;
+        var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
+        var syncTree = (await synchronizer.BuildSyncTree(loadout)).ToFrozenDictionary();
 
         try
         {
@@ -89,7 +92,7 @@ internal sealed class DiagnosticManager : IDiagnosticManager
 
                 try
                 {
-                    await foreach (var diagnostic in emitter.Diagnose(loadout, token))
+                    await foreach (var diagnostic in emitter.Diagnose(loadout, syncTree, token))
                     {
                         lock(diagnostics)
                         {
