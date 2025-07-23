@@ -19,6 +19,7 @@
         <PackageReference Include="Xunit.DependencyInjection" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
+        <PackageReference Include="GitHubActionsTestLogger" />
     </ItemGroup>
     
     <ItemGroup>
