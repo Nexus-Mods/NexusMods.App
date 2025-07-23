@@ -25,7 +25,7 @@ public class EADesktopLocator : AGameLocator<EADesktopGame, EADesktopGameId, IEA
     protected override AbsolutePath Path(EADesktopGame record) => record.BaseInstallPath;
 
     /// <inheritdoc />
-    protected override IGameLocatorResultMetadata CreateMetadata(EADesktopGame game)
+    protected override IGameLocatorResultMetadata CreateMetadata(EADesktopGame game, IEnumerable<EADesktopGame> otherFoundGames)
     {
         return new EADesktopLocatorResultMetadata
         {
