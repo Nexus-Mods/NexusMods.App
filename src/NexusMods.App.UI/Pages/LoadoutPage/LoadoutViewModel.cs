@@ -391,7 +391,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 .FilterImmutable(group => group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == loadoutId && !group.IsReadOnly)
                 .QueryWhenChanged(query => query.Count)
                 .ToObservable()
-                .Select(count => count > 1);
+                .Select(count => count > 1)
+                .ObserveOnUIThreadDispatcher();
 
             CommandDeleteGroup = canDelete.ToReactiveCommand<Unit>(async (_, cancellationToken) =>
             {
