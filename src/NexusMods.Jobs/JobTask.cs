@@ -12,9 +12,9 @@ public class JobTask<TJobDefinition, TJobResult> : IJobTask<TJobDefinition, TJob
         _job = job;
     }
     
-    public IJob JobInstance => _job;
+    public IJob Job => _job;
     
-    public TJobDefinition Job => (TJobDefinition)_job.Definition;
+    public TJobDefinition JobDefinition => (TJobDefinition)_job.Definition;
     public TaskAwaiter<TJobResult> GetAwaiter()
     {
         return _job.WaitForResult().GetAwaiter();

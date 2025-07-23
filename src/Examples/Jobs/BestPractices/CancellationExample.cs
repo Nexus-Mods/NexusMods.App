@@ -10,7 +10,6 @@ namespace Examples.Jobs.BestPractices;
 [PublicAPI]
 public class CancellationExample(IJobMonitor jobMonitor, TemporaryFileManager temporaryFileManager)
 {
-    
     [Fact]
     public async Task DemonstrateStandardCancellation()
     {
@@ -25,10 +24,10 @@ public class CancellationExample(IJobMonitor jobMonitor, TemporaryFileManager te
         // Cancel the job right away!
         jobMonitor.Cancel(jobTask);
 
-        // Wait for the job and expect it to throw TaskCanceledException
+        // Because our job was canceled, it will throw a TaskCanceledException
         await Assert.ThrowsAsync<TaskCanceledException>(async () => await jobTask);
     }
-    
+
     [Fact]
     public async Task DemonstrateSuccessfulCompletion()
     {

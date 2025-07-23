@@ -152,7 +152,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
     
         // Setup our listening.
-        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.JobDefinition.FileMetadata);
     
         // Create collection for results
         var results = new List<ModUpdateOnPage>();
@@ -191,7 +191,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
     
         // Setup our listening.
-        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.JobDefinition.FileMetadata);
     
         // Create collection for results
         var receivedRemove = false;
@@ -231,7 +231,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
 
         // Get the mod page metadata
-        var modPageMetadata = downloadJob.Job.FileMetadata.ModPage;
+        var modPageMetadata = downloadJob.JobDefinition.FileMetadata.ModPage;
 
         // Setup our listening for mod page updates
         var observable = _modUpdateService.GetNewestModPageVersionObservable(modPageMetadata);
@@ -277,7 +277,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
 
         // Get the mod page metadata
-        var modPageMetadata = downloadJob.Job.FileMetadata.ModPage;
+        var modPageMetadata = downloadJob.JobDefinition.FileMetadata.ModPage;
 
         // Setup our listening for mod page updates
         var observable = _modUpdateService.GetNewestModPageVersionObservable(modPageMetadata);
@@ -333,7 +333,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
 
         // Setup our listening for SMAPI updates
-        var smapiObservable = _modUpdateService.GetNewestFileVersionObservable(smapiDownloadJob.Job.FileMetadata);
+        var smapiObservable = _modUpdateService.GetNewestFileVersionObservable(smapiDownloadJob.JobDefinition.FileMetadata);
 
         // Add both mods to the library
         _ = await _libraryService.AddDownload(spaceCoreDownloadJob);
@@ -395,7 +395,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
         
         // Setup our listening for the old version updates
-        var oldVersionObservable = _modUpdateService.GetNewestFileVersionObservable(oldVersionDownloadJob.Job.FileMetadata);
+        var oldVersionObservable = _modUpdateService.GetNewestFileVersionObservable(oldVersionDownloadJob.JobDefinition.FileMetadata);
         
         // Create collection for results
         var updateResults = new List<ModUpdateOnPage>();
@@ -440,7 +440,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
         
         // Setup observable with the filter service applied
-        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.JobDefinition.FileMetadata);
         
         // Create collection for results
         ModUpdateOnPage? updateOnPage = null;
@@ -496,7 +496,7 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         );
         
         // Setup observable with the filter service applied
-        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.Job.FileMetadata);
+        var observable = _modUpdateService.GetNewestFileVersionObservable(downloadJob.JobDefinition.FileMetadata);
         
         // Create collection for results
         ModUpdateOnPage? updateOnPage = null;

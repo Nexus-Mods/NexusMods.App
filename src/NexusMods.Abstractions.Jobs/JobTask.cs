@@ -10,7 +10,7 @@ public interface IJobTask
     /// <summary>
     /// Gets the job instance that this task represents.
     /// </summary>
-    IJob JobInstance { get; }
+    IJob Job { get; }
 }
 
 /// <summary>
@@ -23,9 +23,11 @@ public interface IJobTask<out TJobType, TResultType> : IJobTask
     where TResultType : notnull
 {
     /// <summary>
-    /// Returns the job that this task represents.
+    /// Returns the job definition object that is being processed by this task.
+    /// This can be either a full self-contained job like with <see cref="IJobDefinitionWithStart{TParent,TResultType}"/>,
+    /// or simply context passed onto a lambda.
     /// </summary>
-    public TJobType Job { get; }
+    public TJobType JobDefinition { get; }
     
     /// <summary>
     /// Returns an awaiter that will complete when the job is done.
