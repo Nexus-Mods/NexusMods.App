@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using Xunit;
 // ReSharper disable LocalizableElement
-namespace Examples.Jobs.BestPractices;
+namespace NexusMods.Jobs.Tests.Examples.BestPractices;
 
 // For indeterminate progress (unknown total work), use Size.One as maximum to avoid division by zero.
 

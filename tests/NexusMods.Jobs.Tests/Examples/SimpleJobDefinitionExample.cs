@@ -3,8 +3,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using Xunit;
-
-namespace Examples.Jobs;
+namespace NexusMods.Jobs.Tests.Examples;
 
 // Simple job definitions (using the `Begin` method with a lambda) are used when you
 // want to handle the execution logic in the same method where you call `Begin`.
