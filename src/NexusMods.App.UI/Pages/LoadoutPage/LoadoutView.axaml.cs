@@ -1,6 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 using DynamicData.Binding;
 using Humanizer;
 using Humanizer.Localisation;
@@ -28,6 +28,12 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
 
         this.WhenActivated(disposables =>
             {
+                SearchControl.AttachKeyboardHandlers(this, disposables);
+
+                // Bind search adapter
+                this.OneWayBind(ViewModel, vm => vm.Adapter, view => view.SearchControl.Adapter)
+                    .AddTo(disposables);
+
                 // initially hidden
                 ContextControlGroup.IsVisible = false;
 
@@ -41,7 +47,9 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                         var enableCollectionSharing = vm?.EnableCollectionSharing ?? false;
 
                         view.AllPageHeader.IsVisible = !isCollection;
-                        view.Statusbar.IsVisible = isCollection && enableCollectionSharing;
+                        view.Statusbar.IsVisible = isCollection;
+                        view.PanelShare.IsVisible = isCollection && enableCollectionSharing;
+                        view.PanelPublish.IsVisible = isCollection && enableCollectionSharing;
 
                         view.ButtonShareCollection.IsVisible = isCollection;
                         view.WritableCollectionPageHeader.IsVisible = isCollection;
@@ -127,21 +135,24 @@ public partial class LoadoutView : R3UserControl<ILoadoutViewModel>
                 this.BindCommand(ViewModel, vm => vm.CommandRenameGroup, view => view.MenuItemRenameCollection)
                     .AddTo(disposables);
 
+                this.BindCommand(ViewModel, vm => vm.CommandDeleteGroup, view => view.MenuItemDeleteCollection)
+                    .AddTo(disposables);
+
                 this.BindCommand(ViewModel, vm => vm.CommandChangeVisibility, view => view.ButtonChangeVisibility)
                     .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.CommandOpenRevisionUrl, view => view.ButtonAddTileImage)
                     .AddTo(disposables);
 
-                this.ObserveViewModelProperty(static view => view.BindableViewModel,
-                        static vm => vm.IsCollectionUploaded
-                    )
+                this.ObserveViewModelProperty(static view => view.BindableViewModel, static vm => vm.IsCollectionUploaded)
                     .Subscribe(this, static (isCollectionUploaded, self) =>
                         {
+                            var enableCollectionSharing = self.BindableViewModel.Value?.EnableCollectionSharing ?? false;
+
                             self.ButtonShareCollection.IsVisible = !isCollectionUploaded;
                             self.SplitButtonPublishCollection.IsVisible = isCollectionUploaded;
                             self.VisibilityButtonStack.IsVisible = isCollectionUploaded;
-                            self.IsUploadedStack.IsVisible = isCollectionUploaded;
+                            self.PanelPublish.IsVisible = isCollectionUploaded && enableCollectionSharing;
 
                             self.ButtonAddTileImage.IsVisible = isCollectionUploaded;
                             self.UnpublishedHeaderBorder.IsVisible = !isCollectionUploaded;

@@ -8,18 +8,26 @@
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:reactive="http://reactiveui.net"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:search="clr-namespace:NexusMods.App.UI.Controls.Search"
     xmlns:viewModel="clr-namespace:NexusMods.App.UI.Pages.LoadoutGroupFilesPage"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutGroupFilesPage.LoadoutGroupFilesView">
 
     <Grid RowDefinitions="Auto, *">
-        <Border Grid.Row="0" Classes="Toolbar">
-            <StackPanel>
+        <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
+            <ItemsControl>
+                <search:SearchControl x:Name="SearchControl"
+                                      PageName="LoadoutGroupFiles"
+                                      ButtonSize="Toolbar" />
+            </ItemsControl>
+            
+            <ItemsControl>
                 <navigation:NavigationControl x:Name="OpenEditorMenuItem"
                                               Text="Edit File"
                                               LeftIcon="{x:Static icons:IconValues.FileEdit}"
                                               ShowIcon="Left"
-                                              Size="Small"
+                                              Size="Toolbar"
                                               Type="Tertiary"
                                               Fill="WeakAlt"/>
                 
@@ -27,11 +35,11 @@
                                          Text="Delete"
                                          LeftIcon="{x:Static icons:IconValues.DeleteForever}"
                                          ShowIcon="Left"
-                                         Size="Small"
+                                         Size="Toolbar"
                                          Type="Tertiary"
                                          Fill="WeakAlt"/>
-            </StackPanel>
-        </Border>
+            </ItemsControl>
+        </controls:Toolbar>
 
         <TreeDataGrid Grid.Row="1" x:Name="TreeDataGrid"
                       ShowColumnHeaders="True"

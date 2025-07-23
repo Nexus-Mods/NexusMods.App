@@ -5,8 +5,10 @@ using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.App.UI.Controls.Filters;
 using ObservableCollections;
 using R3;
+using static NexusMods.App.UI.Controls.Filters.Filter;
 using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Controls;

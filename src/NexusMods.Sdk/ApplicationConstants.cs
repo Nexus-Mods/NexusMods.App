@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace NexusMods.Sdk;
@@ -41,6 +42,11 @@ public static class ApplicationConstants
     /// The installation method.
     /// </summary>
     public static readonly InstallationMethod InstallationMethod;
+
+    /// <summary>
+    /// The time when the project was built.
+    /// </summary>
+    public static readonly DateTimeOffset BuildDate;
 
     static ApplicationConstants()
     {
@@ -131,6 +137,25 @@ public static class ApplicationConstants
                 InstallationMethod.Manually;
 #endif
         }
+
+        try
+        {
+            using var stream = currentAssembly.GetManifestResourceStream(name: "buildDate.txt");
+            if (stream is null)
+            {
+                BuildDate = DefaultBuildDate;
+            }
+            else
+            {
+                using var sr = new StreamReader(stream, encoding: Encoding.UTF8);
+                var dateString = sr.ReadToEnd().Trim();
+                BuildDate = DateTimeOffset.TryParse(dateString, out var date) ? date : DefaultBuildDate;
+            }
+        }
+        catch (Exception)
+        {
+            BuildDate = DefaultBuildDate;
+        }
     }
 
     private static string? GetSha(ReadOnlySpan<char> input)
@@ -141,6 +166,8 @@ public static class ApplicationConstants
     }
 
 #region Default values
+
+    private static readonly DateTimeOffset DefaultBuildDate = DateTimeOffset.UnixEpoch;
 
     /// <summary>
     /// Fallback version used for debug builds or release builds with no version.
