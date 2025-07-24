@@ -310,7 +310,7 @@ public partial class NexusModsLibrary
                     AuthorUrl = manifest.Info.AuthorUrl,
                     Description = manifest.Info.Description,
                     DomainName = manifest.Info.DomainName.Value,
-                    GameVersions = [],
+                    GameVersions = manifest.Info.GameVersions,
                     Name = manifest.Info.Name,
                     Summary = string.Empty, // TODO
                 },

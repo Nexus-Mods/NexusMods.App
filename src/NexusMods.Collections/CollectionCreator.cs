@@ -6,6 +6,8 @@ using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
+using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -141,6 +143,7 @@ public static class CollectionCreator
         var temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         var jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
         var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        var fileHashesService = serviceProvider.GetRequiredService<IFileHashesService>();
 
         var userInfo = loginManager.UserInfo;
         if (userInfo is null) throw new NotSupportedException("User has to be logged in!");
@@ -151,10 +154,16 @@ public static class CollectionCreator
         var group = CollectionGroup.Load(connection.Db, groupId);
         Debug.Assert(group.IsValid());
 
+        await fileHashesService.GetFileHashesDb();
+        var installation = group.AsLoadoutItemGroup().AsLoadoutItem().Loadout.InstallationInstance;
+        var locatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
+        var vanityVersion = fileHashesService.TryGetVanityVersion((installation.Store, locatorIds), out var tmpVanityVersion) ? tmpVanityVersion : VanityVersion.From("Unknown");
+
         var collectionManifest = LoadoutItemGroupToCollectionManifest(
             group: group.AsLoadoutItemGroup(),
             mappingCache: mappingCache,
-            author: user
+            author: user,
+            vanityVersion
         );
 
         var archiveFile = temporaryFileManager.CreateFile(ext: Extension.FromPath(".zip"));
@@ -318,7 +327,8 @@ public static class CollectionCreator
     public static CollectionRoot LoadoutItemGroupToCollectionManifest(
         LoadoutItemGroup.ReadOnly group,
         IGameDomainToGameIdMappingCache mappingCache,
-        User.ReadOnly author)
+        User.ReadOnly author,
+        VanityVersion vanityVersion)
     {
         Debug.Assert(group.IsValid());
 
@@ -359,6 +369,7 @@ public static class CollectionCreator
                 DomainName = gameDomain,
                 Author = author.Name,
                 Description = string.Empty,
+                GameVersions = [vanityVersion.Value],
             },
         };
 
