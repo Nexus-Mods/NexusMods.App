@@ -30,8 +30,8 @@ public class IndeterminateProgressExample(IJobMonitor jobMonitor)
                 await Task.Delay(10, context.CancellationToken);
                 processed++;
 
-                // Show progress as fraction of known work so far
-                context.SetPercent(Size.From((ulong)processed), Size.From((ulong)(processed + 1)));
+                // We may not know the progress, but we know the rate of progress
+                context.SetRateOfProgress(1.0); // 1 item per second, etc.
 
                 await context.YieldAsync();
             }

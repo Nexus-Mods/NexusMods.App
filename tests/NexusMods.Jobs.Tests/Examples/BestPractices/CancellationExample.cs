@@ -60,8 +60,8 @@ public class CancellationExample(IJobMonitor jobMonitor, TemporaryFileManager te
         await jobTask; // Complete the job
         
         // Check final progress after completion
-        var finalStatus = jobTask.JobInstance.Status;
-        var finalProgress = jobTask.JobInstance.Progress.Value;
+        var finalStatus = jobTask.Job.Status;
+        var finalProgress = jobTask.Job.Progress.Value;
         
         finalStatus.Should().Be(JobStatus.Completed);
         finalProgress.Should().Be(Percent.CreateClamped(1)); // Should be 100% (done)
