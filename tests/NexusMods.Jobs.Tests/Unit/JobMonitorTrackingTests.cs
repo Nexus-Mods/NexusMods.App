@@ -31,9 +31,6 @@ public class JobMonitorTrackingTests(IJobMonitor jobMonitor)
         
         await Task.WhenAll(progressTask.Job.WaitAsync(), simpleTask.Job.WaitAsync());
         
-        // Allow some time for change notifications
-        await Task.Delay(50);
-        
         // Assert
         progressJobChanges.Should().NotBeEmpty();
         simpleJobChanges.Should().NotBeEmpty();

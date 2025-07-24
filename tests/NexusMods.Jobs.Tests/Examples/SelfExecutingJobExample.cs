@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using Xunit;
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 // ReSharper disable UnusedParameter.Local
 namespace NexusMods.Jobs.Tests.Examples;
 
@@ -55,8 +56,7 @@ public record ProcessFileJob : IJobDefinitionWithStart<ProcessFileJob, ProcessRe
 
     private static async Task<ProcessResult> ProcessFileAsync(AbsolutePath filePath, CancellationToken cancellationToken)
     {
-        // Simulate file processing work
-        await Task.Delay(100, cancellationToken);
+        // await Task.Delay(100, cancellationToken);  // Simulate file processing work
         // Here you would implement the actual file processing logic
         return new ProcessResult(Success: true);
     }
