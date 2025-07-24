@@ -59,5 +59,8 @@
       <Compile Update="Errors\UnknownError.cs">
         <DependentUpon>IGraphQlError.cs</DependentUpon>
       </Compile>
+      <Compile Update="Errors\Invalid.cs">
+        <DependentUpon>IGraphQlError.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>
