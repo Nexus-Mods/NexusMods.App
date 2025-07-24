@@ -93,7 +93,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         );
         return new JobTask<TJobType, TResultType>(ctx);
     }
-    
+
     public void Cancel(JobId jobId)
     {
         var job = _allJobs.Lookup(jobId);

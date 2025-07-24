@@ -3,15 +3,10 @@ using NexusMods.Paths;
 
 namespace NexusMods.Jobs.Tests.TestInfrastructure;
 
-public record SimpleTestJob(ManualResetEventSlim? StartSignal = null) : IJobDefinitionWithStart<SimpleTestJob, string>
+public record SimpleTestJob : IJobDefinitionWithStart<SimpleTestJob, string>
 {
     public async ValueTask<string> StartAsync(IJobContext<SimpleTestJob> context)
     {
-        // Wait for signal before starting checkpoint reporting if provided
-        if (StartSignal != null)
-            if (!StartSignal.Wait(TimeSpan.FromSeconds(30), context.CancellationToken))
-                throw new TimeoutException("StartSignal was not set within timeout period");
-        
         await context.YieldAsync();
         context.SetPercent(Size.From(1UL), Size.From(1UL));
         return "Completed";
@@ -41,7 +36,7 @@ public record ProgressReportingJob(int StepCount, TimeSpan StepDelay, ManualRese
     }
 }
 
-public record SignaledJob(ManualResetEventSlim StartSignal, ManualResetEventSlim? CompletionSignal = null) : IJobDefinitionWithStart<SignaledJob, bool>
+public record SignaledJob(ManualResetEventSlim StartSignal) : IJobDefinitionWithStart<SignaledJob, bool>
 {
     public async ValueTask<bool> StartAsync(IJobContext<SignaledJob> context)
     {
@@ -50,7 +45,6 @@ public record SignaledJob(ManualResetEventSlim StartSignal, ManualResetEventSlim
             throw new TimeoutException("StartSignal was not set within timeout period");
 
         await context.YieldAsync();
-        CompletionSignal?.Set();
         return true;
     }
 }
@@ -71,16 +65,6 @@ public record FailingJob(Exception ExceptionToThrow, ManualResetEventSlim? FailS
     }
 }
 
-public record DelayedJob(TimeSpan Delay, ManualResetEventSlim? StartedSignal = null) : IJobDefinitionWithStart<DelayedJob, string>
-{
-    public async ValueTask<string> StartAsync(IJobContext<DelayedJob> context)
-    {
-        StartedSignal?.Set();
-        await Task.Delay(Delay, context.CancellationToken);
-        await context.YieldAsync();
-        return "Delay completed";
-    }
-}
 
 public record WaitForCancellationJob(ManualResetEventSlim ReadySignal) : IJobDefinitionWithStart<WaitForCancellationJob, string>
 {
@@ -98,7 +82,7 @@ public record WaitForCancellationJob(ManualResetEventSlim ReadySignal) : IJobDef
     }
 }
 
-public record SelfCancellingJob() : IJobDefinitionWithStart<SelfCancellingJob, string>
+public record SelfCancellingJob : IJobDefinitionWithStart<SelfCancellingJob, string>
 {
     public async ValueTask<string> StartAsync(IJobContext<SelfCancellingJob> context)
     {

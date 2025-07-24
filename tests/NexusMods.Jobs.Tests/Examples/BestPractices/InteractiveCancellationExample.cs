@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using Xunit;
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 // ReSharper disable LocalizableElement
 
 namespace NexusMods.Jobs.Tests.Examples.BestPractices;
@@ -61,9 +60,9 @@ public record InteractiveInstallJob : IJobDefinitionWithStart<InteractiveInstall
         }
     }
 
-    private static async Task<bool> SimulateUserInteraction()
+    private static Task<bool> SimulateUserInteraction()
     {
         // Simulate user choosing to cancel (80% chance to continue for demo)
-        return Random.Shared.Next(0, 10) < 8;
+        return Task.FromResult(Random.Shared.Next(0, 10) < 8);
     }
 }

@@ -15,7 +15,6 @@ public interface IJobMonitor
         where TJobType : IJobDefinition<TResultType>
         where TResultType : notnull;
 
-
     /// <summary>
     /// Starts a job given the job definition.
     /// </summary>

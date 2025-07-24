@@ -23,7 +23,7 @@ public interface IJobTask<out TJobType, TResultType> : IJobTask
     where TResultType : notnull
 {
     /// <summary>
-    /// Returns the job definition object that is being processed by this task.
+    /// Gets the job definition object that describes what this task should execute
     /// This can be either a full self-contained job like with <see cref="IJobDefinitionWithStart{TParent,TResultType}"/>,
     /// or simply context passed onto a lambda.
     /// </summary>
