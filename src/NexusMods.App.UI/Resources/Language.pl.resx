@@ -30,11 +30,8 @@
 	<data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
 		<value>Diagnostyka i dane</value>
 	</data>
-	<data name="MetricsOptIn_MoreInfoAboutTheDataWeTrack" xml:space="preserve">
-		<value>Więcej informacji o zbieranych przez nas danych</value>
-	</data>
 	<data name="MetricsOptIn_MainMessage" xml:space="preserve">
-		<value>Pomóż nam zapewnić ci najlepsze wrażenia z modowania.&#x0a;&#x0a;Za twoją zgodą będziemy gromadzić informacje analityczne i wysyłać je do naszego zespołu, aby poprawić jakość i wydajność aplikacji.&#x0a;&#x0a;Informacje analityczne są wysyłane anonimowo i nigdy nie będą udostępniane stronom trzecim.</value>
+		<value>Chcielibyśmy zbierać dane diagnostyczne oraz informacje o Twoim użytkowaniu, aby poprawić wydajność i zwiększyć komfort korzystania z aplikacji. Dzięki tym danym będziemy mogli lepiej identyfikować ewentualne problemy, optymalizować funkcje oraz zapewniać, że Nexus Mods działa jeszcze sprawniej dla wszystkich użytkowników.&#x0a;&#x0a;Twoje dane będą przetwarzane zgodnie z naszą Polityką prywatności. W dowolnym momencie możesz zmienić swoje preferencje w ustawieniach.&#x0a;&#x0a;Czy chcesz włączyć zbieranie danych?</value>
 	</data>
 	<data name="Updater_UPDATE" xml:space="preserve">
 		<value>Zobacz aktualizację</value>
@@ -387,7 +384,7 @@
 		<comment>{0} Represents a number, {1} represents a formatted size (e.g. 12GB)</comment>
 	</data>
 	<data name="Helpers_GenerateHeader_File_Count" xml:space="preserve">
-		<value>PLIKI</value>
+		<value>Pliki</value>
 	</data>
 	<data name="IngestButtonTextBlock_Text" xml:space="preserve">
 		<value>Załaduj</value>
@@ -399,7 +396,7 @@
 		<value>Dodaj swoje ulubione gry, aby rozpocząć ekscytującą przygodę z modowaniem.</value>
 	</data>
 	<data name="GameWidget__Adding_game" xml:space="preserve">
-		<value>Dodawanie gry</value>
+		<value>Dodawanie...</value>
 	</data>
 	<data name="GameWidget__View" xml:space="preserve">
 		<value>Pokaż</value>
@@ -408,7 +405,7 @@
 		<value>Usuwa grę i wszystkie mody zainstalowane przez aplikację</value>
 	</data>
 	<data name="GameWidget__Removing_game" xml:space="preserve">
-		<value>Usuwanie gry</value>
+		<value>Usuwanie...</value>
 	</data>
 	<data name="ApplyDiff_Refresh" xml:space="preserve">
 		<value>Odśwież</value>
@@ -479,6 +476,9 @@
 	<data name="LibraryPageTitleToolTip" xml:space="preserve">
 		<value>Zarządzaj pobranymi modami i kolekcjami</value>
 	</data>
+	<data name="LibraryPageDescription" xml:space="preserve">
+		<value>Zarządzaj pobranymi modami i kolekcjami. Instaluj, aktualizuj lub dodawaj kolejne.</value>
+	</data>
 	<data name="FileOriginsPageView_NameHeader" xml:space="preserve">
 		<value>Nazwa moda</value>
 	</data>
@@ -522,10 +522,13 @@
 		<value>Uzyskaj mody:</value>
 	</data>
 	<data name="FileOriginsPage_FromDrive" xml:space="preserve">
-		<value>Z dysku</value>
+		<value>Przeglądaj dysk</value>
 	</data>
 	<data name="FileOriginsPage_FromNexusMods" xml:space="preserve">
-		<value>Z Nexus Mods</value>
+		<value>Przeglądaj Nexus Mods</value>
+	</data>
+	<data name="FileOriginsPage_BrowseCollectionsNexusMods" xml:space="preserve">
+		<value>Przeglądaj kolekcje</value>
 	</data>
 	<data name="FileOriginsPage_ViewButtonText" xml:space="preserve">
 		<value>Pokaż</value>
@@ -581,11 +584,23 @@
 	<data name="TopBar_Help_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby sprawdzić pomoc i opinie</value>
 	</data>
+	<data name="Library_DeselectItemsButton_Text" xml:space="preserve">
+		<value>Wybrane: {0}</value>
+	</data>
+	<data name="Library_DeselectItemsButton_ToolTip" xml:space="preserve">
+		<value>Usuwa zaznaczenie. Ctrl + Kliknięcie zaznacza lub odznacza pojedyncze elementy. Shift + Kliknięcie zaznacza zakres elementów.</value>
+	</data>
+	<data name="Library_ViewChangelog_Text" xml:space="preserve">
+		<value>Pokaż dziennik zmian</value>
+	</data>
+	<data name="Library_ViewModPage_Text" xml:space="preserve">
+		<value>Przejdź na stronę moda</value>
+	</data>
 	<data name="FileOriginPage_AddMod_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby zainstalować wybrany mod do tego zestawu</value>
 	</data>
 	<data name="FileOriginPage_DeleteMod_ToolTip" xml:space="preserve">
-		<value>Kliknij, aby trwale usunąć ten mod ze swojej biblioteki</value>
+		<value>Kliknij, aby trwale usunąć ten mod</value>
 	</data>
 	<data name="FileOriginPage_AddModAdvanced_ToolTip" xml:space="preserve">
 		<value>Kliknij, aby wybrać określone pliki z moda, które dodasz do swojego zestawu</value>
@@ -769,7 +784,7 @@
 		<value>Zaktualizuj wszystko</value>
 	</data>
 	<data name="LeftMenu_Label_Installed_Mods" xml:space="preserve">
-		<value>Zainstalowane mody</value>
+		<value>Zainstalowane</value>
 	</data>
 	<data name="LeftMenu_Label_Utilities" xml:space="preserve">
 		<value>Narzędzia</value>
@@ -796,7 +811,7 @@
 		<value>Przejrzyj, usuń lub przywróć zmiany wprowadzone poza aplikacją</value>
 	</data>
 	<data name="CollectionDownloadViewModel_DownloadRequired" xml:space="preserve">
-		<value>Pobierz wszystkie wymagane mody</value>
+		<value>Autopobranie wszystkiego</value>
 	</data>
 	<data name="CollectionDownloadViewModel_InstallCollection" xml:space="preserve">
 		<value>Zainstaluj kolekcję</value>
@@ -876,6 +891,9 @@
 	<data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
 		<value>Automatyczne pobieranie jest niedostępne. Kliknij, aby otworzyć stronę zewnętrzną, skąd możesz pobrać i dodać mod ręcznie.</value>
 	</data>
+	<data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
+		<value>Włączenie dodaje tę kolekcję do gry i ładuje ją. Wyłączenie pozostawia ją wyłączoną.</value>
+	</data>
 	<data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
 		<value>Mody</value>
 	</data>
@@ -932,5 +950,32 @@
 	</data>
 	<data name="UpgradeToPremiumView_UpgradeButton" xml:space="preserve">
 		<value>Przejdź na premium</value>
+	</data>
+	<data name="LibraryComponents_InstallAction_ButtonText_Installed" xml:space="preserve">
+		<value>Zainstalowane</value>
+	</data>
+	<data name="LibraryComponents_InstallAction_ButtonText_Install" xml:space="preserve">
+		<value>Zainstaluj</value>
+	</data>
+	<data name="CollectionComponents_DownloadAction_ButtonText_Downloaded" xml:space="preserve">
+		<value>Pobrana</value>
+	</data>
+	<data name="CollectionComponents_DownloadAction_ButtonText_Downloading" xml:space="preserve">
+		<value>Pobieranie</value>
+	</data>
+	<data name="CollectionComponents_DownloadAction_ButtonText_Download" xml:space="preserve">
+		<value>Pobierz</value>
+	</data>
+	<data name="CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload" xml:space="preserve">
+		<value>Pobierz z zewnętrznego źródła</value>
+	</data>
+	<data name="CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload" xml:space="preserve">
+		<value>Ręczne pobieranie</value>
+	</data>
+	<data name="Library_HideUpdates" xml:space="preserve">
+		<value>Ukryj aktualizacje ({0})</value>
+	</data>
+	<data name="Library_ShowUpdates" xml:space="preserve">
+		<value>Pokaż aktualizacje ({0})</value>
 	</data>
 </root>
