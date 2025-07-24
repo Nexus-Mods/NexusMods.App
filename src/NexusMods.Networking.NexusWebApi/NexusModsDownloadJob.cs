@@ -18,7 +18,7 @@ public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusM
     public required NexusModsFileMetadata.ReadOnly FileMetadata { get; init; }
 
     /// <inheritdoc/>
-    public AbsolutePath Destination => HttpDownloadJob.Job.Destination;
+    public AbsolutePath Destination => HttpDownloadJob.JobDefinition.Destination;
 
     public static IJobTask<NexusModsDownloadJob, AbsolutePath> Create(
         IServiceProvider provider,
@@ -60,7 +60,7 @@ public class NexusModsDownloadJob : IDownloadJob, IJobDefinitionWithStart<NexusM
 
         _ = new DownloadedFile.New(tx, libraryFile.Id)
         {
-            DownloadPageUri = HttpDownloadJob.Job.DownloadPageUri,
+            DownloadPageUri = HttpDownloadJob.JobDefinition.DownloadPageUri,
             LibraryFile = libraryFile,
         };
 

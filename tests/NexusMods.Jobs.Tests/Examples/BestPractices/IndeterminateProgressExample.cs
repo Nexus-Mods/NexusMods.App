@@ -27,11 +27,11 @@ public class IndeterminateProgressExample(IJobMonitor jobMonitor)
             // Process items as they come
             for (var x = 0; x < 10; x++)
             {
-                await Task.Delay(10, context.CancellationToken);
+                // await Task.Delay(10, context.CancellationToken); // Simulate processing time
                 processed++;
 
-                // Show progress as fraction of known work so far
-                context.SetPercent(Size.From((ulong)processed), Size.From((ulong)(processed + 1)));
+                // We may not know the progress, but we know the rate of progress
+                context.SetRateOfProgress(1.0); // 1 item per second, etc.
 
                 await context.YieldAsync();
             }

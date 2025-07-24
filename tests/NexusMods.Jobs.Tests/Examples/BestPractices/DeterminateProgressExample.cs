@@ -51,7 +51,7 @@ public record ProgressTrackingDownloadJob : IJobDefinitionWithStart<ProgressTrac
         while (downloadedBytes < totalBytes)
         {
             // Simulate download chunk
-            await Task.Delay(8, context.CancellationToken);
+            // await Task.Delay(8, context.CancellationToken); // Simulate network delay
             
             var bytesToDownload = chunkSize.Value <= (totalBytes - downloadedBytes).Value 
                 ? chunkSize 

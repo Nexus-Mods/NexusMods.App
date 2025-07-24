@@ -53,11 +53,10 @@ public record ProcessFileJob : IJobDefinitionWithStart<ProcessFileJob, ProcessRe
         return result;
     }
 
-    private static async Task<ProcessResult> ProcessFileAsync(AbsolutePath filePath, CancellationToken cancellationToken)
+    private static Task<ProcessResult> ProcessFileAsync(AbsolutePath filePath, CancellationToken cancellationToken)
     {
-        // Simulate file processing work
-        await Task.Delay(100, cancellationToken);
+        // await Task.Delay(100, cancellationToken);  // Simulate file processing work
         // Here you would implement the actual file processing logic
-        return new ProcessResult(Success: true);
+        return Task.FromResult(new ProcessResult(Success: true));
     }
 }

@@ -28,7 +28,7 @@ public class SimpleJobDefinitionExample(IJobMonitor jobMonitor)
             context.SetPercent(Size.Zero, Size.From(100));
 
             // Do some work with the data
-            await Task.Delay(100, context.CancellationToken);
+            // await Task.Delay(100, context.CancellationToken); // Simulate work
             context.SetPercent(Size.From(50), Size.From(100));
 
             // Call YieldAsync() around expensive operations
@@ -36,7 +36,7 @@ public class SimpleJobDefinitionExample(IJobMonitor jobMonitor)
             await context.YieldAsync();
 
             // Complete work
-            await Task.Delay(100, context.CancellationToken);
+            // await Task.Delay(100, context.CancellationToken); // Simulate more work
             context.SetPercent(Size.From(100), Size.From(100));
 
             return $"Job completed with: {data}";

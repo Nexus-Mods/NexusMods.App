@@ -18,20 +18,54 @@ public class CancellationExample(IJobMonitor jobMonitor, TemporaryFileManager te
         {
             ArchivePath = mockArchive.Path,
         };
+
+        var jobTask = jobMonitor.Begin<ArchiveAnalysisJob, AnalysisResults>(job);
+
+        // Cancel the job right away!
+        jobMonitor.Cancel(jobTask);
+
+        // Because our job was canceled, it will throw a TaskCanceledException
+        // await Assert.ThrowsAsync<TaskCanceledException>(async () => await jobTask);
+        // unless it finished before cancellation was requested.
+    }
+
+    [Fact]
+    public async Task DemonstrateSuccessfulCompletion()
+    {
+        await using var mockArchive = temporaryFileManager.CreateFile();
+        var job = new ArchiveAnalysisJob
+        {
+            ArchivePath = mockArchive.Path,
+        };
         
         var jobTask = jobMonitor.Begin<ArchiveAnalysisJob, AnalysisResults>(job);
         
-        // For job callers - cancel jobs using:
-        //jobMonitor.Cancel(jobTask);
-        //jobMonitor.CancelGroup(jobGroup);
-        // jobMonitor.CancelAll();
-        // TODO: I will fix this in upcoming PR. This has been broken, due to missing abstractions. - Sewer
-        
+        // Let the job complete without cancellation
         var result = await jobTask;
         result.Should().NotBeNull();
         result.ArchivePath.Should().Be(job.ArchivePath);
         result.FileCount.Should().Be(3);
         result.IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task DemonstrateJobStatusAndProgress()
+    {
+        await using var mockArchive = temporaryFileManager.CreateFile();
+        var job = new ArchiveAnalysisJob
+        {
+            ArchivePath = mockArchive.Path,
+        };
+
+        var jobTask = jobMonitor.Begin<ArchiveAnalysisJob, AnalysisResults>(job);
+        await jobTask; // Complete the job
+        
+        // Check final progress after completion
+        var finalStatus = jobTask.Job.Status;
+        var finalProgress = jobTask.Job.Progress.Value;
+        
+        finalStatus.Should().Be(JobStatus.Completed);
+        finalProgress.Should().Be(Percent.CreateClamped(1)); // Should be 100% (done)
     }
 }
 
@@ -39,6 +73,7 @@ public class CancellationExample(IJobMonitor jobMonitor, TemporaryFileManager te
 // discarding the extracted files.
 public record ArchiveAnalysisJob : IJobDefinitionWithStart<ArchiveAnalysisJob, AnalysisResults>
 {
+    public const int FileCount = 3;
     public required AbsolutePath ArchivePath { get; init; }
     
     public async ValueTask<AnalysisResults> StartAsync(IJobContext<ArchiveAnalysisJob> context)
@@ -53,24 +88,26 @@ public record ArchiveAnalysisJob : IJobDefinitionWithStart<ArchiveAnalysisJob, A
         await using var extractionFolder = tempFileManager.CreateFolder();
 
         // Simulate archive extraction and analysis with periodic cancellation checks
-        var fileCount = 3; // Simulate 3 files in archive: manifest.json, data.bin, config.xml
+        var fileCount = FileCount; // Simulate 3 files in archive: manifest.json, data.bin, config.xml
         
         // Simulate archive extraction and analysis work
-        for (var x = 0; x < fileCount; x++)
+        for (var x = 0; x < FileCount; x++)
         {
             // Call YieldAsync() around expensive operations
             // and for periodic cancellation checks
             await context.YieldAsync();
             
-            // Simulate extracting file from archive to temp folder
-            await Task.Delay(100, context.CancellationToken); // Simulate extraction time
+            // Pretend we're extracting file from archive to temp folder
+            // await Task.Delay(8);
             await context.YieldAsync();
             
-            // Simulate analyzing the extracted file
-            await Task.Delay(50, context.CancellationToken); // Simulate analysis time
+            // Pretend we're analyzing the extracted file
+            // await Task.Delay(4, context.CancellationToken);
             
             context.SetPercent(Size.FromLong(x), Size.FromLong(fileCount));
         }
+
+        context.SetPercent(Size.FromLong(fileCount), Size.FromLong(fileCount));
 
         // Analysis is complete.
         return new AnalysisResults
