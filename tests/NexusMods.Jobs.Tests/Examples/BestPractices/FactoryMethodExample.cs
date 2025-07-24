@@ -5,8 +5,7 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using Xunit;
-
-namespace Examples.Jobs.BestPractices;
+namespace NexusMods.Jobs.Tests.Examples.BestPractices;
 
 // Factory methods like 'create' are useful when you want to fire a job right away after it is created.
 // They encapsulate job creation and job-starting logic as one operation.

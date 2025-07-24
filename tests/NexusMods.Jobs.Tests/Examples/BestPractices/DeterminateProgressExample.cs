@@ -4,7 +4,7 @@ using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using Xunit;
 // ReSharper disable LocalizableElement
-namespace Examples.Jobs.BestPractices;
+namespace NexusMods.Jobs.Tests.Examples.BestPractices;
 
 // Use percentage for determinate progress when total work is known.
 // Report both progress percentage and rate when applicable using SetRateOfProgress().

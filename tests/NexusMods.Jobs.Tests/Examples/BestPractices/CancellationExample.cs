@@ -5,7 +5,7 @@ using NexusMods.Paths;
 using Xunit;
 // ReSharper disable LocalizableElement
 
-namespace Examples.Jobs.BestPractices;
+namespace NexusMods.Jobs.Tests.Examples.BestPractices;
 
 [PublicAPI]
 public class CancellationExample(IJobMonitor jobMonitor, TemporaryFileManager temporaryFileManager)
