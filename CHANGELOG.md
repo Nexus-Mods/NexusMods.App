@@ -1,23 +1,24 @@
 # v0.14.0 2025-07-XX
-This release includes support for games installed via Epic Games on Windows, adds search to the Library and enables creating collections. 
+This release adds search to the Library and enables creating collections. We also worked on adding support for the Epic Games Store version of Cyberpunk 2077, however, due to some problems with the 2.3 update we've delayed this feature to a future release. 
 
-## Cyberpunk 2077 Gets More Epic
+## Create Collections
 
 
 ## Library Search
 
 
-## Create Collections
-
-
 ## More Features
-
+* The app will now load the latest game version data every 30 minutes in the background.
 
 ## Technical Changes
 * Added validation to app settings, to prevent bad values being saved.
 * Collection metadata will now refresh each time the page is loaded in the app. 
+* Improve error reporting for the Nexus Mods API requests.
 
 ## Bug Fixes
+* Fixed a bug which prevented the app from properly recognising GOG DLCs.
+* Fixed an exception that would often appear when viewing External Changes.
+* Improved the error reporting around "Missing archive" errors, to provide more useful information that will help fix it. 
 
 
 ## Known Issues
