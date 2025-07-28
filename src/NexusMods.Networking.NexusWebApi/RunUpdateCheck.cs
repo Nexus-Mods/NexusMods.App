@@ -8,7 +8,6 @@ using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 using NexusMods.Networking.ModUpdates.Traits;
 using NexusMods.Networking.NexusWebApi.Extensions;
-using StrawberryShake;
 namespace NexusMods.Networking.NexusWebApi;
 
 /// <summary>
@@ -46,7 +45,13 @@ public static class RunUpdateCheck
     /// <summary>
     /// Updates the metadata for mod pages returned from the <see cref="CheckForModPagesWhichNeedUpdating"/> API call.
     /// </summary>
-    public static async Task UpdateModFilesForOutdatedPages(IDb db, ITransaction tx, ILogger logger, INexusGraphQLClient gqlClient, PerFeedCacheUpdaterResult<PageMetadataMixin> result, CancellationToken cancellationToken)
+    public static async Task UpdateModFilesForOutdatedPages(
+        IDb db,
+        ITransaction tx,
+        ILogger logger,
+        IGraphQlClient graphQlClient,
+        PerFeedCacheUpdaterResult<PageMetadataMixin> result,
+        CancellationToken cancellationToken)
     {
         // Note(sewer): Undetermined items may be removed items from the site; or
         // caused by programmer error, so we should log these whenever possible,
@@ -75,8 +80,10 @@ public static class RunUpdateCheck
             try
             {
                 isTaken = await sema.WaitAsync(Timeout.Infinite, cancellationToken);
-                await UpdateModPage(db, tx, gqlClient,
-                    cancellationToken, mixin
+                await UpdateModPage(db, tx,
+                    graphQlClient,
+                    mixin,
+                    cancellationToken
                 );
             }
             catch (OperationCanceledException)
@@ -119,25 +126,32 @@ public static class RunUpdateCheck
         await Task.WhenAll(tasks);
     }
 
-    private static async Task UpdateModPage(IDb db, ITransaction tx, INexusGraphQLClient gqlClient, CancellationToken cancellationToken, PageMetadataMixin mixin)
+    private static async Task UpdateModPage(
+        IDb db,
+        ITransaction tx,
+        IGraphQlClient graphQlClient,
+        PageMetadataMixin mixin,
+        CancellationToken cancellationToken = default)
     {
         var uid = mixin.GetModPageId();
-        var modIdString = uid.ModId.Value.ToString();
-        var gameIdString = uid.GameId.Value.ToString();
-        
-        // Update Mod
-        var modInfo = await gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)uid.ModId.Value, cancellationToken);
-        modInfo.EnsureNoErrors();
-        foreach (var node in modInfo.Data!.LegacyMods.Nodes)
-            node.Resolve(db, tx, setFilesTimestamp: true);
-        
-        // Update Mod Files
-        var filesByUid = await gqlClient.ModFiles.ExecuteAsync(modIdString, gameIdString, cancellationToken);
-        filesByUid.EnsureNoErrors();
 
+        var modResult = await graphQlClient.QueryMod(uid.ModId, uid.GameId, cancellationToken);
+        // TODO: handle errors
+        var mod = modResult.AssertHasData();
+
+        mod.Resolve(db, tx, setFilesTimestamp: true);
+
+        // Update Mod Files
         var pageEntityId = mixin.GetModPageEntityId();
-        foreach (var node in filesByUid.Data!.ModFiles)
-            node.Resolve(db, tx, pageEntityId);
+
+        var modFilesResult = await graphQlClient.QueryModFiles(uid.ModId, uid.GameId, cancellationToken: cancellationToken);
+        // TODO: handle errors
+        var modFiles = modFilesResult.AssertHasData();
+
+        foreach (var modFile in modFiles)
+        {
+            modFile.Resolve(db, tx, pageEntityId);
+        }
     }
 
     /// <summary>
