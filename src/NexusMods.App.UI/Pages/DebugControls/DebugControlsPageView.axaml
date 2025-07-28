@@ -340,7 +340,7 @@
                                 <controls:StandardButton x:Name="ShowModalInput" Click="ShowModalInput_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="3" />
                                 <TextBlock Grid.Column="0" Grid.Row="4" Text="Custom Content" VerticalAlignment="Center" />
-                                <controls:StandardButton x:Name="ShowModalCustomContent" Click="ShowModalCustomContent_OnClick"
+                                <controls:StandardButton x:Name="ShowModalPremium" Click="ShowModalPremium_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="4" />
                             </Grid>
                         </StackPanel>

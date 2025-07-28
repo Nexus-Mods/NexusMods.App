@@ -123,19 +123,7 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
             ));
     }
 
-    private void ShowModalCustomContent_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ShowModal(DialogFactory.CreateDialog(
-                DesignDataContexts.CustomContent.WindowTitle,
-                DesignDataContexts.CustomContent.ButtonDefinitions,
-                new CustomContentExampleViewModel("This is a custom content example for testing the dialog system."),
-                DesignDataContexts.CustomContent.DialogWindowSize
-            )
-        );
-    }
-   
-
-    private async Task ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    private async void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
     {
         await PremiumDialog.ShowUpdatePremiumDialog(
             ViewModel!.WindowManager,
