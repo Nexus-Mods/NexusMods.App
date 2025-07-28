@@ -38,6 +38,7 @@
                     <icons:UnifiedIcon Classes="PlayCircleOutline" />
                     <icons:UnifiedIcon Classes="PlayCircleFilled" />
                     <icons:UnifiedIcon Classes="Image" />
+                    <icons:UnifiedIcon Classes="ImageOutline" />
                     <icons:UnifiedIcon Classes="Description" />
                     <icons:UnifiedIcon Classes="Tune" />
                     <icons:UnifiedIcon Classes="ArrowLeft" />
@@ -141,6 +142,10 @@
                     <icons:UnifiedIcon Classes="WindowMinimize" />
                     <icons:UnifiedIcon Classes="WindowRestore" />
                     <icons:UnifiedIcon Classes="Link" />
+                    <icons:UnifiedIcon Classes="Upload" />
+                    <icons:UnifiedIcon Classes="Pencil" />
+                    <icons:UnifiedIcon Classes="VisibilityListed" />
+                    <icons:UnifiedIcon Classes="VisibilityUnlisted" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -197,6 +202,11 @@
                     <icons:UnifiedIcon Classes="PictogramPremium" />
                     <icons:UnifiedIcon Classes="PictogramPremium" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramPremium" Size="48" />
+                </WrapPanel>
+				<WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramSuccess" />
+                    <icons:UnifiedIcon Classes="PictogramSuccess" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramSuccess" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
@@ -314,7 +324,11 @@
     <Style Selector="icons|UnifiedIcon.Image">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Image}" />
     </Style>
-
+    
+    <Style Selector="icons|UnifiedIcon.ImageOutline">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.ImageOutline}" />
+    </Style>
+    
     <Style Selector="icons|UnifiedIcon.Description">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Description}" />
     </Style>
@@ -718,6 +732,12 @@
     <Style Selector="icons|UnifiedIcon.FolderUploadOutline">
         <Setter Property="Value" Value="{x:Static icons:IconValues.FolderUploadOutline}" />
     </Style>
+    <Style Selector="icons|UnifiedIcon.Upload">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Upload}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.Pencil">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Pencil}" />
+    </Style>
     <Style Selector="icons|UnifiedIcon.TrayArrowDown">
         <Setter Property="Value" Value="{x:Static icons:IconValues.TrayArrowDown}" />
     </Style>
@@ -768,5 +788,14 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.PictogramPremium">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramPremium}" />
+    </Style>
+        <Style Selector="icons|UnifiedIcon.PictogramSuccess">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramSuccess}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.VisibilityListed">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityListed}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.VisibilityUnlisted">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityUnlisted}" />
     </Style>
 </Styles>

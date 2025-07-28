@@ -14,15 +14,16 @@ public class DialogViewModel: IDialogViewModel
     public DialogWindowSize DialogWindowSize { get; }
     public IViewModelInterface? ContentViewModel { get; }
     public DialogButtonDefinition[] ButtonDefinitions { get; }
+    public bool ShowChrome { get; set; }
     public StandardDialogResult Result { get; set; }
 
-    public DialogViewModel(string title, DialogButtonDefinition[] buttonsDefinitions, IViewModelInterface contentViewModel, DialogWindowSize dialogWindowSize)
-    {
+    public DialogViewModel(string title, DialogButtonDefinition[] buttonsDefinitions, IViewModelInterface contentViewModel, DialogWindowSize dialogWindowSize, bool showChrome) {
         Activator = new ViewModelActivator();
         WindowTitle = title;
         DialogWindowSize = dialogWindowSize;
         ContentViewModel = contentViewModel;
         ButtonDefinitions = buttonsDefinitions;
+        ShowChrome = showChrome;
         Result = new StandardDialogResult();
         
         ButtonPressCommand = new R3.ReactiveCommand<ButtonDefinitionId, ButtonDefinitionId>(id =>

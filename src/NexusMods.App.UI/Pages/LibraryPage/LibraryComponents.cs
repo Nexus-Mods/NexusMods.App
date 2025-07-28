@@ -6,6 +6,8 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Filters;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
@@ -25,8 +27,8 @@ public static class LibraryColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aVersion = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
-            var bVersion = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            var aVersion = a.GetOptional<VersionComponent>(key: CurrentVersionComponentKey);
+            var bVersion = b.GetOptional<VersionComponent>(key: CurrentVersionComponentKey);
             
             var aNewVersion = a.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
             var bNewVersion = b.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
@@ -124,13 +126,13 @@ public static class LibraryComponents
 {
     public sealed class NewVersionAvailable : ReactiveR3Object, IItemModelComponent<NewVersionAvailable>, IComparable<NewVersionAvailable>
     {
-        public StringComponent CurrentVersion { get; }
+        public VersionComponent CurrentVersion { get; }
 
         private readonly BindableReactiveProperty<string> _newVersion;
         public IReadOnlyBindableReactiveProperty<string> NewVersion => _newVersion;
 
         private readonly IDisposable _activationDisposable;
-        public NewVersionAvailable(StringComponent currentVersion, string newVersion, Observable<string> newVersionObservable)
+        public NewVersionAvailable(VersionComponent currentVersion, string newVersion, Observable<string> newVersionObservable)
         {
             CurrentVersion = currentVersion;
             _newVersion = new BindableReactiveProperty<string>(value: newVersion);
@@ -153,6 +155,26 @@ public static class LibraryComponents
             var oldVersionComparison = string.Compare(CurrentVersion.Value.Value, other.CurrentVersion.Value.Value, StringComparison.OrdinalIgnoreCase);
             if (oldVersionComparison != 0) return oldVersionComparison;
             return string.Compare(NewVersion.Value, other.NewVersion.Value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.UpdateAvailableFilter updateFilter => updateFilter.ShowWithUpdates 
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.VersionFilter versionFilter => 
+                    (NewVersion.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase) ||
+                     CurrentVersion.Value.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => 
+                    (NewVersion.Value.Contains(textFilter.SearchText, 
+                        textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) ||
+                     CurrentVersion.Value.Value.Contains(textFilter.SearchText, 
+                        textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private bool _isDisposed;
@@ -188,6 +210,22 @@ public static class LibraryComponents
         {
             if (other is null) return 1;
             return IsInstalled.Value.CompareTo(other.IsInstalled.Value);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.InstalledFilter installedFilter => 
+                    ((IsInstalled.Value && installedFilter.ShowInstalled) ||
+                     (!IsInstalled.Value && installedFilter.ShowNotInstalled))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => ButtonText.Value.Contains(
+                    textFilter.SearchText, 
+                    textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private readonly ReactiveR3Object _source;
@@ -313,6 +351,20 @@ public static class LibraryComponents
         {
             if (other is null) return 1;
             return NewFiles.Value.NewestFile().UploadedAt.CompareTo(other.NewFiles.Value.NewestFile().UploadedAt);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.UpdateAvailableFilter updateFilter => updateFilter.ShowWithUpdates
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => ButtonText.Value.Contains(
+                    textFilter.SearchText, 
+                    textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private readonly IDisposable _activationDisposable;
@@ -481,7 +533,7 @@ public static class LibraryComponents
             ButtonText = IsHidden.AsObservable()
                 .CombineLatest(itemCount, static (isHidden, count) => FormatShowUpdates(isHidden, count))
                 .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false, 0));
-            
+
             // Icon changes based on hidden state
             // Use Visibility when hidden (showing "Show Updates"), VisibilityOff when shown (showing "Hide Updates")
             Icon = IsHidden.AsObservable()

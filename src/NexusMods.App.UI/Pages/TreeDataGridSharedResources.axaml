@@ -47,10 +47,10 @@
             <!-- Name -->
             <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
                 <controls:ComponentControl.ComponentTemplate>
-                    <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
-                                                ComponentKey="{x:Static controls:SharedColumns+Name.StringComponentKey}">
+                    <controls:ComponentTemplate x:TypeArguments="controls:NameComponent"
+                                                ComponentKey="{x:Static controls:SharedColumns+Name.NameComponentKey}">
                         <controls:ComponentTemplate.DataTemplate>
-                            <DataTemplate DataType="{x:Type controls:StringComponent}">
+                            <DataTemplate DataType="{x:Type controls:NameComponent}">
                                 <TextBlock Text="{CompiledBinding Value.Value}" />
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>

@@ -147,6 +147,16 @@ public static class NexusModsUrlBuilder
         var url = $"{BaseUrl}/games/{gameDomain}/collections/{collectionSlug}{(revisionNumber.HasValue ? $"/revisions/{revisionNumber.Value}" : string.Empty)}/bugs";
         return CreateUri(url, source: source, campaign: campaign);
     }
+    
+    /// <summary>
+    /// Returns a URI for the changelog page of a collection.
+    /// </summary>
+    public static Uri GetCollectionChangelogUri(GameDomain gameDomain, CollectionSlug collectionSlug, Optional<RevisionNumber> revisionNumber, string? source = ParameterValueSource, string? campaign = null)
+    {
+        // https://www.nexusmods.com/games/stardewvalley/collections/tckf0m/revisions/80/changelog
+        var url = $"{BaseUrl}/games/{gameDomain}/collections/{collectionSlug}{(revisionNumber.HasValue ? $"/revisions/{revisionNumber.Value}" : string.Empty)}/changelog";
+        return CreateUri(url, source: source, campaign: campaign);
+    }
 
     /// <summary>
     /// Uri for the premium benefits page.

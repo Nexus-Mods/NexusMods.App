@@ -52,7 +52,7 @@
         <value>Multi-Option Mod</value>
     </data>
     <data name="InstallationCompleteScreenText" xml:space="preserve">
-        <value>You can change these options anytime by reinstalling this mod.</value>
+        <value>Your mod has been successfully installed with the selected options.  If you ever want to change your choices, simply reinstall the mod. Your settings can be adjusted at any time.</value>
     </data>
     <data name="HighlightedOptionDescription_No_Extra_Details" xml:space="preserve">
         <value>No additional details</value>

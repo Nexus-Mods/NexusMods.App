@@ -12,9 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Query;
-using NexusMods.MnemonicDB.Abstractions.Query.SliceDescriptors;
-using NexusMods.MnemonicDB.Abstractions.TxFunctions;
+using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -24,30 +22,58 @@ using StrawberryShake;
 using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
 
 namespace NexusMods.Networking.NexusWebApi;
+
 using GameIdCache = Dictionary<GameDomain, GameId>;
 using ResolvedEntitiesLookup = Dictionary<UidForFile, ValueTuple<NexusModsModPageMetadataId, NexusModsFileMetadataId>>;
 using ModAndDownload = (Mod Mod, CollectionDownload.ReadOnly Download);
 
 public partial class NexusModsLibrary
 {
+    private async ValueTask UploadToPresignedUrl(
+        IStreamFactory streamFactory,
+        PresignedUploadUrl presignedUploadUrl,
+        string mediaType,
+        CancellationToken cancellationToken)
+    {
+        await using var stream = await streamFactory.GetStreamAsync();
+        using HttpContent httpContent = new StreamContent(stream);
+        httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse(mediaType);
+
+        var response = await _httpClient.PutAsync(presignedUploadUrl, httpContent, cancellationToken: cancellationToken);
+        if (response.IsSuccessStatusCode) return;
+
+        var responseMessage = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
+        _logger.LogError("Failed to upload file, response code={ResponseCode}, response reason=`{ResponseReason}`, response message=`{ResponseMessage}`", response.StatusCode, response.ReasonPhrase, responseMessage);
+
+        response.EnsureSuccessStatusCode();
+        return;
+    }
+
+    private async ValueTask<GraphQlResult<PresignedUploadUrl, Invalid>> UploadMedia(
+        IStreamFactory streamFactory,
+        string mimeType,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.RequestMediaUploadUrl.ExecuteAsync(
+            mimeType: mimeType,
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<PresignedUploadUrl, Invalid>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        var presignedUploadUrl = PresignedUploadUrl.FromApi(operationData.RequestMediaUploadUrl);
+        await UploadToPresignedUrl(streamFactory, presignedUploadUrl, mimeType, cancellationToken);
+        return presignedUploadUrl;
+    }
+
     private async ValueTask<PresignedUploadUrl> UploadCollectionArchive(IStreamFactory archiveStreamFactory, CancellationToken cancellationToken)
     {
         var result = await _gqlClient.GetCollectionRevisionUploadUrl.ExecuteAsync(cancellationToken: cancellationToken);
         result.EnsureNoErrors();
 
         var presignedUploadUrl = PresignedUploadUrl.FromApi(result.Data?.CollectionRevisionUploadUrl!);
-
-        await using var stream = await archiveStreamFactory.GetStreamAsync();
-        using HttpContent httpContent = new StreamContent(stream);
-        httpContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
-
-        var response = await _httpClient.PutAsync(presignedUploadUrl, httpContent, cancellationToken: cancellationToken);
-        if (response.IsSuccessStatusCode) return presignedUploadUrl;
-
-        var responseMessage = await response.Content.ReadAsStringAsync(cancellationToken: cancellationToken);
-        _logger.LogError("Failed to upload collection archive, response code={ResponseCode}, response reason=`{ResponseReason}`, response message=`{ResponseMessage}`", response.StatusCode, response.ReasonPhrase, responseMessage);
-
-        response.EnsureSuccessStatusCode();
+        await UploadToPresignedUrl(archiveStreamFactory, presignedUploadUrl, "application/octet-stream", cancellationToken);
         return presignedUploadUrl;
     }
 
@@ -80,7 +106,7 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Uploads a collection revision, either creating a new revision or updating an existing draft revision.
     /// </summary>
-    public async ValueTask<RevisionNumber> UploadDraftRevision(
+    public async ValueTask<(RevisionNumber, RevisionId)> UploadDraftRevision(
         CollectionMetadata.ReadOnly collection,
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
@@ -99,15 +125,17 @@ public partial class NexusModsLibrary
         result.EnsureNoErrors();
 
         var data = result.Data?.CreateOrUpdateRevision!;
-        if (!data.Success) throw new NotImplementedException();
+        Debug.Assert(data.Success);
 
-        return RevisionNumber.From((ulong)data.Revision.RevisionNumber);
+        var revisionNumber = RevisionNumber.From((ulong)data.Revision.RevisionNumber);
+        var revisionId = RevisionId.From((ulong)data.Revision.Id);
+        return (revisionNumber, revisionId);
     }
 
     /// <summary>
     /// Uploads a new collection to Nexus Mods and adds it to the app.
     /// </summary>
-    public async ValueTask<CollectionMetadata.ReadOnly> CreateCollection(
+    public async ValueTask<(CollectionMetadata.ReadOnly, RevisionId)> CreateCollection(
         IStreamFactory archiveStreamFactory,
         CollectionRoot collectionManifest,
         CancellationToken cancellationToken)
@@ -124,7 +152,7 @@ public partial class NexusModsLibrary
         result.EnsureNoErrors();
 
         var data = result.Data?.CreateCollection!;
-        if (!data.Success) throw new NotImplementedException();
+        Debug.Assert(data.Success);
 
         using var tx = _connection.BeginTransaction();
         var db = _connection.Db;
@@ -133,7 +161,139 @@ public partial class NexusModsLibrary
         var commitResult = await tx.Commit();
 
         var collection = CollectionMetadata.Load(commitResult.Db, commitResult[collectionEntityId]);
-        return collection;
+        var revisionId = RevisionId.From((ulong)data.Revision.Id);
+        return (collection, revisionId);
+    }
+
+    private async ValueTask<GraphQlResult<int, NotFound>> GetDefaultCategoryId(GameId gameId, CancellationToken cancellationToken)
+    {
+        // NOTE(erri120): Default category until the user can select it or we remove validation on the backend.
+        const string defaultCategoryName = "Miscellaneous";
+
+        var operationResult = await _gqlClient.Categories.ExecuteAsync(
+            gameId: (int)gameId.Value,
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<int, NotFound>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        var categories = (operationData.Categories ?? [])
+            .Where(static c => c.Approved && !c.DiscardedAt.HasValue)
+            .OrderBy(static c => c.Id)
+            .ToArray();
+
+        if (categories.TryGetFirst(c => c.Name.Equals(defaultCategoryName, StringComparison.OrdinalIgnoreCase), out var defaultCategory))
+            return defaultCategory.Id;
+        return categories.First().Id;
+    }
+
+    public async ValueTask<GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>> PrefillCollectionMetadata(
+        CollectionMetadata.ReadOnly collection,
+        IStreamFactory defaultImageStreamFactory,
+        string defaultImageMimeType,
+        CancellationToken cancellationToken)
+    {
+        var defaultCategoryResult = await GetDefaultCategoryId(collection.GameId, cancellationToken);
+        if (defaultCategoryResult.HasErrors) return new GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>(defaultCategoryResult.Errors);
+
+        var metadataOperationResult = await _gqlClient.AddRequiredCollectionMetadata.ExecuteAsync(
+            collectionId: (int)collection.CollectionId.Value,
+            categoryId: defaultCategoryResult.AssertHasData().ToString(),
+            description: "Add description here",
+            summary: "Add summary here",
+            cancellationToken: cancellationToken
+        );
+
+        if (metadataOperationResult.TryExtractErrors(out GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>? resultWithErrors, out _))
+            return resultWithErrors;
+
+        // TODO: consider refreshing the collection metadata
+
+        var uploadDefaultImageResult = await UploadMedia(defaultImageStreamFactory, defaultImageMimeType, cancellationToken);
+        if (uploadDefaultImageResult.HasErrors) return new GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>(uploadDefaultImageResult.Errors);
+
+        var imageOperationResult = await _gqlClient.AddTileImageToCollection.ExecuteAsync(
+            collectionId: collection.CollectionId.Value.ToString(),
+            image: new UploadImageInput
+            {
+                Id = uploadDefaultImageResult.AssertHasData().UUID,
+                ContentType = defaultImageMimeType,
+            },
+            cancellationToken: cancellationToken
+        );
+
+        if (imageOperationResult.TryExtractErrors(out GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>? imageErrors, out _))
+            return imageErrors;
+
+        return new NoData();
+    }
+
+    public async ValueTask<GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>> PublishRevision(
+        RevisionId revisionId,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.PublishRevision.ExecuteAsync(
+            revisionId: revisionId.Value.ToString(),
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<NoData, Invalid, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.PublishRevision?.Success ?? false);
+        return new NoData();
+    }
+
+    public ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ChangeCollectionStatus(
+        CollectionId collectionId,
+        Abstractions.NexusModsLibrary.Models.CollectionStatus newStatus,
+        CancellationToken cancellationToken)
+    {
+        if (newStatus is Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed)
+        {
+            return ListCollection(collectionId, cancellationToken);
+        }
+        else if (newStatus is Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted)
+        {
+            return UnlistCollection(collectionId, cancellationToken);
+        }
+        else
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    private async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> ListCollection(
+        CollectionId collectionId,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.ListCollection.ExecuteAsync(
+            collectionId: (int)collectionId.Value,
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.ListCollection?.Success ?? false);
+        return Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed;
+    }
+
+    private async ValueTask<GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>> UnlistCollection(
+        CollectionId collectionId,
+        CancellationToken cancellationToken)
+    {
+        var operationResult = await _gqlClient.UnlistCollection.ExecuteAsync(
+            collectionId: collectionId.Value.ToString(),
+            cancellationToken: cancellationToken
+        );
+
+        if (operationResult.TryExtractErrors(out GraphQlResult<Abstractions.NexusModsLibrary.Models.CollectionStatus, NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        Debug.Assert(operationData.UnlistCollection?.Success ?? false);
+        return Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
     }
 
     private static CollectionPayload ManifestToPayload(CollectionRoot manifest)
@@ -150,7 +310,7 @@ public partial class NexusModsLibrary
                     AuthorUrl = manifest.Info.AuthorUrl,
                     Description = manifest.Info.Description,
                     DomainName = manifest.Info.DomainName.Value,
-                    GameVersions = [],
+                    GameVersions = manifest.Info.GameVersions,
                     Name = manifest.Info.Name,
                     Summary = string.Empty, // TODO
                 },
@@ -201,7 +361,7 @@ public partial class NexusModsLibrary
             };
         }
     }
-    
+
     /// <summary>
     /// Gets or adds the provided collection revision.
     /// </summary>
@@ -268,32 +428,37 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Gets the last published revision number.
     /// </summary>
-    public async ValueTask<Optional<RevisionNumber>> GetLastPublishedRevisionNumber(
+    public async ValueTask<GraphQlResult<Optional<RevisionNumber>, NotFound, CollectionDiscarded>> GetLastPublishedRevisionNumber(
         CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
-        var revisionNumbers = await GetAllRevisionNumbers(collection, cancellationToken);
-        return revisionNumbers.FirstOrOptional(static tuple => tuple.Status == RevisionStatus.Published).Convert(static tuple => tuple.Number);
+        var graphQlResult = await GetAllRevisionNumbers(collection, cancellationToken);
+        return graphQlResult.Map(static revisionNumbers => revisionNumbers.
+            FirstOrOptional(static tuple => tuple.Status == RevisionStatus.Published)
+            .Convert(static tuple => tuple.Number)
+        );
     }
 
     /// <summary>
     /// Gets all revision numbers for the given collection in descending order.
     /// </summary>
-    public async ValueTask<(RevisionNumber Number, RevisionStatus Status)[]> GetAllRevisionNumbers(
+    public async ValueTask<GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>> GetAllRevisionNumbers(
         CollectionMetadata.ReadOnly collection,
         CancellationToken cancellationToken)
     {
         var gameDomain = _mappingCache[collection.GameId];
 
-        var apiResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
+        var operationResult = await _gqlClient.CollectionRevisionNumbers.ExecuteAsync(
             slug: collection.Slug.Value,
             domainName: gameDomain.Value,
             viewAdultContent: true,
             cancellationToken: cancellationToken
         );
 
-        var revisions = apiResult.Data?.Collection.Revisions;
-        if (revisions is null) throw new NotSupportedException($"API call returned no data for collection slug `{collection.Slug}`");
+        if (operationResult.TryExtractErrors(out GraphQlResult<(RevisionNumber Number, RevisionStatus Status)[], NotFound, CollectionDiscarded>? resultWithErrors, out var operationData))
+            return resultWithErrors;
+
+        var revisions = operationData.Collection.Revisions;
 
         var revisionNumbers = revisions
             .OrderByDescending(x => x.RevisionNumber)

@@ -1,10 +1,9 @@
 using System.Globalization;
-using System.Reactive.Linq;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
@@ -17,6 +16,13 @@ namespace NexusMods.App.UI.Pages.LibraryPage;
 [UsedImplicitly]
 public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
 {
+
+    static LibraryView()
+    {
+        // Allo focus on the LibraryView for keyboard shortcuts purposes
+        FocusableProperty.OverrideDefaultValue(typeof(LibraryView), true); 
+    }
+
     public LibraryView()
     {
         InitializeComponent();
@@ -36,6 +42,10 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                         .SubscribeWithErrorLogging(vm => vm.StorageProvider = storageProvider)
                         .AddTo(disposables);
                 }
+
+                SearchControl.AttachKeyboardHandlers(this, disposables);
+                this.OneWayBind(ViewModel, vm => vm.Adapter, view => view.SearchControl.Adapter)
+                    .AddTo(disposables);
 
                 this.OneWayBind(ViewModel, vm => vm.Collections, view => view.Collections.ItemsSource)
                     .AddTo(disposables);
@@ -165,4 +175,5 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
             }
         );
     }
+
 }

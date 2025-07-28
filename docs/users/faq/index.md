@@ -15,3 +15,6 @@ These issues most often occur when your PC is not correctly handling Nexus Mods 
 
 ## How do I find my log files?
 To find your log files, please see [this guide](./LogFiles.md). 
+
+## How can I move the location of my downloaded files?
+To safely move your Library storage location, please follow [the guide here](./MoveLibraryLocation.md).

@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text;
 using JetBrains.Annotations;
 
 namespace NexusMods.Sdk;
@@ -16,6 +17,11 @@ public static class ApplicationConstants
     /// Whether the application is running in debug mode.
     /// </summary>
     public static readonly bool IsDebug;
+
+    /// <summary>
+    /// Whether the application is running in a CI environment.
+    /// </summary>
+    public static readonly bool IsCI;
 
     /// <summary>
     /// The version of the commit the app was build from.
@@ -37,6 +43,11 @@ public static class ApplicationConstants
     /// </summary>
     public static readonly InstallationMethod InstallationMethod;
 
+    /// <summary>
+    /// The time when the project was built.
+    /// </summary>
+    public static readonly DateTimeOffset BuildDate;
+
     static ApplicationConstants()
     {
         if (EnvironmentVariables.TryGetBoolean(EnvironmentVariableNames.IsDebug, out var isDebug))
@@ -51,6 +62,11 @@ public static class ApplicationConstants
 #else
                 false;
 #endif
+        }
+
+        if (EnvironmentVariables.TryGetBoolean(name: "CI", out var isCI))
+        {
+            IsCI = isCI;
         }
 
         var currentAssembly = typeof(ApplicationConstants).Assembly;
@@ -121,6 +137,25 @@ public static class ApplicationConstants
                 InstallationMethod.Manually;
 #endif
         }
+
+        try
+        {
+            using var stream = currentAssembly.GetManifestResourceStream(name: "buildDate.txt");
+            if (stream is null)
+            {
+                BuildDate = DefaultBuildDate;
+            }
+            else
+            {
+                using var sr = new StreamReader(stream, encoding: Encoding.UTF8);
+                var dateString = sr.ReadToEnd().Trim();
+                BuildDate = DateTimeOffset.TryParse(dateString, out var date) ? date : DefaultBuildDate;
+            }
+        }
+        catch (Exception)
+        {
+            BuildDate = DefaultBuildDate;
+        }
     }
 
     private static string? GetSha(ReadOnlySpan<char> input)
@@ -131,6 +166,8 @@ public static class ApplicationConstants
     }
 
 #region Default values
+
+    private static readonly DateTimeOffset DefaultBuildDate = DateTimeOffset.UnixEpoch;
 
     /// <summary>
     /// Fallback version used for debug builds or release builds with no version.

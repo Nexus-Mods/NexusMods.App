@@ -131,6 +131,9 @@
     <data name="SearchBox__Search" xml:space="preserve">
         <value>Rechercher</value>
     </data>
+    <data name="SearchBox__Search_Watermark" xml:space="preserve">
+        <value>Rechercher...</value>
+    </data>
     <data name="TopBarActions__LOG_IN" xml:space="preserve">
         <value>Se connecter</value>
     </data>

@@ -12,6 +12,8 @@ using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.MiniGameWidget;
+using NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
+using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
 using NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
@@ -45,6 +47,9 @@ using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.ObservableInfo;
@@ -93,6 +98,7 @@ public static class Services
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
             .AddViewModel<MiniGameWidgetViewModel, IMiniGameWidgetViewModel>()
+            .AddViewModel<ComingSoonMiniGameWidgetViewModel, IComingSoonMiniGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<LeftMenuItemViewModel, ILeftMenuItemViewModel>()
@@ -118,6 +124,7 @@ public static class Services
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
             .AddView<MiniGameWidget, IMiniGameWidgetViewModel>()
+            .AddView<ComingSoonMiniGameWidget, IComingSoonMiniGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<LeftMenuItemView, ILeftMenuItemViewModel>()
@@ -208,11 +215,12 @@ public static class Services
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
             
             // Dialogs
-            .AddView<CustomContentExampleView, IViewModelInterface>()
-            .AddViewModel<CustomContentExampleViewModel, IViewModelInterface>()
-            
             .AddView<DialogStandardContentView, IDialogStandardContentViewModel>()
             .AddViewModel<DialogStandardContentViewModel, IDialogStandardContentViewModel>()
+            .AddView<DialogShareCollectionView, IDialogShareCollectionViewModel>()
+            .AddViewModel<DialogShareCollectionViewModel, IDialogShareCollectionViewModel>()
+            .AddView<DialogCollectionPublishedView, IDialogCollectionPublishedViewModel>()
+            .AddViewModel<DialogCollectionPublishedViewModel, IDialogCollectionPublishedViewModel>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()

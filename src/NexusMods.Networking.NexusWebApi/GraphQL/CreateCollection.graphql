@@ -10,6 +10,16 @@ query RequestMediaUploadUrl($mimeType: String!) {
     }
 }
 
+query categories($gameId: Int!) {
+    categories(gameId: $gameId, global: true) {
+        id,
+        parentId,
+        name,
+        approved,
+        discardedAt
+    }
+}
+
 mutation CreateCollection($payload: CollectionPayload!, $uuid: String!) {
     createCollection(collectionData: $payload, uuid: $uuid) {
         success
@@ -58,8 +68,45 @@ mutation EditCollectionSummary($collectionId: Int!, $summary: String!) {
     }
 }
 
-mutation PublishRevision($revisionId: ID!, $collectionStatus: CollectionStatus!) {
-    publishRevision(revisionId: $revisionId, collectionStatus: $collectionStatus) {
+mutation PublishRevision($revisionId: ID!) {
+    publishRevision(revisionId: $revisionId) {
         success
+    }
+}
+
+mutation ListCollection($collectionId: Int!) {
+    listCollection(collectionId: $collectionId) {
+        success
+    }
+}
+
+mutation UnlistCollection($collectionId: ID!) {
+    unlistCollection(collectionId: $collectionId) {
+        success
+    }
+}
+
+mutation AddRequiredCollectionMetadata($collectionId: Int!, $categoryId: ID!, $description: String!, $summary: String!) {
+    editCollection(collectionId: $collectionId, categoryId: $categoryId, description: $description, summary: $summary) {
+        success,
+        collection {
+            ...CollectionFragment
+        }
+    }
+}
+
+mutation AddHeaderImageToCollection($collectionId: ID!, $image: UploadImageInput!) {
+    addHeaderImageToCollection(collectionId: $collectionId, image: $image) {
+        image {
+            id
+        }
+    }
+}
+
+mutation AddTileImageToCollection($collectionId: ID!, $image: UploadImageInput!) {
+    addTileImageToCollection(collectionId: $collectionId, image: $image) {
+        image {
+            id
+        }
     }
 }

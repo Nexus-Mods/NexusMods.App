@@ -9,19 +9,21 @@ using ObservableCollections;
 using R3;
 using System.Reactive.Linq;
 using Avalonia.Input;
-using DynamicData.Kernel;
+using System.Diagnostics;
+using NexusMods.App.UI.Controls.Filters;
+using static NexusMods.App.UI.Controls.Filters.Filter;
 
 namespace NexusMods.App.UI.Controls;
 
 /// <summary>
 /// Adapter class for working with <see cref="TreeDataGrid"/>.
 /// </summary>
-public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
+public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISearchableTreeDataGridAdapter
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
     public Subject<(TModel model, bool isActivating)> ModelActivationSubject { get; } = new();
-    
+
     public Subject<(TModel[] sourceModels, TreeDataGridRowDragStartedEventArgs e)> RowDragStartedSubject { get; } = new();
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDragOverSubject { get; } = new();
     public Subject<(TModel[] sourceModels, TModel target, TreeDataGridRowDragEventArgs e)> RowDropSubject { get; } = new();
@@ -32,21 +34,30 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
     public BindableReactiveProperty<int> SourceCount { get; } = new(value: 0);
     public BindableReactiveProperty<IComparer<TModel>?> CustomSortComparer { get; } = new(value: null);
-
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
+    public ReactiveProperty<Filter> Filter { get; } = new(value: NoFilter.Instance);
     protected ObservableList<TModel> Roots { get; private set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
     private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
 
     private readonly IDisposable _activationDisposable;
     private readonly SerialDisposable _selectionModelsSerialDisposable = new();
+    
     protected TreeDataGridAdapter()
-    {
+    { 
         RootsView = Roots.CreateView(static kv => kv);
         RootsCollectionChangedView = RootsView.ToNotifyCollectionChanged();
 
         _activationDisposable = this.WhenActivated(static (self, disposables) =>
         {
+            // Set up reactive filtering on RootsView
+            self.Filter
+                .Subscribe(self, static (filter, self) =>
+                {
+                    self.ApplyFilter(filter);
+                })
+                .AddTo(disposables);
+
             self.Roots
                 .ObserveCountChanged(notifyCurrentCount: true)
                 .Subscribe(self, static (count, self) =>
@@ -59,6 +70,10 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
             self.ModelActivationSubject.Subscribe(self, static (input, self) =>
             {
                 var (model, isActivating) = input;
+
+                // TODO: figure out why disposed models are trying to get activated
+                Debug.Assert(!model.IsDisposed);
+                if (model.IsDisposed) return;
 
                 // NOTE(erri120): This is only necessary for child rows since root rows are handled directly.
                 if (isActivating && !model.IsActivated)
@@ -136,7 +151,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
                 .Switch()
                 .Subscribe()
                 .AddTo(disposables);
-            
+
             self.CustomSortComparer
                 .AsObservable()
                 .ObserveOnUIThreadDispatcher()
@@ -180,21 +195,21 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         }
         RowDragStartedSubject.OnNext((sourceModels, e));
     }
-    
+
     public virtual void OnRowDragOver(object? sender, TreeDataGridRowDragEventArgs e)
     {
         // extract the target model from the event args
         if (e.TargetRow.Model is not TModel targetModel) return;
-        
+
         // extract the source models from the event args
         var dataObject = e.Inner.Data as DataObject;
         if (dataObject?.Get("TreeDataGridDragInfo") is not DragInfo dragInfo) return;
 
         var source = dragInfo.Source;
         var indices = dragInfo.Indexes;
-        
+
         var sourceModels = new List<TModel>();
-        
+
         foreach (var modelIndex in indices)
         {
             var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
@@ -205,7 +220,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
         RowDragOverSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
-    
+
     /// <summary>
     /// Called when one or more dragged rows are dropped.
     /// This is only called if <see cref="TreeDataGridViewHelper.SetupTreeDataGridAdapter"/> enableDragAndDrop parameter is set to true.
@@ -215,19 +230,19 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         // NOTE(Al12rs): This is important in case the source is read-only, otherwise TreeDataGrid will attempt to
         // move the items, updating the source collection, throwing an exception in the process.
         e.Handled = true;
-        
+
         // extract the target model from the event args
         if (e.TargetRow.Model is not TModel targetModel) return;
-        
+
         // extract the source models from the event args
         var dataObject = e.Inner.Data as DataObject;
         if (dataObject?.Get("TreeDataGridDragInfo") is not DragInfo dragInfo) return;
 
         var source = dragInfo.Source;
         var indices = dragInfo.Indexes;
-        
+
         var sourceModels = new List<TModel>();
-        
+
         foreach (var modelIndex in indices)
         {
             var rowIndex = source.Rows.ModelIndexToRowIndex(modelIndex);
@@ -235,7 +250,7 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
             if (row.Model is not TModel model) continue;
             sourceModels.Add(model);
         }
-        
+
         RowDropSubject.OnNext((sourceModels.ToArray(), targetModel, e));
     }
 
@@ -276,10 +291,32 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         }
     }
 
-    protected virtual void BeforeModelActivationHook(TModel model) {}
+    protected virtual void BeforeModelActivationHook(TModel model) { }
 
     protected abstract IObservable<IChangeSet<TModel, TKey>> GetRootsObservable(bool viewHierarchical);
     protected abstract IColumn<TModel>[] CreateColumns(bool viewHierarchical);
+    
+    /// <summary>
+    /// Applies the given filter to the <see cref="RootsView"/>.
+    /// </summary>
+    /// <param name="filter">The filter to apply</param>
+    protected void ApplyFilter(Filter filter)
+    {
+        // Reset any existing filters first
+        RootsView.ResetFilter();
+
+        if (filter is NoFilter) return;
+        if (typeof(TModel) != typeof(CompositeItemModel<TKey>)) throw new NotSupportedException($"Filtering is only supported on composite item models and not {typeof(TModel)}");
+
+        var filterInstance = new SynchronizedViewFilter<TModel, TModel>((model, _) => 
+        {
+            if (model is CompositeItemModel<TKey> compositeModel)
+                return filter.MatchesRow(compositeModel);
+            return filter is NoFilter;
+        });
+
+        RootsView.AttachFilter(filterInstance);
+    }
 
     private bool _isDisposed;
     protected override void Dispose(bool disposing)
@@ -298,4 +335,9 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
         base.Dispose(disposing);
     }
+}
+
+public interface ISearchableTreeDataGridAdapter
+{
+    public ReactiveProperty<Filter> Filter { get; }
 }
