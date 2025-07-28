@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Paths;
 using Xunit;
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 namespace NexusMods.Jobs.Tests.Examples.BestPractices;
 
 // Factory methods like 'create' are useful when you want to fire a job right away after it is created.
@@ -39,7 +41,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     public async ValueTask<AbsolutePath> StartAsync(IJobContext<HttpDownloadJob> context)
     {
         // Stub implementation
-        await Task.Delay(1000, context.CancellationToken);
+        // await Task.Delay(1000, context.CancellationToken); // Simulate download
         return context.Definition.Destination;
     }
 
