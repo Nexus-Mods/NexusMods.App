@@ -71,7 +71,8 @@ public class Program
         var services = host.Services;
         _logger = services.GetRequiredService<ILogger<Program>>();
 
-        CleanupOldProcesses(services).Wait(timeout: TimeSpan.FromSeconds(10));
+        // NOTE(erri120): has to come before host startup
+        CleanupUnresponsiveProcesses(services).Wait(timeout: TimeSpan.FromSeconds(10));
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
@@ -169,8 +170,9 @@ public class Program
         }
     }
 
-    private static async Task CleanupOldProcesses(IServiceProvider serviceProvider)
+    private static async Task CleanupUnresponsiveProcesses(IServiceProvider serviceProvider)
     {
+        // NOTE(erri120): this is a hack, see https://github.com/Nexus-Mods/NexusMods.App/issues/3633
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
         var syncFile = serviceProvider.GetRequiredService<SyncFile>();
 
