@@ -1,0 +1,97 @@
+query QueryGameCategories($gameId: Int!) {
+    categories(gameId: $gameId, global: true) {
+        ...Category
+    }
+}
+
+query QueryGlobalCategories {
+    categories(global: true) {
+        ...Category
+    }
+}
+
+query RequestCollectionRevisionUploadUrl {
+    collectionRevisionUploadUrl {
+        ...PresignedUrl
+    }
+}
+
+query RequestMediaUploadUrl($mimeType: String!) {
+    requestMediaUploadUrl(mimeType: $mimeType) {
+        ...PresignedUrl
+    }
+}
+
+query QueryGameById($id: ID!) {
+    game(id: $id) {
+        domainName
+    }
+}
+
+query QueryGameByDomain($domain: String!) {
+    game(domainName: $domain) {
+        id
+    }
+}
+
+query QueryMod($modId: Int!, $gameId: Int!)
+{
+    legacyMods(ids: [{gameId: $gameId, modId: $modId}])
+    {
+        nodes
+        {
+            ...Mod
+        }
+    }
+}
+
+query QueryModFile($uid: ID!) {
+    modFilesByUid(uids: [$uid]) {
+        nodes {
+            ...ModFile
+        }
+    }
+}
+
+query QueryModFiles($modId: ID!, $gameId: ID!) {
+    modFiles(modId: $modId, gameId: $gameId) {
+        ...ModFile
+    }
+}
+
+query QueryCollectionId($collectionSlug: String!) {
+    collection(slug: $collectionSlug) {
+        id
+        slug
+    }
+}
+
+query QueryCollectionRevision($collectionSlug: String!, $revisionNumber: Int!)
+{
+    collectionRevision(slug: $collectionSlug, revision: $revisionNumber, viewAdultContent: true)
+    {
+        ...CollectionRevision
+    }
+}
+
+query QueryCollectionRevisionDownloadLink($collectionSlug: String!, $revisionNumber: Int!)
+{
+    collectionRevision(slug: $collectionSlug, revision: $revisionNumber, viewAdultContent: true)
+    {
+        downloadLink
+    }
+}
+
+query QueryCollectionRevisionNumbers($collectionSlug: String!, $gameDomainName: String!)
+{
+    collection(slug: $collectionSlug, domainName: $gameDomainName, viewAdultContent: true)
+    {
+        id,
+
+        revisions {
+            id,
+            revisionNumber,
+            ...CollectionRevisionStatus
+        }
+    }
+}
