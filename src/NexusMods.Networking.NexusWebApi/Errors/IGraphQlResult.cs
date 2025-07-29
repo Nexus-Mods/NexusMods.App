@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
+using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi.Errors;
 
@@ -22,14 +23,14 @@ public interface IGraphQlResult
     /// <summary>
     /// Gets all errors produced by the query.
     /// </summary>
-    IReadOnlyDictionary<ErrorCode, IGraphQlError> Errors { get; }
+    KeyValuePair<ErrorCode, IGraphQlError>[] Errors { get; }
 
     /// <summary>
     /// Tries to get a specific error.
     /// </summary>
     bool TryGetError<TError>([NotNullWhen(true)] out TError? error) where TError : IGraphQlError<TError>
     {
-        if (!Errors.TryGetValue(TError.Code, out var tmp))
+        if (!Errors.TryGetFirst(kv => kv.Key.Equals(TError.Code), out var tmp))
         {
             error = default(TError);
             return false;

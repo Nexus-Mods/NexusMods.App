@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Runtime.CompilerServices;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +32,8 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
     protected async ValueTask<Diagnostic[]> GetAllDiagnostics(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(Connection.Db, loadoutId);
-        return await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
+        var syncTree = (await Synchronizer.BuildSyncTree(loadout)).ToFrozenDictionary();
+        return await Emitter.Diagnose(loadout, syncTree, CancellationToken.None).ToArrayAsync();
     }
 
     protected async ValueTask<Diagnostic> GetSingleDiagnostic(LoadoutId loadoutId)
@@ -44,8 +46,7 @@ public class ALoadoutDiagnosticEmitterTest<TTest, TGame, TEmitter> : AIsolatedGa
 
     protected async ValueTask ShouldHaveNoDiagnostics(LoadoutId loadoutId, string because = "")
     {
-        var loadout = Loadout.Load(Connection.Db, loadoutId);
-        var diagnostics = await Emitter.Diagnose(loadout, CancellationToken.None).ToArrayAsync();
+        var diagnostics = await GetAllDiagnostics(loadoutId);
         diagnostics.Should().BeEmpty(because: because);
     }
 

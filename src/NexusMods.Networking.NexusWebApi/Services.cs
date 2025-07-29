@@ -1,7 +1,11 @@
+using System.Collections.Frozen;
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
+using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
@@ -48,18 +52,25 @@ public static class Services
         collection.AddSingleton<GameDomainToGameIdMappingCache>();
         collection.AddSingleton<IGameDomainToGameIdMappingCache>(serviceProvider =>
         {
-            var fallbackCache = serviceProvider.GetRequiredService<GameDomainToGameIdMappingCache>();
+            var logger = serviceProvider.GetRequiredService<ILogger<LocalMappingCache>>();
 
-            if (!LocalMappingCache.TryParseJsonFile(out var gameIdToDomain, out var gameDomainToId))
+            var didParse = LocalMappingCache.TryParseJsonFile(logger, out var gameIdToDomain, out var gameDomainToId);
+            Debug.Assert(didParse);
+
+            if (!didParse) logger.LogWarning("Failed to parse local mapping cache data, all mapping requests will be handled by the fallback cache");
+            else
             {
-                return fallbackCache;
+                Debug.Assert(gameIdToDomain is not null && gameDomainToId is not null);
+                logger.LogInformation("Loaded local mapping cache data with {Count} entries", gameDomainToId?.Count ?? 0);
             }
 
-            return new LocalMappingCache(gameIdToDomain, gameDomainToId, fallbackCache);
+            var fallbackCache = serviceProvider.GetRequiredService<GameDomainToGameIdMappingCache>();
+            return new LocalMappingCache(logger, gameIdToDomain ?? FrozenDictionary<GameId, GameDomain>.Empty, gameDomainToId ?? FrozenDictionary<GameDomain, GameId>.Empty, fallbackCache);
         });
 
         collection
             .AddNexusModsLibraryModels()
+            .AddSingleton<IGraphQlClient, GraphQlClient>()
             .AddSingleton<NexusModsLibrary>()
             .AddAllSingleton<ILoginManager, LoginManager>()
             .AddAllSingleton<INexusApiClient, NexusApiClient>()

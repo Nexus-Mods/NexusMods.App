@@ -1,0 +1,110 @@
+fragment User on User {
+    name
+    avatar
+    memberId
+    membershipRoles
+    roles
+}
+
+fragment PresignedUrl on PresignedUrl {
+    url
+    uuid
+}
+
+fragment Category on Category {
+    id
+    parentId
+    name
+    description
+    approved
+    discardedAt
+}
+
+fragment Mod on Mod {
+    modId
+    name
+    game {
+        domainName
+        id
+    }
+    thumbnailUrl
+    pictureUrl
+    updatedAt
+    uid
+}
+
+fragment ModFile on ModFile {
+    name
+    modId
+    version
+    sizeInBytes
+    date
+    uid
+}
+
+fragment Collection on Collection {
+    id
+    slug
+    name
+    collectionStatus
+    summary
+    endorsements
+    totalDownloads
+    overallRating
+    overallRatingCount
+    recentRating
+    recentRatingCount
+    category {
+        ...Category
+    }
+    tileImage {
+        thumbnailUrl(size: small)
+    }
+    headerImage {
+        url
+    }
+    user {
+        ...User
+    }
+    game {
+        id
+        name
+        domainName
+    }
+}
+
+fragment CollectionRevision on CollectionRevision {
+    id
+    assetsSizeBytes
+    revisionNumber
+    adultContent
+    totalSize
+    overallRating
+    overallRatingCount
+    modCount
+    ...CollectionRevisionStatus
+
+    modFiles {
+        id
+        optional
+        gameId
+        fileId
+        file {
+            ...ModFile
+            mod {
+                ...Mod
+            }
+        }
+        updatePolicy
+        version
+    }
+
+    collection {
+        ...Collection
+    }
+}
+
+fragment CollectionRevisionStatus on CollectionRevision {
+    status
+    revisionStatus
+}

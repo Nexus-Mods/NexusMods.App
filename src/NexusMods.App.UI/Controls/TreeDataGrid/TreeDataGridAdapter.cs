@@ -5,23 +5,20 @@ using DynamicData;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Extensions;
-using NexusMods.MnemonicDB.Abstractions;
 using ObservableCollections;
 using R3;
 using System.Reactive.Linq;
 using Avalonia.Input;
-using DynamicData.Kernel;
 using System.Diagnostics;
 using NexusMods.App.UI.Controls.Filters;
 using static NexusMods.App.UI.Controls.Filters.Filter;
-using NexusMods.Telemetry;
 
 namespace NexusMods.App.UI.Controls;
 
 /// <summary>
 /// Adapter class for working with <see cref="TreeDataGrid"/>.
 /// </summary>
-public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
+public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISearchableTreeDataGridAdapter
     where TModel : class, ITreeDataGridItemModel<TModel, TKey>
     where TKey : notnull
 {
@@ -37,8 +34,8 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
     public BindableReactiveProperty<bool> IsSourceEmpty { get; } = new(value: true);
     public BindableReactiveProperty<int> SourceCount { get; } = new(value: 0);
     public BindableReactiveProperty<IComparer<TModel>?> CustomSortComparer { get; } = new(value: null);
-    public ReactiveProperty<Filter> Filter { get; } = new(value: NoFilter.Instance);
     public ObservableHashSet<TModel> SelectedModels { get; private set; } = [];
+    public ReactiveProperty<Filter> Filter { get; } = new(value: NoFilter.Instance);
     protected ObservableList<TModel> Roots { get; private set; } = [];
     private ISynchronizedView<TModel, TModel> RootsView { get; }
     private INotifyCollectionChangedSynchronizedViewList<TModel> RootsCollectionChangedView { get; }
@@ -183,10 +180,6 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
         });
     }
 
-    public void OnOpenSearchPanel(string pageName)
-    {
-        Tracking.AddEvent(Events.Search.OpenSearch, new EventMetadata(name: pageName));
-    }
     public void ClearSelection() => _selectionModel?.Clear();
 
     /// <summary>
@@ -342,4 +335,9 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object
 
         base.Dispose(disposing);
     }
+}
+
+public interface ISearchableTreeDataGridAdapter
+{
+    public ReactiveProperty<Filter> Filter { get; }
 }

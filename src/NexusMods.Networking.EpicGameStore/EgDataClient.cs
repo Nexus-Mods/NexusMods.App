@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using NexusMods.Networking.EpicGameStore.DTOs.EgData;
 
@@ -15,13 +16,31 @@ public class EgDataClient
 
     public async Task<Build[]> GetBuilds(string appId, CancellationToken token = default)
     {
-        var requestUrl = $"{BaseUrl}items/{appId}/builds";
-        var result = await _httpClient.GetFromJsonAsync<Build[]>(requestUrl, token);
-        if (result == null)
+        // egdata.app serves DLC via `items` and games via `offers`
+        var itemsUrl = $"{BaseUrl}items/{appId}/builds";
+        var offersUrl = $"{BaseUrl}offers/{appId}/builds";
+        
+        Exception? exception = null;
+        foreach (var url in new[] { offersUrl, itemsUrl })
         {
-            throw new HttpRequestException($"Failed to fetch builds for appId: {appId}");
+            try
+            {
+                var result = await _httpClient.GetFromJsonAsync<Build[]>(url, token);
+                if (result == null)
+                {
+                    throw new HttpRequestException($"Failed to fetch builds for appId: {appId}");
+                }
+
+                return result;
+            }
+            catch (HttpRequestException ex)
+            {
+                exception = ex;
+                if (ex.StatusCode == HttpStatusCode.NotFound)
+                    continue;
+            }
         }
-        return result;
+        throw exception ?? new HttpRequestException($"Failed to fetch builds for appId: {appId}");
     }
     
     public async Task<BuildFile[]> GetFiles(string buildId, CancellationToken token = default)
