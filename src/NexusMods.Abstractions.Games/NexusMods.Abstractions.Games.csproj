@@ -37,5 +37,8 @@
       <Compile Update="SortOrder\ASortOrderManager.cs">
         <DependentUpon>ISortOrderManager.cs</DependentUpon>
       </Compile>
+      <Compile Update="SortOrder\DefaultSortOrderManager.cs">
+        <DependentUpon>ASortOrderManager.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

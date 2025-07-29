@@ -50,9 +50,11 @@ public class ASortOrderManager : ISortOrderManager
     }
 
     /// <inheritdoc />
-    public void SetSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties)
+    public void RegisterSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties)
     {
         _sortOrderVarieties = sortOrderVarieties.ToDictionary(variety => variety.SortOrderVarietyId)
             .ToFrozenDictionary();
     }
 }
+
+

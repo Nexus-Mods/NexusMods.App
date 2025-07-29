@@ -28,5 +28,5 @@ public interface ISortOrderManager
     /// Should only be called once during initialization of the game.
     /// </summary>
     /// <param name="sortOrderVarieties"></param>
-    public void SetSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties);
+    public void RegisterSortOrderVarieties(ISortOrderVariety[] sortOrderVarieties);
 }
