@@ -15,7 +15,6 @@ public interface IJobMonitor
         where TJobType : IJobDefinition<TResultType>
         where TResultType : notnull;
 
-
     /// <summary>
     /// Starts a job given the job definition.
     /// </summary>
@@ -32,4 +31,24 @@ public interface IJobMonitor
     /// All the jobs the monitor knows about
     /// </summary>
     ReadOnlyObservableCollection<IJob> Jobs { get; }
+    
+    /// <summary>
+    /// Cancels a specific job by its ID
+    /// </summary>
+    void Cancel(JobId jobId);
+    
+    /// <summary>
+    /// Cancels a specific job by its task
+    /// </summary>
+    void Cancel(IJobTask jobTask);
+    
+    /// <summary>
+    /// Cancels all jobs in the specified group
+    /// </summary>
+    void CancelGroup(IJobGroup group);
+    
+    /// <summary>
+    /// Cancels all active jobs
+    /// </summary>
+    void CancelAll();
 }

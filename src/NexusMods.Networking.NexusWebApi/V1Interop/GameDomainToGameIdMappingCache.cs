@@ -6,8 +6,8 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
 using StrawberryShake;
-namespace NexusMods.Networking.NexusWebApi.V1Interop;
 
+namespace NexusMods.Networking.NexusWebApi.V1Interop;
 
 /// <summary>
 /// Caches the mapping between <see cref="GameDomain"/> and <see cref="GameId"/> values for fast lookup.
@@ -16,21 +16,32 @@ namespace NexusMods.Networking.NexusWebApi.V1Interop;
 public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingCache
 {
     private readonly IConnection _conn;
-    private readonly INexusGraphQLClient _gqlClient;
+    private readonly IGraphQlClient _client;
     private readonly ILogger _logger;
 
     /// <summary/>
     public GameDomainToGameIdMappingCache(
         IConnection conn,
-        INexusGraphQLClient gqlClient,
+        IGraphQlClient client,
         ILogger<GameDomainToGameIdMappingCache> logger)
     {
         _conn = conn;
-        _gqlClient = gqlClient;
+        _client = client;
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    public GameDomain GetDomain(GameId id)
+    {
+        var domain = TryGetDomain(id, CancellationToken.None);
+        return domain.Value;
+    }
+
+    public GameId GetId(GameDomain domain)
+    {
+        var id = TryGetId(domain, CancellationToken.None);
+        return id.Value;
+    }
+
     public ValueTask<Optional<GameId>> TryGetIdAsync(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         // Check if we have a value in the DB
@@ -44,7 +55,6 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc />
     public ValueTask<Optional<GameDomain>> TryGetDomainAsync(GameId gameId, CancellationToken cancellationToken)
     {
         var found = GameDomainToGameIdMapping.FindByGameId(_conn.Db, gameId);
@@ -57,7 +67,6 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc />
     public Optional<GameId> TryGetId(GameDomain gameDomain, CancellationToken cancellationToken)
     {
         // Check cache synchronously
@@ -79,7 +88,6 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc />
     public Optional<GameDomain> TryGetDomain(GameId gameId, CancellationToken cancellationToken)
     {
         // Check cache synchronously
@@ -105,15 +113,9 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
     {
         try
         {
-            var game = await _gqlClient.GameDomainToId.ExecuteAsync(gameDomain.Value, cancellationToken).ConfigureAwait(false);
-            game.EnsureNoErrors();
-            if (game.Data?.Game == null)
-            {
-                _logger.LogError("Unable to find game with domain name {DomainName}", gameDomain.Value);
-                return GameId.DefaultValue;
-            }
+            var result = await _client.QueryGameId(gameDomain, cancellationToken);
+            var id = result.AssertHasData();
 
-            var id = GameId.From((uint)game.Data.Game.Id);
             await InsertAsync(gameDomain, id).ConfigureAwait(false);
             return id;
         }
@@ -128,15 +130,9 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
     {
         try
         {
-            var game = await _gqlClient.GameIdToDomain.ExecuteAsync(gameId.ToString(), cancellationToken).ConfigureAwait(false);
-            if (game.Data?.Game == null)
-            {
-                // ReSharper disable once InconsistentLogPropertyNaming
-                _logger.LogError("Unable to find game with game ID {GameID}", gameId);
-                return GameDomain.DefaultValue;
-            }
+            var result = await _client.QueryGameDomain(gameId, cancellationToken);
+            var domain = result.AssertHasData();
 
-            var domain = GameDomain.From(game.Data.Game.DomainName);
             await InsertAsync(domain, gameId).ConfigureAwait(false);
             return domain;
         }
@@ -148,8 +144,7 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
         }
     }
 
-    /// <inheritdoc/>
-    public async ValueTask InsertAsync(GameDomain gameDomain, GameId gameId)
+    private async ValueTask InsertAsync(GameDomain gameDomain, GameId gameId)
     {
         // Note(sewer): In theory, there's a race condition in here if multiple threads
         //              try to insert at once. However that should not be a concern here,

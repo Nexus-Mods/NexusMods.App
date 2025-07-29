@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.ProxyConsole.Messages;
 using NexusMods.Sdk.ProxyConsole;
 
@@ -22,13 +22,10 @@ public class ProxiedRenderer : IRenderer
     /// <param name="provider"></param>
     /// <param name="duplexStream"></param>
     /// <returns></returns>
-    public static async Task<(string[] Arguments, IRenderer Renderer)> Create(IServiceProvider provider, Stream duplexStream)
+    public static async Task<(string[]? Arguments, IRenderer Renderer)> Create(IServiceProvider provider, Stream duplexStream)
     {
         var renderer = new ProxiedRenderer(new Serializer(duplexStream, provider.GetRequiredService<IEnumerable<IRenderableDefinition>>()));
-
-        var arguments = await renderer._serializer.SendAndReceiveAsync<ProgramArgumentsResponse, ProgramArgumentsRequest>
-            (new ProgramArgumentsRequest());
-
+        var arguments = await renderer._serializer.SendAndReceiveAsync<ProgramArgumentsResponse, ProgramArgumentsRequest>(new ProgramArgumentsRequest());
         return (arguments.Arguments, renderer);
     }
 

@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,14 +11,15 @@ using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI;
+using NexusMods.App.UI.Settings;
 using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.DataModel.SchemaVersions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
+using NexusMods.Sdk;
 using NexusMods.Settings;
 using NexusMods.SingleProcess;
 using NexusMods.SingleProcess.Exceptions;
@@ -38,7 +41,7 @@ public class Program
         // This code will not work properly if it comes after anything that uses the console. So we need to do this first.
         if (OperatingSystem.IsWindows())
             ConsoleHelper.EnsureConsole();
-        
+
         MainThreadData.SetMainThread();
 
         TelemetrySettings telemetrySettings;
@@ -55,7 +58,7 @@ public class Program
         }
 
         var startupMode = StartupMode.Parse(args);
-        
+
         using var host = BuildHost(
             startupMode,
             telemetrySettings,
@@ -67,14 +70,14 @@ public class Program
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
-        
+
         if (startupMode.RunAsMain)
         {
             var dataModelSettings = services.GetRequiredService<ISettingsManager>().Get<DataModelSettings>();
             var fileSystem = services.GetRequiredService<IFileSystem>();
 
             var modelExists = dataModelSettings.MnemonicDBPath.ToPath(fileSystem).DirectoryExists();
-            
+
             // This will startup the MnemonicDb connection
             var migration = services.GetRequiredService<MigrationService>();
             if (modelExists)
@@ -186,7 +189,7 @@ public class Program
                     return 1;
                 }
             }
-                
+
             await client.ExecuteCommand(startupMode.Args, AnsiConsole.Console);
             return 0;
         }
@@ -260,7 +263,7 @@ public class Program
         .ConfigureLogging((_, builder) => AddLogging(observableTarget, builder, loggingSettings, startupMode))
         .Build();
 
-        return host;
+        return ApplicationConstants.IsDebug ? new DebuggingHost(host) : host;
     }
 
     private static void AddLogging(ObservableLoggingTarget observableLoggingTarget, ILoggingBuilder loggingBuilder, LoggingSettings settings, StartupMode startupMode)
@@ -341,16 +344,95 @@ public class Program
             OriginalArgs = [],
         };
 
-        var host = BuildHost(startupMode, 
-            telemetrySettings: new TelemetrySettings(), 
+        var host = BuildHost(startupMode,
+            telemetrySettings: new TelemetrySettings(),
             LoggingSettings.CreateDefault(OSInformation.Shared),
             experimentalSettings: new ExperimentalSettings()
         );
-        
+
         host.StartAsync().GetAwaiter().GetResult();
-        
+
         DesignerUtils.Activate(host.Services);
-        
+
         return Startup.BuildAvaloniaApp(host.Services);
+    }
+}
+
+file class DebuggingHost : IHost
+{
+    private readonly IHost _inner;
+    private readonly ILogger _logger;
+
+    public DebuggingHost(IHost inner)
+    {
+        _inner = inner;
+        _logger = inner.Services.GetRequiredService<ILogger<DebuggingHost>>();
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken) => _inner.StartAsync(cancellationToken);
+    public Task StopAsync(CancellationToken cancellationToken) => _inner.StopAsync(cancellationToken);
+    public IServiceProvider Services => _inner.Services;
+
+    [SuppressMessage("ReSharper", "LocalizableElement")]
+    public void Dispose()
+    {
+        // NOTE(erri120): I'm doing reflection and you can't stop me.
+        if (_inner.Services is not ServiceProvider services) throw new NotSupportedException();
+
+        var rootPropertyInfo = services.GetType().GetProperty(name: "Root", BindingFlags.Instance | BindingFlags.NonPublic);
+        if (rootPropertyInfo is null) throw new NotSupportedException();
+
+        var root = rootPropertyInfo.GetMethod?.Invoke(services, parameters: null);
+        if (root is not IServiceScope scope) throw new NotSupportedException();
+        if (scope.GetType().Name != "ServiceProviderEngineScope") throw new NotSupportedException();
+
+        var fieldInfo = scope.GetType().GetField("_disposables", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (fieldInfo is null) throw new NotSupportedException();
+
+        var fieldValue = fieldInfo.GetValue(scope);
+        if (fieldValue is not List<object> tempList) throw new NotSupportedException();
+
+        var disposableServices = tempList.ToArray();
+        Log("Disposing `{0}` services", disposableServices.Length);
+
+        Reloaded.Memory.Utilities.Box<bool> didDispose = false;
+
+        _ = Task.Run(async () =>
+        {
+            var delay = TimeSpan.FromSeconds(5);
+            await Task.Delay(delay);
+
+            // ReSharper disable once AccessToModifiedClosure
+            bool isDisposed = didDispose;
+            if (isDisposed) return;
+
+            Log("Failed to dispose `{0}` services withing `{1}` seconds", disposableServices.Length, delay.TotalSeconds);
+            foreach (var disposableService in disposableServices)
+            {
+                var disposableType = disposableService switch
+                {
+                    IDisposable => "sync",
+                    IAsyncDisposable => "async",
+                    _ => throw new NotSupportedException(),
+                };
+
+                Log("Type={0} HashCode={1} DisposableType={2}", disposableService.GetType(), disposableService.GetHashCode(), disposableType);
+            }
+
+            // NOTE(erri120): If you landed here, that means the app is probably stuck shutting down.
+            // Use this opportunity to further debug the issue. You can see all the services that need
+            // disposing by inspecting the variables above and checking the logs.
+            if (Debugger.IsAttached) Debugger.Break();
+            // if (ApplicationConstants.IsCI) Environment.Exit(exitCode: 1);
+        });
+
+        _inner.Dispose();
+        didDispose = true;
+    }
+
+    private void Log(string format, params object?[] arguments)
+    {
+        _logger.LogDebug(format, arguments);
+        if (ApplicationConstants.IsCI) Console.WriteLine(format, arguments);
     }
 }

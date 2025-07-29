@@ -1,8 +1,6 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using NexusMods.App.BuildInfo;
 using R3;
 using ReactiveUI;
 
@@ -15,6 +13,7 @@ public interface IReactiveR3Object : ReactiveUI.IReactiveObject, IDisposable
     bool IsActivated { get; }
     IDisposable Activate();
     void Deactivate();
+    bool IsDisposed { get; }
 }
 
 /// <summary>
@@ -63,6 +62,7 @@ public class ReactiveR3Object : IReactiveR3Object
     }
 
     private bool _isDisposed;
+    public bool IsDisposed => _isDisposed;
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     protected virtual void Dispose(bool disposing)
@@ -113,7 +113,7 @@ public class ReactiveR3Object : IReactiveR3Object
         backingField = newValue;
         RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
     }
-    
+
     /// <summary>
     /// A caller to ReactiveUI's <see cref="IReactiveObjectExtensions.RaiseAndSetIfChanged{TObj,TRet}"/>.
     /// I (Sewer) am not sure why this exists concretely, ask erri120.

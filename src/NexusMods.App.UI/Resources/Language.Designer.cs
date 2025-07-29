@@ -231,11 +231,56 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download.
+        /// </summary>
+        public static string CollectionComponents_DownloadAction_ButtonText_Download {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloaded.
+        /// </summary>
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloaded {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading.
+        /// </summary>
+        public static string CollectionComponents_DownloadAction_ButtonText_Downloading {
+            get {
+                return ResourceManager.GetString("CollectionComponents_DownloadAction_ButtonText_Downloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Third-party download.
+        /// </summary>
+        public static string CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ButtonText_ThirdPartyDownload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible..
         /// </summary>
         public static string CollectionComponents_ExternalDownloadAction_ToolTip {
             get {
                 return ResourceManager.GetString("CollectionComponents_ExternalDownloadAction_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manual download.
+        /// </summary>
+        public static string CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload {
+            get {
+                return ResourceManager.GetString("CollectionComponents_ManualDownloadAction_ButtonText_ManualDownload", resourceCulture);
             }
         }
         
@@ -516,6 +561,26 @@ namespace NexusMods.App.UI.Resources {
         public static string DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics {
             get {
                 return ResourceManager.GetString("DiagnosticListViewModel_DiagnosticListViewModel_Diagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update and Replace is not yet supported for free users in this version of the app.
+        ///
+        ///Click **OK** to visit the mod page for manual update..
+        /// </summary>
+        public static string Dialog_ReplaceNotSupported_Text {
+            get {
+                return ResourceManager.GetString("Dialog_ReplaceNotSupported_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Manual Update Required.
+        /// </summary>
+        public static string Dialog_ReplaceNotSupported_Title {
+            get {
+                return ResourceManager.GetString("Dialog_ReplaceNotSupported_Title", resourceCulture);
             }
         }
         
@@ -953,7 +1018,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Permanently remove this mod from your Library.
+        ///   Looks up a localized string similar to Permanently delete this mod.
         /// </summary>
         public static string FileOriginPage_DeleteMod_ToolTip {
             get {
@@ -998,7 +1063,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Browse Nexus Mods.
+        ///   Looks up a localized string similar to Browse Collections.
         /// </summary>
         public static string FileOriginsPage_BrowseCollectionsNexusMods {
             get {
@@ -1151,7 +1216,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding game.
+        ///   Looks up a localized string similar to Adding....
         /// </summary>
         public static string GameWidget__Adding_game {
             get {
@@ -1169,7 +1234,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Removing game.
+        ///   Looks up a localized string similar to Removing....
         /// </summary>
         public static string GameWidget__Removing_game {
             get {
@@ -1484,7 +1549,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Installed Mods.
+        ///   Looks up a localized string similar to Installed.
         /// </summary>
         public static string LeftMenu_Label_Installed_Mods {
             get {
@@ -1516,6 +1581,228 @@ namespace NexusMods.App.UI.Resources {
         public static string Library_DeselectItemsButton_ToolTip {
             get {
                 return ResourceManager.GetString("Library_DeselectItemsButton_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide updates ({0}).
+        /// </summary>
+        public static string Library_HideUpdates {
+            get {
+                return ResourceManager.GetString("Library_HideUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More options.
+        /// </summary>
+        public static string Library_MoreOptions_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_MoreOptions_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show updates ({0}).
+        /// </summary>
+        public static string Library_ShowUpdates {
+            get {
+                return ResourceManager.GetString("Library_ShowUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update ({0}).
+        /// </summary>
+        public static string Library_Update {
+            get {
+                return ResourceManager.GetString("Library_Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Library_Update_InstalledInMultipleCollections_Cancel {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating will apply to all local collections where the mod is installed:.
+        /// </summary>
+        public static string Library_Update_InstalledInMultipleCollections_Description1 {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Description1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nexus Mods collections you are subscribed to will not be affected..
+        /// </summary>
+        public static string Library_Update_InstalledInMultipleCollections_Description2 {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Description2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update in {0} collection(s).
+        /// </summary>
+        public static string Library_Update_InstalledInMultipleCollections_Ok {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating mods installed in multiple collections.
+        /// </summary>
+        public static string Library_Update_InstalledInMultipleCollections_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_InstalledInMultipleCollections_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following mod updates couldn’t be downloaded:
+        ///
+        ///{0}.
+        /// </summary>
+        public static string Library_Update_SomeDownloadsFailed_Description {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Library_Update_SomeDownloadsFailed_Option_Cancel {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Option_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retry failed downloads.
+        /// </summary>
+        public static string Library_Update_SomeDownloadsFailed_Option_Retry {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Option_Retry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some Mod Updates Failed to Download.
+        /// </summary>
+        public static string Library_Update_SomeDownloadsFailed_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeDownloadsFailed_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete failed updates.
+        /// </summary>
+        public static string Library_Update_SomeInstallsFailed_DeleteFiles {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_DeleteFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following mod updates couldn&apos;t be installed:
+        ///
+        ///{0}
+        ///
+        ///Keep the downloaded files in your library in case you want to retry the installation later?.
+        /// </summary>
+        public static string Library_Update_SomeInstallsFailed_Description {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep failed updates.
+        /// </summary>
+        public static string Library_Update_SomeInstallsFailed_KeepFiles {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_KeepFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some Mod Updates Failed to Install.
+        /// </summary>
+        public static string Library_Update_SomeInstallsFailed_Title {
+            get {
+                return ResourceManager.GetString("Library_Update_SomeInstallsFailed_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update and keep old mod ({0}).
+        /// </summary>
+        public static string Library_UpdateAndKeepOldMod {
+            get {
+                return ResourceManager.GetString("Library_UpdateAndKeepOldMod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update mod.
+        /// </summary>
+        public static string Library_UpdateMod_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_UpdateMod_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update mod and replace the old version.
+        /// </summary>
+        public static string Library_UpdateModAndReplace_ToolTip {
+            get {
+                return ResourceManager.GetString("Library_UpdateModAndReplace_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View changelog.
+        /// </summary>
+        public static string Library_ViewChangelog_Text {
+            get {
+                return ResourceManager.GetString("Library_ViewChangelog_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View mod page.
+        /// </summary>
+        public static string Library_ViewModPage_Text {
+            get {
+                return ResourceManager.GetString("Library_ViewModPage_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        public static string LibraryComponents_InstallAction_ButtonText_Install {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string LibraryComponents_InstallAction_ButtonText_Installed {
+            get {
+                return ResourceManager.GetString("LibraryComponents_InstallAction_ButtonText_Installed", resourceCulture);
             }
         }
         
@@ -1615,6 +1902,96 @@ namespace NexusMods.App.UI.Resources {
         public static string LibraryPageTitleToolTip {
             get {
                 return ResourceManager.GetString("LibraryPageTitleToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can change the visibility of your collection at any time in the collection settings..
+        /// </summary>
+        public static string Loadout_Dialog_CollectionPublished_FirstPublish_Help {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_CollectionPublished_FirstPublish_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot; has been published as listed. It will appear in search results and may be featured.&quot;.
+        /// </summary>
+        public static string Loadout_Dialog_CollectionPublished_FirstPublish_Listed {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_CollectionPublished_FirstPublish_Listed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot; has been published as unlisted. Only people with the link can view it..
+        /// </summary>
+        public static string Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &quot;{0}&quot; has been published..
+        /// </summary>
+        public static string Loadout_Dialog_CollectionPublished_Revision {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_CollectionPublished_Revision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We recommend you update this revision&apos;s changelog so users can find out what&apos;s new..
+        /// </summary>
+        public static string Loadout_Dialog_CollectionPublished_Revision_Help {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_CollectionPublished_Revision_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can change the visibility at any time in your collection settings..
+        /// </summary>
+        public static string Loadout_Dialog_ShareCollection_ChangeVisibilityMessage {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_ShareCollection_ChangeVisibilityMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anyone can find this in search or see it featured on Nexus Mods..
+        /// </summary>
+        public static string Loadout_Dialog_ShareCollection_ListedExplanation {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_ShareCollection_ListedExplanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Listed - Publicly Visible on Nexus Mods.
+        /// </summary>
+        public static string Loadout_Dialog_ShareCollection_ListedTitle {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_ShareCollection_ListedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only people with the link can view. Not shown in search or featured..
+        /// </summary>
+        public static string Loadout_Dialog_ShareCollection_UnlistedExplanation {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_ShareCollection_UnlistedExplanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlisted - Recommended for Sharing with Friends.
+        /// </summary>
+        public static string Loadout_Dialog_ShareCollection_UnlistedTitle {
+            get {
+                return ResourceManager.GetString("Loadout_Dialog_ShareCollection_UnlistedTitle", resourceCulture);
             }
         }
         
@@ -2361,6 +2738,55 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Go Premium.
+        /// </summary>
+        public static string PremiumDialog_GoPremiumButton {
+            get {
+                return ResourceManager.GetString("PremiumDialog_GoPremiumButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No browser, no manual downloads. Premium users also get:
+        ///
+        ///• Download entire collections with one click
+        ///• Uncapped download speeds
+        ///• No Ads for life, even if you unsubscribe after 1 month!.
+        /// </summary>
+        public static string PremiumDialog_UpdateDescription {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update all your mods, or individual mods, in one click..
+        /// </summary>
+        public static string PremiumDialog_UpdateHeading {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateHeading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update mods manually.
+        /// </summary>
+        public static string PremiumDialog_UpdateManuallyButton {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateManuallyButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go Premium for one-click mod updates.
+        /// </summary>
+        public static string PremiumDialog_UpdateTitle {
+            get {
+                return ResourceManager.GetString("PremiumDialog_UpdateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Total {1:0}%.
         /// </summary>
         public static string ProgressBar_ProgressTextFormat__Total_1_0 {
@@ -2429,6 +2855,15 @@ namespace NexusMods.App.UI.Resources {
         public static string SearchBox__Search {
             get {
                 return ResourceManager.GetString("SearchBox__Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search....
+        /// </summary>
+        public static string SearchBox__Search_Watermark {
+            get {
+                return ResourceManager.GetString("SearchBox__Search_Watermark", resourceCulture);
             }
         }
         

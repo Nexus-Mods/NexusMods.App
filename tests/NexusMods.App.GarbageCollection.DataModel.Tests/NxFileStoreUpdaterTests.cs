@@ -2,16 +2,16 @@ using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.FileStore.Nx.Models;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Archives.Nx.Headers;
 using NexusMods.DataModel;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
-using NexusMods.Paths.Extensions;
 using NexusMods.Paths.Extensions.Nx.FileProviders;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
+
 namespace NexusMods.App.GarbageCollection.DataModel.Tests;
 
 public class NxFileStoreUpdaterTests(IFileStore fileStore, IConnection connection, NxFileStore nxFileStore)

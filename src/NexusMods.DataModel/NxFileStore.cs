@@ -3,9 +3,6 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileStore.Nx.Models;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.ChunkedStreams;
-using NexusMods.Abstractions.MnemonicDB.Attributes;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Archives.Nx.FileProviders;
 using NexusMods.Archives.Nx.Headers;
@@ -16,13 +13,14 @@ using NexusMods.Archives.Nx.Packing.Unpack;
 using NexusMods.Archives.Nx.Structs;
 using NexusMods.Archives.Nx.Utilities;
 using NexusMods.Hashing.xxHash3;
-using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
-#if DEBUG
+using NexusMods.Sdk.Hashes;
+using NexusMods.Sdk.Threading;
 using System.Diagnostics;
-#endif
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.DataModel;
 
@@ -46,7 +44,7 @@ public class NxFileStore : IFileStore
         IFileSystem fileSystem)
     {
         var settings = settingsManager.Get<DataModelSettings>();
-        
+
         _archiveLocations = settings.ArchiveLocations.Select(f => f.ToPath(fileSystem)).ToArray();
         foreach (var location in _archiveLocations)
         {
@@ -73,7 +71,7 @@ public class NxFileStore : IFileStore
         var hasAnyFiles = backups.Any();
         if (hasAnyFiles == false)
             return;
-     
+
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
         var streams = new List<Stream>();
@@ -81,7 +79,7 @@ public class NxFileStore : IFileStore
         {
             if (deduplicate && await HaveFile(backup.Hash))
                 continue;
-            
+
             var stream = await backup.StreamFactory.GetStreamAsync();
             streams.Add(stream);
             builder.AddFile(stream, new AddFileParams
@@ -148,7 +146,7 @@ public class NxFileStore : IFileStore
     public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
     {
         using var lck = _lock.ReadLock();
-        
+
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
@@ -185,7 +183,7 @@ public class NxFileStore : IFileStore
             }
             else
             {
-                throw new FileNotFoundException($"Missing archive for {file.Hash.ToHex()}");
+                throw new MissingArchiveException(file.Hash, file.Dest);
             }
         });
 
@@ -210,7 +208,7 @@ public class NxFileStore : IFileStore
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "Failed to extract files");
                 throw;
             }
 
@@ -225,7 +223,7 @@ public class NxFileStore : IFileStore
     public Task<Dictionary<Hash, byte[]>> ExtractFiles(IEnumerable<Hash> files, CancellationToken token = default)
     {
         using var lck = _lock.ReadLock();
-        
+
         // Group the files by archive.
         // In almost all cases, everything will go in one archive, except for cases
         // of duplicate files between different mods.
@@ -240,10 +238,10 @@ public class NxFileStore : IFileStore
 
         Parallel.ForEach(filesArr, hash =>
         {
-            #if DEBUG
+#if DEBUG
             if (!processedHashes.TryAdd(hash, 0))
                 throw new Exception($"Duplicate hash found: {hash.ToHex()}");
-            #endif
+#endif
 
             if (TryGetLocation(_conn.Db, hash, fileExistsCache,
                     out var archivePath, out var fileEntry))
@@ -256,7 +254,7 @@ public class NxFileStore : IFileStore
             }
             else
             {
-                throw new Exception($"Missing archive for {hash.ToHex()}");
+                throw new MissingArchiveException(hash);
             }
         });
 
@@ -291,11 +289,11 @@ public class NxFileStore : IFileStore
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
-        
+
         using var lck = _lock.ReadLock();
         if (!TryGetLocation(_conn.Db, hash, null,
                 out var archivePath, out var entry))
-            throw new Exception($"Missing archive for {hash.ToHex()}");
+            throw new MissingArchiveException(hash);
 
         var file = archivePath.Read();
 
@@ -310,24 +308,24 @@ public class NxFileStore : IFileStore
     {
         if (hash == Hash.Zero)
             throw new ArgumentNullException(nameof(hash));
-        
+
         using var lck = _lock.ReadLock();
         if (!TryGetLocation(_conn.Db, hash, null,
                 out var archivePath, out var entry))
-            throw new Exception($"Missing archive for {hash.ToHex()}");
-        
+            throw new MissingArchiveException(hash);
+
         var file = archivePath.Read();
 
         var provider = new FromStreamProvider(file);
         var unpacker = new NxUnpacker(provider);
-        
+
         var output = new OutputArrayProvider("", entry);
-        
+
         unpacker.ExtractFiles([output], new UnpackerSettings()
         {
-            MaxNumThreads = 1, 
+            MaxNumThreads = 1,
         });
-        
+
         return Task.FromResult(output.Data);
     }
 
@@ -335,7 +333,7 @@ public class NxFileStore : IFileStore
     public HashSet<ulong> GetFileHashes()
     {
         using var lck = _lock.ReadLock();
-        
+
         // Build a Hash Table of all currently known files. We do this to deduplicate files between downloads.
         var fileHashes = new HashSet<ulong>();
 
@@ -367,7 +365,7 @@ public class NxFileStore : IFileStore
         public Size Size => Size.From(_entry.DecompressedSize);
         public Size ChunkSize => Size.From((ulong)_header.Header.ChunkSizeBytes);
         public ulong ChunkCount => (ulong)_entry.GetChunkCount(_header.Header.ChunkSizeBytes);
-        
+
         public ulong GetOffset(ulong chunkIndex)
         {
             return (ulong)_header.Header.ChunkSizeBytes * chunkIndex;
@@ -551,7 +549,7 @@ public class NxFileStore : IFileStore
             {
                 var combined = location.Combine(entry.Container.Path);
                 var fileExists = existsCache?.GetOrAdd(combined, path => path.FileExists) ?? combined.FileExists;
-                if (!fileExists) 
+                if (!fileExists)
                     continue;
 
                 archivePath = combined;

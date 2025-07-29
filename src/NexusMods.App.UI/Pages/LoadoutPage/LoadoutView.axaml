@@ -10,29 +10,60 @@
     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
     xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+    xmlns:search="clr-namespace:NexusMods.App.UI.Controls.Search"
     xmlns:sorting="clr-namespace:NexusMods.App.UI.Pages.Sorting"
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="NexusMods.App.UI.Pages.LoadoutPage.LoadoutView">
 
-    <Grid RowDefinitions="Auto, *">
-        
+    <Grid RowDefinitions="Auto, Auto, *">
+
         <!-- different page header if it's a collection (i.e. My Mods) or if it's just All mods -->
-        <Panel Grid.Row="0" Margin="24 24 24 0" >
-            <pageHeader:PageHeader x:Name="WritableCollectionPageHeader"
-                                   Icon="{x:Static icons:IconValues.PictogramCollection3D}"
-                                   Description="Your private collection of installed mods." />
-        
+        <Panel Grid.Row="0" Margin="24 24 24 0">
+
+            <DockPanel x:Name="WritableCollectionPageHeader">
+                <Button x:Name="ButtonAddTileImage"
+                        Margin="0 0 12 0"
+                        Width="48"
+                        Height="60"
+                        Background="{StaticResource SurfaceTranslucentMidBrush}">
+                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CameraPlus}"/>
+                </Button>
+                <Border x:Name="UnpublishedHeaderBorder"
+                        Width="60"
+                        Height="60"
+                        Margin="0,0,8,0"
+                        DockPanel.Dock="Left"
+                        VerticalAlignment="Top">
+                    <icons:UnifiedIcon Size="60" x:Name="Icon"
+                                       Value="{x:Static icons:IconValues.PictogramCollection3D}" />
+                </Border>
+
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                    <TextBlock x:Name="DescriptionTextBlock"
+                               Theme="{StaticResource BodyMDSemiTheme}"
+                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                               TextWrapping="Wrap"
+                               Text="Collection" />
+                    <TextBlock x:Name="TitleTextBlock"
+                               Theme="{StaticResource HeadingMDSemiTheme}"
+                               Foreground="{StaticResource NeutralTranslucentModerateBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Text="Collection Name" />
+                </StackPanel>
+            </DockPanel>
+
             <pageHeader:PageHeader x:Name="AllPageHeader"
                                    Icon="{x:Static icons:IconValues.PictogramPlaylistAdd}"
                                    Title="All"
                                    Description="A combined view of all your installed mods from all collections." />
         </Panel>
-        
+
         <!-- tabs -->
-        
+
         <!-- Temp top margin as we don't have a proper PageHeader on this view yet -->
-        <TabControl Grid.Row="1" x:Name="RulesTabControl" Margin="0 12 0 0">
+        <TabControl Grid.Row="2" x:Name="RulesTabControl" Margin="0 24 0 0">
             <!-- mods tab -->
             <TabItem x:Name="ModsTabItem">
                 <TabItem.Header>
@@ -44,25 +75,163 @@
                     </StackPanel>
                 </TabItem.Header>
 
-                <Grid RowDefinitions="Auto, *">
-                    
-                    <controls:Toolbar Grid.Row="0" Margin="24,12, 24, 0">
+                <Grid RowDefinitions="Auto, Auto, *">
+
+                    <!-- STATUSBAR -->
+
+                    <controls:Statusbar Grid.Row="0" x:Name="Statusbar">
+
+                        <StackPanel>
+                            <controls:StandardButton Size="Toolbar"
+                                                     Fill="Weak"
+                                                     Type="Tertiary"
+                                                     LeftIcon="{x:Static icons:IconValues.MoreVertical}"
+                                                     ShowIcon="Left"
+                                                     ShowLabel="False">
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <!-- not used yet as we don't show local collections in Library -> Collections tab yet -->
+                                        <MenuItem IsVisible="False">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.LibraryOutline}" />
+                                            </MenuItem.Icon>
+                                            <MenuItem.Header>
+                                                <TextBlock Text="View Library" />
+                                            </MenuItem.Header>
+                                        </MenuItem>
+
+                                        <MenuItem x:Name="MenuItemRenameCollection">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.FileEdit}" />
+                                            </MenuItem.Icon>
+                                            <MenuItem.Header>
+                                                <TextBlock Text="Rename Collection" />
+                                            </MenuItem.Header>
+                                        </MenuItem>
+
+                                        <MenuItem x:Name="MenuItemDeleteCollection" Classes="Critical">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.DeleteForever}" />
+                                            </MenuItem.Icon>
+                                            <MenuItem.Header>
+                                                <TextBlock Text="Delete Collection" />
+                                            </MenuItem.Header>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+                            </controls:StandardButton>
+                        </StackPanel>
+
+                        <!-- share and visibility buttons -->
+                        <StackPanel x:Name="PanelShare" Spacing="8">
+                            <Separator />
+
+                            <controls:StandardButton x:Name="ButtonShareCollection"
+                                                     Text="Share"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
+                                                     Type="Tertiary"
+                                                     LeftIcon="{x:Static icons:IconValues.Upload}"
+                                                     ShowIcon="Left" />
+
+                            <StackPanel x:Name="VisibilityButtonStack" Orientation="Horizontal" Spacing="8">
+                                <controls:StandardButton x:Name="ButtonChangeVisibility"
+                                                         Text="Visibility"
+                                                         Size="Toolbar"
+                                                         Fill="Weak"
+                                                         Type="Tertiary"
+                                                         LeftIcon="{x:Static icons:IconValues.VisibilityUnlisted}"
+                                                         ShowIcon="Left" />
+                                <controls:StandardButton x:Name="ButtonOpenRevisionUrl"
+                                                         Size="Toolbar"
+                                                         Fill="Weak"
+                                                         Type="Tertiary"
+                                                         LeftIcon="{x:Static icons:IconValues.OpenInNew}"
+                                                         ShowIcon="Left"
+                                                         ShowLabel="False" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel x:Name="PanelPublish" Orientation="Horizontal" Spacing="8">
+                            <!-- publish button -->
+                            <Separator />
+                            <SplitButton x:Name="SplitButtonPublishCollection"
+                                         Classes="StandardSplitButton ExtraSmall">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}" />
+                                    <TextBlock Text="Publish" />
+                                </StackPanel>
+                                <SplitButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="MenuItemUploadDraft" Header="Upload changes as draft">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Upload}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                        <MenuItem x:Name="MenuItemDiscardChanges" Header="Discard changes"
+                                                  IsVisible="False">
+                                            <MenuItem.Icon>
+                                                <icons:UnifiedIcon Value="{x:Static icons:IconValues.Close}" />
+                                            </MenuItem.Icon>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
+
+                            <TextBlock x:Name="RevisionText" Text="Revision 1"
+                                       Foreground="{StaticResource NeutralTranslucentStrongBrush}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <controls:Divider />
+
+                                <StackPanel x:Name="PublishedStatusStack" Orientation="Horizontal" Spacing="8">
+
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <icons:UnifiedIcon Value="{x:Static icons:IconValues.CloudUpload}"
+                                                           Foreground="{StaticResource SuccessStrongBrush}" />
+                                        <TextBlock Text="Published"
+                                                   Foreground="{StaticResource SuccessStrongBrush}" />
+                                    </StackPanel>
+
+                                    <TextBlock x:Name="LastUploadedText" Text="1 min ago"
+                                               Foreground="{StaticResource NeutralSubduedBrush}" />
+                                </StackPanel>
+
+                                <StackPanel x:Name="HasChangesStatusStack" Orientation="Horizontal" Spacing="8"
+                                            IsVisible="False">
+                                    <TextBlock Text="Draft"
+                                               Foreground="{StaticResource NeutralStrongBrush}" />
+                                    <TextBlock Text="Not uploaded"
+                                               Foreground="{StaticResource NeutralSubduedBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </controls:Statusbar>
+
+                    <!-- TOOLBAR (starts off hidden) -->
+
+                    <controls:Toolbar Grid.Row="1" Margin="24,12, 24, 0">
+                        <ItemsControl>
+                            <search:SearchControl x:Name="SearchControl"
+                                                  PageName="Loadout"
+                                                  ButtonSize="Toolbar" />
+                        </ItemsControl>
+
                         <!-- selection related button group -->
-                        <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl x:Name="ContextControlGroup">
 
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"
                                                      Size="Toolbar"
-                                                     Fill="WeakAlt"
+                                                     Fill="Weak"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                                      ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
-                            
+
                             <navigation:NavigationControl x:Name="ViewFilesButton"
                                                           Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
                                                           Type="Tertiary"
-                                                          Size="Small"
-                                                          Fill="WeakAlt"
+                                                          Size="Toolbar"
+                                                          Fill="Weak"
                                                           ShowIcon="Left"
                                                           LeftIcon="{x:Static icons:IconValues.Folder}"
                                                           ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}" />
@@ -70,19 +239,22 @@
                             <controls:StandardButton x:Name="DeleteButton"
                                                      Text="{x:Static resources:Language.LoadoutGridView__Remove}"
                                                      Type="Tertiary"
-                                                     Size="Small"
-                                                     Fill="WeakAlt"
+                                                     Size="Toolbar"
+                                                     Fill="Weak"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.PlaylistRemove}"
                                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />
                         </ItemsControl>
                     </controls:Toolbar>
-                    
-                    <controls:EmptyState Grid.Row="1" x:Name="EmptyState" Header="Header">
+
+                    <!-- TREEDATAGRID -->
+
+                    <controls:EmptyState Grid.Row="2" x:Name="EmptyState" Header="Header">
 
                         <controls:EmptyState.Subtitle>
                             <StackPanel Orientation="Vertical" Spacing="16">
-                                <TextBlock Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
+                                <TextBlock
+                                    Text="{x:Static resources:Language.LoadoutGrid_EmptyModlistSubtitle_Add_from_library}" />
                                 <navigation:NavigationControl x:Name="ViewLibraryButton"
                                                               Text="{x:Static resources:Language.LibraryPageTitle}"
                                                               ShowIcon="Left"
@@ -95,11 +267,12 @@
                                       ShowColumnHeaders="True"
                                       CanUserResizeColumns="True"
                                       CanUserSortColumns="True"
-                                      Classes="MainListsStyling" />
+                                      Classes="MainListsStyling"
+                                      Margin="0 8 0 0" />
                     </controls:EmptyState>
                 </Grid>
             </TabItem>
-            
+
             <!-- rules tab -->
             <TabItem x:Name="RulesTabItem">
                 <TabItem.Header>
@@ -107,9 +280,9 @@
                         <TextBlock Text="Rules" />
                     </StackPanel>
                 </TabItem.Header>
-                
+
                 <sorting:SortingSelectionView x:Name="SortingSelectionView" Margin="24 12 24 0" />
-                    
+
             </TabItem>
 
         </TabControl>

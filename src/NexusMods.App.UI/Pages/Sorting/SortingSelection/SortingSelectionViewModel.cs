@@ -48,7 +48,7 @@ public class SortingSelectionViewModel : AViewModel<ISortingSelectionViewModel>,
                     Context = new LoadoutPageContext()
                     {
                         LoadoutId = loadoutId,
-                        GroupScope = Optional<LoadoutItemGroupId>.None,
+                        GroupScope = Optional<CollectionGroupId>.None,
                         SelectedSubTab = LoadoutPageSubTabs.Rules,
                     },
                 };

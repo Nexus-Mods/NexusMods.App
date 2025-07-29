@@ -2,8 +2,8 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.CrossPlatform;
 
@@ -48,7 +48,7 @@ public record LoggingSettings : ISettings
     /// <summary>
     /// When enabled, logs will be written to the console as well as the log file.
     /// </summary>
-    public bool LogToConsole { get; [UsedImplicitly] set; } = CompileConstants.IsDebug;
+    public bool LogToConsole { get; [UsedImplicitly] set; } = ApplicationConstants.IsDebug;
 
     /// <summary>
     /// Gets the retention span for process logs.

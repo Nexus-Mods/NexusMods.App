@@ -110,7 +110,7 @@ public class GameLoadoutsSectionEntryViewModel : AViewModel<IGameLoadoutsSection
                         Context = new LoadoutPageContext
                         {
                             LoadoutId = loadoutId,
-                            GroupScope = Optional<LoadoutItemGroupId>.None,
+                            GroupScope = Optional<CollectionGroupId>.None,
                         },
                     },
                     () => new LoadoutContext

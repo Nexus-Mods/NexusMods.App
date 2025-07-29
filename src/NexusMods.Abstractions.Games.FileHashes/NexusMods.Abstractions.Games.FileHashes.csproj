@@ -8,12 +8,16 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\NexusMods.Abstractions.EpicGameStore\NexusMods.Abstractions.EpicGameStore.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Steam\NexusMods.Abstractions.Steam.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Cli\NexusMods.Abstractions.Cli.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\NexusMods.Abstractions.GameLocators\NexusMods.Abstractions.GameLocators.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.GOG\NexusMods.Abstractions.GOG.csproj" />
-        <ProjectReference Include="..\NexusMods.Abstractions.MnemonicDB.Attributes\NexusMods.Abstractions.MnemonicDB.Attributes.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Attributes\EpicGameStore\" />
     </ItemGroup>
 
 </Project>

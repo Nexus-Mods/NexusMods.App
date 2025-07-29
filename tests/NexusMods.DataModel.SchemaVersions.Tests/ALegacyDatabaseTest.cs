@@ -10,22 +10,29 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
+using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
-using NexusMods.App.BuildInfo;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform;
 using NexusMods.FileExtractor;
 using NexusMods.FileExtractor.FileSignatures;
 using NexusMods.Games.FileHashes;
 using NexusMods.Games.StardewValley;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.HttpDownloader;
+using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.Errors;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 using NexusMods.Settings;
 using NexusMods.StandardGameLocators;
 using NexusMods.StandardGameLocators.TestHelpers;
+using NSubstitute;
+using NSubstitute.Core.Arguments;
+using NSubstitute.Core.DependencyInjection;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
@@ -52,7 +59,15 @@ public abstract class ALegacyDatabaseTest
         
         const KnownPath baseKnownPath = KnownPath.EntryDirectory;
         var baseDirectory = $"NexusMods.UI.Tests.Tests-{Guid.NewGuid()}";
-        
+
+        var mock = Substitute.For<IGraphQlClient>();
+        mock.QueryCollectionId(CollectionSlug.DefaultValue, CancellationToken.None).ReturnsForAnyArgs(callInfo =>
+        {
+            var slug = callInfo.Arg<CollectionSlug>();
+            var id = slug.Value.xxHash3AsUtf8().Value;
+            return new GraphQlResult<CollectionId, NotFound>(CollectionId.From(id));
+        });
+
         return services
             .AddSingleton<TimeProvider>(_ => TimeProvider.System)
             .AddLogging(builder => builder.AddXUnit())
@@ -78,6 +93,7 @@ public abstract class ALegacyDatabaseTest
             })
             .AddStandardGameLocators(registerConcreteLocators:false, registerHeroic:false, registerWine: false)
             .AddSingleton<ITestOutputHelperAccessor>(_ => new Accessor { Output = _helper })
+            .AddSingleton(mock)
             .Validate();
     }
     

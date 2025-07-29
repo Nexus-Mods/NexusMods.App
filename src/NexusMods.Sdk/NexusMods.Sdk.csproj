@@ -2,9 +2,13 @@
     <!-- NuGet Package Shared Details -->
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
     <ItemGroup>
+        <PackageReference Include="BitFaster.Caching" />
         <PackageReference Include="DynamicData" />
         <PackageReference Include="MemoryPack" />
+        <PackageReference Include="Microsoft.Extensions.Options" />
         <PackageReference Include="NexusMods.Hashing.xxHash3" />
+        <PackageReference Include="NexusMods.MnemonicDB.Abstractions" />
+        <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="NexusMods.Paths" />
         <PackageReference Include="OneOf" />
         <PackageReference Include="Polly.Core" />
@@ -12,9 +16,76 @@
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="TransparentValueObjects.Abstractions" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <BuildDateOutput>$(BaseIntermediateOutputPath)buildDate.txt</BuildDateOutput>
+    </PropertyGroup>
+
+    <Target Name="WriteCurrentDate" BeforeTargets="BeforeBuild">
+        <MakeDir Directories="$(BaseIntermediateOutputPath)" />
+        <Exec Condition="'$(OS)' != 'Windows_NT'" Command="bash -c &quot;date -u +%Y-%m-%dT%H:%M:%SZ &gt; $(BuildDateOutput)&quot;"  />
+        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Get-Date -Format o | Out-File -FilePath '$(BuildDateOutput)' -Encoding UTF8&quot;" />
+    </Target>
+
+    <Target Name="EmbedOutput" AfterTargets="WriteCurrentDate">
+        <Error Condition="!Exists('$(BuildDateOutput)')" Text="Failed to embed file $(BuildDateOutput)" />
+
+        <ItemGroup>
+            <EmbeddedResource Include="$(BuildDateOutput)" LogicalName="buildDate.txt" />
+        </ItemGroup>
+    </Target>
+
     <ItemGroup>
         <Compile Update="ProxyConsole\DelegateParser.cs">
             <DependentUpon>IOptionParser.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Md5Attribute.cs">
+          <DependentUpon>Md5Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Md5JsonConverter.cs">
+          <DependentUpon>Md5Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Sha1Attribute.cs">
+          <DependentUpon>Sha1Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Sha1JsonConverter.cs">
+          <DependentUpon>Sha1Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Crc32JsonConverter.cs">
+          <DependentUpon>Crc32Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Hashes\Crc32Attribute.cs">
+          <DependentUpon>Crc32Value.cs</DependentUpon>
+        </Compile>
+        <Compile Update="EnvironmentVariableNames.cs">
+          <DependentUpon>EnvironmentVariables.cs</DependentUpon>
+        </Compile>
+        <Compile Update="InstallationMethod.cs">
+          <DependentUpon>ApplicationConstants.cs</DependentUpon>
+        </Compile>
+        <Compile Update="UserAgent.cs">
+          <DependentUpon>ApplicationConstants.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\ResourceLoader.cs">
+          <DependentUpon>IResourceLoader.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\ANestedResourceLoader.cs">
+          <DependentUpon>IResourceLoader.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\DB\PersistedDbResource.cs">
+          <DependentUpon>PersistedDbResourceLoader.cs</DependentUpon>
+        </Compile>
+        <Compile Update="IO\EmbededResourceStreamFactory.cs">
+          <DependentUpon>IStreamFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="IO\NativeFileStreamFactory.cs">
+          <DependentUpon>IStreamFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="IO\MemoryStreamFactory.cs">
+          <DependentUpon>IStreamFactory.cs</DependentUpon>
+        </Compile>
+        <Compile Update="IO\IChunkedStreamSource.cs">
+          <DependentUpon>ChunkedStream.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 </Project>

@@ -17,8 +17,10 @@ using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using NuGet.Versioning;
 using NexusMods.Paths;
+using R3;
 
 namespace NexusMods.App.UI.Pages;
 
@@ -26,12 +28,14 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 {
     private readonly IConnection _connection;
     private readonly IModUpdateService _modUpdateService;
+    private readonly IModUpdateFilterService _modUpdateFilterService;
     private readonly Lazy<IResourceLoader<EntityId, Bitmap>> _thumbnailLoader;
 
     public NexusModsDataProvider(IServiceProvider serviceProvider)
     {
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _modUpdateService = serviceProvider.GetRequiredService<IModUpdateService>();
+        _modUpdateFilterService = serviceProvider.GetRequiredService<IModUpdateFilterService>();
 
         _thumbnailLoader = new Lazy<IResourceLoader<EntityId, Bitmap>>(() => ImagePipelines.GetModPageThumbnailPipeline(serviceProvider));
     }
@@ -100,7 +104,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             ChildrenObservable = childrenObservable,
         };
 
-        parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+        parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: modPage.Name));
         parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
         // Size: sum of library files
@@ -142,7 +146,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 return max.Value.rawVersion;
             });
 
-        parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(
+        parentItemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(
             initialValue: string.Empty,
             valueObservable: currentVersionObservable
         ));
@@ -160,7 +164,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
             componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
-                currentVersion: new StringComponent(
+                currentVersion: new VersionComponent(
                     initialValue: string.Empty,
                     valueObservable: currentUpdateVersionObservable
                 ),
@@ -170,11 +174,10 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
         );
 
         // Update button
-        var newestFiles = _modUpdateService.GetNewestModPageVersionObservable(modPage);
-
+        var updatesOnPage = _modUpdateService.GetNewestModPageVersionObservable(modPage);
         parentItemModel.AddObservable(
             key: LibraryColumns.Actions.UpdateComponentKey,
-            observable: newestFiles,
+            observable: updatesOnPage,
             componentFactory: static (valueObservable, initialValue) => new LibraryComponents.UpdateAction(
                 initialValue,
                 valueObservable
@@ -198,6 +201,21 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             });
 
         LibraryDataProviderHelper.AddInstallActionComponent(parentItemModel, matchesObservable, libraryItems.TransformImmutable(static x => x.AsLibraryItem()));
+        LibraryDataProviderHelper.AddViewChangelogActionComponent(parentItemModel);
+        LibraryDataProviderHelper.AddViewModPageActionComponent(parentItemModel);
+
+        var updatesOnPageUnfiltered = _modUpdateService.GetNewestModPageVersionObservableUnfiltered(modPage);
+        
+        // Note(sewer):
+        // Hide the button if there are no updates available for any files on this mod page
+        // BUT
+        // We have to be very careful here! We only hide if we have the latest version of the mods
+        // from the mod page! If there is an update that's hidden, we still have to show the button,
+        // else the user has no way to unhide the update.
+        var isVisibleObservable = updatesOnPageUnfiltered
+            .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
+            .ToObservable();
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService, isVisibleObservable);
 
         return parentItemModel;
     }
@@ -212,15 +230,17 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
 
         var itemModel = new CompositeItemModel<EntityId>(libraryItem.Id);
 
-        itemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: fileMetadata.Name));
+        itemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: fileMetadata.Name));
         itemModel.Add(LibraryColumns.DownloadedDate.ComponentKey, new DateComponent(value: libraryItem.GetCreatedAt()));
-        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new StringComponent(value: fileMetadata.Version));
+        itemModel.Add(LibraryColumns.ItemVersion.CurrentVersionComponentKey, new VersionComponent(value: fileMetadata.Version));
 
         if (libraryItem.FileMetadata.Size.TryGet(out var size))
             itemModel.Add(SharedColumns.ItemSize.ComponentKey, new SizeComponent(value: size));
 
         LibraryDataProviderHelper.AddInstalledDateComponent(itemModel, linkedLoadoutItemsObservable);
         LibraryDataProviderHelper.AddInstallActionComponent(itemModel, libraryItem.AsLibraryItem(), linkedLoadoutItemsObservable);
+        LibraryDataProviderHelper.AddViewChangelogActionComponent(itemModel);
+        LibraryDataProviderHelper.AddViewModPageActionComponent(itemModel);
 
         // Update available
         var newestVersionObservable = _modUpdateService
@@ -232,7 +252,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             key: LibraryColumns.ItemVersion.NewVersionComponentKey,
             observable: newestVersionObservable,
             componentFactory: (valueObservable, initialValue) => new LibraryComponents.NewVersionAvailable(
-                currentVersion: new StringComponent(value: libraryItem.FileMetadata.Version),
+                currentVersion: new VersionComponent(value: libraryItem.FileMetadata.Version),
                 newVersion: initialValue,
                 newVersionObservable: valueObservable
             )
@@ -249,6 +269,20 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 valueObservable
             )
         );
+
+        var newestFileUnfiltered = _modUpdateService.GetNewestFileVersionObservableUnfiltered(fileMetadata);
+        
+        // Note(sewer):
+        // Hide the button if there are no updates available for this mod.
+        // BUT
+        // We have to be very careful here! We only hide if we have the latest version of the mods
+        // from the mod page! If there is an update that's hidden, we still have to show the button,
+        // else the user has no way to unhide the update.
+        var isVisibleObservable = newestFileUnfiltered
+            .Select(optional => optional.HasValue)
+            .ToObservable();
+        
+        LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService, isVisibleObservable);
 
         return itemModel;
     }
@@ -290,7 +324,7 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
                 ChildrenObservable = childrenObservable,
             };
 
-            parentItemModel.Add(SharedColumns.Name.StringComponentKey, new StringComponent(value: modPage.Name));
+            parentItemModel.Add(SharedColumns.Name.NameComponentKey, new NameComponent(value: modPage.Name));
             parentItemModel.Add(SharedColumns.Name.ImageComponentKey, ImageComponent.FromPipeline(_thumbnailLoader.Value, modPage.Id, initialValue: ImagePipelines.ModPageThumbnailFallback));
 
             LoadoutDataProviderHelper.AddDateComponent(parentItemModel, modPage.GetCreatedAt(), linkedItemsObservable);

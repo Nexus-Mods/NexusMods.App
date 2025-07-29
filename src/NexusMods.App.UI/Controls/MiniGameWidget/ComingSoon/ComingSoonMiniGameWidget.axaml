@@ -1,0 +1,54 @@
+﻿<reactiveUi:ReactiveUserControl
+    mc:Ignorable="d"
+    x:Class="NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon.ComingSoonMiniGameWidget"
+    x:TypeArguments="comingSoon:IComingSoonMiniGameWidgetViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+    xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+    xmlns:comingSoon="clr-namespace:NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon"
+    d:DataContext="{x:Static comingSoon:ComingSoonMiniGameWidgetViewModelDesignViewModel.Instance}">
+
+    <Border x:Name="MiniGameWidgetBorder"
+            BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="12"
+            Width="194">
+
+        <Grid RowDefinitions="Auto, *, Auto">
+
+            <!-- Thumbnail -->
+            <Panel Grid.Row="0" HorizontalAlignment="Left" Margin="0 0 0 8">
+                <icons:UnifiedIcon Value="{x:Static icons:IconValues.GamepadOutline}"
+                                   Width="48"
+                                   Height="48"
+                                   Foreground="{StaticResource NeutralStrongBrush}"/>
+                <Border x:Name="ThumbnailBorder"
+                        CornerRadius="8"
+                        BorderBrush="{StaticResource StrokeTranslucentWeakBrush}"
+                        BorderThickness="1">
+                </Border>
+            </Panel>
+
+            <!-- Details -->
+            <StackPanel Grid.Row="1" Spacing="4" Margin="0 0 0 8">
+                <TextBlock x:Name="NameTextBlock"
+                           Text="More games coming soon..."
+                           Theme="{StaticResource BodyMDSemiTheme}"
+                           Foreground="{StaticResource NeutralModerateBrush}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+
+            <!-- Buttons -->
+            <controls:StandardButton Grid.Row="2" x:Name="ButtonViewRoadmap"
+                                     LeftIcon="{x:Static icons:IconValues.OpenInNew }"
+                                     ShowIcon="Left"
+                                     Text="View roadmap" />
+        </Grid>
+    </Border>
+
+</reactiveUi:ReactiveUserControl>

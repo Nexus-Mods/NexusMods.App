@@ -13,8 +13,8 @@ using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
-using NexusMods.App.BuildInfo;
 using NexusMods.Paths;
+using NexusMods.Sdk;
 
 namespace NexusMods.Telemetry;
 
@@ -42,7 +42,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
         _httpClient = httpClient;
         _writer = new ArrayBufferWriter<byte>();
 
-        if (exceptionSource is not null && !CompileConstants.IsDebug)
+        if (exceptionSource is not null && !ApplicationConstants.IsDebug)
         {
             _disposable = exceptionSource.Exceptions
                 .Select(static msg => msg.Exception)
@@ -205,6 +205,12 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
             {
                 sb.Append("&e_n="); // Event name
                 AppendBytes(metadata.SafeName);
+            }
+
+            if (metadata.Value.HasValue)
+            {
+                sb.Append("&e_v="); // Event value
+                AppendBytes(metadata.SafeValue);
             }
 
             sb.Append("&h="); // The current hour (local time)

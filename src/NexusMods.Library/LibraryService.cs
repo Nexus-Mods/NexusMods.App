@@ -8,6 +8,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
@@ -53,6 +54,104 @@ public sealed class LibraryService : ILibraryService
         return LibraryLinkedLoadoutItem
             .FindByLibraryItem(dbToUse, libraryItem)
             .Select(x => (x.AsLoadoutItem().Loadout, x));
+    }
+
+    public IReadOnlyDictionary<Loadout.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> LoadoutsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems)
+    {
+        var dbToUse = _connection.Db;
+        var result = new Dictionary<Loadout.ReadOnly, List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>>();
+
+        foreach (var libraryItem in libraryItems)
+        {
+            var linkedItems = LibraryLinkedLoadoutItem
+                .FindByLibraryItem(dbToUse, libraryItem)
+                .ToArray();
+                
+            foreach (var linkedItem in linkedItems)
+            {
+                var loadout = linkedItem.AsLoadoutItem().Loadout;
+                if (!result.TryGetValue(loadout, out var list))
+                {
+                    list = new List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>();
+                    result[loadout] = list;
+                }
+                list.Add((libraryItem, linkedItem));
+            }
+        }
+
+        return result.ToDictionary(
+            kvp => kvp.Key,
+            kvp => (IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>)kvp.Value.AsReadOnly()
+        );
+    }
+
+    public IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem, bool excludeReadOnlyCollections = false)
+    {
+        var dbToUse = _connection.Db;
+
+        // Find all linked loadout items for this library item
+        var linkedItems = LibraryLinkedLoadoutItem.FindByLibraryItem(dbToUse, libraryItem);
+
+        foreach (var linkedItem in linkedItems)
+        {
+            // Walk up the parent chain to find the nearest collection group
+            foreach (var parent in linkedItem.AsLoadoutItem().GetThisAndParents())
+            {
+                // First check if it's a LoadoutItemGroup, then if it's a CollectionGroup
+                if (parent.TryGetAsLoadoutItemGroup(out var itemGroup) &&
+                    itemGroup.TryGetAsCollectionGroup(out var collectionGroup))
+                {
+                    // Filter out read-only collections if requested
+                    if (excludeReadOnlyCollections && collectionGroup.IsReadOnly)
+                        break; // Skip this collection but continue looking up the parent chain
+                    
+                    yield return (collectionGroup, linkedItem);
+                    break; // Found the nearest collection, no need to go further up
+                }
+            }
+        }
+    }
+
+    public IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, bool excludeReadOnlyCollections = false)
+    {
+        var dbToUse = _connection.Db;
+        var result = new Dictionary<CollectionGroup.ReadOnly, List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>>();
+        
+        foreach (var libraryItem in libraryItems)
+        {
+            var linkedItems = LibraryLinkedLoadoutItem
+                .FindByLibraryItem(dbToUse, libraryItem)
+                .ToArray();
+                
+            foreach (var linkedItem in linkedItems)
+            {
+                // Walk up the parent chain to find the nearest collection group
+                foreach (var parent in linkedItem.AsLoadoutItem().GetThisAndParents())
+                {
+                    // First check if it's a LoadoutItemGroup, then if it's a CollectionGroup
+                    if (parent.TryGetAsLoadoutItemGroup(out var itemGroup) && 
+                        itemGroup.TryGetAsCollectionGroup(out var collectionGroup))
+                    {
+                        // Filter out read-only collections if requested
+                        if (excludeReadOnlyCollections && collectionGroup.IsReadOnly)
+                            break; // Skip this collection but continue looking up the parent chain
+                        
+                        if (!result.TryGetValue(collectionGroup, out var list))
+                        {
+                            list = new List<(LibraryItem.ReadOnly, LibraryLinkedLoadoutItem.ReadOnly)>();
+                            result[collectionGroup] = list;
+                        }
+                        list.Add((libraryItem, linkedItem));
+                        break; // Found the nearest collection, no need to go further up
+                    }
+                }
+            }
+        }
+        
+        return result.ToDictionary(
+            kvp => kvp.Key,
+            kvp => (IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>)kvp.Value.AsReadOnly()
+        );
     }
 
     public async Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source)
@@ -123,6 +222,16 @@ public sealed class LibraryService : ILibraryService
         RemoveLinkedItemsFromAllLoadouts(libraryItems, tx);
         await tx.Commit();
     }
+
+    public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(
+        LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options)
+    {
+        using var tx = _connection.BeginTransaction();
+        var result = await ReplaceLinkedItemsInAllLoadouts(oldItem, newItem, options, tx);
+        await tx.Commit();
+        return result;
+    }
+
     public async ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx)
     {
         try
@@ -182,7 +291,9 @@ public sealed class LibraryService : ILibraryService
     {
         using var tx = _connection.BeginTransaction();
         var result = await ReplaceLinkedItemsInAllLoadouts(replacements, options, tx);
-        await tx.Commit();
+        if (result == LibraryItemReplacementResult.Success)
+            await tx.Commit();
+
         return result;
     }
 }

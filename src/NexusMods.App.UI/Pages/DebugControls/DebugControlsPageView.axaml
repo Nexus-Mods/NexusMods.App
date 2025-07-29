@@ -313,13 +313,37 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Classes="TabItemHeaderStack">
-                        <TextBlock Text="Overlays" />
+                        <TextBlock Text="Dialogs" />
                     </StackPanel>
                 </TabItem.Header>
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
-                    <StackPanel Spacing="8">
-                        <controls:StandardButton x:Name="GenerateUnhandledException"
-                                                 Text="GenerateUnhandledException" />
+                    <StackPanel Spacing="16" Orientation="Vertical">
+                        <StackPanel Spacing="8">
+                            <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40,40,40"
+                                  ColumnDefinitions="160,60,60">
+ 
+                                <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
+                                <TextBlock Grid.Column="2" Grid.Row="0" Text="Modeless" />
+
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="OkCancel" VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalOkCancel" Click="ShowModalOkCancel_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="1" />
+                                <controls:StandardButton x:Name="ShowModelessOkCancel"
+                                                         Click="ShowModelessOkCancel_OnClick"
+                                                         Text="Open" Grid.Column="2" Grid.Row="1" />
+                                <TextBlock Grid.Column="0" Grid.Row="2" Text="Example Markdown"
+                                           VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalExampleMarkdown"
+                                                         Click="ShowModalExampleMarkdown_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="2" />
+                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Input" VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalInput" Click="ShowModalInput_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="3" />
+                                <TextBlock Grid.Column="0" Grid.Row="4" Text="Custom Content" VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalPremium" Click="ShowModalPremium_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="4" />
+                            </Grid>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </TabItem>
@@ -1023,6 +1047,8 @@
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" ToolTip.Tip="Cog" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.CogOutline}" ToolTip.Tip="CogOutline" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Visibility}" ToolTip.Tip="Visibility" />
+                            <icons:UnifiedIcon Value="{x:Static icons:IconValues.VisibilityOff}"
+                                               ToolTip.Tip="VisibilityOff" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.ViewCarousel}"
                                                ToolTip.Tip="ViewCarousel" />
                             <icons:UnifiedIcon Value="{x:Static icons:IconValues.Sort}" ToolTip.Tip="Sort" />

@@ -10,6 +10,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Threading;
 using R3;
 
 
@@ -118,46 +119,35 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
 
     public override async Task<IReadOnlyList<RedModSortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)
     {
-        var hasEntered = await Semaphore.WaitAsync(SemaphoreTimeout, token);
-        if (!hasEntered) throw new TimeoutException($"Timed out waiting for semaphore in RefreshSortOrder");
-        
-        try
-        {
-            var dbToUse = loadoutDb ?? _connection.Db;
-            
-            var redModsGroups = RedModLoadoutGroup.All(dbToUse)
-                .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
-                .Select(g => new RedModWithState(g, g.RedModFolder(), g.IsEnabled()))
-                .ToList();
-                
-            var oldOrder = OrderCache.Items.OrderBy(item => item.SortIndex).ToList();
-            
-            if (token.IsCancellationRequested) return [];
-            
-            // Update the order
-            var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder, this);
-            
-            if (token.IsCancellationRequested) return [];
+        using var disposableSemaphore = await Semaphore.WaitAsyncDisposable(SemaphoreTimeout, token);
+        if (!disposableSemaphore.HasEntered) throw new TimeoutException($"Timed out waiting for semaphore in SetRelativePosition");
 
-            // Update the database
-            await PersistSortOrder(stagingList, SortOrderEntityId, token);
-            
-            if (token.IsCancellationRequested) return [];
+        var dbToUse = loadoutDb ?? _connection.Db;
 
-            // Update the cache
-            OrderCache.Edit(innerCache =>
-                {
-                    innerCache.Clear();
-                    innerCache.AddOrUpdate(stagingList);
-                }
-            );
-            
-            return stagingList;
-        }
-        finally
+        var redModsGroups = RedModLoadoutGroup.All(dbToUse)
+            .Where(g => g.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId == LoadoutId)
+            .Select(g => new RedModWithState(g, g.RedModFolder(), g.IsEnabled()))
+            .ToList();
+
+        var oldOrder = OrderCache.Items.OrderBy(item => item.SortIndex).ToList();
+        if (token.IsCancellationRequested) return [];
+
+        // Update the order
+        var stagingList = SynchronizeSortingToItems(redModsGroups, oldOrder, this);
+        if (token.IsCancellationRequested) return [];
+
+        // Update the database
+        await PersistSortOrder(stagingList, SortOrderEntityId, token);
+        if (token.IsCancellationRequested) return [];
+
+        // Update the cache
+        OrderCache.Edit(innerCache =>
         {
-            Semaphore.Release();
-        }
+            innerCache.Clear();
+            innerCache.AddOrUpdate(stagingList);
+        });
+   
+        return stagingList;
     }
 
     /// <summary>
@@ -359,6 +349,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
 
     protected override void Dispose(bool disposing)
     {
+        base.Dispose(disposing);
         if (_isDisposed) return;
 
         if (disposing)
@@ -367,8 +358,5 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
         }
 
         _isDisposed = true;
-        
-        base.Dispose(disposing);
     }
-
 }

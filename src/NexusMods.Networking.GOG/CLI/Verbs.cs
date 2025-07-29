@@ -24,7 +24,7 @@ public static class Verbs
             .AddVerb(() => Login)
             .AddVerb(() => Index);
 
-    [Verb("gog login", "Indexes a Steam app and updates the given output folder")]
+    [Verb("gog login", "Logs into GOG")]
     private static async Task<int> Login([Injected] IClient client)
     {
         await client.Login(CancellationToken.None);
@@ -145,7 +145,7 @@ public static class Verbs
                                         offset += chunk.Size;
 
 
-                                        var md5 = Md5.From(MD5.HashData(sized.Span));
+                                        var md5 = Md5Value.From(MD5.HashData(sized.Span));
                                         if (!md5.Equals(chunk.Md5))
                                             throw new InvalidOperationException("MD5 mismatch");
 

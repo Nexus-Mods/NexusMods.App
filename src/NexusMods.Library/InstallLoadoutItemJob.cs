@@ -131,17 +131,24 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
             };
 
             // TODO(erri120): add safeguards to only allow groups to be added to the parent groups
-            var result = await installer.ExecuteAsync(LibraryItem, loadoutGroup, transaction, loadout, context.CancellationToken);
-            if (result.IsNotSupported(out var reason))
+            try
             {
-                if (Logger.IsEnabled(LogLevel.Trace) && !string.IsNullOrEmpty(reason))
-                    Logger.LogTrace("Installer doesn't support library item `{LibraryItem}` because \"{Reason}\"", LibraryItem.Name, reason);
+                var result = await installer.ExecuteAsync(LibraryItem, loadoutGroup, transaction, loadout, context.CancellationToken);
+                if (result.IsNotSupported(out var reason))
+                {
+                    if (Logger.IsEnabled(LogLevel.Trace) && !string.IsNullOrEmpty(reason))
+                        Logger.LogTrace("Installer doesn't support library item `{LibraryItem}` because \"{Reason}\"", LibraryItem.Name, reason);
 
-                continue;
+                    continue;
+                }
+
+                Debug.Assert(result.IsSuccess);
+                return loadoutGroup;
             }
-
-            Debug.Assert(result.IsSuccess);
-            return loadoutGroup;
+            catch (OperationCanceledException ex)
+            {
+                context.CancelAndThrow(ex.Message);
+            }
         }
 
         return null;

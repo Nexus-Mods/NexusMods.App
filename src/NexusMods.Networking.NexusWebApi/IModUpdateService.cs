@@ -36,13 +36,109 @@ public interface IModUpdateService
     /// <summary>
     /// Returns an observable for the newest version of a file.
     /// </summary>
+    /// <param name="current">The current file to listen for changes in.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard notifications about file updates. Return null to discard.
+    ///     If null is passed, default filters will be applied automatically.
+    ///     To get unfiltered data, pass an empty filter function that returns the input unchanged.
+    ///     (or use <see cref="ModUpdateServiceExtensions.GetNewestFileVersionObservableUnfiltered"/>).
+    /// </param>
     /// <returns>An observable that signals an update for a singular mod on a page.</returns>
-    IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current);
+    IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservable(NexusModsFileMetadata.ReadOnly current, Func<ModUpdateOnPage, ModUpdateOnPage?>? select = null);
 
     /// <summary>
-    /// Returns an observable when any file on a mod page is updated. 
+    /// Returns an observable when any file on a mod page is updated.
     /// </summary>
     /// <param name="current">The current mod page to listen for changes in.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard notifications about mod page updates. Return null to discard.
+    ///     If null is passed, default filters will be applied automatically.
+    ///     To get unfiltered data, pass an empty filter function that returns the input unchanged.
+    ///     (or use <see cref="ModUpdateServiceExtensions.GetNewestModPageVersionObservableUnfiltered"/>).
+    /// </param>
     /// <returns>An observable that returns all updated items on a given mod page.</returns>
-    IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current);
+    IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
+
+    /// <summary>
+    /// Checks if a mod page has updates available without creating an observable.
+    /// This is a non-observable version of <see cref="GetNewestModPageVersionObservable"/> that checks the current cache state.
+    /// </summary>
+    /// <param name="current">The current mod page to check for updates.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard update results. Return null to discard.
+    ///     If null is passed, default filters will be applied automatically.
+    /// </param>
+    /// <returns>The current update state for the mod page, if any updates are available.</returns>
+    Optional<ModUpdatesOnModPage> HasModPageUpdatesAvailable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
+
+    /// <summary>
+    /// Returns an observable that emits true when there are any mod updates available in the library, false when there are none.
+    /// This observable monitors the internal update caches and notifies whenever the overall update state changes.
+    /// </summary>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard mod page updates. Return null to discard updates.
+    ///     If null is passed, default filters will be applied automatically.
+    ///     To get unfiltered data, pass an empty filter function that returns the input unchanged.
+    /// </param>
+    /// <returns>An observable that emits the overall update state for the library.</returns>
+    IObservable<bool> HasAnyUpdatesObservable(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
+
+    /// <summary>
+    /// Gets all mod pages that have updates available in the library.
+    /// This method efficiently checks the internal cache for all mod pages with updates.
+    /// </summary>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard mod page updates. Return null to discard updates.
+    ///     If null is passed, default filters will be applied automatically.
+    ///     To get unfiltered data, pass an empty filter function that returns the input unchanged.
+    /// </param>
+    /// <returns>An enumerable of tuples containing mod page IDs and their available updates.</returns>
+    IEnumerable<(NexusModsModPageMetadataId modPageId, ModUpdatesOnModPage updates)> GetAllModPagesWithUpdates(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null);
+}
+
+
+/// <summary>
+/// Extension methods for <see cref="IModUpdateService"/> providing unfiltered access to update data.
+/// </summary>
+public static class ModUpdateServiceExtensions
+{
+    /// <summary>
+    /// Returns an observable for the newest version of a file without applying any default filters.
+    /// Use this when you need access to raw update data.
+    /// </summary>
+    /// <param name="service">The mod update service.</param>
+    /// <param name="current">The current file to listen for changes in.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard notifications about file updates. Return null to discard.
+    ///     Pass an empty function (x => x) if you want truly unfiltered data.
+    /// </param>
+    /// <returns>An observable that signals an update for a singular mod on a page.</returns>
+    public static IObservable<Optional<ModUpdateOnPage>> GetNewestFileVersionObservableUnfiltered(
+        this IModUpdateService service, 
+        NexusModsFileMetadata.ReadOnly current, 
+        Func<ModUpdateOnPage, ModUpdateOnPage?>? select = null)
+    {
+        // Pass an identity function to bypass default filtering
+        return service.GetNewestFileVersionObservable(current, select ?? (x => x));
+    }
+
+    /// <summary>
+    /// Returns an observable when any file on a mod page is updated without applying any default filters.
+    /// Use this when you need access to raw update data.
+    /// </summary>
+    /// <param name="service">The mod update service.</param>
+    /// <param name="current">The current mod page to listen for changes in.</param>
+    /// <param name="select">
+    ///     A selector that can be used to transform or discard notifications about mod page updates. Return null to discard.
+    ///     Pass an empty function (x => x) if you want truly unfiltered data.
+    /// </param>
+    /// <returns>An observable that returns all updated items on a given mod page.</returns>
+    public static IObservable<Optional<ModUpdatesOnModPage>> GetNewestModPageVersionObservableUnfiltered(
+        this IModUpdateService service,
+        NexusModsModPageMetadata.ReadOnly current, 
+        Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
+    {
+        // Pass an identity function to bypass default filtering
+        return service.GetNewestModPageVersionObservable(current, select ?? (x => x));
+    }
 }

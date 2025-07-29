@@ -13,7 +13,6 @@ using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.UI;
-using NexusMods.App.BuildInfo;
 using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.Overlays;
@@ -110,7 +109,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutContext.LoadoutId,
-                    GroupScope = Optional<LoadoutItemGroupId>.None,
+                    GroupScope = Optional<CollectionGroupId>.None,
                 },
             }
         )
@@ -145,7 +144,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
 
                 return new LeftMenuItemWithRightIconViewModel(workspaceController, workspaceId, pageData)
                 {
-                    Text = new StringComponent(revision.Collection.Name),
+                    Text = new StringComponent(initialValue: revision.Collection.Name, CollectionMetadata.Observe(conn, revision.Collection).Select(x => x.Name)),
                     Icon = IconValues.CollectionsOutline,
                     RightIcon = IconValues.Downloading,
                 };
@@ -183,7 +182,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                         Context = new LoadoutPageContext
                         {
                             LoadoutId = loadout,
-                            GroupScope = collection.AsLoadoutItemGroup().LoadoutItemGroupId,
+                            GroupScope = collection.CollectionGroupId,
                         },
                     };
 
@@ -195,7 +194,7 @@ public class LoadoutLeftMenuViewModel : AViewModel<ILoadoutLeftMenuViewModel>, I
                     collection.CollectionGroupId
                 )
                 {
-                    Text = new StringComponent(collection.AsLoadoutItemGroup().AsLoadoutItem().Name),
+                    Text = new StringComponent(initialValue: collection.AsLoadoutItemGroup().AsLoadoutItem().Name, LoadoutItem.Observe(conn, collection).Select(x => x.Name)),
                     Icon = IconValues.CollectionsOutline,
                     IsCollectionReadOnly = collection.IsReadOnly,
                 };

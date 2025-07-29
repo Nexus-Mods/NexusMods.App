@@ -222,7 +222,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
     {
         try
         {
-            return Bitmap.DecodeToWidth(iconStream, 48);
+            return Bitmap.DecodeToWidth(iconStream, (int) ImageSizes.GameThumbnail.Width);
         }
         catch (Exception ex)
         {
@@ -256,7 +256,7 @@ public class SpineViewModel : AViewModel<ISpineViewModel>, ISpineViewModel
                 Context = new LoadoutPageContext
                 {
                     LoadoutId = loadoutId,
-                    GroupScope = Optional<LoadoutItemGroupId>.None,
+                    GroupScope = Optional<CollectionGroupId>.None,
                 }
             },
             () => new LoadoutContext

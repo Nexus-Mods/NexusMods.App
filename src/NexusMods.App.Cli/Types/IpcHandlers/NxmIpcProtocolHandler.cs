@@ -108,7 +108,7 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
     private async Task HandleCollectionUrl(NXMCollectionUrl collectionUrl)
     {
         var domain = GameDomain.From(collectionUrl.Game);
-        var gameId = (await _cache.TryGetIdAsync(domain, CancellationToken.None)).Value.Value;
+        var gameId = _cache[domain];
         var nexusModsLibrary = _serviceProvider.GetRequiredService<NexusModsLibrary>();
         var library = _serviceProvider.GetRequiredService<ILibraryService>();
         var gameRegistry = _serviceProvider.GetRequiredService<IGameRegistry>();

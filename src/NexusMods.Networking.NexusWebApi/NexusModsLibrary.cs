@@ -3,10 +3,8 @@ using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.IO;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.NexusModsLibrary;
-using NexusMods.Abstractions.NexusModsLibrary.Models;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -18,8 +16,7 @@ using NexusMods.Networking.HttpDownloader;
 using NexusMods.Networking.NexusWebApi.Extensions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
-using StrawberryShake;
-using EntityId = NexusMods.MnemonicDB.Abstractions.EntityId;
+using NexusMods.Sdk.FileStore;
 
 namespace NexusMods.Networking.NexusWebApi;
 
@@ -33,7 +30,7 @@ public partial class NexusModsLibrary
     private readonly IServiceProvider _serviceProvider;
     private readonly IConnection _connection;
     private readonly INexusApiClient _apiClient;
-    private readonly NexusGraphQLClient _gqlClient;
+    private readonly IGraphQlClient _graphQlClient;
     private readonly HttpClient _httpClient;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IFileStore _fileStore;
@@ -50,11 +47,11 @@ public partial class NexusModsLibrary
         _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient();
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _apiClient = serviceProvider.GetRequiredService<INexusApiClient>();
-        _gqlClient = serviceProvider.GetRequiredService<NexusGraphQLClient>();
         _temporaryFileManager = serviceProvider.GetRequiredService<TemporaryFileManager>();
         _fileStore = serviceProvider.GetRequiredService<IFileStore>();
         _jsonSerializerOptions = serviceProvider.GetRequiredService<JsonSerializerOptions>();
         _mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
+        _graphQlClient = serviceProvider.GetRequiredService<IGraphQlClient>();
     }
 
     public async Task<NexusModsModPageMetadata.ReadOnly> GetOrAddModPage(
@@ -72,16 +69,15 @@ public partial class NexusModsLibrary
 
         using var tx = _connection.BeginTransaction();
 
-        var modInfo = await _gqlClient.ModInfo.ExecuteAsync((int)uid.GameId.Value, (int)modId.Value, cancellationToken);
-        modInfo.EnsureNoErrors();
-        EntityId first = default;
-        foreach (var node in modInfo.Data!.LegacyMods.Nodes)
-            first = node.Resolve(_connection.Db, tx, setFilesTimestamp: true);
-        
-        await ResolveAllFilesInModPage(uid, tx, first, cancellationToken);
+        var modResult = await _graphQlClient.QueryMod(uid.ModId, uid.GameId, cancellationToken);
+        // TODO: handle errors
+        var mod = modResult.AssertHasData();
+
+        var modEntityId = mod.Resolve(_connection.Db, tx, setFilesTimestamp: true);
+        await ResolveAllFilesInModPage(uid, tx, modEntityId, cancellationToken);
 
         var txResults = await tx.Commit();
-        return NexusModsModPageMetadata.Load(txResults.Db, txResults[first]);
+        return NexusModsModPageMetadata.Load(txResults.Db, txResults[modEntityId]);
     }
 
     private async Task ResolveAllFilesInModPage(UidForMod uid, ITransaction tx, EntityId modPageId, CancellationToken cancellationToken)
@@ -92,12 +88,15 @@ public partial class NexusModsLibrary
         // If our initial mod page item does not contain info on all the files,
         // then updates are not visible unless an actual change is made to the
         // mod page, this is somewhat undesireable.
-        var modIdString = uid.ModId.Value.ToString();
-        var gameIdString = uid.GameId.Value.ToString();
-        var filesByUid = await _gqlClient.ModFiles.ExecuteAsync(modIdString, gameIdString, cancellationToken);
-        filesByUid.EnsureNoErrors();
-        foreach (var node in filesByUid.Data!.ModFiles)
-            node.Resolve(_connection.Db, tx, modPageId);
+        var result = await _graphQlClient.QueryModFiles(uid.ModId, uid.GameId, cancellationToken: cancellationToken);
+
+        // TODO: handle errors
+        var modFiles = result.AssertHasData();
+
+        foreach (var modFile in modFiles)
+        {
+            modFile.Resolve(_connection.Db, tx, modPageId);
+        }
     }
 
     public async Task<NexusModsFileMetadata.ReadOnly> GetOrAddFile(
@@ -110,23 +109,20 @@ public partial class NexusModsLibrary
         if (fileEntities.TryGetFirst(x => x.ModPageId == modPage, out var file))
             return file;
 
+        var modFileResult = await _graphQlClient.QueryModFile(fileId, modPage.Uid.GameId, cancellationToken);
+        // TODO: handle errors
+        var modFile = modFileResult.AssertHasData();
+
         using var tx = _connection.BeginTransaction();
 
-        var filesResponse = await _gqlClient.ModFilesByUid.ExecuteAsync([uid.ToV2Api()], cancellationToken);
-        filesResponse.EnsureNoErrors();
-
-        if (filesResponse.Data == null)
-            throw new Exception("Could not find file, despite knowing correct UID. Is our UID correct? Or is backend borked?");
-
-        var fileNode = filesResponse.Data.ModFilesByUid.Nodes.First();
-        var size = Size.FromLong(long.Parse(fileNode.SizeInBytes ?? "0"));
+        var size = Size.FromLong(long.Parse(modFile.SizeInBytes ?? "0"));
         var newFile = new NexusModsFileMetadata.New(tx)
         {
-            Name = fileNode.Name,
-            Version = fileNode.Version,
+            Name = modFile.Name,
+            Version = modFile.Version,
             ModPageId = modPage,
             Uid = uid,
-            UploadedAt = DateTimeOffset.FromUnixTimeSeconds(fileNode.Date).UtcDateTime,
+            UploadedAt = DateTimeOffset.FromUnixTimeSeconds(modFile.Date).UtcDateTime,
             Size = size,
         };
 
@@ -176,7 +172,7 @@ public partial class NexusModsLibrary
     /// </summary>
     public async ValueTask<bool> IsAlreadyDownloaded(NXMModUrl url, CancellationToken cancellationToken)
     {
-        var gameId = (await _mappingCache.TryGetIdAsync(GameDomain.From(url.Game), cancellationToken)).Value;
+        var gameId = _mappingCache[GameDomain.From(url.Game)];
 
         var modPage = await GetOrAddModPage(url.ModId, gameId, cancellationToken);
         var file = await GetOrAddFile(url.FileId, modPage, cancellationToken);
@@ -194,7 +190,7 @@ public partial class NexusModsLibrary
         CancellationToken cancellationToken)
     {
         var nxmData = url.Key is not null && url.ExpireTime is not null ? (url.Key.Value, url.ExpireTime.Value) : Optional.None<(NXMKey, DateTime)>();
-        var gameId = (await _mappingCache.TryGetIdAsync(GameDomain.From(url.Game), cancellationToken)).Value;
+        var gameId = _mappingCache[GameDomain.From(url.Game)];
         return await CreateDownloadJob(destination, gameId, url.ModId, url.FileId, nxmData, cancellationToken);
     }
 
@@ -214,8 +210,8 @@ public partial class NexusModsLibrary
 
         var uri = await GetDownloadUri(file, nxmData, cancellationToken: cancellationToken);
 
-        var domain = await _mappingCache.TryGetDomainAsync(gameId, cancellationToken);
-        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain.Value, modId), destination);
+        var domain = _mappingCache[gameId];
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain, modId), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, file);
 
         return nexusJob;
@@ -228,8 +224,8 @@ public partial class NexusModsLibrary
     {
         var uri = await GetDownloadUri(fileMetadata, Optional<(NXMKey, DateTime)>.None, cancellationToken: cancellationToken);
 
-        var domain = await _mappingCache.TryGetDomainAsync(fileMetadata.Uid.GameId, cancellationToken);
-        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain.Value, fileMetadata.ModPage.Uid.ModId), destination);
+        var domain = _mappingCache[fileMetadata.Uid.GameId];
+        var httpJob = HttpDownloadJob.Create(_serviceProvider, uri, NexusModsUrlBuilder.GetModUri(domain, fileMetadata.ModPage.Uid.ModId), destination);
         var nexusJob = NexusModsDownloadJob.Create(_serviceProvider, httpJob, fileMetadata);
 
         return nexusJob;

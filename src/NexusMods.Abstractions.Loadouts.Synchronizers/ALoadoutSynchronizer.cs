@@ -11,8 +11,6 @@ using NexusMods.Abstractions.Games.FileHashes;
 using NexusMods.Abstractions.Games.FileHashes.Models;
 using NexusMods.Abstractions.GC;
 using NexusMods.Sdk.Hashes;
-using NexusMods.Abstractions.IO;
-using NexusMods.Abstractions.IO.StreamFactories;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Extensions;
 using NexusMods.Abstractions.Loadouts.Files.Diff;
@@ -28,6 +26,8 @@ using NexusMods.MnemonicDB.Abstractions.Internals;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
+using NexusMods.Sdk.FileStore;
+using NexusMods.Sdk.IO;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -505,12 +505,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (newLocatorIds.Length != metadataLocatorIds.Length)
             Logger.LogWarning("Found duplicate locator IDs `{LocatorIds}` on gameLocatorResult for game `{Game}` while reprocessing game updates", metadataLocatorIds, loadout.InstallationInstance.Game.Name);
-
-        var locatorAdditions = loadout.LocatorIds.Except(newLocatorIds).Count();
-        var locatorRemovals = newLocatorIds.Except(loadout.LocatorIds).Count();
-
+        
+        var locatorsToAdd = newLocatorIds.Except(loadout.LocatorIds).ToArray();
+        var locatorsToRemove = loadout.LocatorIds.Except(newLocatorIds).ToArray();
+        
         // No reason to change the loadout if the version is the same
-        if (locatorRemovals == 0 && locatorAdditions == 0)
+        if (locatorsToAdd.Length == 0 && locatorsToRemove.Length == 0)
             return loadout;
 
         // Make a lookup set of the new files
@@ -560,9 +560,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
         
         loadout = loadout.Rebase();
-        foreach (var id in loadout.LocatorIds) 
+        
+
+        
+        foreach (var id in locatorsToRemove) 
             tx.Retract(loadout, Loadout.LocatorIds, id);
-        foreach (var id in newLocatorIds)
+        foreach (var id in locatorsToAdd)
             tx.Add(loadout, Loadout.LocatorIds, id);
         
         var result = await tx.Commit();

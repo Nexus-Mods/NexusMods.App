@@ -6,9 +6,13 @@ using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
+using NexusMods.App.UI.Controls.Filters;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.UI.Sdk.Icons;
 using ObservableCollections;
 using OneOf;
 using R3;
@@ -23,8 +27,8 @@ public static class LibraryColumns
     {
         public static int Compare<TKey>(CompositeItemModel<TKey> a, CompositeItemModel<TKey> b) where TKey : notnull
         {
-            var aVersion = a.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
-            var bVersion = b.GetOptional<StringComponent>(key: CurrentVersionComponentKey);
+            var aVersion = a.GetOptional<VersionComponent>(key: CurrentVersionComponentKey);
+            var bVersion = b.GetOptional<VersionComponent>(key: CurrentVersionComponentKey);
             
             var aNewVersion = a.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
             var bNewVersion = b.GetOptional<LibraryComponents.NewVersionAvailable>(key: NewVersionComponentKey);
@@ -74,22 +78,35 @@ public static class LibraryColumns
             var aUpdate = a.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
             var bUpdate = b.GetOptional<LibraryComponents.UpdateAction>(key: UpdateComponentKey);
 
-            var orderA = GetOrder(aInstall, aUpdate);
-            var orderB = GetOrder(bInstall, bUpdate);
+            var aViewChangelog = a.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
+            var bViewChangelog = b.GetOptional<LibraryComponents.ViewChangelogAction>(key: ViewChangelogComponentKey);
+
+            var aViewModPage = a.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+            var bViewModPage = b.GetOptional<LibraryComponents.ViewModPageAction>(key: ViewModPageComponentKey);
+
+            var aHideUpdates = a.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
+            var bHideUpdates = b.GetOptional<LibraryComponents.HideUpdatesAction>(key: HideUpdatesComponentKey);
+
+            var orderA = GetOrder(aInstall, aUpdate, aViewChangelog, aViewModPage, aHideUpdates);
+            var orderB = GetOrder(bInstall, bUpdate, bViewChangelog, bViewModPage, bHideUpdates);
 
             return orderA.CompareTo(orderB);
             
-            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update)
+            int GetOrder(Optional<LibraryComponents.InstallAction> install, Optional<LibraryComponents.UpdateAction> update, Optional<LibraryComponents.ViewChangelogAction> viewChangelog, Optional<LibraryComponents.ViewModPageAction> viewModPage, Optional<LibraryComponents.HideUpdatesAction> hideUpdates)
             {
                 var isUpdateAvailable = update.HasValue;
                 var hasInstallButton = install is { HasValue: true, Value.IsInstalled.Value: false };
                 var isInstalled = install is { HasValue: true, Value.IsInstalled.Value: true };
+                var hasViewChangelog = viewChangelog.HasValue;
+                var hasViewModPage = viewModPage.HasValue;
+                var hasHideUpdates = hideUpdates.HasValue;
 
                 if (isUpdateAvailable && hasInstallButton) return 1;
                 if (hasInstallButton) return 2;
                 if (isUpdateAvailable) return 3;
                 if (isInstalled) return 4;
-                return 5;
+                if (hasViewChangelog || hasViewModPage || hasHideUpdates) return 5;
+                return 6;
             }
         }
 
@@ -97,6 +114,9 @@ public static class LibraryColumns
 
         public static readonly ComponentKey InstallComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Install");
         public static readonly ComponentKey UpdateComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "Update");
+        public static readonly ComponentKey ViewChangelogComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewChangelog");
+        public static readonly ComponentKey ViewModPageComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "ViewModPage");
+        public static readonly ComponentKey HideUpdatesComponentKey = ComponentKey.From(ColumnTemplateResourceKey + "_" + nameof(Actions) + "_" + "HideUpdates");
         public static string GetColumnHeader() => "Actions";
         public static string GetColumnTemplateResourceKey() => ColumnTemplateResourceKey;
     }
@@ -106,13 +126,13 @@ public static class LibraryComponents
 {
     public sealed class NewVersionAvailable : ReactiveR3Object, IItemModelComponent<NewVersionAvailable>, IComparable<NewVersionAvailable>
     {
-        public StringComponent CurrentVersion { get; }
+        public VersionComponent CurrentVersion { get; }
 
         private readonly BindableReactiveProperty<string> _newVersion;
         public IReadOnlyBindableReactiveProperty<string> NewVersion => _newVersion;
 
         private readonly IDisposable _activationDisposable;
-        public NewVersionAvailable(StringComponent currentVersion, string newVersion, Observable<string> newVersionObservable)
+        public NewVersionAvailable(VersionComponent currentVersion, string newVersion, Observable<string> newVersionObservable)
         {
             CurrentVersion = currentVersion;
             _newVersion = new BindableReactiveProperty<string>(value: newVersion);
@@ -135,6 +155,26 @@ public static class LibraryComponents
             var oldVersionComparison = string.Compare(CurrentVersion.Value.Value, other.CurrentVersion.Value.Value, StringComparison.OrdinalIgnoreCase);
             if (oldVersionComparison != 0) return oldVersionComparison;
             return string.Compare(NewVersion.Value, other.NewVersion.Value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.UpdateAvailableFilter updateFilter => updateFilter.ShowWithUpdates 
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.VersionFilter versionFilter => 
+                    (NewVersion.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase) ||
+                     CurrentVersion.Value.Value.Contains(versionFilter.VersionPattern, StringComparison.OrdinalIgnoreCase))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => 
+                    (NewVersion.Value.Contains(textFilter.SearchText, 
+                        textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase) ||
+                     CurrentVersion.Value.Value.Contains(textFilter.SearchText, 
+                        textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private bool _isDisposed;
@@ -170,6 +210,22 @@ public static class LibraryComponents
         {
             if (other is null) return 1;
             return IsInstalled.Value.CompareTo(other.IsInstalled.Value);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.InstalledFilter installedFilter => 
+                    ((IsInstalled.Value && installedFilter.ShowInstalled) ||
+                     (!IsInstalled.Value && installedFilter.ShowNotInstalled))
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => ButtonText.Value.Contains(
+                    textFilter.SearchText, 
+                    textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private readonly ReactiveR3Object _source;
@@ -227,7 +283,9 @@ public static class LibraryComponents
             _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
-        internal static string GetButtonText(bool isInstalled) => isInstalled ? "Installed" : "Install";
+        internal static string GetButtonText(bool isInstalled) => isInstalled
+            ? Language.LibraryComponents_InstallAction_ButtonText_Installed // "Installed"
+            : Language.LibraryComponents_InstallAction_ButtonText_Install; // "Install"
 
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
         [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
@@ -239,18 +297,18 @@ public static class LibraryComponents
             {
                 if (numInstalled == numTotal)
                 {
-                    return "Installed";
+                    return Language.LibraryComponents_InstallAction_ButtonText_Installed;
                 } else {
-                    return $"Installed {numInstalled}/{numTotal}";
+                    return $"{Language.LibraryComponents_InstallAction_ButtonText_Installed} {numInstalled}/{numTotal}";
                 }
             }
             else
             {
                 if (!isExpanded && numTotal == 1)
                 {
-                    return "Install";
+                    return Language.LibraryComponents_InstallAction_ButtonText_Install;
                 } else {
-                    return $"Install ({numTotal})";
+                    return $"{Language.LibraryComponents_InstallAction_ButtonText_Install} {numTotal}";
                 }
             }
         }
@@ -274,7 +332,8 @@ public static class LibraryComponents
 
     public sealed class UpdateAction : ReactiveR3Object, IItemModelComponent<UpdateAction>, IComparable<UpdateAction>
     {
-        public ReactiveCommand<Unit> CommandUpdate { get; } = new();
+        public ReactiveCommand<Unit> CommandUpdateAndKeepOld { get; } = new();
+        public ReactiveCommand<Unit> CommandUpdateAndReplace { get; } = new();
 
         private readonly BindableReactiveProperty<ModUpdatesOnModPage> _newFiles;
         public IReadOnlyBindableReactiveProperty<ModUpdatesOnModPage> NewFiles => _newFiles;
@@ -282,10 +341,30 @@ public static class LibraryComponents
         private readonly BindableReactiveProperty<string> _buttonText;
         public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
 
+        private readonly BindableReactiveProperty<string> _updateButtonText;
+        public IReadOnlyBindableReactiveProperty<string> UpdateButtonText => _updateButtonText;
+
+        private readonly BindableReactiveProperty<string> _updateAndKeepOldModButtonText;
+        public IReadOnlyBindableReactiveProperty<string> UpdateAndKeepOldModButtonText => _updateAndKeepOldModButtonText;
+
         public int CompareTo(UpdateAction? other)
         {
             if (other is null) return 1;
             return NewFiles.Value.NewestFile().UploadedAt.CompareTo(other.NewFiles.Value.NewestFile().UploadedAt);
+        }
+
+        public FilterResult MatchesFilter(Filter filter)
+        {
+            return filter switch
+            {
+                Filter.UpdateAvailableFilter updateFilter => updateFilter.ShowWithUpdates
+                    ? FilterResult.Pass : FilterResult.Fail,
+                Filter.TextFilter textFilter => ButtonText.Value.Contains(
+                    textFilter.SearchText, 
+                    textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                    ? FilterResult.Pass : FilterResult.Fail,
+                _ => FilterResult.Indeterminate // Default: no opinion
+            };
         }
 
         private readonly IDisposable _activationDisposable;
@@ -295,12 +374,21 @@ public static class LibraryComponents
             ModUpdateOnPage initialValue,
             Observable<ModUpdateOnPage> valueObservable)
         {
-            _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: (ModUpdatesOnModPage)initialValue);
+            var initialUpdates = (ModUpdatesOnModPage)initialValue;
+            _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: initialUpdates);
             _buttonText = new BindableReactiveProperty<string>();
+            _updateButtonText = new BindableReactiveProperty<string>(value: GetUpdateButtonText(initialUpdates.NumberOfModFilesToUpdate));
+            _updateAndKeepOldModButtonText = new BindableReactiveProperty<string>(value: GetUpdateAndKeepOldModButtonText(initialUpdates.NumberOfModFilesToUpdate));
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, observable, disposables) =>
             {
-                observable.Subscribe(self, static (value, self) => self._newFiles.Value = (ModUpdatesOnModPage)value).AddTo(disposables);
+                observable.Subscribe(self, static (value, self) => 
+                {
+                    var updates = (ModUpdatesOnModPage)value;
+                    self._newFiles.Value = updates;
+                    self._updateButtonText.Value = GetUpdateButtonText(updates.NumberOfModFilesToUpdate);
+                    self._updateAndKeepOldModButtonText.Value = GetUpdateAndKeepOldModButtonText(updates.NumberOfModFilesToUpdate);
+                }).AddTo(disposables);
             });
         }
 
@@ -311,6 +399,8 @@ public static class LibraryComponents
         {
             _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: initialValue);
             _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.NumberOfModFilesToUpdate));
+            _updateButtonText = new BindableReactiveProperty<string>(value: GetUpdateButtonText(initialValue.NumberOfModFilesToUpdate));
+            _updateAndKeepOldModButtonText = new BindableReactiveProperty<string>(value: GetUpdateAndKeepOldModButtonText(initialValue.NumberOfModFilesToUpdate));
 
             _activationDisposable = this.WhenActivated(valuesObservable, static (self, observable, disposables) =>
             {
@@ -318,6 +408,8 @@ public static class LibraryComponents
                 {
                     self._newFiles.Value = values;
                     self._buttonText.Value = GetButtonText(values.NumberOfModFilesToUpdate);
+                    self._updateButtonText.Value = GetUpdateButtonText(values.NumberOfModFilesToUpdate);
+                    self._updateAndKeepOldModButtonText.Value = GetUpdateAndKeepOldModButtonText(values.NumberOfModFilesToUpdate);
                 }).AddTo(disposables);
             });
         }
@@ -328,6 +420,9 @@ public static class LibraryComponents
             return numUpdatable <= 1  ? string.Empty : numUpdatable.ToString();
         }
 
+        private static string GetUpdateButtonText(int numUpdatable) => string.Format(Language.Library_Update, numUpdatable);
+        private static string GetUpdateAndKeepOldModButtonText(int numUpdatable) => string.Format(Language.Library_UpdateAndKeepOldMod, numUpdatable);
+
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
         {
@@ -335,13 +430,136 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, CommandUpdate);
+                    Disposable.Dispose(_activationDisposable, CommandUpdateAndKeepOld, CommandUpdateAndReplace, 
+                        _buttonText, _updateButtonText, _updateAndKeepOldModButtonText);
                 }
 
                 _isDisposed = true;
             }
 
             base.Dispose(disposing);
+        }
+    }
+
+    public sealed class ViewChangelogAction : ReactiveR3Object, IItemModelComponent<ViewChangelogAction>, IComparable<ViewChangelogAction>
+    {
+        public ReactiveCommand<Unit> CommandViewChangelog { get; } = new();
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public int CompareTo(ViewChangelogAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All view changelog actions are considered equal for sorting
+        }
+
+        public ViewChangelogAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(CommandViewChangelog, IsEnabled);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
+    public sealed class ViewModPageAction : ReactiveR3Object, IItemModelComponent<ViewModPageAction>, IComparable<ViewModPageAction>
+    {
+        public ReactiveCommand<Unit> CommandViewModPage { get; } = new();
+        public IReadOnlyBindableReactiveProperty<bool> IsEnabled { get; }
+
+        public int CompareTo(ViewModPageAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All view mod page actions are considered equal for sorting
+        }
+
+        public ViewModPageAction(bool isEnabled = true)
+        {
+            IsEnabled = new BindableReactiveProperty<bool>(isEnabled);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    Disposable.Dispose(CommandViewModPage, IsEnabled);
+                }
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
+    public sealed class HideUpdatesAction : ReactiveR3Object, IItemModelComponent<HideUpdatesAction>, IComparable<HideUpdatesAction>
+    {
+        public ReactiveCommand<Unit> CommandHideUpdates { get; } = new();
+        public BindableReactiveProperty<bool> IsEnabled { get; }
+        public BindableReactiveProperty<bool> IsHidden { get; }
+        public BindableReactiveProperty<bool> IsVisible { get; }
+        public BindableReactiveProperty<string> ButtonText { get; }
+        public BindableReactiveProperty<IconValue> Icon { get; }
+
+        public int CompareTo(HideUpdatesAction? other)
+        {
+            if (other is null) return 1;
+            return 0; // All hide updates actions are considered equal for sorting
+        }
+
+        public HideUpdatesAction(Observable<bool> isHiddenObservable, Observable<int> itemCount, Observable<bool> isEnabled, Observable<bool> isVisible)
+        {
+            IsHidden = isHiddenObservable.ToBindableReactiveProperty();
+            IsEnabled = isEnabled.ToBindableReactiveProperty();
+            IsVisible = isVisible.ToBindableReactiveProperty();
+            
+            // Button text changes based on hidden state and item count
+            // We use BindableReactiveProperty on ButtonText field as UI elements bind to this.
+            ButtonText = IsHidden.AsObservable()
+                .CombineLatest(itemCount, static (isHidden, count) => FormatShowUpdates(isHidden, count))
+                .ToBindableReactiveProperty(initialValue: FormatShowUpdates(false, 0));
+
+            // Icon changes based on hidden state
+            // Use Visibility when hidden (showing "Show Updates"), VisibilityOff when shown (showing "Hide Updates")
+            Icon = IsHidden.AsObservable()
+                .Select(static isHidden => isHidden ? IconValues.Visibility : IconValues.VisibilityOff)
+                .ToBindableReactiveProperty(initialValue: IconValues.Visibility);
+        }
+
+        private bool _isDisposed;
+        protected override void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                    Disposable.Dispose(CommandHideUpdates, IsEnabled, IsHidden, IsVisible, ButtonText, Icon);
+
+                _isDisposed = true;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private static string FormatShowUpdates(bool isHidden, int itemCount)
+        {
+            return string.Format(isHidden 
+                ? Resources.Language.Library_ShowUpdates 
+                : Resources.Language.Library_HideUpdates, itemCount);
         }
     }
 }

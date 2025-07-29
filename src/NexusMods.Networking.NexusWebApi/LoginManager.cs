@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DynamicData.Aggregation;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -10,9 +11,11 @@ using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Networking.NexusWebApi.Auth;
 using NexusMods.Sdk;
+using NexusMods.Sdk.Threading;
 using R3;
 
 namespace NexusMods.Networking.NexusWebApi;
+using UserInDb = NexusMods.Abstractions.NexusModsLibrary.Models.User;
 
 /// <summary>
 /// Component for handling login and logout from the Nexus Mods
@@ -84,7 +87,7 @@ public sealed class LoginManager : IDisposable, ILoginManager
         var cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
-        using var waiter = _verifySemaphore.WaitDisposable(cancellationToken);
+        using var _ = _verifySemaphore.WaitDisposable(cancellationToken);
         cachedValue = _cachedUserInfo.Get();
         if (cachedValue is not null) return cachedValue;
 
@@ -94,7 +97,34 @@ public sealed class LoginManager : IDisposable, ILoginManager
         var userInfo = await _msgFactory.Verify(_nexusApiClient, cancellationToken);
         _cachedUserInfo.Store(userInfo);
 
+        if (userInfo is not null) await AddUserToDb(userInfo);
         return userInfo;
+    }
+
+    private async ValueTask AddUserToDb(UserInfo userInfo)
+    {
+        using var tx = _conn.BeginTransaction();
+
+        var existingDatoms = _conn.Db.Datoms(UserInDb.NexusId, userInfo.UserId.Value);
+        Debug.Assert(existingDatoms.Count <= 1, "ID should be unique");
+
+        EntityId entityId;
+        if (existingDatoms.TryGetFirst(out var existingDatom))
+        {
+            entityId = existingDatom.E;
+        }
+        else
+        {
+            entityId = tx.TempId();
+            tx.Add(entityId, UserInDb.NexusId, userInfo.UserId.Value);
+        }
+
+        tx.Add(entityId, UserInDb.Name, userInfo.Name);
+
+        if (userInfo.AvatarUrl is not null)
+            tx.Add(entityId, UserInDb.AvatarUri, userInfo.AvatarUrl);
+
+        await tx.Commit();
     }
 
     /// <inheritdoc />

@@ -5,8 +5,10 @@ using DynamicData;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.UI;
 using NexusMods.Abstractions.UI.Extensions;
+using NexusMods.App.UI.Controls.Filters;
 using ObservableCollections;
 using R3;
+using static NexusMods.App.UI.Controls.Filters.Filter;
 using Observable = System.Reactive.Linq.Observable;
 
 namespace NexusMods.App.UI.Controls;
@@ -35,6 +37,7 @@ public interface ITreeDataGridItemModel<out TModel, TKey> : ITreeDataGridItemMod
 
     bool IsExpanded { get; [UsedImplicitly] set; }
 
+    public IEnumerable<TModel> InitAndGetChildren();
     public static HierarchicalExpanderColumn<TModel> CreateExpanderColumn(IColumn<TModel> innerColumn)
     {
         return new HierarchicalExpanderColumn<TModel>(
@@ -75,10 +78,19 @@ public class TreeDataGridItemModel<TModel, TKey> : TreeDataGridItemModel, ITreeD
         {
             // NOTE(erri120): When this item model gets disposed, all children get disposed, and then
             // we clear the children observable list which can trigger the TreeDataGrid to access this.
-            if (_isDisposed) return [];
-            _childrenCollectionInitialization.OnNext(true);
-            return _childrenView;
+            return InitAndGetChildren();
         }
+    }
+
+    /// <summary>
+    /// Initializes the children collection and returns it.
+    /// The children remain active until the parent model is disposed, even if the parent is collapsed.
+    /// </summary>
+    public IEnumerable<TModel> InitAndGetChildren()
+    {
+        if (_isDisposed) return [];
+        _childrenCollectionInitialization.OnNext(true);
+        return _childrenView;
     }
 
     private bool _isExpanded;

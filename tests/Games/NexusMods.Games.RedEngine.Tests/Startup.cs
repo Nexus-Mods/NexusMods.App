@@ -1,15 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NexusMods.Abstractions.FileStore;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.GuidedInstallers;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Serialization;
-using NexusMods.App.BuildInfo;
-using NexusMods.CrossPlatform;
 using NexusMods.Games.FOMOD;
-using NexusMods.Games.Generic;
 using NexusMods.Games.TestFramework;
+using NexusMods.Sdk;
 using NexusMods.StandardGameLocators.TestHelpers;
 
 namespace NexusMods.Games.RedEngine.Tests;

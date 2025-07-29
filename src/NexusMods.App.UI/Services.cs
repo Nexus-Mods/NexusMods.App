@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.Serialization.ExpressionGenerator;
 using NexusMods.Abstractions.Serialization.Json;
+using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.DevelopmentBuildBanner;
 using NexusMods.App.UI.Controls.Diagnostics;
 using NexusMods.App.UI.Controls.GameWidget;
@@ -11,8 +12,11 @@ using NexusMods.App.UI.Controls.LoadoutBadge;
 using NexusMods.App.UI.Controls.LoadoutCard;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.MiniGameWidget;
+using NexusMods.App.UI.Controls.MiniGameWidget.ComingSoon;
+using NexusMods.App.UI.Controls.MiniGameWidget.Standard;
 using NexusMods.App.UI.Controls.Settings.Section;
 using NexusMods.App.UI.Controls.Settings.SettingEntries;
+using NexusMods.App.UI.Controls.Settings.SettingEntries.PathsList;
 using NexusMods.App.UI.Controls.Spine;
 using NexusMods.App.UI.Controls.Spine.Buttons.Download;
 using NexusMods.App.UI.Controls.Spine.Buttons.Icon;
@@ -21,6 +25,7 @@ using NexusMods.App.UI.Controls.TopBar;
 using NexusMods.App.UI.Controls.Trees;
 using NexusMods.App.UI.Controls.Trees.Files;
 using NexusMods.App.UI.DiagnosticSystem;
+using NexusMods.App.UI.Dialog;
 using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
@@ -42,6 +47,9 @@ using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Pages.LoadoutGroupFilesPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.CollectionPublished;
+using NexusMods.App.UI.Pages.LoadoutPage.Dialogs.ShareCollection;
 using NexusMods.App.UI.Pages.MyGames;
 using NexusMods.App.UI.Pages.MyLoadouts;
 using NexusMods.App.UI.Pages.ObservableInfo;
@@ -90,6 +98,7 @@ public static class Services
             .AddViewModel<DevelopmentBuildBannerViewModel, IDevelopmentBuildBannerViewModel>()
             .AddViewModel<GameWidgetViewModel, IGameWidgetViewModel>()
             .AddViewModel<MiniGameWidgetViewModel, IMiniGameWidgetViewModel>()
+            .AddViewModel<ComingSoonMiniGameWidgetViewModel, IComingSoonMiniGameWidgetViewModel>()
             .AddViewModel<HomeLeftMenuViewModel, IHomeLeftMenuViewModel>()
             .AddViewModel<IconButtonViewModel, IIconButtonViewModel>()
             .AddViewModel<LeftMenuItemViewModel, ILeftMenuItemViewModel>()
@@ -115,6 +124,7 @@ public static class Services
             .AddView<DevelopmentBuildBannerView, IDevelopmentBuildBannerViewModel>()
             .AddView<GameWidget, IGameWidgetViewModel>()
             .AddView<MiniGameWidget, IMiniGameWidgetViewModel>()
+            .AddView<ComingSoonMiniGameWidget, IComingSoonMiniGameWidgetViewModel>()
             .AddView<HomeLeftMenuView, IHomeLeftMenuViewModel>()
             .AddView<IconButton, IIconButtonViewModel>()
             .AddView<LeftMenuItemView, ILeftMenuItemViewModel>()
@@ -135,6 +145,7 @@ public static class Services
             .AddView<ApplyDiffView, IApplyDiffViewModel>()
             .AddView<FileTreeView, IFileTreeViewModel>()
             
+            
             .AddView<MyLoadoutsView, IMyLoadoutsViewModel>()
             .AddViewModel<MyLoadoutsViewModel, IMyLoadoutsViewModel>()
             .AddView<LoadoutCardView, ILoadoutCardViewModel>()
@@ -153,6 +164,8 @@ public static class Services
             .AddViewModel<SettingToggleViewModel, ISettingToggleViewModel>()
             .AddView<SettingComboBoxView, ISettingComboBoxViewModel>()
             .AddViewModel<SettingComboBoxViewModel, ISettingComboBoxViewModel>()
+            .AddView<SettingPathsControl, ISettingPathsViewModel>()
+            .AddViewModel<SettingPathsViewModel, ISettingPathsViewModel>()
 
             .AddView<DiagnosticEntryView, IDiagnosticEntryViewModel>()
             .AddViewModel<DiagnosticEntryViewModel, IDiagnosticEntryViewModel>()
@@ -200,6 +213,14 @@ public static class Services
 
             .AddView<WelcomeOverlayView, IWelcomeOverlayViewModel>()
             .AddViewModel<WelcomeOverlayViewModel, IWelcomeOverlayViewModel>()
+            
+            // Dialogs
+            .AddView<DialogStandardContentView, IDialogStandardContentViewModel>()
+            .AddViewModel<DialogStandardContentViewModel, IDialogStandardContentViewModel>()
+            .AddView<DialogShareCollectionView, IDialogShareCollectionViewModel>()
+            .AddViewModel<DialogShareCollectionViewModel, IDialogShareCollectionViewModel>()
+            .AddView<DialogCollectionPublishedView, IDialogCollectionPublishedViewModel>()
+            .AddViewModel<DialogCollectionPublishedViewModel, IDialogCollectionPublishedViewModel>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()
@@ -277,6 +298,8 @@ public static class Services
             .AddSingleton<UpdateChecker>()
             .AddFileSystem()
             .AddImagePipelines();
+        
+        
     }
 
 }
