@@ -85,6 +85,25 @@
 
                             </controls:StandardButton>
 
+                            <controls:StandardButton x:Name="UpdateButton"
+                                                     Type="Primary"
+                                                     Size="Toolbar"
+                                                     Fill="WeakAlt"
+                                                     ShowIcon="Both"
+                                                     LeftIcon="{x:Static icons:IconValues.Download}"
+                                                     RightIcon="{x:Static icons:IconValues.ChevronDown}">
+
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="UpdateModMenuItem">
+                                        </MenuItem>
+                                        <MenuItem x:Name="UpdateAndKeepOldModMenuItem">
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+
+                            </controls:StandardButton>
+
                             <controls:StandardButton x:Name="RemoveModButton"
                                                      Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
                                                      Type="Tertiary"
@@ -142,6 +161,13 @@
                                                      Fill="Weak"
                                                      LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
+                            <controls:StandardButton x:Name="UpdateAllButton"
+                                                     Text="{x:Static resources:Language.FileOriginPage_UpdateAll}"
+                                                     ShowIcon="Left"
+                                                     Size="Toolbar"
+                                                     Type="Primary" 
+                                                     Fill="WeakAlt"
+                                                     LeftIcon="{x:Static icons:IconValues.Download}" />
                         </ItemsControl>
                     </controls:Toolbar>
 

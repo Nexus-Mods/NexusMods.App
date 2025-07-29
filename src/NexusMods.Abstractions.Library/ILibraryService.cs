@@ -39,13 +39,44 @@ public interface ILibraryService
     IEnumerable<(Loadout.ReadOnly loadout, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> LoadoutsWithLibraryItem(LibraryItem.ReadOnly libraryItem);
 
     /// <summary>
+    /// Returns all unique loadouts that contain any of the given library items.
+    /// </summary>
+    /// <param name="libraryItems">The items to search for.</param>
+    /// <remarks>
+    ///     Returns a dictionary where each key is a loadout and the value is a list of 
+    ///     tuples containing the library items found in that loadout and their linked items.
+    /// </remarks>
+    IReadOnlyDictionary<Loadout.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> LoadoutsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems);
+
+    /// <summary>
+    /// Returns all collections that contain the given library item.
+    /// </summary>
+    /// <param name="libraryItem">The item to search for.</param>
+    /// <param name="excludeReadOnlyCollections">If true, filters out read-only collections such as collections from Nexus Mods.</param>
+    /// <remarks>
+    ///     Returns tuples containing the collection and the linked item within that collection.
+    /// </remarks>
+    IEnumerable<(CollectionGroup.ReadOnly collection, LibraryLinkedLoadoutItem.ReadOnly linkedItem)> CollectionsWithLibraryItem(LibraryItem.ReadOnly libraryItem, bool excludeReadOnlyCollections = false);
+
+    /// <summary>
+    /// Returns all unique collections that contain any of the given library items.
+    /// </summary>
+    /// <param name="libraryItems">The items to search for.</param>
+    /// <param name="excludeReadOnlyCollections">If true, filters out read-only collections such as collections from Nexus Mods.</param>
+    /// <remarks>
+    ///     Returns a dictionary where each key is a collection and the value is a list of 
+    ///     tuples containing the library items found in that collection and their linked items.
+    /// </remarks>
+    IReadOnlyDictionary<CollectionGroup.ReadOnly, IReadOnlyList<(LibraryItem.ReadOnly libraryItem, LibraryLinkedLoadoutItem.ReadOnly linkedItem)>> CollectionsWithLibraryItems(IEnumerable<LibraryItem.ReadOnly> libraryItems, bool excludeReadOnlyCollections = false);
+
+    /// <summary>
     /// Adds a library file.
     /// </summary>
     Task<LibraryFile.New> AddLibraryFile(ITransaction transaction, AbsolutePath source);
 
     /// <summary>
     /// Installs a library item into a target loadout.
-    /// To remove an installed item, use <see cref="RemoveLinkedItemFromLoadout"/>.
+    /// To remove an installed item, use <see cref="RemoveLinkedItemFromLoadout(LibraryLinkedLoadoutItemId)"/>.
     /// </summary>
     /// <param name="libraryItem">The item to install.</param>
     /// <param name="targetLoadout">The target loadout.</param>
@@ -131,6 +162,17 @@ public interface ILibraryService
     /// </returns>
     ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options, ITransaction tx);
 
+    /// <summary>
+    /// Replaces linked loadout items across all loadouts with installations of a different library item.   
+    /// </summary>
+    /// <param name="oldItem">The library item whose linked loadout items should be replaced.</param>
+    /// <param name="newItem">The replacement library item from which to install the new linked loadout items from.</param>
+    /// <param name="options">Options controlling how to replace the linked loadout items.</param>
+    /// <returns>
+    ///     A result indicating success or failure of the replacement operation.
+    /// </returns>
+    ValueTask<LibraryItemReplacementResult> ReplaceLinkedItemsInAllLoadouts(LibraryItem.ReadOnly oldItem, LibraryItem.ReadOnly newItem, ReplaceLibraryItemOptions options);
+    
     /// <summary>
     /// Replaces multiple sets of linked loadout items across all loadouts with new versions.
     /// </summary>

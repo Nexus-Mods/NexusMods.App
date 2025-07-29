@@ -288,6 +288,64 @@ public class ModUpdateService : IModUpdateService, IDisposable
     }
 
     /// <inheritdoc />
+    public Optional<ModUpdatesOnModPage> HasModPageUpdatesAvailable(NexusModsModPageMetadata.ReadOnly current, Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
+    {
+        select ??= _filterService.SelectModPage;
+        var cached = _newestModOnAnyPageCache.Lookup(current.Id);
+        if (!cached.HasValue)
+            return Optional<ModUpdatesOnModPage>.None;
+        
+        // Apply the filter and return the result
+        var result = select(cached.Value.Value);
+        return result.HasValue ? Optional.Some(result.Value) : Optional<ModUpdatesOnModPage>.None;
+    }
+
+    /// <inheritdoc />
+    public IObservable<bool> HasAnyUpdatesObservable(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
+    {
+        var observable = _newestModOnAnyPageCache.Connect()
+            .Transform(kv => kv.Value);
+
+        // If no custom selector is provided, apply default filters
+        select ??= _filterService.SelectModPage;
+
+        // When a custom selector is provided, also trigger on  when
+        // the update filter changes.
+        var triggerObservable = _filterService.FilterTrigger
+            .Select(_ => _newestModOnAnyPageCache.Items.Select(kv => kv.Value));
+
+        // Merge the observables and check if any updates exist after filtering
+        return observable
+            .Select(changeSet => _newestModOnAnyPageCache.Items.Select(kv => kv.Value))
+            .Merge(triggerObservable)
+            .Select(updates => updates.Any(update => select(update) != null))
+            .DistinctUntilChanged();
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<(NexusModsModPageMetadataId modPageId, ModUpdatesOnModPage updates)> GetAllModPagesWithUpdates(Func<ModUpdatesOnModPage, ModUpdatesOnModPage?>? select = null)
+    {
+        // If no custom selector is provided, apply default filters
+        select ??= _filterService.SelectModPage;
+
+        // Efficiently get all mod pages with updates from the cache without LINQ
+        var results = new List<(NexusModsModPageMetadataId, ModUpdatesOnModPage)>();
+        
+        foreach (var cacheItem in _newestModOnAnyPageCache.Items)
+        {
+            var modPageId = cacheItem.Key;
+            var updates = cacheItem.Value;
+            
+            // Apply the filter
+            var filteredUpdates = select(updates);
+            if (filteredUpdates != null)
+                results.Add((modPageId, filteredUpdates.Value));
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc />
     public void Dispose()
     {
         _newestModVersionCache.Dispose();
@@ -511,6 +569,47 @@ public readonly record struct ModUpdatesOnModPage(ModUpdateOnPage[] FileMappings
     /// Only distinct (unique) files are returned.
     /// </summary>
     public IEnumerable<NexusModsFileMetadata.ReadOnly> NewestUniqueFileForEachMod() => NewestFileForEachMod().DistinctBy(only => only.Id);
+    
+    /// <summary>
+    /// Returns mappings of unique newest file(s) to 1 or more current files.
+    /// </summary>
+    /// <remarks>
+    ///     In most cases, for each file there will be a single 'current' version.
+    ///     However, if you have multiple versions of the same mod installed, such as in
+    ///     different collections or loadouts, then there may be multiple 'current' files.
+    /// </remarks>
+    public Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> NewestToCurrentFileMapping()
+    {
+        var result = new Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>>();
+        NewestToCurrentFileMapping(result);
+        return result;
+    }
+    
+    /// <summary>
+    /// Populates an existing dictionary with mappings of unique newest file(s) to 1 or more current files.
+    /// If a key already exists in the dictionary, the current files will be added to the existing list.
+    /// </summary>
+    /// <param name="result">The dictionary to populate with the mappings.</param>
+    /// <remarks>
+    ///     In most cases, for each file there will be a single 'current' version.
+    ///     However, if you have multiple versions of the same mod installed, such as in
+    ///     different collections or loadouts, then there may be multiple 'current' files.
+    /// </remarks>
+    public void NewestToCurrentFileMapping(Dictionary<NexusModsFileMetadata.ReadOnly, List<NexusModsFileMetadata.ReadOnly>> result)
+    {
+        // Group current files by their newest file version
+        // Multiple current files can map to the same newest file
+        foreach (var mapping in FileMappings)
+        {
+            if (!result.TryGetValue(mapping.NewestFile, out var currentFiles))
+            {
+                currentFiles = new List<NexusModsFileMetadata.ReadOnly>();
+                result[mapping.NewestFile] = currentFiles;
+            }
+
+            currentFiles.Add(mapping.File);
+        }
+    }
     
     /// <summary/>
     public static explicit operator ModUpdatesOnModPage(ModUpdateOnPage[] inner) => new(inner);
