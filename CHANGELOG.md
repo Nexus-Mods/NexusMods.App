@@ -1,11 +1,23 @@
-# v0.14.0 2025-07-XX
+# v0.14.3 2025-07-XX
 This release adds search to the Library and enables creating collections. We also worked on adding support for the Epic Games Store version of Cyberpunk 2077, however, due to some problems with the 2.3 update we've delayed this feature to a future release. 
 
 ## Create Collections
+You can now organise your installed mods into collections in the left menu, allowing you to set up groups of mods that you can quickly toggle on or off. Simply click the new option below "My Mods" to get started. 
 
+![An animation showing the process of creating a new collection in the app.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1753777005-5560856.gif)
+
+From the Library page you can select which Collection to add mods to. The newest collection will be the default option. 
+
+![An animation showing how to add multiple mods to a specific collection from the Library.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1753777011-1671552141.gif)
+
+In future versions, we will enable sharing your collections on Nexus Mods and editing collections you have downloaded from the website. 
+
+**Note: Uploading collections to Nexus Mods is disabled by default in this release. You can enable it in the Experimental Settings but use it at your own risk.**
 
 ## Library Search
+One of the most requested features from community feedback was the ability to search installed mods. We've added this to the Library section and will be including it on other relevant pages in a future release. 
 
+![The Library filtered by the term "better" show results.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1753786504-1960749534.png)
 
 ## More Features
 * The app will now load the latest game version data every 30 minutes in the background.
@@ -22,10 +34,12 @@ This release adds search to the Library and enables creating collections. We als
 
 
 ## Known Issues
-* When deleting a mod from the Library, the confirmation pop-up will not correctly show which collections depend on that mod.
-* The sort order for some columns does not work as expected.
+* Once a collection created by the user is removed from the app, it can no longer be edited even if it was exported to the website.
+* Exported collections do not include a valid version number.
 * The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The sort order for some columns does not work as expected.
 * The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+* When deleting the second-to-last editable collection, an error message will show. This can be ignored. 
 
 
 # v0.13.4 2025-07-02
