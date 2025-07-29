@@ -17,7 +17,7 @@ In future versions, we will enable sharing your collections on Nexus Mods and ed
 ## Library Search
 One of the most requested features from community feedback was the ability to search installed mods. We've added this to the Library section and will be including it on other relevant pages in a future release. 
 
-![The Library filtered by the term "better" show results.](https://staticdelivery.nexusmods.com/mods/2295/images/26/26-1753786504-1960749534.png)
+![The Library filtered by the term "better" show results.](./docs/changelog-assets/90ea236a6c44e03555f00d8d155eb881.webp)
 
 ## More Features
 * The app will now load the latest game version data every 30 minutes in the background.
