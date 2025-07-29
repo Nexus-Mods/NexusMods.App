@@ -14,13 +14,13 @@ internal class _0008_AddCollectionId : ITransactionalMigration
     public static (MigrationId Id, string Name) IdAndName => MigrationId.ParseNameAndId(nameof(_0008_AddCollectionId));
 
     private readonly ILogger _logger;
-    private readonly INexusGraphQLClient _graphQlClient;
+    private readonly IGraphQlClient _graphQlClient;
     private List<(CollectionMetadataId, CollectionId)> _entitiesToUpdate = [];
 
     public _0008_AddCollectionId(IServiceProvider serviceProvider)
     {
         _logger = serviceProvider.GetRequiredService<ILogger<_0008_AddCollectionId>>();
-        _graphQlClient = serviceProvider.GetRequiredService<INexusGraphQLClient>();
+        _graphQlClient = serviceProvider.GetRequiredService<IGraphQlClient>();
     }
 
     public async Task Prepare(IDb db)
@@ -54,13 +54,15 @@ internal class _0008_AddCollectionId : ITransactionalMigration
                 continue;
             }
 
-            var result = await _graphQlClient.CollectionSlugToId.ExecuteAsync(slug: entity.Slug.Value);
-            result.EnsureNoErrors();
+            var result = await _graphQlClient.QueryCollectionId(entity.Slug);
+            if (result.HasErrors)
+            {
+                _logger.LogError("Unable to get collection ID for collection `{Slug}`", entity.Slug);
+                continue;
+            }
 
-            var data = result.Data!.Collection;
-            if (data.Slug != entity.Slug.Value) throw new NotSupportedException();
-
-            _entitiesToUpdate.Add((entity, CollectionId.From((ulong)data.Id)));
+            var collectionId = result.AssertHasData();
+            _entitiesToUpdate.Add((entity, collectionId));
         }
     }
 

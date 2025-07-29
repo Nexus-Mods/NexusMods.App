@@ -30,15 +30,19 @@
     </PropertyGroup>
 
     <!-- NOTE(erri120): Downloading the games.json file at build time if it doesn't exist -->
-    <Target Name="DownloadGamesJson" BeforeTargets="BeforeBuild" Condition="!Exists('$(GamesJsonOutput)')" >
+    <Target Name="DownloadGamesJson" BeforeTargets="BeforeBuild" Condition="!Exists('$(GamesJsonOutput)')">
         <MakeDir Directories="$(BaseIntermediateOutputPath)" />
-        <Exec ContinueOnError="true" Condition="'$(OS)' != 'Windows_NT'" Command="curl -sSL -o $(GamesJsonOutput) $(GamesJsonInput)"  />
-        <Exec ContinueOnError="true" Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Invoke-WebRequest -Uri '$(GamesJsonInput)' -OutFile '$(GamesJsonOutput)'&quot;" />
+        <Exec Condition="'$(OS)' != 'Windows_NT'" Command="curl -sSL -o $(GamesJsonOutput) $(GamesJsonInput)"  />
+        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Invoke-WebRequest -Uri '$(GamesJsonInput)' -OutFile '$(GamesJsonOutput)'&quot;" />
     </Target>
 
-    <ItemGroup Condition="Exists('$(GamesJsonOutput)')">
-        <EmbeddedResource Include="$(GamesJsonOutput)" LogicalName="games.json" />
-    </ItemGroup>
+    <Target Name="EmbedOutput" AfterTargets="DownloadGamesJson">
+        <Error Condition="!Exists('$(GamesJsonOutput)')" Text="Failed to embed file $(GamesJsonOutput)" />
+
+        <ItemGroup>
+            <EmbeddedResource Include="$(GamesJsonOutput)" LogicalName="games.json" />
+        </ItemGroup>
+    </Target>
 
     <ItemGroup>
       <Compile Update="V1Interop\GameMetadata.cs">
@@ -57,6 +61,9 @@
         <DependentUpon>IGraphQlError.cs</DependentUpon>
       </Compile>
       <Compile Update="Errors\UnknownError.cs">
+        <DependentUpon>IGraphQlError.cs</DependentUpon>
+      </Compile>
+      <Compile Update="Errors\Invalid.cs">
         <DependentUpon>IGraphQlError.cs</DependentUpon>
       </Compile>
     </ItemGroup>

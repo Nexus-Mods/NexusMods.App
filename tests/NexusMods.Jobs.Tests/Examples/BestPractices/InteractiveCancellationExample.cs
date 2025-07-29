@@ -39,7 +39,7 @@ public record InteractiveInstallJob : IJobDefinitionWithStart<InteractiveInstall
         try
         {
             // Simulate interaction with an external component that may cancel
-            var shouldInstall = await SimulateUserInteraction(context.CancellationToken);
+            var shouldInstall = await SimulateUserInteraction();
             
             // Self-cancellation: The job cancels itself based on user input
             if (!shouldInstall)
@@ -47,7 +47,7 @@ public record InteractiveInstallJob : IJobDefinitionWithStart<InteractiveInstall
 
             // Continue with installation
             context.SetPercent(Size.From(50), Size.From(100));
-            await Task.Delay(1000, context.CancellationToken);
+            // await Task.Delay(1000, context.CancellationToken); // Simulate installation work
             context.SetPercent(Size.From(100), Size.From(100));
 
             return true;
@@ -60,10 +60,9 @@ public record InteractiveInstallJob : IJobDefinitionWithStart<InteractiveInstall
         }
     }
 
-    private static async Task<bool> SimulateUserInteraction(CancellationToken cancellationToken)
+    private static Task<bool> SimulateUserInteraction()
     {
-        await Task.Delay(1000, cancellationToken);
         // Simulate user choosing to cancel (80% chance to continue for demo)
-        return Random.Shared.Next(0, 10) < 8;
+        return Task.FromResult(Random.Shared.Next(0, 10) < 8);
     }
 }
