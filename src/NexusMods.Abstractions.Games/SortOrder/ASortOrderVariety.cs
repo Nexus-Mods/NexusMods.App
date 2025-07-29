@@ -96,9 +96,6 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
         IDb? db = null,
         CancellationToken token = default)
     {
-        // acquire the lock
-        using var _ = await Manager.Lock(token);
-        
         // retrieve the sorting from the db
         var startingOrder = RetrieveSortOrder(sortOrderId, db);
         
@@ -156,9 +153,6 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
     /// <inheritdoc />
     public async ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default)
     {
-        // acquire the lock
-        using var _ = await Manager.Lock(token);
-        
         // retrieve the sorting from the db
         var startingOrder = RetrieveSortOrder(sortOrderId, db);
         var stagingList = startingOrder.ToList();

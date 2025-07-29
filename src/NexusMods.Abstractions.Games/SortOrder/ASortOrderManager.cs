@@ -18,9 +18,6 @@ public class ASortOrderManager : ISortOrderManager
     private readonly IConnection _connection;
     private readonly ILogger _logger;
     
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
-    private readonly TimeSpan _lockTimeout = TimeSpan.FromSeconds(30);
-    
     private FrozenDictionary<SortOrderVarietyId, ISortOrderVariety> _sortOrderVarieties;
 
     public ASortOrderManager(IServiceProvider serviceProvider)
@@ -32,26 +29,11 @@ public class ASortOrderManager : ISortOrderManager
     }
 
     /// <inheritdoc />
-    public async ValueTask<IDisposable> Lock(CancellationToken token = default)
-    {
-        var hasEntered = await _semaphore.WaitAsync(_lockTimeout, token);
-        if (hasEntered) return Disposable.Create(() => _semaphore.Release());
-        
-        // Failed to acquire the lock, check if cancellation was requested
-        token.ThrowIfCancellationRequested();
-        // Otherwise, throw a timeout exception
-        throw new TimeoutException($"Failed to acquire lock after {_lockTimeout.TotalSeconds} seconds.");
-    }
-
-    /// <inheritdoc />
     public async ValueTask UpdateLoadOrders(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId = default, CancellationToken token = default)
     {
         var parentEntity = collectionGroupId.HasValue
             ? OneOf<LoadoutId, CollectionGroupId>.FromT1(collectionGroupId.Value)
             : OneOf<LoadoutId, CollectionGroupId>.FromT0(loadoutId);
-        
-        // Acquire the lock before proceeding with the reconciliation
-        using var _ = await Lock(token);
         
         foreach (var sortOrderVariety in _sortOrderVarieties.Values)
         {
