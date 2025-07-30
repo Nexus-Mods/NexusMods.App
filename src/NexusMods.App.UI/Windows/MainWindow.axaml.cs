@@ -26,6 +26,8 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         this.WhenActivated(disposables =>
         {
             var storageProvider = GetTopLevel(this)?.StorageProvider;
+            var clipboard = GetTopLevel(this)?.Clipboard;
+            
             if (storageProvider is not null)
             {
                 this.WhenAnyValue(view => view.ViewModel)
@@ -33,6 +35,17 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
                     .SubscribeWithErrorLogging(vm =>
                     {
                         using var _ = vm.RegisterStorageProvider.Execute(storageProvider).Subscribe();
+                    })
+                    .DisposeWith(disposables);
+            }
+            
+            if (clipboard is not null)
+            {
+                this.WhenAnyValue(view => view.ViewModel)
+                    .WhereNotNull()
+                    .SubscribeWithErrorLogging(vm =>
+                    {
+                        using var _ = vm.RegisterClipboard.Execute(clipboard).Subscribe();
                     })
                     .DisposeWith(disposables);
             }

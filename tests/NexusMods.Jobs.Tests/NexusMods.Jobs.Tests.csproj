@@ -5,8 +5,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Remove="Xunit.DependencyInjection" />
-        <PackageReference Remove="Xunit.DependencyInjection.SkippableFact" />
+        <PackageReference Include="Xunit.DependencyInjection" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="NexusMods.MnemonicDB" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

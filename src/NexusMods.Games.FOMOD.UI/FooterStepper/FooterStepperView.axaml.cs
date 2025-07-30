@@ -30,7 +30,6 @@ public partial class FooterStepperView : ReactiveUserControl<IFooterStepperViewM
                 .SubscribeWithErrorLogging(isLastStep =>
                 {
                     GoToNextButton.Text = isLastStep ? Language.FooterStepperView_FooterStepperView_Finish : Language.FooterStepperView_FooterStepperView_Next;
-                    GoToNextButton.ShowIcon = isLastStep ? StandardButton.ShowIconOptions.None : StandardButton.ShowIconOptions.Right;
                 })
                 .DisposeWith(disposables);
         });

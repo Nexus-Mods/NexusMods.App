@@ -53,7 +53,13 @@
 
     <PropertyGroup>
         <!-- SYSLIB1006: Multiple logging methods cannot use the same event ID -->
-        <NoWarn>$(NoWarn);SYSLIB1006</NoWarn>
+        <!-- CS0419: Ambiguous reference in cref attribute -->
+        <!-- CS1571: XML comment has a duplicate param tag -->
+        <!-- CS1572: XML comment has a param tag, but there is no parameter by that name -->
+        <!-- CS1573: Parameter has no matching param tag in the XML comment (but other parameters do) -->
+        <!-- CS1574: XML comment has cref attribute that could not be resolved -->
+        <!-- CS1591: Missing XML comment for publicly visible type or member -->
+        <NoWarn>$(NoWarn);SYSLIB1006;CS0419;CS1571;CS1572;CS1573;CS1574;CS1591</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

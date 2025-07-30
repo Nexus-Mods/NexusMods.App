@@ -16,17 +16,17 @@ namespace NexusMods.Networking.NexusWebApi.V1Interop;
 public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingCache
 {
     private readonly IConnection _conn;
-    private readonly INexusGraphQLClient _gqlClient;
+    private readonly IGraphQlClient _client;
     private readonly ILogger _logger;
 
     /// <summary/>
     public GameDomainToGameIdMappingCache(
         IConnection conn,
-        INexusGraphQLClient gqlClient,
+        IGraphQlClient client,
         ILogger<GameDomainToGameIdMappingCache> logger)
     {
         _conn = conn;
-        _gqlClient = gqlClient;
+        _client = client;
         _logger = logger;
     }
 
@@ -113,15 +113,9 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
     {
         try
         {
-            var game = await _gqlClient.GameDomainToId.ExecuteAsync(gameDomain.Value, cancellationToken).ConfigureAwait(false);
-            game.EnsureNoErrors();
-            if (game.Data?.Game == null)
-            {
-                _logger.LogError("Unable to find game with domain name {DomainName}", gameDomain.Value);
-                return GameId.DefaultValue;
-            }
+            var result = await _client.QueryGameId(gameDomain, cancellationToken);
+            var id = result.AssertHasData();
 
-            var id = GameId.From((uint)game.Data.Game.Id);
             await InsertAsync(gameDomain, id).ConfigureAwait(false);
             return id;
         }
@@ -136,15 +130,9 @@ public sealed class GameDomainToGameIdMappingCache : IGameDomainToGameIdMappingC
     {
         try
         {
-            var game = await _gqlClient.GameIdToDomain.ExecuteAsync(gameId.ToString(), cancellationToken).ConfigureAwait(false);
-            if (game.Data?.Game == null)
-            {
-                // ReSharper disable once InconsistentLogPropertyNaming
-                _logger.LogError("Unable to find game with game ID {GameID}", gameId);
-                return GameDomain.DefaultValue;
-            }
+            var result = await _client.QueryGameDomain(gameId, cancellationToken);
+            var domain = result.AssertHasData();
 
-            var domain = GameDomain.From(game.Data.Game.DomainName);
             await InsertAsync(domain, gameId).ConfigureAwait(false);
             return domain;
         }

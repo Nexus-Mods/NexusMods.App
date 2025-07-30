@@ -1,0 +1,36 @@
+<UserControl x:Class="NexusMods.App.UI.Controls.Search.SearchControl"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+             xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+             xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="40">
+    <DockPanel>
+        <controls:StandardButton x:Name="SearchButton"
+                                 Type="Tertiary"
+                                 Size="{Binding ButtonSize, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                 Fill="WeakAlt"
+                                 ShowIcon="Left"
+                                 ShowLabel="False"
+                                 LeftIcon="{x:Static icons:IconValues.Search}"
+                                 DockPanel.Dock="Left"
+                                 Click="SearchButton_OnClick"
+                                 ToolTip.Tip="Search (Ctrl+F)"/>
+        <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188" IsVisible="False">
+            <TextBox x:Name="SearchTextBox" MinHeight="24" 
+                     Watermark="{x:Static resources:Language.SearchBox__Search_Watermark}" 
+                     Padding="4 2 24 2" Margin="4 0 0 0"/>
+            <controls:StandardButton x:Name="SearchClearButton"
+                                     Margin="0 0 4 0"
+                                     HorizontalAlignment="Right"
+                                     Type="Tertiary"
+                                     Size="{Binding ButtonSize, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                     Fill="None"
+                                     ShowIcon="IconOnly"
+                                     ShowLabel="False"
+                                     LeftIcon="{x:Static icons:IconValues.Close}"/>
+        </Panel>
+    </DockPanel>
+</UserControl>

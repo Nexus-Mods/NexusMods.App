@@ -79,7 +79,7 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/file-document/
     // This is mislabeled on Figma and some places as 'description'
     public static readonly IconValue Description = new ProjektankerIcon("mdi-file-document");
-
+  
     // https://pictogrammers.com/library/mdi/icon/help-circle/
     public static readonly IconValue Help = new ProjektankerIcon("mdi-help-circle");
 
@@ -322,8 +322,17 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/update/
     public static readonly IconValue Update = new ProjektankerIcon("mdi-update");
     
+    // https://pictogrammers.com/library/mdi/icon/upload/
+    public static readonly IconValue Upload = new ProjektankerIcon("mdi-upload");
+    
     // https://pictogrammers.com/library/mdi/icon/export-variant/
     public static readonly IconValue ExportVariant = new ProjektankerIcon("mdi-export-variant");
+    
+    // https://pictogrammers.com/library/mdi/icon/pencil/
+    public static readonly IconValue Pencil = new ProjektankerIcon("mdi-pencil");
+    
+    // https://pictogrammers.com/library/mdi/icon/cloud-upload-outline/
+    public static readonly IconValue CloudUpload = new ProjektankerIcon("mdi-cloud-upload-outline");
 
 #endregion
 
@@ -348,13 +357,17 @@ public static class IconValues
     // https://pictogrammers.com/library/mdi/icon/image/
     public static readonly IconValue Image = new ProjektankerIcon("mdi-image");
 
+    // https://pictogrammers.com/library/mdi/icon/image-outline/
+    public static readonly IconValue ImageOutline = new ProjektankerIcon("mdi-image-outline");
+
     // https://pictogrammers.com/library/mdi/icon/tune/
     public static readonly IconValue Tune = new ProjektankerIcon("mdi-tune");
     
     // https://pictogrammers.com/library/mdi/icon/palette/
     public static readonly IconValue ColorLens = new ProjektankerIcon("mdi-palette");
     
-    
+    // https://pictogrammers.com/library/mdi/icon/camera-plus/
+    public static readonly IconValue CameraPlus = new ProjektankerIcon("mdi-camera-plus");
 
 #endregion
 
@@ -640,6 +653,18 @@ public static class IconValues
         new Rect(0, 0, 6, 10 )
     ));
     
+    // collection visibility listed
+    public static readonly IconValue VisibilityListed = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M7.99967 14.6666C7.07745 14.6666 6.21079 14.4916 5.39967 14.1416C4.58856 13.7916 3.88301 13.3166 3.28301 12.7166C2.68301 12.1166 2.20801 11.411 1.85801 10.5999C1.50801 9.78881 1.33301 8.92214 1.33301 7.99992C1.33301 7.0777 1.50801 6.21103 1.85801 5.39992C2.20801 4.58881 2.68301 3.88325 3.28301 3.28325C3.88301 2.68325 4.58856 2.20825 5.39967 1.85825C6.21079 1.50825 7.07745 1.33325 7.99967 1.33325C9.6219 1.33325 11.0413 1.84159 12.258 2.85825C13.4747 3.87492 14.233 5.14992 14.533 6.68325H13.1663C12.9552 5.87214 12.5747 5.14714 12.0247 4.50825C11.4747 3.86936 10.7997 3.38881 9.99967 3.06659V3.33325C9.99967 3.69992 9.86912 4.01381 9.60801 4.27492C9.3469 4.53603 9.03301 4.66659 8.66634 4.66659H7.33301V5.99992C7.33301 6.18881 7.26912 6.34714 7.14134 6.47492C7.01356 6.6027 6.85523 6.66659 6.66634 6.66659H5.33301V7.99992H6.66634V9.99992H5.99967L2.79967 6.79992C2.76634 6.99992 2.73579 7.19992 2.70801 7.39992C2.68023 7.59992 2.66634 7.79992 2.66634 7.99992C2.66634 9.45547 3.17745 10.7055 4.19967 11.7499C5.2219 12.7944 6.48856 13.3221 7.99967 13.3333V14.6666ZM14.0663 14.3333L11.933 12.1999C11.6997 12.3333 11.4497 12.4444 11.183 12.5333C10.9163 12.6221 10.633 12.6666 10.333 12.6666C9.49967 12.6666 8.79134 12.3749 8.20801 11.7916C7.62467 11.2083 7.33301 10.4999 7.33301 9.66659C7.33301 8.83325 7.62467 8.12492 8.20801 7.54159C8.79134 6.95825 9.49967 6.66659 10.333 6.66659C11.1663 6.66659 11.8747 6.95825 12.458 7.54159C13.0413 8.12492 13.333 8.83325 13.333 9.66659C13.333 9.96659 13.2886 10.2499 13.1997 10.5166C13.1108 10.7833 12.9997 11.0333 12.8663 11.2666L14.9997 13.3999L14.0663 14.3333ZM10.333 11.3333C10.7997 11.3333 11.1941 11.1721 11.5163 10.8499C11.8386 10.5277 11.9997 10.1333 11.9997 9.66659C11.9997 9.19992 11.8386 8.80547 11.5163 8.48325C11.1941 8.16103 10.7997 7.99992 10.333 7.99992C9.86634 7.99992 9.4719 8.16103 9.14967 8.48325C8.82745 8.80547 8.66634 9.19992 8.66634 9.66659C8.66634 10.1333 8.82745 10.5277 9.14967 10.8499C9.4719 11.1721 9.86634 11.3333 10.333 11.3333Z",
+        new Rect(0, 0, 16, 16 )
+    ));
+    
+    // collection visibility listed
+    public static readonly IconValue VisibilityUnlisted = new SimpleVectorIcon(new SimpleVectorIconImage(
+        "M14.667 2.66675V2.33341C14.667 1.41341 13.9203 0.666748 13.0003 0.666748C12.0803 0.666748 11.3337 1.41341 11.3337 2.33341V2.66675C10.967 2.66675 10.667 2.96675 10.667 3.33341V6.00008C10.667 6.36675 10.967 6.66675 11.3337 6.66675H14.667C15.0337 6.66675 15.3337 6.36675 15.3337 6.00008V3.33341C15.3337 2.96675 15.0337 2.66675 14.667 2.66675ZM12.667 8.66675C12.667 8.44008 12.6403 8.22008 12.6137 8.00008H13.967C13.987 8.22008 14.0003 8.44008 14.0003 8.66675C14.0003 12.3467 11.0137 15.3334 7.33366 15.3334C3.65366 15.3334 0.666992 12.3467 0.666992 8.66675C0.666992 4.98675 3.65366 2.00008 7.33366 2.00008C8.03366 2.00008 8.70033 2.10675 9.33366 2.30675V4.00008C9.33366 4.73341 8.73366 5.33341 8.00033 5.33341H6.66699V6.66675C6.66699 7.03341 6.36699 7.33341 6.00033 7.33341H4.66699V8.66675H8.66699C9.03366 8.66675 9.33366 8.96675 9.33366 9.33341V11.3334H10.0003C10.6003 11.3334 11.0937 11.7201 11.267 12.2601C12.1337 11.3134 12.667 10.0534 12.667 8.66675ZM2.00033 8.66675C2.00033 11.3867 4.03366 13.6267 6.66699 13.9534V12.6667C5.93366 12.6667 5.33366 12.0667 5.33366 11.3334V10.6667L2.14033 7.47341C2.05366 7.86008 2.00033 8.25341 2.00033 8.66675ZM12.0003 2.66675H14.0003V2.33341C14.0003 1.78008 13.5537 1.33341 13.0003 1.33341C12.447 1.33341 12.0003 1.78008 12.0003 2.33341V2.66675Z",
+        new Rect(0, 0, 16, 16 )
+    ));
+    
     public static readonly IconValue AvatarTest = new AvaloniaImage(new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png"))));
 
 #endregion
@@ -700,9 +725,20 @@ public static class IconValues
     public static readonly IconValue PictogramLibrary = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/library.svg");
     
     /// <summary>
-    /// Brand pictogram for Library
+    /// Brand pictogram for Upload
     /// </summary>
     public static readonly IconValue PictogramUpload = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/upload.svg");
+    
+    /// <summary>
+    /// Brand pictogram for Library
+    /// </summary>
+    public static readonly IconValue PictogramPremium = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/premium.svg");
+
+    /// <summary>
+    /// Brand pictogram for Success
+    /// </summary>
+    public static readonly IconValue PictogramSuccess = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/success.svg");
+
 #endregion
     
 }

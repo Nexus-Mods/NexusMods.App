@@ -1,8 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:NexusMods.App.UI.Controls;assembly=NexusMods.App.UI"
-                    xmlns:icons="clr-namespace:NexusMods.Icons;assembly=NexusMods.Icons"
-                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources;assembly=NexusMods.App.UI">
+                    xmlns:resources="clr-namespace:NexusMods.App.UI.Resources;assembly=NexusMods.App.UI"
+                    xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
 
     <Design.PreviewWith>
         <Border Width="1000">
@@ -28,13 +28,13 @@
                 <controls:Toolbar>
                     <controls:StandardButton Text="Button 3" Fill="Weak"
                                              Size="Toolbar" />
-                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                    <ItemsControl>
                         <controls:StandardButton Text="Button 4" Fill="Weak"
                                                  Size="Toolbar" />
                         <controls:StandardButton Text="Button 5" Fill="Weak"
                                                  Size="Toolbar" />
                     </ItemsControl>
-                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                    <ItemsControl>
                         <controls:StandardButton Text="Button 4" Fill="Weak"
                                                  Size="Toolbar" />
                         <controls:StandardButton Text="Button 5" Fill="Weak"
@@ -53,7 +53,7 @@
                                              Size="Toolbar" />
 
                     <!-- search button group -->
-                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                    <ItemsControl>
                         <controls:StandardButton x:Name="SearchButton"
                                                  Text="x selected"
                                                  Type="Tertiary"
@@ -72,7 +72,7 @@
                     </ComboBox>
 
                     <!-- context button group -->
-                    <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                    <ItemsControl>
 
                         <!-- fixed height until we have our StandardSplitComponent -->
                         <SplitButton x:Name="InstallModSplitButton"
@@ -151,7 +151,7 @@
 
         </Border>
     </Design.PreviewWith>
-
+    
     <ControlTheme x:Key="{x:Type controls:Toolbar}" TargetType="controls:Toolbar">
         <Setter Property="Focusable" Value="False" />
         <Setter Property="VerticalAlignment" Value="Top" />
@@ -172,6 +172,7 @@
                 </Border>
             </ControlTemplate>
         </Setter>
+        
     </ControlTheme>
 
     <ControlTheme x:Key="ToolbarControlGroup" TargetType="ItemsControl">

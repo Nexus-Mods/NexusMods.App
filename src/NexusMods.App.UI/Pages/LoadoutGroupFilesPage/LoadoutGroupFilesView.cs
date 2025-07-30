@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.ReactiveUI;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.GameLocators;
@@ -14,8 +16,15 @@ public partial class LoadoutGroupFilesView : ReactiveUserControl<ILoadoutGroupFi
     {
         InitializeComponent();
         TreeDataGridViewHelper.SetupTreeDataGridAdapter<LoadoutGroupFilesView, ILoadoutGroupFilesViewModel, CompositeItemModel<GamePath>, GamePath>(this, TreeDataGrid, vm => vm.FileTreeAdapter!);
+
         this.WhenActivated(disposables =>
         {
+            SearchControl.AttachKeyboardHandlers(this, disposables);
+
+            // Bind search adapter
+            this.OneWayBind(ViewModel, vm => vm.FileTreeAdapter, view => view.SearchControl.Adapter)
+                .AddTo(disposables);
+
             this.OneWayBind(ViewModel, vm => vm.FileTreeAdapter!.Source.Value, view => view.TreeDataGrid.Source)
                 .AddTo(disposables);
             

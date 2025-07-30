@@ -30,6 +30,14 @@ public static class Events
         private const string Category = "Library";
     }
 
+    public static class Collections
+    {
+        private const string Category = "Collections";
+        public static readonly EventDefinition CreateLocalCollection = new(Category, Action: "Create local collection");
+        public static readonly EventDefinition ShareCollection = new(Category, Action: "Share collection");
+        public static readonly EventDefinition UploadRevision = new(Category, Action: "Upload revision");
+    }
+
     public static class HealthCheck
     {
         private const string Category = "Health check";
@@ -57,5 +65,11 @@ public static class Events
         public static readonly EventDefinition ViewChangelog = new(Category, Action: "View changelog");
         public static readonly EventDefinition ViewAppLogs   = new(Category, Action: "View app logs");
         public static readonly EventDefinition GiveFeedback  = new(Category, Action: "Give feedback");
+    }
+    
+    public static class Search
+    {
+        private const string Category = "Search";
+        public static readonly EventDefinition OpenSearch = new(Category, Action: "TreeDataGrid Search");
     }
 }

@@ -19,4 +19,24 @@
       <ProjectReference Include="..\NexusMods.Networking.EpicGameStore\NexusMods.Networking.EpicGameStore.csproj" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <HashesDatabaseInput>https://github.com/Nexus-Mods/game-hashes/releases/latest/download/game_hashes_db.zip</HashesDatabaseInput>
+        <HashesDatabaseOutput>$(BaseIntermediateOutputPath)games_hashes_db.zip</HashesDatabaseOutput>
+    </PropertyGroup>
+
+    <!-- NOTE(erri120): Downloading the games hashes database at build time if it doesn't exist -->
+    <Target Name="DownloadHashesDatabase" BeforeTargets="BeforeBuild" Condition="!Exists('$(HashesDatabaseOutput)')">
+        <MakeDir Directories="$(BaseIntermediateOutputPath)" />
+        <Exec Condition="'$(OS)' != 'Windows_NT'" Command="curl -sSL -o $(HashesDatabaseOutput) $(HashesDatabaseInput)"  />
+        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Invoke-WebRequest -Uri '$(HashesDatabaseInput)' -OutFile '$(HashesDatabaseOutput)'&quot;" />
+    </Target>
+
+    <Target Name="EmbedOutput" AfterTargets="DownloadHashesDatabase">
+        <Error Condition="!Exists('$(HashesDatabaseOutput)')" Text="Failed to embed file $(HashesDatabaseOutput)" />
+
+        <ItemGroup>
+            <EmbeddedResource Include="$(HashesDatabaseOutput)" LogicalName="games_hashes_db.zip" />
+        </ItemGroup>
+    </Target>
+
 </Project>

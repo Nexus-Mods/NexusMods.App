@@ -45,8 +45,8 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     public IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType definition, Func<IJobContext<TJobType>, ValueTask<TResultType>> task) where TJobType : IJobDefinition<TResultType> 
         where TResultType : notnull
     {
-        using var creator = JobGroupCreator.Push(this);
-        var ctx = new JobContext<TJobType, TResultType>(definition, this, creator.Group, task);
+        var group = new JobGroup();
+        var ctx = new JobContext<TJobType, TResultType>(definition, this, group, task);
         _allJobs.AddOrUpdate(ctx);
         Task.Run(async () =>
             {
@@ -71,8 +71,8 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     public IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job) where TJobType : IJobDefinitionWithStart<TJobType, TResultType> 
         where TResultType : notnull
     {
-        using var creator = JobGroupCreator.Push(this);
-        var ctx = new JobContext<TJobType, TResultType>(job, this, creator.Group, job.StartAsync);
+        var group = new JobGroup();
+        var ctx = new JobContext<TJobType, TResultType>(job, this, group, job.StartAsync);
         _allJobs.AddOrUpdate(ctx);
         Task.Run(async () =>
             {
@@ -92,5 +92,25 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
             }
         );
         return new JobTask<TJobType, TResultType>(ctx);
+    }
+
+    public void Cancel(JobId jobId)
+    {
+        var job = _allJobs.Lookup(jobId);
+        if (job.HasValue)
+            job.Value.Cancel();
+    }
+    
+    public void Cancel(IJobTask jobTask) => jobTask.Job.Cancel();
+
+    public void CancelGroup(IJobGroup group) => group.Cancel();
+
+    public void CancelAll()
+    {
+        foreach (var job in _allJobs.Items)
+        {
+            if (job.Status.IsActive())
+                job.Cancel();
+        }
     }
 }

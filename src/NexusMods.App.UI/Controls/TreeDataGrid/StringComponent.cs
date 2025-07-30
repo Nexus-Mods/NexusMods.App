@@ -1,4 +1,6 @@
 using JetBrains.Annotations;
+using NexusMods.App.UI.Controls.Filters;
+using NexusMods.App.UI.Controls.TreeDataGrid.Filters;
 using R3;
 
 namespace NexusMods.App.UI.Controls;
@@ -28,4 +30,17 @@ public sealed class StringComponent : AValueComponent<string>, IItemModelCompone
 
     /// <inheritdoc/>
     public StringComponent(string value) : base(value) { }
+
+    /// <inheritdoc/>
+    public FilterResult MatchesFilter(Filter filter)
+    {
+        return filter switch
+        {
+            Filter.TextFilter textFilter => Value.Value.Contains(
+                textFilter.SearchText, 
+                textFilter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)
+                ? FilterResult.Pass : FilterResult.Fail,
+            _ => FilterResult.Indeterminate // Default: no opinion on other filters
+        };
+    }
 }

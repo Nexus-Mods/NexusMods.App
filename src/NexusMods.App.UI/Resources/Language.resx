@@ -32,7 +32,7 @@
     <data name="BrowseGames" xml:space="preserve">
         <value>Browse Games</value>
     </data>
-    
+
     <data name="MetricsOptIn_OverlayTitle" xml:space="preserve">
         <value>Diagnostics and usage data</value>
     </data>
@@ -45,14 +45,14 @@
     <data name="MetricsOptIn_DENY" xml:space="preserve">
         <value>Deny</value>
     </data>
-    
+
     <data name="Updater_UPDATE" xml:space="preserve">
         <value>View update</value>
     </data>
     <data name="Updater_UpdateAvailable" xml:space="preserve">
         <value>Update available {0}</value>
     </data>
-    
+
     <data name="Updater_GenericMessage" xml:space="preserve">
         <value>Your current version {0} can be updated to the latest version {1}. Be sure to close the app completely before updating.</value>
     </data>
@@ -65,10 +65,9 @@
     </data>
     <data name="Updater_UseFlatpak" xml:space="preserve">
         <value>You can update the app using Flatpak.</value>
-    </data>   
-      
-    
-    
+    </data>
+
+
     <data name="LoadoutGridView_AddMod_FilePicker_Title" xml:space="preserve">
         <value>Please select a mod file to install.</value>
     </data>
@@ -158,6 +157,9 @@
     </data>
     <data name="SearchBox__Search" xml:space="preserve">
         <value>Search</value>
+    </data>
+    <data name="SearchBox__Search_Watermark" xml:space="preserve">
+        <value>Search...</value>
     </data>
     <data name="TopBarActions__LOG_IN" xml:space="preserve">
         <value>Log In</value>
@@ -587,7 +589,7 @@
     </data>
     <data name="OpenStatusPageMenuItem.Header" xml:space="preserve">
         <value>Status page</value>
-    </data> 
+    </data>
     <data name="NavigationControl_NavigationControl_Open_in_new_tab" xml:space="preserve">
         <value>Open in new tab</value>
     </data>
@@ -692,7 +694,7 @@
     <data name="SettingsView_Description" xml:space="preserve">
         <value>Manage your preferences.</value>
     </data>
-    
+
     <data name="MyLoadoutsGameSectionHeading" xml:space="preserve">
         <value>{0} Loadouts</value>
         <comment>Where {0} is the name of the game</comment>
@@ -895,15 +897,14 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
 
 
-
     <data name="ManualDownloadRequiredOverlayView_CheckingTitle" xml:space="preserve">
         <value>Checking Added File</value>
-    </data>    
+    </data>
     <data name="ManualDownloadRequiredOverlayView_CheckingText" xml:space="preserve">
         <value>Please wait while we verify the added file.</value>
     </data>
-    
-    
+
+
     <data name="ManualDownloadRequiredOverlayView_ErrorTitle" xml:space="preserve">
         <value>Incorrect Mod File Added</value>
     </data>
@@ -919,20 +920,19 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="ManualDownloadRequiredOverlayView_ErrorReportBugText" xml:space="preserve">
         <value>Report bug</value>
     </data>
-    
+
     <data name="CollectionComponents_ExternalDownloadAction_ToolTip" xml:space="preserve">
         <value>Attempts automatic download of third-party mod. A manual option will be provided if automatic download is not possible.</value>
     </data>
     <data name="CollectionComponents_ManualDownloadAction_ToolTip" xml:space="preserve">
         <value>Automatic download not available. Click to open the third-party site to download and add the mod manually.</value>
     </data>
-    
-    
+
+
     <data name="CollectionDownloadViewModel_Toggle_ToolTip" xml:space="preserve">
         <value>Toggle on adds this collection to the game and loads it. Toggle off leaves it out.</value>
     </data>
-    
-    
+
 
     <data name="CollectionDownloadViewModel_StatsMods_ToolTip" xml:space="preserve">
         <value>Mods</value>
@@ -976,7 +976,7 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="UpgradeToPremiumView_Desc2" xml:space="preserve">
         <value>Premium users also get:</value>
     </data>
-    
+
     <data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
         <value>Uncapped downloads speeds</value>
     </data>
@@ -1022,5 +1022,123 @@ To apply changes or launch the game again, please close the game first.</value>
     </data>
     <data name="Library_ShowUpdates" xml:space="preserve">
         <value>Show updates ({0})</value>
+    </data>
+    <data name="Library_Update" xml:space="preserve">
+        <value>Update ({0})</value>
+    </data>
+    <data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+        <value>Update and keep old mod ({0})</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Title" xml:space="preserve">
+        <value>Manual Update Required</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Text" xml:space="preserve">
+        <value>Update and Replace is not yet supported for free users in this version of the app.
+
+Click **OK** to visit the mod page for manual update.</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Title" xml:space="preserve">
+        <value>Some Mod Updates Failed to Install</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Description" xml:space="preserve">
+        <value>The following mod updates couldn't be installed:
+
+{0}
+
+Keep the downloaded files in your library in case you want to retry the installation later?</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_DeleteFiles" xml:space="preserve">
+        <value>Delete failed updates</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_KeepFiles" xml:space="preserve">
+        <value>Keep failed updates</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+        <value>Updating mods installed in multiple collections</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+        <value>Update in {0} collection(s)</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+        <value>Updating will apply to all local collections where the mod is installed:</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+        <value>Nexus Mods collections you are subscribed to will not be affected.</value>
+    </data>
+    <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+        <value>Update mod</value>
+    </data>
+    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+        <value>More options</value>
+    </data>
+    <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+        <value>Update mod and replace the old version</value>
+    </data>
+    <data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+        <value>Go Premium for one-click mod updates</value>
+    </data>
+    <data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+        <value>No browser, no manual downloads. Premium users also get:
+
+• Download entire collections with one click
+• Uncapped download speeds
+• No Ads for life, even if you unsubscribe after 1 month!</value>
+    </data>
+    <data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+        <value>Update all your mods, or individual mods, in one click.</value>
+    </data>
+    <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+        <value>Update mods manually</value>
+    </data>
+    <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+        <value>Go Premium</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
+        <value>Some Mod Updates Failed to Download</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Description" xml:space="preserve">
+        <value>The following mod updates couldn’t be downloaded:
+
+{0}</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Retry" xml:space="preserve">
+        <value>Retry failed downloads</value>
+    </data>
+        <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
+        <value>"{0}" has been published as listed. It will appear in search results and may be featured."</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">
+        <value>"{0}" has been published as unlisted. Only people with the link can view it.</value>
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Help" xml:space="preserve">
+        <value>You can change the visibility of your collection at any time in the collection settings.</value> 
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision" xml:space="preserve">
+        <value>"{0}" has been published.</value> 
+    </data>
+    <data name="Loadout_Dialog_CollectionPublished_Revision_Help" xml:space="preserve">
+        <value>We recommend you update this revision's changelog so users can find out what's new.</value> 
+    </data>
+    
+    <data name="Loadout_Dialog_ShareCollection_UnlistedTitle" xml:space="preserve">
+        <value>Unlisted - Recommended for Sharing with Friends</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_UnlistedExplanation" xml:space="preserve">
+        <value>Only people with the link can view. Not shown in search or featured.</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedTitle" xml:space="preserve">
+        <value>Listed - Publicly Visible on Nexus Mods</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ListedExplanation" xml:space="preserve">
+        <value>Anyone can find this in search or see it featured on Nexus Mods.</value>
+    </data>
+    <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
+        <value>You can change the visibility at any time in your collection settings.</value>
     </data>
 </root>

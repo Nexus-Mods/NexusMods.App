@@ -1,5 +1,8 @@
+using System.Collections.Frozen;
 using JetBrains.Annotations;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
+using NexusMods.Abstractions.Loadouts.Synchronizers;
 
 namespace NexusMods.Abstractions.Diagnostics.Emitters;
 
@@ -16,5 +19,14 @@ public interface ILoadoutDiagnosticEmitter : IDiagnosticEmitter
     /// <summary>
     /// Diagnoses a loadout and creates instances of <see cref="Diagnostic"/>.
     /// </summary>
+    [Obsolete("To be replaced with the overload that takes in the sync tree")]
     IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Diagnoses a loadout and creates instances of <see cref="Diagnostic"/>.
+    /// </summary>
+    IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, FrozenDictionary<GamePath, SyncNode> syncTree, CancellationToken cancellationToken)
+    {
+        return Diagnose(loadout, cancellationToken);
+    }
 }

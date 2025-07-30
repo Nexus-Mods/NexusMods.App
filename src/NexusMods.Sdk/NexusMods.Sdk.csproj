@@ -16,6 +16,25 @@
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="TransparentValueObjects.Abstractions" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <BuildDateOutput>$(BaseIntermediateOutputPath)buildDate.txt</BuildDateOutput>
+    </PropertyGroup>
+
+    <Target Name="WriteCurrentDate" BeforeTargets="BeforeBuild">
+        <MakeDir Directories="$(BaseIntermediateOutputPath)" />
+        <Exec Condition="'$(OS)' != 'Windows_NT'" Command="bash -c &quot;date -u +%Y-%m-%dT%H:%M:%SZ &gt; $(BuildDateOutput)&quot;"  />
+        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="powershell -NoProfile -ExecutionPolicy Bypass -Command &quot;Get-Date -Format o | Out-File -FilePath '$(BuildDateOutput)' -Encoding UTF8&quot;" />
+    </Target>
+
+    <Target Name="EmbedOutput" AfterTargets="WriteCurrentDate">
+        <Error Condition="!Exists('$(BuildDateOutput)')" Text="Failed to embed file $(BuildDateOutput)" />
+
+        <ItemGroup>
+            <EmbeddedResource Include="$(BuildDateOutput)" LogicalName="buildDate.txt" />
+        </ItemGroup>
+    </Target>
+
     <ItemGroup>
         <Compile Update="ProxyConsole\DelegateParser.cs">
             <DependentUpon>IOptionParser.cs</DependentUpon>

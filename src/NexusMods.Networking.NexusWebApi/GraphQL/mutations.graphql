@@ -1,0 +1,67 @@
+mutation CreateCollection($payload: CollectionPayload!, $storageUUID: String!) {
+    createCollection(collectionData: $payload, uuid: $storageUUID) {
+        success
+        collection {
+            ...Collection
+        }
+        revision {
+            ...CollectionRevision
+        }
+    }
+}
+
+mutation RenameCollection($collectionId: Int!, $newName: String!) {
+    editCollection(collectionId: $collectionId, name: $newName) {
+        success,
+        collection {
+            ...Collection
+        }
+    }
+}
+
+mutation AddRequiredCollectionMetadata($collectionId: Int!, $categoryId: ID!, $summary: String!, $description: String!) {
+    editCollection(collectionId: $collectionId, categoryId: $categoryId, summary: $summary, description: $description) {
+        success,
+        collection {
+            ...Collection
+        }
+    }
+}
+
+mutation AddTileImageToCollection($collectionId: ID!, $image: UploadImageInput!){
+    addTileImageToCollection(collectionId: $collectionId, image: $image) {
+        image {
+            id
+        }
+    }
+}
+
+mutation ChangeCollectionStatusToListed($collectionId: Int!) {
+    listCollection(collectionId: $collectionId) {
+        success
+    }
+}
+
+mutation ChangeCollectionStatusToUnlisted($collectionId: ID!) {
+    unlistCollection(collectionId: $collectionId) {
+        success
+    }
+}
+
+mutation CreateOrUpdateRevision($payload: CollectionPayload!, $collectionId: Int!, $storageUUID: String!) {
+    createOrUpdateRevision(collectionData: $payload, collectionId: $collectionId, uuid: $storageUUID) {
+        success
+        collection {
+            ...Collection
+        }
+        revision {
+            ...CollectionRevision
+        }
+    }
+}
+
+mutation PublishRevision($revisionId: ID!) {
+    publishRevision(revisionId: $revisionId) {
+        success
+    }
+}

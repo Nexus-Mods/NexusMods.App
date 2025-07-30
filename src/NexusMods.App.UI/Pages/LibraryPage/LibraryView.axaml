@@ -14,8 +14,11 @@
     xmlns:pageHeader="clr-namespace:NexusMods.App.UI.Controls.PageHeader"
     xmlns:loadouts="clr-namespace:NexusMods.Abstractions.Loadouts;assembly=NexusMods.Abstractions.Loadouts"
     xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
+    xmlns:search="clr-namespace:NexusMods.App.UI.Controls.Search"
     mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="450"
-    x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView">
+    x:Class="NexusMods.App.UI.Pages.LibraryPage.LibraryView"
+    Background="{StaticResource SurfaceTransparentBrush}">
+    <!-- Background set to ensure that clicks anywhere on the page are correctly registered and bring focus to it -->
 
     <Grid RowDefinitions="Auto, *">
 
@@ -44,43 +47,14 @@
                     <!-- toolbar component -->
                     <controls:Toolbar Margin="24,12, 24, 0">
 
-                        <!-- search button group -->
-                        <!-- leave in for now, it won't be long before we have a search component -->
-
-                        <!-- <ItemsControl Template="{StaticResource ToolbarControlGroup}"> -->
-                        <!--     <DockPanel> -->
-                        <!--         <controls:StandardButton x:Name="SearchButton" -->
-                        <!--                                  Text="x selected" -->
-                        <!--                                  Type="Tertiary" -->
-                        <!--                                  Size="ExtraSmall" -->
-                        <!--                                  Fill="WeakAlt" -->
-                        <!--                                  ShowIcon="Left" -->
-                        <!--                                  ShowLabel="False" -->
-                        <!--                                  LeftIcon="{x:Static icons:IconValues.Search}" -->
-                        <!--                                  DockPanel.Dock="Left"/> -->
-                        <!--         <Panel x:Name="SearchPanel" HorizontalAlignment="Left" Width="188"> -->
-                        <!--             <TextBox x:Name="SearchTextBox" MinHeight="24" Watermark="Search..." Padding="4 2 24 2" -->
-                        <!--                      Margin="4 0 0 0"/> -->
-                        <!--             <controls:StandardButton x:Name="SearchClearButton" -->
-                        <!--                                      Margin="0 0 4 0" -->
-                        <!--                                      HorizontalAlignment="Right" -->
-                        <!--                                      Type="Tertiary" -->
-                        <!--                                      Size="ExtraSmall" -->
-                        <!--                                      Fill="None" -->
-                        <!--                                      ShowIcon="IconOnly" -->
-                        <!--                                      ShowLabel="False" -->
-                        <!--                                      LeftIcon="{x:Static icons:IconValues.Close}"/> -->
-                        <!--             <Panel.Transitions> -->
-                        <!--                 <Transitions> -->
-                        <!--                     <DoubleTransition Property="Width" Duration="0:0:0.1"/> -->
-                        <!--                 </Transitions> -->
-                        <!--             </Panel.Transitions> -->
-                        <!--         </Panel> -->
-                        <!--     </DockPanel> -->
-                        <!-- </ItemsControl> -->
+                        <ItemsControl>
+                            <search:SearchControl x:Name="SearchControl"
+                                                  PageName="Library"
+                                                  ButtonSize="Toolbar" />
+                        </ItemsControl>
 
                         <!-- selection related button group -->
-                        <ItemsControl x:Name="ContextControlGroup" Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl x:Name="ContextControlGroup">
 
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"
@@ -111,6 +85,25 @@
 
                             </controls:StandardButton>
 
+                            <controls:StandardButton x:Name="UpdateButton"
+                                                     Type="Primary"
+                                                     Size="Toolbar"
+                                                     Fill="WeakAlt"
+                                                     ShowIcon="Both"
+                                                     LeftIcon="{x:Static icons:IconValues.Download}"
+                                                     RightIcon="{x:Static icons:IconValues.ChevronDown}">
+
+                                <controls:StandardButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuItem x:Name="UpdateModMenuItem">
+                                        </MenuItem>
+                                        <MenuItem x:Name="UpdateAndKeepOldModMenuItem">
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </controls:StandardButton.Flyout>
+
+                            </controls:StandardButton>
+
                             <controls:StandardButton x:Name="RemoveModButton"
                                                      Text="{x:Static resources:Language.FileOriginPage_DeleteMod}"
                                                      Type="Tertiary"
@@ -123,8 +116,7 @@
                                                      Classes="Danger" />
                         </ItemsControl>
 
-                        <ItemsControl x:Name="InstallationTargetControlGroup"
-                                      Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl x:Name="InstallationTargetControlGroup">
                             <ComboBox x:Name="InstallationTargetSelector">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate DataType="local:InstallationTarget">
@@ -135,7 +127,7 @@
                         </ItemsControl>
 
                         <!-- static button group -->
-                        <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl>
                             <controls:StandardButton
                                 Text="Add"
                                 Type="Tertiary"
@@ -169,6 +161,13 @@
                                                      Fill="Weak"
                                                      LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
+                            <controls:StandardButton x:Name="UpdateAllButton"
+                                                     Text="{x:Static resources:Language.FileOriginPage_UpdateAll}"
+                                                     ShowIcon="Left"
+                                                     Size="Toolbar"
+                                                     Type="Primary" 
+                                                     Fill="WeakAlt"
+                                                     LeftIcon="{x:Static icons:IconValues.Download}" />
                         </ItemsControl>
                     </controls:Toolbar>
 
@@ -211,7 +210,7 @@
 
                     <!-- toolbar component -->
                     <controls:Toolbar Margin="24,12, 24, 0">
-                        <ItemsControl Theme="{StaticResource ToolbarControlGroup}">
+                        <ItemsControl>
                             <controls:StandardButton
                                 x:Name="GetCollectionFromNexusButton"
                                 Text="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}"

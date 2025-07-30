@@ -80,10 +80,10 @@
                 </controls:ComponentTemplate>
 
                 <!-- Current version -->
-                <controls:ComponentTemplate x:TypeArguments="controls:StringComponent"
+                <controls:ComponentTemplate x:TypeArguments="controls:VersionComponent"
                                             ComponentKey="{x:Static local:LibraryColumns+ItemVersion.CurrentVersionComponentKey}">
                     <controls:ComponentTemplate.DataTemplate>
-                        <DataTemplate DataType="{x:Type controls:StringComponent}">
+                        <DataTemplate DataType="{x:Type controls:VersionComponent}">
                             <TextBlock Text="{CompiledBinding Value.Value}" />
                         </DataTemplate>
                     </controls:ComponentTemplate.DataTemplate>
@@ -109,14 +109,14 @@
                         <controls:ComponentTemplate.DataTemplate>
                             <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
 
-                                <controls:StandardButton Command="{CompiledBinding CommandUpdate}"
+                                <controls:StandardButton Command="{CompiledBinding CommandUpdateAndReplace}"
                                                          Text="{CompiledBinding ButtonText.Value}"
                                                          Size="Small"
                                                          Type="Primary"
                                                          Fill="WeakAlt"
                                                          LeftIcon="{x:Static icons:IconValues.Download}"
                                                          ShowIcon="Left"
-                                                         ToolTip.Tip="Update mod"/>
+                                                         ToolTip.Tip="{x:Static resources:Language.Library_UpdateMod_ToolTip}"/>
                             </DataTemplate>
                         </controls:ComponentTemplate.DataTemplate>
                     </controls:ComponentTemplate>
@@ -154,7 +154,7 @@
            
             <!-- more options -->
             <controls:StandardButton
-                ToolTip.Tip="More options"
+                ToolTip.Tip="{x:Static resources:Language.Library_MoreOptions_ToolTip}"
                 x:Name="HamburgerMenuButton"
                 LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                 ShowIcon="Left"
@@ -163,6 +163,45 @@
                 <controls:StandardButton.Flyout>
 
                     <MenuFlyout FlyoutPresenterClasses="TreeDataGridMenu">
+                        
+                        <!-- Update (and Replace) -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+                                            <MenuItem Header="{CompiledBinding UpdateButtonText.Value}"
+                                                      Command="{CompiledBinding CommandUpdateAndReplace}"
+                                                      ToolTip.Tip="{x:Static resources:Language.Library_UpdateModAndReplace_ToolTip}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
+                        
+                        <!-- Update and Keep Old Mod -->
+                        <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
+                            <controls:ComponentControl.ComponentTemplate>
+                                <controls:ComponentTemplate x:TypeArguments="local:LibraryComponents+UpdateAction"
+                                                            ComponentKey="{x:Static local:LibraryColumns+Actions.UpdateComponentKey}">
+                                    <controls:ComponentTemplate.DataTemplate>
+                                        <DataTemplate DataType="{x:Type local:LibraryComponents+UpdateAction}">
+                                            <MenuItem Header="{CompiledBinding UpdateAndKeepOldModButtonText.Value}"
+                                                      Command="{CompiledBinding CommandUpdateAndKeepOld}">
+                                                <MenuItem.Icon>
+                                                    <icons:UnifiedIcon Value="{x:Static icons:IconValues.Download}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </DataTemplate>
+                                    </controls:ComponentTemplate.DataTemplate>
+                                </controls:ComponentTemplate>
+                            </controls:ComponentControl.ComponentTemplate>
+                        </controls:ComponentControl>
 
                         <!-- Hide Updates -->
                         <controls:ComponentControl x:TypeArguments="abstractions:EntityId" Content="{CompiledBinding}">
