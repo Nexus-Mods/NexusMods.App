@@ -142,3 +142,29 @@ public record NonYieldingJob(ManualResetEventSlim CompletionSignal, ManualResetE
         return ValueTask.FromResult("Non-yielding work completed");
     }
 }
+
+// Test job definitions for pause/resume testing
+public record PauseResumeTestJob(
+    ManualResetEventSlim AllowYieldSignal,
+    ManualResetEventSlim PausingSignal,
+    ManualResetEventSlim? AllowCompletionSignal = null,
+    ManualResetEventSlim? ResumedSignal = null) : IJobDefinitionWithStart<PauseResumeTestJob, int>
+{
+    public async ValueTask<int> StartAsync(IJobContext<PauseResumeTestJob> context)
+    {
+        AllowYieldSignal.Wait(context.CancellationToken);
+        PausingSignal.Set(); // Signal that we're about to hit the paused state
+        // This is purely in case of slow CI that stalls for seconds
+        // to avoid being flaky.
+        await context.YieldAsync(); // Should pause here
+        
+        // Signal that we've resumed execution after the pause
+        ResumedSignal?.Set();
+        
+        // If we have an AllowCompletionSignal, wait for it before completing
+        // This allows the test to check the running state after resume
+        AllowCompletionSignal?.Wait(context.CancellationToken);
+        
+        return 42;
+    }
+}
