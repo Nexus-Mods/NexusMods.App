@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Sockets;
 using System.Reactive;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -58,7 +60,6 @@ public class Program
         }
 
         var startupMode = StartupMode.Parse(args);
-
         using var host = BuildHost(
             startupMode,
             telemetrySettings,
@@ -66,8 +67,11 @@ public class Program
             experimentalSettings,
             gameLocatorSettings
         );
+
         var services = host.Services;
         _logger = services.GetRequiredService<ILogger<Program>>();
+
+        CleanupOldProcesses(services).Wait(timeout: TimeSpan.FromSeconds(10));
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
@@ -162,6 +166,48 @@ public class Program
             // Wait for 15 seconds for the host to stop, otherwise kill the process
             if (!host.StopAsync().Wait(timeout: TimeSpan.FromSeconds(15)))
                 Environment.Exit(0);
+        }
+    }
+
+    private static async Task CleanupOldProcesses(IServiceProvider serviceProvider)
+    {
+        var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+        var syncFile = serviceProvider.GetRequiredService<SyncFile>();
+
+        var (process, port) = syncFile.GetSyncInfo();
+        if (process is null) return;
+
+        var pid = process.Id;
+        var canConnect = await CanConnectToProcess(logger, port, timeout: TimeSpan.FromSeconds(5));
+        if (canConnect) return;
+
+        logger.LogWarning("Unable to connect to old process with PID `{PID}` on port `{Port}`, force closing process", pid, port);
+
+        try
+        {
+            process.Kill(entireProcessTree: true);
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(e, "Exception killing old process `{PID}`", pid);
+        }
+    }
+
+    private static async Task<bool> CanConnectToProcess(ILogger logger, int port, TimeSpan timeout)
+    {
+        using var client = new TcpClient();
+        var cts = new CancellationTokenSource(delay: timeout);
+
+        try
+        {
+            await client.ConnectAsync(IPAddress.Loopback, port, cts.Token);
+            await using var stream = client.GetStream();
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(e, "Exception connecting to process on `{Port}`", port);
+            return false;
         }
     }
 
