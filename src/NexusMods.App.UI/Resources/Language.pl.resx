@@ -139,7 +139,7 @@
 		<value>WSPIERAJĄCY</value>
 	</data>
 	<data name="SearchBox__Search" xml:space="preserve">
-		<value>Wyszukaj</value>
+		<value>Szukaj</value>
 	</data>
 	<data name="SearchBox__Search_Watermark" xml:space="preserve">
 		<value>Szukaj...</value>
@@ -934,13 +934,13 @@
 		<value>Użytkownicy Premium otrzymują także:</value>
 	</data>
 	<data name="UpgradeToPremiumView_Bullet1" xml:space="preserve">
-		<value>Nieograniczona prędkość pobierania,</value>
+		<value>Nieograniczona prędkość pobierania.</value>
 	</data>
 	<data name="UpgradeToPremiumView_Bullet2" xml:space="preserve">
 		<value>Dożywotni brak reklam, nawet po anulowaniu!</value>
 	</data>
 	<data name="UpgradeToPremiumView_Bullet3" xml:space="preserve">
-		<value>Wspieraj twórców – premium pomaga nagradzać autorów modów.</value>
+		<value>Wsparcie twórców – premium pomaga nagradzać autorów modów.</value>
 	</data>
 	<data name="UpgradeToPremiumView_CancelButton" xml:space="preserve">
 		<value>Anuluj</value>
@@ -977,5 +977,122 @@
 	</data>
 	<data name="Library_ShowUpdates" xml:space="preserve">
 		<value>Pokaż aktualizacje ({0})</value>
+	</data>
+	<data name="Library_Update" xml:space="preserve">
+		<value>Zaktualizuj ({0})</value>
+	</data>
+	<data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+		<value>Zaktualizuj i zachowaj stary mod ({0})</value>
+	</data>
+	<data name="Dialog_ReplaceNotSupported_Title" xml:space="preserve">
+		<value>Wymagana ręczna aktualizacja</value>
+	</data>
+	<data name="Dialog_ReplaceNotSupported_Text" xml:space="preserve">
+		<value>W tej wersji aplikacji funkcja „Zaktualizuj i Zamień” nie jest jeszcze wspierana dla użytkowników z darmowym kontem.
+
+Kliknij **OK**, aby przejść do strony modyfikacji i przeprowadzić ręczną aktualizację.</value>
+	</data>
+	<data name="Library_Update_SomeInstallsFailed_Title" xml:space="preserve">
+		<value>Instalacja aktualizacji podanych modów nie powiodła się</value>
+	</data>
+	<data name="Library_Update_SomeInstallsFailed_Description" xml:space="preserve">
+		<value>Poniższe aktualizacje modów nie mogły zostać zainstalowane:
+
+{0}
+
+Zachować pobrane pliki w bibliotece na wypadek późniejszej próby instalacji?</value>
+	</data>
+	<data name="Library_Update_SomeInstallsFailed_DeleteFiles" xml:space="preserve">
+		<value>Usuń nieudane aktualizacje</value>
+	</data>
+	<data name="Library_Update_SomeInstallsFailed_KeepFiles" xml:space="preserve">
+		<value>Zachowaj nieudane aktualizacje</value>
+	</data>
+	<data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+		<value>Aktualizacja modów zainstalowanych w wielu kolekcjach</value>
+	</data>
+	<data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+		<value>Aktualizacja w {0} kolekcji(ach)</value>
+	</data>
+	<data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+		<value>Aktualizacja zostanie zastosowana do wszystkich lokalnych kolekcji, w których mod jest zainstalowany:</value>
+	</data>
+	<data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+		<value>Nie będzie to miało wpływu na subskrybowane kolekcje Nexus Mods.</value>
+	</data>
+	<data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+		<value>Zaktualizuj mod</value>
+	</data>
+	<data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+		<value>Więcej opcji</value>
+	</data>
+	<data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+		<value>Zaktualizuj moda i zastąp starą wersję</value>
+	</data>
+	<data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+		<value>Przejdź na Premium, aby aktualizować mody jednym kliknięciem</value>
+	</data>
+	<data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+		<value>Bez przeglądarki, bez ręcznego pobierania. Użytkownicy Premium otrzymują również:
+
+• Pobieranie całych kolekcji jednym kliknięciem
+• Nieograniczona prędkość pobierania
+• Dożywotni brak reklam, nawet jeśli zrezygnujesz z subskrypcji po 1 miesiącu!</value>
+	</data>
+	<data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+		<value>Zaktualizuj wszystkie lub pojedyncze mody jednym kliknięciem.</value>
+	</data>
+	<data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+		<value>Zaktualizuj mody ręcznie</value>
+	</data>
+	<data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+		<value>Przejdź na Premium</value>
+	</data>
+	<data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
+		<value>Pobieranie kilku aktualizacji modów nie powiodło się</value>
+	</data>
+	<data name="Library_Update_SomeDownloadsFailed_Description" xml:space="preserve">
+		<value>Nie można pobrać poniższych aktualizacji modów:
+
+{0}</value>
+	</data>
+	<data name="Library_Update_SomeDownloadsFailed_Option_Cancel" xml:space="preserve">
+		<value>Anuluj</value>
+	</data>
+	<data name="Library_Update_SomeDownloadsFailed_Option_Retry" xml:space="preserve">
+		<value>Ponów nieudane pobieranie</value>
+	</data>
+	<data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
+		<value>Opublikowano „{0}” jako widoczne. Pojawi się ona w wyszukiwarce i może zostać wyróżniona.</value>
+	</data>
+	<data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">
+		<value>Opublikowano „{0}” jako niewidoczne. Tylko osoby posiadające link mogą ją wyświetlić.</value>
+	</data>
+	<data name="Loadout_Dialog_CollectionPublished_FirstPublish_Help" xml:space="preserve">
+		<value>Widoczność kolekcji możesz zmienić w dowolnym momencie w ustawieniach kolekcji.</value>
+	</data>
+	<data name="Loadout_Dialog_CollectionPublished_Revision" xml:space="preserve">
+		<value>Opublikowano "{0}".</value>
+	</data>
+	<data name="Loadout_Dialog_CollectionPublished_Revision_Help" xml:space="preserve">
+		<value>Zalecamy zaktualizowanie dziennika zmian dla tej wersji, aby użytkownicy mogli poznać nowości.</value>
+	</data>
+	<data name="Loadout_Dialog_ShareCollection_UnlistedTitle" xml:space="preserve">
+		<value>Niewidoczna - zalecane przy udostępnianiu znajomym</value>
+	</data>
+	<data name="Loadout_Dialog_ShareCollection_UnlistedExplanation" xml:space="preserve">
+		<value>Tylko osoby posiadające link mogą ją wyświetlić. Nie pojawia się w wyszukiwarce ani w sekcji polecanych.</value>
+	</data>
+	<data name="Loadout_Dialog_ShareCollection_ListedTitle" xml:space="preserve">
+		<value>Widczona - publicznie dostępna na Nexus Mods</value>
+	</data>
+	<data name="Loadout_Dialog_ShareCollection_ListedExplanation" xml:space="preserve">
+		<value>Każdy może ją znaleźć w wyszukiwarce lub zobaczyć na Nexus Mods.</value>
+	</data>
+	<data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
+		<value>Widoczność możesz zmienić w dowolnym momencie w ustawieniach kolekcji.</value>
 	</data>
 </root>
