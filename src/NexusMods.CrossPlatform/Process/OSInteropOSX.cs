@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using CliWrap;
 using Microsoft.Extensions.Logging;
+using NexusMods.Paths;
 
 namespace NexusMods.CrossPlatform.Process;
 
@@ -14,8 +15,7 @@ internal class OSInteropOSX : AOSInterop
     /// <summary>
     /// Constructor.
     /// </summary>
-    public OSInteropOSX(ILoggerFactory loggerFactory, IProcessFactory processFactory)
-        : base(loggerFactory, processFactory) { }
+    public OSInteropOSX(ILoggerFactory loggerFactory, IProcessFactory processFactory, IFileSystem fileSystem) : base(fileSystem, loggerFactory, processFactory) { }
 
     /// <inheritdoc/>
     protected override Command CreateCommand(Uri uri)
