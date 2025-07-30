@@ -1,3 +1,5 @@
+using Nito.AsyncEx;
+
 namespace NexusMods.Abstractions.Jobs;
 
 /// <summary>
@@ -19,7 +21,7 @@ namespace NexusMods.Abstractions.Jobs;
 public class JobCancellationToken(CancellationToken linkedToken = default) : IDisposable
 {
     private readonly CancellationTokenSource _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(linkedToken);
-    private readonly ManualResetEventSlim _pauseEvent = new(initialState: true); // Not paused initially
+    private readonly AsyncManualResetEvent _pauseEvent = new(true); // Not paused initially
     private CancellationReason? _reason;
 
     /// <summary>
@@ -116,33 +118,26 @@ public class JobCancellationToken(CancellationToken linkedToken = default) : IDi
     /// </summary>
     /// <returns>A task that completes when the job is resumed or cancelled.</returns>
     /// <exception cref="OperationCanceledException">
-    /// Thrown when the job is cancelled while waiting for resume.
+    /// Thrown when the job is cancelled while waiting for resume. The actual exception type thrown is <see cref="TaskCanceledException"/>.
     /// </exception>
     /// <remarks>
     /// <para>
     /// If the job is not paused, this method returns immediately.
-    /// If the job is cancelled while waiting, an <see cref="OperationCanceledException"/> is thrown.
+    /// If the job is cancelled while waiting, a <see cref="TaskCanceledException"/> (which inherits from <see cref="OperationCanceledException"/>) is thrown.
     /// </para>
     /// <para>
     /// This method is typically called by the job framework when <see cref="IJobContext.YieldAsync()"/> detects a pause.
     /// </para>
     /// </remarks>
-    public async Task WaitForResumeAsync()
-    {
-        await Task.Run(() => _pauseEvent.Wait(Token), Token);
-    }
-    
+    public async Task WaitForResumeAsync() => await _pauseEvent.WaitAsync(Token);
+
     /// <summary>
     /// Releases all resources used by this <see cref="JobCancellationToken"/>.
     /// </summary>
     /// <remarks>
     /// After disposal, this token should not be used. Any pending operations may throw exceptions.
     /// </remarks>
-    public void Dispose()
-    {
-        _cancellationTokenSource?.Dispose();
-        _pauseEvent?.Dispose();
-    }
+    public void Dispose() => _cancellationTokenSource?.Dispose();
 }
 
 /// <summary>

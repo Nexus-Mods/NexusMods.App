@@ -162,6 +162,6 @@ public class JobCancellationTokenTests
         token.Cancel();
 
         // Assert
-        await Assert.ThrowsAsync<OperationCanceledException>(() => waitTask);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => waitTask);
     }
 }
