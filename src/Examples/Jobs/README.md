@@ -58,6 +58,15 @@ indeterminate progress, use `Size.One` as maximum to avoid division by zero.
 See [**DeterminateProgressExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/DeterminateProgressExample.cs)
 and [**IndeterminateProgressExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/IndeterminateProgressExample.cs).
 
+### Pausing and Resuming Jobs
+
+Jobs can be paused and resumed cooperatively.
+Pausing works the same as cancellation.
+
+i.e. Jobs must call `context.YieldAsync()` to respect pause requests.
+
+See [**PauseResumeExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/PauseResumeExample.cs).
+
 ### Factory Methods
 
 Often you want to fire a job right away after it is created. In this case,
