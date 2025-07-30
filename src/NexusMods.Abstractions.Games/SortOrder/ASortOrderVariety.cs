@@ -191,13 +191,32 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
     }
 
     /// <inheritdoc />
-    public abstract ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
+    public virtual async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
+    {
+        var dbToUse = db ?? Connection.Db;
+
+        var sortOrder = NexusMods.Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
+        
+        var collectionGroupId = sortOrder.ParentEntity.IsT1 ? 
+            sortOrder.ParentEntity.AsT1 : 
+            Optional<CollectionGroupId>.None;
+        
+        // Retrieve the loadout data
+        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, dbToUse);
+        
+        // Retrieve the sort oder
+        var currentSortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
+        
+        var reconciledItems = Reconcile(currentSortOrder, loadoutData);
+        
+        await PersistSortOrder(reconciledItems, sortOrderId, token);
+    }
 
 
 
 #endregion public members
     
-    #region protected members
+#region protected members
     
     /// <summary>
     /// Retrieves the sortable entries for the sortOrderId, and returns them as a sorted list of sortable items, without the loadout data.
@@ -207,11 +226,16 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
     /// Those will need to be updated after the sortableItems are matched to items in the loadout. 
     /// </remarks>
     protected abstract IReadOnlyList<TSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null);
-    
+
     /// <summary>
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
-    protected abstract ValueTask PersistSortOrder(IReadOnlyList<TSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token);
+    protected virtual async ValueTask PersistSortOrder(IReadOnlyList<TSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token)
+    {
+        var sortedKeys = items.Select(item => item.Key).ToList();
+
+        await SetSortOrder(sortOrderEntityId, sortedKeys, token: token);
+    }
 
     /// <summary>
     /// Returns a collection of loadout-specific TItemLoadoutData for each relevant item found in the provided loadout/collection.

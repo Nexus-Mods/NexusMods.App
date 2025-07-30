@@ -12,11 +12,12 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// Abstract implementation for ISortOrderManager meant as the starting point for implementations.
 /// </summary>
-public class ASortOrderManager : ISortOrderManager
+public class ASortOrderManager : ISortOrderManager, IDisposable
 {
     private readonly IServiceProvider _serviceProvider; 
     private readonly IConnection _connection;
     private readonly ILogger _logger;
+    private IDisposable? _subscription;
     
     private FrozenDictionary<SortOrderVarietyId, ISortOrderVariety> _sortOrderVarieties;
 
@@ -54,6 +55,39 @@ public class ASortOrderManager : ISortOrderManager
     {
         _sortOrderVarieties = sortOrderVarieties.ToDictionary(variety => variety.SortOrderVarietyId)
             .ToFrozenDictionary();
+        
+        // Subscribe to changes in the sort orders
+        SubscribeToChanges();
+    }
+
+
+    protected void SubscribeToChanges()
+    {
+        foreach (var variety in _sortOrderVarieties.Values)
+        {
+            // TODO: Do initial cleanup
+            // Remove orphaned sort orders
+            // Create missing sort orders for existing loadouts/collections
+            // Update existing sort orders to match the current state of the loadouts/collections
+            //
+            // variety.RefreshSortOrders();
+        
+            // TODO: Subscribe to loadouts/collections changes
+            // Additions (add new sort orders for new loadouts/collections)
+            // Updates (reconcile sort orders when loadouts/collections change)
+            //     Skip updates for sort orders that don't want to be updated
+            // Deletions (remove sort orders when loadouts/collections are deleted)
+            //
+            // variety.SubscribeToChanges();
+        
+            // TODO: Ensure subscription are disposed when a sort order is removed or manager is disposed
+        }
+        
+    }
+
+    public void Dispose()
+    {
+        _subscription?.Dispose();
     }
 }
 

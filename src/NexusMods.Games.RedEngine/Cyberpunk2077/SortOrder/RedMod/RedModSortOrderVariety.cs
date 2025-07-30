@@ -133,28 +133,6 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
 
         await tx.Commit();
     }
-
-    /// <inheritdoc />
-    public override async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
-    {
-        var dbToUse = db ?? Connection.Db;
-
-        var sortOrder = NexusMods.Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
-        
-        var collectionGroupId = sortOrder.ParentEntity.IsT1 ? 
-            sortOrder.ParentEntity.AsT1 : 
-            Optional<CollectionGroupId>.None;
-        
-        // Retrieve the loadout data
-        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, dbToUse);
-        
-        // Retrieve the sort oder
-        var currentSortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
-        
-        var reconciledItems = Reconcile(currentSortOrder, loadoutData);
-        
-        await PersistSortOrder(reconciledItems, sortOrderId, token);
-    }
     
     /// <inheritdoc />
     protected override IReadOnlyList<RedModSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
@@ -177,14 +155,6 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
             .ToList();
     }
     
-    /// <inheritdoc />
-    protected override async ValueTask PersistSortOrder(IReadOnlyList<RedModSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token)
-    {
-        var redModOrderList = items.Select(item => item.Key).ToList();
-
-        await SetSortOrder(sortOrderEntityId, redModOrderList, token: token);
-    }
-
     /// <inheritdoc />
     protected override IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId, IDb? db)
     {
