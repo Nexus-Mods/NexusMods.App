@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.Versioning;
+using System.Text;
 using CliWrap;
 using LinuxDesktopUtils.XDGDesktopPortal;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ internal class OSInteropLinux : AOSInterop
         ILoggerFactory loggerFactory,
         DesktopPortalConnectionManagerWrapper portalWrapper,
         IProcessFactory processFactory,
-        IFileSystem fileSystem) : base(loggerFactory, processFactory)
+        IFileSystem fileSystem) : base(fileSystem, loggerFactory, processFactory)
     {
         _fileSystem = fileSystem;
         _portalWrapper = portalWrapper;
@@ -76,5 +77,121 @@ internal class OSInteropLinux : AOSInterop
         if (appImagePath is null) return base.GetOwnExe();
 
         return _fileSystem.FromUnsanitizedFullPath(appImagePath);
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask<IReadOnlyList<FileSystemMount>> GetFileSystemMounts(CancellationToken cancellationToken = default)
+    {
+        var stdOut = new StringBuilder();
+        var command = Cli.Wrap("df").WithArguments([
+            "--local",                                          // limit listing to local file systems
+            "--output=source,fstype,size,avail,target",         // output these columns
+            "--block-size=1K",                                  // scale sizes
+            "--exclude-type=tmpfs",                             // limit listing to file systems not of this type
+            "--exclude-type=devtmpfs",
+            "--exclude-type=vfat",
+            "--exclude-type=efivarfs",
+        ]).WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut));
+
+        await ProcessFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+        return ParseFileSystemMounts(_fileSystem, stdOut.ToString());
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask<FileSystemMount?> GetFileSystemMount(AbsolutePath path, IReadOnlyList<FileSystemMount> knownFileSystemMounts, CancellationToken cancellationToken = default)
+    {
+        var stdOut = new StringBuilder();
+        var command = Cli.Wrap("df").WithArguments([
+            path.ToNativeSeparators(_fileSystem.OS),
+            "--output=source",
+        ]).WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOut));
+
+        await ProcessFactory.ExecuteAsync(command, cancellationToken: cancellationToken);
+        return ParseFileSystemMount(knownFileSystemMounts, stdOut.ToString());
+    }
+
+    internal static FileSystemMount? ParseFileSystemMount(IReadOnlyList<FileSystemMount> knownFileSystemMounts, ReadOnlySpan<char> stdOut)
+    {
+        var lineEnumerator = stdOut.EnumerateLines();
+
+        // skip header
+        if (!lineEnumerator.MoveNext()) return null;
+        if (!lineEnumerator.MoveNext()) return null;
+
+        var source = lineEnumerator.Current.ToString();
+        return knownFileSystemMounts.FirstOrDefault(x => x.Source.Equals(source, StringComparison.OrdinalIgnoreCase));
+    }
+
+    internal static IReadOnlyList<FileSystemMount> ParseFileSystemMounts(IFileSystem fileSystem, ReadOnlySpan<char> stdOut)
+    {
+        var lineEnumerator = stdOut.EnumerateLines();
+
+        // skip header
+        if (!lineEnumerator.MoveNext()) return [];
+
+        var tmp = new List<FileSystemMount>();
+
+        foreach (var line in lineEnumerator)
+        {
+            var splitEnumerator = line.Split(' ');
+            var index = 0;
+
+            var source = string.Empty;
+            var type = string.Empty;
+            var bytesTotal = Size.Zero;
+            var bytesAvailable = Size.Zero;
+            var target = default(AbsolutePath);
+
+            foreach (var split in splitEnumerator)
+            {
+                var span = line[split];
+                if (span.IsWhiteSpace()) continue;
+
+                if (index == 0)
+                {
+                    source = span.ToString();
+                }
+                else if (index == 1)
+                {
+                    type = span.ToString();
+                } else if (index == 2)
+                {
+                    bytesTotal = BlocksToSize(span);
+                } else if (index == 3)
+                {
+                    bytesAvailable = BlocksToSize(span);
+                } else if (index == 4)
+                {
+                    target = fileSystem.FromUnsanitizedFullPath(span.ToString());
+                }
+
+                index += 1;
+            }
+
+            tmp.Add(new FileSystemMount(
+                Source: source,
+                Target: target,
+                Type: type,
+                BytesTotal: bytesTotal,
+                BytesAvailable: bytesAvailable
+            ));
+        }
+
+        // NOTE(erri120): Need to group by source since one source can have multiple mounting points.
+        var results = tmp
+            .GroupBy(mount => mount.Source)
+            .Select(groups => groups
+                .OrderBy(mount => mount.Target.Parts.Count())
+                .First()
+            )
+            .ToArray();
+
+        return results;
+
+        static Size BlocksToSize(ReadOnlySpan<char> input)
+        {
+            if (!ulong.TryParse(input, out var blocks)) return Size.Zero;
+            return Size.From(Size.KB.Value * blocks);
+        }
     }
 }

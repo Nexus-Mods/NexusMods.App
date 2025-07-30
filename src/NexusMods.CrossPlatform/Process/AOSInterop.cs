@@ -13,15 +13,17 @@ namespace NexusMods.CrossPlatform.Process;
 internal abstract class AOSInterop : IOSInterop
 {
     private readonly ILogger _logger;
-    private readonly IProcessFactory _processFactory;
+    private readonly IFileSystem _fileSystem;
+    protected IProcessFactory ProcessFactory { get; }
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    protected AOSInterop(ILoggerFactory loggerFactory, IProcessFactory processFactory)
+    protected AOSInterop(IFileSystem fileSystem, ILoggerFactory loggerFactory, IProcessFactory processFactory)
     {
+        _fileSystem = fileSystem;
         _logger = loggerFactory.CreateLogger(nameof(IOSInterop));
-        _processFactory = processFactory;
+        ProcessFactory = processFactory;
     }
 
     /// <summary>
@@ -38,7 +40,7 @@ internal abstract class AOSInterop : IOSInterop
         var isWeb = url.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase);
         var shouldLogOutput = logOutput && !isWeb;
 
-        var task = _processFactory.ExecuteAsync(command, logProcessOutput: shouldLogOutput, cancellationToken: cancellationToken);
+        var task = ProcessFactory.ExecuteAsync(command, logProcessOutput: shouldLogOutput, cancellationToken: cancellationToken);
 
         try
         {
@@ -90,5 +92,30 @@ internal abstract class AOSInterop : IOSInterop
         Debug.Assert(processPath is not null);
 
         return FileSystem.Shared.FromUnsanitizedFullPath(processPath);
+    }
+
+    /// <inheritdoc />
+    public virtual ValueTask<IReadOnlyList<FileSystemMount>> GetFileSystemMounts(CancellationToken cancellationToken = default)
+    {
+        var result = DriveInfo
+            .GetDrives()
+            .Where(drive => drive.DriveType == DriveType.Fixed)
+            .Select(drive => new FileSystemMount(
+                Source: drive.VolumeLabel,
+                Target: _fileSystem.FromUnsanitizedFullPath(drive.RootDirectory.FullName),
+                Type: drive.DriveFormat,
+                BytesTotal: Size.FromLong(drive.TotalSize),
+                BytesAvailable: Size.FromLong(drive.AvailableFreeSpace)
+            ))
+            .ToArray();
+
+        return ValueTask.FromResult<IReadOnlyList<FileSystemMount>>(result);
+    }
+
+    /// <inheritdoc />
+    public virtual ValueTask<FileSystemMount?> GetFileSystemMount(AbsolutePath path, IReadOnlyList<FileSystemMount> knownFileSystemMounts, CancellationToken cancellationToken = default)
+    {
+        var result = knownFileSystemMounts.FirstOrDefault(mount => path.InFolder(mount.Target));
+        return ValueTask.FromResult(result);
     }
 }
