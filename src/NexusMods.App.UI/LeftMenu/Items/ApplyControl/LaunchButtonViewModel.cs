@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -11,6 +12,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Resources;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Telemetry;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -67,7 +69,18 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
             var tool = _toolManager.GetTools(marker).OfType<IRunGameTool>().First();
             await Task.Run(async () =>
             {
-                await _toolManager.RunTool(tool, marker, _monitor, token: token);
+                var installation = marker.InstallationInstance;
+                var sw = Stopwatch.StartNew();
+                try
+                {
+                    Tracking.AddEvent(Events.Game.LaunchGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
+                    await _toolManager.RunTool(tool, marker, _monitor, token: token);
+                }
+                finally
+                {
+                    var duration = sw.Elapsed;
+                    Tracking.AddEvent(Events.Game.ExitGame, EventMetadata.Create(name: $"{installation.Game.Name} - {installation.Store}", value: duration.TotalSeconds));
+                }
             }, token);
         }
         catch (ExecutableInUseException)
@@ -76,7 +89,7 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error launching game: {ex.Message}\n{ex.StackTrace}");
+            _logger.LogError(ex, "Error launching game");
         }
         SetLabelToLaunch();
     }

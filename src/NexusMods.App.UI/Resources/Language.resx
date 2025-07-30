@@ -1023,7 +1023,94 @@ To apply changes or launch the game again, please close the game first.</value>
     <data name="Library_ShowUpdates" xml:space="preserve">
         <value>Show updates ({0})</value>
     </data>
-    <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
+    <data name="Library_Update" xml:space="preserve">
+        <value>Update ({0})</value>
+    </data>
+    <data name="Library_UpdateAndKeepOldMod" xml:space="preserve">
+        <value>Update and keep old mod ({0})</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Title" xml:space="preserve">
+        <value>Manual Update Required</value>
+    </data>
+    <data name="Dialog_ReplaceNotSupported_Text" xml:space="preserve">
+        <value>Update and Replace is not yet supported for free users in this version of the app.
+
+Click **OK** to visit the mod page for manual update.</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Title" xml:space="preserve">
+        <value>Some Mod Updates Failed to Install</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_Description" xml:space="preserve">
+        <value>The following mod updates couldn't be installed:
+
+{0}
+
+Keep the downloaded files in your library in case you want to retry the installation later?</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_DeleteFiles" xml:space="preserve">
+        <value>Delete failed updates</value>
+    </data>
+    <data name="Library_Update_SomeInstallsFailed_KeepFiles" xml:space="preserve">
+        <value>Keep failed updates</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Title" xml:space="preserve">
+        <value>Updating mods installed in multiple collections</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Ok" xml:space="preserve">
+        <value>Update in {0} collection(s)</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description1" xml:space="preserve">
+        <value>Updating will apply to all local collections where the mod is installed:</value>
+    </data>
+    <data name="Library_Update_InstalledInMultipleCollections_Description2" xml:space="preserve">
+        <value>Nexus Mods collections you are subscribed to will not be affected.</value>
+    </data>
+    <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
+        <value>Update mod</value>
+    </data>
+    <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+        <value>More options</value>
+    </data>
+    <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">
+        <value>Update mod and replace the old version</value>
+    </data>
+    <data name="PremiumDialog_UpdateTitle" xml:space="preserve">
+        <value>Go Premium for one-click mod updates</value>
+    </data>
+    <data name="PremiumDialog_UpdateDescription" xml:space="preserve">
+        <value>No browser, no manual downloads. Premium users also get:
+
+• Download entire collections with one click
+• Uncapped download speeds
+• No Ads for life, even if you unsubscribe after 1 month!</value>
+    </data>
+    <data name="PremiumDialog_UpdateHeading" xml:space="preserve">
+        <value>Update all your mods, or individual mods, in one click.</value>
+    </data>
+    <data name="PremiumDialog_UpdateManuallyButton" xml:space="preserve">
+        <value>Update mods manually</value>
+    </data>
+    <data name="PremiumDialog_GoPremiumButton" xml:space="preserve">
+        <value>Go Premium</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Title" xml:space="preserve">
+        <value>Some Mod Updates Failed to Download</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Description" xml:space="preserve">
+        <value>The following mod updates couldn’t be downloaded:
+
+{0}</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="Library_Update_SomeDownloadsFailed_Option_Retry" xml:space="preserve">
+        <value>Retry failed downloads</value>
+    </data>
+        <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Listed" xml:space="preserve">
         <value>"{0}" has been published as listed. It will appear in search results and may be featured."</value>
     </data>
     <data name="Loadout_Dialog_CollectionPublished_FirstPublish_Unlisted" xml:space="preserve">

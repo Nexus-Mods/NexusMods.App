@@ -38,4 +38,20 @@ public interface IOSInterop
     /// Get the path to the current executable
     /// </summary>
     AbsolutePath GetOwnExe();
+
+    /// <summary>
+    /// Gets all file system mounts.
+    /// </summary>
+    ValueTask<IReadOnlyList<FileSystemMount>> GetFileSystemMounts(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Looks up the file system mount that hosts the file or directory at the given path.
+    /// </summary>
+    ValueTask<FileSystemMount?> GetFileSystemMount(AbsolutePath path, IReadOnlyList<FileSystemMount> knownFileSystemMounts, CancellationToken cancellationToken = default);
+}
+
+[PublicAPI]
+public record FileSystemMount(string Source, AbsolutePath Target, string Type, Size BytesTotal, Size BytesAvailable)
+{
+    public Size BytesUsed => BytesTotal - BytesAvailable;
 }

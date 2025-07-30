@@ -730,9 +730,15 @@ public static class IconValues
     public static readonly IconValue PictogramUpload = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/upload.svg");
     
     /// <summary>
+    /// Brand pictogram for Library
+    /// </summary>
+    public static readonly IconValue PictogramPremium = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/premium.svg");
+
+    /// <summary>
     /// Brand pictogram for Success
     /// </summary>
     public static readonly IconValue PictogramSuccess = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/success.svg");
+
 #endregion
     
 }
