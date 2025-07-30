@@ -75,8 +75,25 @@ public class Program
         {
             var dataModelSettings = services.GetRequiredService<ISettingsManager>().Get<DataModelSettings>();
             var fileSystem = services.GetRequiredService<IFileSystem>();
+            var osInterop = services.GetRequiredService<IOSInterop>();
 
             var modelExists = dataModelSettings.MnemonicDBPath.ToPath(fileSystem).DirectoryExists();
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var fileSystemMounts = await osInterop.GetFileSystemMounts();
+                    var archiveLocation = dataModelSettings.ArchiveLocations[0].ToPath(fileSystem);
+                    var mount = await osInterop.GetFileSystemMount(archiveLocation, fileSystemMounts);
+                    if (mount is not null) _logger.LogInformation("Archives are stored at {Path} on mount {Mount}", archiveLocation, mount);
+                    else _logger.LogWarning("Failed to find file system mount for {Path}", archiveLocation);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e, "Failed to get file system mounts");
+                }
+            });
 
             // This will startup the MnemonicDb connection
             var migration = services.GetRequiredService<MigrationService>();

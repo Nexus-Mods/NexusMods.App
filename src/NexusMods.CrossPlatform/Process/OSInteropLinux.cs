@@ -133,6 +133,8 @@ internal class OSInteropLinux : AOSInterop
 
         foreach (var line in lineEnumerator)
         {
+            if (line.IsWhiteSpace()) continue;
+
             var splitEnumerator = line.Split(' ');
             var index = 0;
 

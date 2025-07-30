@@ -23,9 +23,10 @@ Filesystem     Type    1K-blocks       Avail Mounted on
 /dev/sdc1      btrfs  3907016704  3314146976 /mnt/hdd1
 /dev/sdb2      ntfs3 15625861116 15087785212 /mnt/hdd3
 /dev/sda1      btrfs  3907016704   940272700 /mnt/redline
+
 """;
 
-        input.Should().StartWith("Filesystem").And.EndWith("/mnt/redline");
+        input.Should().StartWith("Filesystem").And.EndWith("\n");
 
         var fs = new InMemoryFileSystem(os: OSInformation.FakeUnix);
         var output = OSInteropLinux.ParseFileSystemMounts(fs, input);
