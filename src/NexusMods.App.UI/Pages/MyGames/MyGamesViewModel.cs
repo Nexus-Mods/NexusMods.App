@@ -119,9 +119,8 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 vm.State = GameWidgetState.AddingGame;
                                 await Task.Run(async () => await ManageGame(installation));
                                 vm.State = GameWidgetState.ManagedGame;
-                                
-                                Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: installation.Game.Name));
-                                
+
+                                Tracking.AddEvent(Events.Game.AddGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
                                 NavigateToLoadoutLibrary(conn, installation);
                             });
 
@@ -149,13 +148,13 @@ public class MyGamesViewModel : APageViewModel<IMyGamesViewModel>, IMyGamesViewM
                                 await Task.Run(async () => await RemoveGame(installation, shouldDeleteDownloads: result.ShouldDeleteDownloads, filesToDelete, collections));
                                 vm.State = GameWidgetState.DetectedGame;
 
-                                Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: installation.Game.Name));
+                                Tracking.AddEvent(Events.Game.RemoveGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
                             });
 
                             vm.ViewGameCommand = ReactiveCommand.Create(() =>
                             {
                                 NavigateToLoadoutLibrary(conn, installation);
-                                Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: installation.Game.Name));
+                                Tracking.AddEvent(Events.Game.ViewGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
                             });
 
                             vm.IsManagedObservable = Loadout.ObserveAll(conn)

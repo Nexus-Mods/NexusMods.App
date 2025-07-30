@@ -22,7 +22,7 @@ internal class OSInteropWindows : AOSInterop
     public OSInteropWindows(
         ILoggerFactory loggerFactory,
         IProcessFactory processFactory,
-        IFileSystem fileSystem) : base(loggerFactory, processFactory)
+        IFileSystem fileSystem) : base(fileSystem, loggerFactory, processFactory)
     {
         _fileSystem = fileSystem;
         _processFactory = processFactory;
