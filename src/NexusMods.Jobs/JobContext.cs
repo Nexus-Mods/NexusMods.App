@@ -15,8 +15,9 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     private Optional<TJobResult> _result = Optional<TJobResult>.None;
     private readonly Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> _action;
     private readonly TaskCompletionSource<TJobResult> _tcs;
+    private readonly JobCancellationToken _jobCancellationToken;
 
-    internal JobContext(TJobDefinition definition, IJobMonitor monitor, IJobGroup jobGroup, Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> action)
+    internal JobContext(TJobDefinition definition, IJobMonitor monitor, IJobGroup jobGroup, JobCancellationToken jobCancellationToken, Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> action)
     {
         Id = JobId.NewId();
         Status = JobStatus.None;
@@ -32,6 +33,7 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         Progress = Optional<Percent>.None;
         RateOfProgress = Optional<double>.None;
         Group = jobGroup;
+        _jobCancellationToken = jobCancellationToken;
     }
 
     internal async Task Start()
@@ -71,13 +73,25 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     public IObservable<Optional<double>> ObservableRateOfProgress => _rateOfProgress;
     public bool CanBeCancelled => Status.IsActive();
 
-    public Task YieldAsync()
+    public async Task YieldAsync()
     {
-        CancellationToken.ThrowIfCancellationRequested();
-        return Task.CompletedTask;
+        // First check for cancellation
+        JobCancellationToken.ThrowIfCancellationRequested();
+        
+        // Then check for pause
+        if (JobCancellationToken.IsPaused)
+        {
+            SetStatus(JobStatus.Paused);
+            await JobCancellationToken.WaitForResumeAsync();
+            SetStatus(JobStatus.Running);
+            
+            // Check cancellation again after resume in case it was requested while paused
+            JobCancellationToken.ThrowIfCancellationRequested();
+        }
     }
 
-    public CancellationToken CancellationToken => Group.CancellationToken;
+    public JobCancellationToken JobCancellationToken => _jobCancellationToken;
+    public CancellationToken CancellationToken => _jobCancellationToken.Token;
     
     public IJobMonitor Monitor { get; }
     public IJobGroup Group { get; }
@@ -132,7 +146,9 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         return _tcs.Task;
     }
     
-    public void Cancel() => Group.Cancel();
+    public void Cancel() => _jobCancellationToken.Cancel();
+    public void Pause() => _jobCancellationToken.Pause();
+    public void Resume() => _jobCancellationToken.Resume();
 
     public async ValueTask DisposeAsync()
     {

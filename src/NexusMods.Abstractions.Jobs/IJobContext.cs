@@ -14,10 +14,15 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     Task YieldAsync();
 
     /// <summary>
+    /// Job cancellation token that supports pause/resume functionality
+    /// </summary>
+    JobCancellationToken JobCancellationToken { get; }
+    
+    /// <summary>
     /// Prefer to use <see cref="YieldAsync"/> instead of this but if you need a token to pass
     /// to a method that doesn't support our pause and cancel mechanism then use this
     /// </summary>
-    CancellationToken CancellationToken { get; }
+    CancellationToken CancellationToken => JobCancellationToken.Token;
     
     /// <summary>
     /// Get the connected job monitor

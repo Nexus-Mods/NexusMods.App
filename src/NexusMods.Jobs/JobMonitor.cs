@@ -46,7 +46,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         where TResultType : notnull
     {
         var group = new JobGroup();
-        var ctx = new JobContext<TJobType, TResultType>(definition, this, group, task);
+        var ctx = new JobContext<TJobType, TResultType>(definition, this, group, group.JobCancellationToken, task);
         _allJobs.AddOrUpdate(ctx);
         Task.Run(async () =>
             {
@@ -72,7 +72,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         where TResultType : notnull
     {
         var group = new JobGroup();
-        var ctx = new JobContext<TJobType, TResultType>(job, this, group, job.StartAsync);
+        var ctx = new JobContext<TJobType, TResultType>(job, this, group, group.JobCancellationToken, job.StartAsync);
         _allJobs.AddOrUpdate(ctx);
         Task.Run(async () =>
             {
@@ -111,6 +111,46 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         {
             if (job.Status.IsActive())
                 job.Cancel();
+        }
+    }
+    
+    public void Pause(JobId jobId)
+    {
+        var job = _allJobs.Lookup(jobId);
+        if (job.HasValue)
+            job.Value.Pause();
+    }
+    
+    public void Pause(IJobTask jobTask) => jobTask.Job.Pause();
+    
+    public void PauseGroup(IJobGroup group) => group.Pause();
+    
+    public void PauseAll()
+    {
+        foreach (var job in _allJobs.Items)
+        {
+            if (job.Status == JobStatus.Running)
+                job.Pause();
+        }
+    }
+    
+    public void Resume(JobId jobId)
+    {
+        var job = _allJobs.Lookup(jobId);
+        if (job.HasValue)
+            job.Value.Resume();
+    }
+    
+    public void Resume(IJobTask jobTask) => jobTask.Job.Resume();
+    
+    public void ResumeGroup(IJobGroup group) => group.Resume();
+    
+    public void ResumeAll()
+    {
+        foreach (var job in _allJobs.Items)
+        {
+            if (job.Status == JobStatus.Paused)
+                job.Resume();
         }
     }
 }
