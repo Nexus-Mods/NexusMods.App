@@ -67,6 +67,7 @@ public class Program
             gameLocatorSettings
         );
         var services = host.Services;
+        _logger = services.GetRequiredService<ILogger<Program>>();
 
         // Okay to do wait here, as we are in the main process thread.
         host.StartAsync().Wait(timeout: TimeSpan.FromMinutes(5));
@@ -114,7 +115,6 @@ public class Program
         var cliServer = services.GetService<CliServer>();
         cliServer?.StartCliServerAsync().Wait(timeout: TimeSpan.FromSeconds(5));
 
-        _logger = services.GetRequiredService<ILogger<Program>>();
         LogMessages.RuntimeInformation(_logger, RuntimeInformation.OSDescription, RuntimeInformation.FrameworkDescription, ApplicationConstants.InstallationMethod);
         TaskScheduler.UnobservedTaskException += (sender, eventArgs) =>
         {
