@@ -101,7 +101,7 @@ internal abstract class AOSInterop : IOSInterop
             .GetDrives()
             .Where(drive => drive.DriveType == DriveType.Fixed)
             .Select(drive => new FileSystemMount(
-                Source: drive.VolumeLabel,
+                Source: drive.Name,
                 Target: _fileSystem.FromUnsanitizedFullPath(drive.RootDirectory.FullName),
                 Type: drive.DriveFormat,
                 BytesTotal: Size.FromLong(drive.TotalSize),
