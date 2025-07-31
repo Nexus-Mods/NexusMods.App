@@ -31,6 +31,7 @@ fragment Mod on Mod {
     pictureUrl
     updatedAt
     uid
+    author
 }
 
 fragment ModFile on ModFile {
@@ -40,6 +41,10 @@ fragment ModFile on ModFile {
     sizeInBytes
     date
     uid
+
+    mod {
+        ...Mod
+    }
 }
 
 fragment Collection on Collection {
@@ -54,18 +59,23 @@ fragment Collection on Collection {
     overallRatingCount
     recentRating
     recentRatingCount
+
     category {
         ...Category
     }
+
     tileImage {
         thumbnailUrl(size: small)
     }
+
     headerImage {
         url
     }
+
     user {
         ...User
     }
+
     game {
         id
         name
@@ -91,17 +101,27 @@ fragment CollectionRevision on CollectionRevision {
         fileId
         file {
             ...ModFile
-            mod {
-                ...Mod
-            }
         }
         updatePolicy
         version
     }
 
+    collectionChangelog {
+        ...CollectionRevisionChangelog
+    }
+
     collection {
         ...Collection
     }
+}
+
+fragment CollectionRevisionChangelog on CollectionChangelog {
+    id
+    collectionRevisionId
+    revisionNumber
+    createdAt
+    updatedAt
+    description
 }
 
 fragment CollectionRevisionStatus on CollectionRevision {

@@ -65,3 +65,17 @@ mutation PublishRevision($revisionId: ID!) {
         success
     }
 }
+
+mutation CreateChangelog($revisionId: ID!, $description: String!) {
+    createChangelog(revisionId: $revisionId, description:  $description) {
+        success,
+        changelogId
+    }
+}
+
+mutation UpdateChangelog($changelogId: ID!, $description: String!) {
+    updateChangelog(changelogId: $changelogId, description: $description) {
+        success,
+        changelogId
+    }
+}

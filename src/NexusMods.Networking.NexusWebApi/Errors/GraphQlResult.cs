@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
+using NexusMods.Sdk;
 using StrawberryShake;
 
 namespace NexusMods.Networking.NexusWebApi.Errors;
@@ -76,6 +77,24 @@ public class GraphQlResult<TData> : IGraphQlResult<TData>
         return true;
     }
 
+    /// <summary>
+    /// Tries to get a specific error.
+    /// </summary>
+    public bool TryGetError<TError>([NotNullWhen(true)] out TError? error) where TError : IGraphQlError<TError>
+    {
+        if (!Errors.TryGetFirst(kv => kv.Key.Equals(TError.Code), out var tmp))
+        {
+            error = default(TError);
+            return false;
+        }
+
+        if (tmp is not TError errorInstance)
+            throw new NotSupportedException($"Error with code `{TError.Code}` is of type `{tmp.GetType()}` but expected `{typeof(TError)}`");
+
+        error = errorInstance;
+        return true;
+    }
+
     /// <inheritdoc/>
     public override string ToString() => $"HasData = {HasData} ({_data}) ErrorsCount = {Errors.Length}";
 
@@ -121,6 +140,9 @@ public class GraphQlResult<TData, TError1> : GraphQlResult<TData>, IGraphQlResul
         var data = func(AssertHasData());
         return new GraphQlResult<TOther, TError1>(data);
     }
+
+    /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
+    public bool TryGetError([NotNullWhen(true)] out TError1? error) => TryGetError<TError1>(out error);
 
     /// <summary>
     /// Implicit conversion.
@@ -170,6 +192,12 @@ public class GraphQlResult<TData, TError1, TError2> : GraphQlResult<TData>, IGra
         var data = func(AssertHasData());
         return new GraphQlResult<TOther, TError1, TError2>(data);
     }
+
+    /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
+    public bool TryGetError([NotNullWhen(true)] out TError1? error) => TryGetError<TError1>(out error);
+
+    /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
+    public bool TryGetError([NotNullWhen(true)] out TError2? error) => TryGetError<TError2>(out error);
 
     /// <summary>
     /// Implicit conversion.
@@ -225,6 +253,15 @@ public class GraphQlResult<TData, TError1, TError2, TError3> : GraphQlResult<TDa
         var data = func(AssertHasData());
         return new GraphQlResult<TOther, TError1, TError2, TError3>(data);
     }
+
+    /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
+    public bool TryGetError([NotNullWhen(true)] out TError1? error) => TryGetError<TError1>(out error);
+
+    /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
+    public bool TryGetError([NotNullWhen(true)] out TError2? error) => TryGetError<TError2>(out error);
+
+    /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
+    public bool TryGetError([NotNullWhen(true)] out TError3? error) => TryGetError<TError3>(out error);
 
     /// <summary>
     /// Implicit conversion.
