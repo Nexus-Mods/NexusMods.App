@@ -32,7 +32,7 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
         this.WhenActivated(disposables =>
             {
                 // initially hidden
-                ContextControlGroup.IsVisible = false;
+                ContextControlGroup.IsVisible = true;
 
                 var storageProvider = TopLevel.GetTopLevel(this)?.StorageProvider;
                 if (storageProvider is not null)

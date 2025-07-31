@@ -222,7 +222,7 @@
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"
                                                      Size="Toolbar"
-                                                     Fill="Weak"
+                                                     Fill="None"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                                      ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
@@ -231,7 +231,7 @@
                                                           Text="{x:Static resources:Language.LoadoutGridView__View_Files}"
                                                           Type="Tertiary"
                                                           Size="Toolbar"
-                                                          Fill="Weak"
+                                                          Fill="None"
                                                           ShowIcon="Left"
                                                           LeftIcon="{x:Static icons:IconValues.Folder}"
                                                           ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__View_Files_ToolTip}" />
@@ -240,7 +240,7 @@
                                                      Text="{x:Static resources:Language.LoadoutGridView__Remove}"
                                                      Type="Tertiary"
                                                      Size="Toolbar"
-                                                     Fill="Weak"
+                                                     Fill="None"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.PlaylistRemove}"
                                                      ToolTip.Tip="{x:Static resources:Language.LoadoutGridView__Remove_ToolTip}" />

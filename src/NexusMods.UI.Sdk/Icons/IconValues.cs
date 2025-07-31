@@ -212,6 +212,10 @@ public static class IconValues
 
     // https://pictogrammers.com/library/mdi/icon/play-circle-outline/
     public static readonly IconValue PlayCircleOutline = new ProjektankerIcon("mdi-play-circle-outline");
+    
+    
+    // https://pictogrammers.com/library/mdi/icon/pause/
+    public static readonly IconValue Pause = new ProjektankerIcon("mdi-pause");
 
 #endregion
 
@@ -446,6 +450,10 @@ public static class IconValues
     
     // https://pictogrammers.com/library/mdi/icon/trophy-outline/
     public static readonly IconValue TrophyOutline = new ProjektankerIcon("mdi-trophy-outline");
+    
+    // https://pictogrammers.com/library/mdi/icon/notification-clear-all/
+    public static readonly IconValue NotificationClearAll = new ProjektankerIcon("mdi-notification-clear-all");
+    
     
 #endregion
 
@@ -738,6 +746,12 @@ public static class IconValues
     /// Brand pictogram for Success
     /// </summary>
     public static readonly IconValue PictogramSuccess = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/success.svg");
+    
+    /// <summary>
+    /// Brand pictogram for Download
+    /// </summary>
+    public static readonly IconValue PictogramDownload = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Pictograms/download.svg");
+
 
 #endregion
     

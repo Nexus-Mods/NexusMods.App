@@ -59,7 +59,7 @@
                             <controls:StandardButton x:Name="DeselectItemsButton"
                                                      Type="Tertiary"
                                                      Size="Toolbar"
-                                                     Fill="Weak"
+                                                     Fill="None"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.Close}"
                                                      ToolTip.Tip="{x:Static resources:Language.Library_DeselectItemsButton_ToolTip}" />
@@ -109,7 +109,7 @@
                                                      Type="Tertiary"
                                                      Size="Toolbar"
                                                      ShowLabel="False"
-                                                     Fill="Weak"
+                                                     Fill="None"
                                                      ShowIcon="Left"
                                                      LeftIcon="{x:Static icons:IconValues.DeleteOutline}"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginPage_DeleteMod_ToolTip}"
@@ -132,7 +132,7 @@
                                 Text="Add"
                                 Type="Tertiary"
                                 Size="Toolbar"
-                                Fill="Weak"
+                                Fill="None"
                                 ShowIcon="Both"
                                 LeftIcon="{x:Static icons:IconValues.AddCircleOutline}"
                                 RightIcon="{x:Static icons:IconValues.ChevronDown}">
@@ -158,7 +158,7 @@
                                                      ShowLabel="False"
                                                      Size="Toolbar"
                                                      Type="Tertiary"
-                                                     Fill="Weak"
+                                                     Fill="None"
                                                      LeftIcon="{x:Static icons:IconValues.Refresh}"
                                                      ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
                             <controls:StandardButton x:Name="UpdateAllButton"
@@ -216,7 +216,7 @@
                                 Text="{x:Static resources:Language.FileOriginsPage_BrowseCollectionsNexusMods}"
                                 Type="Tertiary"
                                 Size="Toolbar"
-                                Fill="Weak"
+                                Fill="None"
                                 ShowIcon="Left"
                                 LeftIcon="{x:Static icons:IconValues.NexusColor}"/>
                         </ItemsControl>

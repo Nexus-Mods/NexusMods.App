@@ -5,22 +5,21 @@
         xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk">
 
     <Design.PreviewWith>
-        <Border Width="800">
+        <Border Padding="32">
             <StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <controls:Toolbar>
-                        <controls:StandardButton Text="Button 1" Fill="Weak"
-                                                 Size="Toolbar" />
-                        <controls:StandardButton Text="Button 2" Fill="Weak"
-                                                 Size="Toolbar" />
+                        <ItemsControl>
+                            <controls:StandardButton Text="Button 1" Fill="Weak"
+                                                     Size="Toolbar" />
+                            <controls:StandardButton Text="Button 2" Fill="Weak"
+                                                     Size="Toolbar" />
+                        </ItemsControl>
+
+
                     </controls:Toolbar>
-                    <controls:Toolbar>
-                        <controls:StandardButton Text="Button 6" Fill="Weak"
-                                                 Size="Toolbar" />
-                        <controls:StandardButton Text="Button 5" Fill="Weak"
-                                                 Size="Toolbar" />
-                    </controls:Toolbar>
+
                 </StackPanel>
 
                 <controls:Toolbar />
@@ -62,8 +61,15 @@
                                                  ToolTip.Tip="Deselect mods" />
                     </ItemsControl>
 
+                    <ItemsControl Classes="GetPremiumToolbarBanner">
+                        <TextBlock Text="Tired of waiting? Increase speed with Premium" />
+                        <controls:StandardButton Text="Get Premium" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium"
+                                                 Size="Toolbar" />
+                    </ItemsControl>
+
                     <!-- context button group -->
-                    <ItemsControl Theme="{StaticResource ToolbarControlsGroup}" x:Name="SelectedButtonStack">
+                    <ItemsControl x:Name="SelectedButtonStack">
 
                         <!-- fixed height until we have our StandardSplitComponent -->
                         <SplitButton x:Name="InstallModSplitButton"
@@ -136,6 +142,7 @@
                                              Type="Tertiary" Fill="Weak"
                                              LeftIcon="{x:Static icons:IconValues.Refresh}"
                                              ToolTip.Tip="{x:Static resources:Language.FileOriginsPage_CheckForUpdates_ToolTip}" />
+
                 </controls:Toolbar>
 
             </StackPanel>
@@ -152,25 +159,32 @@
             <Setter Property="Height" Value="{CompiledBinding $parent[controls:Toolbar].Height}" />
             <Setter Property="Width" Value="1" />
         </Style>
-        
-        <Style Selector="^ controls|StandardButton[Size=Toolbar]:not(:pointerover)">
-            <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
-        </Style>
-        
+
         <Style Selector="^ SplitButton">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="Height" Value="24" />
             <Setter Property="Padding" Value="8,0" />
         </Style>
-        
+
         <Style Selector="^ ComboBox">
             <Setter Property="Background" Value="{StaticResource SurfaceTransparentBrush}" />
             <Setter Property="Height" Value="24" />
             <Setter Property="Padding" Value="8,0" />
         </Style>
-        
+
         <Style Selector="^ ItemsControl">
             <Setter Property="Theme" Value="{StaticResource ToolbarControlGroup}" />
+
+            <Style Selector="^.GetPremiumToolbarBanner">
+                <Setter Property="Foreground" Value="{StaticResource PremiumWeakBrush}" />
+                <Setter Property="Background" Value="{StaticResource BrandPremium300Brush}" />
+
+                <Style Selector="^ > TextBlock">
+                    <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
+                    <Setter Property="Margin" Value="6 0" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </Style>
         </Style>
     </Style>
 </Styles>
