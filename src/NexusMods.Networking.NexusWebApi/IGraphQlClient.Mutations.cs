@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Networking.NexusWebApi.Errors;
 
@@ -70,5 +71,21 @@ public partial interface IGraphQlClient
     ValueTask<GraphQlResult<NoData, NotFound>> ChangeCollectionStatus(
         CollectionId collectionId,
         Abstractions.NexusModsLibrary.Models.CollectionStatus newStatus,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Creates a new changelog on a revision.
+    /// </summary>
+    ValueTask<GraphQlResult<RevisionChangelogId, NotFound>> CreateChangelog(
+        RevisionId revisionId,
+        [LanguageInjection("markdown")] string changelog,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates an existing changelog on a revision.
+    /// </summary>
+    ValueTask<GraphQlResult<RevisionChangelogId, NotFound>> UpdateChangelog(
+        RevisionChangelogId changelogId,
+        [LanguageInjection("markdown")] string changelog,
         CancellationToken cancellationToken = default);
 }
