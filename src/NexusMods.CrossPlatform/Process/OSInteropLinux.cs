@@ -68,13 +68,13 @@ internal class OSInteropLinux : AOSInterop
     protected override Command CreateCommand(Uri uri) => throw new UnreachableException("Should never be called");
 
     /// <inheritdoc />
-    public override AbsolutePath GetOwnExe()
+    public override string GetOwnExeUnsanitized()
     {
         // https://docs.appimage.org/packaging-guide/environment-variables.html#type-2-appimage-runtime
         // APPIMAGE: (Absolute) path to AppImage file (with symlinks resolved)
         var appImagePath = Environment.GetEnvironmentVariable("APPIMAGE", EnvironmentVariableTarget.Process);
-        if (appImagePath is null) return base.GetOwnExe();
+        if (appImagePath is not null) return appImagePath;
 
-        return _fileSystem.FromUnsanitizedFullPath(appImagePath);
+        return base.GetOwnExeUnsanitized();
     }
 }

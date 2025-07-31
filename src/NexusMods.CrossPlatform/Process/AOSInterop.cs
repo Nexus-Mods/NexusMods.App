@@ -84,11 +84,14 @@ internal abstract class AOSInterop : IOSInterop
     }
 
     /// <inheritdoc />
-    public virtual AbsolutePath GetOwnExe()
+    public virtual AbsolutePath GetOwnExe() => FileSystem.Shared.FromUnsanitizedFullPath(GetOwnExeUnsanitized());
+
+    /// <inheritdoc />
+    public virtual string GetOwnExeUnsanitized()
     {
         var processPath = Environment.ProcessPath;
         Debug.Assert(processPath is not null);
 
-        return FileSystem.Shared.FromUnsanitizedFullPath(processPath);
+        return processPath;
     }
 }
