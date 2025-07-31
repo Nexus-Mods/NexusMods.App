@@ -137,10 +137,8 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     }
     
     /// <inheritdoc />
-    protected override IReadOnlyList<SortedEntry<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
+    protected override IReadOnlyList<SortedEntry<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb dbToUse)
     {
-        var dbToUse = db ?? Connection.Db;
-
         return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
             .Select(redModSortableEntry =>
                 {
@@ -161,12 +159,14 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     }
 
     /// <inheritdoc />
-    protected override IReadOnlyList<RedModSortableItem> Reconcile(IReadOnlyList<SortedEntry<SortItemKey<string>>> sourceSortedEntries, IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
+    protected override IReadOnlyList<(SortedEntry<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)> Reconcile(
+        IReadOnlyList<SortedEntry<SortItemKey<string>>> sourceSortedEntries, 
+        IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
     {
         var loadoutItemsDict = loadoutDataItems.ToDictionary(item => item.Key);
     
         // Start with a copy of source items
-        var results = new List<RedModSortableItem>(sourceSortedEntries.Count);
+        var results = new List<(SortedEntry<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)>(sourceSortedEntries.Count);
         var processedKeys = new HashSet<SortItemKey<string>>(sourceSortedEntries.Count);
 
 
@@ -179,32 +179,17 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             processedKeys.Add(sortedEntry.Key);
 
             // Create sortable item from sorted entry and loadout data
-            results.Add(new RedModSortableItem(
-                sortIndex: sortedEntry.SortIndex,
-                redModFolderName: loadoutItemData.Key.Key,
-                modName: loadoutItemData.ModName,
-                isActive: loadoutItemData.IsEnabled
-            )
-            {
-                LoadoutData = loadoutItemData,
-                ModGroupId = loadoutItemData.ModGroupId,
-            });
+            results.Add((sortedEntry, loadoutItemData));
         }
     
         // Add any remaining loadout items that were not in the source sorted entries
         var itemsToAdd = loadoutItemsDict.Values
             .Where(item => !processedKeys.Contains(item.Key))
             .OrderByDescending(item => item.ModGroupId)
-            .Select(loadoutItemData => new RedModSortableItem(
-                sortIndex: 0, // Will be updated below
-                redModFolderName: loadoutItemData.Key.Key,
-                modName: loadoutItemData.ModName,
-                isActive: loadoutItemData.IsEnabled
-            )
-            {
-                LoadoutData = loadoutItemData,
-                ModGroupId = loadoutItemData.ModGroupId,
-            });
+            .Select(loadoutItemData => (
+                new SortedEntry<SortItemKey<string>>(loadoutItemData.Key, 0), // SortIndex will be updated later
+                loadoutItemData
+            ));
 
         // Insert new items at the start, sorted by newest creation order (ModGroupId)
         // For cyberpunk RedMods, lower index wins, so we add new items at the start
@@ -213,7 +198,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         // Update sort indices
         for (var i = 0; i < results.Count; i++)
         {
-            results[i].SortIndex = i;
+            results[i].SortedEntry.SortIndex = i;
         }
     
         return results;

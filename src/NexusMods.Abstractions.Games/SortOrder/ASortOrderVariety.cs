@@ -147,7 +147,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         if (token.IsCancellationRequested) return;
         
         // persist the new sorting
-        await PersistSortOrder(stagingList, sortOrderId, dbToUse, token);
+        await PersistSortOrder(sortOrderId, stagingList, dbToUse, token);
     }
 
     /// <inheritdoc />
@@ -189,7 +189,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
             
         if (token.IsCancellationRequested) return;
             
-        await PersistSortOrder(stagingList, sortOrderId, dbToUse, token);
+        await PersistSortOrder(sortOrderId, stagingList, dbToUse, token);
     }
 
     /// <inheritdoc />
@@ -211,7 +211,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         
         var reconciledItems = Reconcile(currentSortOrder, loadoutData);
         
-        await PersistSortOrder(reconciledItems, sortOrderId, dbToUse, token);
+        await PersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), dbToUse, token);
     }
 
 
@@ -223,19 +223,17 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     /// <summary>
     /// Retrieves the sorted entries for the sortOrderId, and returns them as a sorted list of TSortedEntries, without the loadout data.
     /// </summary>
-    protected abstract IReadOnlyList<TSortedEntry> RetrieveSortOrder(SortOrderId sortOrderId, IDb? db = null);
+    protected abstract IReadOnlyList<TSortedEntry> RetrieveSortOrder(SortOrderId sortOrderId, IDb db);
 
     /// <summary>
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
-    protected virtual ValueTask PersistSortOrder(IReadOnlyList<TSortableItem> items, SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
-    {
-        throw new NotImplementedException();
-    }
-    
-    protected virtual async ValueTask PersistSortOrderActual(SortOrderId sortOrderId, IReadOnlyList<TSortedEntry> newOrder, IDb startingDb, CancellationToken token = default)
+    protected virtual async ValueTask PersistSortOrder(SortOrderId sortOrderId, IReadOnlyList<TSortedEntry> newOrder, IDb startingDb, CancellationToken token = default)
     {
         using var tx = Connection.BeginTransaction();
+        
+        // TODO: Determine the max TxId for sortOrder in startingDb
+        // Add a function to the transaction to compare the max TxId of the DB in the transaction with the one in the startingDb
         
         try
         {
@@ -268,7 +266,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     /// <summary>
     /// Reconciles the provided sorted entries with the loadout data items returning a list of sortable items that include loadout data.
     /// </summary>
-    protected abstract IReadOnlyList<TSortableItem> Reconcile(
+    protected abstract IReadOnlyList<(TSortedEntry SortedEntry, TItemLoadoutData ItemLoadoutData)> Reconcile(
         IReadOnlyList<TSortedEntry> sourceSortedEntries,
         IReadOnlyList<TItemLoadoutData> loadoutDataItems);
 
