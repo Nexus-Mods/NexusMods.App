@@ -41,6 +41,10 @@ fragment ModFile on ModFile {
     sizeInBytes
     date
     uid
+
+    mod {
+        ...Mod
+    }
 }
 
 fragment Collection on Collection {
@@ -97,9 +101,6 @@ fragment CollectionRevision on CollectionRevision {
         fileId
         file {
             ...ModFile
-            mod {
-                ...Mod
-            }
         }
         updatePolicy
         version

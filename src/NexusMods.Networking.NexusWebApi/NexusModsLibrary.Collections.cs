@@ -808,29 +808,29 @@ public partial class NexusModsLibrary
 
         return sb.ToString();
 
-        static string Stringify(ICreateCollection_CreateCollection_Revision_ModFiles_File modFile)
+        static string Stringify(IModFile modFile)
         {
             return $"{modFile.Mod.Name} {modFile.Version} by {modFile.Mod.Author}";
         }
 
-        static ICreateCollection_CreateCollection_Revision_ModFiles_File[] GetFiles(ICollectionRevision revision)
+        static IModFile[] GetFiles(ICollectionRevision revision)
         {
             var files = revision.ModFiles
                 .Select(static modFiles => modFiles.File)
                 .Where(static modFile => modFile is not null)
                 .Select(static modFile => modFile!)
-                .Distinct(ModFileEqualityComparer.Instance)
+                .Distinct(comparer: ModFileEqualityComparer.Instance)
                 .ToArray();
 
             return files;
         }
     }
 
-    private class ModFileEqualityComparer : IEqualityComparer<ICreateCollection_CreateCollection_Revision_ModFiles_File>
+    private class ModFileEqualityComparer : IEqualityComparer<IModFile>
     {
-        public static readonly IEqualityComparer<ICreateCollection_CreateCollection_Revision_ModFiles_File> Instance = new ModFileEqualityComparer();
+        public static readonly IEqualityComparer<IModFile> Instance = new ModFileEqualityComparer();
 
-        public bool Equals(ICreateCollection_CreateCollection_Revision_ModFiles_File? x, ICreateCollection_CreateCollection_Revision_ModFiles_File? y) => string.Equals(x?.Uid, y?.Uid, StringComparison.OrdinalIgnoreCase);
-        public int GetHashCode(ICreateCollection_CreateCollection_Revision_ModFiles_File x) => x.Uid.GetHashCode(StringComparison.OrdinalIgnoreCase);
+        public bool Equals(IModFile? x, IModFile? y) => string.Equals(x?.Uid, y?.Uid, StringComparison.OrdinalIgnoreCase);
+        public int GetHashCode(IModFile x) => x.Uid.GetHashCode(StringComparison.OrdinalIgnoreCase);
     }
 }
