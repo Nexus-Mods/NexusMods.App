@@ -31,6 +31,7 @@ fragment Mod on Mod {
     pictureUrl
     updatedAt
     uid
+    author
 }
 
 fragment ModFile on ModFile {
