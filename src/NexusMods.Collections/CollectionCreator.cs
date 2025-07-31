@@ -258,10 +258,27 @@ public static class CollectionCreator
     {
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
+        var client = serviceProvider.GetRequiredService<IGraphQlClient>();
 
         var managedGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
 
-        var (collection, revisionId) = await UploadDraftRevision(serviceProvider, groupId, cancellationToken);
+        var (collection, revisionId, revisionNumber) = await UploadDraftRevision(serviceProvider, groupId, cancellationToken);
+
+        var previousRevisionResult = await client.QueryCollectionRevision(collection.Slug, RevisionNumber.From(revisionNumber.Value - 1), cancellationToken: cancellationToken);
+        var currentRevisionResult = await client.QueryCollectionRevision(collection.Slug, revisionNumber, cancellationToken);
+
+        if (currentRevisionResult.HasData)
+        {
+            var changelog = NexusModsLibrary.GenerateChangelog(currentRevisionResult.AssertHasData(), previousRevisionResult.HasData ? Optional<ICollectionRevision>.Create(previousRevisionResult.AssertHasData()) : Optional<ICollectionRevision>.None);
+            if (changelog is not null)
+            {
+                var changelogResult = await client.CreateChangelog(revisionId, changelog: changelog, cancellationToken: cancellationToken);
+
+                // TODO: handle results
+                _ = changelogResult.AssertHasData();
+            }
+        }
+
         var result = await nexusModsLibrary.PublishRevision(revisionId, cancellationToken);
 
         // TODO: handle result
@@ -278,7 +295,7 @@ public static class CollectionCreator
         return collection;
     }
 
-    public static async ValueTask<(CollectionMetadata.ReadOnly, RevisionId)> UploadDraftRevision(
+    public static async ValueTask<(CollectionMetadata.ReadOnly, RevisionId, RevisionNumber)> UploadDraftRevision(
         IServiceProvider serviceProvider,
         ManagedCollectionLoadoutGroupId groupId,
         CancellationToken cancellationToken)
@@ -301,7 +318,7 @@ public static class CollectionCreator
         await tx.Commit();
 
         Tracking.AddEvent(Events.Collections.UploadRevision, EventMetadata.Create(name: $"{collection.Slug}", value: collectionManifest.Mods.Length));
-        return (collection, revisionId);
+        return (collection, revisionId, revisionNumber);
     }
 
     private static async ValueTask<IStreamFactory> CreateArchive(
