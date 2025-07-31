@@ -40,6 +40,17 @@ public interface IOSInterop
     AbsolutePath GetOwnExe();
 
     /// <summary>
+    /// Get the path to the current executable as an unsanitized string.
+    /// This preserves the original path without conversion through the paths library.
+    /// </summary>
+    /// <remarks>
+    /// Do not use in production *unless you have a very good reason to do so*.
+    /// This API exists to resolve an edge case with protocol registration on Linux,
+    /// https://github.com/Nexus-Mods/NexusMods.Paths/issues/71
+    /// </remarks>
+    string GetOwnExeUnsanitized();
+
+    /// <summary>
     /// Gets all file system mounts.
     /// </summary>
     ValueTask<IReadOnlyList<FileSystemMount>> GetFileSystemMounts(CancellationToken cancellationToken = default);
