@@ -71,12 +71,6 @@ public interface ISortOrderVariety
     /// </summary>
     [Pure]
     public IReadOnlyList<ISortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
-    
-    /// <summary>
-    /// Sets the sort order to match the one of the passed keys, regardless of the current loadout state.
-    /// </summary>
-    [Pure]
-    public ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<ISortItemKey> items, IDb? db = null, CancellationToken token = default);
 
     /// <summary>
     /// Moves the given items to be before or after the target item in ascending index sort order.
@@ -150,15 +144,6 @@ public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
     /// <inheritdoc cref="ISortOrderVariety.GetSortableItems"/>
     [Pure]
     new IReadOnlyList<TItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
-    
-    /// <inheritdoc/>
-    [Pure]
-    ValueTask ISortOrderVariety.SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<ISortItemKey> items, IDb? db, CancellationToken token) =>
-        SetSortOrder(sortOrderId, items.Cast<TKey>().ToList(), db, token);
-
-    /// <inheritdoc cref="ISortOrderVariety.SetSortOrder"/>
-    [Pure]
-    ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<TKey> items, IDb? db = null, CancellationToken token = default);
     
     /// <inheritdoc/>
     [Pure]

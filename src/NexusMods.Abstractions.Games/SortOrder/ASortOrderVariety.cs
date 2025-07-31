@@ -15,10 +15,12 @@ namespace NexusMods.Abstractions.Games;
 /// <typeparam name="TKey">The type of the key used by the game to identify sortable items</typeparam>
 /// <typeparam name="TSortableItem">The type of the SortableItem implementation used for this variety</typeparam>
 /// <typeparam name="TItemLoadoutData">Represents an item in the loadout that can be sorted but without the sorting information</typeparam>
-public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> : ISortOrderVariety<TKey, TSortableItem>
+/// <typeparam name="TSortedEntry">Represents the minimal information for persisting a sortable entry inside a Sort Order</typeparam>
+public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, TSortedEntry> : ISortOrderVariety<TKey, TSortableItem>
     where TKey : IEquatable<TKey>, ISortItemKey
     where TSortableItem : ISortableItem<TSortableItem, TKey>
     where TItemLoadoutData : ISortableItemLoadoutData<TKey>
+    where TSortedEntry : ISortedEntry<TKey>
 {
     private readonly ILogger _logger;
     
@@ -85,9 +87,6 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
     public abstract IReadOnlyList<TSortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db);
 
     /// <inheritdoc />
-    public abstract ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<TKey> items, IDb? db = null, CancellationToken token = default);
-
-    /// <inheritdoc />
     public async ValueTask MoveItems(
         SortOrderId sortOrderId,
         TKey[] itemsToMove,
@@ -96,8 +95,9 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
         IDb? db = null,
         CancellationToken token = default)
     {
+        var dbToUse = db ?? Connection.Db;
         // retrieve the sorting from the db
-        var startingOrder = RetrieveSortOrder(sortOrderId, db);
+        var startingOrder = RetrieveSortOrder(sortOrderId, dbToUse);
         
         // prepare the data for moving
         var sortedSourceItems = itemsToMove
@@ -147,14 +147,16 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
         if (token.IsCancellationRequested) return;
         
         // persist the new sorting
-        await PersistSortOrder(stagingList, sortOrderId, token);
+        await PersistSortOrder(stagingList, sortOrderId, dbToUse, token);
     }
 
     /// <inheritdoc />
     public async ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default)
     {
+        var dbToUse = db ?? Connection.Db;
+        
         // retrieve the sorting from the db
-        var startingOrder = RetrieveSortOrder(sortOrderId, db);
+        var startingOrder = RetrieveSortOrder(sortOrderId, dbToUse);
         var stagingList = startingOrder.ToList();
         
         // get the index of the source item
@@ -187,7 +189,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
             
         if (token.IsCancellationRequested) return;
             
-        await PersistSortOrder(stagingList, sortOrderId, token);
+        await PersistSortOrder(stagingList, sortOrderId, dbToUse, token);
     }
 
     /// <inheritdoc />
@@ -209,7 +211,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
         
         var reconciledItems = Reconcile(currentSortOrder, loadoutData);
         
-        await PersistSortOrder(reconciledItems, sortOrderId, token);
+        await PersistSortOrder(reconciledItems, sortOrderId, dbToUse, token);
     }
 
 
@@ -219,23 +221,40 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
 #region protected members
     
     /// <summary>
-    /// Retrieves the sortable entries for the sortOrderId, and returns them as a sorted list of sortable items, without the loadout data.
+    /// Retrieves the sorted entries for the sortOrderId, and returns them as a sorted list of TSortedEntries, without the loadout data.
     /// </summary>
-    /// <remarks>
-    /// The items in the returned list can have temporary values for properties such as `ModName` and `IsActive`.
-    /// Those will need to be updated after the sortableItems are matched to items in the loadout. 
-    /// </remarks>
-    protected abstract IReadOnlyList<TSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null);
+    protected abstract IReadOnlyList<TSortedEntry> RetrieveSortOrder(SortOrderId sortOrderId, IDb? db = null);
 
     /// <summary>
     /// Persists the sort order for the provided list of sortable items
     /// </summary>
-    protected virtual async ValueTask PersistSortOrder(IReadOnlyList<TSortableItem> items, SortOrderId sortOrderEntityId, CancellationToken token)
+    protected virtual ValueTask PersistSortOrder(IReadOnlyList<TSortableItem> items, SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
     {
-        var sortedKeys = items.Select(item => item.Key).ToList();
-
-        await SetSortOrder(sortOrderEntityId, sortedKeys, token: token);
+        throw new NotImplementedException();
     }
+    
+    protected virtual async ValueTask PersistSortOrderActual(SortOrderId sortOrderId, IReadOnlyList<TSortedEntry> newOrder, IDb startingDb, CancellationToken token = default)
+    {
+        using var tx = Connection.BeginTransaction();
+        
+        try
+        {
+            PersistSortOrderCore(sortOrderId, newOrder, tx, startingDb, token);
+            await tx.Commit();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to persist sort order {SortOrderId}", sortOrderId);
+            throw;
+        }
+    }
+
+    protected abstract void PersistSortOrderCore(
+        SortOrderId sortOrderId,
+        IReadOnlyList<TSortedEntry> newOrder,
+        ITransaction tx,
+        IDb startingDb,
+        CancellationToken token = default);
 
     /// <summary>
     /// Returns a collection of loadout-specific TItemLoadoutData for each relevant item found in the provided loadout/collection.
@@ -247,10 +266,10 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData> :
         IDb? db);
 
     /// <summary>
-    /// Reconciles the provided sortable items with the loadout data items returning a list of sortable items that include loadout data.
+    /// Reconciles the provided sorted entries with the loadout data items returning a list of sortable items that include loadout data.
     /// </summary>
     protected abstract IReadOnlyList<TSortableItem> Reconcile(
-        IReadOnlyList<TSortableItem> sourceSortableItems,
+        IReadOnlyList<TSortedEntry> sourceSortedEntries,
         IReadOnlyList<TItemLoadoutData> loadoutDataItems);
 
 #endregion protected members

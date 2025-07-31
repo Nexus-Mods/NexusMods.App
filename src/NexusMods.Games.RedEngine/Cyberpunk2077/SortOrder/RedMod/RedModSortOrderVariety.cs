@@ -10,7 +10,11 @@ using OneOf;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
-public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, RedModSortableItem, SortableItemLoadoutData<SortItemKey<string>>>
+public class RedModSortOrderVariety : ASortOrderVariety<
+    SortItemKey<string>, 
+    RedModSortableItem, 
+    SortableItemLoadoutData<SortItemKey<string>>, 
+    SortedEntry<SortItemKey<string>> >
 {
     private static readonly SortOrderVarietyId StaticVarietyId = SortOrderVarietyId.From(new Guid("9120C6F5-E0DD-4AD2-A99E-836F56796950"));
     
@@ -76,33 +80,33 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
         // Make sure to use the correct db for the query
     }
 
-    public override async ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<SortItemKey<string>> items, IDb? db = null, CancellationToken token = default)
+    protected override void PersistSortOrderCore(
+        SortOrderId sortOrderId,
+        IReadOnlyList<SortedEntry<SortItemKey<string>>> newOrder,
+        ITransaction tx,
+        IDb startingDb,
+        CancellationToken token = default)
     {
-        var dbToUse = db ?? Connection.Db;
-
-        var keyOrderList = items.ToArray();
+        var persistentSortableEntries = startingDb.RetrieveRedModSortableEntries(sortOrderId);
         
-        var persistentSortableItems = dbToUse.RetrieveRedModSortableEntries(sortOrderId);
+        token.ThrowIfCancellationRequested();
         
-        if (token.IsCancellationRequested) return;
-        
-        using var tx = Connection.BeginTransaction();
-
         // Remove outdated persistent items
-        foreach (var dbItem in persistentSortableItems)
+        foreach (var dbItem in persistentSortableEntries)
         {
-            var liveItem = keyOrderList.FirstOrOptional(
-                i => i.Key == dbItem.RedModFolderName
+            var newItem = newOrder.FirstOrOptional(
+                newItem => newItem.Key.Key == dbItem.RedModFolderName
             );
 
-            if (!liveItem.HasValue)
+            if (!newItem.HasValue)
             {
                 tx.Delete(dbItem, recursive: false);
                 continue;
             }
 
-            var liveIdx = keyOrderList.IndexOf(liveItem.Value);
-
+            var liveIdx = newOrder.IndexOf(newItem.Value);
+            
+            // Update existing items
             if (dbItem.AsSortableEntry().SortIndex != liveIdx)
             {
                 tx.Add(dbItem, SortableEntry.SortIndex, liveIdx);
@@ -110,10 +114,10 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
         }
 
         // Add new items
-        for (var i = 0; i < keyOrderList.Length; i++)
+        for (var i = 0; i < newOrder.Count; i++)
         {
-            var liveItem = keyOrderList[i];
-            if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.Key))
+            var newItem = newOrder[i];
+            if (persistentSortableEntries.Any(si => si.RedModFolderName == newItem.Key.Key))
                 continue;
 
             var newDbItem = new SortableEntry.New(tx)
@@ -125,30 +129,25 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
             _ = new RedModSortableEntry.New(tx, newDbItem)
             {
                 SortableEntry = newDbItem,
-                RedModFolderName = liveItem.Key,
+                RedModFolderName = newItem.Key.Key,
             };
         }
 
-        if (token.IsCancellationRequested) return;
-
-        await tx.Commit();
+        token.ThrowIfCancellationRequested();
     }
     
     /// <inheritdoc />
-    protected override IReadOnlyList<RedModSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
+    protected override IReadOnlyList<SortedEntry<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
     {
         var dbToUse = db ?? Connection.Db;
 
         return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
-            .Select(redModSortableItem =>
+            .Select(redModSortableEntry =>
                 {
-                    var sortableItem = redModSortableItem.AsSortableEntry();
-                    return new RedModSortableItem(
-                        sortableItem.SortIndex,
-                        redModSortableItem.RedModFolderName,
-                        // Temp values, will get updated when we load the RedMods
-                        modName: redModSortableItem.RedModFolderName,
-                        isActive: false
+                    var sortableEntry = redModSortableEntry.AsSortableEntry();
+                    return new SortedEntry<SortItemKey<string>>(
+                        new SortItemKey<string>(redModSortableEntry.RedModFolderName.Path),
+                        sortableEntry.SortIndex
                     );
                 }
             )
@@ -162,59 +161,61 @@ public class RedModSortOrderVariety : ASortOrderVariety<SortItemKey<string>, Red
     }
 
     /// <inheritdoc />
-    protected override IReadOnlyList<RedModSortableItem> Reconcile(IReadOnlyList<RedModSortableItem> sourceSortableItems, IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
+    protected override IReadOnlyList<RedModSortableItem> Reconcile(IReadOnlyList<SortedEntry<SortItemKey<string>>> sourceSortedEntries, IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
     {
         var loadoutItemsDict = loadoutDataItems.ToDictionary(item => item.Key);
     
         // Start with a copy of source items
-        var sortableItems = sourceSortableItems.ToList();
-        var itemsToAdd = new List<RedModSortableItem>();
-    
-        // Update existing items and identify new ones
-        foreach (var loadoutItemData in loadoutDataItems)
+        var results = new List<RedModSortableItem>(sourceSortedEntries.Count);
+        var processedKeys = new HashSet<SortItemKey<string>>(sourceSortedEntries.Count);
+
+
+        foreach (var sortedEntry in sourceSortedEntries)
         {
-            var index = sortableItems.FindIndex(item => item.Key == loadoutItemData.Key);
-        
-            if (index == -1)
+            // No matching loadout data, skip this entry
+            if (!loadoutItemsDict.TryGetValue(sortedEntry.Key, out var loadoutItemData))
+                continue;
+            
+            processedKeys.Add(sortedEntry.Key);
+
+            // Create sortable item from sorted entry and loadout data
+            results.Add(new RedModSortableItem(
+                sortIndex: sortedEntry.SortIndex,
+                redModFolderName: loadoutItemData.Key.Key,
+                modName: loadoutItemData.ModName,
+                isActive: loadoutItemData.IsEnabled
+            )
             {
-                // If the sortable item is not found, create a new one to add later
-                itemsToAdd.Add(new RedModSortableItem(
-                    sortIndex: 0, // Sort index will be set later
-                    redModFolderName: loadoutItemData.Key.Key,
-                    modName: loadoutItemData.ModName,
-                    isActive: loadoutItemData.IsEnabled
-                )
-                {
-                    LoadoutData = loadoutItemData,
-                    ModGroupId = loadoutItemData.ModGroupId
-                });
-            }
-            else
-            {
-                // Update existing item
-                var sortableItem = sortableItems[index];
-                sortableItem.LoadoutData = loadoutItemData;
-                sortableItem.IsActive = loadoutItemData.IsEnabled;
-                sortableItem.ModGroupId = loadoutItemData.ModGroupId;
-                sortableItem.ModName = loadoutItemData.ModName;
-            }
+                LoadoutData = loadoutItemData,
+                ModGroupId = loadoutItemData.ModGroupId,
+            });
         }
     
-        // Remove items that don't exist in loadout data
-        sortableItems.RemoveAll(item => !loadoutItemsDict.ContainsKey(item.Key));
-    
-        // Add new items at the end, sorted by creation order (ModGroupId)
-        if (itemsToAdd.Count > 0)
-        {
-            sortableItems.AddRange(itemsToAdd.OrderBy(item => item.ModGroupId));
-        }
+        // Add any remaining loadout items that were not in the source sorted entries
+        var itemsToAdd = loadoutItemsDict.Values
+            .Where(item => !processedKeys.Contains(item.Key))
+            .OrderByDescending(item => item.ModGroupId)
+            .Select(loadoutItemData => new RedModSortableItem(
+                sortIndex: 0, // Will be updated below
+                redModFolderName: loadoutItemData.Key.Key,
+                modName: loadoutItemData.ModName,
+                isActive: loadoutItemData.IsEnabled
+            )
+            {
+                LoadoutData = loadoutItemData,
+                ModGroupId = loadoutItemData.ModGroupId,
+            });
+
+        // Insert new items at the start, sorted by newest creation order (ModGroupId)
+        // For cyberpunk RedMods, lower index wins, so we add new items at the start
+        results.InsertRange(0, itemsToAdd);
     
         // Update sort indices
-        for (var i = 0; i < sortableItems.Count; i++)
+        for (var i = 0; i < results.Count; i++)
         {
-            sortableItems[i].SortIndex = i;
+            results[i].SortIndex = i;
         }
     
-        return sortableItems;
+        return results;
     }
 }
