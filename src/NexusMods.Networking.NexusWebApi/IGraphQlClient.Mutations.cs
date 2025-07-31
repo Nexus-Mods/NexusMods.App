@@ -76,7 +76,7 @@ public partial interface IGraphQlClient
     /// <summary>
     /// Creates a new changelog on a revision.
     /// </summary>
-    ValueTask<GraphQlResult<RevisionChangelogId, NotFound>> CreateChangelog(
+    ValueTask<GraphQlResult<RevisionChangelogId, NotFound, Invalid>> CreateChangelog(
         RevisionId revisionId,
         [LanguageInjection("markdown")] string changelog,
         CancellationToken cancellationToken = default);
@@ -84,7 +84,7 @@ public partial interface IGraphQlClient
     /// <summary>
     /// Updates an existing changelog on a revision.
     /// </summary>
-    ValueTask<GraphQlResult<RevisionChangelogId, NotFound>> UpdateChangelog(
+    ValueTask<GraphQlResult<RevisionChangelogId, NotFound, Invalid>> UpdateChangelog(
         RevisionChangelogId changelogId,
         [LanguageInjection("markdown")] string changelog,
         CancellationToken cancellationToken = default);

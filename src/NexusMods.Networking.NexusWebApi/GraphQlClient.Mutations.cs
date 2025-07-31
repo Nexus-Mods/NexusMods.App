@@ -165,7 +165,7 @@ internal partial class GraphQlClient
         );
     }
 
-    public async ValueTask<GraphQlResult<RevisionChangelogId, NotFound>> CreateChangelog(RevisionId revisionId, string changelog, CancellationToken cancellationToken)
+    public async ValueTask<GraphQlResult<RevisionChangelogId, NotFound, Invalid>> CreateChangelog(RevisionId revisionId, string changelog, CancellationToken cancellationToken)
     {
         var operationResult = await _client.CreateChangelog.ExecuteAsync(
             revisionId: revisionId.ToString(),
@@ -174,13 +174,13 @@ internal partial class GraphQlClient
         );
 
         return operationResult.Transform(
-            out GraphQlResult<RevisionChangelogId, NotFound> _,
+            out GraphQlResult<RevisionChangelogId, NotFound, Invalid> _,
             static result => result.CreateChangelog,
             create => RequiresSuccess(create, static create => create.Success, static create => RevisionChangelogId.From((uint)create.ChangelogId))
         );
     }
 
-    public async ValueTask<GraphQlResult<RevisionChangelogId, NotFound>> UpdateChangelog(RevisionChangelogId changelogId, string changelog, CancellationToken cancellationToken)
+    public async ValueTask<GraphQlResult<RevisionChangelogId, NotFound, Invalid>> UpdateChangelog(RevisionChangelogId changelogId, string changelog, CancellationToken cancellationToken)
     {
         var operationResult = await _client.UpdateChangelog.ExecuteAsync(
             changelogId: changelogId.ToString(),
@@ -189,7 +189,7 @@ internal partial class GraphQlClient
         );
 
         return operationResult.Transform(
-            out GraphQlResult<RevisionChangelogId, NotFound> _,
+            out GraphQlResult<RevisionChangelogId, NotFound, Invalid> _,
             static result => result.UpdateChangelog,
             update => RequiresSuccess(update, static update => update.Success, static update => RevisionChangelogId.From((uint)update.ChangelogId))
         );

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
@@ -259,6 +260,8 @@ public static class CollectionCreator
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var client = serviceProvider.GetRequiredService<IGraphQlClient>();
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+        var logger = loggerFactory.CreateLogger(nameof(CollectionCreator));
 
         var managedGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
 
@@ -274,8 +277,14 @@ public static class CollectionCreator
             {
                 var changelogResult = await client.CreateChangelog(revisionId, changelog: changelog, cancellationToken: cancellationToken);
 
-                // TODO: handle results
-                _ = changelogResult.AssertHasData();
+                if (changelogResult.TryGetError(out Invalid? invalid))
+                {
+                    logger.LogWarning("Failed to create changelog for `{Slug}/{RevisionNumber}` because of invalid input: {Message}", collection.Slug, revisionNumber, invalid.Message);
+                }
+                else
+                {
+                    _ = changelogResult.AssertHasData();
+                }
             }
         }
 
