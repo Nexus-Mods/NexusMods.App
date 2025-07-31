@@ -80,6 +80,10 @@
                     <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
                     <controls:StandardButton Text="  " ShowIcon="Both" Size="Medium" />
                     <controls:StandardButton Text="Danger" ShowIcon="Both" Classes="Danger" HorizontalAlignment="Stretch" />
+                    <controls:StandardButton Text="Get Premium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium"/>
+                    <controls:StandardButton Text="Get Premium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium" Size="Toolbar"/>
+                    
+                    
                 </StackPanel>
 
                 <StackPanel Spacing="8">
@@ -347,6 +351,7 @@
                     <!-- this is used when Content isn't set (used for normal buttons) -->
                     <Border Name="PART_Border"
                             Background="{TemplateBinding Background}"
+                            BackgroundSizing="OuterBorderEdge"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
@@ -805,6 +810,34 @@
         
         <Style Selector="^.Danger">
             <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
+        </Style>
+        
+        <Style Selector="^.Premium">
+            <Setter Property="Background" Value="{StaticResource PremiumButtonLinearGradientBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource SurfaceInvertedBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
+            <Setter Property="BorderThickness" Value="0 1 0 0" />
+            <Setter Property="MaxHeight" Value="28" />
+            
+            <!-- if used in a toolbar, we need to set the background specifically for the override to happen -->
+            <Style Selector="^[Size=Toolbar]">
+                <Setter Property="Background" Value="{StaticResource PremiumButtonLinearGradientBrush}" />
+                <Setter Property="MaxHeight" Value="24" />
+            </Style>
+            
+            <Style Selector="^ TextBlock#PART_Label">
+                <Setter Property="Margin" Value="4,0,4,2" />
+                <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
+            </Style>
+
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="{StaticResource PremiumButtonPointerOverLinearGradientBrush}" />
+            </Style>
+            
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{StaticResource BrandPremium950Brush}" />
+            </Style>
+            
         </Style>
 
     </ControlTheme>

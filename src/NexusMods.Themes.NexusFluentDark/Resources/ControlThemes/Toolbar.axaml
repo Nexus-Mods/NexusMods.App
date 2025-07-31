@@ -42,6 +42,10 @@
                         <controls:StandardButton Text="Button 5" Fill="Weak"
                                                  Size="Toolbar" />
                     </ItemsControl>
+                    <ItemsControl Classes="GetPremiumToolbarBanner">
+                        <TextBlock Text="Tired of waiting? Increase speed with Premium"/>
+                        <controls:StandardButton Text="Get Premium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium" Size="Toolbar" />
+                    </ItemsControl>
                 </controls:Toolbar>
 
                 <!-- toolbar component -->
