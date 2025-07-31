@@ -6,7 +6,10 @@ namespace NexusMods.Jobs;
 
 public class JobGroup : IJobGroup
 {
-    private readonly JobCancellationToken _jobCancellationToken = new();
+    private readonly JobCancellationToken _jobCancellationToken;
+    
+    public JobGroup(bool supportsForcePause = false) => _jobCancellationToken = new JobCancellationToken(supportsForcePause);
+
     public bool IsCancelled => _jobCancellationToken.Token.IsCancellationRequested;
 
     private ConcurrentBag<IJob> Jobs { get; } = new();

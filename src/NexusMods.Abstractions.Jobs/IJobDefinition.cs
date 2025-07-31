@@ -25,4 +25,16 @@ public interface IJobDefinitionWithStart<in TParent, TResultType> : IJobDefiniti
     /// </summary>
     /// <param name="context">The job context</param>
     ValueTask<TResultType> StartAsync(IJobContext<TParent> context);
+    
+    /// <summary>
+    /// Indicates whether this job supports force pause via token cancellation.
+    /// When true, pause operations will immediately cancel the current token,
+    /// allowing interruption of external code with nested async operations.
+    /// </summary>
+    /// <remarks>
+    /// Jobs with force pause support should handle <see cref="OperationCanceledException"/>
+    /// and use <see cref="IJobContext.HandlePauseExceptionAsync"/> to distinguish between
+    /// pause and true cancellation.
+    /// </remarks>
+    bool SupportsForcePause => false;
 }

@@ -71,7 +71,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     public IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job) where TJobType : IJobDefinitionWithStart<TJobType, TResultType> 
         where TResultType : notnull
     {
-        var group = new JobGroup();
+        var group = new JobGroup(job.SupportsForcePause);
         var ctx = new JobContext<TJobType, TResultType>(job, this, group, group.JobCancellationToken, job.StartAsync);
         _allJobs.AddOrUpdate(ctx);
         Task.Run(async () =>

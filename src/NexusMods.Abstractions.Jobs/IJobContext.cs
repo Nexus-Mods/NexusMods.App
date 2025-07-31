@@ -56,6 +56,23 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     /// <param name="message">The cancellation message</param>
     /// <returns>This method never returns - it always throws</returns>
     void CancelAndThrow(string message);
+    
+    /// <summary>
+    /// Helper for force pause exception handling.
+    /// Determines if the given exception was caused by a force pause and handles the pause flow appropriately.
+    /// </summary>
+    /// <param name="ex">The <see cref="OperationCanceledException"/> to check.</param>
+    /// <returns>
+    /// A task that completes when the job is resumed (if it was a pause)
+    /// or immediately (if not a pause).
+    /// </returns>
+    /// <exception cref="OperationCanceledException">Re-thrown if this was a true cancellation, not a pause.</exception>
+    /// <remarks>
+    /// This method should be called in catch blocks when handling <see cref="OperationCanceledException"/> in jobs that support force pause.
+    /// If the exception was caused by a force pause, this method will wait for resume and return normally.
+    /// If the exception was caused by true cancellation, it will re-throw the exception.
+    /// </remarks>
+    Task HandlePauseExceptionAsync(OperationCanceledException ex);
 }
 
 /// <summary>

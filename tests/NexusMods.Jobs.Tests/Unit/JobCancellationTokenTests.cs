@@ -18,17 +18,17 @@ public class JobCancellationTokenTests
     }
 
     [Fact]
-    public void Should_Link_To_External_CancellationToken()
+    public void Should_Support_Basic_Cancellation()
     {
         // Arrange
-        using var externalTokenSource = new CancellationTokenSource();
-        var token = new JobCancellationToken(externalTokenSource.Token);
+        var token = new JobCancellationToken(false);
 
         // Act
-        externalTokenSource.Cancel();
+        token.Cancel();
 
         // Assert
         token.Token.IsCancellationRequested.Should().BeTrue();
+        token.IsCancelled.Should().BeTrue();
     }
 
     [Fact]
