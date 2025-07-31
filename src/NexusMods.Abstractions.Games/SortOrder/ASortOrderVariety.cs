@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using OneOf;
 
 namespace NexusMods.Abstractions.Games;
@@ -232,28 +233,41 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     {
         using var tx = Connection.BeginTransaction();
         
-        // TODO: Determine the max TxId for sortOrder in startingDb
-        // Add a function to the transaction to compare the max TxId of the DB in the transaction with the one in the startingDb
+        PersistSortOrderCore(sortOrderId, newOrder, tx, startingDb, token);
+
+        var sortOrderTxId = GetMaxTxIdForSortOrder(sortOrderId, startingDb);
+            
+        tx.Add(sortOrderId, sortOrderTxId,
+            (_ ,txDb, orderId, oldTxId) =>
+            {
+                var currentTxId = GetMaxTxIdForSortOrder(orderId, txDb);
+                
+                if (currentTxId > oldTxId)
+                {
+                    throw new InvalidOperationException(
+                        $"Unable to complete transaction: Sort Order {orderId} changed, Current TxId: {currentTxId}, Old TxId: {oldTxId}");
+                }
+            } );
         
         try
         {
-            PersistSortOrderCore(sortOrderId, newOrder, tx, startingDb, token);
             await tx.Commit();
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             _logger.LogError(ex, "Failed to persist sort order {SortOrderId}", sortOrderId);
-            throw;
+            // TODO: Should we throw or handle this differently?
+            // throw;
         }
     }
-
+    
     protected abstract void PersistSortOrderCore(
         SortOrderId sortOrderId,
         IReadOnlyList<TSortedEntry> newOrder,
         ITransaction tx,
         IDb startingDb,
         CancellationToken token = default);
-
+    
     /// <summary>
     /// Returns a collection of loadout-specific TItemLoadoutData for each relevant item found in the provided loadout/collection.
     /// These loadout data items are unsorted and do not have a sort index.
@@ -269,6 +283,21 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     protected abstract IReadOnlyList<(TSortedEntry SortedEntry, TItemLoadoutData ItemLoadoutData)> Reconcile(
         IReadOnlyList<TSortedEntry> sourceSortedEntries,
         IReadOnlyList<TItemLoadoutData> loadoutDataItems);
+    
+    
+    protected static TxId GetMaxTxIdForSortOrder(SortOrderId sortOrderId, IDb db)
+    {
+        var maxTxId = db.Get(sortOrderId).Max(datom => datom.T);
+        var maxIds = db.Datoms(SortableEntry.ParentSortOrder, sortOrderId)
+            .Select(d => db.Get(d.E).Max(datom => datom.T));
+        
+        foreach (var maxId in maxIds)
+        {
+            if (maxId < maxTxId)
+                maxTxId = maxId;
+        }
+        return maxTxId;
+    }
 
 #endregion protected members
 }
