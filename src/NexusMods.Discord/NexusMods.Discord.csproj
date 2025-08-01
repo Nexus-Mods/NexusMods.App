@@ -15,7 +15,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NexusMods.Sdk\NexusMods.Sdk.csproj" />
-        <ProjectReference Include="..\NexusMods.App.UI\NexusMods.App.UI.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Settings\NexusMods.Abstractions.Settings.csproj" />
     </ItemGroup>
 

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -107,6 +107,7 @@
         <ProjectReference Include="..\NexusMods.Networking.GitHub\NexusMods.Networking.GitHub.csproj" />
         <ProjectReference Include="..\NexusMods.Telemetry\NexusMods.Telemetry.csproj" />
         <ProjectReference Include="..\NexusMods.UI.Sdk\NexusMods.UI.Sdk.csproj" />
+        <ProjectReference Include="..\NexusMods.Discord\NexusMods.Discord.csproj" />
     </ItemGroup>
 
     <ItemGroup>

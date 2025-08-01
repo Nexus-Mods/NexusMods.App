@@ -15,6 +15,8 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Telemetry;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using NexusMods.Discord;
+using NexusMods.Abstractions.Loadouts.Extensions;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
@@ -36,8 +38,9 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
     private readonly IJobMonitor _monitor;
     private readonly IServiceProvider _serviceProvider;
     private readonly GameRunningTracker _gameRunningTracker;
+    private readonly DiscordRpcService _discordRpcService;
 
-    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IServiceProvider serviceProvider, GameRunningTracker gameRunningTracker)
+    public LaunchButtonViewModel(ILogger<ILaunchButtonViewModel> logger, IToolManager toolManager, IConnection conn, IJobMonitor monitor, IServiceProvider serviceProvider, GameRunningTracker gameRunningTracker, DiscordRpcService discordRpcService)
     {
         _logger = logger;
         _toolManager = toolManager;
@@ -45,7 +48,8 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
         _monitor = monitor;
         _serviceProvider = serviceProvider;
         _gameRunningTracker = gameRunningTracker;
-        
+        _discordRpcService = discordRpcService;
+
         this.WhenActivated(cd =>
         {
             _gameRunningTracker.GetWithCurrentStateAsStarting().Subscribe(isRunning =>
@@ -73,6 +77,15 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 var sw = Stopwatch.StartNew();
                 try
                 {
+                    try
+                    {
+                        _logger.LogDebug("Stopping Discord RPC before launching game");
+                        await _discordRpcService.StopAsync(token);
+                    }
+                    catch
+                    {
+                        _logger.LogWarning("Failed to stop Discord RPC before launching game, continuing anyway.");
+                    }
                     Tracking.AddEvent(Events.Game.LaunchGame, new EventMetadata(name: $"{installation.Game.Name} - {installation.Store}"));
                     await _toolManager.RunTool(tool, marker, _monitor, token: token);
                 }
@@ -80,6 +93,22 @@ public class LaunchButtonViewModel : AViewModel<ILaunchButtonViewModel>, ILaunch
                 {
                     var duration = sw.Elapsed;
                     Tracking.AddEvent(Events.Game.ExitGame, EventMetadata.Create(name: $"{installation.Game.Name} - {installation.Store}", value: duration.TotalSeconds));
+                    try
+                    {
+                        _logger.LogDebug("Starting Discord RPC after launching game");
+                        await _discordRpcService.StartAsync(token);
+                        var mods = marker.Items.OfType<LoadoutItem.ReadOnly>().Where(item => item.IsValid() && item.IsEnabled() && item.HasParent());
+                        var modCount = mods.Count();
+                        foreach (var mod in mods)
+                        {
+                            _logger.LogDebug("Adding mod to Discord RPC presence: {ModName}", mod.Name);
+                        }
+                        _discordRpcService.SetGamePresence(installation.Game.Name, "stardewvalley", modCount);
+                    }
+                    catch
+                    {
+                        _logger.LogWarning("Failed to start Discord RPC after launching game, continuing anyway.");
+                    }
                 }
             }, token);
         }

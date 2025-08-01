@@ -2,23 +2,19 @@ using System.Collections.ObjectModel;
 using DiscordRPC;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NexusMods.App.UI.Settings;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Sdk;
-using ReactiveUI;
 
 namespace NexusMods.Discord
 {
     public class DiscordRpcService : IHostedService
     {
-        private readonly DiscordRpcClient _client;
+        private DiscordRpcClient _client;
         private readonly string _applicationId = "1393166557101691101";
         private readonly ILogger<DiscordRpcService> _logger;
         private readonly ISettingsManager _settings;
-        private bool _isEnabled;
-        // Temporary for testing
-        private CancellationTokenSource? _periodicUpdateTokenSource;
-        private string _lastGameName = "";
+        private bool _isEnabled = true;
+        private bool _isInitialized = false;
 
         private readonly IReadOnlyDictionary<string, string> _assetKeys = new ReadOnlyDictionary<string, string>(
             new Dictionary<string, string>
@@ -37,16 +33,16 @@ namespace NexusMods.Discord
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var settings = _settings.Get<DiscordSettings>();
-            _isEnabled = settings.EnableRichPresence;
+            //var settings = _settings.Get<DiscordSettings>();
+            //_isEnabled = settings.EnableRichPresence;
 
             if (!_isEnabled)
             {
                 _logger.LogInformation("Discord RPC is disabled in settings and was not started.");
-                return Task.CompletedTask; 
+                return Task.CompletedTask;
             }
-            
-            
+
+
             _client.OnReady += (_, e) =>
             {
                 _logger.LogDebug($"Connected to Discord as {e.User.Username}");
@@ -62,10 +58,15 @@ namespace NexusMods.Discord
                 _logger.LogError($"Discord RPC Error: {e.Message}");
             };
 
+            if (_client.IsDisposed) { 
+                _client = new DiscordRpcClient(_applicationId); 
+                _logger.LogDebug("Recreated Discord RPC client due to previous disposal.");
+            }
+
             try
             {
                 _client.Initialize();
-                SetDefaultPresence();
+                _isInitialized = true;
             }
             catch (Exception ex)
             {
@@ -74,57 +75,21 @@ namespace NexusMods.Discord
 
             _logger.LogTrace("Discord RPC service started successfully.");
 
-            _periodicUpdateTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-            _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        while (!_periodicUpdateTokenSource.Token.IsCancellationRequested)
-                        {
-                            if (_lastGameName != "")
-                            {
-                                if (_lastGameName == "Stardew Valley")
-                                {
-                                    _logger.LogInformation("Discord RPC set to Cyberpunk");
-                                    SetGamePresence("Cyberpunk 2077", "cyberpunk2077", 9);
-                                    _lastGameName = "Cyberpunk 2077";
-                                }
-                                else
-                                {
-                                    _logger.LogInformation("Discord RPC set to Unknown");
-                                    SetGamePresence("Unknown Game", "unknown", 0);
-                                    _lastGameName = "";
-                                }
-                            }
-                            else
-                            {
-                                _logger.LogInformation("Discord RPC set to Stardew");
-                                SetGamePresence("Stardew Valley", "stardewvalley", 222);
-                                _lastGameName = "Stardew Valley";
-                            }
-                            
-                            await Task.Delay(TimeSpan.FromSeconds(15), _periodicUpdateTokenSource.Token);
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        _logger.LogInformation("Discord RPC periodic update task cancelled.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Discord RPC periodic update task failed: {ex.Message}");
-                    }
-                }, _periodicUpdateTokenSource.Token
-            );
-
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _client.Dispose();
-            _logger.LogInformation("Discord RPC service stopped.");
+            if (!_isInitialized)
+            {
+                _logger.LogWarning("Discord RPC service was not initialized, skipping stop.");
+            }
+            else
+            {
+                _client.ClearPresence();
+                _client.Dispose();
+                _logger.LogInformation("Discord RPC service stopped.");
+            }
             return Task.CompletedTask;
         }
 
@@ -154,7 +119,11 @@ namespace NexusMods.Discord
 
         public void SetGamePresence(string gameName, string gameDomain, int modCount)
         {
-            if (!_isEnabled) return;
+            if (!_isInitialized || !_isEnabled)
+            {
+                _logger.LogWarning("Discord RPC is not initialized or enabled, cannot set game presence.");
+                return;
+            }
             
             var largeImageKey = "nexusmods_logo";
             
@@ -162,6 +131,9 @@ namespace NexusMods.Discord
             {
                 largeImageKey = gameArtKey;
             }
+
+            _logger.LogInformation($"Setting Discord presence for game: {gameName}, Domain: {gameDomain}, Mods: {modCount}");
+
             _client.SetPresence(new RichPresence
             {
                 Details = $"Modding {gameName}",
@@ -175,16 +147,17 @@ namespace NexusMods.Discord
                 },
             });
         }
-
-        public void ClearPresence()
-        {
-            _client.ClearPresence();
-            _logger.LogInformation("Discord presence cleared.");
-        }
     }
 }
 
 public interface IDiscordRpcService
 {
     void SetGamePresence(string gameName, string gameDomain, int modCount);
+
+    void SetCustomPresence(RichPresence presence);
+
+    void SetDefaultPresence();
+
+    Task StartAsync(CancellationToken cancellationToken);
+    Task StopAsync(CancellationToken cancellationToken);
 }
