@@ -14,6 +14,7 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Games.FileHashes\NexusMods.Abstractions.Games.FileHashes.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.Logging\NexusMods.Abstractions.Logging.csproj" />
         <ProjectReference Include="..\NexusMods.Backend\NexusMods.Backend.csproj" />
+        <ProjectReference Include="..\NexusMods.Discord\NexusMods.Discord.csproj" />
         <ProjectReference Include="..\NexusMods.FileExtractor\NexusMods.FileExtractor.csproj" />
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller.UI\NexusMods.Games.AdvancedInstaller.UI.csproj" />
         <ProjectReference Include="..\NexusMods.Games.FOMOD.UI\NexusMods.Games.FOMOD.UI.csproj" />
@@ -91,8 +92,7 @@
         </None>
     </ItemGroup>
 
-    <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish"
-            Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86' Or '$(RuntimeIdentifier)' == 'win'">
+    <Target Name="CopyCustomContentOnPublish" AfterTargets="Publish" Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86' Or '$(RuntimeIdentifier)' == 'win'">
         <Copy SourceFiles="uninstall.bat" DestinationFolder="$(PublishDir)" />
     </Target>
 </Project>
