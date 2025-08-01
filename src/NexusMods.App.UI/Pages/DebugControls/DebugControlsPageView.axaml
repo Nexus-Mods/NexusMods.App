@@ -319,9 +319,9 @@
                 <Border Margin="24,12" VerticalAlignment="Top" Padding="0">
                     <StackPanel Spacing="16" Orientation="Vertical">
                         <StackPanel Spacing="8">
-                            <Grid RowDefinitions="Auto,40,40,40,40"
-                                  ColumnDefinitions="160,Auto,Auto">
-
+                            <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40,40,40"
+                                  ColumnDefinitions="160,60,60">
+ 
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
                                 <TextBlock Grid.Column="2" Grid.Row="0" Text="Modeless" />
 
@@ -331,22 +331,17 @@
                                 <controls:StandardButton x:Name="ShowModelessOkCancel"
                                                          Click="ShowModelessOkCancel_OnClick"
                                                          Text="Open" Grid.Column="2" Grid.Row="1" />
-
                                 <TextBlock Grid.Column="0" Grid.Row="2" Text="Example Markdown"
                                            VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalExampleMarkdown"
                                                          Click="ShowModalExampleMarkdown_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="2" />
-
-
                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Input" VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalInput" Click="ShowModalInput_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="3" />
-
-                                <TextBlock Grid.Column="0" Grid.Row="4"  Text="Errors" VerticalAlignment="Center" />
-                                <controls:StandardButton x:Name="GenerateUnhandledException"
-                                                         Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" 
-                                                         Text="GenerateUnhandledException" />
+                                <TextBlock Grid.Column="0" Grid.Row="4" Text="Custom Content" VerticalAlignment="Center" />
+                                <controls:StandardButton x:Name="ShowModalPremium" Click="ShowModalPremium_OnClick"
+                                                         Text="Open" Grid.Column="1" Grid.Row="4" />
                             </Grid>
                         </StackPanel>
                     </StackPanel>

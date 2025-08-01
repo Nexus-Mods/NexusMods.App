@@ -77,6 +77,43 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                 this.BindCommand(ViewModel, vm => vm.InstallSelectedItemsWithAdvancedInstallerCommand, view => view.AdvancedInstallModMenuItem)
                     .AddTo(disposables);
 
+                this.BindCommand(ViewModel, vm => vm.UpdateSelectedItemsCommand, view => view.UpdateModMenuItem)
+                    .AddTo(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.UpdateAndKeepOldSelectedItemsCommand, view => view.UpdateAndKeepOldModMenuItem)
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateButton.Text,
+                        count => count > 0 ? count.ToString() : "")
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateButton.IsVisible,
+                        count => count > 0)
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.IsUpdatingAll,
+                        view => view.UpdateButton.IsEnabled,
+                        isUpdating => !isUpdating)
+                    .AddTo(disposables);
+
+                // Bind menu item headers to show real-time counts
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateModMenuItem.Header,
+                        count => string.Format(Language.Library_Update, count))
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel,
+                        vm => vm.UpdatableSelectionCount,
+                        view => view.UpdateAndKeepOldModMenuItem.Header,
+                        count => string.Format(Language.Library_UpdateAndKeepOldMod, count))
+                    .AddTo(disposables);
+
                 this.BindCommand(ViewModel, vm => vm.OpenFilePickerCommand, view => view.GetModsFromDriveButton)
                     .AddTo(disposables);
 
@@ -99,6 +136,12 @@ public partial class LibraryView : ReactiveUserControl<ILibraryViewModel>
                     .AddTo(disposables);
 
                 this.BindCommand(ViewModel, vm => vm.RefreshUpdatesCommand, view => view.Refresh)
+                    .AddTo(disposables);
+
+                this.BindCommand(ViewModel, vm => vm.UpdateAllCommand, view => view.UpdateAllButton)
+                    .AddTo(disposables);
+
+                this.OneWayBind(ViewModel, vm => vm.HasAnyUpdatesAvailable, view => view.UpdateAllButton.IsVisible)
                     .AddTo(disposables);
 
                 this.WhenAnyValue(view => view.ViewModel!.InstallationTargets.Count)

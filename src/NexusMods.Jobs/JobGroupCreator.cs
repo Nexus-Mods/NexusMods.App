@@ -7,19 +7,19 @@ public sealed class JobGroupCreator
 {
     private static AsyncLocal<IJobGroup?> CurrentGroup { get; } = new();
     
-    [MustDisposeResource] public static JobGroupDisposable Push(JobMonitor monitor)
+    [MustDisposeResource] public static JobGroupDisposable Push()
     {
-        return new JobGroupDisposable(monitor);
+        return new JobGroupDisposable();
     }
     
     public struct JobGroupDisposable : IDisposable
     {
         private readonly IJobGroup? _previous;
 
-        public JobGroupDisposable(JobMonitor monitor)
+        public JobGroupDisposable()
         {
             _previous = CurrentGroup.Value;
-            Group = _previous ?? new JobGroup(monitor);
+            Group = _previous ?? new JobGroup();
         }
         
         public IJobGroup Group { get; }

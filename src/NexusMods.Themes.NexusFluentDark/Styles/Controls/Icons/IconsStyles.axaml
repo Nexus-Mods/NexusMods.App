@@ -199,6 +199,11 @@
                     <icons:UnifiedIcon Classes="PictogramUpload" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
+                    <icons:UnifiedIcon Classes="PictogramPremium" />
+                    <icons:UnifiedIcon Classes="PictogramPremium" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramPremium" Size="48" />
+                </WrapPanel>
+				<WrapPanel>
                     <icons:UnifiedIcon Classes="PictogramSuccess" />
                     <icons:UnifiedIcon Classes="PictogramSuccess" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramSuccess" Size="48" />
@@ -781,7 +786,10 @@
     <Style Selector="icons|UnifiedIcon.Link">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Link}" />
     </Style>
-    <Style Selector="icons|UnifiedIcon.PictogramSuccess">
+    <Style Selector="icons|UnifiedIcon.PictogramPremium">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramPremium}" />
+    </Style>
+        <Style Selector="icons|UnifiedIcon.PictogramSuccess">
         <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramSuccess}" />
     </Style>
     <Style Selector="icons|UnifiedIcon.VisibilityListed">

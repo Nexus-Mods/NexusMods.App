@@ -15,7 +15,6 @@ public interface IJobMonitor
         where TJobType : IJobDefinition<TResultType>
         where TResultType : notnull;
 
-
     /// <summary>
     /// Starts a job given the job definition.
     /// </summary>
@@ -37,6 +36,11 @@ public interface IJobMonitor
     /// Cancels a specific job by its ID
     /// </summary>
     void Cancel(JobId jobId);
+    
+    /// <summary>
+    /// Cancels a specific job by its task
+    /// </summary>
+    void Cancel(IJobTask jobTask);
     
     /// <summary>
     /// Cancels all jobs in the specified group

@@ -332,13 +332,20 @@ public static class LibraryComponents
 
     public sealed class UpdateAction : ReactiveR3Object, IItemModelComponent<UpdateAction>, IComparable<UpdateAction>
     {
-        public ReactiveCommand<Unit> CommandUpdate { get; } = new();
+        public ReactiveCommand<Unit> CommandUpdateAndKeepOld { get; } = new();
+        public ReactiveCommand<Unit> CommandUpdateAndReplace { get; } = new();
 
         private readonly BindableReactiveProperty<ModUpdatesOnModPage> _newFiles;
         public IReadOnlyBindableReactiveProperty<ModUpdatesOnModPage> NewFiles => _newFiles;
 
         private readonly BindableReactiveProperty<string> _buttonText;
         public IReadOnlyBindableReactiveProperty<string> ButtonText => _buttonText;
+
+        private readonly BindableReactiveProperty<string> _updateButtonText;
+        public IReadOnlyBindableReactiveProperty<string> UpdateButtonText => _updateButtonText;
+
+        private readonly BindableReactiveProperty<string> _updateAndKeepOldModButtonText;
+        public IReadOnlyBindableReactiveProperty<string> UpdateAndKeepOldModButtonText => _updateAndKeepOldModButtonText;
 
         public int CompareTo(UpdateAction? other)
         {
@@ -367,12 +374,21 @@ public static class LibraryComponents
             ModUpdateOnPage initialValue,
             Observable<ModUpdateOnPage> valueObservable)
         {
-            _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: (ModUpdatesOnModPage)initialValue);
+            var initialUpdates = (ModUpdatesOnModPage)initialValue;
+            _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: initialUpdates);
             _buttonText = new BindableReactiveProperty<string>();
+            _updateButtonText = new BindableReactiveProperty<string>(value: GetUpdateButtonText(initialUpdates.NumberOfModFilesToUpdate));
+            _updateAndKeepOldModButtonText = new BindableReactiveProperty<string>(value: GetUpdateAndKeepOldModButtonText(initialUpdates.NumberOfModFilesToUpdate));
 
             _activationDisposable = this.WhenActivated(valueObservable, static (self, observable, disposables) =>
             {
-                observable.Subscribe(self, static (value, self) => self._newFiles.Value = (ModUpdatesOnModPage)value).AddTo(disposables);
+                observable.Subscribe(self, static (value, self) => 
+                {
+                    var updates = (ModUpdatesOnModPage)value;
+                    self._newFiles.Value = updates;
+                    self._updateButtonText.Value = GetUpdateButtonText(updates.NumberOfModFilesToUpdate);
+                    self._updateAndKeepOldModButtonText.Value = GetUpdateAndKeepOldModButtonText(updates.NumberOfModFilesToUpdate);
+                }).AddTo(disposables);
             });
         }
 
@@ -383,6 +399,8 @@ public static class LibraryComponents
         {
             _newFiles = new BindableReactiveProperty<ModUpdatesOnModPage>(value: initialValue);
             _buttonText = new BindableReactiveProperty<string>(value: GetButtonText(initialValue.NumberOfModFilesToUpdate));
+            _updateButtonText = new BindableReactiveProperty<string>(value: GetUpdateButtonText(initialValue.NumberOfModFilesToUpdate));
+            _updateAndKeepOldModButtonText = new BindableReactiveProperty<string>(value: GetUpdateAndKeepOldModButtonText(initialValue.NumberOfModFilesToUpdate));
 
             _activationDisposable = this.WhenActivated(valuesObservable, static (self, observable, disposables) =>
             {
@@ -390,6 +408,8 @@ public static class LibraryComponents
                 {
                     self._newFiles.Value = values;
                     self._buttonText.Value = GetButtonText(values.NumberOfModFilesToUpdate);
+                    self._updateButtonText.Value = GetUpdateButtonText(values.NumberOfModFilesToUpdate);
+                    self._updateAndKeepOldModButtonText.Value = GetUpdateAndKeepOldModButtonText(values.NumberOfModFilesToUpdate);
                 }).AddTo(disposables);
             });
         }
@@ -400,6 +420,9 @@ public static class LibraryComponents
             return numUpdatable <= 1  ? string.Empty : numUpdatable.ToString();
         }
 
+        private static string GetUpdateButtonText(int numUpdatable) => string.Format(Language.Library_Update, numUpdatable);
+        private static string GetUpdateAndKeepOldModButtonText(int numUpdatable) => string.Format(Language.Library_UpdateAndKeepOldMod, numUpdatable);
+
         private bool _isDisposed;
         protected override void Dispose(bool disposing)
         {
@@ -407,7 +430,8 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, CommandUpdate);
+                    Disposable.Dispose(_activationDisposable, CommandUpdateAndKeepOld, CommandUpdateAndReplace, 
+                        _buttonText, _updateButtonText, _updateAndKeepOldModButtonText);
                 }
 
                 _isDisposed = true;

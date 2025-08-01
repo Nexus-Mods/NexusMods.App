@@ -14,6 +14,8 @@ public static class Events
         public static readonly EventDefinition AddGame    = new(Category, Action: "Add Game");
         public static readonly EventDefinition ViewGame   = new(Category, Action: "View Game");
         public static readonly EventDefinition RemoveGame = new(Category, Action: "Remove Game");
+        public static readonly EventDefinition LaunchGame = new(Category, Action: "Launch Game");
+        public static readonly EventDefinition ExitGame = new(Category, Action: "Exit Game");
     }
 
     public static class Loadout

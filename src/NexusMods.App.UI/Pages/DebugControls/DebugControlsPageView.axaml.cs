@@ -1,16 +1,14 @@
 using System.Reactive.Disposables;
-using Avalonia.Controls.Chrome;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using Microsoft.Extensions.DependencyInjection;
-using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Dialog;
+using NexusMods.App.UI.Dialog.Standard;
 using NexusMods.App.UI.Dialog.Enums;
-using NexusMods.App.UI.Windows;
+using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
-using R3;
 
 namespace NexusMods.App.UI.Pages.DebugControls;
 
@@ -22,9 +20,6 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
 
         this.WhenActivated(disposables =>
             {
-                this.OneWayBind(ViewModel, vm => vm.GenerateUnhandledException, v => v.GenerateUnhandledException.Command)
-                    .DisposeWith(disposables);
-
                 this.OneWayBind(ViewModel, vm => vm.MarkdownRenderer, v => v.MarkdownRendererViewModelViewHost.ViewModel)
                     .DisposeWith(disposables);
             }
@@ -126,5 +121,13 @@ public partial class DebugControlsPageView : ReactiveUserControl<IDebugControlsP
                     ),
                 ]
             ));
+    }
+
+    private async void ShowModalPremium_OnClick(object? sender, RoutedEventArgs e)
+    {
+        await PremiumDialog.ShowUpdatePremiumDialog(
+            ViewModel!.WindowManager,
+            ViewModel.ServiceProvider.GetRequiredService<IOSInterop>()
+        );
     }
 }
