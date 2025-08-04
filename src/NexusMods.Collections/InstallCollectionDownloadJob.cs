@@ -387,8 +387,22 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
     private LibraryFile.ReadOnly GetLibraryFile(CollectionDownload.ReadOnly download, IDb db)
     {
         var status = CollectionDownloader.GetStatus(download, Group, db);
-        if (!status.IsInLibrary(out var libraryItem)) throw new NotImplementedException();
-        if (!libraryItem.TryGetAsLibraryFile(out var libraryFile)) throw new NotImplementedException();
+        if (status.IsInLibrary(out var libraryItem)) return GetLibraryFile(libraryItem, download);
+
+        if (status.IsInstalled(out var loadoutItem))
+        {
+            var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(loadoutItem.Db, loadoutItem.Id);
+            if (!libraryLinkedLoadoutItem.IsValid()) throw new NotSupportedException($"Expected loadout item `{loadoutItem.Name}` for download `{download.Name}` (index={download.ArrayIndex}) to be linked to a loadout item");
+            return GetLibraryFile(libraryLinkedLoadoutItem.LibraryItem, download);
+        }
+
+        throw new NotSupportedException($"Status for download `{download.Name}` (index={download.ArrayIndex}) is {status.Value.Index}");
+    }
+
+    private static LibraryFile.ReadOnly GetLibraryFile(LibraryItem.ReadOnly libraryItem, CollectionDownload.ReadOnly download)
+    {
+        if (!libraryItem.TryGetAsLibraryFile(out var libraryFile))
+            throw new NotSupportedException($"Expected library item `{libraryItem.Name}` for download `{download.Name}` (index={download.ArrayIndex}) to be a library file");
         return libraryFile;
     }
 }
