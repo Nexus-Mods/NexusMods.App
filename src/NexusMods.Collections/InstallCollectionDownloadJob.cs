@@ -392,7 +392,7 @@ public class InstallCollectionDownloadJob : IJobDefinitionWithStart<InstallColle
         if (status.IsInstalled(out var loadoutItem))
         {
             var libraryLinkedLoadoutItem = LibraryLinkedLoadoutItem.Load(loadoutItem.Db, loadoutItem.Id);
-            if (!libraryLinkedLoadoutItem.IsValid()) throw new NotSupportedException($"Expected loadout item `{loadoutItem.Name}` for download `{download.Name}` (index={download.ArrayIndex}) to be linked to a loadout item");
+            if (!libraryLinkedLoadoutItem.IsValid()) throw new NotSupportedException($"Expected loadout item `{loadoutItem.Name}` for download `{download.Name}` (index={download.ArrayIndex}) to be linked to a library item");
             return GetLibraryFile(libraryLinkedLoadoutItem.LibraryItem, download);
         }
 
