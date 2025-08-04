@@ -147,7 +147,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         
         if (token.IsCancellationRequested) return;
         
-        // persist the new sorting
+        // TODO: This can fail, decide what to do in that case
         await PersistSortOrder(sortOrderId, stagingList, dbToUse, token);
     }
 
@@ -189,7 +189,8 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         }
             
         if (token.IsCancellationRequested) return;
-            
+        
+        // TODO: This can fail, decide what to do in that case
         await PersistSortOrder(sortOrderId, stagingList, dbToUse, token);
     }
 
@@ -212,9 +213,9 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         
         var reconciledItems = Reconcile(currentSortOrder, loadoutData);
         
+        // TODO: This can fail, decide what to do in that case
         await PersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), dbToUse, token);
     }
-
 
 
 #endregion public members
