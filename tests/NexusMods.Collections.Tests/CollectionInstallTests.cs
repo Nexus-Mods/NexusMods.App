@@ -6,14 +6,15 @@ using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Games.TestFramework;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Collections.Tests;
 
-[Trait("RequiresNetworking", "True")]
 public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<CollectionInstallTests>(helper)
 {
-    [Theory]
+    [SkippableTheory]
+    [Trait("RequiresApiKey", "True")]
     // Includes a basic collection
     [InlineData("jjctqn", 1)]
     // FOMOD and binary patching
@@ -26,6 +27,8 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
     [InlineData("jjctqn", 6)]
     public async Task CanInstallCollections(string slug, int revisionNumber)
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        
         // NOTE(erri120): dirty hack to get the login manager to understand we're premium with the API key
         var loginManager = ServiceProvider.GetRequiredService<ILoginManager>();
         _ = await loginManager.GetUserInfoAsync();

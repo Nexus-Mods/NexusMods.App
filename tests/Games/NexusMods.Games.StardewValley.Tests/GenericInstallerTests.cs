@@ -11,11 +11,11 @@ using NexusMods.Games.StardewValley.Models;
 using NexusMods.Games.TestFramework;
 using NexusMods.Sdk;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
-[Trait("RequiresNetworking", "True")]
 public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstallerTests, StardewValley>
 {
     private readonly GenericInstaller _installer;
@@ -32,9 +32,11 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
             .AddUniversalGameLocator<StardewValley>(new Version("1.6.14"));
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_NotSupported()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         // 3D NPC Houses 1.0 https://www.nexusmods.com/stardewvalley/mods/763?tab=files
@@ -56,7 +58,8 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
         reason.Should().Be("The installer doesn't support putting files in the Content folder");
     }
 
-    [Theory]
+    [SkippableTheory]
+    [Trait("RequiresApiKey", "True")]
     [InlineData(1915, 124659,1)] // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
     [InlineData(16893, 123812,2)] // Romanceable Rasmodius Redux Revamped 1.8.55 (https://www.nexusmods.com/stardewvalley/mods/16893?tab=files)
     [InlineData(18144, 114038,1)] // Romanceable Rasmodia - RRRR Patch 1.1 (https://www.nexusmods.com/stardewvalley/mods/18144?tab=files)
@@ -65,6 +68,7 @@ public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstal
     [InlineData(1536, 98230, 1)] // Mail Framework Mod 1.18.0 (https://www.nexusmods.com/stardewvalley/mods/1536?tab=files)
     public async Task Test_Mods(uint modId, uint fileId, int expectedManifestCount)
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         var libraryArchive = await DownloadArchiveFromNexusMods(ModId.From(modId), FileId.From(fileId));

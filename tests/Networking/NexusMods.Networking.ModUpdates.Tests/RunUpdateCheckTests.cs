@@ -6,6 +6,7 @@ using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.ModUpdates.Tests.Helpers;
 using NexusMods.Networking.NexusWebApi;
+using Xunit;
 using Xunit.Abstractions;
 using FileId = NexusMods.Abstractions.NexusWebApi.Types.V2.FileId;
 using ModId = NexusMods.Abstractions.NexusWebApi.Types.V2.ModId;
@@ -29,10 +30,11 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
     // we won't be mocking the V1 APIs; so more complex/stable tests involving mocks will
     // move after full V2 move.
 
-    [Fact]
-    [Trait("RequiresNetworking", "True")]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task UpdatingModPageMetadata_ViaWebApi_ShouldWork()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         // Create loadout
         var loadout = await CreateLoadout();
         

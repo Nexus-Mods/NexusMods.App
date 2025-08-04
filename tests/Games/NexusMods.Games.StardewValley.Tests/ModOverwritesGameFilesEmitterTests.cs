@@ -11,11 +11,11 @@ using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
-[Trait("RequiresNetworking", "True")]
 public class ModOverwritesGameFilesEmitterTests : ALoadoutDiagnosticEmitterTest<ModOverwritesGameFilesEmitterTests, StardewValley, ModOverwritesGameFilesEmitter>
 {
     public ModOverwritesGameFilesEmitterTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
@@ -28,9 +28,11 @@ public class ModOverwritesGameFilesEmitterTests : ALoadoutDiagnosticEmitterTest<
             .AddSingleton<DummyInstaller>();
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_ModOverwritesGameFiles()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         // 3D NPC Houses 1.0 https://www.nexusmods.com/stardewvalley/mods/763?tab=files

@@ -14,6 +14,7 @@ using NexusMods.Networking.HttpDownloader.Tests;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Settings;
+using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
@@ -23,6 +24,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
+            .AddSkippableFactSupport()
             .AddSerializationAbstractions()
             .AddFileSystem()
             .AddSettingsManager()

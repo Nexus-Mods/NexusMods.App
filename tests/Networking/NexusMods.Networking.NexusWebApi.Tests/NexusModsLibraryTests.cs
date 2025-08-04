@@ -3,11 +3,12 @@ using NexusMods.Abstractions.Library;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
+using Xunit;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
-[Trait("RequiresNetworking", "True")]
 public class NexusModsLibraryTests
 {
     private readonly NexusModsLibrary _nexusLibrary;
@@ -21,12 +22,14 @@ public class NexusModsLibraryTests
         _temporaryFileManager = temporaryFileManager;
     }
 
-    [Theory]
+    [SkippableTheory]
+    [Trait("RequiresApiKey", "True")]
     [InlineData("iszwwe", 469)]
     [InlineData("r1flnc", 38)]
     [InlineData("aexcgn", 6)]
     public async Task CanDownloadCollection(string slug, ulong revisionNumber)
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         await using var destination = _temporaryFileManager.CreateFile();
         var downloadJob = _nexusLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(slug), RevisionNumber.From(revisionNumber),
             CancellationToken.None

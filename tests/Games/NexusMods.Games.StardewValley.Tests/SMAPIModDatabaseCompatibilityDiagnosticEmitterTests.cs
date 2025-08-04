@@ -5,11 +5,11 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
-[Trait("RequiresNetworking", "True")]
 public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<SMAPIModDatabaseCompatibilityDiagnosticEmitterTests, StardewValley, SMAPIModDatabaseCompatibilityDiagnosticEmitter>
 {
     public SMAPIModDatabaseCompatibilityDiagnosticEmitterTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
@@ -21,9 +21,11 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
             .AddUniversalGameLocator<StardewValley>(new Version("1.6.14"));
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_ModCompatabilityObsolete()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -43,9 +45,11 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
         await VerifyDiagnostic(diagnostic);
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_ModCompatabilityAssumeBroken()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)

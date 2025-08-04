@@ -5,11 +5,11 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
-[Trait("RequiresNetworking", "True")]
 public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<DependencyDiagnosticEmitterTests, StardewValley, DependencyDiagnosticEmitter>
 {
     public DependencyDiagnosticEmitterTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
@@ -21,9 +21,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
             .AddUniversalGameLocator<StardewValley>(new Version("1.6.14"));
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_MissingRequiredDependency()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -48,9 +50,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await VerifyDiagnostic(diagnostic);
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_DisabledRequiredDependencyMessageData()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -78,9 +82,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await VerifyDiagnostic(diagnostic);
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_DisabledRequiredDependency_Collections()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
         
         var collectionA = (await CreateCollection(loadout, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;
@@ -122,9 +128,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await VerifyDiagnostic(diagnostic);
     }
 
-    [Fact]
+    [SkippableFact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_RequiredDependencyIsOutdated()
     {
+        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
