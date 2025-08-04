@@ -16,12 +16,13 @@ public static class StatusVerbs
     internal static IServiceCollection AddStatusVerbs(this IServiceCollection services) =>
         services.AddVerb(() => Heartbeat);
 
+    public const string HeartbeatCommand = "heartbeat";
     /// <summary>
     /// Returns the processId and the uptime of the Nexus Mods app process.
     /// </summary>
     /// <param name="renderer"></param>
     /// <returns></returns>
-    [Verb("heartbeat", "Returns process uptime for the Nexus Mods app.")]
+    [Verb(HeartbeatCommand, "Returns process uptime for the Nexus Mods app.")]
     private static async Task<int> Heartbeat([Injected] IRenderer renderer)
     {
         var process = Process.GetCurrentProcess();

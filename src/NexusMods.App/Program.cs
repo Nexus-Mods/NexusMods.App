@@ -13,6 +13,7 @@ using NexusMods.Abstractions.Logging;
 using NexusMods.Abstractions.Serialization;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.App.Commandline;
 using NexusMods.App.UI;
 using NexusMods.App.UI.Settings;
 using NexusMods.CrossPlatform;
@@ -180,7 +181,7 @@ public class Program
         if (process is null) return;
 
         var pid = process.Id;
-        var canConnect = await CanConnectToProcess(logger, port, timeout: TimeSpan.FromSeconds(5));
+        var canConnect = await CanConnectToProcess(logger, port, timeout: TimeSpan.FromSeconds(6), services: serviceProvider);
         if (canConnect) return;
 
         logger.LogWarning("Unable to connect to old process with PID `{PID}` on port `{Port}`, force closing process", pid, port);
@@ -195,15 +196,18 @@ public class Program
         }
     }
 
-    private static async Task<bool> CanConnectToProcess(ILogger logger, int port, TimeSpan timeout)
+    private static async Task<bool> CanConnectToProcess(ILogger logger, int port, TimeSpan timeout, IServiceProvider services)
     {
-        using var client = new TcpClient();
+        var client = services.GetRequiredService<CliClient>();
         var cts = new CancellationTokenSource(delay: timeout);
 
         try
         {
-            await client.ConnectAsync(IPAddress.Loopback, port, cts.Token);
-            await using var stream = client.GetStream();
+            // Run the heartbeat command to check if the process is responsive
+            var commandTask = client.ExecuteCommand([StatusVerbs.HeartbeatCommand], AnsiConsole.Console);
+            
+            // Wait for the command to complete or the timeout to expire
+            await commandTask.WaitAsync(cts.Token);
             return true;
         }
         catch (Exception e)
