@@ -513,6 +513,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         if (locatorsToAdd.Length == 0 && locatorsToRemove.Length == 0)
             return loadout;
 
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var sCurrent = loadout.LocatorIds.Select(x => x.Value).ToArray();
+            var sToAdd = locatorsToAdd.Select(x => x.Value).ToArray();
+            var sToRemove = locatorsToRemove.Select(x => x.Value).ToArray();
+            Logger.LogInformation("Locator IDs changed Current=`{CurrentIds}` ToAdd=`{ToAdd}` ToRemove=`{ToRemove}`", sCurrent, sToAdd, sToRemove);
+        }
+
         // Make a lookup set of the new files
         var versionFiles = _fileHashService
             .GetGameFiles((loadout.InstallationInstance.Store, newLocatorIds))
