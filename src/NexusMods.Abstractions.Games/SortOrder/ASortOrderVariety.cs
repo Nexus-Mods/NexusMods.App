@@ -42,7 +42,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         Manager = manager;
     }
         
-    #region public members
+#region public members
     
     /// <inheritdoc />
     public abstract SortOrderVarietyId SortOrderVarietyId { get; }
@@ -147,8 +147,8 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         
         if (token.IsCancellationRequested) return;
         
-        // TODO: This can fail, decide what to do in that case
-        await PersistSortOrder(sortOrderId, stagingList, dbToUse, token);
+        // TODO: Should we retry if the transaction fails due to a data race?
+        await TryPersistSortOrder(sortOrderId, stagingList, dbToUse, token);
     }
 
     /// <inheritdoc />
@@ -190,33 +190,38 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
             
         if (token.IsCancellationRequested) return;
         
-        // TODO: This can fail, decide what to do in that case
-        await PersistSortOrder(sortOrderId, stagingList, dbToUse, token);
+        // TODO: Should we retry if the transaction fails due to a data race?
+        await TryPersistSortOrder(sortOrderId, stagingList, dbToUse, token);
     }
 
     /// <inheritdoc />
     public virtual async ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default)
     {
+        // If this is passed a specific database, don't retry the reconciliation using the most recent database.
+        var noRetry = db is not null; 
+        var retryCount = 0;
         var dbToUse = db ?? Connection.Db;
 
-        var sortOrder = NexusMods.Abstractions.Loadouts.SortOrder.Load(dbToUse, sortOrderId);
-        
-        var collectionGroupId = sortOrder.ParentEntity.IsT1 ? 
-            sortOrder.ParentEntity.AsT1 : 
-            Optional<CollectionGroupId>.None;
-        
-        // Retrieve the loadout data
-        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, dbToUse);
-        
-        // Retrieve the sort oder
-        var currentSortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
-        
-        var reconciledItems = Reconcile(currentSortOrder, loadoutData);
-        
-        // TODO: This can fail, decide what to do in that case
-        await PersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), dbToUse, token);
-    }
+        var reconciledItems = ReconcileSortOrderCore(sortOrderId, dbToUse);
 
+        while (retryCount <= 3)
+        {
+            var succeded = await TryPersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), dbToUse, token);
+            if (succeded) return;
+        
+            if (noRetry)
+            {
+                _logger.LogWarning("Reconciliation of sort order {SortOrderId} failed, but no retry is allowed", sortOrderId);
+                return;
+            }
+            
+            retryCount++;
+            _logger.LogWarning("Reconciliation of sort order {SortOrderId} failed, retrying ({RetryCount}/3)", sortOrderId, retryCount);
+        }
+        
+        _logger.LogError("Reconciliation of sort order {SortOrderId} failed after 4 attempts", sortOrderId);
+    }
+    
 
 #endregion public members
     
@@ -228,9 +233,10 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     protected abstract IReadOnlyList<TSortedEntry> RetrieveSortOrder(SortOrderId sortOrderId, IDb db);
 
     /// <summary>
-    /// Persists the sort order for the provided list of sortable items
+    /// Persists the sort order for the provided list of sortable items.
+    /// Returns false if the transaction fails due to a data race condition.
     /// </summary>
-    protected virtual async ValueTask PersistSortOrder(SortOrderId sortOrderId, IReadOnlyList<TSortedEntry> newOrder, IDb startingDb, CancellationToken token = default)
+    protected virtual async ValueTask<bool> TryPersistSortOrder(SortOrderId sortOrderId, IReadOnlyList<TSortedEntry> newOrder, IDb startingDb, CancellationToken token = default)
     {
         using var tx = Connection.BeginTransaction();
         
@@ -257,17 +263,43 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         catch (InvalidOperationException ex)
         {
             _logger.LogError(ex, "Failed to persist sort order {SortOrderId}", sortOrderId);
-            // TODO: Should we throw or handle this differently?
-            // throw;
+            return false;
         }
+
+        return true;
     }
     
+    /// <summary>
+    /// Prepares the transaction to persist the sort order for the provided list of sortable entries.
+    /// </summary>
+    /// <param name="sortOrderId">Id of the sort order</param>
+    /// <param name="newOrder">A sorted list of entries representing the new order to be persisted</param>
+    /// <param name="tx">The transaction to be used. Will not be committed</param>
+    /// <param name="startingDb">Db revision to base change on</param>
+    /// <param name="token"></param>
     protected abstract void PersistSortOrderCore(
         SortOrderId sortOrderId,
         IReadOnlyList<TSortedEntry> newOrder,
         ITransaction tx,
         IDb startingDb,
         CancellationToken token = default);
+    
+    
+    protected virtual IReadOnlyList<(TSortedEntry SortedEntry, TItemLoadoutData ItemLoadoutData)> ReconcileSortOrderCore(SortOrderId sortOrderId, IDb dbToUse)
+    {
+        var sortOrder = SortOrder.Load(dbToUse, sortOrderId);
+        
+        var collectionGroupId = sortOrder.ParentEntity.IsT1 ? 
+            sortOrder.ParentEntity.AsT1 : 
+            Optional<CollectionGroupId>.None;
+        
+        var loadoutData = RetrieveLoadoutData(sortOrder.LoadoutId, collectionGroupId, dbToUse);
+        
+        var currentSortOrder = RetrieveSortOrder(sortOrderId, dbToUse);
+        
+        var reconciledItems = Reconcile(currentSortOrder, loadoutData);
+        return reconciledItems;
+    }
     
     /// <summary>
     /// Returns a collection of loadout-specific TItemLoadoutData for each relevant item found in the provided loadout/collection.
