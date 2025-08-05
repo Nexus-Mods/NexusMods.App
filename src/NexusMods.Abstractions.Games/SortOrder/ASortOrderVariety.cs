@@ -320,6 +320,8 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     
     protected static TxId GetMaxTxIdForSortOrder(SortOrderId sortOrderId, IDb db)
     {
+        // TODO: Use better queries to potentially optimize this
+        
         var maxTxId = db.Get(sortOrderId).Max(datom => datom.T);
         var maxIds = db.Datoms(SortableEntry.ParentSortOrder, sortOrderId)
             .Select(d => db.Get(d.E).Max(datom => datom.T));
