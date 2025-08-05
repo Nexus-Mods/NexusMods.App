@@ -202,10 +202,10 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
         var retryCount = 0;
         var dbToUse = db ?? Connection.Db;
 
-        var reconciledItems = ReconcileSortOrderCore(sortOrderId, dbToUse);
-
         while (retryCount <= 3)
         {
+            var reconciledItems = ReconcileSortOrderCore(sortOrderId, dbToUse);
+            
             var succeded = await TryPersistSortOrder(sortOrderId, reconciledItems.Select(tuple => tuple.SortedEntry).ToArray(), dbToUse, token);
             if (succeded) return;
         
