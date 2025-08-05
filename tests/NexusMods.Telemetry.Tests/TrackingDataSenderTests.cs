@@ -105,8 +105,8 @@ public class TrackingDataSenderTests
 
         var parsedException = parsedExceptions.Should().ContainSingle().Which;
         parsedException.Type.Should().Be("System.NotSupportedException");
-        parsedException.Message.Should().Be("Foo bar baz");
-        parsedException.StackTrace.Should().NotBeNull();
+        parsedException.Message.Should().Be("NexusMods.Telemetry.Tests.TrackingDataSenderTests.Test_ParseSingleException()");
+        parsedException.StackTrace.Should().StartWith("Foo bar baz\n");
     }
 
     [Fact]
