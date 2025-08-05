@@ -106,14 +106,20 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                         self.SelectedModels.RemoveRange(eventArgs.DeselectedItems.NotNull());
                         foreach (var item in eventArgs.DeselectedItems)
                         {
-                            if (item is null || item.IsDisposed) continue;
+                            if (item is null) continue;
+                            Debug.Assert(!item.IsDisposed);
+                            if (item.IsDisposed) continue;
+                            
                             item.IsSelected.Value = false;
                         }
 
                         self.SelectedModels.AddRange(eventArgs.SelectedItems.NotNull());
                         foreach (var item in eventArgs.SelectedItems)
                         {
-                            if (item is null || item.IsDisposed) continue;
+                            if (item is null) continue;
+                            Debug.Assert(!item.IsDisposed);
+                            if (item.IsDisposed) continue;
+                            
                             item.IsSelected.Value = true;
                         }
                     });
@@ -131,8 +137,11 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                             // so they get values before the TreeDataGrid even sees them.
                             foreach (var change in changeSet)
                             {
-                                if (change.Reason is ChangeReason.Add && !change.Current.IsDisposed)
+                                if (change.Reason is ChangeReason.Add)
                                 {
+                                    Debug.Assert(!change.Current.IsDisposed);
+                                    if (change.Current.IsDisposed) continue;
+                                    
                                     self.BeforeModelActivationHook(change.Current);
                                     change.Current.Activate();
                                 }
