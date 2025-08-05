@@ -50,7 +50,7 @@ public abstract class AGame : IGame
     
     private ISortOrderManager MakeSortOrderManager(IServiceProvider provider)
     {
-        var manager = new DefaultSortOrderManager(provider);
+        var manager = new SortOrderManager(provider);
         manager.RegisterSortOrderVarieties(GetSortOrderVarieties());
         return manager;
     }

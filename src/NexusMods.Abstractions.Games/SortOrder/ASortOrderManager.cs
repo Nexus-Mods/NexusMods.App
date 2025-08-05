@@ -65,6 +65,8 @@ public class ASortOrderManager : ISortOrderManager, IDisposable
     {
         foreach (var variety in _sortOrderVarieties.Values)
         {
+            throw new NotImplementedException();
+            
             // TODO: Do initial cleanup
             // Remove orphaned sort orders
             // Create missing sort orders for existing loadouts/collections
