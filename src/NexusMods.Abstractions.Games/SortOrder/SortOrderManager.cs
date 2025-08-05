@@ -10,7 +10,8 @@ using OneOf;
 namespace NexusMods.Abstractions.Games;
 
 /// <summary>
-/// Abstract implementation for ISortOrderManager meant as the starting point for implementations.
+/// Implementation for ISortOrderManager
+/// Responsible for subscribing and updating sortOrders for all registered varieties when loadouts or collections change.
 /// </summary>
 public class SortOrderManager : ISortOrderManager, IDisposable
 {
