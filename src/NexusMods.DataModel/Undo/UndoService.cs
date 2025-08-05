@@ -1,10 +1,8 @@
 using System.Collections.Frozen;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Cascade;
-using NexusMods.Cascade.Patterns;
+using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -31,15 +29,17 @@ public class UndoService
     /// <summary>
     /// Get a query of all the valid restore points (revisions) for the given loadout.
     /// </summary>
-    public async Task<IQueryResult<LoadoutRevisionWithStats>> RevisionsFor(EntityId loadout)
+    public async Task<List<LoadoutRevisionWithStats>> RevisionsFor(EntityId loadout)
     { 
+        throw new NotImplementedException();
+        /*
         return await _conn.Topology.QueryAsync(Queries.LoadoutRevisionsWithMetadata
             .Where(row => row.RowId == loadout)
             .Select(row => LoadoutStats(_conn, row)));
+            */
     }
     
-    private static readonly Inlet<EntityId> LoadoutId = new();
-    
+    /*
     /// <summary>
     /// For now our stats only include getting the count of valid mods
     /// </summary>
@@ -64,7 +64,7 @@ public class UndoService
         
         using var modCount = newDb.Topology.Query(ModCount);
         return new LoadoutRevisionWithStats(revision, modCount.FirstOrDefault().ModCount); 
-    }
+    }*/
     
 
     /// <summary>
@@ -89,7 +89,8 @@ public class UndoService
         var revertDb = _conn.AsOf(TxId.From(revisionRevision.TxEntity.Value));
         var ignoreAttrs = IgnoreAttributes.Select(a => currentDb.AttributeCache.GetAttributeId(a.Id)).ToFrozenSet();
         var toProcess = new HashSet<EntityId>();
-        toProcess.Add(revisionRevision.RowId);
+        throw new NotImplementedException();
+        //toProcess.Add(revisionRevision.RowId);
 
         var tx = _conn.BeginTransaction();
         var processed = new HashSet<EntityId>();

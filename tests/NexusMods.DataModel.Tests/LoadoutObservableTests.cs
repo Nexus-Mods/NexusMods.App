@@ -1,11 +1,8 @@
 using FluentAssertions;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Abstractions.Loadouts.Rows;
-using NexusMods.Cascade;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.DataModel.Tests;
@@ -15,7 +12,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
     [Fact]
     public async Task DeletingAModShouldUpdateTheLoadout()
     {
-        using var loadouts = await Connection.Topology.QueryAsync(Loadout.MostRecentTxForLoadout);
+
         using var tx = Connection.BeginTransaction();
         var loadoutId = tx.TempId();
 
@@ -50,23 +47,32 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
 
         var result = await tx.Commit();
         loadoutId = result[loadoutId];
+        
+        var lastTimestamp = DateTimeOffset.UtcNow;
+        var lastId = LoadoutId.From(0);
+        using var loadouts = Loadout.RevisionsWithChildUpdates(Connection, loadoutId)
+            .Subscribe(loadout =>
+                {
+                    lastId = loadout.Id;
+                    lastTimestamp = DateTimeOffset.UtcNow;
+                }
+            );
+        
         fileId = result[fileId];
         groupId = result[groupId];
 
-        await Connection.Topology.FlushEffectsAsync();
-        var firstRow = loadouts.First();
-        firstRow.RowId.Should().Be(loadoutId);
-        var originalItemCount = firstRow.ItemCount;
-
+        await Connection.FlushQueries(); 
+        lastId.Should().Be(loadoutId);
+        var originalTimestamp = lastTimestamp;
+        
         
         // Delete a file and the row should update
         using var tx2 = Connection.BeginTransaction();
         tx2.Delete(fileId, false);
         var result2 = await tx2.Commit();
-        
-        await Connection.Topology.FlushEffectsAsync();
-        var firstRow2 = loadouts.First();
-        var newItemCount = firstRow2.ItemCount;
-        newItemCount.Should().NotBe(originalItemCount);
+
+        await Connection.FlushQueries();
+        lastId.Should().Be(loadoutId);
+        lastTimestamp.Should().BeAfter(originalTimestamp);
     }
 }

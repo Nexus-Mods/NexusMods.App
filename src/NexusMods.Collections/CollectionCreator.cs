@@ -106,7 +106,7 @@ public static class CollectionCreator
 
         if (string.IsNullOrWhiteSpace(newName))
         {
-            var names = (await loadout.MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
+            var names = loadout.MutableCollections().Select(x => x.Name).ToArray();
             newName = GenerateNewCollectionName(names);
         }
 

@@ -1,10 +1,6 @@
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Cascade;
-using NexusMods.Cascade.Flows;
-using NexusMods.Cascade.Patterns;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
-using NexusMods.MnemonicDB.Abstractions.Cascade;
 
 
 namespace NexusMods.DataModel.Undo;
@@ -12,7 +8,7 @@ namespace NexusMods.DataModel.Undo;
 public static class Queries
 {
 
-    
+    /*
     /// <summary>
     /// Implied loadout revisions, that we turn into snapshots to allow the user to undo to a previous working state
     /// </summary>
@@ -40,5 +36,6 @@ public static class Queries
             .Match(LoadoutSnapshots, out var loadoutId, out var txEntity)
             .Db(txEntity, Transaction.Timestamp, out var timestamp)
             .ReturnLoadoutRevision(loadoutId, txEntity, timestamp);
+            */
     
 }
