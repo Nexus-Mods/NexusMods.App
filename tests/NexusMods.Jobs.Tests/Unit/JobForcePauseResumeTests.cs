@@ -50,7 +50,12 @@ public class JobForcePauseResumeTests(IJobMonitor jobMonitor)
                     .Should().BeTrue($"Cycle {cycle} should signal resume within timeout");
                 
                 // 7. Verify running state
-                task.Job.Status.Should().Be(JobStatus.Running, $"Job should be running after cycle {cycle}");
+                if (cycle < cycleCount - 1)
+                    task.Job.Status.Should().Be(JobStatus.Running, $"Job should be running after cycle {cycle}");
+                else
+                    // On the last iteration, the job may complete before this assert runs.
+                    // That is expected.
+                    task.Job.Status.Should().BeOneOf(JobStatus.Running, JobStatus.Completed);
             }
             
             // Wait for completion
