@@ -198,6 +198,15 @@
                                                     </MenuFlyout>
                                                 </controls:StandardButton.Flyout>
                                             </controls:StandardButton>
+                                            <controls:Toolbar>
+                                                <ItemsControl Classes="GetPremiumToolbarBanner">
+                                                    <TextBlock Text="Tired of waiting? Increase speed with Premium" />
+                                                    <controls:StandardButton Text="Get Premium" ShowIcon="Left"
+                                                                             LeftIcon="{x:Static icons:IconValues.Premium}"
+                                                                             Classes="Premium"
+                                                                             Size="Toolbar" />
+                                                </ItemsControl>
+                                            </controls:Toolbar>
                                         </StackPanel>
                                         <StackPanel Spacing="8">
                                             <Button Content="Avalonia Button" />
@@ -205,6 +214,14 @@
                                             <controls:StandardButton Content="StandardButton Content" />
                                             <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
                                             <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
+                                            <controls:StandardButton Text="Danger" ShowIcon="Both" Classes="Danger"
+                                                                     HorizontalAlignment="Stretch" />
+                                            <controls:StandardButton Text="Get Premium" ShowIcon="Left"
+                                                                     LeftIcon="{x:Static icons:IconValues.Premium}"
+                                                                     Classes="Premium" />
+                                            <controls:StandardButton Text="Get Premium" ShowIcon="Left"
+                                                                     LeftIcon="{x:Static icons:IconValues.Premium}"
+                                                                     Classes="Premium" Size="Toolbar" />
                                         </StackPanel>
 
                                         <StackPanel Spacing="8">
@@ -321,7 +338,7 @@
                         <StackPanel Spacing="8">
                             <Grid RowDefinitions="Auto,40,40,40,40,40,40,40,40,40,40"
                                   ColumnDefinitions="160,60,60">
- 
+
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="Modal" />
                                 <TextBlock Grid.Column="2" Grid.Row="0" Text="Modeless" />
 
@@ -339,7 +356,8 @@
                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Input" VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalInput" Click="ShowModalInput_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="3" />
-                                <TextBlock Grid.Column="0" Grid.Row="4" Text="Custom Content" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="0" Grid.Row="4" Text="Custom Content"
+                                           VerticalAlignment="Center" />
                                 <controls:StandardButton x:Name="ShowModalPremium" Click="ShowModalPremium_OnClick"
                                                          Text="Open" Grid.Column="1" Grid.Row="4" />
                             </Grid>
