@@ -203,7 +203,7 @@ public class JobCancellationToken : IDisposable
     /// </para>
     /// </remarks>
     // ReSharper disable once MethodSupportsCancellation (no token here, as it's recycled for force pause)
-    public async Task WaitForResumeAsync() => await _pauseEvent.WaitAsync();
+    public async Task WaitForResumeAsync() => await _pauseEvent.WaitAsync(_currentTokenSource.Token);
 
     /// <summary>
     /// Releases all resources used by this <see cref="JobCancellationToken"/>.
