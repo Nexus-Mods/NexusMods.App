@@ -21,7 +21,7 @@ public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, T
     where TKey : IEquatable<TKey>, ISortItemKey
     where TSortableItem : ISortableItem<TSortableItem, TKey>
     where TItemLoadoutData : ISortableItemLoadoutData<TKey>
-    where TSortedEntry : ISortedEntry<TKey>
+    where TSortedEntry : ISortItemData<TKey>
 {
     private readonly ILogger _logger;
     

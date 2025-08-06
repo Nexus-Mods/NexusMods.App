@@ -3,18 +3,18 @@ namespace NexusMods.Abstractions.Games;
 /// <summary>
 /// Represents an entry in a stored sort order.
 /// </summary>
-public interface ISortedEntry
+public interface ISortItemData
 {
     public ISortItemKey Key { get;}
     
     public int SortIndex { get; set; }
 }
 
-public interface ISortedEntry<out TKey> : ISortedEntry
+public interface ISortItemData<out TKey> : ISortItemData
     where TKey : IEquatable<TKey>, ISortItemKey
 {
     /// <inheritdoc />
-    ISortItemKey ISortedEntry.Key => Key;
+    ISortItemKey ISortItemData.Key => Key;
     
     /// <summary>
     /// <inheritdoc cref="ISortableItemLoadoutData.Key"/>
@@ -24,14 +24,14 @@ public interface ISortedEntry<out TKey> : ISortedEntry
 }
 
 /// <summary>
-/// Default implementation of <see cref="ISortedEntry{TKey}"/>.
+/// Default implementation of <see cref="ISortItemData{TKey}"/>.
 /// This class is used to represent an entry in a stored sort order.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
-public class SortedEntry<TKey> : ISortedEntry<TKey>
+public class SortItemData<TKey> : ISortItemData<TKey>
     where TKey : IEquatable<TKey>, ISortItemKey
 {
-    public SortedEntry(TKey key, int sortIndex)
+    public SortItemData(TKey key, int sortIndex)
     {
         Key = key;
         SortIndex = sortIndex;

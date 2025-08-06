@@ -14,7 +14,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     SortItemKey<string>, 
     RedModSortableItem, 
     SortableItemLoadoutData<SortItemKey<string>>, 
-    SortedEntry<SortItemKey<string>> >
+    SortItemData<SortItemKey<string>> >
 {
     private static readonly SortOrderVarietyId StaticVarietyId = SortOrderVarietyId.From(new Guid("9120C6F5-E0DD-4AD2-A99E-836F56796950"));
     
@@ -82,7 +82,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
 
     protected override void PersistSortOrderCore(
         SortOrderId sortOrderId,
-        IReadOnlyList<SortedEntry<SortItemKey<string>>> newOrder,
+        IReadOnlyList<SortItemData<SortItemKey<string>>> newOrder,
         ITransaction tx,
         IDb startingDb,
         CancellationToken token = default)
@@ -137,13 +137,13 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     }
     
     /// <inheritdoc />
-    protected override IReadOnlyList<SortedEntry<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb dbToUse)
+    protected override IReadOnlyList<SortItemData<SortItemKey<string>>> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb dbToUse)
     {
         return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
             .Select(redModSortableEntry =>
                 {
                     var sortableEntry = redModSortableEntry.AsSortableEntry();
-                    return new SortedEntry<SortItemKey<string>>(
+                    return new SortItemData<SortItemKey<string>>(
                         new SortItemKey<string>(redModSortableEntry.RedModFolderName.Path),
                         sortableEntry.SortIndex
                     );
@@ -159,14 +159,14 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     }
 
     /// <inheritdoc />
-    protected override IReadOnlyList<(SortedEntry<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)> Reconcile(
-        IReadOnlyList<SortedEntry<SortItemKey<string>>> sourceSortedEntries, 
+    protected override IReadOnlyList<(SortItemData<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)> Reconcile(
+        IReadOnlyList<SortItemData<SortItemKey<string>>> sourceSortedEntries, 
         IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
     {
         var loadoutItemsDict = loadoutDataItems.ToDictionary(item => item.Key);
     
         // Start with a copy of source items
-        var results = new List<(SortedEntry<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)>(sourceSortedEntries.Count);
+        var results = new List<(SortItemData<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)>(sourceSortedEntries.Count);
         var processedKeys = new HashSet<SortItemKey<string>>(sourceSortedEntries.Count);
 
 
@@ -187,7 +187,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             .Where(item => !processedKeys.Contains(item.Key))
             .OrderByDescending(item => item.ModGroupId)
             .Select(loadoutItemData => (
-                new SortedEntry<SortItemKey<string>>(loadoutItemData.Key, 0), // SortIndex will be updated later
+                new SortItemData<SortItemKey<string>>(loadoutItemData.Key, 0), // SortIndex will be updated later
                 loadoutItemData
             ));
 
