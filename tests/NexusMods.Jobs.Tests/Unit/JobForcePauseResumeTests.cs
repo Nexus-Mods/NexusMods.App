@@ -35,18 +35,18 @@ public class JobForcePauseResumeTests(IJobMonitor jobMonitor)
                 allowYieldSignals[cycle].Set();
                 
                 // 3. Wait for job to signal it's ready to pause (CI-safety, in case of long CI stalls)
-                pausingSignals[cycle].Wait(TimeSpan.FromSeconds(30))
+                pausingSignals[cycle].Wait(TimeSpan.FromSeconds(60))
                     .Should().BeTrue($"Cycle {cycle} should signal pausing within timeout");
                 
                 // 4. Wait for job to reach paused state
                 await SynchronizationHelpers.WaitForJobState(
-                    task.Job, JobStatus.Paused, TimeSpan.FromSeconds(30));
+                    task.Job, JobStatus.Paused, TimeSpan.FromSeconds(60));
                 
                 // 5. Resume the job
                 jobMonitor.Resume(task);
                 
                 // 6. Wait for job to signal it has resumed
-                resumedSignals[cycle].Wait(TimeSpan.FromSeconds(30))
+                resumedSignals[cycle].Wait(TimeSpan.FromSeconds(60))
                     .Should().BeTrue($"Cycle {cycle} should signal resume within timeout");
                 
                 // 7. Verify running state
@@ -175,21 +175,13 @@ public record PauseCancellationDistinctionJob(
         // Signal ready
         ReadySignal.Set();
         
-        var currentIteration = 0;
-        
         while (true)
         {
             try
             {
                 // Long running operation that can be interrupted
-                for (var x = currentIteration; x < 1000; x++)
-                {
-                    await context.YieldAsync();
-                    await Task.Delay(10, context.CancellationToken);
-                    currentIteration = x + 1;
-                }
-                
-                return "Completed without interruption";
+                await context.YieldAsync();
+                await Task.Delay(10, context.CancellationToken);
             }
             catch (OperationCanceledException ex)
             {
