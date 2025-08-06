@@ -19,7 +19,7 @@ namespace NexusMods.Abstractions.Games;
 /// <typeparam name="TSortedEntry">Represents the minimal information for persisting a sortable entry inside a Sort Order</typeparam>
 public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, TSortedEntry> : ISortOrderVariety<TKey, TSortableItem>
     where TKey : IEquatable<TKey>, ISortItemKey
-    where TSortableItem : ISortableItem<TSortableItem, TKey>
+    where TSortableItem : IReactiveSortItem<TSortableItem, TKey>
     where TItemLoadoutData : ISortItemLoadoutData<TKey>
     where TSortedEntry : ISortItemData<TKey>
 {

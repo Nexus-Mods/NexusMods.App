@@ -63,14 +63,14 @@ public interface ISortOrderVariety
     /// Returns an observable change set of ISortableItems for the given SortOrderId.
     /// </summary>
     [Pure]
-    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
+    public IObservable<IChangeSet<IReactiveSortItem, ISortItemKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
     
     /// <summary>
     /// Returns a list of ISortableItems for the given SortOrderId.
     /// The latest database revision is used unless a specific IDb is provided.
     /// </summary>
     [Pure]
-    public IReadOnlyList<ISortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
+    public IReadOnlyList<IReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
 
     /// <summary>
     /// Moves the given items to be before or after the target item in ascending index sort order.
@@ -125,12 +125,12 @@ public interface ISortOrderVariety
 /// </summary>
 public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
     where TKey : IEquatable<TKey>, ISortItemKey
-    where TItem : ISortableItem<TItem, TKey>
+    where TItem : IReactiveSortItem<TItem, TKey>
 {
     /// <inheritdoc/>
     [Pure]
-    IObservable<IChangeSet<ISortableItem, ISortItemKey>> ISortOrderVariety.GetSortableItemsChangeSet(SortOrderId sortOrderId) => 
-        GetSortableItemsChangeSet(sortOrderId).ChangeKey((key,_) => (ISortItemKey)key).Transform(item => (ISortableItem)item);
+    IObservable<IChangeSet<IReactiveSortItem, ISortItemKey>> ISortOrderVariety.GetSortableItemsChangeSet(SortOrderId sortOrderId) => 
+        GetSortableItemsChangeSet(sortOrderId).ChangeKey((key,_) => (ISortItemKey)key).Transform(item => (IReactiveSortItem)item);
     
     /// <inheritdoc cref="ISortOrderVariety.GetSortableItemsChangeSet"/>
     [Pure]
@@ -138,8 +138,8 @@ public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
     
     /// <inheritdoc/>
     [Pure]
-    IReadOnlyList<ISortableItem> ISortOrderVariety.GetSortableItems(SortOrderId sortOrderId, IDb? db) => 
-        GetSortableItems(sortOrderId, db).Cast<ISortableItem>().ToList();
+    IReadOnlyList<IReactiveSortItem> ISortOrderVariety.GetSortableItems(SortOrderId sortOrderId, IDb? db) => 
+        GetSortableItems(sortOrderId, db).Cast<IReactiveSortItem>().ToList();
     
     /// <inheritdoc cref="ISortOrderVariety.GetSortableItems"/>
     [Pure]

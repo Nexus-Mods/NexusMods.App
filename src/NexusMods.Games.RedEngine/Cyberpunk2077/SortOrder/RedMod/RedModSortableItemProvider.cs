@@ -18,7 +18,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 using RedModWithState = (RedModLoadoutGroup.ReadOnly RedMod, RelativePath RedModFolder, bool IsEnabled);
 
-public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableItem, SortItemKey<string>>
+public class RedModSortableItemProvider : ASortableItemProvider<RedModReactiveSortItem, SortItemKey<string>>
 {
     private readonly IConnection _connection;
     private bool _isDisposed;
@@ -117,7 +117,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
             .ToList();
     }
 
-    public override async Task<IReadOnlyList<RedModSortableItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)
+    public override async Task<IReadOnlyList<RedModReactiveSortItem>> RefreshSortOrder(CancellationToken token, IDb? loadoutDb = null)
     {
         using var disposableSemaphore = await Semaphore.WaitAsyncDisposable(SemaphoreTimeout, token);
         if (!disposableSemaphore.HasEntered) throw new TimeoutException($"Timed out waiting for semaphore in SetRelativePosition");
@@ -159,14 +159,14 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
     /// <param name="currentOrder">The starting order</param>
     /// <param name="provider"></param>
     /// <returns>The new sorting</returns>
-    private static IReadOnlyList<RedModSortableItem> SynchronizeSortingToItems(
+    private static IReadOnlyList<RedModReactiveSortItem> SynchronizeSortingToItems(
         IReadOnlyList<RedModWithState> availableRedMods,
-        IReadOnlyList<RedModSortableItem> currentOrder,
+        IReadOnlyList<RedModReactiveSortItem> currentOrder,
         RedModSortableItemProvider provider)
     {
         var redModCurrentOrder =  currentOrder.ToList();
         var redModsToAdd = new List<RedModWithState>();
-        var sortableItemsToRemove = new List<RedModSortableItem>();
+        var sortableItemsToRemove = new List<RedModReactiveSortItem>();
 
         // Find items to remove
         foreach (var si in redModCurrentOrder)
@@ -206,7 +206,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
         // for RedMods this means they should be added at the beginning of the order.
         stagingList.InsertRange(0,
             redModsToAdd.Select((redMod, idx) =>
-                new RedModSortableItem(idx,
+                new RedModReactiveSortItem(idx,
                     redMod.RedModFolder.ToString(),
                     redMod.RedMod.AsLoadoutItemGroup().AsLoadoutItem().Parent.AsLoadoutItem().Name,
                     isActive: redMod.IsEnabled
@@ -236,7 +236,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
     }
 
     /// <inheritdoc />
-    protected override async Task PersistSortOrder(IReadOnlyList<RedModSortableItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
+    protected override async Task PersistSortOrder(IReadOnlyList<RedModReactiveSortItem> orderList, SortOrderId sortOrderEntityId, CancellationToken token)
     {
         var redModOrderList = orderList.ToList();
         
@@ -293,7 +293,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
     }
 
     /// <inheritdoc />
-    protected sealed override IReadOnlyList<RedModSortableItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
+    protected sealed override IReadOnlyList<RedModReactiveSortItem> RetrieveSortOrder(SortOrderId sortOrderEntityId, IDb? db = null)
     {
         var dbToUse = db ?? _connection.Db;
 
@@ -301,7 +301,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModSortableIt
             .Select(redModSortableItem =>
                 {
                     var sortableItem = redModSortableItem.AsSortableEntry();
-                    return new RedModSortableItem(
+                    return new RedModReactiveSortItem(
                         sortableItem.SortIndex,
                         redModSortableItem.RedModFolderName,
                         // Temp values, will get updated when we load the RedMods

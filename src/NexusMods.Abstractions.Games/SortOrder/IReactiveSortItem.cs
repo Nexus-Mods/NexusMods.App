@@ -11,7 +11,7 @@ namespace NexusMods.Abstractions.Games;
 ///
 /// Non-generic interface for the UI.
 /// </summary>
-public interface ISortableItem
+public interface IReactiveSortItem
 {
     /// <summary>
     /// Represents a game-specific id for the item, ideally what the game uses to identify the items, often a path
@@ -54,18 +54,18 @@ public interface ISortableItem
 }
 
 /// <summary>
-/// <inheritdoc cref="ISortableItem"/>
+/// <inheritdoc cref="IReactiveSortItem"/>
 /// Generic version of the sortable item interface for use in provider implementations.
 /// </summary>
-public interface ISortableItem<in TSelf, out TKey> : IComparable<TSelf>, ISortableItem
-    where TSelf : ISortableItem<TSelf, TKey>
+public interface IReactiveSortItem<in TSelf, out TKey> : IComparable<TSelf>, IReactiveSortItem
+    where TSelf : IReactiveSortItem<TSelf, TKey>
     where TKey : IEquatable<TKey>, ISortItemKey
 {
     /// <inheritdoc />
-    ISortItemKey ISortableItem.Key => Key;
+    ISortItemKey IReactiveSortItem.Key => Key;
 
     /// <summary>
-    /// <inheritdoc cref="ISortableItem.Key" />
+    /// <inheritdoc cref="IReactiveSortItem.Key" />
     /// Generic version of the key property
     /// </summary>
     public new TKey Key { get; }

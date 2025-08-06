@@ -5,9 +5,9 @@ using NexusMods.Paths;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
-public class RedModSortableItem : ISortableItem<RedModSortableItem, SortItemKey<string>>
+public class RedModReactiveSortItem : IReactiveSortItem<RedModReactiveSortItem, SortItemKey<string>>
 {
-    public RedModSortableItem(int sortIndex, RelativePath redModFolderName, string modName, bool isActive)
+    public RedModReactiveSortItem(int sortIndex, RelativePath redModFolderName, string modName, bool isActive)
     {
         SortIndex = sortIndex;
         RedModFolderName = redModFolderName;

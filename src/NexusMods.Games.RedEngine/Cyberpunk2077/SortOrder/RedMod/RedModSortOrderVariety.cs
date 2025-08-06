@@ -12,7 +12,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
 public class RedModSortOrderVariety : ASortOrderVariety<
     SortItemKey<string>, 
-    RedModSortableItem, 
+    RedModReactiveSortItem, 
     SortItemLoadoutData<SortItemKey<string>>, 
     SortItemData<SortItemKey<string>> >
 {
@@ -69,12 +69,12 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         return redModSortOrder.AsSortOrder().SortOrderId;
     }
 
-    public override IObservable<IChangeSet<RedModSortableItem, SortItemKey<string>>> GetSortableItemsChangeSet(SortOrderId sortOrderId)
+    public override IObservable<IChangeSet<RedModReactiveSortItem, SortItemKey<string>>> GetSortableItemsChangeSet(SortOrderId sortOrderId)
     {
         throw new NotImplementedException();
     }
 
-    public override IReadOnlyList<RedModSortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
+    public override IReadOnlyList<RedModReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db)
     {
         throw new NotImplementedException();
         // Make sure to use the correct db for the query

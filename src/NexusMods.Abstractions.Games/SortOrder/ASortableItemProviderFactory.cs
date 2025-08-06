@@ -10,7 +10,7 @@ namespace NexusMods.Abstractions.Games;
 
 /// <inheritdoc />
 public abstract class ASortableItemProviderFactory<TItem, TKey> : ISortableItemProviderFactory
-    where TItem : ISortableItem<TItem, TKey>
+    where TItem : IReactiveSortItem<TItem, TKey>
     where TKey : IEquatable<TKey>, ISortItemKey
 {
     /// <inheritdoc />
