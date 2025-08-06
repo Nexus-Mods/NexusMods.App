@@ -139,16 +139,7 @@ public class Program
             if (startupMode.RunAsMain)
             {
                 LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
-
-                try
-                {
-                    services.GetRequiredService<IQueryEngine>().DuckDb.ExecuteNoPepare("INSTALL ui; LOAD ui; CALL start_ui();");
-                }
-                catch (Exception e)
-                {
-                    
-                }
-
+                
                 if (startupMode.ShowUI)
                 {
                     var task = RunCliTaskAsMain(services, startupMode);
