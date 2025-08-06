@@ -358,7 +358,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var metadata = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
-        return BuildSyncTree(DiskStateToPathPartPair(metadata.DiskStateEntries), DiskStateToPathPartPair(previouslyApplied), loadout);
+        return BuildSyncTree(metadata.DiskStateEntries, previouslyApplied, loadout);
+    }
+    
+    
+    public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout)
+        where T : IEnumerable<DiskStateEntry.ReadOnly>
+    {
+        var currentState = DiskStateToPathPartPair(latestDiskState);
+        var previousTree = DiskStateToPathPartPair(previousDiskState);
+        return BuildSyncTree(currentState, previousTree, loadout);
     }
 
     /// <summary>
