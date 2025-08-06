@@ -16,6 +16,7 @@ using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
+[Trait("RequiresNetworking", "True")]
 public class GenericInstallerTests : ALibraryArchiveInstallerTests<GenericInstallerTests, StardewValley>
 {
     private readonly GenericInstaller _installer;

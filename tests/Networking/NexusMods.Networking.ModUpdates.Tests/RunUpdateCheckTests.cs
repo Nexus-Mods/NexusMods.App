@@ -31,6 +31,7 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
     // move after full V2 move.
 
     [SkippableFact]
+    [Trait("RequiresNetworking", "True")]
     [Trait("RequiresApiKey", "True")]
     public async Task UpdatingModPageMetadata_ViaWebApi_ShouldWork()
     {

@@ -11,6 +11,7 @@ using Xunit.Abstractions;
 
 namespace NexusMods.Collections.Tests;
 
+[Trait("RequiresNetworking", "True")]
 public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<CollectionInstallTests>(helper)
 {
     [SkippableTheory]

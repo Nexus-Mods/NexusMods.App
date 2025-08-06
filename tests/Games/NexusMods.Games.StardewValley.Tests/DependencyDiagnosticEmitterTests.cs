@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
+[Trait("RequiresNetworking", "True")]
 public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<DependencyDiagnosticEmitterTests, StardewValley, DependencyDiagnosticEmitter>
 {
     public DependencyDiagnosticEmitterTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }

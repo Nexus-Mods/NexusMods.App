@@ -7,6 +7,7 @@ using Xunit;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
+[Trait("RequiresNetworking", "True")]
 public class NexusApiClientTests
 {
     private readonly NexusApiClient _nexusApiClient;

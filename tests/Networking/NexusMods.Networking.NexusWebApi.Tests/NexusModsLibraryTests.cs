@@ -9,6 +9,7 @@ using Xunit;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
 
+[Trait("RequiresNetworking", "True")]
 public class NexusModsLibraryTests
 {
     private readonly NexusModsLibrary _nexusLibrary;

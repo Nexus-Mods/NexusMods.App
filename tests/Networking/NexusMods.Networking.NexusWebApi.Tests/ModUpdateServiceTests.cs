@@ -26,6 +26,7 @@ namespace NexusMods.Networking.NexusWebApi.Tests;
 ///     - Correct firing of observables (page, mod).
 ///     - Correct result of updates.
 /// </summary>
+[Trait("RequiresNetworking", "True")]
 public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateServiceTests> // game doesn't matter here, we just don't have SDV.
 {
     private readonly ILibraryService _libraryService;

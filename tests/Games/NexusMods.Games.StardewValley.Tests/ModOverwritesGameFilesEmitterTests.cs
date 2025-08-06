@@ -16,6 +16,7 @@ using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
+[Trait("RequiresNetworking", "True")]
 public class ModOverwritesGameFilesEmitterTests : ALoadoutDiagnosticEmitterTest<ModOverwritesGameFilesEmitterTests, StardewValley, ModOverwritesGameFilesEmitter>
 {
     public ModOverwritesGameFilesEmitterTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper) { }
