@@ -19,6 +19,7 @@ using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.DataModel.SchemaVersions;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Sdk;
@@ -138,6 +139,15 @@ public class Program
             if (startupMode.RunAsMain)
             {
                 LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
+
+                try
+                {
+                    services.GetRequiredService<IQueryEngine>().DuckDb.ExecuteNoPepare("INSTALL ui; LOAD ui; CALL start_ui();");
+                }
+                catch (Exception e)
+                {
+                    
+                }
 
                 if (startupMode.ShowUI)
                 {
