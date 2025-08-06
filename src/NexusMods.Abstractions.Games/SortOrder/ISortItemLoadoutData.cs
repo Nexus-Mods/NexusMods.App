@@ -5,7 +5,7 @@ namespace NexusMods.Abstractions.Games;
 
 /// <summary>
 /// An abstraction for loadout-specific data of an item that is part of a sort order.
-/// While <see cref="SortableEntry"/> represents an item in a sort order, it doesn't include information regarding the associated loadoutItem or mod.
+/// While <see cref="SortOrderItem"/> represents an item in a sort order, it doesn't include information regarding the associated loadoutItem or mod.
 /// This encapsulates the loadout-specific parts of data, like active state, without the sort index.
 /// </summary>
 public interface ISortItemLoadoutData

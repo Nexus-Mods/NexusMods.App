@@ -107,9 +107,9 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             var liveIdx = newOrder.IndexOf(newItem.Value);
             
             // Update existing items
-            if (dbItem.AsSortableEntry().SortIndex != liveIdx)
+            if (dbItem.AsSortOrderItem().SortIndex != liveIdx)
             {
-                tx.Add(dbItem, SortableEntry.SortIndex, liveIdx);
+                tx.Add(dbItem, SortOrderItem.SortIndex, liveIdx);
             }
         }
 
@@ -120,15 +120,15 @@ public class RedModSortOrderVariety : ASortOrderVariety<
             if (persistentSortableEntries.Any(si => si.RedModFolderName == newItem.Key.Key))
                 continue;
 
-            var newDbItem = new SortableEntry.New(tx)
+            var newDbItem = new SortOrderItem.New(tx)
             {
                 ParentSortOrderId = sortOrderId,
                 SortIndex = i,
             };
 
-            _ = new RedModSortableEntry.New(tx, newDbItem)
+            _ = new RedModSortOrderItem.New(tx, newDbItem)
             {
-                SortableEntry = newDbItem,
+                SortOrderItem = newDbItem,
                 RedModFolderName = newItem.Key.Key,
             };
         }
@@ -142,7 +142,7 @@ public class RedModSortOrderVariety : ASortOrderVariety<
         return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
             .Select(redModSortableEntry =>
                 {
-                    var sortableEntry = redModSortableEntry.AsSortableEntry();
+                    var sortableEntry = redModSortableEntry.AsSortOrderItem();
                     return new SortItemData<SortItemKey<string>>(
                         new SortItemKey<string>(redModSortableEntry.RedModFolderName.Path),
                         sortableEntry.SortIndex

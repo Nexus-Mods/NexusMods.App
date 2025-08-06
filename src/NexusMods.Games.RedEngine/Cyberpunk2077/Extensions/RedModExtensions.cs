@@ -6,11 +6,11 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.Extensions;
 
 public static class RedModExtensions
 {
-    public static RedModSortableEntry.ReadOnly[] RetrieveRedModSortableEntries(this IDb db, SortOrderId sortOrderId)
+    public static RedModSortOrderItem.ReadOnly[] RetrieveRedModSortableEntries(this IDb db, SortOrderId sortOrderId)
     {
-        return RedModSortableEntry.All(db)
-            .Where(si => si.IsValid() && si.AsSortableEntry().ParentSortOrderId == sortOrderId)
-            .OrderBy(si => si.AsSortableEntry().SortIndex)
+        return RedModSortOrderItem.All(db)
+            .Where(si => si.IsValid() && si.AsSortOrderItem().ParentSortOrderId == sortOrderId)
+            .OrderBy(si => si.AsSortOrderItem().SortIndex)
             .ToArray();
     }
 }

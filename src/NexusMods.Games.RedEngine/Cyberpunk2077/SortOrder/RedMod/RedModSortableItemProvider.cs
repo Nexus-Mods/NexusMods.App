@@ -261,9 +261,9 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModReactiveSo
 
             var liveIdx = redModOrderList.IndexOf(liveItem.Value);
 
-            if (dbItem.AsSortableEntry().SortIndex != liveIdx)
+            if (dbItem.AsSortOrderItem().SortIndex != liveIdx)
             {
-                tx.Add(dbItem, SortableEntry.SortIndex, liveIdx);
+                tx.Add(dbItem, SortOrderItem.SortIndex, liveIdx);
             }
         }
 
@@ -274,15 +274,15 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModReactiveSo
             if (persistentSortableItems.Any(si => si.RedModFolderName == liveItem.RedModFolderName))
                 continue;
 
-            var newDbItem = new SortableEntry.New(tx)
+            var newDbItem = new SortOrderItem.New(tx)
             {
                 ParentSortOrderId = sortOrderEntityId,
                 SortIndex = i,
             };
 
-            _ = new RedModSortableEntry.New(tx, newDbItem)
+            _ = new RedModSortOrderItem.New(tx, newDbItem)
             {
-                SortableEntry = newDbItem,
+                SortOrderItem = newDbItem,
                 RedModFolderName = liveItem.RedModFolderName,
             };
         }
@@ -300,7 +300,7 @@ public class RedModSortableItemProvider : ASortableItemProvider<RedModReactiveSo
         return dbToUse.RetrieveRedModSortableEntries(sortOrderEntityId)
             .Select(redModSortableItem =>
                 {
-                    var sortableItem = redModSortableItem.AsSortableEntry();
+                    var sortableItem = redModSortableItem.AsSortOrderItem();
                     return new RedModReactiveSortItem(
                         sortableItem.SortIndex,
                         redModSortableItem.RedModFolderName,
