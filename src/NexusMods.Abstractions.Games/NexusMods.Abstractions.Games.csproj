@@ -28,8 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="SortOrder\SortableItemLoadoutData.cs">
-        <DependentUpon>ISortableItemLoadoutData.cs</DependentUpon>
+      <Compile Update="SortOrder\SortItemLoadoutData.cs">
+        <DependentUpon>ISortItemLoadoutData.cs</DependentUpon>
       </Compile>
       <Compile Update="SortOrder\ASortOrderVariety.cs">
         <DependentUpon>ISortOrderVariety.cs</DependentUpon>

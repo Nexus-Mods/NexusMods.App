@@ -20,7 +20,7 @@ namespace NexusMods.Abstractions.Games;
 public abstract class ASortOrderVariety<TKey, TSortableItem, TItemLoadoutData, TSortedEntry> : ISortOrderVariety<TKey, TSortableItem>
     where TKey : IEquatable<TKey>, ISortItemKey
     where TSortableItem : ISortableItem<TSortableItem, TKey>
-    where TItemLoadoutData : ISortableItemLoadoutData<TKey>
+    where TItemLoadoutData : ISortItemLoadoutData<TKey>
     where TSortedEntry : ISortItemData<TKey>
 {
     private readonly ILogger _logger;

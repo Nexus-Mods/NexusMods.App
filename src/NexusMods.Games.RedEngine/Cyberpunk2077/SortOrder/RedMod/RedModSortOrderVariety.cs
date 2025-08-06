@@ -13,7 +13,7 @@ namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 public class RedModSortOrderVariety : ASortOrderVariety<
     SortItemKey<string>, 
     RedModSortableItem, 
-    SortableItemLoadoutData<SortItemKey<string>>, 
+    SortItemLoadoutData<SortItemKey<string>>, 
     SortItemData<SortItemKey<string>> >
 {
     private static readonly SortOrderVarietyId StaticVarietyId = SortOrderVarietyId.From(new Guid("9120C6F5-E0DD-4AD2-A99E-836F56796950"));
@@ -153,20 +153,20 @@ public class RedModSortOrderVariety : ASortOrderVariety<
     }
     
     /// <inheritdoc />
-    protected override IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId, IDb? db)
+    protected override IReadOnlyList<SortItemLoadoutData<SortItemKey<string>>> RetrieveLoadoutData(LoadoutId loadoutId, Optional<CollectionGroupId> collectionGroupId, IDb? db)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    protected override IReadOnlyList<(SortItemData<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)> Reconcile(
+    protected override IReadOnlyList<(SortItemData<SortItemKey<string>> SortedEntry, SortItemLoadoutData<SortItemKey<string>> ItemLoadoutData)> Reconcile(
         IReadOnlyList<SortItemData<SortItemKey<string>>> sourceSortedEntries, 
-        IReadOnlyList<SortableItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
+        IReadOnlyList<SortItemLoadoutData<SortItemKey<string>>> loadoutDataItems)
     {
         var loadoutItemsDict = loadoutDataItems.ToDictionary(item => item.Key);
     
         // Start with a copy of source items
-        var results = new List<(SortItemData<SortItemKey<string>> SortedEntry, SortableItemLoadoutData<SortItemKey<string>> ItemLoadoutData)>(sourceSortedEntries.Count);
+        var results = new List<(SortItemData<SortItemKey<string>> SortedEntry, SortItemLoadoutData<SortItemKey<string>> ItemLoadoutData)>(sourceSortedEntries.Count);
         var processedKeys = new HashSet<SortItemKey<string>>(sourceSortedEntries.Count);
 
 

@@ -26,5 +26,5 @@ public class RedModSortableItem : ISortableItem<RedModSortableItem, SortItemKey<
     public string ModName { get; set; }
     public Optional<LoadoutItemGroupId> ModGroupId { get; set; }
     public bool IsActive { get; set; }
-    public ISortableItemLoadoutData? LoadoutData { get; set; }
+    public ISortItemLoadoutData? LoadoutData { get; set; }
 }

@@ -8,7 +8,7 @@ namespace NexusMods.Abstractions.Games;
 /// While <see cref="SortableEntry"/> represents an item in a sort order, it doesn't include information regarding the associated loadoutItem or mod.
 /// This encapsulates the loadout-specific parts of data, like active state, without the sort index.
 /// </summary>
-public interface ISortableItemLoadoutData
+public interface ISortItemLoadoutData
 {
     /// <summary>
     /// Represents a game-specific id for the item, ideally what the game uses to identify the items, often a path
@@ -35,17 +35,17 @@ public interface ISortableItemLoadoutData
 
 
 /// <summary>
-/// <inheritdoc cref="ISortableItemLoadoutData"/>
+/// <inheritdoc cref="ISortItemLoadoutData"/>
 /// Generic version of the sortable item interface for use in implementations.
 /// </summary>
-public interface ISortableItemLoadoutData<out TKey> : ISortableItemLoadoutData
+public interface ISortItemLoadoutData<out TKey> : ISortItemLoadoutData
     where TKey : IEquatable<TKey>, ISortItemKey
 {
     /// <inheritdoc />
-    ISortItemKey ISortableItemLoadoutData.Key => Key;
+    ISortItemKey ISortItemLoadoutData.Key => Key;
     
     /// <summary>
-    /// <inheritdoc cref="ISortableItemLoadoutData.Key"/>
+    /// <inheritdoc cref="ISortItemLoadoutData.Key"/>
     /// Generic version of the key property
     /// </summary>
     new TKey Key { get; }

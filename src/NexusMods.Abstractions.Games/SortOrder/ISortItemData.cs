@@ -17,7 +17,7 @@ public interface ISortItemData<out TKey> : ISortItemData
     ISortItemKey ISortItemData.Key => Key;
     
     /// <summary>
-    /// <inheritdoc cref="ISortableItemLoadoutData.Key"/>
+    /// <inheritdoc cref="ISortItemLoadoutData.Key"/>
     /// Generic version of the key property
     /// </summary>
     new TKey Key { get; }

@@ -50,7 +50,7 @@ public interface ISortableItem
     /// <summary>
     /// Contains the loadout-specific data for the item, such as parent mod or enabled state.
     /// </summary>
-    public ISortableItemLoadoutData? LoadoutData { get; set; }
+    public ISortItemLoadoutData? LoadoutData { get; set; }
 }
 
 /// <summary>

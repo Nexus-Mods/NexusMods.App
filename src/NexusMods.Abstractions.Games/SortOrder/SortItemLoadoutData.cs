@@ -4,16 +4,16 @@ using NexusMods.Abstractions.Loadouts;
 namespace NexusMods.Abstractions.Games;
 
 /// <summary>
-/// Default implementation to cover most use cases of <see cref="ISortableItemLoadoutData"/>.
-/// <inheritdoc cref="ISortableItemLoadoutData"/>
+/// Default implementation to cover most use cases of <see cref="ISortItemLoadoutData"/>.
+/// <inheritdoc cref="ISortItemLoadoutData"/>
 /// </summary>
-public class SortableItemLoadoutData<TKey> : ISortableItemLoadoutData<TKey>
+public class SortItemLoadoutData<TKey> : ISortItemLoadoutData<TKey>
     where TKey : IEquatable<TKey>, ISortItemKey
 {
     /// <summary>
-    /// Constructs a new instance of <see cref="SortableItemLoadoutData"/>.
+    /// Constructs a new instance of <see cref="SortItemLoadoutData{TKey}"/>.
     /// </summary>
-    public SortableItemLoadoutData(TKey key, bool isEnabled, string modName, Optional<LoadoutItemGroupId> modGroupId)
+    public SortItemLoadoutData(TKey key, bool isEnabled, string modName, Optional<LoadoutItemGroupId> modGroupId)
     {
         Key = key;
         IsEnabled = isEnabled;
