@@ -3,6 +3,7 @@ using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.RedEngine.Cyberpunk2077;
 using NexusMods.Games.TestFramework;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 
 namespace NexusMods.DataModel.Tests;
@@ -49,7 +50,7 @@ public class LoadoutObservableTests(IServiceProvider provider) : AGameTest<Cyber
         loadoutId = result[loadoutId];
         
         var lastTimestamp = DateTimeOffset.UtcNow;
-        var lastId = LoadoutId.From(0);
+        var lastId = EntityId.From(0);
         using var loadouts = Loadout.RevisionsWithChildUpdates(Connection, loadoutId)
             .Subscribe(loadout =>
                 {
