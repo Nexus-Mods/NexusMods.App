@@ -10,6 +10,7 @@ using NexusMods.Abstractions.Diagnostics.Emitters;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.MnemonicDB.Abstractions.BuiltInEntities;
 using R3;
 using CompositeDisposable = R3.CompositeDisposable;
 
@@ -79,8 +80,18 @@ internal sealed class DiagnosticManager : IDiagnosticManager
     private async Task<Diagnostic[]> GetLoadoutDiagnostics(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
         var diagnosticEmitters = loadout.InstallationInstance.GetGame().DiagnosticEmitters;
+        
+        var db = _connection.Db;
         var synchronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        var baseSyncTree = await synchronizer.BuildSyncTree(loadout);
+        var metaData = GameInstallMetadata.Load(db, loadout.InstallationInstance.GameMetadataId);
+        var hasPreviousLoadout = GameInstallMetadata.LastSyncedLoadoutTransaction.TryGetValue(metaData, out var lastId);
+
+        var lastScannedDiskState = metaData.DiskStateEntries;
+        var previousDiskState = hasPreviousLoadout ? 
+            metaData.DiskStateAsOf(Transaction.Load(db, lastId)) : 
+            lastScannedDiskState;
+        
+        var baseSyncTree = synchronizer.BuildSyncTree(lastScannedDiskState, previousDiskState, loadout);
         synchronizer.ProcessSyncTree(baseSyncTree);
         var syncTree = baseSyncTree.ToFrozenDictionary();
 
