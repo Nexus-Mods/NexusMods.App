@@ -6,8 +6,8 @@ using NexusMods.MnemonicDB.Abstractions.Models;
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.Models;
 
 [PublicAPI]
-[Include<SortableEntry>]
-public partial class RedModSortableEntry : IModelDefinition
+[Include<SortOrderItem>]
+public partial class RedModSortOrderItem : IModelDefinition
 {
     private const string Namespace = "NexusMods.Games.RedEngine.Cyberpunk2077.RedModSortableEntry";
     

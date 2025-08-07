@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using DynamicData;
+using DynamicData.Kernel;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
 using OneOf;
@@ -22,7 +23,7 @@ public interface ISortOrderVariety
     /// <summary>
     /// Returns an id identifying the variety of the sort order.
     /// </summary>
-    Guid SortOrderVarietyId { get; }
+    SortOrderVarietyId SortOrderVarietyId { get; }
     
     /// <summary>
     /// Default direction (ascending/descending) in which sortIndexes should be sorted and displayed
@@ -46,34 +47,44 @@ public interface ISortOrderVariety
     /// Returns the SortOrderId for this variety for the given parent entity.
     /// </summary>
     [Pure]
-    public SortOrderId GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity);
+    public Optional<SortOrderId> GetSortOrderIdFor(OneOf<LoadoutId, CollectionGroupId> parentEntity);
+    
+    /// <summary>
+    /// Returns the SortOrderId for the given loadout, parent entity and variety.
+    /// If it does not exist, it will first be created.
+    /// </summary>
+    [Pure]
+    public ValueTask<SortOrderId> GetOrCreateSortOrderFor(
+        LoadoutId loadoutId,
+        OneOf<LoadoutId, CollectionGroupId> parentEntity,
+        CancellationToken token = default);
     
     /// <summary>
     /// Returns an observable change set of ISortableItems for the given SortOrderId.
     /// </summary>
     [Pure]
-    public IObservable<IChangeSet<ISortableItem, ISortItemKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
+    public IObservable<IChangeSet<IReactiveSortItem, ISortItemKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
     
     /// <summary>
     /// Returns a list of ISortableItems for the given SortOrderId.
     /// The latest database revision is used unless a specific IDb is provided.
     /// </summary>
     [Pure]
-    public IReadOnlyList<ISortableItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
-    
-    /// <summary>
-    /// Sets the sort order to match the one of the passed keys.
-    /// </summary>
-    [Pure]
-    public ValueTask SetSortOrder(SortOrderId sortOrderId, IReadOnlyList<ISortItemKey> items, IDb? db = null, CancellationToken token = default);
-    
+    public IReadOnlyList<IReactiveSortItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
+
     /// <summary>
     /// Moves the given items to be before or after the target item in ascending index sort order.
     /// The relative index order of the moved items is preserved.
     /// Validity and outcome of the move may depend on game-specific logic, so only some or none of the items may be moved.
     /// </summary>
     [Pure]
-    public ValueTask MoveItems(SortOrderId sortOrderId, ISortItemKey[] itemsToMove, ISortItemKey dropTargetItem, TargetRelativePosition relativePosition, IDb? db = null, CancellationToken token = default);
+    public ValueTask MoveItems(
+        SortOrderId sortOrderId,
+        ISortItemKey[] itemsToMove,
+        ISortItemKey dropTargetItem,
+        TargetRelativePosition relativePosition,
+        IDb? db = null,
+        CancellationToken token = default);
 
     /// <summary>
     /// Sets the relative position of a sortable item in the sort order
@@ -88,5 +99,79 @@ public interface ISortOrderVariety
     /// </summary>
     [Pure]
     public ValueTask ReconcileSortOrder(SortOrderId sortOrderId, IDb? db = null, CancellationToken token = default);
+
+
+    
+    /// <summary>
+    /// Static metadata for the sort order type that can be accessed by derived classes for reuse
+    /// </summary>
+    protected static SortOrderUiMetadata StaticSortOrderUiMetadata { get; } = new()
+    {
+        SortOrderName = "Load Order",
+        OverrideInfoTitle = string.Empty,
+        OverrideInfoMessage = string.Empty,
+        WinnerIndexToolTip = "Last Loaded Mod Wins: Items that load last will overwrite changes from items loaded before them.",
+        IndexColumnHeader = "LOAD ORDER",
+        DisplayNameColumnHeader = "NAME",
+        EmptyStateMessageTitle = "No Sortable Mods detected",
+        EmptyStateMessageContents = "Some mods may modify the same game assets. When detected, they will be sortable via this interface.",
+        LearnMoreUrl = string.Empty,
+    };
 }
 
+/// <summary>
+/// Genric version of <inheritdoc cref="ISortOrderVariety"/>, with implementation of non-generic methods.
+/// To allow for type-safe access to the items in the implementations.
+/// </summary>
+public interface ISortOrderVariety<TKey, TItem> : ISortOrderVariety
+    where TKey : IEquatable<TKey>, ISortItemKey
+    where TItem : IReactiveSortItem<TItem, TKey>
+{
+    /// <inheritdoc/>
+    [Pure]
+    IObservable<IChangeSet<IReactiveSortItem, ISortItemKey>> ISortOrderVariety.GetSortableItemsChangeSet(SortOrderId sortOrderId) => 
+        GetSortableItemsChangeSet(sortOrderId).ChangeKey((key,_) => (ISortItemKey)key).Transform(item => (IReactiveSortItem)item);
+    
+    /// <inheritdoc cref="ISortOrderVariety.GetSortableItemsChangeSet"/>
+    [Pure]
+    new IObservable<IChangeSet<TItem, TKey>> GetSortableItemsChangeSet(SortOrderId sortOrderId);
+    
+    /// <inheritdoc/>
+    [Pure]
+    IReadOnlyList<IReactiveSortItem> ISortOrderVariety.GetSortableItems(SortOrderId sortOrderId, IDb? db) => 
+        GetSortableItems(sortOrderId, db).Cast<IReactiveSortItem>().ToList();
+    
+    /// <inheritdoc cref="ISortOrderVariety.GetSortableItems"/>
+    [Pure]
+    new IReadOnlyList<TItem> GetSortableItems(SortOrderId sortOrderId, IDb? db = null);
+    
+    /// <inheritdoc/>
+    [Pure]
+    ValueTask ISortOrderVariety.MoveItems(
+        SortOrderId sortOrderId,
+        ISortItemKey[] itemsToMove,
+        ISortItemKey dropTargetItem,
+        TargetRelativePosition relativePosition,
+        IDb? db,
+        CancellationToken token) =>
+        MoveItems(sortOrderId, itemsToMove.Cast<TKey>().ToArray(), (TKey)dropTargetItem, relativePosition, db, token);
+    
+    /// <inheritdoc cref="ISortOrderVariety.MoveItems"/>
+    [Pure]
+    ValueTask MoveItems(
+        SortOrderId sortOrderId,
+        TKey[] itemsToMove,
+        TKey dropTargetItem,
+        TargetRelativePosition relativePosition,
+        IDb? db = null,
+        CancellationToken token = default);
+    
+    /// <inheritdoc/>
+    [Pure]
+    ValueTask ISortOrderVariety.MoveItemDelta(SortOrderId sortOrderId, ISortItemKey sourceItem, int delta, IDb? db, CancellationToken token) =>
+        MoveItemDelta(sortOrderId, (TKey)sourceItem, delta, db, token);
+
+    /// <inheritdoc cref="ISortOrderVariety.MoveItemDelta"/>
+    [Pure]
+    ValueTask MoveItemDelta(SortOrderId sortOrderId, TKey sourceItem, int delta, IDb? db = null, CancellationToken token = default);
+}

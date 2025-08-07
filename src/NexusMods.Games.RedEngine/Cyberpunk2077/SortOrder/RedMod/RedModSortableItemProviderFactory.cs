@@ -5,7 +5,7 @@ using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Games.RedEngine.Cyberpunk2077.SortOrder;
 
-public class RedModSortableItemProviderFactory(IConnection connection) : ASortableItemProviderFactory<RedModSortableItem, SortItemKey<string>>(connection, Cyberpunk2077Game.GameIdStatic)
+public class RedModSortableItemProviderFactory(IConnection connection) : ASortableItemProviderFactory<RedModReactiveSortItem, SortItemKey<string>>(connection, Cyberpunk2077Game.GameIdStatic)
 {
     private static readonly Guid StaticTypeId = new("9120C6F5-E0DD-4AD2-A99E-836F56796950");
 
@@ -31,7 +31,7 @@ public class RedModSortableItemProviderFactory(IConnection connection) : ASortab
 
     public override IndexOverrideBehavior IndexOverrideBehavior => IndexOverrideBehavior.SmallerIndexWins;
 
-    protected override async Task<ILoadoutSortableItemProvider<RedModSortableItem, SortItemKey<string>>> CreateProviderAsync(IConnection connection, LoadoutId currentLoadoutId)
+    protected override async Task<ILoadoutSortableItemProvider<RedModReactiveSortItem, SortItemKey<string>>> CreateProviderAsync(IConnection connection, LoadoutId currentLoadoutId)
     {
         return await RedModSortableItemProvider.CreateAsync(connection, currentLoadoutId, this);
     }

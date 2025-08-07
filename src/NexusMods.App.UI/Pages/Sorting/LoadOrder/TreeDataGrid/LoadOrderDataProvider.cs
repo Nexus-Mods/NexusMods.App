@@ -56,29 +56,29 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         return sortableItemProvider.SortableItemsChangeSet
             .Transform(item => ToLoadOrderItemModel(item, topMostIndexObservable, bottomMostIndexObservable, _connection, _thumbnailLoader));
 
-        static int GetLastIndex(IReadOnlyList<ISortableItem> items)
+        static int GetLastIndex(IReadOnlyList<IReactiveSortItem> items)
         {
             return items.Count == 0 ? 0 : items.Max(item => item.SortIndex);
         }
     }
 
     private static CompositeItemModel<ISortItemKey> ToLoadOrderItemModel(
-        ISortableItem sortableItem,
+        IReactiveSortItem reactiveSortItem,
         R3.Observable<int> topMostIndexObservable,
         R3.Observable<int> bottomMostIndexObservable,
         IConnection connection,
         Lazy<IResourceLoader<EntityId, Bitmap>> thumbnailLoader)
     {
-        var compositeModel = new CompositeItemModel<ISortItemKey>(sortableItem.Key);
+        var compositeModel = new CompositeItemModel<ISortItemKey>(reactiveSortItem.Key);
 
         // DisplayName
         compositeModel.Add(LoadOrderColumns.DisplayNameColumn.DisplayNameComponentKey,
-            new StringComponent(sortableItem.DisplayName, sortableItem.WhenAnyValue(item => item.DisplayName)));
+            new StringComponent(reactiveSortItem.DisplayName, reactiveSortItem.WhenAnyValue(item => item.DisplayName)));
         
         // Thumbnail
-        if (sortableItem.ModGroupId.HasValue)
+        if (reactiveSortItem.ModGroupId.HasValue)
         {
-            if (LoadoutItemGroup.Load(connection.Db, sortableItem.ModGroupId.Value).TryGetAsLibraryLinkedLoadoutItem(out var linkedItem))
+            if (LoadoutItemGroup.Load(connection.Db, reactiveSortItem.ModGroupId.Value).TryGetAsLibraryLinkedLoadoutItem(out var linkedItem))
             {
                 if (linkedItem.LibraryItem.TryGetAsNexusModsLibraryItem(out var nexusLibraryItem))
                 {
@@ -90,14 +90,14 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
 
         // ModName
         compositeModel.Add(LoadOrderColumns.ModNameColumn.ModNameComponentKey,
-            new StringComponent(sortableItem.ModName, sortableItem.WhenAnyValue(item => item.ModName)));
+            new StringComponent(reactiveSortItem.ModName, reactiveSortItem.WhenAnyValue(item => item.ModName)));
 
         // IsActive
         compositeModel.Add(LoadOrderColumns.IsActiveComponentKey,
-            new ValueComponent<bool>(sortableItem.IsActive, sortableItem.WhenAnyValue(item => item.IsActive)));
+            new ValueComponent<bool>(reactiveSortItem.IsActive, reactiveSortItem.WhenAnyValue(item => item.IsActive)));
 
         // SortIndex
-        var sortIndexObservable = sortableItem.WhenAnyValue(item => item.SortIndex).ToObservable();
+        var sortIndexObservable = reactiveSortItem.WhenAnyValue(item => item.SortIndex).ToObservable();
         
         var canExecuteMoveUp = R3.Observable.CombineLatest(
             sortIndexObservable,
@@ -112,12 +112,12 @@ public class LoadOrderDataProvider : ILoadOrderDataProvider
         
         
         // The UI requires 1-based indexes, so we convert the 0-based index to a 1-based ordinalized string.
-        var displayIndexObservable = sortableItem.WhenAnyValue(item => item.SortIndex).Select(ToOneBasedOrdinalized);
+        var displayIndexObservable = reactiveSortItem.WhenAnyValue(item => item.SortIndex).Select(ToOneBasedOrdinalized);
         
         compositeModel.Add(LoadOrderColumns.IndexColumn.IndexComponentKey,
             new IndexComponent(
-                new ValueComponent<int>(sortableItem.SortIndex, sortIndexObservable),
-                new ValueComponent<string>(ToOneBasedOrdinalized(sortableItem.SortIndex), displayIndexObservable),
+                new ValueComponent<int>(reactiveSortItem.SortIndex, sortIndexObservable),
+                new ValueComponent<string>(ToOneBasedOrdinalized(reactiveSortItem.SortIndex), displayIndexObservable),
                 canExecuteMoveUp,
                 canExecuteMoveDown
             )
