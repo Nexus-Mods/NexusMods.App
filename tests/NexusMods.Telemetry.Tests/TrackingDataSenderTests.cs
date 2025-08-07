@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Time.Testing;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.Types;
+using NexusMods.Sdk;
 using NSubstitute;
 using Xunit;
 
@@ -49,7 +50,9 @@ public class TrackingDataSenderTests
                 var res = textReader.ReadToEnd();
                 try
                 {
-                    ExpectJson($$"""{ "requests": ["?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add+Game&e_n=Mount+%26+Blade&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Mount+%26+Blade&h=0&m=0&s=1","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=Foo&cra_tp=System.NotSupportedException&cra_ct=v0.0.1","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=bar&cra_tp=System.Diagnostics.UnreachableException&cra_ct=v0.0.1","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Foo+bar+baz&e_v=100&h=0&m=0&s=3","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Foo+bar+baz&e_v=1131412.132&h=0&m=0&s=4"] }""", res);
+                    var version = ApplicationConstants.Version;
+                    var versionStr = version.ToSafeString(maxFieldCount: 3);
+                    ExpectJson($$"""{ "requests": ["?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Game&e_a=Add+Game&e_n=Mount+%26+Blade&h=0&m=0&s=0","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Mount+%26+Blade&h=0&m=0&s=1","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=Foo&cra_tp=System.NotSupportedException&cra_ct=v{{versionStr}}","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&cra=bar&cra_tp=System.Diagnostics.UnreachableException&cra_ct=v{{versionStr}}","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Foo+bar+baz&e_v=100&h=0&m=0&s=3","?idsite=7&rec=1&apiv=1&ua={{expectedUserAgent}}&send_image=0&ca=1&uid=1337&e_c=Loadout&e_a=Create+Loadout&e_n=Foo+bar+baz&e_v=1131412.132&h=0&m=0&s=4"] }""", res);
                     tsc.SetResult();
                 }
                 catch (Exception e)
@@ -102,8 +105,8 @@ public class TrackingDataSenderTests
 
         var parsedException = parsedExceptions.Should().ContainSingle().Which;
         parsedException.Type.Should().Be("System.NotSupportedException");
-        parsedException.Message.Should().Be("Foo bar baz");
-        parsedException.StackTrace.Should().NotBeNull();
+        parsedException.Message.Should().Be("NexusMods.Telemetry.Tests.TrackingDataSenderTests.Test_ParseSingleException()");
+        parsedException.StackTrace.Should().StartWith("Foo bar baz\n");
     }
 
     [Fact]

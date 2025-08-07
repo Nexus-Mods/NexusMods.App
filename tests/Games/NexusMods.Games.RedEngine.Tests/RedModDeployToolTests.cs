@@ -80,7 +80,7 @@ public class RedModDeployToolTests : ACyberpunkIsolatedGameTest<Cyberpunk2077Gam
             sb.AppendLine(name);
             sb.AppendLine($"Delta: {delta}");
 
-            var specificRedMod = sortOrder.OfType<RedModSortableItem>().Single(g => g.DisplayName == name);
+            var specificRedMod = sortOrder.OfType<RedModReactiveSortItem>().Single(g => g.DisplayName == name);
     
             var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var token = cts2.Token;

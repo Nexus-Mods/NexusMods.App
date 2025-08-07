@@ -13,6 +13,16 @@
         <GradientStop Color="{StaticResource BrandPrimary400}" Offset="0" />
         <GradientStop Color="{StaticResource BrandPrimary600}" Offset="1" />
     </LinearGradientBrush>
+    
+    <LinearGradientBrush x:Key="PremiumButtonLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+        <GradientStop Color="{StaticResource BrandPremium900}" Offset="0" />
+        <GradientStop Color="{StaticResource BrandPremium700}" Offset="1" />
+    </LinearGradientBrush>
+    
+    <LinearGradientBrush x:Key="PremiumButtonPointerOverLinearGradientBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+        <GradientStop Color="{StaticResource BrandPremium600}" Offset="0" />
+        <GradientStop Color="{StaticResource BrandPremium400}" Offset="1" />
+    </LinearGradientBrush>
 
     <!-- SurfaceLow 75% to SurfaceLow 100% -->
     <Color x:Key="CollectionHeaderImageLinearGradientStartColor">#BF1D1D21</Color>

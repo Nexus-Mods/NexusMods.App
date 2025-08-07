@@ -358,7 +358,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     {
         var metadata = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
         var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
-        return BuildSyncTree(DiskStateToPathPartPair(metadata.DiskStateEntries), DiskStateToPathPartPair(previouslyApplied), loadout);
+        return BuildSyncTree(metadata.DiskStateEntries, previouslyApplied, loadout);
+    }
+    
+    
+    public Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout)
+        where T : IEnumerable<DiskStateEntry.ReadOnly>
+    {
+        var currentState = DiskStateToPathPartPair(latestDiskState);
+        var previousTree = DiskStateToPathPartPair(previousDiskState);
+        return BuildSyncTree(currentState, previousTree, loadout);
     }
 
     /// <summary>
@@ -512,6 +521,14 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         // No reason to change the loadout if the version is the same
         if (locatorsToAdd.Length == 0 && locatorsToRemove.Length == 0)
             return loadout;
+
+        if (Logger.IsEnabled(LogLevel.Information))
+        {
+            var sCurrent = loadout.LocatorIds.Select(x => x.Value).ToArray();
+            var sToAdd = locatorsToAdd.Select(x => x.Value).ToArray();
+            var sToRemove = locatorsToRemove.Select(x => x.Value).ToArray();
+            Logger.LogInformation("Locator IDs changed Current=`{CurrentIds}` ToAdd=`{ToAdd}` ToRemove=`{ToRemove}`", sCurrent, sToAdd, sToRemove);
+        }
 
         // Make a lookup set of the new files
         var versionFiles = _fileHashService

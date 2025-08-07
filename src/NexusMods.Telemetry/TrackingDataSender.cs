@@ -238,11 +238,7 @@ internal sealed class TrackingDataSender : ITrackingDataSender, IDisposable
 
             // NOTE(erri120): (Ab)using the error category to inject the current version
             sb.Append("&cra_ct=v"); // error category
-            sb.Append(ApplicationConstants.Version.Major);
-            sb.Append('.');
-            sb.Append(ApplicationConstants.Version.Minor);
-            sb.Append('.');
-            sb.Append(ApplicationConstants.Version.Build);
+            sb.Append(ApplicationConstants.Version.ToSafeString(maxFieldCount: 3));
         }
 
         sb.Append("\"");

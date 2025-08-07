@@ -107,6 +107,9 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                         foreach (var item in eventArgs.DeselectedItems)
                         {
                             if (item is null) continue;
+                            Debug.Assert(!item.IsDisposed);
+                            if (item.IsDisposed) continue;
+                            
                             item.IsSelected.Value = false;
                         }
 
@@ -114,6 +117,9 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                         foreach (var item in eventArgs.SelectedItems)
                         {
                             if (item is null) continue;
+                            Debug.Assert(!item.IsDisposed);
+                            if (item.IsDisposed) continue;
+                            
                             item.IsSelected.Value = true;
                         }
                     });
@@ -133,6 +139,9 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
                             {
                                 if (change.Reason is ChangeReason.Add)
                                 {
+                                    Debug.Assert(!change.Current.IsDisposed);
+                                    if (change.Current.IsDisposed) continue;
+                                    
                                     self.BeforeModelActivationHook(change.Current);
                                     change.Current.Activate();
                                 }

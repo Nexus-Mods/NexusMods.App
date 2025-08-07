@@ -26,4 +26,16 @@
         <ProjectReference Include="..\NexusMods.Abstractions.UI\NexusMods.Abstractions.UI.csproj" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="SortOrder\SortItemLoadoutData.cs">
+        <DependentUpon>ISortItemLoadoutData.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SortOrder\ASortOrderVariety.cs">
+        <DependentUpon>ISortOrderVariety.cs</DependentUpon>
+      </Compile>
+      <Compile Update="SortOrder\SortOrderManager.cs">
+        <DependentUpon>ISortOrderManager.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
 </Project>

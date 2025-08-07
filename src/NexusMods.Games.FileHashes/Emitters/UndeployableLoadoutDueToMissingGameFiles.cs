@@ -1,6 +1,8 @@
+using System.Collections.Frozen;
+using System.Runtime.CompilerServices;
 using NexusMods.Abstractions.Diagnostics;
 using NexusMods.Abstractions.Diagnostics.Emitters;
-using NexusMods.Abstractions.Games;
+using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Loadouts.Synchronizers.Rules;
@@ -10,16 +12,18 @@ namespace NexusMods.Games.FileHashes.Emitters;
 
 public class UndeployableLoadoutDueToMissingGameFiles : ILoadoutDiagnosticEmitter
 {
-    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
+    public IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, CancellationToken cancellationToken)
     {
+        throw new NotSupportedException();
+    }
 
-        var syncronizer = loadout.InstallationInstance.GetGame().Synchronizer;
-        var syncTree = await syncronizer.BuildSyncTree(loadout);
-        syncronizer.ProcessSyncTree(syncTree);
-        
+    public async IAsyncEnumerable<Diagnostic> Diagnose(Loadout.ReadOnly loadout, FrozenDictionary<GamePath, SyncNode> syncTree, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        await Task.Yield();
+
         var totalSize = Size.Zero;
         var count = 0;
-        
+
         foreach (var (_, node) in syncTree)
         {
             if (node.SourceItemType == LoadoutSourceItemType.Game && node.Actions.HasFlag(Actions.WarnOfUnableToExtract))

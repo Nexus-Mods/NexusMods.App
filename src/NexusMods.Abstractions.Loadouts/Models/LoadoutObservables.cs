@@ -16,7 +16,7 @@ public partial class Loadout
         SELECT Id FROM mdb_Loadout(Db=>$1) WHERE Id = $2
         UNION ALL
         SELECT sortItem.Id FROM mdb_SortOrder(Db=>$1) sortOrder
-           LEFT JOIN mdb_SortableEntry(Db=>$1) sortItem ON sortOrder.Id = sortItem.ParentSortOrder
+           LEFT JOIN mdb_SortOrderItem(Db=>$1) sortItem ON sortOrder.Id = sortItem.ParentSortOrder
            WHERE sortOrder.Loadout = $2
         """;
 
