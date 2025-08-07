@@ -8,6 +8,7 @@ using NexusMods.Networking.ModUpdates;
 using NexusMods.Networking.ModUpdates.Mixins;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
 using System.Reactive.Linq;
+using R3;
 
 namespace NexusMods.Networking.NexusWebApi;
 
