@@ -65,6 +65,16 @@ public interface IJob
     /// Gets whether this job can be cancelled
     /// </summary>
     bool CanBeCancelled { get; }
+    
+    /// <summary>
+    /// Pauses this job
+    /// </summary>
+    void Pause();
+    
+    /// <summary>
+    /// Resumes this job
+    /// </summary>
+    void Resume();
 }
 
 /// <summary>
