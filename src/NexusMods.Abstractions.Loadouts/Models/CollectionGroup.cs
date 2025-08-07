@@ -23,8 +23,6 @@ public partial class CollectionGroup : IModelDefinition
 
 public static partial class CollectionGroupLoaderExtensions
 {
-    private static CompiledQuery<List<(EntityId CollectionGroup, string Name)>, EntityId> MutableCollectionsQuery =
-        Query.Compile<List<(EntityId CollectionGroup, string Name)>, EntityId>("SELECT Id, Name FROM mdb_CollectionGroup() WHERE IsReadOnly = false AND LoadoutId = $1");
     
     /// <summary>
     /// Find the user collection for a given loadout

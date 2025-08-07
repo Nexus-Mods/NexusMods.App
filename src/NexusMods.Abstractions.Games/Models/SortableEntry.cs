@@ -31,19 +31,4 @@ public partial class SortableEntry : IModelDefinition
     /// The order in which this item should be loaded relative to other items in the Load Order.
     /// </summary>
     public static readonly Int32Attribute SortIndex = new(Namespace, nameof(SortIndex));
-
-    static class Queries
-    {
-        /*
-        /// <summary>
-        /// Include all sort order entities that are associated with a loadout
-        /// </summary>
-        internal static readonly Flow<(EntityId Loadout, EntityId Entity)> LoadoutSortOrderSubFlow =
-            Pattern.Create()
-                .Db(out var sortOrder, SortOrder.LoadoutId, out var loadoutId)
-                .Db(out var sortItem, ParentSortOrder, sortOrder)
-                .Return(loadoutId, sortItem);
-                */
-    }
-
 }
