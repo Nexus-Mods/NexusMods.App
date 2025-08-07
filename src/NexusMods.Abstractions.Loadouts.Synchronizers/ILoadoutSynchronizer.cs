@@ -27,6 +27,11 @@ public interface ILoadoutSynchronizer
     /// Builds a sync tree from a loadout and the current state of the game folder.
     /// </summary>
     Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadoutTree);
+
+    /// <summary>
+    /// Builds a sync tree from the latest stored disk state and the previous disk state.
+    /// </summary>
+    Dictionary<GamePath, SyncNode> BuildSyncTree<T>(T latestDiskState, T previousDiskState, Loadout.ReadOnly loadout) where T : IEnumerable<DiskStateEntry.ReadOnly>;
     
     /// <summary>
     /// Processes the sync tree to create the signature and actions for each file, changes are made in-place on the tree.

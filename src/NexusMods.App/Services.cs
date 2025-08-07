@@ -100,6 +100,7 @@ public static class Services
                 .AddTestHarness()
                 .AddFileSystem()
                 .AddCleanupVerbs()
+                .AddStatusVerbs()
                 .AddSteamCli()
                 .AddGOG()
                 .AddFileHashes()

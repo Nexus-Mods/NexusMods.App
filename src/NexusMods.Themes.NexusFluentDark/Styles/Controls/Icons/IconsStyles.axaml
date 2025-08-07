@@ -30,6 +30,7 @@
                     <icons:UnifiedIcon Classes="Play" />
                     <icons:UnifiedIcon Classes="PlusCircleOutline" />
                     <icons:UnifiedIcon Classes="ProgressDownload" />
+                    <icons:UnifiedIcon Classes="Pause" />
                     <icons:UnifiedIcon Classes="PauseCircleOutline" />
                     <icons:UnifiedIcon Classes="PauseCircleFilled" />
                     <icons:UnifiedIcon Classes="RemoveCircleOutline" />
@@ -146,6 +147,7 @@
                     <icons:UnifiedIcon Classes="Pencil" />
                     <icons:UnifiedIcon Classes="VisibilityListed" />
                     <icons:UnifiedIcon Classes="VisibilityUnlisted" />
+                    <icons:UnifiedIcon Classes="NotificationClearAll" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Classes="Nexus" />
@@ -202,11 +204,12 @@
                     <icons:UnifiedIcon Classes="PictogramPremium" />
                     <icons:UnifiedIcon Classes="PictogramPremium" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramPremium" Size="48" />
-                </WrapPanel>
-				<WrapPanel>
                     <icons:UnifiedIcon Classes="PictogramSuccess" />
                     <icons:UnifiedIcon Classes="PictogramSuccess" Size="32" />
                     <icons:UnifiedIcon Classes="PictogramSuccess" Size="48" />
+                    <icons:UnifiedIcon Classes="PictogramDownload" />
+                    <icons:UnifiedIcon Classes="PictogramDownload" Size="32" />
+                    <icons:UnifiedIcon Classes="PictogramDownload" Size="48" />
                 </WrapPanel>
                 <WrapPanel>
                     <icons:UnifiedIcon Value="{x:Static icons:IconValues.Cog}" Classes="Suggestion" />
@@ -291,6 +294,10 @@
 
     <Style Selector="icons|UnifiedIcon.ProgressDownload">
         <Setter Property="Value" Value="{x:Static icons:IconValues.Downloading}" />
+    </Style>
+
+    <Style Selector="icons|UnifiedIcon.Pause">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.Pause}" />
     </Style>
 
     <Style Selector="icons|UnifiedIcon.PauseCircleOutline">
@@ -797,5 +804,11 @@
     </Style>
     <Style Selector="icons|UnifiedIcon.VisibilityUnlisted">
         <Setter Property="Value" Value="{x:Static icons:IconValues.VisibilityUnlisted}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.PictogramDownload">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.PictogramDownload}" />
+    </Style>
+    <Style Selector="icons|UnifiedIcon.NotificationClearAll">
+        <Setter Property="Value" Value="{x:Static icons:IconValues.NotificationClearAll}" />
     </Style>
 </Styles>

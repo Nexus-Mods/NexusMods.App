@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
-using NexusMods.Sdk;
 
 namespace NexusMods.Networking.NexusWebApi.Errors;
 
@@ -28,20 +27,7 @@ public interface IGraphQlResult
     /// <summary>
     /// Tries to get a specific error.
     /// </summary>
-    bool TryGetError<TError>([NotNullWhen(true)] out TError? error) where TError : IGraphQlError<TError>
-    {
-        if (!Errors.TryGetFirst(kv => kv.Key.Equals(TError.Code), out var tmp))
-        {
-            error = default(TError);
-            return false;
-        }
-
-        if (tmp is not TError errorInstance)
-            throw new NotSupportedException($"Error with code `{TError.Code}` is of type `{tmp.GetType()}` but expected `{typeof(TError)}`");
-
-        error = errorInstance;
-        return true;
-    }
+    bool TryGetError<TError>([NotNullWhen(true)] out TError? error) where TError : IGraphQlError<TError>;
 }
 
 /// <summary>
@@ -73,7 +59,7 @@ public interface IGraphQlResult<TData, TError1> : IGraphQlResult<TData>
     where TError1 : IGraphQlError<TError1>
 {
     /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
-    bool TryGetError([NotNullWhen(true)] out TError1? error) => TryGetError<TError1>(out error);
+    bool TryGetError([NotNullWhen(true)] out TError1? error);
 }
 
 /// <inheritdoc cref="IGraphQlResult{TData}"/>
@@ -84,10 +70,10 @@ public interface IGraphQlResult<TData, TError1, TError2> : IGraphQlResult<TData>
     where TError2 : IGraphQlError<TError2>
 {
     /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
-    bool TryGetError([NotNullWhen(true)] out TError1? error) => TryGetError<TError1>(out error);
+    bool TryGetError([NotNullWhen(true)] out TError1? error);
 
     /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
-    bool TryGetError([NotNullWhen(true)] out TError2? error) => TryGetError<TError2>(out error);
+    bool TryGetError([NotNullWhen(true)] out TError2? error);
 }
 
 /// <inheritdoc cref="IGraphQlResult{TData}"/>
@@ -99,11 +85,11 @@ public interface IGraphQlResult<TData, TError1, TError2, TError3> : IGraphQlResu
     where TError3 : IGraphQlError<TError3>
 {
     /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
-    bool TryGetError([NotNullWhen(true)] out TError1? error) => TryGetError<TError1>(out error);
+    bool TryGetError([NotNullWhen(true)] out TError1? error);
 
     /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
-    bool TryGetError([NotNullWhen(true)] out TError2? error) => TryGetError<TError2>(out error);
+    bool TryGetError([NotNullWhen(true)] out TError2? error);
 
     /// <inheritdoc cref="IGraphQlResult.TryGetError{TError}"/>>
-    bool TryGetError([NotNullWhen(true)] out TError3? error) => TryGetError<TError3>(out error);
+    bool TryGetError([NotNullWhen(true)] out TError3? error);
 }
