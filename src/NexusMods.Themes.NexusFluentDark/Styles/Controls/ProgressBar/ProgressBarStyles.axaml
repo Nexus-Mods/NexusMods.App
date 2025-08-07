@@ -7,6 +7,7 @@
             <TextBlock Text="DownloadBar" TextAlignment="Center" />
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" />
             <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.75" />
+            <ProgressBar Classes="DownloadBar" Minimum="0" Maximum="1" Value="0.5"  IsEnabled="False"/>
 
             <!-- For Classes.DisabledDownloadBar see Conditional Classes at https://docs.avaloniaui.net/docs/styling/styles -->
             <ProgressBar Classes="DownloadBar" Classes.DisabledDownloadBar="true" Minimum="0" Maximum="1" Value="0.4" />
@@ -46,6 +47,11 @@
         <Setter Property="MinWidth" Value="100" />
 
         <Style Selector="^.DisabledDownloadBar">
+            <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource SurfaceHighBrush}" />
+        </Style>
+        
+        <Style Selector="^:disabled">
             <Setter Property="Background" Value="{StaticResource SurfaceMidBrush}" />
             <Setter Property="Foreground" Value="{StaticResource SurfaceHighBrush}" />
         </Style>
