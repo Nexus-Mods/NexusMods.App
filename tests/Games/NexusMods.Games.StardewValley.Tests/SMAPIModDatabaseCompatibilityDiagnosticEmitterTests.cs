@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
@@ -22,8 +23,10 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_ModCompatabilityObsolete()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -44,8 +47,10 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_ModCompatabilityAssumeBroken()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
