@@ -19,11 +19,12 @@ public static class ApiKeyTestHelper
     }
     
     /// <summary>
-    /// Skips the test if the NEXUS_API_KEY environment variable is not set.
-    /// Use this in SkippableFact tests that require API access.
+    /// Fails the test if the NEXUS_API_KEY environment variable is not set.
+    /// Use this in Fact tests that require API access.
     /// </summary>
-    public static void SkipIfApiKeyNotAvailable()
+    public static void RequireApiKey()
     {
-        Skip.If(!IsApiKeyAvailable(), $"Test requires {ApiKeyMessageFactory.NexusApiKeyEnvironmentVariable} environment variable to be set");
+        if (!IsApiKeyAvailable())
+            throw new InvalidOperationException($"Test requires {ApiKeyMessageFactory.NexusApiKeyEnvironmentVariable} environment variable to be set");
     }
 }

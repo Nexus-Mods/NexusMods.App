@@ -17,11 +17,11 @@ public class NexusApiClientTests
         _nexusApiClient = nexusApiClient;
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task CanGetCollectionDownloadLinks()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var links = await _nexusApiClient.CollectionDownloadLinksAsync(CollectionSlug.From("iszwwe"), RevisionNumber.From(469));
         links.Data.DownloadLinks.Should().HaveCountGreaterThan(0);
     }

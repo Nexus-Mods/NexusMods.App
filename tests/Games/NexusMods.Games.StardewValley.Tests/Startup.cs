@@ -6,7 +6,6 @@ using NexusMods.Games.TestFramework;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.StandardGameLocators.TestHelpers;
-using Xunit.DependencyInjection;
 
 namespace NexusMods.Games.StardewValley.Tests;
 
@@ -20,7 +19,6 @@ public class Startup
         };
 
         container
-            .AddSkippableFactSupport()
             .AddDefaultServicesForTesting()
             .AddUniversalGameLocator<StardewValley>(new Version(1, 0), gameFiles)
             .AddStardewValley()

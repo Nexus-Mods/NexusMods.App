@@ -23,14 +23,14 @@ public class NexusModsLibraryTests
         _temporaryFileManager = temporaryFileManager;
     }
 
-    [SkippableTheory]
+    [Theory]
     [Trait("RequiresApiKey", "True")]
     [InlineData("iszwwe", 469)]
     [InlineData("r1flnc", 38)]
     [InlineData("aexcgn", 6)]
     public async Task CanDownloadCollection(string slug, ulong revisionNumber)
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         await using var destination = _temporaryFileManager.CreateFile();
         var downloadJob = _nexusLibrary.CreateCollectionDownloadJob(destination, CollectionSlug.From(slug), RevisionNumber.From(revisionNumber),
             CancellationToken.None

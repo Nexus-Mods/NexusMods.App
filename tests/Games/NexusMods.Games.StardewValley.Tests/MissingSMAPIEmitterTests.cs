@@ -22,11 +22,11 @@ public class MissingSMAPIEmitterTests : ALoadoutDiagnosticEmitterTest<Dependency
             .AddUniversalGameLocator<StardewValley>(new Version("1.6.14"));
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_SMAPIRequiredButNotInstalled()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
@@ -48,11 +48,11 @@ public class MissingSMAPIEmitterTests : ALoadoutDiagnosticEmitterTest<Dependency
         await VerifyDiagnostic(diagnostic);
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_SMAPIRequiredButDisabled()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
         
         var collectionA = (await CreateCollection(loadout, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;

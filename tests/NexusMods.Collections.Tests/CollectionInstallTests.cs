@@ -14,7 +14,7 @@ namespace NexusMods.Collections.Tests;
 [Trait("RequiresNetworking", "True")]
 public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolatedGameTest<CollectionInstallTests>(helper)
 {
-    [SkippableTheory]
+    [Theory]
     [Trait("RequiresApiKey", "True")]
     // Includes a basic collection
     [InlineData("jjctqn", 1)]
@@ -28,7 +28,7 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
     [InlineData("jjctqn", 6)]
     public async Task CanInstallCollections(string slug, int revisionNumber)
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         
         // NOTE(erri120): dirty hack to get the login manager to understand we're premium with the API key
         var loginManager = ServiceProvider.GetRequiredService<ILoginManager>();

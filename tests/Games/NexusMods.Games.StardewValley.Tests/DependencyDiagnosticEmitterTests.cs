@@ -22,11 +22,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
             .AddUniversalGameLocator<StardewValley>(new Version("1.6.14"));
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_MissingRequiredDependency()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -51,11 +51,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await VerifyDiagnostic(diagnostic);
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_DisabledRequiredDependencyMessageData()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -83,11 +83,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await VerifyDiagnostic(diagnostic);
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_DisabledRequiredDependency_Collections()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
         
         var collectionA = (await CreateCollection(loadout, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;
@@ -129,11 +129,11 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
         await VerifyDiagnostic(diagnostic);
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_RequiredDependencyIsOutdated()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)

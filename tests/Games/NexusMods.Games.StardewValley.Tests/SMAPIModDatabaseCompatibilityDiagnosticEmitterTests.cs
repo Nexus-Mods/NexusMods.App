@@ -22,11 +22,11 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
             .AddUniversalGameLocator<StardewValley>(new Version("1.6.14"));
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_ModCompatabilityObsolete()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -46,11 +46,11 @@ public class SMAPIModDatabaseCompatibilityDiagnosticEmitterTests : ALoadoutDiagn
         await VerifyDiagnostic(diagnostic);
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_ModCompatabilityAssumeBroken()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)

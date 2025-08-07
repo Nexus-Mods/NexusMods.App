@@ -135,11 +135,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         secondResult.ResultStatus.Should().Be(CacheUpdaterResultStatus.Ok);
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOnLibraryItemAdd()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is added to library, the 'observable' should fire immediately.
         // Arrange
@@ -174,11 +174,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         AssertUpdatesContainAllResults(spaceCoreData.Updates, updateOnPage);
     }
     
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOnLibraryItemRemove()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is removed from library, the 'observable' should emit a 'null'
         // object to indicate there is not an update anymore.
@@ -217,11 +217,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         receivedRemove.Should().BeTrue();
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task GetNewestModPageVersionObservable_ShouldNotifyOnLibraryItemAdd()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is added to library, the 'observable' for mod page should fire immediately.
 
@@ -264,11 +264,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         AssertUpdatesContainAllResults(spaceCoreData.Updates, updatesOnModPage.FileMappings[0]);
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task GetNewestModPageVersionObservable_ShouldNotifyOnLibraryItemRemove()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is removed from library, the 'observable' for mod page
         // should emit a 'null' object to indicate there is not an update anymore.
@@ -310,11 +310,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         receivedRemove.Should().BeTrue();
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotRemoveUnrelatedModUpdates_WhenModOnAnotherPageIsUpdated()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // This tests the 'fast path' of the real time update mechanism.
         // When receiving mod updates via the library, we only update a small subset
         // of the underlying ObservableCache. This test ensures that an update in
@@ -376,11 +376,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         receivedRemove.Should().BeFalse("SMAPI updates should not be removed when SpaceCore is updated");
     }
     
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOlderVersionWhenCurrentVersionRemoved()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that when both an older and current version of a mod are installed,
         // and the current version is removed, the older version should receive update notification
         // instantly.
@@ -437,11 +437,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         AssertUpdatesContainAllResults(spaceCoreData.Updates, updateOnPage);
     }
     
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task FilterService_HideAndShowFile_ShouldToggleUpdateVisibility()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 
@@ -495,11 +495,11 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
         updateOnPage.Value.NewerFiles.Length.Should().Be(initialUpdateCount, "Update count should return to original after showing the file");
     }
     
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task FilterService_HideAndShowMultipleFiles_ShouldToggleUpdateVisibility()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 

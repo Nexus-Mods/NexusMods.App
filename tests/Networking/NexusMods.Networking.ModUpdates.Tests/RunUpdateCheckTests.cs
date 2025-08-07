@@ -30,12 +30,12 @@ public class RunUpdateCheckTests : ACyberpunkIsolatedGameTest<RunUpdateCheckTest
     // we won't be mocking the V1 APIs; so more complex/stable tests involving mocks will
     // move after full V2 move.
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresNetworking", "True")]
     [Trait("RequiresApiKey", "True")]
     public async Task UpdatingModPageMetadata_ViaWebApi_ShouldWork()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         // Create loadout
         var loadout = await CreateLoadout();
         

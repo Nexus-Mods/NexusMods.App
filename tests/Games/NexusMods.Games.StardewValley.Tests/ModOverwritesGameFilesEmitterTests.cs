@@ -29,11 +29,11 @@ public class ModOverwritesGameFilesEmitterTests : ALoadoutDiagnosticEmitterTest<
             .AddSingleton<DummyInstaller>();
     }
 
-    [SkippableFact]
+    [Fact]
     [Trait("RequiresApiKey", "True")]
     public async Task Test_ModOverwritesGameFiles()
     {
-        ApiKeyTestHelper.SkipIfApiKeyNotAvailable();
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // 3D NPC Houses 1.0 https://www.nexusmods.com/stardewvalley/mods/763?tab=files
