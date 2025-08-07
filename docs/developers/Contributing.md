@@ -45,7 +45,7 @@ but some features may not work as expected. To add a supported game manually:
 ### Testing with Nexus API Integration
 
 Some tests in the project require a valid Nexus Mods API key to run properly.
-These tests are marked with the `RequiresApiKey` trait and will be skipped if the API key is not set.
+These tests are marked with the `RequiresApiKey` trait and will fail if the API key is not set.
 
 #### Obtaining a Nexus API Key
 
