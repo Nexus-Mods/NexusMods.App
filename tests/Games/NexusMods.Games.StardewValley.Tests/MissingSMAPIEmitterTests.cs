@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
@@ -22,8 +23,10 @@ public class MissingSMAPIEmitterTests : ALoadoutDiagnosticEmitterTest<Dependency
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_SMAPIRequiredButNotInstalled()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // Content Patcher 2.5.3 (https://www.nexusmods.com/stardewvalley/mods/1915?tab=files)
@@ -46,8 +49,10 @@ public class MissingSMAPIEmitterTests : ALoadoutDiagnosticEmitterTest<Dependency
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_SMAPIRequiredButDisabled()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
         
         var collectionA = (await CreateCollection(loadout, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;

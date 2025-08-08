@@ -9,7 +9,7 @@ namespace NexusMods.Abstractions.Games;
 
 /// <inheritdoc />
 public abstract class ASortableItemProvider<TItem, TKey> : ILoadoutSortableItemProvider<TItem, TKey>
-    where TItem : ISortableItem<TItem, TKey>
+    where TItem : IReactiveSortItem<TItem, TKey>
     where TKey : IEquatable<TKey>, ISortItemKey
 {
     private bool _isDisposed;

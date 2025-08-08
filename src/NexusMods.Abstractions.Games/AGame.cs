@@ -23,6 +23,7 @@ public abstract class AGame : IGame
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
+    private readonly Lazy<ISortOrderManager> _sortOrderManager;
     private readonly IServiceProvider _provider;
     private readonly IFileSystem _fs;
 
@@ -35,6 +36,7 @@ public abstract class AGame : IGame
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider));
         _fs = provider.GetRequiredService<IFileSystem>();
     }
 
@@ -44,6 +46,13 @@ public abstract class AGame : IGame
     protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new DefaultSynchronizer(provider);
+    }
+    
+    private ISortOrderManager MakeSortOrderManager(IServiceProvider provider)
+    {
+        var manager = new SortOrderManager(provider);
+        manager.RegisterSortOrderVarieties(GetSortOrderVarieties());
+        return manager;
     }
 
     /// <inheritdoc />
@@ -154,6 +163,12 @@ public abstract class AGame : IGame
     /// </summary>
     /// <param name="locations">Result of <see cref="GetLocations"/>.</param>
     public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
+
+    /// <summary>
+    /// Returns the Sort Order Variety definitions supported by this game.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual ISortOrderVariety[] GetSortOrderVarieties() => [];
 
     /// <inheritdoc/>
     public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory() => Optional<GamePath>.None;

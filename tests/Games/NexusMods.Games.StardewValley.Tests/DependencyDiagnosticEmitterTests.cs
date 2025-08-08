@@ -5,6 +5,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Games.StardewValley.Emitters;
 using NexusMods.Games.TestFramework;
 using NexusMods.StandardGameLocators.TestHelpers;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Games.StardewValley.Tests;
@@ -22,8 +23,10 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_MissingRequiredDependency()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -49,8 +52,10 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_DisabledRequiredDependencyMessageData()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
@@ -79,8 +84,10 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_DisabledRequiredDependency_Collections()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
         
         var collectionA = (await CreateCollection(loadout, "Collection A")).AsLoadoutItemGroup().LoadoutItemGroupId;
@@ -123,8 +130,10 @@ public class DependencyDiagnosticEmitterTests : ALoadoutDiagnosticEmitterTest<De
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task Test_RequiredDependencyIsOutdated()
     {
+        ApiKeyTestHelper.RequireApiKey();
         var loadout = await CreateLoadout();
 
         // SMAPI 4.1.10 (https://www.nexusmods.com/stardewvalley/mods/2400?tab=files)
