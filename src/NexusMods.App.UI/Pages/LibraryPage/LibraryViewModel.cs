@@ -275,7 +275,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
             Loadout.MutableCollections(_connection, _loadout.LoadoutId)
                 .Observe(r => r.GroupId)
                 .Transform(r => new InstallationTarget(r.GroupId, r.Name))
-                .SortAndBind(out _installationTargets, Comparer<InstallationTarget>.Create((a, b) => b.Id.Value.CompareTo(a.Id.Value)))
+                .SortBy(target => target.Id.Value.Value)
+                .DistinctUntilChanged()
+                .Bind(out _installationTargets)
                 .Subscribe()
                 .AddTo(disposables);
 
