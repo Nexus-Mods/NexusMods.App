@@ -268,7 +268,7 @@ public class SynchronizerService : ISynchronizerService
         // Solution: Check if EXE (primaryfile) is in use.
         // Note: This doesn't account for CLI calls. I think that's fine; an external CLI user/caller
         var game = loadout.InstallationInstance.GetGame() as AGame;
-        var primaryFile = game!.GetPrimaryFile(loadout.InstallationInstance.Store)
+        var primaryFile = game!.GetPrimaryFile(loadout.InstallationInstance.TargetInfo)
             .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]);
         if (IsFileInUse(primaryFile))
             throw new ExecutableInUseException("Game's main executable file is in use.\n" +

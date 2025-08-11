@@ -121,19 +121,19 @@ public static class Services
                             [
                                 CreateDelegateFor<GOGGame, IGogGame>(
                                     (foundGame, requestedGame) => requestedGame.GogIds.Any(x => foundGame.Id.Equals(x)),
-                                    game => new GameLocatorResult(game.Path, game.Path.FileSystem, GameStore.GOG,
+                                    game => new GameLocatorResult(game.Path, game.Path.FileSystem, OSInformation.FakeWindows, GameStore.GOG,
                                         GogLocator.CreateMetadataCore(game, [])
                                     )
                                 ),
                                 CreateDelegateFor<EGSGame, IEpicGame>(
                                     (foundGame, requestedGame) => requestedGame.EpicCatalogItemId.Any(x => foundGame.CatalogItemId.Equals(x)),
-                                    game => new GameLocatorResult(game.InstallLocation, game.InstallLocation.FileSystem, GameStore.EGS,
+                                    game => new GameLocatorResult(game.InstallLocation, game.InstallLocation.FileSystem, OSInformation.FakeWindows, GameStore.EGS,
                                         EpicLocator.CreateMetadataCore(game)
                                     )
                                 ),
                                 CreateDelegateFor<OriginGame, IOriginGame>(
                                     (foundGame, requestedGame) => requestedGame.OriginGameIds.Any(x => foundGame.Id.Equals(x)),
-                                    game => new GameLocatorResult(game.InstallPath, game.InstallPath.FileSystem, GameStore.Origin,
+                                    game => new GameLocatorResult(game.InstallPath, game.InstallPath.FileSystem, OSInformation.FakeWindows, GameStore.Origin,
                                         OriginLocator.CreateMetadataCore(game)
                                     )
                                 ),

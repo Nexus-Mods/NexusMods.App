@@ -36,6 +36,13 @@ public class GameInstallation : IEquatable<GameInstallation>
     public GameStore Store { get; init; } = GameStore.Unknown;
 
     /// <summary>
+    /// OS targeted by the game version.
+    /// </summary>
+    public IOSInformation TargetOS { get; init; } = OSInformation.Shared;
+
+    public GameTargetInfo TargetInfo => new(Store, TargetOS);
+
+    /// <summary>
     /// Gets the metadata returned by the game locator.
     /// </summary>
     public IGameLocatorResultMetadata? LocatorResultMetadata { get; init; }
