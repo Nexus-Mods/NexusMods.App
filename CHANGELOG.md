@@ -9,7 +9,7 @@ Updating mods is now faster and more predictable. By default, the app will:
 
 Mods used in a collection downloaded from Nexus Mods will be left untouched.
 
-You can update all eligible mods at once with the "Update All" button in the Library.
+Premium members can update all eligible mods at once with the "Update All" button in the Library.
 
 Prefer to keep the old version? Use "Update and Keep Old Version" from the Library toolbar to update without deleting the old files.
 
