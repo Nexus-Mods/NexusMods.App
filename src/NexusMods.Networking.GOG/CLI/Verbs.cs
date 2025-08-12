@@ -1,5 +1,7 @@
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,8 +11,10 @@ using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Sdk.Hashes;
 using NexusMods.Hashing.xxHash3;
+using NexusMods.Networking.GOG.DTOs;
 using NexusMods.Paths;
 using NexusMods.Paths.Extensions;
+using NexusMods.Sdk;
 using NexusMods.Sdk.ProxyConsole;
 
 namespace NexusMods.Networking.GOG.CLI;
@@ -51,6 +55,8 @@ public static class Verbs
         await using (var _ = await renderer.WithProgress())
         {
             {
+                // TODO: await HandleLinuxInstallers(client, ProductId.From((ulong)productId), token);
+
                 await foreach (var os in Enum.GetValues<OS>().WithProgress(renderer, "Operating Systems Builds").WithCancellation(token))
                 {
                     var builds = await client.GetBuilds(ProductId.From((ulong)productId), os, token);
@@ -168,4 +174,91 @@ public static class Verbs
 
         return 0;
     }
+
+    private static async Task HandleLinuxInstallers(
+        IClient client,
+        ProductId productId,
+        CancellationToken cancellationToken)
+    {
+        var installers = await client.GetInstallers(ProductId.From((ulong)productId), cancellationToken: cancellationToken);
+        if (!installers.TryGetFirst(x => x.OS == OSPlatform.Linux, out var linuxInstaller)) return;
+
+        // TODO: use something else for production, only using MemoryStream for testing
+        using var ms = new MemoryStream();
+        await client.DownloadInstallerArchive(linuxInstaller, ms, cancellationToken: cancellationToken);
+        ms.Position = 0;
+
+        // NOTE(erri120): this magic directory contains the actual game data
+        var targetDirectory = RelativePath.FromUnsanitizedInput("data/noarch");
+
+        // NOTE(erri120): gameinfo file has the product and build IDs
+        var gameInfoFile = targetDirectory / "gameinfo";
+
+        using var zipArchive = new ZipArchive(ms, ZipArchiveMode.Read);
+        var gameInfoEntry = zipArchive.GetEntry(gameInfoFile.Path);
+        var gameInfo = gameInfoEntry is null ? null : ParseGameInfoFile(gameInfoEntry);
+
+        foreach (var zipEntry in zipArchive.Entries)
+        {
+            var originalPath = zipEntry.FullName;
+            var relativePath = RelativePath.FromUnsanitizedInput(originalPath);
+
+            if (!relativePath.StartsWith(targetDirectory)) continue;
+            relativePath = relativePath.DropFirst(numDirectories: targetDirectory.Depth + 1);
+
+            // TODO: put in DB
+        }
+    }
+    
+    private static GameInfo ParseGameInfoFile(ZipArchiveEntry zipArchiveEntry)
+    {
+        using var stream = zipArchiveEntry.Open();
+        var sr = new StreamReader(stream);
+        var contents = sr.ReadToEnd();
+        return ParseGameInfoFile(contents);
+    }
+
+    private static GameInfo ParseGameInfoFile(ReadOnlySpan<char> contents)
+    {
+        var lineEnumerator = contents.EnumerateLines();
+        var lineCount = -1;
+
+        string? gameName = null;
+        string? vanityVersion = null;
+        string? language = null;
+        ProductId productId = default;
+        BuildId buildId = default;
+
+        foreach (var line in lineEnumerator)
+        {
+            lineCount++;
+
+            if (lineCount == 0)
+            {
+                gameName = line.ToString();
+            } else if (lineCount == 1)
+            {
+                vanityVersion = line.ToString();
+            } else if (lineCount == 2)
+            {
+                // unknown
+            } else if (lineCount == 3)
+            {
+                language = line.ToString();
+            } else if (lineCount == 4)
+            {
+                productId = ProductId.From(ulong.Parse(line));
+            } else if (lineCount == 5)
+            {
+                // appears to be a duplicate entry for gameId
+            } else if (lineCount == 6)
+            {
+                buildId = BuildId.From(ulong.Parse(line));
+            }
+        }
+
+        return new GameInfo(gameName, vanityVersion, language, productId, buildId);
+    }
+
+    private record GameInfo(string? GameName, string? VanityVersion, string? Language, ProductId ProductId, BuildId BuildId);
 }

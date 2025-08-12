@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Channels;
@@ -241,6 +242,106 @@ internal class Client : IClient
         authInfo = default(AuthInfo.ReadOnly);
         return false;
     }
+
+    public async ValueTask<(OSPlatform OS, Uri DownloadLink)[]> GetInstallers(ProductId productId, CancellationToken token)
+    {
+        // NOTE(erri120): can also get DLC installers from this endpoint but requires using `expand=expanded_dlcs`
+        var uri = new Uri($"https://api.gog.com/products/{productId}?expand=downloads");
+        return await _pipeline.ExecuteAsync<(OSPlatform OS, Uri DownloadLink)[]>(async cancellationToken =>
+        {
+            using var msg = await CreateMessage(uri, token: cancellationToken);
+            using var response = await _client.SendAsync(msg, cancellationToken: cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound) return [];
+                throw new Exception($"Failed to get product information for {productId}");
+            }
+
+            var productResponse = await response.Content.ReadFromJsonAsync<ProductResponse>(_jsonSerializerOptions, cancellationToken: cancellationToken);
+            if (productResponse is null) throw new JsonException($"Failed to deserialize product response for {productId}");
+            var result = productResponse.Downloads.Installers.Select(installer =>
+            {
+                var downloadLink = new Uri(installer.Files[0].Downlink);
+                var os = installer.OS switch
+                {
+                    "linux" => OSPlatform.Linux,
+                    "osx" or "mac" => OSPlatform.OSX,
+                    "windows" => OSPlatform.Windows,
+                    _ => OSPlatform.Create(installer.OS),
+                };
+
+                return (os, downloadLink);
+            }).ToArray();
+
+            return result;
+        }, cancellationToken: token);
+    }
+
+    public async ValueTask DownloadInstallerArchive((OSPlatform OS, Uri DownloadLink) installerInfo, Stream output, CancellationToken token)
+    {
+        if (installerInfo.OS != OSPlatform.Linux) throw new NotSupportedException();
+        // NOTE(erri120): Linux installers are downloaded as shell scripts.
+        // The shell script is a self-extractable archive created using makeself (https://makeself.io/)
+        // A startup script is configured to run a mojosetup script (https://icculus.org/mojosetup/)
+        // We don't really care about any of this since we can just get the game contents directly by finding
+        // the ZIP archive embedded in the downloaded file and only extracting the game files.
+
+        await _pipeline.ExecuteAsync(async cancellationToken =>
+        {
+            Uri downloadLink;
+
+            using (var msg = await CreateMessage(installerInfo.DownloadLink, cancellationToken))
+            using (var response = await _client.SendAsync(msg, cancellationToken: cancellationToken))
+            {
+                var installerResponse = await response.Content.ReadFromJsonAsync<InstallerResponse>(_jsonSerializerOptions, cancellationToken: cancellationToken);
+                if (installerResponse is null) throw new JsonException("Failed to get installer");
+                downloadLink = new Uri(installerResponse.DownloadLink);
+            }
+
+            using (var msg = await CreateMessage(downloadLink, cancellationToken))
+            using (var response = await _client.SendAsync(msg, cancellationToken: cancellationToken))
+            {
+                await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken: cancellationToken);
+                await CopyArchive(stream, output, cancellationToken);
+            }
+        }, cancellationToken: token);
+    }
+
+    private static async ValueTask CopyArchive(Stream input, Stream output, CancellationToken cancellationToken)
+    {
+        var bufferSize = Size.MB;
+        var buffer = new Memory<byte>(array: new byte[bufferSize.Value]);
+
+        var found = false;
+
+        while (true)
+        {
+            var numRead = await input.ReadAsync(buffer, cancellationToken: cancellationToken);
+            if (numRead <= 0) break;
+
+            var span = buffer.Span.Slice(start: 0, length: numRead);
+            if (!IsArchive(span, out var index)) continue;
+
+            found = true;
+            await output.WriteAsync(buffer[index..], cancellationToken: cancellationToken);
+            break;
+        }
+
+        if (!found) throw new NotSupportedException("The input Stream doesn't appear to contain an archive");
+        await input.CopyToAsync(output, cancellationToken: cancellationToken);
+    }
+
+    private static bool IsArchive(ReadOnlySpan<byte> span, out int index)
+    {
+        Span<byte> magic = stackalloc byte[4];
+        magic[0] = 0x50;
+        magic[1] = 0x4B;
+        magic[2] = 0x03;
+        magic[3] = 0x04;
+
+        index = span.IndexOf(magic);
+        return index != -1;
+    }
     
     /// <summary>
     /// Get all the builds for a given product and OS.
@@ -332,33 +433,33 @@ internal class Client : IClient
     public async Task<Stream> GetFileStream(Build build, DepotInfo depotInfo, RelativePath path, CancellationToken token)
     { 
         return await _pipeline.ExecuteAsync(async token =>
+        {
+            var itemInfo = depotInfo.Items.FirstOrDefault(f => f.Path == path);
+            if (itemInfo == null)
+                throw new KeyNotFoundException($"The path {path} was not found in the depot.");
+
+            var secureUrl = await GetSecureUrl(build.ProductId, token);
+
+            if (itemInfo.SfcRef == null)
             {
-                var itemInfo = depotInfo.Items.FirstOrDefault(f => f.Path == path);
-                if (itemInfo == null)
-                    throw new KeyNotFoundException($"The path {path} was not found in the depot.");
-
-                var secureUrl = await GetSecureUrl(build.ProductId, token);
-
-                if (itemInfo.SfcRef == null)
-                {
-                    // No small file container, just return a stream to the chunks
-                    var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
-                    var source = new ChunkedStreamSource(this, itemInfo.Chunks, size,
-                        secureUrl
-                    );
-                    return (Stream)new ChunkedStream<ChunkedStreamSource>(source);
-                }
-                else
-                {
-                    // If the file is in a small file container, we need a stream to the outer container, and then a substream to the inner file
-                    var subSize = Size.FromLong(depotInfo.SmallFilesContainer!.Chunks.Sum(c => (long)c.Size.Value));
-                    var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, subSize,
-                        secureUrl, putInCache: true);
-                    var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
-                    var subStream = new SubStream(sfcStream, itemInfo.SfcRef.Offset, itemInfo.SfcRef.Size);
-                    return subStream;
-                }
-            }, token);
+                // No small file container, just return a stream to the chunks
+                var size = Size.FromLong(itemInfo.Chunks.Sum(c => (long)c.Size.Value));
+                var source = new ChunkedStreamSource(this, itemInfo.Chunks, size,
+                    secureUrl
+                );
+                return (Stream)new ChunkedStream<ChunkedStreamSource>(source);
+            }
+            else
+            {
+                // If the file is in a small file container, we need a stream to the outer container, and then a substream to the inner file
+                var subSize = Size.FromLong(depotInfo.SmallFilesContainer!.Chunks.Sum(c => (long)c.Size.Value));
+                var sfcSource = new ChunkedStreamSource(this, depotInfo.SmallFilesContainer!.Chunks, subSize,
+                    secureUrl, putInCache: true);
+                var sfcStream = new ChunkedStream<ChunkedStreamSource>(sfcSource);
+                var subStream = new SubStream(sfcStream, itemInfo.SfcRef.Offset, itemInfo.SfcRef.Size);
+                return subStream;
+            }
+        }, token);
     }
 
 
