@@ -36,6 +36,7 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> : I
     /// </summary>
     public IObservable<IChangeSet<CompositeItemModel<GamePath>, GamePath>> SimplifiedObservableRoots()
     {
+        throw new NotSupportedException("Not usable yet, calling this causes a double dispoe error");
         return _observableRoots
             .Select(_ => LocationIdToTree.Count) // tied 1:1 with root count
             .Select(GetAdaptedChangeSet) // get either changeset with 1 root, or with all roots.
