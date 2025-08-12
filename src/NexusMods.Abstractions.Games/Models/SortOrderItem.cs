@@ -1,10 +1,8 @@
+using System.Reactive.Joins;
 using JetBrains.Annotations;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Cascade;
-using NexusMods.Cascade.Patterns;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
-using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
 namespace NexusMods.Abstractions.Games;
@@ -33,22 +31,4 @@ public partial class SortOrderItem : IModelDefinition
     /// The order in which this item should be loaded relative to other items in the Load Order.
     /// </summary>
     public static readonly Int32Attribute SortIndex = new(Namespace, nameof(SortIndex));
-
-    static class Queries
-    {
-        /// <summary>
-        /// Include all sort order entities that are associated with a loadout
-        /// </summary>
-        internal static readonly Flow<(EntityId Loadout, EntityId Entity)> LoadoutSortOrderSubFlow =
-            Pattern.Create()
-                .Db(out var sortOrder, SortOrder.LoadoutId, out var loadoutId)
-                .Db(out var sortItem, ParentSortOrder, sortOrder)
-                .Return(loadoutId, sortItem);
-    }
-
-    static SortOrderItem()
-    {
-        Loadout.LoadoutAssociatedEntities.With(Queries.LoadoutSortOrderSubFlow);
-    }
-    
 }

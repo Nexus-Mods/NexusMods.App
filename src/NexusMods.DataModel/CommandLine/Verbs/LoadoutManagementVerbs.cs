@@ -259,7 +259,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         
-        var revisions = await undoService.RevisionsFor(loadout);
+        var revisions = undoService.RevisionsFor(loadout);
         
         await revisions.OrderBy(r => r.Revision.Timestamp)
             .Select((r, idx) => (idx, r.Revision.Timestamp, r.Revision.TxEntity, r.ModCount))
@@ -277,7 +277,7 @@ public static class LoadoutManagementVerbs
         [Injected] CancellationToken token)
     {
         
-        var revisions = await undoService.RevisionsFor(loadout);
+        var revisions = undoService.RevisionsFor(loadout);
         
         var revision = revisions.OrderBy(r => r.Revision.Timestamp)
             .Select((r, idx) => (Idx: idx, r.Revision))

@@ -63,8 +63,8 @@ internal class InstallLoadoutItemJob : IJobDefinitionWithStart<InstallLoadoutIte
     {
         if (!ParentGroupId.HasValue)
         {
-            var collections = await (Loadout.Load(Connection.Db, LoadoutId).MutableCollections());
-            ParentGroupId = collections.First().AsLoadoutItemGroup().LoadoutItemGroupId;
+            var collection = Loadout.Load(Connection.Db, LoadoutId).MutableCollections().First().CollectionId;
+            ParentGroupId = LoadoutItemGroupId.From(collection);
         }
 
         await context.YieldAsync();
