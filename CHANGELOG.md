@@ -1,7 +1,7 @@
 # v0.15.2 2025-08-12
 This update expands search to more screens, streamlines the mod update process, and includes several bug fixes for a smoother experience.
 
-## Improved Update Mods
+## Improved Updating Mods
 Updating mods is now faster and more predictable. By default, the app will:
 
 * Replace the currently installed version with the new one.
