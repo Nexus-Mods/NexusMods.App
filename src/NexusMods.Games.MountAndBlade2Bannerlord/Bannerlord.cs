@@ -36,7 +36,6 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpic
 
     private readonly IServiceProvider _serviceProvider;
     private readonly LauncherManagerFactory _launcherManagerFactory;
-    private readonly IFileSystem _fs;
 
     public override string Name => DisplayName;
     public override GameId GameId => GameIdStatic;
@@ -78,16 +77,15 @@ public sealed class Bannerlord : AGame, ISteamGame, IGogGame, IXboxGame//, IEpic
     {
         _serviceProvider = serviceProvider;
         _launcherManagerFactory = launcherManagerFactory;
-        _fs = serviceProvider.GetRequiredService<IFileSystem>();
     }
 
-    public override GamePath GetPrimaryFile(GameStore store) => GamePathProvier.PrimaryLauncherFile(store);
+    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => GamePathProvier.PrimaryLauncherFile(targetInfo.Store);
 
-    public override Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+    public override Optional<Version> GetLocalVersion(GameTargetInfo targetInfo, AbsolutePath installationPath)
     {
         // Note(sewer): Bannerlord can use prefixes on versions etc. ,we want to strip them out
         // so we sanitize/parse with `ApplicationVersion`.
-        var bannerlordVerStr = Fetcher.GetVersion(installation.Path, "TaleWorlds.Library.dll");
+        var bannerlordVerStr = Fetcher.GetVersion(installationPath.ToNativeSeparators(OSInformation.Shared), "TaleWorlds.Library.dll");
         var versionStr = ApplicationVersion.TryParse(bannerlordVerStr, out var av) ? $"{av.Major}.{av.Minor}.{av.Revision}.{av.ChangeSet}" : "0.0.0.0";
         return Version.TryParse(versionStr, out var val) ? val : new Version();
     }

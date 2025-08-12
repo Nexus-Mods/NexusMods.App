@@ -17,7 +17,7 @@ public class SkyrimSE : AGame, ISteamGame, IGogGame
 
     public override string Name => "Skyrim Special Edition";
     public override GameId GameId => GameId.From(1704);
-    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "SkyrimSE.exe");
+    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "SkyrimSE.exe");
 
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem, GameLocatorResult installation)
     {

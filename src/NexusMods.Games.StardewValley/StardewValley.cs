@@ -9,7 +9,6 @@ using NexusMods.Abstractions.GameLocators.Stores.Steam;
 using NexusMods.Abstractions.GameLocators.Stores.Xbox;
 using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Installers;
-using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
@@ -25,9 +24,7 @@ namespace NexusMods.Games.StardewValley;
 public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
 {
     public static GameDomain DomainStatic => GameDomain.From("stardewvalley");
-    private readonly IOSInformation _osInformation;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IFileSystem _fs;
     public IEnumerable<uint> SteamIds => new[] { 413150u };
     public IEnumerable<long> GogIds => new long[] { 1453375253 };
     public IEnumerable<string> XboxIds => new[] { "ConcernedApe.StardewValleyPC" };
@@ -49,25 +46,23 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         IEnumerable<IGameLocator> gameLocators,
         IServiceProvider provider) : base(provider)
     {
-        _osInformation = osInformation;
         _serviceProvider = provider;
-        _fs = provider.GetRequiredService<IFileSystem>();
     }
 
-    public override GamePath GetPrimaryFile(GameStore store)
+    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo)
     {
         // NOTE(erri120): Our SMAPI installer overrides all of these files.
-        return _osInformation.MatchPlatform(
+        return targetInfo.OS.MatchPlatform(
             onWindows: () => new GamePath(LocationId.Game, "Stardew Valley.exe"),
             onLinux: () => new GamePath(LocationId.Game, "StardewValley"),
             onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS/StardewValley")
         );
     }
 
-    public override Optional<GamePath> GetFallbackCollectionInstallDirectory()
+    public override Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo)
     {
         // NOTE(erri120): see https://github.com/Nexus-Mods/NexusMods.App/issues/2553
-        var path = _osInformation.MatchPlatform(
+        var path = targetInfo.OS.MatchPlatform(
             onWindows: () => new GamePath(LocationId.Game, Constants.ModsFolder),
             onLinux: () => new GamePath(LocationId.Game, Constants.ModsFolder),
             onOSX: () => new GamePath(LocationId.Game, "Contents/MacOS" / Constants.ModsFolder)
@@ -76,17 +71,17 @@ public class StardewValley : AGame, ISteamGame, IGogGame, IXboxGame
         return Optional<GamePath>.Create(path);
     }
 
-    public override Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+    public override Optional<Version> GetLocalVersion(GameTargetInfo targetInfo, AbsolutePath installationPath)
     {
         try
         {
-            var path = _osInformation.MatchPlatform(
+            var path = targetInfo.OS.MatchPlatform(
                 onWindows: () => "Stardew Valley.dll",
                 onLinux: () => "Stardew Valley.dll",
                 onOSX: () => "Contents/MacOS/Stardew Valley.dll"
             );
 
-            var fileInfo = _fs.FromUnsanitizedFullPath(installation.Path).Combine(path).FileInfo;
+            var fileInfo = installationPath.Combine(path).FileInfo;
             return fileInfo.GetFileVersionInfo().FileVersion;
         }
         catch (Exception)

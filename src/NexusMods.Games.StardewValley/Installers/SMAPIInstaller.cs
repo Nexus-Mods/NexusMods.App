@@ -20,7 +20,6 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     private static readonly RelativePath WindowsFolder = "windows";
     private static readonly RelativePath MacOSFolder = "macOS";
 
-    private readonly IOSInformation _osInformation;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IFileStore _fileStore;
     private readonly IFileHashesService _fileHashesService;
@@ -28,13 +27,11 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     public SMAPIInstaller(
         IServiceProvider serviceProvider,
         ILogger<SMAPIInstaller> logger,
-        IOSInformation osInformation,
         TemporaryFileManager temporaryFileManager,
         IFileHashesService fileHashesService,
         IFileStore fileStore)
         : base(serviceProvider, logger)
     {
-        _osInformation = osInformation;
         _temporaryFileManager = temporaryFileManager;
         _fileStore = fileStore;
         _fileHashesService = fileHashesService;
@@ -47,7 +44,8 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var targetParentName = _osInformation.MatchPlatform(
+        var targetOS = loadout.InstallationInstance.TargetOS;
+        var targetParentName = targetOS.MatchPlatform(
             onWindows: static () => WindowsFolder,
             onLinux: static () => LinuxFolder,
             onOSX: static () => MacOSFolder
@@ -69,10 +67,10 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
             return new NotSupported(Reason: "Expected the installation data file to be an archive");
         }
 
-        var isUnix = _osInformation.IsUnix();
+        var isUnix = targetOS.IsUnix();
 
         // NOTE(erri120): paths can be verified using Steam depots: https://steamdb.info/app/413150/depots/
-        RelativePath unixLauncherPath = _osInformation.IsOSX
+        RelativePath unixLauncherPath = targetOS.IsOSX
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 

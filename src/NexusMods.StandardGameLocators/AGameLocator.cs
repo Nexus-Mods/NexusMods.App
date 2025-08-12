@@ -100,7 +100,13 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
         foreach (var id in Ids(tg))
         {
             if (!_cachedGames.TryGetValue(id, out var found)) continue;
-            yield return new GameLocatorResult(Path(found), GetMappedFileSystem(found), Store, CreateMetadata(found, _cachedGames.Values));
+            yield return new GameLocatorResult(
+                Path(found),
+                GetMappedFileSystem(found),
+                GetTargetOS(found),
+                Store,
+                CreateMetadata(found, _cachedGames.Values)
+            );
         }
     }
 
@@ -124,6 +130,8 @@ public abstract class AGameLocator<TGameType, TId, TGame, TParent> : IGameLocato
     protected abstract AbsolutePath Path(TGameType record);
 
     protected virtual IFileSystem GetMappedFileSystem(TGameType game) => Path(game).FileSystem;
+
+    protected virtual IOSInformation GetTargetOS(TGameType game) => OSInformation.Shared;
 
     /// <summary>
     /// Creates <see cref="IGameLocatorResultMetadata"/> for the specific result.
