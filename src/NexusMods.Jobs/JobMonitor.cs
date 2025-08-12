@@ -48,49 +48,17 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         var group = new JobGroup();
         var ctx = new JobContext<TJobType, TResultType>(definition, this, group, group.JobCancellationToken, task);
         _allJobs.AddOrUpdate(ctx);
-        Task.Run(async () =>
-            {
-                await ctx.Start();
-                if (ctx.Status == JobStatus.Failed)
-                {
-                    if (ctx.TryGetException(out var ex))
-                    {
-                        _logger.LogError(ex!, "Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
-                    }
-                    else
-                    {
-                        _logger.LogError("Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
-                    }
-                }
-                _allJobs.Remove(ctx);
-            }
-        );
+        ExecuteJob(ctx);
         return new JobTask<TJobType, TResultType>(ctx);
     }
 
     public IJobTask<TJobType, TResultType> Begin<TJobType, TResultType>(TJobType job) where TJobType : IJobDefinitionWithStart<TJobType, TResultType> 
         where TResultType : notnull
     {
-        var group = new JobGroup(job.SupportsForcePause);
+        var group = new JobGroup();
         var ctx = new JobContext<TJobType, TResultType>(job, this, group, group.JobCancellationToken, job.StartAsync);
         _allJobs.AddOrUpdate(ctx);
-        Task.Run(async () =>
-            {
-                await ctx.Start();
-                if (ctx.Status == JobStatus.Failed)
-                {
-                    if (ctx.TryGetException(out var ex))
-                    {
-                        _logger.LogError(ex!, "Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
-                    }
-                    else
-                    {
-                        _logger.LogError("Job {JobId} of type {JobType} failed", ctx.Id, typeof(TJobType));
-                    }
-                }
-                _allJobs.Remove(ctx);
-            }
-        );
+        ExecuteJob(ctx);
         return new JobTask<TJobType, TResultType>(ctx);
     }
 
@@ -98,10 +66,10 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     {
         var job = _allJobs.Lookup(jobId);
         if (job.HasValue)
-            job.Value.Cancel();
+            job.Value.AsContext().Cancel();
     }
     
-    public void Cancel(IJobTask jobTask) => jobTask.Job.Cancel();
+    public void Cancel(IJobTask jobTask) => Cancel(jobTask.Job.Id);
 
     public void CancelGroup(IJobGroup group) => group.Cancel();
 
@@ -110,7 +78,7 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         foreach (var job in _allJobs.Items)
         {
             if (job.Status.IsActive())
-                job.Cancel();
+                job.AsContext().Cancel();
         }
     }
     
@@ -118,10 +86,10 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     {
         var job = _allJobs.Lookup(jobId);
         if (job.HasValue)
-            job.Value.Pause();
+            job.Value.AsContext().Pause();
     }
     
-    public void Pause(IJobTask jobTask) => jobTask.Job.Pause();
+    public void Pause(IJobTask jobTask) => Pause(jobTask.Job.Id);
     
     public void PauseGroup(IJobGroup group) => group.Pause();
     
@@ -130,18 +98,24 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
         foreach (var job in _allJobs.Items)
         {
             if (job.Status == JobStatus.Running)
-                job.Pause();
+                job.AsContext().Pause();
         }
     }
     
     public void Resume(JobId jobId)
     {
         var job = _allJobs.Lookup(jobId);
-        if (job.HasValue)
-            job.Value.Resume();
+        if (!job.HasValue || job.Value.Status != JobStatus.Paused) return;
+        job.Value.AsContext().Resume(); // Clear pause flag
+        ExecuteJob(job.Value.AsContext()); // Restart execution
     }
     
-    public void Resume(IJobTask jobTask) => jobTask.Job.Resume();
+    public void Resume(IJobTask jobTask)
+    {
+        if (jobTask.Job.Status != JobStatus.Paused) return;
+        jobTask.Job.AsContext().Resume(); // Clear pause flag
+        ExecuteJob(jobTask.Job.AsContext()); // Restart execution
+    }
     
     public void ResumeGroup(IJobGroup group) => group.Resume();
     
@@ -149,8 +123,35 @@ public sealed class JobMonitor : IJobMonitor, IDisposable
     {
         foreach (var job in _allJobs.Items)
         {
-            if (job.Status == JobStatus.Paused)
-                job.Resume();
+            if (job.Status != JobStatus.Paused) continue;
+            job.AsContext().Resume(); // Clear pause flag
+            ExecuteJob(job.AsContext()); // Restart execution
         }
+    }
+
+    /// <summary>
+    /// Executes a job with proper lifecycle management (used for both initial start and resume)
+    /// </summary>
+    private void ExecuteJob(IJobContext ctx)
+    {
+        Task.Run(async () =>
+        {
+            await ctx.Start();
+            
+            // Note(sewer): Per the existing comment in IJob.
+            // An untyped job interface, this is the reporting end of a job. The writable side is the <see cref="IJobContext{TJobType}"/>
+            // Therefore, by definition, both interfaces are always applied to same object.
+            var job = ((IJob)ctx);
+            if (job.Status == JobStatus.Failed)
+            {
+                if (ctx.TryGetException(out var ex))
+                    _logger.LogError(ex!, "Job {JobId} of type {JobType} failed", job.Id, ctx.JobType);
+                else
+                    _logger.LogError("Job {JobId} of type {JobType} failed", job.Id, ctx.JobType);
+            }
+            
+            if (((IJob)ctx).Status != JobStatus.Paused)
+                _allJobs.Remove(job.Id);
+        });
     }
 }

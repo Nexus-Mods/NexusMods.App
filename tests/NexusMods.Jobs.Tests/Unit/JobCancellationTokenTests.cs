@@ -21,7 +21,7 @@ public class JobCancellationTokenTests
     public void Should_Support_Basic_Cancellation()
     {
         // Arrange
-        var token = new JobCancellationToken(false);
+        var token = new JobCancellationToken();
 
         // Act
         token.Cancel();
@@ -56,7 +56,8 @@ public class JobCancellationTokenTests
 
         // Assert
         token.IsPaused.Should().BeTrue();
-        token.Token.IsCancellationRequested.Should().BeFalse();
+        // Unified approach: pause immediately cancels token for instant response
+        token.Token.IsCancellationRequested.Should().BeTrue();
     }
 
     [Fact]
@@ -102,66 +103,16 @@ public class JobCancellationTokenTests
     }
 
     [Fact]
-    public async Task Should_Block_On_WaitForResumeAsync_When_Paused()
+    public void RecycleToken_ShouldProvideFreshToken()
     {
         // Arrange
         var token = new JobCancellationToken();
-        var resumed = false;
-        using var waitingStarted = new ManualResetEventSlim();
-
-        // Act
-        token.Pause();
-        var waitTask = Task.Run(async () =>
-        {
-            // ReSharper disable once AccessToDisposedClosure
-            waitingStarted.Set(); // Signal that we're about to start waiting
-            await token.WaitForResumeAsync();
-            resumed = true;
-        });
-
-        // Wait for the task to actually start waiting
-        waitingStarted.Wait(TimeSpan.FromSeconds(30));
-        resumed.Should().BeFalse();
-
-        // Resume and verify
-        token.Resume();
-        await waitTask.WaitAsync(TimeSpan.FromSeconds(30));
-        resumed.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task Should_Complete_WaitForResumeAsync_When_Not_Paused()
-    {
-        // Arrange
-        var token = new JobCancellationToken();
-
-        // Act & Assert
-        var waitTask = token.WaitForResumeAsync();
-        await waitTask.WaitAsync(TimeSpan.FromSeconds(100));
-        waitTask.IsCompleted.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task Should_Throw_OperationCanceledException_When_Token_Cancelled_During_Wait()
-    {
-        // Arrange
-        var token = new JobCancellationToken();
-        using var waitingStarted = new ManualResetEventSlim();
-        token.Pause();
-
-        // Act
-        var waitTask = Task.Run(async () =>
-        {
-            // ReSharper disable once AccessToDisposedClosure
-            waitingStarted.Set(); // Signal that we're about to start waiting
-            await token.WaitForResumeAsync();
-        });
+        token.Pause(); // This cancels the token
         
-        // Wait for the task to actually start waiting
-        waitingStarted.Wait(TimeSpan.FromSeconds(30));
-        token.Cancel();
-
+        // Act
+        token.RecycleToken();
+        
         // Assert
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => waitTask);
+        token.Token.IsCancellationRequested.Should().BeFalse();
     }
 }

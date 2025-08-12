@@ -1,5 +1,5 @@
 using System.Numerics;
-using NexusMods.Paths;
+using DynamicData.Kernel;
 
 namespace NexusMods.Abstractions.Jobs;
 
@@ -8,6 +8,11 @@ namespace NexusMods.Abstractions.Jobs;
 /// </summary>
 public interface IJobContext : IAsyncDisposable, IDisposable
 {
+    /// <summary>
+    /// Allows you to start the job.
+    /// </summary>
+    public Task Start();
+    
     /// <summary>
     /// Call this whenever the job needs to check if the execution should cancel or pause
     /// </summary>
@@ -40,6 +45,16 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     IJobDefinition Definition { get; }
 
     /// <summary>
+    /// The type of the job definition
+    /// </summary>
+    Type JobType { get; }
+    
+    /// <summary>
+    /// Try to get the exception that caused the job to fail.
+    /// </summary>
+    public bool TryGetException(out Exception? exception);
+
+    /// <summary>
     /// Set the progress of the job as either a percentage or a rate of progress or both
     /// </summary>
     void SetPercent<TVal>(TVal current, TVal max)
@@ -58,21 +73,20 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     void CancelAndThrow(string message);
     
     /// <summary>
-    /// Helper for force pause exception handling.
-    /// Determines if the given exception was caused by a force pause and handles the pause flow appropriately.
+    /// Cancel the job
     /// </summary>
-    /// <param name="ex">The <see cref="OperationCanceledException"/> to check.</param>
-    /// <returns>
-    /// A task that completes when the job is resumed (if it was a pause)
-    /// or immediately (if not a pause).
-    /// </returns>
-    /// <exception cref="OperationCanceledException">Re-thrown if this was a true cancellation, not a pause.</exception>
-    /// <remarks>
-    /// This method should be called in catch blocks when handling <see cref="OperationCanceledException"/> in jobs that support force pause.
-    /// If the exception was caused by a force pause, this method will wait for resume and return normally.
-    /// If the exception was caused by true cancellation, it will re-throw the exception.
-    /// </remarks>
-    Task HandlePauseExceptionAsync(OperationCanceledException ex);
+    void Cancel();
+    
+    /// <summary>
+    /// Pause the job
+    /// </summary>
+    void Pause();
+    
+    /// <summary>
+    /// Resume the job
+    /// </summary>
+    void Resume();
+    
 }
 
 /// <summary>

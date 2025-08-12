@@ -8,7 +8,7 @@ public class JobGroup : IJobGroup
 {
     private readonly JobCancellationToken _jobCancellationToken;
     
-    public JobGroup(bool supportsForcePause = false) => _jobCancellationToken = new JobCancellationToken(supportsForcePause);
+    public JobGroup() => _jobCancellationToken = new JobCancellationToken();
 
     public bool IsCancelled => _jobCancellationToken.Token.IsCancellationRequested;
 

@@ -1,13 +1,11 @@
 using System.Numerics;
 using System.Reactive.Subjects;
-using System.Runtime.ExceptionServices;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Jobs;
 
-public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>, IJobContext<TJobDefinition> 
-    where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
+public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>, IJobContext<TJobDefinition> where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
 {
     private readonly BehaviorSubject<JobStatus> _status;
     private readonly Subject<Optional<Percent>> _progress;
@@ -37,19 +35,40 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         _jobCancellationToken = jobCancellationToken;
     }
 
-    internal async Task Start()
+    public async Task Start()
     {
+        // Just in case, as this API is publicly exposed
+        if (Status == JobStatus.Running)
+            return;
+        
+        // If paused, refuse to start until explicitly resumed
+        if (JobCancellationToken.IsPaused)
+        {
+            SetStatus(JobStatus.Paused);
+            return; // Don't auto-resume - require explicit Resume() call
+        }
+        
         SetStatus(JobStatus.Running);
         try
         {
-            _result= await _action(this);
+            _result = await _action(this);
             SetStatus(JobStatus.Completed);
             _tcs.TrySetResult(_result.Value);
         }
         catch (OperationCanceledException)
         {
-            SetStatus(JobStatus.Cancelled);
-            _tcs.TrySetCanceled();
+            // Distinguish between pause and true cancellation
+            // Note: Job will restart when Start() is called again
+            if (JobCancellationToken.IsPaused)
+            {
+                SetStatus(JobStatus.Paused);
+                // Don't signal _tcs when paused - await should continue waiting
+            }
+            else
+            {
+                SetStatus(JobStatus.Cancelled);
+                _tcs.TrySetCanceled();
+            }
         }
         catch (Exception ex)
         {
@@ -74,19 +93,11 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     public IObservable<Optional<double>> ObservableRateOfProgress => _rateOfProgress;
     public bool CanBeCancelled => Status.IsActive();
 
-    public async Task YieldAsync()
+    public Task YieldAsync()
     {
-        // First check for cancellation (which includes force pause)
+        // Simple cancellation check - pause becomes immediate cancellation
         JobCancellationToken.ThrowIfCancellationRequested();
-
-        // Then check for cooperative 
-        if (JobCancellationToken.IsPaused)
-        {
-            await PerformPause();
-
-            // Check cancellation again after resume in case it was requested while paused
-            JobCancellationToken.ThrowIfCancellationRequested();
-        }
+        return Task.CompletedTask;
     }
 
     public JobCancellationToken JobCancellationToken => _jobCancellationToken;
@@ -97,6 +108,7 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     
     TJobDefinition IJobContext<TJobDefinition>.Definition => _definition;
     public IJobDefinition Definition => _definition;
+    public Type JobType => typeof(TJobDefinition);
     
     public void SetPercent<TVal>(TVal current, TVal max) where TVal : IDivisionOperators<TVal, TVal, double>
     {
@@ -117,30 +129,13 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         throw new OperationCanceledException(message);
     }
 
-    public async Task HandlePauseExceptionAsync(OperationCanceledException ex)
-    {
-        if (_jobCancellationToken.IsPausingCancellation(ex))
-        {
-            // This was a force pause, not true cancellation,
-            // so wait until the job is resumed as usual.
-            JobCancellationToken.RecycleToken();
-            await PerformPause();
-        }
-        else
-        {
-            // This was real cancellation, re-throw preserving stack trace
-            ExceptionDispatchInfo.Capture(ex).Throw();
-        }
-    }
 
     public Task WaitAsync(CancellationToken cancellationToken = default)
     {
         return _tcs.Task;
     }
     
-    /// <summary>
-    /// Try to get the exception that caused the job to fail.
-    /// </summary>
+    /// <inheritdoc />
     public bool TryGetException(out Exception? exception)
     {
         if (_tcs.Task.IsFaulted)
@@ -160,9 +155,22 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         return _tcs.Task;
     }
     
-    public void Cancel() => _jobCancellationToken.Cancel();
-    public void Pause() => _jobCancellationToken.Pause();
-    public void Resume() => _jobCancellationToken.Resume();
+    internal void Cancel() => _jobCancellationToken.Cancel();
+    internal void Pause() => _jobCancellationToken.Pause();
+    internal void Resume()
+    {
+        if (!_jobCancellationToken.IsPaused)
+            return;
+
+        // Clear pause flag only - JobMonitor handles restarting execution
+        _jobCancellationToken.Resume();
+    }
+
+    public IJobContext AsContext() => this;
+    
+    void IJobContext.Cancel() => Cancel();
+    void IJobContext.Pause() => Pause();
+    void IJobContext.Resume() => Resume();
 
     public async ValueTask DisposeAsync()
     {
@@ -179,10 +187,4 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         }
     }
 
-    private async Task PerformPause()
-    {
-        SetStatus(JobStatus.Paused);
-        await JobCancellationToken.WaitForResumeAsync();
-        SetStatus(JobStatus.Running);
-    }
 }
