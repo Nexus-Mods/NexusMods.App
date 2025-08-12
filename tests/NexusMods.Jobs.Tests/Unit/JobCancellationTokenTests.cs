@@ -46,18 +46,22 @@ public class JobCancellationTokenTests
     }
 
     [Fact]
-    public void Should_Pause_And_Set_Paused_State()
+    public void Should_Cancel_And_Recycle_Token_on_Pause()
     {
         // Arrange
         var token = new JobCancellationToken();
 
         // Act
+        var originalToken = token.Token;
         token.Pause();
 
         // Assert
         token.IsPaused.Should().BeTrue();
-        // Unified approach: pause immediately cancels token for instant response
-        token.Token.IsCancellationRequested.Should().BeTrue();
+        
+        // Original token should request cancellation,
+        // while new token should be recycled
+        originalToken.IsCancellationRequested.Should().BeTrue();
+        token.Token.IsCancellationRequested.Should().BeFalse();
     }
 
     [Fact]
@@ -100,19 +104,5 @@ public class JobCancellationTokenTests
         // Assert
         token.Token.IsCancellationRequested.Should().BeTrue();
         token.IsPaused.Should().BeFalse();
-    }
-
-    [Fact]
-    public void RecycleToken_ShouldProvideFreshToken()
-    {
-        // Arrange
-        var token = new JobCancellationToken();
-        token.Pause(); // This cancels the token
-        
-        // Act
-        token.RecycleToken();
-        
-        // Assert
-        token.Token.IsCancellationRequested.Should().BeFalse();
     }
 }

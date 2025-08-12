@@ -155,7 +155,15 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         return _tcs.Task;
     }
     
-    internal void Cancel() => _jobCancellationToken.Cancel();
+    internal void Cancel() 
+    {
+        _jobCancellationToken.Cancel();
+        
+        // If the job was paused, we need to signal the TCS since the Start() method has already exited
+        if (Status != JobStatus.Paused) return;
+        SetStatus(JobStatus.Cancelled);
+        _tcs.TrySetCanceled();
+    }
     internal void Pause() => _jobCancellationToken.Pause();
     internal void Resume()
     {
