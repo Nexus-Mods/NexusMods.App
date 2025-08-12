@@ -1,3 +1,46 @@
+# v0.15.2 2025-08-12
+This update expands search to more screens, streamlines the mod update process, and includes several bug fixes for a smoother experience.
+
+## Improved Updating Mods
+Updating mods is now faster and more predictable. By default, the app will:
+
+* Replace the currently installed version with the new one.
+* Update all editable loadouts to the latest version.
+
+Mods used in a collection downloaded from Nexus Mods will be left untouched.
+
+Premium members can update all eligible mods at once with the "Update All" button in the Library.
+
+Prefer to keep the old version? Use "Update and Keep Old Version" from the Library toolbar to update without deleting the old files.
+
+## Search In More Places
+Search is now available in all mod views and the External Changes screen - making it easier than ever to find exactly what you need.
+
+## More Features
+* When pushing a new revision of a collection, a list of mods that have been added and removed will be automatically generated and posted as a changelog entry. 
+
+## Technical Changes
+* Exported collections now include the game version number.
+* A copy of the game hashing database is included with the app by default, reducing startup times. 
+
+## Bug Fixes
+* Fixed the "File In Use" error for Cyberpunk 2077. 
+* Fixed an issue preventing the app from restarting after closing; lingering instances are now killed on startup.
+* Removed erroneous error message when deleting the second-to-last editable collection. 
+
+## Known Issues
+The following are issues that we are already aware of in this build and will address in a future release:
+### Stardew Valley (GOG via Heroic on Linux)
+* Native version cannot be managed by the app.
+* WINE version is misidentified as native, causing some mods to fail.
+### Cyberpunk 2077
+* Epic Games version cannot be managed due to metadata issues in v2.3.
+### General 
+* Once a collection created by the user is removed from the app, it can no longer be edited, even if it was exported to the website.
+* The game version is not checked when adding a collection, meaning you can install outdated mods without being warned. 
+* The table header sorting and active tab states are not saved and are reset each time the view is loaded.
+
+
 # v0.14.3 2025-07-30
 This release adds search to the Library and enables creating collections. We also worked on adding support for the Epic Games Store version of Cyberpunk 2077; however, due to some problems with the 2.3 update, we've delayed this feature to a future release. 
 
