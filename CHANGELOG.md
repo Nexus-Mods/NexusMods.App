@@ -6,11 +6,12 @@ Updating mods is now faster and more predictable. By default, the app will:
 
 * Replace the currently installed version with the new one.
 * Update all editable loadouts to the latest version.
-* Mods used in a collection downloaded from Nexus Mods will be left untouched.
 
-You can update all eligible mods at once with the Update All button in the Library.
+Mods used in a collection downloaded from Nexus Mods will be left untouched.
 
-Prefer to keep the old version? Use Update and Keep Old Version from the Library toolbar to update without deleting the old files.
+You can update all eligible mods at once with the "Update All" button in the Library.
+
+Prefer to keep the old version? Use "Update and Keep Old Version" from the Library toolbar to update without deleting the old files.
 
 ## Search In More Places
 Search is now available in all mod views and the External Changes screen - making it easier than ever to find exactly what you need.
@@ -20,7 +21,7 @@ Search is now available in all mod views and the External Changes screen - makin
 
 ## Technical Changes
 * Exported collections now include the game version number.
-* A copy of the game hashing database is include with the app by default, reducing startup times. 
+* A copy of the game hashing database is included with the app by default, reducing startup times. 
 
 ## Bug Fixes
 * Fixed the "File In Use" error for Cyberpunk 2077. 
@@ -28,7 +29,7 @@ Search is now available in all mod views and the External Changes screen - makin
 * Removed erroneous error message when deleting the second-to-last editable collection. 
 
 ## Known Issues
-The following are issues that we are already aware of in this build and will aim to fix in a future release:
+The following are issues that we are already aware of in this build and will address in a future release:
 ### Stardew Valley (GOG via Heroic on Linux)
 * Native version cannot be managed by the app.
 * WINE version is misidentified as native, causing some mods to fail.
