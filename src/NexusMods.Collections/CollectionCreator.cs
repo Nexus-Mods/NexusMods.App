@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Collections.Json;
 using NexusMods.Abstractions.GameLocators;
@@ -106,7 +107,7 @@ public static class CollectionCreator
 
         if (string.IsNullOrWhiteSpace(newName))
         {
-            var names = (await loadout.MutableCollections()).Select(x => x.AsLoadoutItemGroup().AsLoadoutItem().Name).ToArray();
+            var names = loadout.MutableCollections().Select(x => x.Name).ToArray();
             newName = GenerateNewCollectionName(names);
         }
 
@@ -258,10 +259,35 @@ public static class CollectionCreator
     {
         var nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         var connection = serviceProvider.GetRequiredService<IConnection>();
+        var client = serviceProvider.GetRequiredService<IGraphQlClient>();
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+        var logger = loggerFactory.CreateLogger(nameof(CollectionCreator));
 
         var managedGroup = ManagedCollectionLoadoutGroup.Load(connection.Db, groupId);
 
-        var (collection, revisionId) = await UploadDraftRevision(serviceProvider, groupId, cancellationToken);
+        var (collection, revisionId, revisionNumber) = await UploadDraftRevision(serviceProvider, groupId, cancellationToken);
+
+        var previousRevisionResult = await client.QueryCollectionRevision(collection.Slug, RevisionNumber.From(revisionNumber.Value - 1), cancellationToken: cancellationToken);
+        var currentRevisionResult = await client.QueryCollectionRevision(collection.Slug, revisionNumber, cancellationToken);
+
+        if (currentRevisionResult.HasData)
+        {
+            var changelog = NexusModsLibrary.GenerateChangelog(currentRevisionResult.AssertHasData(), previousRevisionResult.HasData ? Optional<ICollectionRevision>.Create(previousRevisionResult.AssertHasData()) : Optional<ICollectionRevision>.None);
+            if (changelog is not null)
+            {
+                var changelogResult = await client.CreateChangelog(revisionId, changelog: changelog, cancellationToken: cancellationToken);
+
+                if (changelogResult.TryGetError(out Invalid? invalid))
+                {
+                    logger.LogWarning("Failed to create changelog for `{Slug}/{RevisionNumber}` because of invalid input: {Message}", collection.Slug, revisionNumber, invalid.Message);
+                }
+                else
+                {
+                    _ = changelogResult.AssertHasData();
+                }
+            }
+        }
+
         var result = await nexusModsLibrary.PublishRevision(revisionId, cancellationToken);
 
         // TODO: handle result
@@ -278,7 +304,7 @@ public static class CollectionCreator
         return collection;
     }
 
-    public static async ValueTask<(CollectionMetadata.ReadOnly, RevisionId)> UploadDraftRevision(
+    public static async ValueTask<(CollectionMetadata.ReadOnly, RevisionId, RevisionNumber)> UploadDraftRevision(
         IServiceProvider serviceProvider,
         ManagedCollectionLoadoutGroupId groupId,
         CancellationToken cancellationToken)
@@ -301,7 +327,7 @@ public static class CollectionCreator
         await tx.Commit();
 
         Tracking.AddEvent(Events.Collections.UploadRevision, EventMetadata.Create(name: $"{collection.Slug}", value: collectionManifest.Mods.Length));
-        return (collection, revisionId);
+        return (collection, revisionId, revisionNumber);
     }
 
     private static async ValueTask<IStreamFactory> CreateArchive(

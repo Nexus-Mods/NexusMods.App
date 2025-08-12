@@ -42,6 +42,20 @@ but some features may not work as expected. To add a supported game manually:
    NexusMods.App as-main remove-game -g "Game Name" -id "EntityID"
    ```
 
+### Testing with Nexus API Integration
+
+Some tests in the project require a valid Nexus Mods API key to run properly.
+These tests are marked with the `RequiresApiKey` trait and will fail if the API key is not set.
+
+#### Obtaining a Nexus API Key
+
+1. Go to your [API Key management page](https://www.nexusmods.com/users/myaccount?tab=api)
+2. Generate a new API key for development/testing purposes
+
+#### Setting Up the Environment Variable
+
+To run networking tests locally, set the `NEXUS_API_KEY` environment variable.
+
 ## Translations
 
 Translations are currently handled via the IDE. See [this issue](https://github.com/Nexus-Mods/NexusMods.App/issues/598) for more details.

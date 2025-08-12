@@ -62,7 +62,7 @@ public class RunGameTool<T> : IRunGameTool
         _logger.LogInformation("Starting {Name}", Name);
         
         var program = await GetGamePath(loadout);
-        var primaryFile = _game.GetPrimaryFile(loadout.InstallationInstance.Store).CombineChecked(loadout.InstallationInstance);
+        var primaryFile = _game.GetPrimaryFile(loadout.InstallationInstance.TargetInfo).CombineChecked(loadout.InstallationInstance);
 
         if (OSInformation.Shared.IsLinux && program.Equals(primaryFile))
         {
@@ -264,8 +264,7 @@ public class RunGameTool<T> : IRunGameTool
     /// <returns></returns>
     protected virtual ValueTask<AbsolutePath> GetGamePath(Loadout.ReadOnly loadout)
     {
-        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.InstallationInstance.Store)
-            .Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]));
+        return ValueTask.FromResult(_game.GetPrimaryFile(loadout.InstallationInstance.TargetInfo).Combine(loadout.InstallationInstance.LocationsRegister[LocationId.Game]));
     }
 
     /// <inheritdoc />

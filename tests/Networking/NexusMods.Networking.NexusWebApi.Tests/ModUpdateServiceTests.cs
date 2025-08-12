@@ -12,6 +12,7 @@ using NexusMods.Abstractions.NexusWebApi.Types.V2;
 using NexusMods.Abstractions.NexusWebApi.Types.V2.Uid;
 using NexusMods.Games.TestFramework;
 using NexusMods.Networking.NexusWebApi.UpdateFilters;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace NexusMods.Networking.NexusWebApi.Tests;
@@ -135,8 +136,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOnLibraryItemAdd()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is added to library, the 'observable' should fire immediately.
         // Arrange
@@ -172,8 +175,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
     
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOnLibraryItemRemove()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is removed from library, the 'observable' should emit a 'null'
         // object to indicate there is not an update anymore.
@@ -213,8 +218,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task GetNewestModPageVersionObservable_ShouldNotifyOnLibraryItemAdd()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is added to library, the 'observable' for mod page should fire immediately.
 
@@ -258,8 +265,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task GetNewestModPageVersionObservable_ShouldNotifyOnLibraryItemRemove()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that our real time update firing mechanism works.
         // As a mod is removed from library, the 'observable' for mod page
         // should emit a 'null' object to indicate there is not an update anymore.
@@ -302,8 +311,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotRemoveUnrelatedModUpdates_WhenModOnAnotherPageIsUpdated()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // This tests the 'fast path' of the real time update mechanism.
         // When receiving mod updates via the library, we only update a small subset
         // of the underlying ObservableCache. This test ensures that an update in
@@ -366,8 +377,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
     
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task GetNewestFileVersionObservable_ShouldNotifyOlderVersionWhenCurrentVersionRemoved()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // This tests that when both an older and current version of a mod are installed,
         // and the current version is removed, the older version should receive update notification
         // instantly.
@@ -425,8 +438,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
     
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task FilterService_HideAndShowFile_ShouldToggleUpdateVisibility()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 
@@ -481,8 +496,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
     
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task FilterService_HideAndShowMultipleFiles_ShouldToggleUpdateVisibility()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // Arrange
         var spaceCoreData = StaticTestData.SpaceCoreModData;
 

@@ -34,7 +34,7 @@ internal static class Helpers
         // to it for some reason.
         // See https://github.com/Nexus-Mods/NexusMods.App/pull/2713 for details.
         var localVersion = game
-            .GetLocalVersion(loadout.Installation)
+            .GetLocalVersion(loadout.Installation, loadout.InstallationInstance)
             .Convert(static version => new SemanticVersion(version));
 
         if (localVersion.HasValue) return localVersion.Value;

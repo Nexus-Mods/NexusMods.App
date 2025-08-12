@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
@@ -772,5 +773,64 @@ public partial class NexusModsLibrary
 
         var jsonFileEntity = archive.Children.FirstOrDefault(f => f.Path == "collection.json");
         return jsonFileEntity;
+    }
+
+    public static string? GenerateChangelog(ICollectionRevision current, Optional<ICollectionRevision> previous)
+    {
+        var currentFiles = GetFiles(current);
+        var previousFiles = previous.HasValue ? GetFiles(previous.Value) : [];
+
+        var added = currentFiles.Except(previousFiles, comparer: ModFileEqualityComparer.Instance).ToArray();
+        var removed = previousFiles.Except(currentFiles, comparer: ModFileEqualityComparer.Instance).ToArray();
+
+        if (added.Length == 0 && removed.Length == 0) return null;
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"Auto-generated changelog created by the Nexus Mods app {ApplicationConstants.Version.ToSafeString(maxFieldCount: 3)}");
+
+        if (added.Length > 0)
+        {
+            sb.AppendLine("### Added");
+            foreach (var item in added)
+            {
+                sb.AppendLine($"* {Stringify(item)}");
+            }
+        }
+
+        if (removed.Length > 0)
+        {
+            sb.AppendLine("### Removed");
+            foreach (var item in removed)
+            {
+                sb.AppendLine($"* {Stringify(item)}");
+            }
+        }
+
+        return sb.ToString();
+
+        static string Stringify(IModFile modFile)
+        {
+            return $"{modFile.Mod.Name} {modFile.Version} by {modFile.Mod.Author}";
+        }
+
+        static IModFile[] GetFiles(ICollectionRevision revision)
+        {
+            var files = revision.ModFiles
+                .Select(static modFiles => modFiles.File)
+                .Where(static modFile => modFile is not null)
+                .Select(static modFile => modFile!)
+                .Distinct(comparer: ModFileEqualityComparer.Instance)
+                .ToArray();
+
+            return files;
+        }
+    }
+
+    private class ModFileEqualityComparer : IEqualityComparer<IModFile>
+    {
+        public static readonly IEqualityComparer<IModFile> Instance = new ModFileEqualityComparer();
+
+        public bool Equals(IModFile? x, IModFile? y) => string.Equals(x?.Uid, y?.Uid, StringComparison.OrdinalIgnoreCase);
+        public int GetHashCode(IModFile x) => x.Uid.GetHashCode(StringComparison.OrdinalIgnoreCase);
     }
 }

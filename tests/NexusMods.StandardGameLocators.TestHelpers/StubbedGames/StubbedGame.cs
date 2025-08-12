@@ -38,8 +38,8 @@ public class StubbedGame : AGame, IEADesktopGame, IEpicGame, IOriginGame, ISteam
         _locators = locators;
     }
 
-    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "");
-    
+    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "");
+
     public override ILoadoutSynchronizer Synchronizer =>
         // Lazy initialization to avoid circular dependencies
         new DefaultSynchronizer(_serviceProvider);

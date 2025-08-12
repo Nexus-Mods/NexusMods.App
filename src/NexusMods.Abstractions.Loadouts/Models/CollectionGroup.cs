@@ -1,4 +1,6 @@
 using DynamicData.Kernel;
+using NexusMods.HyperDuck;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Models;
@@ -21,20 +23,12 @@ public partial class CollectionGroup : IModelDefinition
 
 public static partial class CollectionGroupLoaderExtensions
 {
+    
     /// <summary>
     /// Find the user collection for a given loadout
     /// </summary>
-    public static async ValueTask<CollectionGroup.ReadOnly[]> MutableCollections(this Loadout.ReadOnly loadout)
+    public static Query<(EntityId CollectionId, string Name)> MutableCollections(this Loadout.ReadOnly loadout)
     {
-        var db = loadout.Db;
-        using var query = await db.Topology.QueryAsync(Loadout.MutableCollections);
-
-        var result = query
-            .Where(x => x.Loadout == loadout)
-            .Select(x => CollectionGroup.Load(db, x.CollectionGroup))
-            .OrderBy(x => x.Id)
-            .ToArray();
-
-        return result;
+        return Loadout.MutableCollections(loadout.Db.Connection, loadout);
     }
 }

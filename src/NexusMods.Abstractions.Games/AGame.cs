@@ -23,6 +23,7 @@ public abstract class AGame : IGame
     private IReadOnlyCollection<GameInstallation>? _installations;
     private readonly IEnumerable<IGameLocator> _gameLocators;
     private readonly Lazy<ILoadoutSynchronizer> _synchronizer;
+    private readonly Lazy<ISortOrderManager> _sortOrderManager;
     private readonly IServiceProvider _provider;
     private readonly IFileSystem _fs;
 
@@ -35,6 +36,7 @@ public abstract class AGame : IGame
         _gameLocators = provider.GetServices<IGameLocator>();
         // In a Lazy so we don't get a circular dependency
         _synchronizer = new Lazy<ILoadoutSynchronizer>(() => MakeSynchronizer(provider));
+        _sortOrderManager = new Lazy<ISortOrderManager>(() => MakeSortOrderManager(provider));
         _fs = provider.GetRequiredService<IFileSystem>();
     }
 
@@ -44,6 +46,13 @@ public abstract class AGame : IGame
     protected virtual ILoadoutSynchronizer MakeSynchronizer(IServiceProvider provider)
     {
         return new DefaultSynchronizer(provider);
+    }
+    
+    private ISortOrderManager MakeSortOrderManager(IServiceProvider provider)
+    {
+        var manager = new SortOrderManager(provider);
+        manager.RegisterSortOrderVarieties(GetSortOrderVarieties());
+        return manager;
     }
 
     /// <inheritdoc />
@@ -58,11 +67,9 @@ public abstract class AGame : IGame
     /// <inheritdoc />
     public abstract GameId GameId { get; }
 
-    /// <summary>
-    /// The path to the main executable file for the game.
-    /// </summary>
-    public abstract GamePath GetPrimaryFile(GameStore store);
-    
+    /// <inheritdoc/>
+    public abstract GamePath GetPrimaryFile(GameTargetInfo targetInfo);
+
     /// <inheritdoc />
     public virtual IStreamFactory Icon => throw new NotImplementedException("No icon provided for this game.");
 
@@ -91,23 +98,31 @@ public abstract class AGame : IGame
             LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
             InstallDestinations = GetInstallDestinations(locations),
             Store = metadata.Store,
+            TargetOS = metadata.TargetOS,
             LocatorResultMetadata = metadata.Metadata,
             Locator = locator,
             GameMetadataId = dbId,
         };
     }
 
+    public virtual Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly metadata, GameInstallation installation)
+    {
+        return GetLocalVersion(
+            targetInfo: installation.TargetInfo,
+            installationPath: _fs.FromUnsanitizedFullPath(metadata.Path)
+        );
+    }
+
     /// <summary>
     /// Returns a game specific version of the game, usually from the primary executable.
     /// Usually used for game specific diagnostics.
     /// </summary>
-    public virtual Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+    public virtual Optional<Version> GetLocalVersion(GameTargetInfo targetInfo, AbsolutePath installationPath)
     {
         try
         {
-            var fvi = GetPrimaryFile(installation.Store)
-                .Combine(_fs.FromUnsanitizedFullPath(installation.Path)).FileInfo
-                .GetFileVersionInfo();
+            var primaryFile = GetPrimaryFile(targetInfo);
+            var fvi = installationPath.Combine(primaryFile.Path).FileInfo.GetFileVersionInfo();
             return fvi.ProductVersion;
         }
         catch (Exception)
@@ -136,6 +151,7 @@ public abstract class AGame : IGame
                     LocationsRegister = new GameLocationsRegister(new Dictionary<LocationId, AbsolutePath>(locations)),
                     InstallDestinations = GetInstallDestinations(locations),
                     Store = installation.Store,
+                    TargetOS = installation.TargetOS,
                     LocatorResultMetadata = installation.Metadata,
                     Locator = locator,
                 };
@@ -155,8 +171,14 @@ public abstract class AGame : IGame
     /// <param name="locations">Result of <see cref="GetLocations"/>.</param>
     public abstract List<IModInstallDestination> GetInstallDestinations(IReadOnlyDictionary<LocationId, AbsolutePath> locations);
 
+    /// <summary>
+    /// Returns the Sort Order Variety definitions supported by this game.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual ISortOrderVariety[] GetSortOrderVarieties() => [];
+
     /// <inheritdoc/>
-    public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory() => Optional<GamePath>.None;
+    public virtual Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo) => Optional<GamePath>.None;
 
     /// <inheritdoc />
     public override string ToString() => Name;

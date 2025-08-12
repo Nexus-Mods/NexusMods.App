@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using DynamicData.Kernel;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
@@ -6,6 +7,7 @@ using NexusMods.Abstractions.Library.Installers;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Games.StardewValley.Models;
+using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -20,7 +22,6 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     private static readonly RelativePath WindowsFolder = "windows";
     private static readonly RelativePath MacOSFolder = "macOS";
 
-    private readonly IOSInformation _osInformation;
     private readonly TemporaryFileManager _temporaryFileManager;
     private readonly IFileStore _fileStore;
     private readonly IFileHashesService _fileHashesService;
@@ -28,13 +29,11 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
     public SMAPIInstaller(
         IServiceProvider serviceProvider,
         ILogger<SMAPIInstaller> logger,
-        IOSInformation osInformation,
         TemporaryFileManager temporaryFileManager,
         IFileHashesService fileHashesService,
         IFileStore fileStore)
         : base(serviceProvider, logger)
     {
-        _osInformation = osInformation;
         _temporaryFileManager = temporaryFileManager;
         _fileStore = fileStore;
         _fileHashesService = fileHashesService;
@@ -47,7 +46,8 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         Loadout.ReadOnly loadout,
         CancellationToken cancellationToken)
     {
-        var targetParentName = _osInformation.MatchPlatform(
+        var targetOS = loadout.InstallationInstance.TargetOS;
+        var targetParentName = targetOS.MatchPlatform(
             onWindows: static () => WindowsFolder,
             onLinux: static () => LinuxFolder,
             onOSX: static () => MacOSFolder
@@ -69,10 +69,10 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
             return new NotSupported(Reason: "Expected the installation data file to be an archive");
         }
 
-        var isUnix = _osInformation.IsUnix();
+        var isUnix = targetOS.IsUnix();
 
         // NOTE(erri120): paths can be verified using Steam depots: https://steamdb.info/app/413150/depots/
-        RelativePath unixLauncherPath = _osInformation.IsOSX
+        RelativePath unixLauncherPath = targetOS.IsOSX
             ? "Contents/MacOS/StardewValley"
             : "StardewValley";
 
@@ -159,21 +159,18 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         // https://github.com/Pathoschild/SMAPI/blob/9763bc7484e29cbc9e7f37c61121d794e6720e75/src/SMAPI.Installer/InteractiveInstaller.cs#L419-L425
         var srcPath = new GamePath(LocationId.Game, "Stardew Valley.deps.json");
         await _fileHashesService.GetFileHashesDb();
-        var foundRecord = _fileHashesService.GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.Distinct().ToArray()))
-            .Where(f => f.Path == srcPath)
-            .TryGetFirst(out var gameFileRecord);
 
-        if (!foundRecord)
+        if (!TryGetGameFile(srcPath, loadout, out var fileHash, out var fileSize))
         {
-            Logger.LogError("Can't find the game file record for `{Path}`", srcPath);
+            Logger.LogWarning("Can't find the file `{Path}` SMAPI might not work properly", srcPath);
         }
         else
         {
             var to = new GamePath(LocationId.Game, "StardewModdingAPI.deps.json");
             _ = new LoadoutFile.New(transaction, out var id)
             {
-                Hash = gameFileRecord.Hash,
-                Size = gameFileRecord.Size,
+                Hash = fileHash,
+                Size = fileSize,
                 LoadoutItemWithTargetPath = new LoadoutItemWithTargetPath.New(transaction, id)
                 {
                     TargetPath = to.ToGamePathParentTuple(loadout.Id),
@@ -195,5 +192,32 @@ public class SMAPIInstaller : ALibraryArchiveInstaller
         };
 
         return new Success();
+    }
+
+    private bool TryGetGameFile(GamePath path, Loadout.ReadOnly loadout, out Hash hash, out Size size)
+    {
+        hash = default(Hash);
+        size = default(Size);
+
+        if (_fileHashesService.GetGameFiles((loadout.InstallationInstance.Store, loadout.LocatorIds.Distinct().ToArray()))
+            .Where(f => f.Path == path)
+            .TryGetFirst(out var gameFileRecord))
+        {
+            hash = gameFileRecord.Hash;
+            size = gameFileRecord.Size;
+            return true;
+        }
+
+        Logger.LogWarning("Failed to find game file `{Path}` in the game file hashes, using Loadout as fallback", path);
+        var entities = LoadoutItemWithTargetPath.FindByTargetPath(loadout.Db, path.ToGamePathParentTuple(loadout.Id));
+        if (!entities.TryGetFirst(x => x.IsLoadoutFile(), out var entity)) return false;
+        Logger.LogInformation("Using game file `{Path}` found in the Loadout", path);
+
+        var loadoutFile = LoadoutFile.Load(loadout.Db, entity.Id);
+        Debug.Assert(loadoutFile.IsValid());
+
+        hash = loadoutFile.Hash;
+        size = loadoutFile.Size;
+        return true;
     }
 }

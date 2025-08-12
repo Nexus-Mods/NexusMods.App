@@ -23,7 +23,6 @@ namespace NexusMods.Games.Larian.BaldursGate3;
 public class BaldursGate3 : AGame, ISteamGame, IGogGame
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IOSInformation _osInformation;
     private readonly IFileSystem _fs;
     public override string Name => "Baldur's Gate 3";
 
@@ -44,21 +43,20 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
     public BaldursGate3(IServiceProvider provider) : base(provider)
     {
         _serviceProvider = provider;
-        _osInformation = provider.GetRequiredService<IOSInformation>();
         _fs = provider.GetRequiredService<IFileSystem>();
     }
-    
-    public override Optional<Version> GetLocalVersion(GameInstallMetadata.ReadOnly installation)
+
+    public override Optional<Version> GetLocalVersion(GameTargetInfo targetInfo, AbsolutePath installationPath)
     {
         try
         {
             // Use the vulkan executable to get the version, not the primary file (launcher)
-            var executableGamePath = _osInformation.IsOSX 
+            var executableGamePath = targetInfo.OS.IsOSX 
                 ? new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3") 
                 : new GamePath(LocationId.Game, "bin/bg3.exe");
 
             var fvi = executableGamePath
-                .Combine(_fs.FromUnsanitizedFullPath(installation.Path)).FileInfo
+                .Combine(installationPath).FileInfo
                 .GetFileVersionInfo();
             return fvi.ProductVersion;
         }
@@ -68,11 +66,10 @@ public class BaldursGate3 : AGame, ISteamGame, IGogGame
         }
     }
 
-    public override GamePath GetPrimaryFile(GameStore store)
+    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo)
     {
-        if (_osInformation.IsOSX)
-            return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
-        
+        if (targetInfo.OS.IsOSX) return new GamePath(LocationId.Game, "Contents/MacOS/Baldur's Gate 3");
+
         // Use launcher to allow choosing between DirectX11 and Vulkan on GOG, Steam already always starts the launcher
         return new GamePath(LocationId.Game, "Launcher/LariLauncher.exe");
     }

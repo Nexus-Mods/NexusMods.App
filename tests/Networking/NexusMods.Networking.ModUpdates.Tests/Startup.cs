@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Games.TestFramework;
+
 namespace NexusMods.Networking.ModUpdates.Tests;
 
 public class Startup

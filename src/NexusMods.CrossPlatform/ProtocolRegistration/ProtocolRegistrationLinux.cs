@@ -118,12 +118,6 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
 
         var text = await sr.ReadToEndAsync(cancellationToken);
 
-        // Note(sewer): For `processPath` we're temporarily using `_osInterop.GetOwnExe()` because
-        //              paths library will replace backslashes in folder names with forward slashes.
-        //              Backslashes are valid on Linux (& macOS), so we're avoiding 
-        //              breaking the App here.
-        // https://github.com/Nexus-Mods/NexusMods.Paths/issues/71
-
         // Note(sewer): xdg-utils has issues with the 'generic' fallback for `.desktop` files
         //              which will be used in non-mainstream DEs like Hyprland, Sway, i3, etc.
         //              We'll use a hack to work around this.
@@ -146,7 +140,13 @@ internal class ProtocolRegistrationLinux : IProtocolRegistration
         // I also added an extra 'safety' rule: 
         //  - The wrapper will only be used if the path requires escaping.
         //  - IF Path requires escaping AND `XDG_DATA_HOME` needs escaping, we log a warning.
-        var processPath = Environment.ProcessPath!;
+        
+        // Note(sewer): We use GetOwnExeUnsanitized() instead of GetOwnExe()
+        //              because the backslashes \ are unfortunately valid filename
+        //              characters on Linux. The Paths library converts \ to /
+        //              which breaks the path, so we must avoid this.
+        //              https://github.com/Nexus-Mods/NexusMods.Paths/issues/71
+        var processPath = _osInterop.GetOwnExeUnsanitized();
         var wrapperScriptPath = await CreateWrapperScriptIfNeeded(applicationsDirectory, processPath, cancellationToken);
 
         text = text.Replace(ExecuteParameterPlaceholder, wrapperScriptPath.ToString());

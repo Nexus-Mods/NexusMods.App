@@ -12,8 +12,6 @@ namespace NexusMods.SingleProcess;
 /// </summary>
 public class CliClient(ILogger<CliClient> logger, SyncFile syncFile, IServiceProvider provider)
 {
-    private TcpClient? _client;
-    private NetworkStream? _stream;
 
     /// <summary>
     /// Starts the client process, connecting to the main process and running the console response loop
@@ -28,19 +26,19 @@ public class CliClient(ILogger<CliClient> logger, SyncFile syncFile, IServicePro
 
         logger.LogInformation("Found main process {ProcessId} listening on port {Port}", process.Id, port);
 
-        _client = new TcpClient();
-        _client.NoDelay = true; // Disable Nagle's algorithm to reduce delay.
+        using var client = new TcpClient();
+        client.NoDelay = true; // Disable Nagle's algorithm to reduce delay.
         try
         {
-            await _client.ConnectAsync(IPAddress.Loopback, port);
-            _stream = _client.GetStream();
+            await client.ConnectAsync(IPAddress.Loopback, port);
+            await using var stream = client.GetStream();
 
             logger.LogDebug("Connected to main process {ProcessId} on port {Port}", process.Id, port);
             await RunTillCloseAsync(new ConsoleSettings
             {
                 Arguments = args,
                 Renderer = new SpectreRenderer(console ?? AnsiConsole.Console),
-            });
+            }, stream);
         }
         catch (SocketException)
         {
@@ -49,11 +47,11 @@ public class CliClient(ILogger<CliClient> logger, SyncFile syncFile, IServicePro
         }
     }
 
-    private async Task RunTillCloseAsync(ConsoleSettings proxy)
+    private async Task RunTillCloseAsync(ConsoleSettings proxy, NetworkStream stream)
     {
         try
         {
-            var adaptor = new ClientRendererAdaptor(_stream!, proxy.Renderer, provider, proxy.Arguments);
+            var adaptor = new ClientRendererAdaptor(stream, proxy.Renderer, provider, proxy.Arguments);
             await adaptor.RunningTask;
         }
         catch (IOException ex)

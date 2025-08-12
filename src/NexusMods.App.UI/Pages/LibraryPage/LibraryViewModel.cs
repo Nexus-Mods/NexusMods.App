@@ -29,7 +29,6 @@ using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
-using NexusMods.Cascade;
 using NexusMods.Collections;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk.Icons;
@@ -273,15 +272,12 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                 configureAwait: false
             ).AddTo(disposables);
 
-            _connection.Topology
-                .Observe(Loadout.MutableCollections.Where(tuple => tuple.Loadout == loadoutId.Value))
-                .Transform(tuple =>
-                {
-                    var group = CollectionGroup.Load(_connection.Db, tuple.CollectionGroup);
-                    return new InstallationTarget(group.CollectionGroupId, group.AsLoadoutItemGroup().AsLoadoutItem().Name);
-                })
-                .AddKey(x => x.Id)
-                .SortAndBind(out _installationTargets, Comparer<InstallationTarget>.Create((a, b) => b.Id.Value.CompareTo(a.Id.Value)))
+            Loadout.MutableCollections(_connection, _loadout.LoadoutId)
+                .Observe(r => r.GroupId)
+                .Transform(r => new InstallationTarget(r.GroupId, r.Name))
+                .SortBy(target => target.Id.Value.Value)
+                .DistinctUntilChanged()
+                .Bind(out _installationTargets)
                 .Subscribe()
                 .AddTo(disposables);
 
