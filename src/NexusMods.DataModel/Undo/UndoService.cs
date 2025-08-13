@@ -1,10 +1,10 @@
 using System.Collections.Frozen;
+using System.Diagnostics;
+using FomodInstaller.Interface;
 using NexusMods.Abstractions.Collections;
 using NexusMods.Abstractions.Loadouts;
-using NexusMods.Cascade;
-using NexusMods.Cascade.Patterns;
+using NexusMods.HyperDuck;
 using NexusMods.MnemonicDB.Abstractions;
-using NexusMods.MnemonicDB.Abstractions.Cascade;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Query;
@@ -31,42 +31,27 @@ public class UndoService
     /// <summary>
     /// Get a query of all the valid restore points (revisions) for the given loadout.
     /// </summary>
-    public async Task<IQueryResult<LoadoutRevisionWithStats>> RevisionsFor(EntityId loadout)
-    { 
-        return await _conn.Topology.QueryAsync(Queries.LoadoutRevisionsWithMetadata
-            .Where(row => row.RowId == loadout)
-            .Select(row => LoadoutStats(_conn, row)));
+    public List<LoadoutRevisionWithStats> RevisionsFor(EntityId loadout)
+    {
+        var sw = Stopwatch.StartNew();
+        var revisions = _conn.Query<(EntityId TxId, DateTimeOffset Timestamp)>(Queries.LoadoutRevisionsWithMetadata, _conn, loadout)
+            .Select(row => LoadoutStats(_conn, new LoadoutRevision(loadout, row.TxId, row.Timestamp)))
+            .ToList();
+        var elapsed = sw.ElapsedMilliseconds;
+        return revisions;
     }
     
-    private static readonly Inlet<EntityId> LoadoutId = new();
-    
     /// <summary>
-    /// For now our stats only include getting the count of valid mods
-    /// </summary>
-    private static readonly Flow<(EntityId LoadoutId, int ModCount)> ModCount =
-        Pattern.Create()
-            .Each(LoadoutId, out var loadoutId)
-            .Db(out var itemId, LoadoutItem.LoadoutId, loadoutId)
-            .Db(itemId, LibraryLinkedLoadoutItem.LibraryItemId, out _)
-            .Return(loadoutId, itemId.Count());
-    
-
-    /// <summary>
-    /// This query isn't super efficient, but for every stat loadout we have to load one or (in the future) two
-    /// databases. So it's O(n) for the number of revisions for now. We can optimize it in the future
+    /// This will be expanded in the future to diff loadout states, but for now just grab the mod count
     /// </summary>
     private static LoadoutRevisionWithStats LoadoutStats(IConnection conn, LoadoutRevision revision)
     {
+        const string modCount = "SELECT COUNT(*) FROM mdb_LibraryLinkedLoadoutItem(Db=>$1) WHERE Loadout = $2";
         var newDb = conn.AsOf(TxId.From(revision.TxEntity.Value));
-
-        var loadoutInlet = newDb.Topology.Intern(LoadoutId);
-        loadoutInlet.Values = [revision.RowId];
-        
-        using var modCount = newDb.Topology.Query(ModCount);
-        return new LoadoutRevisionWithStats(revision, modCount.FirstOrDefault().ModCount); 
+        var result = newDb.Connection.Query<long>(modCount, newDb, revision.EntityId).First();
+        return new LoadoutRevisionWithStats(revision, (int)result); 
     }
     
-
     /// <summary>
     /// Attributes to ignore when undoing loadouts. Any of these attributes will not be reverted, and the entities pointed to
     /// in the E or V parts of the datom will not be traversed during the revert process.
@@ -89,7 +74,7 @@ public class UndoService
         var revertDb = _conn.AsOf(TxId.From(revisionRevision.TxEntity.Value));
         var ignoreAttrs = IgnoreAttributes.Select(a => currentDb.AttributeCache.GetAttributeId(a.Id)).ToFrozenSet();
         var toProcess = new HashSet<EntityId>();
-        toProcess.Add(revisionRevision.RowId);
+        toProcess.Add(revisionRevision.TxEntity);
 
         var tx = _conn.BeginTransaction();
         var processed = new HashSet<EntityId>();

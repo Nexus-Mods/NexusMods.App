@@ -50,9 +50,12 @@ public class HeroicGogLocator : IGameLocator
             var gamePath = found.Path;
 
             ILinuxCompatibilityDataProvider? linuxCompatibilityDataProvider = null;
+            var targetOS = OSInformation.Shared;
 
             if (found is HeroicGOGGame heroicGOGGame)
             {
+                targetOS = new OSInformation(heroicGOGGame.Platform);
+
                 var wineData = heroicGOGGame.WineData;
                 var winePrefix = heroicGOGGame.GetWinePrefix();
                 if (wineData is not null && winePrefix is not null)
@@ -72,7 +75,9 @@ public class HeroicGogLocator : IGameLocator
                     gamePath = gamePath.Combine("game");
             }
 
-            yield return new GameLocatorResult(gamePath, fs, GameStore.GOG,
+            yield return new GameLocatorResult(gamePath, fs, 
+                targetOS,
+                GameStore.GOG,
                 new HeroicGOGLocatorResultMetadata
                 {
                     Id = id,

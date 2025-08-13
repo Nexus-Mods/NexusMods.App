@@ -56,7 +56,7 @@ public class Cyberpunk2077Game : AGame, ISteamGame, IGogGame //, IEpicGame
         new(BaseFeatures.HasLoadOrder, IsImplemented: false),
     ];
 
-    public override GamePath GetPrimaryFile(GameStore store) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
+    public override GamePath GetPrimaryFile(GameTargetInfo targetInfo) => new(LocationId.Game, "bin/x64/Cyberpunk2077.exe");
     protected override IReadOnlyDictionary<LocationId, AbsolutePath> GetLocations(IFileSystem fileSystem,
         GameLocatorResult installation)
     {

@@ -129,14 +129,14 @@ public class InstallCollectionJob : IJobDefinitionWithStart<InstallCollectionJob
 
         var loadout = Loadout.Load(Connection.Db, TargetLoadout);
         var game = (loadout.InstallationInstance.Game as IGame)!;
-        var fallbackInstaller = FallbackCollectionDownloadInstaller.Create(ServiceProvider, game);
+        var fallbackInstaller = FallbackCollectionDownloadInstaller.Create(ServiceProvider, loadout, game);
 
         await Parallel.ForEachAsync(modsAndDownloads, context.CancellationToken, async (modAndDownload, _) =>
         {
             try
             {
                 Logger.LogDebug("Installing `{DownloadName}` (index={Index}) into `{CollectionName}/{RevisionNumber}`", modAndDownload.Mod.Name, modAndDownload.Download.ArrayIndex, RevisionMetadata.Collection.Name, RevisionMetadata.RevisionNumber);
-                await InstallMod(modAndDownload, collectionGroup, fallbackInstaller, game.GetFallbackCollectionInstallDirectory());
+                await InstallMod(modAndDownload, collectionGroup, fallbackInstaller, game.GetFallbackCollectionInstallDirectory(loadout.InstallationInstance.TargetInfo));
             }
             catch (Exception e)
             {

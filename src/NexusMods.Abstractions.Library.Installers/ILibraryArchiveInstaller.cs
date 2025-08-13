@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.MnemonicDB.Abstractions;
+using NexusMods.Paths;
 
 namespace NexusMods.Abstractions.Library.Installers;
 

@@ -170,4 +170,5 @@ for the file, and the size of the file.
 | Cyberpunk 2077   | Red Mod         | 2060310     | 1597316373    | 563d27afe4544a648a0c222d73dedd84 |
 | Stardew Valley   | Base Game       | 413150      | 1453375253    | N/A                              |
 | Baldur's Gate 3  | Base Game       | 1086940     | 1456460669    | N/A                              |
+| Skyrim SE        | Base Game       | 489830      | 1711230643    | 2d837b8ee87b434a99a80fca0e4eb960 |
 

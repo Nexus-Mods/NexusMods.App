@@ -55,12 +55,11 @@ public interface IGame : ILocatableGame
     /// also marks the installation was sourced from the given <see cref="IGameLocator"/>.
     /// </summary>
     public GameInstallation InstallationFromLocatorResult(GameLocatorResult metadata, EntityId dbId, IGameLocator locator);
-    
+
     /// <summary>
     /// Returns the primary (executable) file for the game.
     /// </summary>
-    /// <param name="store">The store used for the game.</param>
-    public GamePath GetPrimaryFile(GameStore store);
+    GamePath GetPrimaryFile(GameTargetInfo targetInfo);
 
     /// <summary>
     /// Gets the fallback directory for mods in collections that don't have matching installers.
@@ -69,5 +68,5 @@ public interface IGame : ILocatableGame
     /// Also is used for bundled mods.
     /// See https://github.com/Nexus-Mods/NexusMods.App/issues/2630 for details.
     /// </summary>
-    Optional<GamePath> GetFallbackCollectionInstallDirectory();
+    Optional<GamePath> GetFallbackCollectionInstallDirectory(GameTargetInfo targetInfo);
 }

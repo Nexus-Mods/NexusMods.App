@@ -20,6 +20,7 @@ using NexusMods.CrossPlatform;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.DataModel;
 using NexusMods.DataModel.SchemaVersions;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.ProxyConsole;
 using NexusMods.Sdk;
@@ -139,7 +140,7 @@ public class Program
             if (startupMode.RunAsMain)
             {
                 LogMessages.StartingProcess(_logger, Environment.ProcessPath, Environment.ProcessId, args);
-
+                
                 if (startupMode.ShowUI)
                 {
                     var task = RunCliTaskAsMain(services, startupMode);
