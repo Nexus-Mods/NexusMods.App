@@ -15,7 +15,7 @@ namespace NexusMods.Abstractions.Jobs;
 public class JobCancellationToken : IDisposable
 {
     private CancellationTokenSource _currentTokenSource;
-    private CancellationReason? _reason;
+    private CancellationReason _cancellationReason = CancellationReason.None;
 
     /// <summary>
     /// Initializes a new instance of <see cref="JobCancellationToken"/>.
@@ -32,12 +32,12 @@ public class JobCancellationToken : IDisposable
     /// A paused job will resume execution when <see cref="Resume()"/> is called
     /// and the job next calls <see cref="IJobContext.YieldAsync()"/>.
     /// </remarks>
-    public bool IsPaused => _reason == CancellationReason.Paused;
+    public bool IsPaused => _cancellationReason == CancellationReason.Paused;
     
     /// <summary>
     /// Gets a value indicating whether the job has been cancelled.
     /// </summary>
-    public bool IsCancelled => _reason == CancellationReason.Cancelled;
+    public bool IsCancelled => _cancellationReason == CancellationReason.Cancelled;
     
     /// <summary>
     /// Gets the underlying <see cref="CancellationToken"/> that can be used with standard .NET APIs.
@@ -66,10 +66,10 @@ public class JobCancellationToken : IDisposable
     /// </remarks>
     public void ThrowIfCancellationRequested() 
     {
-        // Note(sewer): The source of truth in cancellation is the _reason field.
+        // Note(sewer): The source of truth in cancellation is the _cancellationReason field.
         // The inner cancellation token is only used for compatibility with 
         // external APIs which are unaware of features like pause.
-        if (_reason.HasValue)
+        if (_cancellationReason != CancellationReason.None)
             throw new OperationCanceledException();
     }
     
@@ -83,7 +83,7 @@ public class JobCancellationToken : IDisposable
     /// </remarks>
     public void Cancel()
     {
-        _reason = CancellationReason.Cancelled;
+        _cancellationReason = CancellationReason.Cancelled;
         _currentTokenSource.Cancel();
     }
     
@@ -97,10 +97,10 @@ public class JobCancellationToken : IDisposable
     /// </remarks>
     public void Pause()
     {
-        if (_reason == CancellationReason.Cancelled)
+        if (_cancellationReason == CancellationReason.Cancelled)
             return; // Cannot pause if cancelled
             
-        _reason = CancellationReason.Paused;
+        _cancellationReason = CancellationReason.Paused;
         _currentTokenSource.Cancel(); // Always cancel immediately
         RecycleToken(); // Prepare fresh token immediately for eventual resume
     }
@@ -115,10 +115,10 @@ public class JobCancellationToken : IDisposable
     /// </remarks>
     public void Resume()
     {
-        if (_reason != CancellationReason.Paused)
+        if (_cancellationReason != CancellationReason.Paused)
             return;
 
-        _reason = null; // Just clear the flag - no waiting
+        _cancellationReason = CancellationReason.None; // Just clear the flag - no waiting
         // Token recycling handled by Start() method
     }
     
@@ -148,12 +148,17 @@ public class JobCancellationToken : IDisposable
 internal enum CancellationReason
 {
     /// <summary>
+    /// The job is running normally and has not been interrupted.
+    /// </summary>
+    None = 0,
+    
+    /// <summary>
     /// The job has been cancelled and will not resume.
     /// </summary>
-    Cancelled = 0,
+    Cancelled = 1,
     
     /// <summary>
     /// The job has been paused and can be resumed later.
     /// </summary>
-    Paused = 1,
+    Paused = 2,
 }
