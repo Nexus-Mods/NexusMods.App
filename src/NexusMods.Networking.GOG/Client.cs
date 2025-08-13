@@ -320,7 +320,7 @@ internal class Client : IClient
             if (numRead <= 0) break;
 
             var span = buffer.Span.Slice(start: 0, length: numRead);
-            if (!IsArchive(span, out var index)) continue;
+            if (!ContainsZipArchiveHeader(span, out var index)) continue;
 
             found = true;
             await output.WriteAsync(buffer[index..], cancellationToken: cancellationToken);
@@ -331,8 +331,9 @@ internal class Client : IClient
         await input.CopyToAsync(output, cancellationToken: cancellationToken);
     }
 
-    private static bool IsArchive(ReadOnlySpan<byte> span, out int index)
+    private static bool ContainsZipArchiveHeader(ReadOnlySpan<byte> span, out int index)
     {
+        // ZIP archive magic (50 4B 03 04)
         Span<byte> magic = stackalloc byte[4];
         magic[0] = 0x50;
         magic[1] = 0x4B;
