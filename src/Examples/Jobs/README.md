@@ -60,21 +60,14 @@ and [**IndeterminateProgressExample.cs**](../../../tests/NexusMods.Jobs.Tests/Ex
 
 ### Pausing and Resuming Jobs
 
-Jobs can be paused and resumed cooperatively.
-Pausing works the same as cancellation.
+Pausing uses the same mechanism as cancellation (cancellation tokens), but paused jobs can be resumed while cancelled jobs cannot.
 
-i.e. Jobs must call `context.YieldAsync()` to respect pause requests.
+Jobs must call `context.YieldAsync()` to respect pause requests.
+
+When resumed, jobs restart from the beginning of `StartAsync()`, so use mutable properties to persist state across pause/resume cycles.
 
 See [**PauseResumeExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/PauseResumeExample.cs).
 
-### Force Pausing Jobs
-
-Sometimes you need to call long-lived external code which only supports a `CancellationToken`.
-For this, a slightly more pre-emptive 'Force Pause' approach is supported.
-
-Set `SupportsForcePause => true` and use `HandlePauseExceptionAsync()` in a try/catch block.
-
-See [**ForcePauseExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/ForcePauseExample.cs).
 
 ### Factory Methods
 

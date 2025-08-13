@@ -33,7 +33,7 @@ public class PauseResumeExample(IJobMonitor jobMonitor)
         
         // Once paused, you can resume the job.
         // No 'magic' is required here.
-        // It will pick up after the last YieldAsync() call.
+        // The job will restart from the beginning, but state persists via mutable properties (e.g. _completed).
         jobMonitor.Resume(jobTask);
         
         // Wait for completion
@@ -44,22 +44,24 @@ public class PauseResumeExample(IJobMonitor jobMonitor)
 
 public record SimplePausableJob(int IterationCount) : IJobDefinitionWithStart<SimplePausableJob, int>
 {
+    // Use mutable property to persist state across pause/resume cycles
+    private int _completed;
+    
     public async ValueTask<int> StartAsync(IJobContext<SimplePausableJob> context)
     {
-        var completed = 0;
-        for (var x = 0; x < IterationCount; x++)
+        for (var x = _completed; x < IterationCount; x++)
         {
             // Call YieldAsync() to allow pause/resume (and cancellation) at this point
             await context.YieldAsync();
             
             // Simulate some work
             await Task.Delay(TimeSpan.FromMilliseconds(30), context.CancellationToken);
-            completed++;
+            _completed++;
             
             // Report progress
-            context.SetPercent(Size.FromLong(completed), Size.FromLong(IterationCount));
+            context.SetPercent(Size.FromLong(_completed), Size.FromLong(IterationCount));
         }
 
-        return completed;
+        return _completed;
     }
 }
