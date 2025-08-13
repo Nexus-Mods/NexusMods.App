@@ -39,7 +39,6 @@ public class JobCancellationToken : IDisposable
     /// </summary>
     public bool IsCancelled => _reason == CancellationReason.Cancelled;
     
-    
     /// <summary>
     /// Gets the underlying <see cref="CancellationToken"/> that can be used with standard .NET APIs.
     /// This token may be recycled on resume if force pause is supported.
@@ -56,7 +55,7 @@ public class JobCancellationToken : IDisposable
         => jobToken.Token;
     
     /// <summary>
-    /// Throws an <see cref="OperationCanceledException"/> if cancellation has been requested for this token.
+    /// Throws an <see cref="OperationCanceledException"/> if cancellation has been requested.
     /// </summary>
     /// <exception cref="OperationCanceledException">
     /// The token has been canceled.
@@ -65,7 +64,14 @@ public class JobCancellationToken : IDisposable
     /// This method provides the same functionality as <see cref="CancellationToken.ThrowIfCancellationRequested"/>
     /// for convenience when working with <see cref="JobCancellationToken"/>.
     /// </remarks>
-    public void ThrowIfCancellationRequested() => Token.ThrowIfCancellationRequested();
+    public void ThrowIfCancellationRequested() 
+    {
+        // Note(sewer): The source of truth in cancellation is the _reason field.
+        // The inner cancellation token is only used for compatibility with 
+        // external APIs which are unaware of features like pause.
+        if (_reason.HasValue)
+            throw new OperationCanceledException();
+    }
     
     /// <summary>
     /// Cancels the job, preventing it from resuming if paused.
@@ -121,12 +127,11 @@ public class JobCancellationToken : IDisposable
     /// Creates a fresh cancellation token source, disposing the previous one.
     /// This is used internally to provide new tokens after force pause resume.
     /// </summary>
-    public void RecycleToken()
+    private void RecycleToken()
     {
         _currentTokenSource?.Dispose();
         _currentTokenSource = new CancellationTokenSource();
     }
-    
 
     /// <summary>
     /// Releases all resources used by this <see cref="JobCancellationToken"/>.
