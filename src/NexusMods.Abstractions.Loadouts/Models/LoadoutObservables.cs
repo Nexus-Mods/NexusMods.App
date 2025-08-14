@@ -105,7 +105,7 @@ public partial class Loadout
     /// <summary>
     /// This excludes items that are groups themselves.
     /// </summary>
-    private const string LoadoutItemsEnabledStateSql =
+    private const string LoadoutItemEnabledStateSql =
         """
         SELECT 
             item_table.Id AS ItemId, 
@@ -120,7 +120,7 @@ public partial class Loadout
         WHERE isGroup_table.Id IS NULL
         """;
 
-    private const string LoadoutItemsEnabledStateInLoadoutSql =
+    private const string LoadoutItemEnabledStateInLoadoutSql =
         """
         SELECT 
             item_table.Id AS ItemId, 
@@ -218,7 +218,7 @@ public partial class Loadout
     
     public static Query<(EntityId ItemId, bool IsEnabled)> LoadoutItemEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId ItemId, bool IsEnabled)>(LoadoutItemsEnabledStateInLoadoutSql, connection, loadoutId.Value);
+        return connection.Query<(EntityId ItemId, bool IsEnabled)>(LoadoutItemEnabledStateInLoadoutSql, connection, loadoutId.Value);
     }
     
     public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
