@@ -110,7 +110,7 @@ public partial class Loadout
         SELECT 
             item_table.Id AS ItemId, 
             item_table.Disabled = FALSE 
-                AND COALESCE(group_table.Disabled, FALSE) = FALSE
+                AND group_table.Disabled = FALSE
                 AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
         FROM mdb_LoadoutItem(Db=>$1) item_table
         JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
@@ -125,7 +125,7 @@ public partial class Loadout
         SELECT 
             item_table.Id AS ItemId, 
             item_table.Disabled = FALSE 
-                AND COALESCE(group_table.Disabled, FALSE) = FALSE
+                AND group_table.Disabled = FALSE
                 AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
         FROM mdb_LoadoutItem(Db=>$1) item_table
         JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
@@ -142,7 +142,7 @@ public partial class Loadout
         SELECT 
             item_table.Id AS ItemId, 
             item_table.Disabled = FALSE 
-                AND COALESCE(group_table.Disabled, FALSE) = FALSE
+                AND group_table.Disabled = FALSE
                 AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
         FROM mdb_LoadoutItem(Db=>$1) item_table
         JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
