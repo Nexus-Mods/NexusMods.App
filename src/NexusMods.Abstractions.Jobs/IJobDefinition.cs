@@ -3,7 +3,13 @@ using JetBrains.Annotations;
 namespace NexusMods.Abstractions.Jobs;
 
 [PublicAPI]
-public interface IJobDefinition;
+public interface IJobDefinition
+{
+    /// <summary>
+    /// Get the readonly state for external access. Returns null if job has no externally visible state.
+    /// </summary>
+    IReadOnlyJobState? GetReadOnlyState() => null;
+}
 
 /// <summary>
 /// A typed job definition that returns a result
