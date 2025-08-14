@@ -153,6 +153,20 @@ public partial class Loadout
     
 #endregion Enabled State Queries
     
+    private const string EnabledLoadoutItemWithTargetPathInLoadoutSql =
+        """
+        SELECT item_table.Id
+        FROM mdb_LoadoutItemWithTargetPath(Db=>$1) item_table
+        JOIN mdb_LoadoutItemGroup(Db=>$1) group_table 
+            ON item_table.Parent = group_table.Id
+            AND group_table.Loadout = $2
+            AND group_table.Disabled = FALSE
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table 
+            ON group_table.Parent = coll_table.Id
+            AND coll_table.Loadout = $2
+        WHERE item_table.Loadout = $2
+            AND (coll_table.Disabled IS NULL OR coll_table.Disabled = FALSE)
+        """;
     
     /// <summary>
     /// Returns all mutable collection groups in a loadout.
@@ -205,5 +219,13 @@ public partial class Loadout
     public static Query<(EntityId ItemId, bool IsEnabled)> LoadoutItemEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
         return connection.Query<(EntityId ItemId, bool IsEnabled)>(LoadoutItemsEnabledStateInLoadoutSql, connection, loadoutId.Value);
+    }
+    
+    public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
+    {
+        return LoadoutItemWithTargetPath.Load(
+            connection.Db,
+            connection.Query<EntityId>(EnabledLoadoutItemWithTargetPathInLoadoutSql, connection, loadoutId.Value)
+        );
     }
 }

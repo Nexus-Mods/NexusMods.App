@@ -218,12 +218,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             };
         }
         
-        foreach (var loadoutItem in loadout.Items.OfTypeLoadoutItemWithTargetPath())
+        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(Connection, loadout.Id))
         {
             var targetPath = loadoutItem.TargetPath;
-            // Ignore disabled Items
-            if (!loadoutItem.AsLoadoutItem().IsEnabled())
-                continue;
 
             SyncNodePart sourceItem;
             LoadoutSourceItemType sourceItemType;
