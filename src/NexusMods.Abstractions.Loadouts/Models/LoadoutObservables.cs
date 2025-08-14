@@ -7,7 +7,6 @@ using NexusMods.MnemonicDB.Abstractions;
 
 namespace NexusMods.Abstractions.Loadouts;
 
-
 public partial class Loadout
 {
 
@@ -28,69 +27,133 @@ public partial class Loadout
         ({TrackedEntitiesForLoadout}) ents
         LEFT JOIN mdb_Datoms() d ON d.E = ents.Id
         """;
-
+    
+    
+#region Enabled State Queries
+    
+    
+    private const string CollectionEnabledStateSql =
+        """
+        SELECT 
+            coll_table.Id AS Id, 
+            coll_table.Disabled = FALSE AS IsEnabled 
+        FROM mdb_CollectionGroup(Db=>$1) coll_table
+        """;
+    
+    private const string CollectionEnabledStateInLoadoutSql =
+        """
+        SELECT 
+            coll_table.Id AS Id, 
+            coll_table.Disabled = FALSE AS IsEnabled 
+        FROM mdb_CollectionGroup(Db=>$1) coll_table
+        
+        WHERE coll_table.Loadout = $2
+        """;
+    
     private const string IsCollectionEnabledSql =
         """
-        SELECT collection_table.Id, collection_table.Disabled = FALSE AS IsEnabled 
-        FROM mdb_CollectionGroup(Db=>$1) collection_table
-        WHERE collection_table.Id = $2
+        SELECT 
+            coll_table.Id AS Id, 
+            coll_table.Disabled = FALSE AS IsEnabled 
+        FROM mdb_CollectionGroup(Db=>$1) coll_table
+        
+        WHERE coll_table.Id = $2
+        """;
+    
+    
+    /// <summary>
+    /// This excludes groups that are collections
+    /// </summary>
+    private const string LoadoutItemGroupEnabledStateSql =
+        """
+        SELECT 
+            group_table.Id AS Id, 
+            group_table.Disabled = FALSE AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
+        FROM mdb_LoadoutItemGroup(Db=>$1) group_table
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
+        -- Exclude groups that are collections
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) isColl_table ON group_table.Id = isColl_table.Id
+        WHERE isColl_table.Id IS NULL
+        """;
+    
+    private const string LoadoutItemGroupEnabledStateInLoadoutSql =
+        """
+        SELECT 
+            group_table.Id AS Id, 
+            group_table.Disabled = FALSE AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
+        FROM mdb_LoadoutItemGroup(Db=>$1) group_table
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
+        -- Exclude groups that are collections
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) isColl_table ON group_table.Id = isColl_table.Id
+        WHERE isColl_table.Id IS NULL
+        
+        AND group_table.Loadout = $2
         """;
     
     private const string IsLoadoutItemGroupEnabledSql =
         """
         SELECT 
-            group_table.Id, 
-            (group_table.Disabled = FALSE 
-                 AND (collection_table.Disabled IS NULL OR collection_table.Disabled = FALSE))AS IsEnabled 
+            group_table.Id AS Id, 
+            group_table.Disabled = FALSE AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
         FROM mdb_LoadoutItemGroup(Db=>$1) group_table
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) collection_table ON Parent = collection_table.Id
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
+        
         WHERE group_table.Id = $2
+        """;
+    
+    
+    /// <summary>
+    /// This excludes items that are groups themselves.
+    /// </summary>
+    private const string LoadoutItemsEnabledStateSql =
+        """
+        SELECT 
+            item_table.Id AS ItemId, 
+            item_table.Disabled = FALSE 
+                AND COALESCE(group_table.Disabled, FALSE) = FALSE
+                AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
+        FROM mdb_LoadoutItem(Db=>$1) item_table
+        JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
+        -- Exclude items that are groups themselves
+        LEFT JOIN mdb_LoadoutItemGroup(Db=>$1) isGroup_table ON item_table.Id = isGroup_table.Id
+        WHERE isGroup_table.Id IS NULL
+        """;
+
+    private const string LoadoutItemsEnabledStateInLoadoutSql =
+        """
+        SELECT 
+            item_table.Id AS ItemId, 
+            item_table.Disabled = FALSE 
+                AND COALESCE(group_table.Disabled, FALSE) = FALSE
+                AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
+        FROM mdb_LoadoutItem(Db=>$1) item_table
+        JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
+        -- Exclude items that are groups themselves
+        LEFT JOIN mdb_LoadoutItemGroup(Db=>$1) isGroup_table ON item_table.Id = isGroup_table.Id
+        WHERE isGroup_table.Id IS NULL 
+            
+        AND item_table.Loadout = $2
         """;
     
     private const string IsLoadoutItemEnabledSql =
         """
         SELECT 
-            item_table.Id, 
-            (item_table.Disabled = FALSE 
-                AND (group_table.Disabled IS NULL OR group_table.Disabled = FALSE)
-                AND (collection_table.Disabled IS NULL OR collection_table.Disabled = FALSE)) AS IsEnabled
+            item_table.Id AS ItemId, 
+            item_table.Disabled = FALSE 
+                AND COALESCE(group_table.Disabled, FALSE) = FALSE
+                AND COALESCE(coll_table.Disabled, FALSE) = FALSE AS IsEnabled
         FROM mdb_LoadoutItem(Db=>$1) item_table
-        LEFT JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) collection_table ON group_table.Parent = collection_table.Id
+        JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
+        LEFT JOIN mdb_CollectionGroup(Db=>$1) coll_table ON group_table.Parent = coll_table.Id
+        
         WHERE item_table.Id = $2
         """;
     
-    private const string CollectionsEnabledStateSql =
-        """
-        SELECT Id, Disabled = FALSE AS IsEnabled 
-        FROM mdb_CollectionGroup(Db=>$1) 
-        WHERE Loadout = $2
-        """;
+#endregion Enabled State Queries
     
-    private const string LoadoutItemGroupsEnabledStateSql =
-        """
-        SELECT 
-            group_table.Id AS GroupId, 
-            (group_table.Disabled = FALSE 
-                AND (parent_table.Disabled IS NULL OR parent_table.Disabled = FALSE)) AS IsEnabled
-        FROM mdb_LoadoutItemGroup(Db=>$1) group_table
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) parent_table ON group_table.Parent = parent_table.Id
-        WHERE group_table.Loadout = $2
-        """;
     
-    private const string LoadoutItemsEnabledStateSql =
-        """
-        SELECT 
-            item_table.Id AS ItemId, 
-            (item_table.Disabled = FALSE 
-                AND (group_table.Disabled IS NULL OR group_table.Disabled = FALSE)
-                AND (collection_table.Disabled IS NULL OR collection_table.Disabled = FALSE)) AS IsEnabled
-        FROM mdb_LoadoutItem(Db=>$1) item_table
-        LEFT JOIN mdb_LoadoutItemGroup(Db=>$1) group_table ON item_table.Parent = group_table.Id
-        LEFT JOIN mdb_CollectionGroup(Db=>$1) collection_table ON group_table.Parent = collection_table.Id
-        WHERE item_table.Loadout = $2
-        """;
-
     /// <summary>
     /// Returns all mutable collection groups in a loadout.
     /// </summary>
@@ -129,18 +192,18 @@ public partial class Loadout
             .FirstOrOptional(_ => true);
     }
 
-    public static Query<(EntityId CollectionId, bool IsEnabled)> CollectionsEnabledState(IConnection connection, LoadoutId loadoutId)
+    public static Query<(EntityId CollectionId, bool IsEnabled)> CollectionEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId CollectionId, bool IsEnabled)>(CollectionsEnabledStateSql, connection, loadoutId.Value);
+        return connection.Query<(EntityId CollectionId, bool IsEnabled)>(CollectionEnabledStateInLoadoutSql, connection, loadoutId.Value);
     }
     
-    public static Query<(EntityId GroupId, bool IsEnabled)> LoadoutItemGroupsEnabledState(IConnection connection, LoadoutId loadoutId)
+    public static Query<(EntityId GroupId, bool IsEnabled)> LoadoutItemGroupEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId GroupId, bool IsEnabled)>(LoadoutItemGroupsEnabledStateSql, connection, loadoutId.Value);
+        return connection.Query<(EntityId GroupId, bool IsEnabled)>(LoadoutItemGroupEnabledStateInLoadoutSql, connection, loadoutId.Value);
     }
     
-    public static Query<(EntityId ItemId, bool IsEnabled)> LoadoutItemsEnabledState(IConnection connection, LoadoutId loadoutId)
+    public static Query<(EntityId ItemId, bool IsEnabled)> LoadoutItemEnabledStateInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
     {
-        return connection.Query<(EntityId ItemId, bool IsEnabled)>(LoadoutItemsEnabledStateSql, connection, loadoutId.Value);
+        return connection.Query<(EntityId ItemId, bool IsEnabled)>(LoadoutItemsEnabledStateInLoadoutSql, connection, loadoutId.Value);
     }
 }
