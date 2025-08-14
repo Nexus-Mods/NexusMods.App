@@ -3,7 +3,13 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove('NuGet.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
     <ItemGroup>
+        <InternalsVisibleTo Include="NexusMods.Jobs"/>
+        <InternalsVisibleTo Include="NexusMods.Jobs.Tests"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="DynamicData" />
+        <PackageReference Include="Nito.AsyncEx" />
         <PackageReference Include="TransparentValueObjects" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="TransparentValueObjects.Abstractions" />
         <PackageReference Include="NexusMods.MnemonicDB.SourceGenerator" PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

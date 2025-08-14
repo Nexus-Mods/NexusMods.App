@@ -5,8 +5,7 @@ using NexusMods.Abstractions.Jobs;
 
 namespace NexusMods.Jobs;
 
-public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>, IJobContext<TJobDefinition> 
-    where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
+public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJobResult>, IJobContext<TJobDefinition> where TJobDefinition : IJobDefinition<TJobResult> where TJobResult : notnull
 {
     private readonly BehaviorSubject<JobStatus> _status;
     private readonly Subject<Optional<Percent>> _progress;
@@ -15,8 +14,9 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     private Optional<TJobResult> _result = Optional<TJobResult>.None;
     private readonly Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> _action;
     private readonly TaskCompletionSource<TJobResult> _tcs;
+    private readonly JobCancellationToken _jobCancellationToken;
 
-    internal JobContext(TJobDefinition definition, IJobMonitor monitor, IJobGroup jobGroup, Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> action)
+    internal JobContext(TJobDefinition definition, IJobMonitor monitor, IJobGroup jobGroup, JobCancellationToken jobCancellationToken, Func<IJobContext<TJobDefinition>, ValueTask<TJobResult>> action)
     {
         Id = JobId.NewId();
         Status = JobStatus.None;
@@ -32,21 +32,43 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         Progress = Optional<Percent>.None;
         RateOfProgress = Optional<double>.None;
         Group = jobGroup;
+        _jobCancellationToken = jobCancellationToken;
     }
 
-    internal async Task Start()
+    public async Task Start()
     {
+        // Just in case, as this API is publicly exposed
+        if (Status == JobStatus.Running)
+            return;
+        
+        // If paused, refuse to start until explicitly resumed
+        if (JobCancellationToken.IsPaused)
+        {
+            SetStatus(JobStatus.Paused);
+            return; // Don't auto-resume - require explicit Resume() call
+        }
+        
         SetStatus(JobStatus.Running);
         try
         {
-            _result= await _action(this);
+            _result = await _action(this);
             SetStatus(JobStatus.Completed);
             _tcs.TrySetResult(_result.Value);
         }
         catch (OperationCanceledException)
         {
-            SetStatus(JobStatus.Cancelled);
-            _tcs.TrySetCanceled();
+            // Distinguish between pause and true cancellation
+            // Note: Job will restart when Start() is called again
+            if (JobCancellationToken.IsPaused)
+            {
+                SetStatus(JobStatus.Paused);
+                // Don't signal _tcs when paused - await should continue waiting
+            }
+            else
+            {
+                SetStatus(JobStatus.Cancelled);
+                _tcs.TrySetCanceled();
+            }
         }
         catch (Exception ex)
         {
@@ -73,18 +95,20 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
 
     public Task YieldAsync()
     {
-        CancellationToken.ThrowIfCancellationRequested();
+        // Simple cancellation check - pause becomes immediate cancellation
+        JobCancellationToken.ThrowIfCancellationRequested();
         return Task.CompletedTask;
     }
 
-    public CancellationToken CancellationToken => Group.CancellationToken;
+    public JobCancellationToken JobCancellationToken => _jobCancellationToken;
+    public CancellationToken CancellationToken => _jobCancellationToken.Token;
     
     public IJobMonitor Monitor { get; }
     public IJobGroup Group { get; }
-
     
     TJobDefinition IJobContext<TJobDefinition>.Definition => _definition;
     public IJobDefinition Definition => _definition;
+    public Type JobType => typeof(TJobDefinition);
     
     public void SetPercent<TVal>(TVal current, TVal max) where TVal : IDivisionOperators<TVal, TVal, double>
     {
@@ -105,14 +129,13 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         throw new OperationCanceledException(message);
     }
 
+
     public Task WaitAsync(CancellationToken cancellationToken = default)
     {
         return _tcs.Task;
     }
     
-    /// <summary>
-    /// Try to get the exception that caused the job to fail.
-    /// </summary>
+    /// <inheritdoc />
     public bool TryGetException(out Exception? exception)
     {
         if (_tcs.Task.IsFaulted)
@@ -132,7 +155,30 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         return _tcs.Task;
     }
     
-    public void Cancel() => Group.Cancel();
+    internal void Cancel() 
+    {
+        _jobCancellationToken.Cancel();
+        
+        // If the job was paused, we need to signal the TCS since the Start() method has already exited
+        if (Status != JobStatus.Paused) return;
+        SetStatus(JobStatus.Cancelled);
+        _tcs.TrySetCanceled();
+    }
+    internal void Pause() => _jobCancellationToken.Pause();
+    internal void Resume()
+    {
+        if (!_jobCancellationToken.IsPaused)
+            return;
+
+        // Clear pause flag only - JobMonitor handles restarting execution
+        _jobCancellationToken.Resume();
+    }
+
+    public IJobContext AsContext() => this;
+    
+    void IJobContext.Cancel() => Cancel();
+    void IJobContext.Pause() => Pause();
+    void IJobContext.Resume() => Resume();
 
     public async ValueTask DisposeAsync()
     {
@@ -148,4 +194,5 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
             disposable.Dispose();
         }
     }
+
 }

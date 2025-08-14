@@ -6,8 +6,11 @@ namespace NexusMods.Jobs;
 
 public class JobGroup : IJobGroup
 {
-    private readonly CancellationTokenSource _token = new();
-    public bool IsCancelled => _token.Token.IsCancellationRequested;
+    private readonly JobCancellationToken _jobCancellationToken;
+    
+    public JobGroup() => _jobCancellationToken = new JobCancellationToken();
+
+    public bool IsCancelled => _jobCancellationToken.Token.IsCancellationRequested;
 
     private ConcurrentBag<IJob> Jobs { get; } = new();
     public IEnumerator<IJob> GetEnumerator() => Jobs.GetEnumerator();
@@ -17,6 +20,9 @@ public class JobGroup : IJobGroup
     public void Attach(IJob job) => Jobs.Add(job);
 
     public int Count => Jobs.Count;
-    public CancellationToken CancellationToken => _token.Token;
-    public void Cancel() => _token.Cancel();
+    public JobCancellationToken JobCancellationToken => _jobCancellationToken;
+    public CancellationToken CancellationToken => _jobCancellationToken.Token;
+    public void Cancel() => _jobCancellationToken.Cancel();
+    public void Pause() => _jobCancellationToken.Pause();
+    public void Resume() => _jobCancellationToken.Resume();
 }

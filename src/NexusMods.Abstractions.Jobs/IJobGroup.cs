@@ -21,4 +21,14 @@ public interface IJobGroup : IReadOnlyCollection<IJob>
     /// Adds a job to this group
     /// </summary>
     void Attach(IJob job);
+    
+    /// <summary>
+    /// Pauses all jobs in this group
+    /// </summary>
+    void Pause();
+    
+    /// <summary>
+    /// Resumes all jobs in this group
+    /// </summary>
+    void Resume();
 }

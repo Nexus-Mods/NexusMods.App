@@ -51,4 +51,44 @@ public interface IJobMonitor
     /// Cancels all active jobs
     /// </summary>
     void CancelAll();
+    
+    /// <summary>
+    /// Pauses a specific job by its ID
+    /// </summary>
+    void Pause(JobId jobId);
+    
+    /// <summary>
+    /// Pauses a specific job by its task
+    /// </summary>
+    void Pause(IJobTask jobTask);
+    
+    /// <summary>
+    /// Pauses all jobs in the specified group
+    /// </summary>
+    void PauseGroup(IJobGroup group);
+    
+    /// <summary>
+    /// Pauses all active jobs
+    /// </summary>
+    void PauseAll();
+    
+    /// <summary>
+    /// Resumes a specific job by its ID
+    /// </summary>
+    void Resume(JobId jobId);
+    
+    /// <summary>
+    /// Resumes a specific job by its task
+    /// </summary>
+    void Resume(IJobTask jobTask);
+    
+    /// <summary>
+    /// Resumes all jobs in the specified group
+    /// </summary>
+    void ResumeGroup(IJobGroup group);
+    
+    /// <summary>
+    /// Resumes all active jobs
+    /// </summary>
+    void ResumeAll();
 }
