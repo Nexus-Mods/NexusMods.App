@@ -66,6 +66,8 @@ public partial class CollectionLoadoutView : ReactiveUserControl<ICollectionLoad
                 .AddTo(disposables);
             this.BindCommand(ViewModel, vm => vm.CommandDeleteCollection, view => view.RemoveCollectionMenuItem)
                 .AddTo(disposables);
+            this.BindCommand(ViewModel, vm => vm.CommandMakeLocalEditableCopy, view => view.MakeEditableLocalCopy)
+                .AddTo(disposables);
             this.BindCommand(ViewModel, vm => vm.CommandViewCollectionDownloadPage, view => view.ViewCollectionDownloadMenuItem)
                 .AddTo(disposables);
 

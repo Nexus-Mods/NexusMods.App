@@ -1,6 +1,7 @@
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusModsLibrary.Models;
+using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.Attributes;
 using NexusMods.MnemonicDB.Abstractions.Models;
 
@@ -38,5 +39,23 @@ public partial class NexusCollectionLoadoutGroup : IModelDefinition
                 .AsModels<NexusCollectionItemLoadoutGroup.ReadOnly>(Db)
                 .Where(static model => model.IsValid());
         }
+    }
+
+    public static async Task<EntityId> MakeEditableLocalCollection(IConnection conn, EntityId collId, string newName)
+    {
+        var cloneId = await CollectionGroup.Clone(conn, collId);
+        var cloneEnt = Load(conn.Db, cloneId);
+                
+        using var tx = conn.BeginTransaction();
+        // Remap the name
+        tx.Add(cloneId, LoadoutItem.Name, newName);
+        // Make it editable
+        tx.Add(cloneId, CollectionGroup.IsReadOnly, false);
+        // Retract the Nexus references as this is no longer associated with the official collection
+        tx.Retract(cloneId, RevisionId, RevisionId.Get(cloneEnt));
+        tx.Retract(cloneId, CollectionId, CollectionId.Get(cloneEnt));
+        tx.Retract(cloneId, LibraryFileId, LibraryFileId.Get(cloneEnt));
+        await tx.Commit();
+        return cloneId;
     }
 }
