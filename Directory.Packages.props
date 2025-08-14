@@ -18,8 +18,8 @@
     <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.7.0" />
     <PackageVersion Include="Nerdbank.FullDuplexStream" Version="1.1.12" />
     <PackageVersion Include="Nerdbank.Streams" Version="2.11.79" />
-    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.20.0" />
-    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.20.0" />
+    <PackageVersion Include="NexusMods.MnemonicDB" Version="0.21.0" />
+    <PackageVersion Include="NexusMods.MnemonicDB.Abstractions" Version="0.21.0" />
     <PackageVersion Include="NexusMods.Hashing.xxHash3.Paths" Version="3.0.4" />
     <PackageVersion Include="NexusMods.Hashing.xxHash3" Version="3.0.4" />
     <PackageVersion Include="NexusMods.Archives.Nx" Version="0.6.4" />
@@ -149,7 +149,7 @@
     <PackageVersion Include="Humanizer" Version="2.14.1" />
     <PackageVersion Include="ini-parser-netstandard" Version="2.5.2" />
     <PackageVersion Include="Mutagen.Bethesda.Skyrim" Version="0.44.0" />
-    <PackageVersion Include="NexusMods.MnemonicDB.SourceGenerator" Version="0.20.0" />
+    <PackageVersion Include="NexusMods.MnemonicDB.SourceGenerator" Version="0.21.0" />
     <PackageVersion Include="NLog.Extensions.Logging" Version="5.3.14" />
     <PackageVersion Include="OneOf" Version="3.0.271" />
     <PackageVersion Include="ReactiveUI.Fody" Version="19.5.41" />
