@@ -33,6 +33,12 @@ public class NxFileStore : IFileStore
     private readonly AbsolutePath[] _archiveLocations;
     private readonly IConnection _conn;
     private readonly ILogger<NxFileStore> _logger;
+    
+    /// <summary>
+    /// This is the hash of an empty byte sequence. Useful for determining if we're being asked
+    /// to read an empty file (which is never going to be archived). 
+    /// </summary>
+    private static readonly Hash EmptyFile = Array.Empty<byte>().xxHash3();
 
     /// <summary>
     /// Constructor
@@ -161,6 +167,13 @@ public class NxFileStore : IFileStore
         var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, 2);
         Parallel.ForEach(files, file =>
         {
+            // Create empty files as empty
+            if (file.Hash == EmptyFile)
+            {
+                file.Dest.Create().Dispose();
+                return;
+            }
+
             if (TryGetLocation(_conn.Db, file.Hash, fileExistsCache,
                     out var archivePath, out var fileEntry))
             {
@@ -238,6 +251,11 @@ public class NxFileStore : IFileStore
 
         Parallel.ForEach(filesArr, hash =>
         {
+            if (hash == EmptyFile)
+            {
+                results.TryAdd(hash, []);
+                return;
+            }
 #if DEBUG
             if (!processedHashes.TryAdd(hash, 0))
                 throw new Exception($"Duplicate hash found: {hash.ToHex()}");
@@ -288,7 +306,9 @@ public class NxFileStore : IFileStore
     public Task<Stream> GetFileStream(Hash hash, CancellationToken token = default)
     {
         if (hash == Hash.Zero)
-            throw new ArgumentNullException(nameof(hash));
+        {
+            return Task.FromResult(Stream.Null);
+        }
 
         using var lck = _lock.ReadLock();
         if (!TryGetLocation(_conn.Db, hash, null,
