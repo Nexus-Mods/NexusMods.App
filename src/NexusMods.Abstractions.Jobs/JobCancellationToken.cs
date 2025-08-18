@@ -29,8 +29,7 @@ public class JobCancellationToken : IDisposable
     /// Gets a value indicating whether the job is currently paused.
     /// </summary>
     /// <remarks>
-    /// A paused job will resume execution when <see cref="Resume()"/> is called
-    /// and the job next calls <see cref="IJobContext.YieldAsync()"/>.
+    /// A paused job will resume execution when <see cref="Resume()"/> is called.
     /// </remarks>
     public bool IsPaused => _cancellationReason == CancellationReason.Paused;
     

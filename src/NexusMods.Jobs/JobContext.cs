@@ -41,7 +41,16 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         if (Status == JobStatus.Running)
             return;
         
+        // Note(sewer)
         // If paused, refuse to start until explicitly resumed
+        // `_cancellationReason` is the source of truth in a cancellation and pausing (per other comment)
+        //
+        // It's possible for the user to call 'pause' on a Task before it even properly begins, i.e.
+        // as this job is being started on a `ThreadPool`, activation may be delayed, during which case a 'pause' call may be made.
+        // This can sometimes be observed in the tests.
+        //
+        // If the launched task has no early/immediate yield point, it may run for a while, or even complete,
+        // despite being ordered to pause by the time it started.
         if (JobCancellationToken.IsPaused)
         {
             SetStatus(JobStatus.Paused);
