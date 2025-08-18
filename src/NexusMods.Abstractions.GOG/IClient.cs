@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using NexusMods.Abstractions.GOG.DTOs;
 using NexusMods.Abstractions.GOG.Values;
 using NexusMods.Abstractions.NexusWebApi.Types;
@@ -19,7 +20,17 @@ public interface IClient
     /// Initiate the login process.
     /// </summary>
     public Task Login(CancellationToken token);
-    
+
+    /// <summary>
+    /// Gets all installers.
+    /// </summary>
+    ValueTask<(OSPlatform OS, Uri DownloadLink)[]> GetInstallers(ProductId productId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Downloads the installer archive.
+    /// </summary>
+    ValueTask DownloadInstallerArchive((OSPlatform OS, Uri DownloadLink) installerInfo, Stream output, CancellationToken cancellationToken);
+
     /// <summary>
     /// Get all the builds for a given product and OS.
     /// </summary>
