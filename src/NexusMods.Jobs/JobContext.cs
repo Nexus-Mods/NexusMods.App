@@ -101,6 +101,7 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
     public Optional<double> RateOfProgress { get; private set; }
     public IObservable<Optional<double>> ObservableRateOfProgress => _rateOfProgress;
     public bool CanBeCancelled => Status.IsActive();
+    public bool CanBePaused => Status == JobStatus.Running && Definition.SupportsPausing;
 
     public Task YieldAsync()
     {
@@ -173,7 +174,16 @@ public sealed class JobContext<TJobDefinition, TJobResult> : IJobWithResult<TJob
         SetStatus(JobStatus.Cancelled);
         _tcs.TrySetCanceled();
     }
-    internal void Pause() => _jobCancellationToken.Pause();
+    internal void Pause()
+    {
+        if (!Definition.SupportsPausing)
+        {
+            Cancel();
+            return;
+        }
+        
+        _jobCancellationToken.Pause();
+    }
     internal void Resume()
     {
         if (!_jobCancellationToken.IsPaused)

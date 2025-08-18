@@ -38,6 +38,8 @@ public record ProgressReportingJob(int StepCount, TimeSpan StepDelay, ManualRese
 
 public record SignaledJob(ManualResetEventSlim StartSignal) : IJobDefinitionWithStart<SignaledJob, bool>
 {
+    // Override to enable pause/resume functionality
+    public bool SupportsPausing => true;
     public async ValueTask<bool> StartAsync(IJobContext<SignaledJob> context)
     {
         // Use timeout to prevent infinite hanging if signal is never set
@@ -150,6 +152,8 @@ public record PauseResumeTestJob(
     ManualResetEventSlim? AllowCompletionSignal = null,
     ManualResetEventSlim? ResumedSignal = null) : IJobDefinitionWithStart<PauseResumeTestJob, int>
 {
+    // Override to enable pause/resume functionality
+    public bool SupportsPausing => true;
     public async ValueTask<int> StartAsync(IJobContext<PauseResumeTestJob> context)
     {
         AllowYieldSignal.Wait(context.CancellationToken);
@@ -166,5 +170,25 @@ public record PauseResumeTestJob(
         AllowCompletionSignal?.Wait(context.CancellationToken);
         
         return 42;
+    }
+}
+
+// Test job definition that doesn't support pausing - uses default SupportsPausing = false
+public record NonPausableJob(ManualResetEventSlim StartSignal, ManualResetEventSlim CompletionSignal) : IJobDefinitionWithStart<NonPausableJob, string>
+{
+    public async ValueTask<string> StartAsync(IJobContext<NonPausableJob> context)
+    {
+        // Wait for signal to start
+        if (!StartSignal.Wait(TimeSpan.FromSeconds(30), context.CancellationToken))
+            throw new TimeoutException("StartSignal was not set within timeout period");
+
+        // Yield to allow pause/cancel requests to be processed
+        await context.YieldAsync();
+        
+        // Wait for completion signal 
+        if (!CompletionSignal.Wait(TimeSpan.FromSeconds(30), context.CancellationToken))
+            throw new TimeoutException("CompletionSignal was not set within timeout period");
+        
+        return "Completed";
     }
 }

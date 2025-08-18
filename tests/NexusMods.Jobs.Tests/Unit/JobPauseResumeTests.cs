@@ -68,4 +68,28 @@ public class JobPauseResumeTests(IJobMonitor jobMonitor)
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task.Job.WaitAsync());
         task.Job.Status.Should().Be(JobStatus.Cancelled);
     }
+
+    [Fact]
+    public async Task Should_Cancel_Instead_Of_Pause_When_SupportsPausing_Is_False()
+    {
+        // Arrange
+        var startSignal = new ManualResetEventSlim();
+        var completionSignal = new ManualResetEventSlim();
+        
+        var job = new NonPausableJob(startSignal, completionSignal);
+        var task = jobMonitor.Begin<NonPausableJob, string>(job);
+        
+        // Act
+        startSignal.Set(); // Allow job to start and reach yield point
+        
+        // Wait for job to start running
+        await SynchronizationHelpers.WaitForJobState(task.Job, JobStatus.Running, TimeSpan.FromSeconds(5));
+        
+        // Try to pause - should cancel instead because SupportsPausing = false
+        jobMonitor.Pause(task);
+        
+        // Assert
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task.Job.WaitAsync());
+        task.Job.Status.Should().Be(JobStatus.Cancelled);
+    }
 }

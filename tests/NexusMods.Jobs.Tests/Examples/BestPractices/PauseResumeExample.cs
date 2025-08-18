@@ -47,6 +47,9 @@ public record SimplePausableJob(int IterationCount) : IJobDefinitionWithStart<Si
     // Use mutable property to persist state across pause/resume cycles
     private int _completed;
     
+    // Override to enable pause/resume functionality
+    public bool SupportsPausing => true;
+    
     public async ValueTask<int> StartAsync(IJobContext<SimplePausableJob> context)
     {
         for (var x = _completed; x < IterationCount; x++)

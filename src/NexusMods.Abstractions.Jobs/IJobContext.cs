@@ -73,6 +73,12 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     void CancelAndThrow(string message);
     
     /// <summary>
+    /// Gets whether this job can be paused. Jobs can only be paused if they support pausing 
+    /// (see <see cref="IJobDefinition.SupportsPausing"/>) and are currently running.
+    /// </summary>
+    bool CanBePaused { get; }
+    
+    /// <summary>
     /// Cancel the job
     /// </summary>
     void Cancel();

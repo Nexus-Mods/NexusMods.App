@@ -62,6 +62,11 @@ public interface IJob
     bool CanBeCancelled { get; }
     
     /// <summary>
+    /// Gets whether this job can be paused
+    /// </summary>
+    bool CanBePaused { get; }
+    
+    /// <summary>
     /// Get the job context for performing control operations like Resume, Pause, Cancel.
     /// IJob is the reader side, IJobContext is the writer side.
     /// </summary>
