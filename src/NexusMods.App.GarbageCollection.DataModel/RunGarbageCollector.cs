@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Settings;
 using NexusMods.App.GarbageCollection.Nx;
 using NexusMods.Hashing.xxHash3;
@@ -15,17 +16,19 @@ namespace NexusMods.App.GarbageCollection.DataModel;
 public static class RunGarbageCollector
 {
     private static readonly AsyncFriendlyReaderWriterLock _gcLock = new();
-    
+
     /// <summary/>
+    /// <param name="logger"></param>
     /// <param name="archiveLocations">The archive locations, usually obtained from 'DataModelSettings'.</param>
     /// <param name="store">The <see cref="IFileStore"/> that requires locking for concurrent access.</param>
     /// <param name="connection">The MneumonicDB <see cref="IConnection"/> to the DataModel.</param>
-    public static void Do(Span<ConfigurablePath> archiveLocations, IFileStore store, IConnection connection)
+    public static void Do(ILogger logger, Span<ConfigurablePath> archiveLocations, IFileStore store, IConnection connection)
     {
         // See 'SAFETY' comment below for explanation of 'gcLock'
         using var gcLock = _gcLock.WriteLock();
         var toUpdateInDataStore = new List<ToUpdateInDataStoreEntry>();
 
+        logger.LogInformation("Running garbage collector");
         using (store.Lock())
         {
             var gc = new ArchiveGarbageCollector<NxParsedHeaderState, FileEntryWrapper>();
@@ -33,6 +36,7 @@ public static class RunGarbageCollector
             DataStoreReferenceMarker.MarkUsedFiles(connection, gc);
             gc.CollectGarbage(new Progress<double>(), (progress, toArchive, toRemove, archive) =>
             {
+                logger.LogInformation("Repacking archive {From} files to {To}", toRemove.Count, toArchive.Count);
                 NxRepacker.RepackArchive(progress, toArchive, toRemove, archive, false, out var newArchivePath);
                 toUpdateInDataStore.Add(new ToUpdateInDataStoreEntry(toRemove, archive.FilePath, newArchivePath));
             });
@@ -53,15 +57,15 @@ public static class RunGarbageCollector
         //         so long term we will want to avoid UpdateNxFileStore (MnemonicDB Commit) to avoid
         //         yielding to external code. We need a non-blocking `Commit`; that
         //         sends stuff off to another thread or internal queue without blocking.
-        var updater = new NxFileStoreUpdater(connection);
         foreach (var entry in toUpdateInDataStore)
         {
-            updater.UpdateNxFileStore(entry.ToRemove, entry.OldFilePath, entry.NewFilePath);
             // Delete original archive. We do this in a delayed fashion such that
             // a power loss during the UpdateNxFileStore operation does not lead
             // to an inconsistent state
             entry.OldFilePath.Delete();
         }
+        
+        store.ReloadCaches();
     }
 
     private record struct ToUpdateInDataStoreEntry(List<Hash> ToRemove, AbsolutePath OldFilePath, AbsolutePath NewFilePath);

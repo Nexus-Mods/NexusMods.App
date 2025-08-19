@@ -48,4 +48,9 @@ public class DummyFileStore : IFileStore
     }
 
     public AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock() => throw new NotImplementedException(); // Only used by GC, so never called right now.
+    
+    public void ReloadCaches()
+    {
+        
+    }
 }
