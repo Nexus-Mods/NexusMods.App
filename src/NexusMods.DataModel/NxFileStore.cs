@@ -124,6 +124,10 @@ public class NxFileStore : IFileStore
                 RelativePath = backup.Hash.ToHex(),
             });
         }
+        
+        // If we already have all the files (HaveFile), there is nothing to back up.
+        if (streams.Count == 0)
+            return;
 
         _logger.LogDebug("Backing up {Count} files of {Size} in size", distinct.Length, distinct.Sum(s => s.Size));
         var guid = Guid.NewGuid();
