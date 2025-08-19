@@ -57,14 +57,20 @@ public interface IJob
     public IJobDefinition Definition { get; }
     
     /// <summary>
-    /// Cancels this job
-    /// </summary>
-    void Cancel();
-    
-    /// <summary>
     /// Gets whether this job can be cancelled
     /// </summary>
     bool CanBeCancelled { get; }
+    
+    /// <summary>
+    /// Gets whether this job can be paused
+    /// </summary>
+    bool CanBePaused { get; }
+    
+    /// <summary>
+    /// Get the job context for performing control operations like Resume, Pause, Cancel.
+    /// IJob is the reader side, IJobContext is the writer side.
+    /// </summary>
+    internal IJobContext AsContext();
 }
 
 /// <summary>
