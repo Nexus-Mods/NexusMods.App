@@ -71,6 +71,11 @@ public interface IJob
     /// IJob is the reader side, IJobContext is the writer side.
     /// </summary>
     internal IJobContext AsContext();
+    
+    /// <summary>
+    /// Get the current readonly state of the job. Returns null if no state of this type exists.
+    /// </summary>
+    TState? GetReadOnlyState<TState>() where TState : class, IReadOnlyJobState => Definition.GetReadOnlyState() as TState;
 }
 
 /// <summary>
