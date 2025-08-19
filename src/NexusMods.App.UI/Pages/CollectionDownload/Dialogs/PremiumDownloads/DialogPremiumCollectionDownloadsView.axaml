@@ -1,0 +1,51 @@
+<reactiveUi:ReactiveUserControl x:TypeArguments="premiumDownloads:DialogPremiumCollectionDownloadsViewModel"
+                                xmlns="https://github.com/avaloniaui"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:reactiveUi="http://reactiveui.net"
+                                xmlns:premiumDownloads="clr-namespace:NexusMods.App.UI.Pages.CollectionDownload.Dialogs.PremiumDownloads"
+                                xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
+                                xmlns:controls="clr-namespace:NexusMods.App.UI.Controls"
+                                xmlns:resources="clr-namespace:NexusMods.App.UI.Resources"
+                                mc:Ignorable="d" d:DesignWidth="500"
+                                x:Class="NexusMods.App.UI.Pages.CollectionDownload.Dialogs.PremiumDownloads.DialogPremiumCollectionDownloadsView">
+
+    <StackPanel Spacing="{StaticResource Spacing-4}">
+        
+        <DockPanel>
+            <icons:UnifiedIcon DockPanel.Dock="Left" 
+                               Value="{x:Static icons:IconValues.Premium}"
+                               Size="20"
+                               Margin="0 0 4 0"
+                               Foreground="{StaticResource BrandPremium400Brush}"/>
+            <TextBlock TextWrapping="WrapWithOverflow" Theme="{StaticResource BodyLGBoldTheme}"><Span Foreground="{StaticResource BrandPremium400Brush}">Go Premium</Span> for one-click collection downloads</TextBlock>
+        </DockPanel>
+
+        <TextBlock x:Name="MessageTextBlock" 
+                   TextWrapping="WrapWithOverflow"
+                   Text="{x:Static resources:Language.UpgradeToPremiumView_Desc1}" />
+
+        <TextBlock x:Name="MessageTextBlock2" 
+                   TextWrapping="WrapWithOverflow"
+                   Theme="{StaticResource BodyMDSemiTheme}"
+                   Text="{x:Static resources:Language.UpgradeToPremiumView_Desc2}" />
+
+        <Grid ColumnDefinitions="20, *" RowDefinitions="Auto,10,Auto,10,Auto,10,Auto">
+            <Ellipse Grid.Column="0" Grid.Row="0" Fill="{StaticResource NeutralModerateBrush}" Width="4" Height="4" />
+            <TextBlock Grid.Column="1" Grid.Row="0" TextWrapping="WrapWithOverflow"
+                       Text="{x:Static resources:Language.UpgradeToPremiumView_Bullet0}" />
+            <Ellipse Grid.Column="0" Grid.Row="2" Fill="{StaticResource NeutralModerateBrush}" Width="4" Height="4" />
+            <TextBlock Grid.Column="1" Grid.Row="2" TextWrapping="WrapWithOverflow"
+                       Text="{x:Static resources:Language.UpgradeToPremiumView_Bullet1}" />
+            <Ellipse Grid.Column="0" Grid.Row="4" Fill="{StaticResource NeutralModerateBrush}" Width="4" Height="4" />
+            <TextBlock Grid.Column="1" Grid.Row="4" TextWrapping="WrapWithOverflow"
+                       Text="{x:Static resources:Language.UpgradeToPremiumView_Bullet2}" />
+            <Ellipse Grid.Column="0" Grid.Row="6" Fill="{StaticResource NeutralModerateBrush}" Width="4" Height="4" />
+            <TextBlock Grid.Column="1" Grid.Row="6" TextWrapping="WrapWithOverflow"
+                       Text="{x:Static resources:Language.UpgradeToPremiumView_Bullet3}" />
+        </Grid>
+    </StackPanel>
+
+
+</reactiveUi:ReactiveUserControl>

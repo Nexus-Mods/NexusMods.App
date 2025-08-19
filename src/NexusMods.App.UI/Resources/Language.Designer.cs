@@ -621,6 +621,33 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string DialogPremiumCollection_Cancel {
+            get {
+                return ResourceManager.GetString("DialogPremiumCollection_Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Learn more.
+        /// </summary>
+        public static string DialogPremiumCollection_LearnMore {
+            get {
+                return ResourceManager.GetString("DialogPremiumCollection_LearnMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Upgrade to Premium.
+        /// </summary>
+        public static string DialogPremiumCollection_UpgradeToPremium {
+            get {
+                return ResourceManager.GetString("DialogPremiumCollection_UpgradeToPremium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply changes: Adding {0} Modifying {1} Removing {2}.
         /// </summary>
         public static string DiffTreeViewModel_StatusBar__Apply_changes {
@@ -3107,6 +3134,15 @@ namespace NexusMods.App.UI.Resources {
         public static string Updater_UsePackageManager {
             get {
                 return ResourceManager.GetString("Updater_UsePackageManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seamlessly update mods within the app, no website or manual downloads needed..
+        /// </summary>
+        public static string UpgradeToPremiumView_Bullet0 {
+            get {
+                return ResourceManager.GetString("UpgradeToPremiumView_Bullet0", resourceCulture);
             }
         }
         

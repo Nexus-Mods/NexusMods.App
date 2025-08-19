@@ -36,6 +36,12 @@ internal static class DesignDataContexts
         [
             DialogStandardButtons.Ok,
             DialogStandardButtons.Cancel,
+            new DialogButtonDefinition(
+                "Go Premium",
+                ButtonDefinitionId.From("go-premium"),
+                ButtonAction.None,
+                ButtonStyling.Premium
+            ),
         ],
         new DialogStandardContentViewModel(
             new StandardDialogParameters()
