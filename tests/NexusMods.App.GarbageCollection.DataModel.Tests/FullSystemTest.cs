@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
@@ -14,6 +15,7 @@ public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager s
 {
     private readonly NxFileStore _fileStore = serviceProvider.GetRequiredService<NxFileStore>();
     private readonly DataModelSettings _dataModelSettings = settingsManager.Get<DataModelSettings>();
+    private readonly ILogger _logger = serviceProvider.GetRequiredService<ILogger<FullSystemTest>>();
 
     [Fact]
     public async Task FullGarbageCollectionProcess_ShouldRemoveUnusedFiles()
@@ -47,7 +49,7 @@ public class FullSystemTest(IServiceProvider serviceProvider, ISettingsManager s
         Refresh(ref loadout2);
 
         // Act: All files are referenced.
-        RunGarbageCollector.Do(_dataModelSettings.ArchiveLocations, _fileStore, Connection);
+        RunGarbageCollector.Do(_logger, _dataModelSettings.ArchiveLocations, _fileStore, Connection);
 
         // Assert that all files exist after a GC where everything is used.
         foreach (var hash in loadout2ModHashes.Concat(loadout1ModHashes)
