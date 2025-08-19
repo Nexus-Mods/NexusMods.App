@@ -82,13 +82,9 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
         await gc.RunAsync();
         
         // Make sure the collection files (Json and others) still exist after
-
         collectionFile = collectionFile.Rebase();
         var json = await NexusModsLibrary.ParseCollectionJsonFile(collectionFile, CancellationToken.None);
         json.Should().NotBe(null, "The collection file should exist");
-        
-        
-        
 
         await Verify(new
             {
@@ -97,6 +93,4 @@ public class CollectionInstallTests(ITestOutputHelper helper) : ACyberpunkIsolat
             }
         ).UseParameters(slug, revisionNumber);
     }
-    
-    
 }
