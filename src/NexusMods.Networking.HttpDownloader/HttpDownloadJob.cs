@@ -62,6 +62,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     private Optional<bool> AcceptRanges { get; set; }
     
     private Size TotalBytesDownloaded { get; set; }
+    public bool SupportsPausing => true;
     
     /// <summary>
     /// Constructor for the job
