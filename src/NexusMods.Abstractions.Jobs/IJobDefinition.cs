@@ -12,9 +12,9 @@ public interface IJobDefinition
     bool SupportsPausing => false;
 
     /// <summary>
-    /// Get the readonly state for external access. Returns null if job has no externally visible state.
+    /// Get the job state data for external access. Returns null if job has no externally visible state.
     /// </summary>
-    IReadOnlyJobState? GetReadOnlyState() => null;
+    IPublicJobStateData? GetJobStateData() => null;
 }
 
 /// <summary>

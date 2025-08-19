@@ -61,9 +61,9 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
     
     public bool SupportsPausing => true;
     /// <summary>
-    /// Implementation for external readonly access
+    /// Implementation for external job state data access
     /// </summary>
-    public IReadOnlyJobState? GetReadOnlyState() => _state;
+    public IPublicJobStateData? GetJobStateData() => _state;
     
     /// <summary>
     /// Constructor for the job
@@ -298,10 +298,10 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 }
 
 /// <summary>
-/// Readonly interface for external access to download information
+/// Public interface for external access to download information
 /// </summary>
 [PublicAPI]
-public interface IReadOnlyHttpDownloadState : IReadOnlyJobState
+public interface IReadOnlyHttpDownloadState : IPublicJobStateData
 {
     /// <summary>
     /// Content length from HTTP headers

@@ -64,10 +64,51 @@ Pausing uses the same mechanism as cancellation (cancellation tokens), but pause
 
 Jobs must call `context.YieldAsync()` to respect pause requests.
 
-When resumed, jobs restart from the beginning of `StartAsync()`, so use mutable properties to persist state across pause/resume cycles.
+When resumed, jobs restart from their entry point.
+Therefore, to properly support resuming, you must persist some state inside a class field.
 
 See [**PauseResumeExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/PauseResumeExample.cs).
 
+### Job State Management
+
+Jobs can expose internal state for external monitoring via `IPublicJobStateData`.
+
+```csharp
+// Public interface - subset of internal state
+public interface IReadOnlyHttpDownloadState : IPublicJobStateData
+{
+    Optional<Size> ContentLength { get; }
+    Size TotalBytesDownloaded { get; }
+}
+
+// Internal state - includes both public and private properties
+internal sealed class HttpDownloadState : IReadOnlyHttpDownloadState
+{
+    public Optional<Size> ContentLength { get; set; }          // ← Exposed
+    public Size TotalBytesDownloaded { get; set; }             // ← Exposed
+    
+    public Optional<EntityTagHeaderValue> ETag { get; set; }   // ← Internal only
+    public Optional<bool> AcceptRanges { get; set; }           // ← Internal only
+}
+```
+
+Implementation:
+
+```csharp
+public class HttpDownloadJob : IJobDefinition<AbsolutePath>
+{
+    private readonly HttpDownloadState _state = new();
+    public IPublicJobStateData? GetJobStateData() => _state;
+    // ...
+}
+
+// Usage
+var downloadState = job.GetJobStateData<IReadOnlyHttpDownloadState>();
+```
+
+Usually, the read-only interface is a subset of the full internal state; which is sometimes also used across suspend/resume cycles.
+
+See [**JobStateManagementExample.cs**](../../../tests/NexusMods.Jobs.Tests/Examples/BestPractices/JobStateManagementExample.cs).
 
 ### Factory Methods
 

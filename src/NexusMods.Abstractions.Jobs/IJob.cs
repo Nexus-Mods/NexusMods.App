@@ -73,9 +73,9 @@ public interface IJob
     internal IJobContext AsContext();
     
     /// <summary>
-    /// Get the current readonly state of the job. Returns null if no state of this type exists.
+    /// Get the current job state data. Returns null if no state of this type exists.
     /// </summary>
-    TState? GetReadOnlyState<TState>() where TState : class, IReadOnlyJobState => Definition.GetReadOnlyState() as TState;
+    TState? GetJobStateData<TState>() where TState : class, IPublicJobStateData => Definition.GetJobStateData() as TState;
 }
 
 /// <summary>
