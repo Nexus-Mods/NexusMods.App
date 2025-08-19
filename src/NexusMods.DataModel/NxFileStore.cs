@@ -16,7 +16,6 @@ using NexusMods.Hashing.xxHash3;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
-using NexusMods.Sdk.Hashes;
 using NexusMods.Sdk.Threading;
 using System.Diagnostics;
 using NexusMods.Sdk.FileStore;
@@ -33,8 +32,9 @@ public class NxFileStore : IFileStore
     private readonly AbsolutePath[] _archiveLocations;
     private readonly ILogger<NxFileStore> _logger;
     private FrozenDictionary<Hash, ArchiveContents> _archivesByEntry = FrozenDictionary<Hash, ArchiveContents>.Empty;
+    private FrozenDictionary<AbsolutePath, ArchiveContents> _archives = FrozenDictionary<AbsolutePath, ArchiveContents>.Empty;
 
-    private record ArchiveContents(AbsolutePath ArchivePath, FrozenDictionary<Hash, FileEntry> Entries);
+    private record ArchiveContents(AbsolutePath ArchivePath, Size Size, DateTimeOffset LastModified, FrozenDictionary<Hash, FileEntry> Entries);
     
     /// <summary>
     /// This is the hash of an empty byte sequence. Useful for determining if we're being asked
@@ -66,35 +66,37 @@ public class NxFileStore : IFileStore
 
     public void ReloadCaches()
     {
+        var oldFrozenArchives = _archives;
+        
         var archives = _archiveLocations
             .SelectMany(folder => folder.EnumerateFiles(KnownExtensions.Nx))
             .AsParallel()
             .Select(file =>
                 {
+                    var info = file.FileInfo;
+                    if (oldFrozenArchives.TryGetValue(file, out var oldArchive) && oldArchive.LastModified == info.LastWriteTimeUtc && oldArchive.Size == info.Size)
+                        return oldArchive;
+                    
                     using var stream = file.Read();
                     var provider = new FromStreamProvider(stream);
                     var header = HeaderParser.ParseHeader(provider);
                     Dictionary<Hash, FileEntry> entries = new();
                     foreach (var entry in header.Entries)
                         entries[Hash.From(entry.Hash)] = entry;
-                    return new ArchiveContents(file, entries.ToFrozenDictionary());
+                    return new ArchiveContents(file, info.Size, info.LastWriteTimeUtc, entries.ToFrozenDictionary());
                 }
-            ).ToList();
+            ).ToDictionary(static x => x.ArchivePath);
         var index = new Dictionary<Hash, ArchiveContents>();
         
-        foreach (var archive in archives)
+        foreach (var archive in archives.Values)
         {
-            // Note(sewer): IMPORTANT.
-            // Do not use `index.Add` here to append to the dictionary.
-            // In the rare probability of a power outage during or right before the deletion
-            // phase of the Garbage Collector, we may end up with more than one copy of the 
-            // same file in the store. Doing an `index.Add` here would result in an exception
-            // thrown due to duplicate. This duplication is okay. We'll just pick up the file
-            // again on next GC run.
+            // Using the indexer (instead of .Add) so we don't throw an error on duplicates. Duplicates may be removed later by the
+            // GC but are benign  
             foreach (var entry in archive.Entries)
                 index[entry.Key] = archive;
         }
         _archivesByEntry = index.ToFrozenDictionary();
+        _archives = archives.ToFrozenDictionary();
     }
 
     /// <inheritdoc />
