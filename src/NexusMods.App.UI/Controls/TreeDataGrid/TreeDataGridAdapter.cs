@@ -190,6 +190,21 @@ public abstract class TreeDataGridAdapter<TModel, TKey> : ReactiveR3Object, ISea
     }
 
     public void ClearSelection() => _selectionModel?.Clear();
+    
+    public void SelectAll()
+    {
+        if (_selectionModel is null) return;
+
+        _selectionModel.BeginBatchUpdate();
+        using (Disposable.Create(() => _selectionModel.EndBatchUpdate()))
+        {
+            _selectionModel.Clear();
+            for (var i = 0; i < Roots.Count; i++)
+            {
+                _selectionModel.Select(new IndexPath(i));
+            }
+        }
+    }
 
     /// <summary>
     /// Called when a row drag operation is started.
