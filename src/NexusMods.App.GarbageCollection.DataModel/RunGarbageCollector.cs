@@ -41,27 +41,16 @@ public static class RunGarbageCollector
                 toUpdateInDataStore.Add(new ToUpdateInDataStoreEntry(toRemove, archive.FilePath, newArchivePath));
             });
         }
-
-        // SAFETY: Updating the FileStore interacts with external non-GC components,
-        //         such as MnemonicDB. This may cause us to yield to external code
-        //         that could touch the FileStore lock. To avoid deadlocks, we should
-        //         prevent this from happening if possible.
-        //
-        //         This is why we release `store.Lock()` early.
         
-        // NOTE:   In theory UpdateNxFileStore can call GC back again. This is unlikely to happen
-        //         however for the time being; because we only run GC when deleting a library item
-        //         or loadout. No callback should do that. Long term we want to prevent re-entrancy.
-        //
-        //         Running arbitrary code in GC in any system is however prone to possible failure,
-        //         so long term we will want to avoid UpdateNxFileStore (MnemonicDB Commit) to avoid
-        //         yielding to external code. We need a non-blocking `Commit`; that
-        //         sends stuff off to another thread or internal queue without blocking.
+        // Note(sewer):
+        // SAFETY: There is a small risk here that we experience a power outage, or crash when deleting these
+        // store paths. In such a case, there may be multiple copies of a file in the store with a given hash.
+        // This is not a problem, since the DataStore will only ever use one of them.
+        // This is accounted for in `ReloadCaches`.
         foreach (var entry in toUpdateInDataStore)
         {
-            // Delete original archive. We do this in a delayed fashion such that
-            // a power loss during the UpdateNxFileStore operation does not lead
-            // to an inconsistent state
+            // Delete original archive. At this point, all hashes in here have been repacked
+            // and are no longer in use.
             entry.OldFilePath.Delete();
         }
         

@@ -83,12 +83,18 @@ public class NxFileStore : IFileStore
                 }
             ).ToList();
         var index = new Dictionary<Hash, ArchiveContents>();
+        
         foreach (var archive in archives)
         {
+            // Note(sewer): IMPORTANT.
+            // Do not use `index.Add` here to append to the dictionary.
+            // In the rare probability of a power outage during or right before the deletion
+            // phase of the Garbage Collector, we may end up with more than one copy of the 
+            // same file in the store. Doing an `index.Add` here would result in an exception
+            // thrown due to duplicate. This duplication is okay. We'll just pick up the file
+            // again on next GC run.
             foreach (var entry in archive.Entries)
-            {
-                index.Add(entry.Key, archive);
-            }
+                index[entry.Key] = archive;
         }
         _archivesByEntry = index.ToFrozenDictionary();
     }
