@@ -27,6 +27,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
     private readonly IGraphQlClient _graphQlClient;
     private readonly TimeProvider _timeProvider;
     private readonly IModUpdateFilterService _filterService;
+    private readonly ILoginManager _loginManager;
     
     // Use SourceCache to maintain latest values per key
     private readonly SourceCache<KeyValuePair<NexusModsFileMetadataId, ModUpdateOnPage>, EntityId> _newestModVersionCache = new (static kv => kv.Key);
@@ -43,7 +44,8 @@ public class ModUpdateService : IModUpdateService, IDisposable
         ILogger<ModUpdateService> logger,
         IGraphQlClient graphQlClient,
         TimeProvider timeProvider,
-        IModUpdateFilterService filterService)
+        IModUpdateFilterService filterService,
+        ILoginManager loginManager)
     {
         _connection = connection;
         _nexusApiClient = nexusApiClient;
@@ -51,6 +53,7 @@ public class ModUpdateService : IModUpdateService, IDisposable
         _logger = logger;
         _timeProvider = timeProvider;
         _graphQlClient = graphQlClient;
+        _loginManager = loginManager;
 
         // Note(sewer): Technically speaking, the user can supply a custom filter that is not attached
         // to `IgnoreFileUpdate` (IModUpdateFilterService) when calling APIs such as 
@@ -123,6 +126,12 @@ public class ModUpdateService : IModUpdateService, IDisposable
     /// <inheritdoc />
     public async Task<PerFeedCacheUpdaterResult<PageMetadataMixin>> CheckAndUpdateModPages(CancellationToken token, bool notify = true, bool throttle = true)
     {
+        if (!await _loginManager.GetIsUserLoggedInAsync(token))
+        {
+            _logger.LogInformation("Skipping mod update check, not logged in");
+            return PerFeedCacheUpdaterResult<PageMetadataMixin>.WithStatus(CacheUpdaterResultStatus.NotLoggedIn);
+        }
+        
         // Note(sewer): There's no need for a lock here; in practice, only 1 API
         // call is fired per method call. We just want to make sure we don't let users
         // spam the Nexus API too much by putting an autoclicker on a refresh button.
