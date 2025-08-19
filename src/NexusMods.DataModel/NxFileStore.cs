@@ -34,7 +34,6 @@ public class NxFileStore : IFileStore
     private readonly IConnection _conn;
     private readonly ILogger<NxFileStore> _logger;
     private FrozenDictionary<Hash, ArchiveContents> _archivesByEntry = FrozenDictionary<Hash, ArchiveContents>.Empty;
-    private IReadOnlyList<ArchiveContents> _archives = [];
 
     private record ArchiveContents(AbsolutePath ArchivePath, FrozenDictionary<Hash, FileEntry> Entries);
     
@@ -92,7 +91,6 @@ public class NxFileStore : IFileStore
             }
         }
         _archivesByEntry = index.ToFrozenDictionary();
-        _archives = archives;
     }
 
     /// <inheritdoc />
