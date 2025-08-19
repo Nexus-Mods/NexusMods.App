@@ -51,6 +51,24 @@
                            BlurRadius2="5"
                            SpreadRadius2="0"
                            ShadowColor2="#80000000" />
+    
+    <!-- Drop Shadow MD -->
+    <extensions:BoxShadows x:Key="DropShadowLG"
+                           HorizontalLength="0"
+                           VerticalLength="5"
+                           BlurRadius="6"
+                           SpreadRadius="0"
+                           ShadowColor="#00000080"
+                           HorizontalLength1="0"
+                           VerticalLength1="3"
+                           BlurRadius1="16"
+                           SpreadRadius1="2"
+                           ShadowColor1="#0000001F"
+                           HorizontalLength2="0"
+                           VerticalLength2="9"
+                           BlurRadius2="12"
+                           SpreadRadius2="1"
+                           ShadowColor2="#00000024" />
 
     <!-- :focus BoxShadow style -->
     <extensions:BoxShadows x:Key="FocusBoxShadow"

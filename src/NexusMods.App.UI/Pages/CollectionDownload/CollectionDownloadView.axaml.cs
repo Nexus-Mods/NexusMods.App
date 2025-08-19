@@ -1,6 +1,10 @@
 using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using NexusMods.App.UI.Controls;
@@ -28,6 +32,9 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
 
         this.WhenActivated(d =>
             {
+                this.BindCommand(ViewModel, vm => vm.CommandShowNotification, view => view.ButtonShowNotification)
+                    .DisposeWith(d);
+                
                 this.BindCommand(ViewModel, vm => vm.CommandViewOnNexusMods, view => view.MenuItemViewOnNexusMods)
                     .DisposeWith(d);
 
@@ -260,5 +267,16 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
         );
 
         ButtonViewOptionalMods.Command = new ReactiveCommand(_ => TabControl.SelectedItem = OptionalTab);
+    }
+    
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+
+        ViewModel!.NotificationManager = new WindowNotificationManager(TopLevel.GetTopLevel(this)!)
+        {
+            Position = NotificationPosition.BottomCenter,
+            MaxItems = 3,
+        };
     }
 }

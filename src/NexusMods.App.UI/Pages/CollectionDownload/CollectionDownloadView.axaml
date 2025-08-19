@@ -56,6 +56,9 @@
                                          LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                          ShowIcon="Left"
                                          Size="Toolbar" />
+                <controls:StandardButton x:Name="ButtonShowNotification"
+                                         Text="Show Notification"
+                                         Size="Toolbar" />
                 <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
                                          Size="Toolbar"
@@ -88,9 +91,9 @@
                 <TextBlock x:Name="TextCollectionStatus" />
             </controls:Statusbar>
 
-            <Border x:Name="DownloadsTreeContainer" 
-                    Padding="0 8 0 0" 
-                    Background="{StaticResource SurfaceLowBrush}" >
+            <Border x:Name="DownloadsTreeContainer"
+                    Padding="0 8 0 0"
+                    Background="{StaticResource SurfaceLowBrush}">
                 <TreeDataGrid x:Name="DownloadsTree" />
             </Border>
         </DockPanel>
@@ -106,12 +109,12 @@
     </reactiveUi:ReactiveUserControl.Resources>
 
     <Border x:Name="HeaderBorderBackground">
-        
+
         <!-- header, tabcontrol -->
         <Grid x:Name="Body" RowDefinitions="Auto, *">
 
             <!-- first row (header) -->
-            <Border x:Name="HeaderBorder" Grid.Row="0" >
+            <Border x:Name="HeaderBorder" Grid.Row="0">
 
                 <StackPanel x:Name="Header">
 
@@ -222,7 +225,7 @@
                                          Header="There are no required mods">
                         <controls:EmptyState.Subtitle>
                             <StackPanel Orientation="Vertical" Spacing="{StaticResource Spacing-3.5}">
-                                <TextBlock Text="All mods in this collection are optional."/>
+                                <TextBlock Text="All mods in this collection are optional." />
                                 <controls:StandardButton x:Name="ButtonViewOptionalMods"
                                                          Type="Tertiary"
                                                          ShowIcon="None"

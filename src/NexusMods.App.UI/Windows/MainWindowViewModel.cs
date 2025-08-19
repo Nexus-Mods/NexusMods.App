@@ -1,5 +1,8 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Input.Platform;
 using Avalonia.Platform.Storage;
 using DynamicData.Kernel;
@@ -42,6 +45,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
     private readonly IWindowManager _windowManager;
     private readonly IConnection _connection;
     private readonly IServiceProvider _serviceProvider;
+    
 
     public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
     public ReactiveUI.ReactiveCommand<IStorageProvider, System.Reactive.Unit> RegisterStorageProvider { get; }
@@ -79,7 +83,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         BringWindowToFront = ReactiveCommand.Create(() => settingsManager.Get<BehaviorSettings>().BringWindowToFront);
         RegisterStorageProvider = ReactiveCommand.Create<IStorageProvider>(storageProvider => avaloniaInterop.RegisterStorageProvider(storageProvider));
         RegisterClipboard = ReactiveCommand.Create<IClipboard>(clipboard => avaloniaInterop.RegisterClipboard(clipboard));
-
+        
         this.WhenActivated(d =>
         {
             ConnectErrors(serviceProvider).DisposeWith(d);
@@ -175,7 +179,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             }
         });
     }
-
+    
     private Optional<(LoadoutId, WorkspaceId)> GetWorkspaceIdForGame(IWorkspaceController workspaceController, GameId gameId)
     {
         if (workspaceController.ActiveWorkspace.Context is LoadoutContext existingLoadoutContext && IsCorrectLoadoutForGame(existingLoadoutContext.LoadoutId, gameId))

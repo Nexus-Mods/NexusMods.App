@@ -1,5 +1,6 @@
 using System.Reactive.Linq;
 using Avalonia.Controls.Models.TreeDataGrid;
+using Avalonia.Controls.Notifications;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Kernel;
@@ -14,6 +15,7 @@ using NexusMods.App.UI.Controls;
 using NexusMods.App.UI.Controls.MarkdownRenderer;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Extensions;
+using NexusMods.App.UI.Notifications;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.LibraryPage;
 using NexusMods.App.UI.Pages.LoadoutPage;
@@ -48,6 +50,10 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
     public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
 
+    public ReactiveCommand<Unit>  CommandShowNotification { get; }
+    
+    public WindowNotificationManager? NotificationManager { get; set; }
+    
     public CollectionDownloadViewModel(
         IWindowManager windowManager,
         IServiceProvider serviceProvider,
@@ -84,6 +90,15 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
         RequiredDownloadsCount = CollectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Required);
         OptionalDownloadsCount = CollectionDownloader.CountItems(_revision, CollectionDownloader.ItemType.Optional);
+        
+        CommandShowNotification = new ReactiveCommand(something =>
+        {
+            // NotificationManager?.Show(new CustomNotificationViewModel("What a lovely slice of toast"), NotificationType.Information);
+            
+            NotificationManager?.Show("Mod has been added", 
+                NotificationType.Information,
+                TimeSpan.FromSeconds(5));
+        });
 
         CommandDownloadRequiredItems = _isDownloadingRequiredItems.CombineLatest(_canDownloadRequiredItems, static (isDownloading, canDownload) => !isDownloading && canDownload).ToReactiveCommand<Unit>(
             executeAsync: async (_, cancellationToken) =>

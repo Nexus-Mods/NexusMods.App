@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.ReactiveUI;
 using Avalonia.Platform;
 using NexusMods.App.UI.Extensions;
