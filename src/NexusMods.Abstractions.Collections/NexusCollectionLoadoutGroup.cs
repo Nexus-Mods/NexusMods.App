@@ -55,6 +55,16 @@ public partial class NexusCollectionLoadoutGroup : IModelDefinition
         tx.Retract(cloneId, RevisionId, RevisionId.Get(cloneEnt));
         tx.Retract(cloneId, CollectionId, CollectionId.Get(cloneEnt));
         tx.Retract(cloneId, LibraryFileId, LibraryFileId.Get(cloneEnt));
+
+        // Retract the Nexus references in items so that this is no longer associated with the official collection
+        var db = conn.Db;
+        foreach (var item in conn.Query<EntityId>("SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db=>$Db) WHERE Parent = $Collection", new { Db = db, Collection = cloneId }))
+        {
+            var ent = NexusCollectionItemLoadoutGroup.Load(db, item);
+            tx.Retract(item, NexusCollectionItemLoadoutGroup.Download, NexusCollectionItemLoadoutGroup.Download.Get(ent));
+            tx.Retract(item, NexusCollectionItemLoadoutGroup.IsRequired, NexusCollectionItemLoadoutGroup.IsRequired.Get(ent));
+        }
+        
         await tx.Commit();
         return cloneId;
     }

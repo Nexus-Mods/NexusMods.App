@@ -13,6 +13,7 @@ public class CollectionTests(ITestOutputHelper helper) : AArchivedDatabaseTest(h
     {
         // Load up a database with two collections installed, and the first one deleted
         await using var tmpConn = await ConnectionFor("two_sdv_collections_added_removed.zip");
+        var conn = tmpConn.Connection;
         
         var collId = tmpConn.Connection.Query<EntityId>("SELECT Id FROM mdb_NexusCollectionLoadoutGroup(Db => $db) ORDER BY Name DESC", tmpConn.Connection.Db).First();
         var coll = NexusCollectionLoadoutGroup.Load(tmpConn.Connection.Db, collId);
@@ -33,5 +34,13 @@ public class CollectionTests(ITestOutputHelper helper) : AArchivedDatabaseTest(h
         
         NexusCollectionLoadoutGroup.LibraryFile.Contains(newColl).Should().BeFalse();
         NexusCollectionLoadoutGroup.LibraryFile.Contains(coll).Should().BeTrue();
+
+        conn.Query<EntityId>("SELECT Id FROM mdb_NexusCollectionItemLoadoutGroup(Db => $Db) WHERE Parent = $Collection", new { Db = conn, Collection = newColl.Id })
+            .Should()
+            .HaveCount(0);
+
+        conn.Query<EntityId>("SELECT Id FROM mdb_LoadoutItemGroup(Db => $Db) WHERE Parent = $Collection", new { Db = conn, Collection = newColl.Id })
+            .Should()
+            .HaveCountGreaterThan(0);
     }
 }
