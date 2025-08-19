@@ -13,7 +13,7 @@ public static class CollectionDialogs
     {
         var premiumCollectionDownloadsViewModel = new DialogPremiumCollectionDownloadsViewModel();
 
-        return DialogFactory.CreateDialog("",
+        return DialogFactory.CreateDialog(Language.DialogPremiumCollection_DialogTitle,
             [
                 new DialogButtonDefinition(
                     Language.DialogPremiumCollection_Cancel,
@@ -21,14 +21,11 @@ public static class CollectionDialogs
                     ButtonAction.Reject
                 ),
                 new DialogButtonDefinition(
-                    Language.DialogPremiumCollection_LearnMore,
-                    ButtonDefinitionId.From("learn-more")
-                ),
-                new DialogButtonDefinition(
                     Language.DialogPremiumCollection_UpgradeToPremium,
                     ButtonDefinitionId.From("go-premium"),
                     ButtonAction.Accept,
-                    ButtonStyling.Premium
+                    ButtonStyling.Premium,
+                    IconValues.Premium
                 )
             ],
             premiumCollectionDownloadsViewModel
