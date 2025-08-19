@@ -163,7 +163,6 @@ public class NxFileStore : IFileStore
 #endif
 
         // Capacity is set to 'expected archive count' + 1.
-        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, 2);
         Parallel.ForEach(files, file =>
         {
             // Create empty files as empty
@@ -173,7 +172,7 @@ public class NxFileStore : IFileStore
                 return;
             }
 
-            if (TryGetLocation(_conn.Db, file.Hash, fileExistsCache,
+            if (TryGetLocation(file.Hash,
                     out var archivePath, out var fileEntry))
             {
                 var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry, AbsolutePath)>());
@@ -242,7 +241,6 @@ public class NxFileStore : IFileStore
         var filesArr = files.ToArray();
         var results = new ConcurrentDictionary<Hash, byte[]>(Environment.ProcessorCount, filesArr.Length);
         var groupedFiles = new ConcurrentDictionary<AbsolutePath, List<(Hash Hash, FileEntry FileEntry)>>(Environment.ProcessorCount, 1);
-        var fileExistsCache = new ConcurrentDictionary<AbsolutePath, bool>(Environment.ProcessorCount, filesArr.Length);
 
 #if DEBUG
         var processedHashes = new ConcurrentDictionary<Hash, byte>();
@@ -260,7 +258,7 @@ public class NxFileStore : IFileStore
                 throw new Exception($"Duplicate hash found: {hash.ToHex()}");
 #endif
 
-            if (TryGetLocation(_conn.Db, hash, fileExistsCache,
+            if (TryGetLocation(hash,
                     out var archivePath, out var fileEntry))
             {
                 var group = groupedFiles.GetOrAdd(archivePath, _ => new List<(Hash, FileEntry)>());
@@ -310,7 +308,7 @@ public class NxFileStore : IFileStore
         }
 
         using var lck = _lock.ReadLock();
-        if (!TryGetLocation(_conn.Db, hash, null,
+        if (!TryGetLocation(hash,
                 out var archivePath, out var entry))
             throw new MissingArchiveException(hash);
 
@@ -329,7 +327,7 @@ public class NxFileStore : IFileStore
             throw new ArgumentNullException(nameof(hash));
 
         using var lck = _lock.ReadLock();
-        if (!TryGetLocation(_conn.Db, hash, null,
+        if (!TryGetLocation(hash,
                 out var archivePath, out var entry))
             throw new MissingArchiveException(hash);
 
@@ -539,7 +537,7 @@ public class NxFileStore : IFileStore
         public required int DecompressSize { get; set; }
     }
 
-    internal bool TryGetLocation(IDb db, Hash hash, ConcurrentDictionary<AbsolutePath, bool>? existsCache, out AbsolutePath archivePath, out FileEntry fileEntry)
+    internal bool TryGetLocation(Hash hash, out AbsolutePath archivePath, out FileEntry fileEntry)
     {
         archivePath = default(AbsolutePath);
         fileEntry = default(FileEntry);
