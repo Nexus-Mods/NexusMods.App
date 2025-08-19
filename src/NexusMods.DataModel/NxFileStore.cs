@@ -31,7 +31,6 @@ public class NxFileStore : IFileStore
 {
     private readonly AsyncFriendlyReaderWriterLock _lock = new(); // See details on struct.
     private readonly AbsolutePath[] _archiveLocations;
-    private readonly IConnection _conn;
     private readonly ILogger<NxFileStore> _logger;
     private FrozenDictionary<Hash, ArchiveContents> _archivesByEntry = FrozenDictionary<Hash, ArchiveContents>.Empty;
 
@@ -62,7 +61,6 @@ public class NxFileStore : IFileStore
         }
 
         _logger = logger;
-        _conn = conn;
         ReloadCaches();
     }
 
@@ -153,7 +151,6 @@ public class NxFileStore : IFileStore
     /// <inheritdoc />
     public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
     {
-        // TODO: implement with repacking
         return BackupFiles(files, deduplicate: true, cancellationToken);
     }
     
