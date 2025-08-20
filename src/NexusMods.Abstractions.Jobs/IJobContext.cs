@@ -1,5 +1,5 @@
 using System.Numerics;
-using NexusMods.Paths;
+using DynamicData.Kernel;
 
 namespace NexusMods.Abstractions.Jobs;
 
@@ -9,15 +9,25 @@ namespace NexusMods.Abstractions.Jobs;
 public interface IJobContext : IAsyncDisposable, IDisposable
 {
     /// <summary>
+    /// Allows you to start the job.
+    /// </summary>
+    public Task Start();
+    
+    /// <summary>
     /// Call this whenever the job needs to check if the execution should cancel or pause
     /// </summary>
     Task YieldAsync();
 
     /// <summary>
+    /// Job cancellation token that supports pause/resume functionality
+    /// </summary>
+    JobCancellationToken JobCancellationToken { get; }
+    
+    /// <summary>
     /// Prefer to use <see cref="YieldAsync"/> instead of this but if you need a token to pass
     /// to a method that doesn't support our pause and cancel mechanism then use this
     /// </summary>
-    CancellationToken CancellationToken { get; }
+    CancellationToken CancellationToken => JobCancellationToken.Token;
     
     /// <summary>
     /// Get the connected job monitor
@@ -33,6 +43,16 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     /// The job definition passed to the job when it was created
     /// </summary>
     IJobDefinition Definition { get; }
+
+    /// <summary>
+    /// The type of the job definition
+    /// </summary>
+    Type JobType { get; }
+    
+    /// <summary>
+    /// Try to get the exception that caused the job to fail.
+    /// </summary>
+    public bool TryGetException(out Exception? exception);
 
     /// <summary>
     /// Set the progress of the job as either a percentage or a rate of progress or both
@@ -51,6 +71,28 @@ public interface IJobContext : IAsyncDisposable, IDisposable
     /// <param name="message">The cancellation message</param>
     /// <returns>This method never returns - it always throws</returns>
     void CancelAndThrow(string message);
+    
+    /// <summary>
+    /// Gets whether this job can be paused. Jobs can only be paused if they support pausing 
+    /// (see <see cref="IJobDefinition.SupportsPausing"/>) and are currently running.
+    /// </summary>
+    bool CanBePaused { get; }
+    
+    /// <summary>
+    /// Cancel the job
+    /// </summary>
+    void Cancel();
+    
+    /// <summary>
+    /// Pause the job
+    /// </summary>
+    void Pause();
+    
+    /// <summary>
+    /// Resume the job
+    /// </summary>
+    void Resume();
+    
 }
 
 /// <summary>

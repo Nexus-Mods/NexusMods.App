@@ -34,6 +34,7 @@ public class TreeFolderGenerator<TTreeItemWithPath, TFolderModelInitializer> : I
     /// In simpler words, don't show the 'GAME' folder if we only have files in 'GAME'.
     /// But if we have 'GAME' and 'SAVES', show both!
     /// </summary>
+    [Obsolete("Not usable yet, calling this causes a double dispose error when used from the UI. This needs investigation.")]
     public IObservable<IChangeSet<CompositeItemModel<GamePath>, GamePath>> SimplifiedObservableRoots()
     {
         return _observableRoots

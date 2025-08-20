@@ -47,7 +47,7 @@
         <value>Mod z wieloma opcjami</value>
     </data>
     <data name="InstallationCompleteScreenText" xml:space="preserve">
-        <value>Możesz zmienić te opcje w dowolnym momencie poprzez ponowne zainstalowanie tego moda.</value>
+        <value>Mod został pomyślnie zainstalowany z wybranymi opcjami.  Jeśli zechcesz zmienić ustawienia, po prostu zainstaluj mod ponownie. Ustawienia można zmienić w dowolnym momencie.</value>
     </data>
     <data name="HighlightedOptionDescription_No_Extra_Details" xml:space="preserve">
         <value>Brak dodatkowych szczegółów</value>

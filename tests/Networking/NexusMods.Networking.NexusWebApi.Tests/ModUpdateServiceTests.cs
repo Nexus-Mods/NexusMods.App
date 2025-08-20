@@ -50,12 +50,15 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
             ServiceProvider.GetRequiredService<ILogger<ModUpdateService>>(),
             ServiceProvider.GetRequiredService<IGraphQlClient>(),
             _timeProvider,
-            _filterService);
+            _filterService,
+            ServiceProvider.GetRequiredService<ILoginManager>());
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task CheckAndUpdateModPages_WithNoMods_ShouldReturnEmptyResult()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // Act
         var result = await _modUpdateService.CheckAndUpdateModPages(
             CancellationToken.None,
@@ -70,8 +73,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task CheckAndUpdateModPages_WithThrottleTrue_ShouldRespectCooldown()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // First call
         _ = await _modUpdateService.CheckAndUpdateModPages(
             CancellationToken.None,
@@ -91,8 +96,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task CheckAndUpdateModPages_WithThrottleTrue_ShouldAllowAfterCooldown()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // First call
         _ = await _modUpdateService.CheckAndUpdateModPages(
             CancellationToken.None,
@@ -115,8 +122,10 @@ public class ModUpdateServiceTests : ACyberpunkIsolatedGameTest<ModUpdateService
     }
 
     [Fact]
+    [Trait("RequiresApiKey", "True")]
     public async Task CheckAndUpdateModPages_WithThrottleFalse_ShouldIgnoreCooldown()
     {
+        ApiKeyTestHelper.RequireApiKey();
         // First call
         _ = await _modUpdateService.CheckAndUpdateModPages(
             CancellationToken.None,

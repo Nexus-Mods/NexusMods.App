@@ -58,7 +58,7 @@ public class LoadoutGroupFilesProvider
         // Otherwise make all the folders via adapter.
         var adapter = new TreeFolderGeneratorLoadoutTreeItemAdapter<LoadoutGroupFilesTreeFolderModelInitializer>(filesObservable);
         var wrapper = new DisposableObservableWrapper<IChangeSet<CompositeItemModel<GamePath>, GamePath>>
-            (adapter.FolderGenerator.SimplifiedObservableRoots(), adapter);
+            (adapter.FolderGenerator.ObservableRoots(), adapter);
         return wrapper; // Use `SimplifiedObservableRoots` to match previous behaviour pre-CompositeItemModels.
     }
 
