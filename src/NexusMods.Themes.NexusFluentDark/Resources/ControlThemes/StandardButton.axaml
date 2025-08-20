@@ -4,42 +4,57 @@
                     xmlns:icons="clr-namespace:NexusMods.UI.Sdk.Icons;assembly=NexusMods.UI.Sdk"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                     x:ClassModifier="internal">
-    
+
     <!--
     Control Theme for our StandardButton (src/NexusMods.App.UI/Controls/StandardButton.cs) which is based on the default 
     Avalonia Button. This allows us to set properties like Type, Fill, Size and ShowIcon to get the desired button style 
     to exactly match Figma.
-    -->    
-    
+    -->
+
     <Design.PreviewWith>
         <Border Padding="16">
             <StackPanel Spacing="8" Orientation="Horizontal">
                 <StackPanel Spacing="8">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                    <controls:StandardButton Text="Extra Small 24px" Size="Toolbar" ShowIcon="None" />
-                    <controls:StandardButton Text="Left" Size="Toolbar" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
-                    <controls:StandardButton Text="Right" Size="Toolbar" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
-                    <controls:StandardButton Text="Both" Size="Toolbar" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
-                    <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
-                    <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
-                    <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Extra Small 24px" Size="Toolbar" ShowIcon="None" />
+                        <controls:StandardButton Text="Left" Size="Toolbar" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Right" Size="Toolbar" ShowIcon="Right"
+                                                 RightIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Both" Size="Toolbar" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="IconOnly"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <controls:StandardButton Text="Small 28px (Default)" Size="Small" ShowIcon="None" />
-                        <controls:StandardButton Text="Left" Size="Small" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Text="Right" Size="Small" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Text="Both" Size="Small" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Left" Size="Small" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Right" Size="Small" ShowIcon="Right"
+                                                 RightIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Both" Size="Small" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="IconOnly"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <controls:StandardButton Text="Medium 36px" Size="Medium" ShowIcon="None" />
-                        <controls:StandardButton Text="Left" Size="Medium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Text="Right" Size="Medium" ShowIcon="Right" RightIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Text="Both" Size="Medium" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Left" Size="Medium" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Right" Size="Medium" ShowIcon="Right"
+                                                 RightIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Text="Both" Size="Medium" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
                         <controls:StandardButton Size="Medium">
-                            <icons:UnifiedIcon x:Name="AvatarUnifiedIcon" 
+                            <icons:UnifiedIcon x:Name="AvatarUnifiedIcon"
                                                Value="{x:Static icons:IconValues.AvatarTest}"
                                                Size="20"
                                                Margin="0 3">
@@ -48,17 +63,70 @@
                                 </icons:UnifiedIcon.Clip>
                             </icons:UnifiedIcon>
                         </controls:StandardButton>
-                        
-                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Both" LeftIcon="{x:Static icons:IconValues.Code}" />
-                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="IconOnly" LeftIcon="{x:Static icons:IconValues.Code}" />
+
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="IconOnly"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" />
+
                     </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <controls:StandardButton Text="Extra Small 24px" Size="Toolbar" ShowIcon="None" RequiresPremium="True" Type="Secondary" Fill="Strong"/>
+                        <controls:StandardButton Text="Left" Size="Toolbar" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Text="Right" Size="Toolbar" ShowIcon="Right"
+                                                 RightIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Text="Both" Size="Toolbar" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Toolbar" ShowLabel="False" ShowIcon="IconOnly"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <controls:StandardButton Text="Small 28px (Default)" Size="Small" ShowIcon="None" RequiresPremium="True" Type="Secondary" Fill="Strong"  />
+                        <controls:StandardButton Text="Left" Size="Small" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Text="Right" Size="Small" ShowIcon="Right"
+                                                 RightIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Text="Both" Size="Small" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Small" ShowLabel="False" ShowIcon="IconOnly"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <controls:StandardButton Text="Medium 36px" Size="Medium" ShowIcon="None" RequiresPremium="True" Type="Secondary" Fill="Strong"  />
+                        <controls:StandardButton Text="Left" Size="Medium" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Text="Right" Size="Medium" ShowIcon="Right"
+                                                 RightIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Text="Both" Size="Medium" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Left"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="Both"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                        <controls:StandardButton Size="Medium" ShowLabel="False" ShowIcon="IconOnly"
+                                                 LeftIcon="{x:Static icons:IconValues.Code}" RequiresPremium="True" Type="Secondary" Fill="Strong" />
+                    </StackPanel>
+
+                    
                     <controls:StandardButton Text="Open Menu" Size="Toolbar" ShowIcon="Right" Type="Primary"
                                              Fill="Weak">
                         <controls:StandardButton.Flyout>
                             <MenuFlyout>
-                                <MenuItem Header="Item 1"/>
-                                <MenuItem Header="Item 2"/>
+                                <MenuItem Header="Item 1" />
+                                <MenuItem Header="Item 2" />
                             </MenuFlyout>
                         </controls:StandardButton.Flyout>
                     </controls:StandardButton>
@@ -79,11 +147,15 @@
                     <controls:StandardButton Text="Both Icons" ShowIcon="Both" />
                     <controls:StandardButton Text="Medium" ShowIcon="Both" Size="Medium" />
                     <controls:StandardButton Text="  " ShowIcon="Both" Size="Medium" />
-                    <controls:StandardButton Text="Danger" ShowIcon="Both" Classes="Danger" HorizontalAlignment="Stretch" />
-                    <controls:StandardButton Text="Get Premium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium"/>
-                    <controls:StandardButton Text="Get Premium" ShowIcon="Left" LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium" Size="Toolbar"/>
-                    
-                    
+                    <controls:StandardButton Text="Danger" ShowIcon="Both" Classes="Danger"
+                                             HorizontalAlignment="Stretch" />
+                    <controls:StandardButton Text="Get Premium" ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium" />
+                    <controls:StandardButton Text="Get Premium" ShowIcon="Left"
+                                             LeftIcon="{x:Static icons:IconValues.Premium}" Classes="Premium"
+                                             Size="Toolbar" />
+
+
                 </StackPanel>
 
                 <StackPanel Spacing="8">
@@ -99,8 +171,10 @@
                     <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Primary" Fill="WeakAlt" />
                     <controls:StandardButton Text="Primary-WeakAlt" ShowIcon="Right" Type="Primary" Fill="WeakAlt"
                                              IsEnabled="False" />
-                    <controls:StandardButton Text="Primary-Strong-Toolbar" ShowIcon="Right" Type="Primary" Fill="StrongAlt" Size="Toolbar" />
-                    <controls:StandardButton Text="Primary-Strong-Toolbar" ShowIcon="Right" Type="Primary" Fill="WeakAlt" Size="Toolbar" />
+                    <controls:StandardButton Text="Primary-Strong-Toolbar" ShowIcon="Right" Type="Primary"
+                                             Fill="StrongAlt" Size="Toolbar" />
+                    <controls:StandardButton Text="Primary-Strong-Toolbar" ShowIcon="Right" Type="Primary"
+                                             Fill="WeakAlt" Size="Toolbar" />
                 </StackPanel>
 
                 <StackPanel Spacing="8">
@@ -126,26 +200,30 @@
                     <controls:StandardButton Text="Tertiary-None" ShowIcon="Right" Type="Tertiary" Fill="None"
                                              IsEnabled="False" />
                 </StackPanel>
-                
+
             </StackPanel>
         </Border>
     </Design.PreviewWith>
 
     <!-- RESOURCES -->
-    
+
     <!-- Unusual values to account for rendering differences with Figma and rounding errors. This makes sure that we 
     don't have to set fixed heights but the heights are ending up the same as Figma i.e. Medium button is 36 pixels high,
-     Small is 28 and ExtraSmall is 24. --> 
+     Small is 28 and ExtraSmall is 24. -->
     <Thickness x:Key="StandardButtonPaddingMedium">6,6,6,5</Thickness>
-    <Thickness x:Key="StandardButtonPaddingSmall">6,4,6,3</Thickness>
-    <Thickness x:Key="StandardButtonPaddingExtraSmall">6,2,6,1</Thickness>
-    
+    <Thickness x:Key="StandardButtonPaddingSmall">6,4,4,3</Thickness>
+    <Thickness x:Key="StandardButtonPaddingExtraSmall">6,2,2,1</Thickness>
+
     <sys:Double x:Key="StandardButtonIconSizeMedium">20</sys:Double>
     <sys:Double x:Key="StandardButtonIconSizeSmall">16</sys:Double>
     <sys:Double x:Key="StandardButtonIconSizeExtraSmall">16</sys:Double>
+
+    <sys:Double x:Key="StandardButtonPremiumBadgeSizeMedium">20</sys:Double>
+    <sys:Double x:Key="StandardButtonPremiumBadgeSizeSmall">16</sys:Double>
+    <sys:Double x:Key="StandardButtonPremiumBadgeSizeToolbar">16</sys:Double>
     
     <!-- The below will also be used when ComboBox and SplitButtons are extended by us so that the styling matches -->
-    
+
     <!-- Primary/Strong -->
     <Thickness x:Key="ButtonPrimaryStrongBorderThickness">0</Thickness>
     <StaticResource x:Key="ButtonPrimaryStrongBackground" ResourceKey="PrimaryModerateBrush" />
@@ -180,7 +258,7 @@
     <StaticResource x:Key="ButtonPrimaryWeakForegroundDisabled" ResourceKey="NeutralInvertedBrush" />
     <StaticResource x:Key="ButtonPrimaryWeakBorderBrushDisabled" ResourceKey="StrokeTranslucentModerateBrush" />
 
-    
+
     <!-- Primary/StrongAlt -->
     <StaticResource x:Key="ButtonPrimaryStrongAltForeground" ResourceKey="PrimaryModerateBrush" />
     <StaticResource x:Key="ButtonPrimaryStrongAltForegroundPointerOver" ResourceKey="PrimaryStrongBrush" />
@@ -188,7 +266,7 @@
     <SolidColorBrush x:Key="ButtonPrimaryStrongAltForegroundDisabled"
                      Color="{StaticResource PrimaryModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
-    
+
     <!-- Primary/WeakAlt -->
     <StaticResource x:Key="ButtonPrimaryWeakAltForeground" ResourceKey="InfoModerateBrush" />
     <StaticResource x:Key="ButtonPrimaryWeakAltForegroundPointerOver" ResourceKey="InfoStrongBrush" />
@@ -196,7 +274,7 @@
     <SolidColorBrush x:Key="ButtonPrimaryWeakAltForegroundDisabled"
                      Color="{StaticResource InfoModerate}"
                      Opacity="{StaticResource OpacityDisabledElement}" />
-    
+
     <!-- Secondary/Strong -->
     <Thickness x:Key="ButtonSecondaryStrongBorderThickness">0</Thickness>
     <StaticResource x:Key="ButtonSecondaryStrongBackground" ResourceKey="NeutralStrongBrush" />
@@ -316,7 +394,7 @@
                      Opacity="{StaticResource OpacityDisabledElement}" />
 
     <!-- CONTROL THEME -->
-    
+
     <!-- need original button theme as well as all the new stuff -->
     <!-- default colours are based on Small-Tertiary-Weak -->
     <ControlTheme x:Key="{x:Type controls:StandardButton}" TargetType="controls:StandardButton">
@@ -325,7 +403,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
         <Setter Property="BorderThickness" Value="{StaticResource ButtonBorderThemeThickness}" />
         <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}" />
-        <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingSmall}" /> 
+        <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingSmall}" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="RenderTransform" Value="none" />
@@ -356,7 +434,7 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}"
                             Padding="{TemplateBinding Padding}">
-                        <Grid ColumnDefinitions="Auto,*,Auto" HorizontalAlignment="Center">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" HorizontalAlignment="Center">
                             <icons:UnifiedIcon Grid.Column="0" Name="PART_LeftIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"
@@ -366,17 +444,27 @@
                                        Foreground="{TemplateBinding Foreground}"
                                        Margin="4,2"
                                        VerticalAlignment="Center"
-                                       HorizontalAlignment="Center"/>
+                                       HorizontalAlignment="Center" />
                             <icons:UnifiedIcon Grid.Column="2" Name="PART_RightIcon"
                                                Size="{StaticResource StandardButtonIconSizeSmall}"
                                                Foreground="{TemplateBinding Foreground}"
-                                               Margin="0,2,0,3"/>
+                                               Margin="0,2,4,3" />
+                            <Border Grid.Column="3" Name="PART_PremiumBadge" 
+                                    Background="{StaticResource BrandPremium600Brush}"
+                                    CornerRadius="{StaticResource Rounded}"
+                                    VerticalAlignment="Center"
+                                    Padding="2">
+                                <icons:UnifiedIcon
+                                    Size="{StaticResource StandardButtonPremiumBadgeSizeSmall}"
+                                    Foreground="{StaticResource BrandPremium100Brush}"
+                                    Value="{x:Static icons:IconValues.Premium}" />
+                            </Border>
                         </Grid>
                     </Border>
                 </Panel>
             </ControlTemplate>
         </Setter>
-        
+
 
         <!-- Set the default button styles when ContentPresenter is used -->
         <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -428,9 +516,16 @@
         <!-- toolbar -->
         <Style Selector="^[Size=Toolbar]">
             <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingExtraSmall}" />
-            
-            <Style Selector="^ icons|UnifiedIcon">
+
+            <Style Selector="^ icons|UnifiedIcon#PART_LeftIcon, ^ icons|UnifiedIcon#PART_RightIcon">
                 <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeExtraSmall}" />
+            </Style>
+
+            <Style Selector="^ Border#PART_PremiumBadge">
+                <Setter Property="Margin" Value="0" />
+                <Style Selector="^ > icons|UnifiedIcon">
+                    <Setter Property="Size" Value="{StaticResource StandardButtonPremiumBadgeSizeToolbar}" />
+                </Style>
             </Style>
         </Style>
 
@@ -438,7 +533,7 @@
         <Style Selector="^[Size=Medium]">
             <Setter Property="Padding" Value="{StaticResource StandardButtonPaddingMedium}" />
 
-            <Style Selector="^ icons|UnifiedIcon">
+            <Style Selector="^ icons|UnifiedIcon#PART_LeftIcon,^ icons|UnifiedIcon#PART_RightIcon">
                 <Setter Property="Size" Value="{StaticResource StandardButtonIconSizeMedium}" />
                 <Setter Property="Margin" Value="2,2,2,3" />
             </Style>
@@ -447,18 +542,28 @@
                 <Setter Property="Margin" Value="4,0,4,1" />
                 <Setter Property="Theme" Value="{StaticResource BodyLGNormalTheme}" />
             </Style>
-            
+
+            <Style Selector="^ Border#PART_PremiumBadge">
+                <Setter Property="Margin" Value="0" />
+                <Style Selector="^ > icons|UnifiedIcon">
+                    <Setter Property="Size" Value="{StaticResource StandardButtonPremiumBadgeSizeMedium}" />
+                </Style>
+            </Style>
+
         </Style>
 
         <!-- icon only variants -->
         <Style Selector="^[ShowIcon=IconOnly]">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
-            <Style Selector="^ icons|UnifiedIcon">
+            <Style Selector="^ icons|UnifiedIcon#PART_LeftIcon,^ icons|UnifiedIcon#PART_RightIcon">
+                <Setter Property="Margin" Value="0" />
+            </Style>
+            <Style Selector="^ Border#PART_PremiumBadge">
                 <Setter Property="Margin" Value="0" />
             </Style>
         </Style>
-        
+
         <!-- fills and types -->
 
         <!-- PRIMARY -->
@@ -488,21 +593,21 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonPrimaryStrongBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongForegroundPressed}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryStrongBorderBrushPressed}" />
                 </Style>
             </Style>
-            
+
             <!-- PRIMARY/STRONGALT -->
             <Style Selector="^[Fill=StrongAlt]">
                 <Setter Property="BorderThickness" Value="{StaticResource ButtonTertiaryWeakBorderThickness}" />
                 <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackground}" />
                 <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongAltForeground}" />
                 <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrush}" />
-                
+
                 <!-- if used in a toolbar -->
                 <Style Selector="^[Size=Toolbar]">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackground}" />
@@ -525,14 +630,14 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongAltForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryStrongAltForegroundPressed}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushPressed}" />
                 </Style>
-                
-                
+
+
             </Style>
 
             <!-- PRIMARY/WEAK -->
@@ -559,21 +664,21 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonPrimaryWeakBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakForegroundPressed}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonPrimaryWeakBorderBrushPressed}" />
                 </Style>
             </Style>
-            
+
             <!-- PRIMARY/WEAKALT -->
             <Style Selector="^[Fill=WeakAlt]">
                 <Setter Property="BorderThickness" Value="{StaticResource ButtonTertiaryWeakBorderThickness}" />
                 <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackground}" />
                 <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakAltForeground}" />
                 <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrush}" />
-                
+
                 <!-- if used in a toolbar -->
                 <Style Selector="^[Size=Toolbar]">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackground}" />
@@ -597,7 +702,7 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakAltForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonPrimaryWeakAltForeground}" />
@@ -633,7 +738,7 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryStrongBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonSecondaryStrongBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryStrongForegroundPressed}" />
@@ -665,7 +770,7 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryWeakBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonSecondaryWeakBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryWeakForegroundPressed}" />
@@ -697,7 +802,7 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonSecondaryNoneBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonSecondaryNoneBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonSecondaryNoneForegroundPressed}" />
@@ -716,7 +821,7 @@
                 <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackground}" />
                 <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForeground}" />
                 <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrush}" />
-                
+
                 <Style Selector="^:pointerover">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPointerOver}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundPointerOver}" />
@@ -734,7 +839,7 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakForegroundPressed}" />
@@ -766,7 +871,7 @@
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryWeakAltBorderBrushDisabled}" />
                 </Style>
-                
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryWeakAltBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryWeakAltForegroundPressed}" />
@@ -797,8 +902,8 @@
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundDisabled}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundDisabled}" />
                     <Setter Property="BorderBrush" Value="{StaticResource ButtonTertiaryNoneBorderBrushDisabled}" />
-                </Style> 
-                
+                </Style>
+
                 <Style Selector="^:flyout-open">
                     <Setter Property="Background" Value="{StaticResource ButtonTertiaryNoneBackgroundPressed}" />
                     <Setter Property="Foreground" Value="{StaticResource ButtonTertiaryNoneForegroundPressed}" />
@@ -807,24 +912,24 @@
             </Style>
 
         </Style>
-        
+
         <Style Selector="^.Danger">
             <Setter Property="Foreground" Value="{StaticResource DangerStrongBrush}" />
         </Style>
-        
+
         <Style Selector="^.Premium">
             <Setter Property="Background" Value="{StaticResource PremiumButtonLinearGradientBrush}" />
             <Setter Property="Foreground" Value="{StaticResource SurfaceInvertedBrush}" />
             <Setter Property="BorderBrush" Value="{StaticResource StrokeTranslucentWeakBrush}" />
             <Setter Property="BorderThickness" Value="0 1 0 0" />
             <Setter Property="MaxHeight" Value="28" />
-            
+
             <!-- if used in a toolbar, we need to set the background specifically for the override to happen -->
             <Style Selector="^[Size=Toolbar]">
                 <Setter Property="Background" Value="{StaticResource PremiumButtonLinearGradientBrush}" />
                 <Setter Property="MaxHeight" Value="24" />
             </Style>
-            
+
             <Style Selector="^ TextBlock#PART_Label">
                 <Setter Property="Margin" Value="4,0,4,2" />
                 <Setter Property="Theme" Value="{StaticResource BodySMSemiTheme}" />
@@ -833,11 +938,11 @@
             <Style Selector="^:pointerover">
                 <Setter Property="Background" Value="{StaticResource PremiumButtonPointerOverLinearGradientBrush}" />
             </Style>
-            
+
             <Style Selector="^:pressed">
                 <Setter Property="Background" Value="{StaticResource BrandPremium950Brush}" />
             </Style>
-            
+
         </Style>
 
     </ControlTheme>
