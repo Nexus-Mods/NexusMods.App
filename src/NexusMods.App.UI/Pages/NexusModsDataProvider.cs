@@ -216,6 +216,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .Select(optional => optional.HasValue && optional.Value.HasAnyUpdates)
             .ToObservable();
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(parentItemModel, updatesOnPageUnfiltered, _modUpdateFilterService, isVisibleObservable);
+        
+        LibraryDataProviderHelper.AddDeleteItemActionComponent(parentItemModel);
 
         return parentItemModel;
     }
@@ -283,6 +285,8 @@ public class NexusModsDataProvider : ILibraryDataProvider, ILoadoutDataProvider
             .ToObservable();
         
         LibraryDataProviderHelper.AddHideUpdatesActionComponent(itemModel, newestFileUnfiltered, _modUpdateFilterService, isVisibleObservable);
+        
+        LibraryDataProviderHelper.AddDeleteItemActionComponent(itemModel);
 
         return itemModel;
     }

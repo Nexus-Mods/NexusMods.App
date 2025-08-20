@@ -133,6 +133,13 @@ public static class LibraryDataProviderHelper
     {
         itemModel.Add(LibraryColumns.Actions.ViewModPageComponentKey, new LibraryComponents.ViewModPageAction(isEnabled));
     }
+    
+    public static void AddDeleteItemActionComponent(
+        CompositeItemModel<EntityId> itemModel,
+        bool isEnabled = true)
+    {
+        itemModel.Add(LibraryColumns.Actions.DeleteItemComponentKey, new LibraryComponents.DeleteItemAction(isEnabled));
+    }
 
     public static void AddHideUpdatesActionComponent(
         CompositeItemModel<EntityId> itemModel,
