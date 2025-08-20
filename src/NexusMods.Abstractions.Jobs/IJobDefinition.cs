@@ -10,6 +10,11 @@ public interface IJobDefinition
     /// When false, calls to <see cref="IJobMonitor.Pause(NexusMods.Abstractions.Jobs.JobId)"/> will cancel the job instead.
     /// </summary>
     bool SupportsPausing => false;
+
+    /// <summary>
+    /// Get the job state data for external access. Returns null if job has no externally visible state.
+    /// </summary>
+    IPublicJobStateData? GetJobStateData() => null;
 }
 
 /// <summary>

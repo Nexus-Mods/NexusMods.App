@@ -621,7 +621,9 @@ public class FilterTests
 
     private static CompositeItemModel<EntityId> CreateTestModel()
     {
-        return new CompositeItemModel<EntityId>(EntityId.From(1));
+        var model = new CompositeItemModel<EntityId>(EntityId.From(1));
+        model.Add(LibraryColumns.Actions.LibraryItemIdsComponentKey, new LibraryComponents.LibraryItemIds(model.Key));
+        return model;
     }
 
     private static LibraryComponents.InstallAction CreateInstallAction(bool isInstalled)
@@ -632,9 +634,7 @@ public class FilterTests
             subscribeWhenCreated: false
         );
         
-        var libraryItemId = EntityId.From(1); // Use EntityId directly as LibraryItemId
-        
-        return new LibraryComponents.InstallAction(valueComponent, libraryItemId);
+        return new LibraryComponents.InstallAction(valueComponent);
     }
 
     private static LibraryComponents.UpdateAction CreateUpdateAction()
