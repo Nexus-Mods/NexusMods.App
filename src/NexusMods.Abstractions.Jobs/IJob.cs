@@ -71,6 +71,11 @@ public interface IJob
     /// IJob is the reader side, IJobContext is the writer side.
     /// </summary>
     internal IJobContext AsContext();
+    
+    /// <summary>
+    /// Get the current job state data. Returns null if no state of this type exists.
+    /// </summary>
+    TState? GetJobStateData<TState>() where TState : class, IPublicJobStateData => Definition.GetJobStateData() as TState;
 }
 
 /// <summary>
