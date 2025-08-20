@@ -131,7 +131,7 @@ public static class LibraryDataProviderHelper
         CompositeItemModel<EntityId> itemModel,
         bool isEnabled = true)
     {
-        itemModel.Add(LibraryColumns.Actions.ViewModPageComponentKey, new LibraryComponents.ViewModPageAction(isEnabled));
+        itemModel.Add(LibraryColumns.Actions.ViewModPageComponentKey, new SharedComponents.ViewModPageAction(isEnabled));
     }
 
     public static void AddHideUpdatesActionComponent(

@@ -1594,15 +1594,6 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to More options.
-        /// </summary>
-        public static string Library_MoreOptions_ToolTip {
-            get {
-                return ResourceManager.GetString("Library_MoreOptions_ToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Show updates ({0}).
         /// </summary>
         public static string Library_ShowUpdates {
@@ -2397,6 +2388,15 @@ namespace NexusMods.App.UI.Resources {
         public static string MaxPanelsAddedToolTip {
             get {
                 return ResourceManager.GetString("MaxPanelsAddedToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to More options.
+        /// </summary>
+        public static string Menu_MoreOptions_ToolTip {
+            get {
+                return ResourceManager.GetString("Menu_MoreOptions_ToolTip", resourceCulture);
             }
         }
         

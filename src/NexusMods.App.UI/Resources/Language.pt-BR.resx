@@ -1132,7 +1132,7 @@ Para aplicar mudanças ou iniciar o jogo novamente, feche o jogo primeiro.</valu
   <data name="Library_UpdateMod_ToolTip" xml:space="preserve">
     <value>Atualizar mod</value>
   </data>
-  <data name="Library_MoreOptions_ToolTip" xml:space="preserve">
+  <data name="Menu_MoreOptions_ToolTip" xml:space="preserve">
     <value>Mais opções</value>
   </data>
   <data name="Library_UpdateModAndReplace_ToolTip" xml:space="preserve">

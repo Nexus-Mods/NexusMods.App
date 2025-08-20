@@ -123,7 +123,7 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
             .RefCount();
 
         var hasChildrenObservable = linkedItemsObservable.IsNotEmpty();
-        var childrenObservable = linkedItemsObservable.Transform(loadoutItem => LoadoutDataProviderHelper.ToChildItemModel(_connection, loadoutItem));
+        var childrenObservable = linkedItemsObservable.Transform(loadoutItem => ToLocalChildLoadoutItemModel(_connection, loadoutItem));
 
         var parentItemModel = new CompositeItemModel<EntityId>(localFile.Id)
         {
@@ -141,8 +141,16 @@ internal class LocalFileDataProvider : ILibraryDataProvider, ILoadoutDataProvide
         LoadoutDataProviderHelper.AddLockedEnabledStates(parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddEnabledStateToggle(_connection, parentItemModel, linkedItemsObservable);
         LoadoutDataProviderHelper.AddLoadoutItemIds(parentItemModel, linkedItemsObservable);
+        LoadoutDataProviderHelper.AddViewModPageActionComponent(parentItemModel, isEnabled: false);
         
 
         return parentItemModel;
+    }
+    
+    private static CompositeItemModel<EntityId> ToLocalChildLoadoutItemModel(IConnection connection, LoadoutItem.ReadOnly loadoutItem)
+    {
+        var childModel = LoadoutDataProviderHelper.ToChildItemModel(connection, loadoutItem);
+        LoadoutDataProviderHelper.AddViewModPageActionComponent(childModel, isEnabled: false);
+        return childModel;
     }
 }
