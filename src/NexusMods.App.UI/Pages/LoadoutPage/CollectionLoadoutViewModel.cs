@@ -164,6 +164,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                         Text = "This is the name of the new cloned collection.",
                         InputLabel = "Collection name",
                         InputWatermark = "(Local) " + group.AsLoadoutItemGroup().AsLoadoutItem().Name,
+                        InputText = "(Local) " + group.AsLoadoutItemGroup().AsLoadoutItem().Name,
                     },
                     [
                         DialogStandardButtons.Cancel,
