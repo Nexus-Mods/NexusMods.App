@@ -106,10 +106,6 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                         {
                             await osInterop.OpenUrl(NexusModsUrlBuilder.UpgradeToPremiumUri);
                         }
-                        else if (dialogResult.ButtonId == ButtonDefinitionId.From("learn-more"))
-                        {
-                            await osInterop.OpenUrl(NexusModsUrlBuilder.LearnAboutPremiumUri);
-                        }
 
                         return;
                     }
@@ -126,11 +122,23 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             .ToReactiveCommand<Unit>(
                 executeAsync: async (_, cancellationToken) =>
                 {
-                    if (loginManager.IsPremium)
-                        await collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db,
-                            cancellationToken: cancellationToken
-                        );
-                    else _overlayController.Enqueue(serviceProvider.GetRequiredService<IUpgradeToPremiumViewModel>());
+                    if (!loginManager.IsPremium)
+                    {
+                        var premiumCollectionDownloadsDialog = CollectionDialogs.PremiumCollectionDialog();
+
+                        var dialogResult = await windowManager.ShowDialog(premiumCollectionDownloadsDialog, DialogWindowType.Modal);
+
+                        if (dialogResult.ButtonId == ButtonDefinitionId.From("go-premium"))
+                        {
+                            await osInterop.OpenUrl(NexusModsUrlBuilder.UpgradeToPremiumUri);
+                        }
+
+                        return;
+                    }
+
+                    await collectionDownloader.DownloadItems(_revision, itemType: CollectionDownloader.ItemType.Optional, db: connection.Db,
+                        cancellationToken: cancellationToken
+                    );
                 },
                 awaitOperation: AwaitOperation.Drop,
                 configureAwait: false

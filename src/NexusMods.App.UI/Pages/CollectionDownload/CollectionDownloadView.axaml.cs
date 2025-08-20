@@ -219,24 +219,8 @@ public partial class CollectionDownloadView : ReactiveUserControl<ICollectionDow
                 this.WhenAnyValue(view => view.ViewModel!.CanDownloadAutomatically)
                     .Subscribe(canDownloadAutomatically =>
                     {
-                        ButtonDownloadRequiredItems.ShowIcon = StandardButton.ShowIconOptions.Left;
-                        ButtonDownloadOptionalItems.ShowIcon = StandardButton.ShowIconOptions.Left;
-                        
-                        var icon = canDownloadAutomatically ? IconValues.Download : IconValues.Premium;
-                        ButtonDownloadRequiredItems.LeftIcon = icon;
-                        ButtonDownloadOptionalItems.LeftIcon = icon;
-                        
-                        if (canDownloadAutomatically)
-                        {
-                            ButtonDownloadRequiredItems.Classes.Remove("Premium");
-                            ButtonDownloadOptionalItems.Classes.Remove("Premium");
-                        }
-                        else
-                        {
-                            ButtonDownloadRequiredItems.Classes.Add("Premium");
-                            ButtonDownloadOptionalItems.Classes.Add("Premium");
-                        }
-                        
+                        ButtonDownloadRequiredItems.RequiresPremium = !canDownloadAutomatically;
+                        ButtonDownloadOptionalItems.RequiresPremium = !canDownloadAutomatically;
                         
                     }).DisposeWith(d);
                 
