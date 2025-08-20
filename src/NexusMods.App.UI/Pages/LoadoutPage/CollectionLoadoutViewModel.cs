@@ -184,11 +184,11 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 
                 var pageData = new PageData
                 {
-                    FactoryId = CollectionLoadoutPageFactory.StaticId,
-                    Context = new CollectionLoadoutPageContext()
+                    FactoryId = LoadoutPageFactory.StaticId,
+                    Context = new LoadoutPageContext()
                     {
                         LoadoutId = group.AsLoadoutItemGroup().AsLoadoutItem().LoadoutId, 
-                        GroupId = CollectionGroupId.From(cloneId),
+                        GroupScope = CollectionGroupId.From(cloneId),
                     },
                 };
 
