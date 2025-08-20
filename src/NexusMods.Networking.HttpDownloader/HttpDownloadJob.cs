@@ -301,7 +301,7 @@ public record HttpDownloadJob : IJobDefinitionWithStart<HttpDownloadJob, Absolut
 /// Public interface for external access to download information
 /// </summary>
 [PublicAPI]
-public interface IReadOnlyHttpDownloadState : IPublicJobStateData
+public interface IHttpDownloadState : IPublicJobStateData
 {
     /// <summary>
     /// Content length from HTTP headers
@@ -317,7 +317,7 @@ public interface IReadOnlyHttpDownloadState : IPublicJobStateData
 /// <summary>
 /// Internal mutable state that persists across pause/resume cycles
 /// </summary>
-internal sealed class HttpDownloadState : IReadOnlyHttpDownloadState
+internal sealed class HttpDownloadState : IHttpDownloadState
 {
     public Optional<Size> ContentLength { get; set; }
     public Optional<EntityTagHeaderValue> ETag { get; set; }

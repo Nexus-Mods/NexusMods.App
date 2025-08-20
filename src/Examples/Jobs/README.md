@@ -75,14 +75,14 @@ Jobs can expose internal state for external monitoring via `IPublicJobStateData`
 
 ```csharp
 // Public interface - subset of internal state
-public interface IReadOnlyHttpDownloadState : IPublicJobStateData
+public interface IHttpDownloadState : IPublicJobStateData
 {
     Optional<Size> ContentLength { get; }
     Size TotalBytesDownloaded { get; }
 }
 
 // Internal state - includes both public and private properties
-internal sealed class HttpDownloadState : IReadOnlyHttpDownloadState
+internal sealed class HttpDownloadState : IHttpDownloadState
 {
     public Optional<Size> ContentLength { get; set; }          // ← Exposed
     public Size TotalBytesDownloaded { get; set; }             // ← Exposed
@@ -103,7 +103,7 @@ public class HttpDownloadJob : IJobDefinition<AbsolutePath>
 }
 
 // Usage
-var downloadState = job.GetJobStateData<IReadOnlyHttpDownloadState>();
+var downloadState = job.GetJobStateData<IHttpDownloadState>();
 ```
 
 Usually, the read-only interface is a subset of the full internal state; which is sometimes also used across suspend/resume cycles.
