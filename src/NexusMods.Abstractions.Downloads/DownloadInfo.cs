@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusWebApi.Types.V2;
-using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Paths;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -29,7 +28,7 @@ public class DownloadInfo : ReactiveObject
     /// <summary>
     /// The game this download is for.
     /// </summary>
-    [Reactive] public Optional<GameId> GameId { get; set; }
+    [Reactive] public required GameId GameId { get; set; }
     
     /// <summary>
     /// Total file size.
@@ -45,11 +44,6 @@ public class DownloadInfo : ReactiveObject
     /// Downloaded bytes so far.
     /// </summary>
     [Reactive] public Size DownloadedBytes { get; set; }
-    
-    /// <summary>
-    /// Estimated time remaining.
-    /// </summary>
-    [Reactive] public Optional<TimeSpan> EstimatedTimeRemaining { get; set; }
     
     /// <summary>
     /// Current transfer rate.
@@ -69,20 +63,10 @@ public class DownloadInfo : ReactiveObject
     /// <summary>
     /// The page URL where the download originated.
     /// </summary>
-    [Reactive] public Optional<Uri> DownloadPageUri { get; set; }
+    [Reactive] public Uri DownloadPageUri { get; set; } = null!;
     
     /// <summary>
-    /// The completed library file if download is finished.
-    /// </summary>
-    [Reactive] public Optional<LibraryFile.ReadOnly> CompletedFile { get; set; }
-    
-    /// <summary>
-    /// When the download started.
-    /// </summary>
-    [Reactive] public DateTimeOffset StartedAt { get; set; }
-    
-    /// <summary>
-    /// When the download completed (if applicable).
+    /// When the download completed.
     /// </summary>
     [Reactive] public Optional<DateTimeOffset> CompletedAt { get; set; }
 }

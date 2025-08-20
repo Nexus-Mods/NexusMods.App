@@ -7,5 +7,7 @@
         <ProjectReference Include="..\NexusMods.Abstractions.Loadouts.Synchronizers\NexusMods.Abstractions.Loadouts.Synchronizers.csproj" />
         <ProjectReference Include="..\NexusMods.Abstractions.NexusWebApi\NexusMods.Abstractions.NexusWebApi.csproj" />
         <ProjectReference Include="..\NexusMods.Games.AdvancedInstaller\NexusMods.Games.AdvancedInstaller.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.HttpDownloader\NexusMods.Networking.HttpDownloader.csproj" />
+        <ProjectReference Include="..\NexusMods.Networking.NexusWebApi\NexusMods.Networking.NexusWebApi.csproj" />
     </ItemGroup>
 </Project>

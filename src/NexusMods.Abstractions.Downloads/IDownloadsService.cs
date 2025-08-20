@@ -36,15 +36,6 @@ public interface IDownloadsService
     /// </summary>
     IObservable<IChangeSet<DownloadInfo, JobId>> GetDownloadsForGame(GameId gameId);
     
-    /// <summary>
-    /// Observable of download counts grouped by game.
-    /// </summary>
-    IObservable<IReadOnlyDictionary<GameId, int>> DownloadCountsByGame { get; }
-    
-    /// <summary>
-    /// Observable of aggregate download speed across all active downloads.
-    /// </summary>
-    IObservable<Size> AggregateDownloadSpeed { get; }
     
     /// <summary>
     /// Pauses a specific download.
@@ -52,14 +43,29 @@ public interface IDownloadsService
     void PauseDownload(JobId jobId);
     
     /// <summary>
+    /// Pauses a specific download.
+    /// </summary>
+    void PauseDownload(DownloadInfo downloadInfo);
+    
+    /// <summary>
     /// Resumes a specific download.
     /// </summary>
     void ResumeDownload(JobId jobId);
     
     /// <summary>
+    /// Resumes a specific download.
+    /// </summary>
+    void ResumeDownload(DownloadInfo downloadInfo);
+    
+    /// <summary>
     /// Cancels a specific download.
     /// </summary>
     void CancelDownload(JobId jobId);
+    
+    /// <summary>
+    /// Cancels a specific download.
+    /// </summary>
+    void CancelDownload(DownloadInfo downloadInfo);
     
     /// <summary>
     /// Pauses all active downloads.
@@ -75,4 +81,12 @@ public interface IDownloadsService
     /// Cancels selected downloads.
     /// </summary>
     void CancelSelected(IEnumerable<JobId> jobIds);
+    
+    /// <summary>
+    /// Resolves a library file for a completed download using FileId/GameId matching.
+    /// Returns None for incomplete downloads or non-Nexus downloads.
+    /// </summary>
+    /// <param name="downloadInfo">The download info to resolve library file for.</param>
+    /// <returns>The library file if found, otherwise None.</returns>
+    Optional<LibraryFile.ReadOnly> ResolveLibraryFile(DownloadInfo downloadInfo);
 }
