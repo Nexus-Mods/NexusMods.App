@@ -42,7 +42,6 @@
     <StyleInclude Source="/Styles/Controls/Expander/ExpanderStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/ScrollBar/ScrollBarStyles.axaml" />
     <StyleInclude Source="/Styles/Controls/Menu/MenuStyles.axaml" />
-    <StyleInclude Source="/Styles/Controls/Notifications/NotificationStyles.axaml" />
     
      
     <!-- extended avalonia controls -->
