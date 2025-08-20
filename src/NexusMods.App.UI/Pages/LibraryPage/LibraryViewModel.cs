@@ -741,10 +741,9 @@ After asking design, we're choosing to simply open the mod page for now.
     {
         var ids = deleteItemMessage.Ids;
         if (ids.Length == 0) return;
-
-        // Note(sewer): We don't use the library service here because we want to delete the items
-        //              without any additional checks.
-        await _libraryService.RemoveLibraryItems(ids.Select(id => LibraryItem.Load(_connection.Db, id)));
+        
+        var toRemove = ids.Select(id => LibraryItem.Load(_connection.Db, id)).ToArray();
+        await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove);
     }
     
     private async ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
@@ -1172,7 +1171,7 @@ public class LibraryTreeDataGridAdapter :
                 var (self, model, component) = state;
                 var ids = GetLibraryItemIds(model).ToArray();
 
-                self.MessageSubject.OnNext(new InstallMessage(ids));
+                self.MessageSubject.OnNext(new DeleteItemMessage(ids));
             })
         );
 
