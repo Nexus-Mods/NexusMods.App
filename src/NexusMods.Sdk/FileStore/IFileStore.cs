@@ -81,15 +81,15 @@ public interface IFileStore
     Task<byte[]> Load(Hash hash, CancellationToken token = default);
 
     /// <summary>
-    /// Retrieves hashes of all files associated with this FileStore.
-    /// </summary>
-    HashSet<ulong> GetFileHashes();
-
-    /// <summary>
     /// Locks the file store, preventing it from being used until the returned
     /// <see cref="IDisposable"/> is disposed.
     /// </summary>
     AsyncFriendlyReaderWriterLock.WriteLockDisposable Lock();
+
+    /// <summary>
+    /// Reload any caches that may be stale due to GC operations
+    /// </summary>
+    void ReloadCaches();
 }
 
 

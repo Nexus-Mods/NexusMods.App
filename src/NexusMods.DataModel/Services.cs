@@ -2,7 +2,6 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Diagnostics;
-using NexusMods.Abstractions.FileStore.Nx.Models;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GC;
 using NexusMods.Abstractions.Loadouts;
@@ -78,8 +77,6 @@ public static class Services
         coll.AddAttributeCollection(typeof(GameInstallMetadata));
         
         // File Store
-        coll.AddAttributeCollection(typeof(ArchivedFileContainer));
-        coll.AddAttributeCollection(typeof(ArchivedFile));
         coll.AddAllSingleton<IFileStore, NxFileStore>();
         
         coll.AddAllSingleton<IToolManager, ToolManager>();

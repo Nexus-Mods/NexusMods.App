@@ -1154,4 +1154,7 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="Loadout_Dialog_ShareCollection_ChangeVisibilityMessage" xml:space="preserve">
         <value>You can change the visibility at any time in your collection settings.</value>
     </data>
+    <data name="Library_DeleteItem_Text" xml:space="preserve">
+        <value>Delete</value>
+    </data>
 </root>

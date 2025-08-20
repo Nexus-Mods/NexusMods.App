@@ -76,7 +76,7 @@ public class DataStoreNxArchiveFinderTests(NxFileStore fileStore, IConnection co
 
     private AbsolutePath GetArchivePath(Hash hash)
     {
-        fileStore.TryGetLocation(connection.Db, hash, null, out var archivePath, out _).Should().BeTrue("Archive should exist");
+        fileStore.TryGetLocation(hash, out var archivePath, out _).Should().BeTrue("Archive should exist");
         return archivePath;
     }
     

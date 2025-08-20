@@ -1594,6 +1594,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string Library_DeleteItem_Text {
+            get {
+                return ResourceManager.GetString("Library_DeleteItem_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} selected.
         /// </summary>
         public static string Library_DeselectItemsButton_Text {
