@@ -88,4 +88,8 @@
           <DependentUpon>ChunkedStream.cs</DependentUpon>
         </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NexusMods.Abstractions.Jobs\NexusMods.Abstractions.Jobs.csproj" />
+    </ItemGroup>
 </Project>

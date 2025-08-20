@@ -1,5 +1,7 @@
 ﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Avalonia.ReactiveUI;
+using NexusMods.Abstractions.Jobs;
 using ReactiveUI;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
@@ -28,6 +30,16 @@ public partial class ApplyControlView : ReactiveUserControl<IApplyControlViewMod
                     .DisposeWith(disposables);
                 
                 this.OneWayBind(ViewModel, vm => vm.IsApplying, v => v.ProgressBarControl.IsVisible)
+                    .DisposeWith(disposables);
+                
+                ViewModel!.WhenAnyValue(p => p.Progress)
+                    .OnUI()
+                    .Subscribe(p => ProgressBarControl.IsIndeterminate = p == Percent.Zero)
+                    .DisposeWith(disposables);
+
+                ViewModel!.WhenAnyValue(p => p.Progress)
+                    .OnUI()
+                    .Subscribe(p => ProgressBarControl.Value = p.Value)
                     .DisposeWith(disposables);
 
                 this.WhenAnyObservable(view => view.ViewModel!.ApplyCommand.CanExecute)

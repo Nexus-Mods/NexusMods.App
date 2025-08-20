@@ -40,6 +40,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     [Reactive] public bool IsProcessing { get; private set; }
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
     [Reactive] public bool IsLaunchButtonEnabled { get; private set; } = true;
+    
+    [Reactive] public Percent Progress { get; private set; } = Percent.Zero;
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
 
@@ -85,7 +87,7 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 
                 var loadoutStatuses = Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
                     .Switch()
-                    .Prepend(LoadoutSynchronizerState.Pending);
+                    .Prepend(new LoadoutSynchronizerStateWithProgress(LoadoutSynchronizerState.Pending));
 
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId)
                     .Prepend(GameSynchronizerState.Idle);
@@ -110,12 +112,12 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                         CanApply = !isProcessing
                                    && !running
                                    && gameStatus != GameSynchronizerState.Busy
-                                   && ldStatus != LoadoutSynchronizerState.Pending
-                                   && ldStatus != LoadoutSynchronizerState.Current;
+                                   && ldStatus.State != LoadoutSynchronizerState.Pending
+                                   && ldStatus.State != LoadoutSynchronizerState.Current;
                         IsLaunchButtonEnabled = !isProcessing 
                                                 && !running
                                                 && gameStatus != GameSynchronizerState.Busy
-                                                && ldStatus == LoadoutSynchronizerState.Current;
+                                                && ldStatus.State == LoadoutSynchronizerState.Current;
                         
                     })
                     .DisposeWith(disposables);
@@ -126,6 +128,10 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .Subscribe(isApplying => IsApplying = isApplying)
                     .DisposeWith(disposables);
                 
+                loadoutStatuses.OnUI()
+                    .Select(s => s.Progress)
+                    .BindTo(this, vm => vm.Progress)
+                    .DisposeWith(disposables);
             }
         );
     }

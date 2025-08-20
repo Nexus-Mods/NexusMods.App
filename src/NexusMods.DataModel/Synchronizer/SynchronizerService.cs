@@ -96,7 +96,7 @@ public class SynchronizerService : ISynchronizerService
                     var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
                     using var _2 = gameState.WithLock();
 
-                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout, progress => loadoutState.Progress = progress);
                 }
                 finally
                 {
@@ -170,16 +170,18 @@ public class SynchronizerService : ISynchronizerService
     public IObservable<GameSynchronizerState> StatusForGame(GameInstallMetadataId gameInstallId)
     {
         var gameState = GetOrAddGameState(gameInstallId);
-        return gameState.ObservableForProperty(s => s.Busy, skipInitial: false)
-            .Select(e => e.Value ? GameSynchronizerState.Busy : GameSynchronizerState.Idle);
+        return gameState
+            .ObservableForProperty(s => s.Busy, skipInitial: false)
+            .Zip(gameState.ObservableForProperty(s => s.Progress, skipInitial: false))
+            .Select(e => e.Item1.Value ? GameSynchronizerState.Busy : GameSynchronizerState.Idle);
     } 
     
-    private readonly Dictionary<LoadoutId, Observable<LoadoutSynchronizerState>> _statusObservables = new();
+    private readonly Dictionary<LoadoutId, Observable<LoadoutSynchronizerStateWithProgress>> _statusObservables = new();
     private readonly SemaphoreSlim _statusSemaphore = new(1, 1);
     private readonly IFileHashesService _fileHashesService;
 
     /// <inheritdoc />
-    public async Task<IObservable<LoadoutSynchronizerState>> StatusForLoadout(LoadoutId loadoutId)
+    public async Task<IObservable<LoadoutSynchronizerStateWithProgress>> StatusForLoadout(LoadoutId loadoutId)
     {
         await _statusSemaphore.WaitAsync();
         try
@@ -197,12 +199,13 @@ public class SynchronizerService : ISynchronizerService
         }
     }
 
-    private Observable<LoadoutSynchronizerState> CreateStatusObservable(LoadoutId loadoutId)
+    private Observable<LoadoutSynchronizerStateWithProgress> CreateStatusObservable(LoadoutId loadoutId)
     {
         var loadout = Loadout.Load(_conn.Db, loadoutId);
         var loadoutState = GetOrAddLoadoutState(loadoutId);
 
-        var isBusy = loadoutState.ObservePropertyChanged(l => l.Busy);
+        var busyObservable = loadoutState.ObservePropertyChanged(l => l.Busy)
+            .Zip(loadoutState.ObservePropertyChanged(l => l.Progress), static (busy, progress) => (busy, progress));
 
         var lastApplied = LastAppliedRevisionFor(loadout.InstallationInstance)
             .ToObservable();
@@ -212,9 +215,9 @@ public class SynchronizerService : ISynchronizerService
             // Use DB transaction, since child updates are not part of the loadout
             .Select(rev => (loadout: rev, revDbTx: _conn.Db.BasisTxId));
 
-        var statusObservable = isBusy.CombineLatest(lastApplied,
+        var statusObservable = busyObservable.CombineLatest(lastApplied,
                 revisions,
-                (busy, last, rev) => (busy, last, rev.loadout, rev.revDbTx)
+                (busy, last, rev) => (busy.busy, busy.progress, last, rev.loadout, rev.revDbTx)
             )
             
             .DistinctUntilChanged()
@@ -224,21 +227,21 @@ public class SynchronizerService : ISynchronizerService
                     // To make sure the DB is loaded, before we start diffing
                     await _fileHashesService.GetFileHashesDb();
                  
-                    var (busy, last, rev, revDbTx) = tuple;
+                    var (busy, progress, last, rev, revDbTx) = tuple;
                     
                     // if the loadout is not found, it means it was deleted
                     if (!rev.IsValid())
-                        return LoadoutSynchronizerState.OtherLoadoutSynced;
+                        return new LoadoutSynchronizerStateWithProgress(LoadoutSynchronizerState.OtherLoadoutSynced);
                     
                     if (busy)
-                        return LoadoutSynchronizerState.Pending;
+                        return new LoadoutSynchronizerStateWithProgress(LoadoutSynchronizerState.Pending, progress);
 
                     if (last.Id != loadoutId && last != default(LoadoutWithTxId))
-                        return LoadoutSynchronizerState.OtherLoadoutSynced;
+                        return new LoadoutSynchronizerStateWithProgress(LoadoutSynchronizerState.OtherLoadoutSynced);
 
                     // Last DB revision is the same in the applied loadout
                     if (last.Id == rev.LoadoutId && revDbTx == last.Tx)
-                        return LoadoutSynchronizerState.Current;
+                        return new LoadoutSynchronizerStateWithProgress(LoadoutSynchronizerState.Current);
 
                     // Potentially long operation, run on thread pool
                     var diffFound = await Task.Run(async () =>
@@ -249,7 +252,7 @@ public class SynchronizerService : ISynchronizerService
                             return diffFound;
                         }, cancellationToken);
 
-                    return diffFound ? LoadoutSynchronizerState.NeedsSync : LoadoutSynchronizerState.Current;
+                    return  new LoadoutSynchronizerStateWithProgress(diffFound ? LoadoutSynchronizerState.NeedsSync : LoadoutSynchronizerState.Current);
                 },
                 awaitOperation: AwaitOperation.ThrottleFirstLast
             )

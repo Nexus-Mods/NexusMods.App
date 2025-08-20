@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Sdk.FileStore;
@@ -12,17 +13,17 @@ public class DummyFileStore : IFileStore
         return ValueTask.FromResult(false);
     }
 
-    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
+    public Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, IProgressUpdater? progressUpdater = null, CancellationToken token = default)
     {
         return Task.CompletedTask;
     }
-
+    
     public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
 
-    public Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
+    public Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, IProgressUpdater? updater, CancellationToken token = default)
     {
         return Task.CompletedTask;
     }

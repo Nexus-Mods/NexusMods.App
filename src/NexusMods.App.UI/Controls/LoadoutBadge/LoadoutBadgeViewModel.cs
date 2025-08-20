@@ -34,8 +34,8 @@ public class LoadoutBadgeViewModel : AViewModel<ILoadoutBadgeViewModel>, ILoadou
                     .OnUI()
                     .Do(applyStatus =>
                         {
-                            IsLoadoutApplied = applyStatus is LoadoutSynchronizerState.Current or LoadoutSynchronizerState.NeedsSync;
-                            IsLoadoutInProgress = applyStatus is LoadoutSynchronizerState.Pending;
+                            IsLoadoutApplied = applyStatus.State is LoadoutSynchronizerState.Current or LoadoutSynchronizerState.NeedsSync;
+                            IsLoadoutInProgress = applyStatus.State is LoadoutSynchronizerState.Pending;
                         }
                     )
                     .SubscribeWithErrorLogging();;

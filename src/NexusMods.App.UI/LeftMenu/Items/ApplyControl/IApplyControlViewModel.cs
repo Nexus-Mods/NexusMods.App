@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using ReactiveUI;
@@ -20,4 +21,6 @@ public interface IApplyControlViewModel : IViewModelInterface
     bool IsApplying { get; }
     
     string ApplyButtonText { get; }
+    
+    Percent Progress { get; }
 }

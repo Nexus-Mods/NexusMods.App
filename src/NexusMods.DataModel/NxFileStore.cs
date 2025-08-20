@@ -18,6 +18,7 @@ using NexusMods.Paths;
 using NexusMods.Paths.Utilities;
 using NexusMods.Sdk.Threading;
 using System.Diagnostics;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
 
@@ -103,7 +104,7 @@ public class NxFileStore : IFileStore
     public ValueTask<bool> HaveFile(Hash hash) => ValueTask.FromResult(_archivesByEntry.ContainsKey(hash));
 
     /// <inheritdoc />
-    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default)
+    public async Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, IProgressUpdater? updater = null,  CancellationToken token = default)
     {
         var builder = new NxPackerBuilder();
         var distinct = backups.DistinctBy(d => d.Hash).ToArray();
@@ -137,6 +138,8 @@ public class NxFileStore : IFileStore
         await using (var outputStream = outputPath.Create())
         {
             builder.WithOutput(outputStream);
+            if (updater != null)
+                builder.WithProgress(updater);
             builder.Build();
         }
 
@@ -150,14 +153,15 @@ public class NxFileStore : IFileStore
         ReloadCaches();
     }
 
+
     /// <inheritdoc />
     public Task BackupFiles(string archiveName, IEnumerable<ArchivedFileEntry> files, CancellationToken cancellationToken = default)
     {
-        return BackupFiles(files, deduplicate: true, cancellationToken);
+        return BackupFiles(files, deduplicate: true, token: cancellationToken);
     }
     
     /// <inheritdoc />
-    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
+    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, IProgressUpdater? updater = null, CancellationToken token = default)
     {
         using var lck = _lock.ReadLock();
 
@@ -224,7 +228,14 @@ public class NxFileStore : IFileStore
 
             try
             {
-                unpacker.ExtractFiles(toExtract, new UnpackerSettings());
+                var settings = new UnpackerSettings();
+                if (updater != null)
+                {
+                    settings.Progress = updater;
+                    settings.MaxNumThreads = 1;
+                }
+
+                unpacker.ExtractFiles(toExtract, settings);
             }
             catch (Exception e)
             {

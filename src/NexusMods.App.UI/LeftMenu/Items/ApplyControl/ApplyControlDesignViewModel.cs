@@ -1,4 +1,5 @@
 ﻿using System.Reactive;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.UI;
 using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Resources;
@@ -21,6 +22,8 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
     public bool IsLaunchButtonEnabled { get; } = true;
     public bool IsProcessing { get; } = false;
     public string ApplyButtonText { get; } = Language.ApplyControlViewModel__APPLY;
+
+    public Percent Progress { get; } = Percent.Create(75, 100);
 
     public ApplyControlDesignViewModel()
     {

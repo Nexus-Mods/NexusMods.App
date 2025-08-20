@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.Loadouts.Synchronizers;
 using NexusMods.Abstractions.Settings;
@@ -51,9 +52,9 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         ArchivePcEp1Folder,
     ];
 
-    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, Action<Percent>? progressUpdater)
     {
-        loadout = await base.Synchronize(loadout);
+        loadout = await base.Synchronize(loadout, progressUpdater);
         if (!MissingRedModEmitter.HasRedMods(loadout, out _, out var numRedModDirs)) return loadout;
         if (!MissingRedModEmitter.HasRedModToolInstalled(loadout, out _))
         {
@@ -62,7 +63,7 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         }
 
         await _redModTool.Execute(loadout, CancellationToken.None);
-        return await base.Synchronize(loadout);
+        return await base.Synchronize(loadout, progressUpdater);
     }
 
 

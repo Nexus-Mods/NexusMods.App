@@ -1,5 +1,6 @@
 using System.Reactive.Disposables;
 using DynamicData.Kernel;
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Abstractions.Loadouts.Ids;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -9,11 +10,18 @@ namespace NexusMods.DataModel.Synchronizer;
 public class SynchronizerState : ReactiveObject
 {
     private bool _busy = false;
+    private Percent _progress = Percent.Zero;
 
     public bool Busy
     {
         get => _busy;
         set => this.RaiseAndSetIfChanged(ref _busy, value);
+    }
+
+    public Percent Progress
+    {
+        get => _progress;
+        set => this.RaiseAndSetIfChanged(ref _progress, value);
     }
 
     [Reactive] public Optional<LoadoutWithTxId> LastApplied { get; set; }

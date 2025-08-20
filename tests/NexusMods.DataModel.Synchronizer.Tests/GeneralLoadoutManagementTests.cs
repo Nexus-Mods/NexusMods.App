@@ -31,7 +31,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
             """);
         var loadoutA = await CreateLoadout();
         var loadoutAState = await SynchronizerService.StatusForLoadout(loadoutA);
-        var subADisposable = loadoutAState.SubscribeSafe(new AnonymousObserver<LoadoutSynchronizerState>(_ => { }, onError: exception => sb.AppendLine($"Loadout A State Error: {exception}")));
+        var subADisposable = loadoutAState.SubscribeSafe(new AnonymousObserver<LoadoutSynchronizerStateWithProgress>(_ => { }, onError: exception => sb.AppendLine($"Loadout A State Error: {exception}")));
 
         LogDiskState(sb, "## 2 - Loadout Created (A) - Synced",
             """
@@ -58,7 +58,7 @@ public class GeneralLoadoutManagementTests(ITestOutputHelper helper) : ACyberpun
         
         var loadoutB = await CreateLoadout();
         var loadoutBState = await SynchronizerService.StatusForLoadout(loadoutB);
-        var subBDisposable = loadoutBState.SubscribeSafe(new AnonymousObserver<LoadoutSynchronizerState>(_ => { }, onError: exception => sb.AppendLine($"Loadout B State Error: {exception}")));
+        var subBDisposable = loadoutBState.SubscribeSafe(new AnonymousObserver<LoadoutSynchronizerStateWithProgress>(_ => { }, onError: exception => sb.AppendLine($"Loadout B State Error: {exception}")));
 
         LogDiskState(sb, "## 6 - New Loadout (B) Created - No Sync",
             """

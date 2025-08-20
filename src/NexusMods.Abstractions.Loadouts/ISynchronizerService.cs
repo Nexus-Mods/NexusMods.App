@@ -41,6 +41,6 @@ public interface ISynchronizerService
     /// <summary>
     /// Returns an observable of the status of the synchronizer for a specific loadout.
     /// </summary>
-    public Task<IObservable<LoadoutSynchronizerState>> StatusForLoadout(LoadoutId loadoutId);
+    public Task<IObservable<LoadoutSynchronizerStateWithProgress>> StatusForLoadout(LoadoutId loadoutId);
 }
 

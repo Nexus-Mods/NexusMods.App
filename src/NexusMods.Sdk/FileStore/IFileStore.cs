@@ -1,3 +1,4 @@
+using NexusMods.Abstractions.Jobs;
 using NexusMods.Hashing.xxHash3;
 using NexusMods.Paths;
 using NexusMods.Sdk.Threading;
@@ -43,7 +44,7 @@ public interface IFileStore
     /// being made without a lock is so low that it is generally recommended not to lock
     /// to instead maximize performance. The Garbage Collector will remove any duplicates down the road.
     /// </remarks>
-    Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, CancellationToken token = default);
+    Task BackupFiles(IEnumerable<ArchivedFileEntry> backups, bool deduplicate = true, IProgressUpdater? progressUpdater = null, CancellationToken token = default);
 
     /// <summary>
     /// Similar to <c>BackupFiles</c> except the same archive is used.
@@ -55,9 +56,10 @@ public interface IFileStore
     /// the extractor needs more direct access (such as memory mapping).
     /// </summary>
     /// <param name="files"></param>
+    /// <param name="updater"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default);
+    Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, IProgressUpdater? updater = null, CancellationToken token = default);
 
     /// <summary>
     /// Extract the given files from archives.

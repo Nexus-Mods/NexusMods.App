@@ -1,3 +1,5 @@
+using NexusMods.Abstractions.Jobs;
+
 namespace NexusMods.Abstractions.Loadouts;
 
 /// <summary>
@@ -24,4 +26,11 @@ public enum LoadoutSynchronizerState
     /// The loadout is applied and up-to-date with the game state.
     /// </summary>
     Current,
+}
+
+public record struct LoadoutSynchronizerStateWithProgress(LoadoutSynchronizerState State, Percent Progress)
+{
+    public LoadoutSynchronizerStateWithProgress(LoadoutSynchronizerState state) : this(state, Percent.Zero)
+    {
+    }
 }

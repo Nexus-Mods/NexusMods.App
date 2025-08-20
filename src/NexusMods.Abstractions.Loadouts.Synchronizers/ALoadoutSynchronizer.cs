@@ -418,7 +418,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, Action<Percent>? progressUpdater)
     {
         using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
@@ -426,6 +426,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         var register = loadout.InstallationInstance.LocationsRegister;
         HashSet<GamePath> foldersWithDeletedFiles = [];
         EntityId? overridesGroup = null;
+        
+        var updater = RunActionsCompositeUpdater.Create(syncTree, progressUpdater ?? NullUpdater);
         
         foreach (var action in ActionsInOrder)
         {
@@ -435,23 +437,23 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.BackupFile:
-                    await ActionBackupNewFiles(loadout.InstallationInstance, syncTree);
+                    await ActionBackupNewFiles(loadout.InstallationInstance, syncTree, updater);
                     break;
 
                 case Actions.IngestFromDisk:
-                    ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup);
+                    ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup, updater);
                     break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId, foldersWithDeletedFiles);
+                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId, foldersWithDeletedFiles, updater);
                     break;
 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId);
+                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId, updater);
                     break;
 
                 case Actions.AddReifiedDelete:
-                    ActionAddReifiedDelete(syncTree, loadout, tx, ref overridesGroup);
+                    ActionAddReifiedDelete(syncTree, loadout, tx, ref overridesGroup, updater);
                     break;
 
                 case Actions.WarnOfUnableToExtract:
@@ -465,6 +467,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 default:
                     throw new InvalidOperationException($"Unknown action: {action}");
             }
+            updater.NextStep(action);
         }
 
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
@@ -485,6 +488,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         loadout = await ReprocessOverrides(loadout);
 
         return loadout;
+        
+        void NullUpdater(Percent _) { }
     }
 
     private async ValueTask<Loadout.ReadOnly> ReprocessOverrides(Loadout.ReadOnly loadout)
@@ -686,13 +691,18 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private void ActionAddReifiedDelete(Dictionary<GamePath, SyncNode> groupings, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup)
+    private void ActionAddReifiedDelete(Dictionary<GamePath, SyncNode> groupings, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroup, IProgressUpdater? updater = null)
     {
+        var totalActions = groupings.Count;
+        var currentAction = 0;
 
         foreach (var (path, node) in groupings)
         {
             if (!node.Actions.HasFlag(Actions.AddReifiedDelete))
                 continue;
+            
+            updater?.SetStepProgress(currentAction, totalActions);
+            currentAction++;
             
             overridesGroup ??= GetOrCreateOverridesGroup(tx, loadout);
             
@@ -734,7 +744,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
+    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId, IProgressUpdater? updater = null)
     {
         List<(Hash Hash, AbsolutePath Path)> toExtract = [];
         
@@ -754,7 +764,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (toExtract.Count > 0)
         {
-            await _fileStore.ExtractFiles(toExtract, CancellationToken.None);
+            await _fileStore.ExtractFiles(toExtract, updater, CancellationToken.None);
 
             var isUnix = _os.IsUnix();
             foreach (var (gamePath, node) in groupings)
@@ -807,13 +817,21 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IGameLocationsRegister register,
         ITransaction tx,
         GameInstallMetadataId gameMetadataId,
-        HashSet<GamePath> foldersWithDeletedFiles)
+        HashSet<GamePath> foldersWithDeletedFiles,
+        IProgressUpdater? updater = null)
     {
+        var total = groupings.Values.Count(x => x.Actions.HasFlag(Actions.DeleteFromDisk));
+        var current = 0;
+        
         // Delete files from disk
         foreach (var (path, node) in groupings)
         {
             if (!node.Actions.HasFlag(Actions.DeleteFromDisk))
                 continue;
+            
+            updater?.SetStepProgress(current, total);
+            current++;
+            
             var resolvedPath = register.GetResolvedPath(path);
             resolvedPath.Delete();
 
@@ -840,7 +858,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         public required LoadoutFile.New LoadoutFileEntry { get; init; }
     }
 
-    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroupId)
+    private bool ActionIngestFromDisk(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, ITransaction tx, ref EntityId? overridesGroupId, IProgressUpdater? updater = null)
     {
         overridesGroupId ??= GetOrCreateOverridesGroup(tx, loadout);
         var newGroup = true;
@@ -853,10 +871,16 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var ingestedFiles = false;
         
+        var totalItems = syncTree.Values.Sum(x => x.Actions.HasFlag(Actions.IngestFromDisk) ? 1 : 0);
+        var currentItem = 0;
+        
         foreach (var (path, node) in syncTree)
         {
             if (!node.Actions.HasFlag(Actions.IngestFromDisk))
                 continue;
+            
+            updater?.SetStepProgress(currentItem, totalItems);
+            currentItem++;
 
             // If the overrides group is not new, we need to check if the file is already in the overrides group
             if (!newGroup)
@@ -910,7 +934,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, Action<Percent>? progressUpdater)
     {
         loadout = loadout.Rebase();
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
@@ -928,7 +952,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
 
         var tree = await BuildSyncTree(loadout);
         ProcessSyncTree(tree);
-        return await RunActions(tree, loadout);
+        return await RunActions(tree, loadout, progressUpdater);
     }
 
     public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDates)
@@ -1172,7 +1196,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     /// Backs up any new files in the loadout.
     ///
     /// </summary>
-    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SyncNode> files)
+    public virtual async Task ActionBackupNewFiles(GameInstallation installation, Dictionary<GamePath, SyncNode> files, IProgressUpdater? updater = null)
     {
         // During ingest, new files that haven't been seen before are fed into the game's synchronizer to convert a
         // DiskStateEntry (hash, size, path) into some sort of LoadoutItem. By default, these are converted into a "LoadoutFile".
@@ -1216,7 +1240,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         );
 
         // PERFORMANCE: We deduplicate above with the HaveFile call.
-        await _fileStore.BackupFiles(archivedFiles, deduplicate: false);
+        await _fileStore.BackupFiles(archivedFiles, deduplicate: false, progressUpdater: updater);
 
         // Pin the files to avoid garbage collection.
         using var tx = Connection.BeginTransaction();
@@ -1501,7 +1525,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             return;
         
         // Synchronize the last applied loadout, so we don't lose any changes
-        await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout));
+        await Synchronize(Loadout.Load(Connection.Db, metadata.LastSyncedLoadout), p => {});
         
         var metadataLocatorIds = installation.LocatorResultMetadata?.ToLocatorIds().ToArray() ?? [];
         var locatorIds = metadataLocatorIds.Distinct().ToArray();
@@ -1530,7 +1554,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         var tree = BuildSyncTree(DiskStateToPathPartPair(reindexed.DiskStateEntries), DiskStateToPathPartPair(reindexed.DiskStateEntries), loadout);
         ProcessSyncTree(tree);
-        await RunActions(tree, loadout);
+        await RunActions(tree, loadout, null);
     }
 
     private LoadoutGameFilesGroup.New CreateLoadoutGameFilesGroup(LoadoutId loadout, GameInstallation installation, ITransaction tx)

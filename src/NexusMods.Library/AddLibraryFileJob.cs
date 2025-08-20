@@ -56,7 +56,7 @@ internal class AddLibraryFileJob : IJobDefinitionWithStart<AddLibraryFileJob, Li
             throw new Exception($"File '{FilePath}' does not exist.");
 
         var topFile = await AnalyzeFile(context, FilePath);
-        await FileStore.BackupFiles(ToArchive, deduplicate: false, context.CancellationToken);
+        await FileStore.BackupFiles(ToArchive, deduplicate: false, progressUpdater: null, context.CancellationToken);
         return topFile;
     }
 
