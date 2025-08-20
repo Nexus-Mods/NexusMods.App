@@ -846,13 +846,16 @@ After asking design, we're choosing to simply open the mod page for now.
     private LibraryItemId[] GetSelectedIds()
     {
         var ids = Adapter.SelectedModels
-            .Select(static model => model.GetOptional<LibraryComponents.InstallAction>(LibraryColumns.Actions.InstallComponentKey))
-            .Where(static optional => optional.HasValue)
-            .SelectMany(static optional => optional.Value.ItemIds)
+            .SelectMany(static model => GetLibraryItemIds(model))
             .Distinct()
             .ToArray();
 
         return ids;
+    }
+    
+    private static IEnumerable<LibraryItemId> GetLibraryItemIds(CompositeItemModel<EntityId> itemModel)
+    {
+        return itemModel.Get<LibraryComponents.LibraryItemIds>(LibraryColumns.Actions.LibraryItemIdsComponentKey).ItemIds;
     }
 
     private IEnumerable<CompositeItemModel<EntityId>> GetSelectedModelsWithUpdates()
@@ -1090,8 +1093,8 @@ public class LibraryTreeDataGridAdapter :
             state: this,
             factory: static (self, itemModel, component) => component.CommandInstall.Subscribe((self, itemModel, component), static (_, state) =>
             {
-                var (self, _, component) = state;
-                var ids = component.ItemIds.ToArray();
+                var (self, model, component) = state;
+                var ids = GetLibraryItemIds(model).ToArray();
 
                 self.MessageSubject.OnNext(new InstallMessage(ids));
             })
@@ -1186,9 +1189,9 @@ public class LibraryTreeDataGridAdapter :
         );
     }
     
-    public static IEnumerable<LibraryItemId> GetLibraryItemIds(CompositeItemModel<EntityId> itemModel)
+    private static IEnumerable<LibraryItemId> GetLibraryItemIds(CompositeItemModel<EntityId> itemModel)
     {
-        return itemModel.Get<LibraryComponents.InstallAction>(LibraryColumns.Actions.LibraryItemIdsComponentKey).ItemIds;
+        return itemModel.Get<LibraryComponents.LibraryItemIds>(LibraryColumns.Actions.LibraryItemIdsComponentKey).ItemIds;
     }
 
     protected override IColumn<CompositeItemModel<EntityId>>[] CreateColumns(bool viewHierarchical)

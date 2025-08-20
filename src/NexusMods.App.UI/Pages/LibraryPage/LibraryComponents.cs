@@ -255,12 +255,6 @@ public static class LibraryComponents
         public IReadOnlyBindableReactiveProperty<string> ButtonText { get; }
         public ReactiveCommand<Unit> CommandInstall { get; }
 
-        private readonly OneOf<ObservableHashSet<LibraryItemId>, LibraryItemId[]> _ids;
-        public IEnumerable<LibraryItemId> ItemIds => _ids.Match(
-            f0: static x => x.AsEnumerable(),
-            f1: static x => x.AsEnumerable()
-        );
-
         public int CompareTo(InstallAction? other)
         {
             if (other is null) return 1;
@@ -285,14 +279,11 @@ public static class LibraryComponents
 
         private readonly ReactiveR3Object _source;
         private readonly IDisposable _activationDisposable;
-        private readonly IDisposable? _idsObservable;
 
         public InstallAction(
-            ValueComponent<bool> isInstalled,
-            LibraryItemId itemId)
+            ValueComponent<bool> isInstalled)
         {
             _source = isInstalled;
-            _ids = new[] { itemId };
 
             IsInstalled = isInstalled.Value;
 
@@ -311,11 +302,9 @@ public static class LibraryComponents
         }
 
         public InstallAction(
-            ValueComponent<MatchesData> matches,
-            IObservable<IChangeSet<LibraryItemId, EntityId>> childrenItemIdsObservable)
+            ValueComponent<MatchesData> matches)
         {
             _source = matches;
-            _ids = new ObservableHashSet<LibraryItemId>();
 
             IsInstalled = matches.Value
                 .Select(static data => data.NumMatches > 0)
@@ -334,8 +323,6 @@ public static class LibraryComponents
             {
                 self._source.Activate().AddTo(disposables);
             });
-
-            _idsObservable = childrenItemIdsObservable.SubscribeWithErrorLogging(changeSet => _ids.AsT0.ApplyChanges(changeSet));
         }
 
         internal static string GetButtonText(bool isInstalled) => isInstalled
@@ -375,7 +362,7 @@ public static class LibraryComponents
             {
                 if (disposing)
                 {
-                    Disposable.Dispose(_activationDisposable, _idsObservable ?? Disposable.Empty, CommandInstall, ButtonText, _source);
+                    Disposable.Dispose(_activationDisposable, CommandInstall, ButtonText, _source);
                 }
 
                 _isDisposed = true;
