@@ -30,6 +30,7 @@ using NexusMods.App.UI.LeftMenu;
 using NexusMods.App.UI.LeftMenu.Home;
 using NexusMods.App.UI.LeftMenu.Items;
 using NexusMods.App.UI.LeftMenu.Loadout;
+using NexusMods.App.UI.Notifications;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.OkCancel;
@@ -61,6 +62,7 @@ using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceAttachments;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk;
 using ReactiveUI;
 using ImageButton = NexusMods.App.UI.Controls.Spine.Buttons.Image.ImageButton;
 using ManageGameWarningView = NexusMods.App.UI.Overlays.ManageGameWarning.ManageGameWarningView;
@@ -88,6 +90,7 @@ public static class Services
 
             // Services
             .AddSingleton<IOverlayController, OverlayController>()
+            .AddSingleton<IWindowNotificationService, WindowNotificationService>()
 
             // View Models
             .AddTransient<MainWindowViewModel>()
