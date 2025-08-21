@@ -218,7 +218,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             };
         }
         
-        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(Connection,loadout.Id, loadout.Db))
+        foreach (var loadoutItem in Loadout.EnabledLoadoutItemWithTargetPathInLoadoutQuery(Connection, loadout.Db, loadout.Id))
         {
             var targetPath = loadoutItem.TargetPath;
 
