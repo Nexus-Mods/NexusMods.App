@@ -1,4 +1,3 @@
-using Avalonia.Controls.Notifications;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using DynamicData.Kernel;
@@ -30,7 +29,6 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
 
     public string Category => "Themed";
     public bool IsAdult => true;
-    public WindowNotificationManager? NotificationManager { get; set;  }
     public int RequiredDownloadsCount => 9;
     public int OptionalDownloadsCount => 2;
     public Bitmap AuthorAvatar => new(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/avatar.webp")));
@@ -72,5 +70,4 @@ public class CollectionDownloadDesignViewModel : APageViewModel<ICollectionDownl
     public ReactiveCommand<Unit> CommandOpenJsonFile { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandDeleteAllDownloads { get; } = new ReactiveCommand();
     public ReactiveCommand<Unit> CommandDeleteCollectionRevision { get; } = new ReactiveCommand();
-    public ReactiveCommand<Unit> CommandShowNotification { get; } = new ReactiveCommand();
 }
