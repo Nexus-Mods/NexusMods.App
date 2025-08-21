@@ -13,7 +13,7 @@
                   Margin="12"
                   Spacing="8"
                   TextElement.Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
-                <TextBlock FontWeight="Medium" Text="{Binding Title}" />
+                <TextBlock FontWeight="Medium" Text="{Binding Title}" IsVisible="False" />
                 <TextBlock
                     MaxHeight="80"
                     Margin="0,0,12,0"
