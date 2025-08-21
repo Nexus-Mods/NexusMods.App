@@ -129,11 +129,12 @@ public partial class Loadout
         return connection.Query<(EntityId ItemId, bool IsEnabled)>(LoadoutItemEnabledStateInLoadoutSql, connection, loadoutId.Value);
     }
     
-    public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IConnection connection, LoadoutId loadoutId)
+    public static IEnumerable<LoadoutItemWithTargetPath.ReadOnly> EnabledLoadoutItemWithTargetPathInLoadoutQuery(IConnection connection, LoadoutId loadoutId, IDb? db = null)
     {
+        var dbToUse = db ?? connection.Db;
         return LoadoutItemWithTargetPath.Load(
-            connection.Db,
-            connection.Query<EntityId>(EnabledLoadoutItemWithTargetPathInLoadoutSql, connection, loadoutId.Value)
+            dbToUse,
+            connection.Query<EntityId>(EnabledLoadoutItemWithTargetPathInLoadoutSql, dbToUse, loadoutId.Value)
         );
     }
 }
