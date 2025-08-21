@@ -1,4 +1,3 @@
-using Avalonia.Controls.Notifications;
 using Avalonia.Media.Imaging;
 using DynamicData.Kernel;
 using NexusMods.Abstractions.Jobs;
@@ -40,9 +39,6 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
 
     /// <inheritdoc cref="CollectionRevisionMetadata.IsAdult"/>
     bool IsAdult { get; }
-    
-    
-    WindowNotificationManager? NotificationManager { get; set;  }
 
     IMarkdownRendererViewModel? InstructionsRenderer { get; }
     ModInstructions[] RequiredModsInstructions { get; }
@@ -119,8 +115,6 @@ public interface ICollectionDownloadViewModel : IPageViewModelInterface
     ReactiveCommand<Unit> CommandOpenJsonFile { get; }
     ReactiveCommand<Unit> CommandDeleteAllDownloads { get; }
     ReactiveCommand<Unit> CommandDeleteCollectionRevision { get; }
-    
-    ReactiveCommand<Unit>  CommandShowNotification { get; }
 }
 
 public record ModInstructions(string ModName, string Instructions, CollectionDownloader.ItemType ItemType);

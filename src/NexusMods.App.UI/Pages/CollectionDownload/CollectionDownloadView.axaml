@@ -56,9 +56,6 @@
                                          LeftIcon="{x:Static icons:IconValues.MoreVertical}"
                                          ShowIcon="Left"
                                          Size="Toolbar" />
-                <controls:StandardButton x:Name="ButtonShowNotification"
-                                         Text="Show Notification"
-                                         Size="Toolbar" />
                 <controls:StandardButton IsVisible="False" x:Name="ButtonUpdateCollection"
                                          Text="{x:Static resources:Language.CollectionDownloadViewModel_UpdateCollection}"
                                          Size="Toolbar"
