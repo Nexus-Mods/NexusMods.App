@@ -40,6 +40,7 @@ using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Pages.CollectionDownload.Dialogs.PremiumDownloads;
 using NexusMods.App.UI.Pages.DebugControls;
 using NexusMods.App.UI.Pages.Diagnostics;
 using NexusMods.App.UI.Pages.Diff.ApplyDiff;
@@ -221,6 +222,9 @@ public static class Services
             .AddViewModel<DialogShareCollectionViewModel, IDialogShareCollectionViewModel>()
             .AddView<DialogCollectionPublishedView, IDialogCollectionPublishedViewModel>()
             .AddViewModel<DialogCollectionPublishedViewModel, IDialogCollectionPublishedViewModel>()
+            
+            .AddView<DialogPremiumCollectionDownloadsView, IDialogPremiumCollectionDownloadsViewModel>()
+            .AddViewModel<DialogPremiumCollectionDownloadsViewModel, IDialogPremiumCollectionDownloadsViewModel>()
 
             .AddView<ProtocolRegistrationTestPageView, IProtocolRegistrationTestPageViewModel>()
             .AddViewModel<ProtocolRegistrationTestPageViewModel, IProtocolRegistrationTestPageViewModel>()

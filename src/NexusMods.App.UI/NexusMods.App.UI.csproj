@@ -769,6 +769,17 @@
         <Compile Update="Controls\MiniGameWidget\ComingSoon\ComingSoonMiniGameWidgetDesignViewModel.cs">
           <DependentUpon>IComingSoonMiniGameWidgetViewModel.cs</DependentUpon>
         </Compile>
+        <Compile Update="Pages\CollectionDownload\Dialogs\CollectionPublished\DialogPremiumCollectionDownloadsView.axaml.cs">
+          <DependentUpon>DialogPremiumCollectionDownloads.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\CollectionDownload\Dialogs\CollectionPublished\DialogCollectionPublishedView.axaml.cs">
+          <DependentUpon>DialogCollectionPublishedView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Pages\CollectionDownload\Dialogs\PremiumDownloads\DialogPremiumCollectionDownloadsView.axaml.cs">
+          <DependentUpon>DialogCollectionPublishedView.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
