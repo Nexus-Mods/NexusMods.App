@@ -2,25 +2,31 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     x:DataType="WindowNotificationManager"
                     x:ClassModifier="internal">
-  <ControlTheme x:Key="{x:Type WindowNotificationManager}" TargetType="WindowNotificationManager">
+    
+    <ControlTheme x:Key="{x:Type WindowNotificationManager}" TargetType="WindowNotificationManager">
     <Setter Property="Margin" Value="0 0 0 32" />
     <Setter Property="Template">
       <ControlTemplate>
         <ReversibleStackPanel Name="PART_Items">
           <ReversibleStackPanel.DataTemplates>
-            <DataTemplate DataType="INotification">
+              
+              <!-- DataTemplate for when NotificationCard content is an INotification -->
+              <DataTemplate DataType="INotification">
               <StackPanel
                   Margin="12"
                   Spacing="8"
-                  TextElement.Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}">
-                <TextBlock FontWeight="Medium" Text="{Binding Title}" IsVisible="False" />
+                  TextElement.Foreground="{StaticResource NeutralStrongBrush}">
+                  <!-- Title is not currently used but we keep it for future use -->
+                  <TextBlock FontWeight="Medium" Text="{Binding Title}" IsVisible="False" />
                 <TextBlock
                     MaxHeight="80"
-                    Margin="0,0,12,0"
                     Text="{Binding Message}"
+                    Foreground="{StaticResource NeutralStrongBrush}"
                     TextWrapping="Wrap" />
               </StackPanel>
             </DataTemplate>
+              
+              <!-- fallback for when NotificationCard content is just a single string -->
             <DataTemplate DataType="x:String">
               <TextBlock
                   Margin="12"
