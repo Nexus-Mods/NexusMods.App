@@ -3,6 +3,7 @@
                     x:DataType="WindowNotificationManager"
                     x:ClassModifier="internal">
     
+    
     <ControlTheme x:Key="{x:Type WindowNotificationManager}" TargetType="WindowNotificationManager">
     <Setter Property="Margin" Value="0 0 0 32" />
     <Setter Property="Template">
@@ -15,14 +16,15 @@
               <StackPanel
                   Margin="12"
                   Spacing="8"
+                  MaxWidth="400"
                   TextElement.Foreground="{StaticResource NeutralStrongBrush}">
                   <!-- Title is not currently used but we keep it for future use -->
                   <TextBlock FontWeight="Medium" Text="{Binding Title}" IsVisible="False" />
                 <TextBlock
-                    MaxHeight="80"
                     Text="{Binding Message}"
                     Foreground="{StaticResource NeutralStrongBrush}"
-                    TextWrapping="Wrap" />
+                    TextWrapping="NoWrap"
+                    TextTrimming="CharacterEllipsis"/>
               </StackPanel>
             </DataTemplate>
               
