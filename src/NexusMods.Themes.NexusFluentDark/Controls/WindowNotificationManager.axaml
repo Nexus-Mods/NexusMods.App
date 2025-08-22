@@ -8,7 +8,7 @@
     <Setter Property="Margin" Value="0 0 0 32" />
     <Setter Property="Template">
       <ControlTemplate>
-        <ReversibleStackPanel Name="PART_Items">
+        <ReversibleStackPanel Name="PART_Items" Spacing="8">
           <ReversibleStackPanel.DataTemplates>
               
               <!-- DataTemplate for when NotificationCard content is an INotification -->
@@ -16,7 +16,7 @@
               <StackPanel
                   Margin="12"
                   Spacing="8"
-                  MaxWidth="400"
+                  Width="400"
                   TextElement.Foreground="{StaticResource NeutralStrongBrush}">
                   <!-- Title is not currently used but we keep it for future use -->
                   <TextBlock FontWeight="Medium" Text="{Binding Title}" IsVisible="False" />
