@@ -4,6 +4,7 @@ using NexusMods.Sdk.EventBus;
 using NexusMods.Abstractions.GameLocators;
 using NexusMods.Abstractions.GOG;
 using NexusMods.Abstractions.Library;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
@@ -113,28 +114,39 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         }
                     
         var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
-        await using var destination = temporaryFileManager.CreateFile();
+        _eventBus.Send(new CliMessages.CollectionAddStarted());
 
-        var slug = collectionUrl.Collection.Slug;
-        var revision = collectionUrl.Revision;
-
-        var db = connection.Db;
-        var list = db.Datoms(
-            (NexusModsCollectionLibraryFile.CollectionSlug, slug),
-            (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revision)
-        );
-
-        if (!list.Select(id => NexusModsCollectionLibraryFile.Load(db, id)).TryGetFirst(x => x.IsValid(), out var collectionFile))
+        try
         {
-            var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
-            var libraryFile = await library.AddDownload(downloadJob);
+            await using var destination = temporaryFileManager.CreateFile();
 
-            if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out collectionFile))
-                throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
+            var slug = collectionUrl.Collection.Slug;
+            var revision = collectionUrl.Revision;
+
+            var db = connection.Db;
+            var list = db.Datoms(
+                (NexusModsCollectionLibraryFile.CollectionSlug, slug),
+                (NexusModsCollectionLibraryFile.CollectionRevisionNumber, revision)
+            );
+
+            if (!list.Select(id => NexusModsCollectionLibraryFile.Load(db, id)).TryGetFirst(x => x.IsValid(), out var collectionFile))
+            {
+                var downloadJob = nexusModsLibrary.CreateCollectionDownloadJob(destination, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
+                var libraryFile = await library.AddDownload(downloadJob);
+
+                if (!libraryFile.TryGetAsNexusModsCollectionLibraryFile(out collectionFile))
+                    throw new InvalidOperationException("The library file is not a NexusModsCollectionLibraryFile");
+            }
+
+            var collectionRevision = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
+            
+            _eventBus.Send(new CliMessages.CollectionAddSucceeded(collectionRevision));
         }
-
-        var collectionRevision = await nexusModsLibrary.GetOrAddCollectionRevision(collectionFile, collectionUrl.Collection.Slug, collectionUrl.Revision, CancellationToken.None);
-        _eventBus.Send(new CliMessages.CollectionAddSucceeded(collectionRevision));
+        catch (Exception e)
+        {
+            _eventBus.Send(new CliMessages.CollectionAddFailed(new FailureReason.Unknown(e)));
+            throw;
+        }
     }
 
     private async Task HandleModUrl(NXMModUrl modUrl, CancellationToken cancel)
@@ -170,14 +182,24 @@ public class NxmIpcProtocolHandler : IIpcProtocolHandler
         var temporaryFileManager = _serviceProvider.GetRequiredService<TemporaryFileManager>();
 
         _eventBus.Send(new CliMessages.ModDownloadStarted());
-
-        await using var destination = temporaryFileManager.CreateFile();
-        var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);
-
-        var libraryFile = await library.AddDownload(downloadJob);
         
-        _eventBus.Send(new CliMessages.ModDownloadSucceeded(libraryFile));
+        LibraryFile.ReadOnly? libraryFile = null;
+        try
+        {
+            await using var destination = temporaryFileManager.CreateFile();
+            var downloadJob = await nexusModsLibrary.CreateDownloadJob(destination, modUrl, cancellationToken: cancel);
+
+            libraryFile = await library.AddDownload(downloadJob);
+            
+            _eventBus.Send(new CliMessages.ModDownloadSucceeded(libraryFile.Value.AsLibraryItem()));
+        }
+        catch (Exception e)
+        {
+            _eventBus.Send(new CliMessages.ModDownloadFailed(new FailureReason.Unknown(e)));
+            throw;
+        }
     }
+    
     
     private GameInstallation? GetManagedGameFor(GameDomain domain)
     {

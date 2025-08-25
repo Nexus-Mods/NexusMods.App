@@ -3012,11 +3012,38 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding new Collection to Library.
+        /// </summary>
+        public static string ToastNotification_Adding_new_Collection_to_Library {
+            get {
+                return ResourceManager.GetString("ToastNotification_Adding_new_Collection_to_Library", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Applied {0} successfully.
         /// </summary>
         public static string ToastNotification_Applied__0__successfully {
             get {
                 return ResourceManager.GetString("ToastNotification_Applied__0__successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection Add failed: {0} is not a managed game.
+        /// </summary>
+        public static string ToastNotification_Collection_Add_failed___0__is_not_a_managed_game {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_Add_failed___0__is_not_a_managed_game", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collection Add failed: An unknown error occurred.
+        /// </summary>
+        public static string ToastNotification_Collection_Add_failed__An_unknown_error_occurred {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_Add_failed__An_unknown_error_occurred", resourceCulture);
             }
         }
         
@@ -3048,6 +3075,42 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download failed: An unknown error occurred.
+        /// </summary>
+        public static string ToastNotification_Download_failed__An_unknown_error_occurred {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_failed__An_unknown_error_occurred", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download failed: game is not managed - {0}.
+        /// </summary>
+        public static string ToastNotification_Download_failed__game_is_not_managed____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_failed__game_is_not_managed____0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download failed: User is not logged in.
+        /// </summary>
+        public static string ToastNotification_Download_failed__User_is_not_logged_in {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_failed__User_is_not_logged_in", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download skipped: file already exists - {0} .
+        /// </summary>
+        public static string ToastNotification_Download_skipped__file_already_exists____0__ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Download_skipped__file_already_exists____0__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Draft revision uploaded successfully.
         /// </summary>
         public static string ToastNotification_Draft_revision_uploaded_successfully {
@@ -3071,6 +3134,15 @@ namespace NexusMods.App.UI.Resources {
         public static string ToastNotification_Items_deleted {
             get {
                 return ResourceManager.GetString("ToastNotification_Items_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod Download Completed - {0}.
+        /// </summary>
+        public static string ToastNotification_Mod_Download_Completed____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Mod_Download_Completed____0_", resourceCulture);
             }
         }
         

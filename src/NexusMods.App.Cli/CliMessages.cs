@@ -22,7 +22,6 @@ public static class CliMessages
     /// <summary>
     /// A new collection failed to be added to the app.
     /// </summary>
-    /// <param name="Reason"></param>
     public record CollectionAddFailed(IFailureReason Reason) : IEventBusMessage;
 
     /// <summary>
@@ -33,12 +32,11 @@ public static class CliMessages
     /// <summary>
     /// A mod download was successfully completed.
     /// </summary>
-    public record ModDownloadSucceeded(LibraryFile.ReadOnly LibraryFile) : IEventBusMessage;
+    public record ModDownloadSucceeded(LibraryItem.ReadOnly LibraryItem) : IEventBusMessage;
     
     /// <summary>
     /// A mod download failed.
     /// </summary>
-    /// <param name="Reason"></param>
     public record ModDownloadFailed(IFailureReason Reason) : IEventBusMessage;
     
     /// <summary>

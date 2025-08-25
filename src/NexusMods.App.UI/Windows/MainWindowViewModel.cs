@@ -24,6 +24,7 @@ using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.CollectionDownload;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
@@ -129,7 +130,18 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
             overlayController.WhenAnyValue(oc => oc.CurrentOverlay)
                 .BindTo(this, vm => vm.CurrentOverlay)
                 .DisposeWith(d);
-
+            
+            eventBus
+                .ObserveMessages<CliMessages.CollectionAddStarted>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (_, self) =>
+                {
+                    using var disposable = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                    
+                    self._notificationService.Show(Language.ToastNotification_Adding_new_Collection_to_Library);
+                })
+                .DisposeWith(d);
+            
             eventBus
                 .ObserveMessages<CliMessages.CollectionAddSucceeded>()
                 .ObserveOnUIThreadDispatcher()
@@ -155,13 +167,34 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, NavigationInput.Default);
                     workspaceController.OpenPage(workspaceId, pageData, behavior);
 
-                    using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
-
                     self._notificationService.Show(
                         string.Format(Language.ToastNotification_Adding_collection____0_, message.Revision.Collection.Name),
                         ToastNotificationVariant.Success
                     );
                 })
+                .DisposeWith(d);
+            
+            eventBus
+                .ObserveMessages<CliMessages.CollectionAddFailed>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    switch (message.Reason)
+                    {
+                        case FailureReason.GameNotManaged gameNotManaged:
+                            self._notificationService.Show(
+                                string.Format(Language.ToastNotification_Collection_Add_failed___0__is_not_a_managed_game, gameNotManaged.Game),
+                                ToastNotificationVariant.Failure  
+                            );
+                            return;
+                        case FailureReason.Unknown unknown:
+                            self._notificationService.Show(
+                                Language.ToastNotification_Collection_Add_failed__An_unknown_error_occurred,
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                    }
+                })  
                 .DisposeWith(d);
 
             eventBus
@@ -173,6 +206,53 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     
                     self._notificationService.Show(Language.ToastNotification_Mod_Download_started);
                 })
+                .DisposeWith(d);
+            
+            eventBus
+                .ObserveMessages<CliMessages.ModDownloadSucceeded>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    self._notificationService.Show(
+                        string.Format(Language.ToastNotification_Mod_Download_Completed____0_, message.LibraryItem.Name),
+                        ToastNotificationVariant.Success
+                    );
+                })
+                .DisposeWith(d);
+            
+            eventBus
+                .ObserveMessages<CliMessages.ModDownloadFailed>()
+                .ObserveOnUIThreadDispatcher()
+                .Subscribe(this, static (message, self) =>
+                {
+                    switch (message.Reason)
+                    {
+                        case FailureReason.NotLoggedIn:
+                            self._notificationService.Show(
+                                Language.ToastNotification_Download_failed__User_is_not_logged_in,
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                        case FailureReason.AlreadyExists alreadyExists:
+                            self._notificationService.Show(
+                                string.Format(Language.ToastNotification_Download_skipped__file_already_exists____0__, alreadyExists.Name),
+                                ToastNotificationVariant.Neutral
+                            );
+                            return;
+                        case FailureReason.GameNotManaged gameNotManaged:
+                            self._notificationService.Show(
+                                string.Format(Language.ToastNotification_Download_failed__game_is_not_managed____0_, gameNotManaged.Game),
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                        case FailureReason.Unknown:
+                            self._notificationService.Show(
+                                Language.ToastNotification_Download_failed__An_unknown_error_occurred,
+                                ToastNotificationVariant.Failure
+                            );
+                            return;
+                    }
+                })  
                 .DisposeWith(d);
 
             R3.Disposable.Create(this, vm =>
