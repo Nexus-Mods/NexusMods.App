@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
+using CommunityToolkit.HighPerformance.Buffers;
 using DynamicData.Kernel;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +25,13 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.DatomIterators;
 using NexusMods.MnemonicDB.Abstractions.IndexSegments;
 using NexusMods.MnemonicDB.Abstractions.Internals;
+using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.MnemonicDB.Abstractions.TxFunctions;
 using NexusMods.Paths;
 using NexusMods.Sdk;
 using NexusMods.Sdk.FileStore;
 using NexusMods.Sdk.IO;
+using Reloaded.Memory.Extensions;
 
 namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 
@@ -49,6 +53,9 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private readonly IGarbageCollectorRunner _garbageCollectorRunner;
     private readonly ISynchronizerService _synchronizerService;
     private readonly IServiceProvider _serviceProvider;
+    
+    private readonly StringPool _fileNamePool = new();
+
 
     /// <summary>
     /// Connection.
@@ -357,8 +364,77 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     public async Task<Dictionary<GamePath, SyncNode>> BuildSyncTree(Loadout.ReadOnly loadout)
     {
         var metadata = await ReindexState(loadout.InstallationInstance, ignoreModifiedDates: false, Connection);
-        var previouslyApplied = loadout.Installation.GetLastAppliedDiskState();
-        return BuildSyncTree(metadata.DiskStateEntries, previouslyApplied, loadout);
+
+        var currentItems = GetDiskStateForGame(metadata.Db, metadata);
+        List<PathPartPair> prevItems;
+        if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
+        {
+            prevItems = new List<PathPartPair>();
+        }
+        else
+        {
+            var txId = GameInstallMetadata.LastSyncedLoadoutTransactionId.Get(metadata);
+            var asOfDb = metadata.Db.Connection.AsOf(TxId.From(txId.Value));
+            prevItems = GetDiskStateForGame(asOfDb, metadata);
+        }
+
+        return BuildSyncTree(currentItems, prevItems, loadout);
+    }
+    
+    /// <summary>
+    /// This is a highly optimized way to load all the disk state for a game. It's a sorted merge
+    /// join over all the required attributes for the results
+    /// </summary>
+    public unsafe List<PathPartPair> GetDiskStateForGame(IDb db, GameInstallMetadataId metadataId)
+    {
+        var pairs = new List<PathPartPair>();
+        var mainAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.GameId.Id);
+        var pathAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.Path.Id);
+        var hashAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.Hash.Id);
+        var sizeAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.Size.Id);
+        var lastModifiedAttrId = db.AttributeCache.GetAttributeId(DiskStateEntry.LastModified.Id);
+        
+        // We start with a single reference iterator, that points to the game data we are trying to access
+        // Since this data will return results sorted by E (entry Id) we can merge join to any other data 
+        // that is sorted in the same order
+        using var iterator = db.LightweightDatoms(SliceDescriptor.Create(mainAttrId, metadataId));
+        
+        // Now we have iterators for each field to load
+        using var pathIterator = db.LightweightDatoms(SliceDescriptor.Create(pathAttrId));
+        using var hashIterator = db.LightweightDatoms(SliceDescriptor.Create(hashAttrId));
+        using var sizeIterator = db.LightweightDatoms(SliceDescriptor.Create(sizeAttrId));
+        using var lastModifiedIterator = db.LightweightDatoms(SliceDescriptor.Create(lastModifiedAttrId));
+        
+        // For each entry in the main iterator
+        while (iterator.MoveNext())
+        {
+            // Fast-forward the other iterators to the same entry
+            pathIterator.FastForwardTo(iterator.KeyPrefix.E);
+            hashIterator.FastForwardTo(iterator.KeyPrefix.E);
+            sizeIterator.FastForwardTo(iterator.KeyPrefix.E);
+            lastModifiedIterator.FastForwardTo(iterator.KeyPrefix.E);
+            
+            // Get the location id for the path
+            var locationId = MemoryMarshal.Read<LocationId>(pathIterator.ValueSpan.SliceFast(sizeof(EntityId)));
+            var pathSpan = pathIterator.ValueSpan.SliceFast(sizeof(EntityId) + sizeof(LocationId));
+            // The number of paths in a loadout don't often change much, so we'll put them all through a cache pool, which will
+            // allow us to not have to create UTF16 strings on every load of the data
+            var pathStr = _fileNamePool.GetOrAdd(pathSpan, Encoding.UTF8);
+            var gamePath = new GamePath(locationId, RelativePath.CreateUnsafe(pathStr));
+
+            var pathPartPair = new PathPartPair
+            {
+                Path = gamePath,
+                Part = new SyncNodePart
+                {
+                    Hash = MemoryMarshal.Read<Hash>(hashIterator.ValueSpan),
+                    Size = MemoryMarshal.Read<Size>(sizeIterator.ValueSpan),
+                    LastModifiedTicks = MemoryMarshal.Read<long>(lastModifiedIterator.ValueSpan),
+                },
+            };
+            pairs.Add(pathPartPair);
+        }
+        return pairs;
     }
     
     
@@ -378,6 +454,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     private IEnumerable<PathPartPair> DiskStateToPathPartPair<T>(T entries) 
         where T : IEnumerable<DiskStateEntry.ReadOnly>
     {
+         
+        
         foreach (var entry in entries)
         {
             yield return new PathPartPair
