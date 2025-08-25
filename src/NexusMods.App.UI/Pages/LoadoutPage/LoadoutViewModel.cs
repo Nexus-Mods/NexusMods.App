@@ -38,6 +38,7 @@ using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.MnemonicDB.Abstractions.ElementComparers;
 using NexusMods.MnemonicDB.Abstractions.Query;
 using NexusMods.Networking.NexusWebApi;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using NexusMods.UI.Sdk.Dialog.Enums;
 using ObservableCollections;
@@ -100,6 +101,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
     private readonly NexusModsLibrary _nexusModsLibrary;
     private readonly IConnection _connection;
     private readonly IAvaloniaInterop _avaloniaInterop;
+    private readonly IWindowNotificationService _notificationService;
 
     public LoadoutViewModel(
         IWindowManager windowManager,
@@ -113,6 +115,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
         _connection = serviceProvider.GetRequiredService<IConnection>();
         _nexusModsLibrary = serviceProvider.GetRequiredService<NexusModsLibrary>();
         _avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
 
         var settingsManager = serviceProvider.GetRequiredService<ISettingsManager>();
         EnableCollectionSharing = settingsManager.Get<ExperimentalSettings>().EnableCollectionSharing;
@@ -543,6 +546,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                     if (result.ButtonId != ButtonDefinitionId.Accept) return;
 
                     await libraryService.RemoveLinkedItemsFromLoadout(ids);
+                    
+                    _notificationService.Show("Mods removed");
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,
