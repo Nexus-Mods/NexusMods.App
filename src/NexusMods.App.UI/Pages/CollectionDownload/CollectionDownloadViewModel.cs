@@ -164,13 +164,17 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CommandInstallRequiredItems = IsInstalling.CombineLatest(_canInstallRequiredItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(
             executeAsync: async (_, _) =>
             {
+                var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
                 await InstallCollectionJob.Create(
                     serviceProvider,
                     targetLoadout,
                     source: libraryFile,
                     revisionMetadata,
-                    items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required)
+                    items: items
                 );
+                
+                if (CollectionDownloader.IsFullyInstalled(items, connection.Db))
+                    _notificationService.Show(Language.ToastNotification_Collection_installed);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -346,7 +350,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                             {
                                 if (isCollectionInstalled)
                                 {
-                                    IsInstalled.Value = true;
+                                    if (!IsInstalled.Value)
+                                    {
+                                        IsInstalled.Value = true;
+                                    }
+                                    
                                     CollectionStatusText = Language.CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed;
                                 }
                                 else

@@ -242,6 +242,11 @@ public class CollectionDownloader
     {
         return items.All(download => GetStatus(download, db).IsDownloaded());
     }
+    
+    public static bool IsFullyInstalled(CollectionDownload.ReadOnly[] items, IDb db)
+    {
+        return items.All(download => GetStatus(download, db).IsInstalled(out _));
+    }
 
     [Flags, PublicAPI]
     public enum ItemType
