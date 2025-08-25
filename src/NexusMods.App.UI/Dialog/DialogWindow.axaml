@@ -12,7 +12,7 @@
     mc:Ignorable="d" d:DesignWidth="450"
     x:Class="NexusMods.App.UI.Dialog.DialogWindow"
     d:DataContext="{x:Static dialog:DesignDataContexts.StandardContentWithMarkdown}"
-    Background="{StaticResource SurfaceLowBrush}"
+    Background="{StaticResource SurfaceLowBrush}" 
     SizeToContent="Height">
 
     <!-- Temporary styles to see modal button variations -->
@@ -50,9 +50,7 @@
             </Style>
 
             <Style Selector="^.Premium">
-                <Setter Property="Background" Value="{StaticResource PremiumStrongBrush}" />
-                <Setter Property="Foreground" Value="{StaticResource NeutralInvertedBrush}" />
-
+                <Setter Property="Background" Value="{StaticResource PremiumModerateBrush}" />
                 <Style Selector="^:pointerover">
                     <Setter Property="Background" Value="{StaticResource PremiumSubduedBrush}" />
                 </Style>
