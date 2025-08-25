@@ -3012,6 +3012,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Signed in successfully.
+        /// </summary>
+        public static string ToastNotification_Signed_in_successfully {
+            get {
+                return ResourceManager.GetString("ToastNotification_Signed_in_successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Account settings.
         /// </summary>
         public static string TopBar_AccountSettings {

@@ -15,6 +15,7 @@ using NexusMods.App.UI.Controls.Navigation;
 using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Changelog;
 using NexusMods.App.UI.Pages.Settings;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform;
@@ -241,7 +242,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         await _loginManager.LoginAsync();
         
         if (await _loginManager.GetIsUserLoggedInAsync())
-            _notificationService.Show("Signed in successfully", ToastNotificationVariant.Success);
+            _notificationService.Show(Language.ToastNotification_Signed_in_successfully, ToastNotificationVariant.Success);
             
     }
 

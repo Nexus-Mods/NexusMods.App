@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.CrossPlatform.Process;
 using NexusMods.UI.Sdk;
@@ -47,7 +48,7 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
                 await loginManager.LoginAsync(token: cancellationToken);
                 
                 if (await loginManager.GetIsUserLoggedInAsync())
-                    notificationService.Show("Signed in successfully", ToastNotificationVariant.Success);
+                    notificationService.Show(Language.ToastNotification_Signed_in_successfully, ToastNotificationVariant.Success);
             },
             initialCanExecute: false
         );
