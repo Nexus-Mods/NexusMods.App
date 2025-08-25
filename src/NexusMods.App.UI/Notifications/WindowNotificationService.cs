@@ -33,32 +33,8 @@ public class WindowNotificationService : IWindowNotificationService
 
         return _notificationManager;
     }
-    
-    public bool Show(
-        string message, 
-        ToastNotificationVariant type = ToastNotificationVariant.Neutral,
-        TimeSpan? expiration = null, 
-        Action? onClick = null, 
-        Action? onClose = null)
-    {
-        var manager = GetNotificationManager();
-        if (manager == null) return false;
-        
-        // TODO: Use ToastNotificationVariant
-        
-        var notification = new Notification(
-            null,
-            message,
-            NotificationType.Information,
-            expiration ?? TimeSpan.FromSeconds(5),
-            onClick,
-            onClose);
-        
-        manager.Show(notification);
-        
-        return true;
-    }
 
+    /// <Inheritdoc />
     public bool Show(
         string message,
         ToastNotificationVariant type = ToastNotificationVariant.Neutral,

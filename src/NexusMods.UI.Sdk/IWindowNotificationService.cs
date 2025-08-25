@@ -1,4 +1,5 @@
 using Avalonia.Controls.Notifications;
+using NexusMods.UI.Sdk.Dialog;
 
 namespace NexusMods.UI.Sdk;
 
@@ -7,7 +8,7 @@ namespace NexusMods.UI.Sdk;
 /// </summary>
 public interface IWindowNotificationService
 {
-    
+
     /// <summary>
     /// Shows a toast-like notification in the UI.
     /// </summary>
@@ -18,11 +19,16 @@ public interface IWindowNotificationService
     ///   If the value is Zero then the notification will remain open until the user closes it.
     ///   Defaults to 5 seconds
     /// </param>
-    /// <param name="onClick">an Action to be run when the notification is clicked, defaults to dismiss</param>
-    /// <param name="onClose">an Action to be run when the notification is closed</param>
-    /// <returns>False if unable to access window object to display notification to, true otherwise</returns>
-    bool Show(string message, ToastNotificationVariant type, TimeSpan? expiration = null, Action? onClick = null, Action? onClose = null);
-    
+    /// <param name="buttonDefinitions">Array of buttons to be added to the toast (no need to pass in the Close button)</param>
+    /// <param name="buttonHandler">Callback for handling button clicks, should take the ButtonDefinitionId of the clicked button</param>
+    /// <returns></returns>
+    public bool Show(
+        string message,
+        ToastNotificationVariant type = ToastNotificationVariant.Neutral,
+        TimeSpan? expiration = null,
+        DialogButtonDefinition[]? buttonDefinitions = null,
+        Action<ButtonDefinitionId>? buttonHandler = null);
+
 }
 
 /// <summary>
