@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.FileExtractor;
 using NexusMods.Abstractions.GameLocators;
+using NexusMods.Abstractions.Games;
 using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.Loadouts;
 using NexusMods.Abstractions.NexusModsLibrary;
@@ -89,6 +90,7 @@ public abstract class AArchivedDatabaseTest
             .AddStubbedStardewValley()
             .AddNexusModsCollections()
             .AddNexusModsLibraryModels()
+            .AddSortOrderItemModel()
             .OverrideSettingsForTests<FileHashesServiceSettings>(settings => settings with
             {
                 HashDatabaseLocation = new ConfigurablePath(baseKnownPath, $"{baseDirectory}/FileHashService"),
