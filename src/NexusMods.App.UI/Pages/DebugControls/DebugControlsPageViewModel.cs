@@ -42,7 +42,7 @@ public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewM
         GenerateUnhandledException = ReactiveCommand.Create(() => throw new Exception("Help me! This is an unhandled exception"));
         ShowInfoNotificationCommand = ReactiveCommand.Create(() =>
         {
-            windowNotificationService1?.Show(
+            windowNotificationService1?.ShowToast(
                 "This is an info toast notification",
                 ToastNotificationVariant.Neutral
             );

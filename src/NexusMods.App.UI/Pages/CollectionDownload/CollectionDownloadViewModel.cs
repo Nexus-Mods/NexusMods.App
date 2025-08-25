@@ -28,6 +28,7 @@ using NexusMods.UI.Sdk.Icons;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Networking.NexusWebApi;
 using NexusMods.Paths;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Dialog;
 using OneOf;
 using R3;
@@ -47,6 +48,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
     private readonly IServiceProvider _serviceProvider;
     private readonly IOverlayController _overlayController;
+    private readonly IWindowNotificationService _notificationService;
     private readonly LoadoutId _targetLoadout;
 
     public CollectionDownloadTreeDataGridAdapter TreeDataGridAdapter { get; }
@@ -59,6 +61,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
     {
         _serviceProvider = serviceProvider;
         _overlayController = serviceProvider.GetRequiredService<IOverlayController>();
+        _notificationService = serviceProvider.GetRequiredService<IWindowNotificationService>();
 
         var connection = serviceProvider.GetRequiredService<IConnection>();
         var mappingCache = serviceProvider.GetRequiredService<IGameDomainToGameIdMappingCache>();
@@ -161,13 +164,17 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
         CommandInstallRequiredItems = IsInstalling.CombineLatest(_canInstallRequiredItems, static (isInstalling, canInstall) => !isInstalling && canInstall).ToReactiveCommand<Unit>(
             executeAsync: async (_, _) =>
             {
-                await InstallCollectionJob.Create(
+                var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
+                var group = await InstallCollectionJob.Create(
                     serviceProvider,
                     targetLoadout,
                     source: libraryFile,
                     revisionMetadata,
-                    items: CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required)
+                    items: items
                 );
+
+                if (CollectionDownloader.IsFullyInstalled(items, group.AsCollectionGroup(), connection.Db))
+                    _notificationService.ShowToast(Language.ToastNotification_Collection_installed, ToastNotificationVariant.Success);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -193,6 +200,8 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
 
                 await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken: CancellationToken.None);
                 await collectionDownloader.DeleteRevision(_revision);
+                
+                _notificationService.ShowToast(Language.ToastNotification_Collection_deleted);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false,
@@ -341,7 +350,11 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                             {
                                 if (isCollectionInstalled)
                                 {
-                                    IsInstalled.Value = true;
+                                    if (!IsInstalled.Value)
+                                    {
+                                        IsInstalled.Value = true;
+                                    }
+                                    
                                     CollectionStatusText = Language.CollectionDownloadViewModel_CollectionDownloadViewModel_Ready_to_play___All_required_mods_installed;
                                 }
                                 else

@@ -35,7 +35,7 @@ public class WindowNotificationService : IWindowNotificationService
     }
 
     /// <Inheritdoc />
-    public bool Show(
+    public bool ShowToast(
         string message,
         ToastNotificationVariant type = ToastNotificationVariant.Neutral,
         TimeSpan? expiration = null,
@@ -45,6 +45,26 @@ public class WindowNotificationService : IWindowNotificationService
         var manager = GetNotificationManager();
         if (manager == null) return false;
         
+        // Check if we are on the UI thread
+        if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+            return ShowToastInternal(manager, message, type, expiration, buttonDefinitions, buttonHandler);
+        
+        // If not, marshal the call to the UI thread
+        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            ShowToastInternal(manager, message, type, expiration, buttonDefinitions, buttonHandler);
+        });
+        return true;
+    }
+
+    private static bool ShowToastInternal(
+        WindowNotificationManager manager,
+        string message,
+        ToastNotificationVariant type = ToastNotificationVariant.Neutral,
+        TimeSpan? expiration = null,
+        DialogButtonDefinition[]? buttonDefinitions = null,
+        Action<ButtonDefinitionId>? buttonHandler = null)
+    {
         // TODO: Use ToastNotificationVariant
         // TODO: Use buttons and handler
         
