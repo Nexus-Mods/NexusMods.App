@@ -4,6 +4,7 @@ using NexusMods.Abstractions.Settings;
 using NexusMods.Abstractions.Telemetry;
 using NexusMods.App.UI.Settings;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
 using ReactiveCommand = R3.ReactiveCommand;
@@ -30,7 +31,8 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
     public WelcomeOverlayViewModel(
         IOSInterop osInterop,
         ISettingsManager settingsManager,
-        ILoginManager loginManager)
+        ILoginManager loginManager,
+        IWindowNotificationService notificationService)
     {
         AllowTelemetry = new BindableReactiveProperty<bool>(value: settingsManager.Get<TelemetrySettings>().IsEnabled);
 
@@ -40,7 +42,13 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
         CommandOpenPrivacyPolicy = new ReactiveCommand(_ => osInterop.OpenUrl(ConstantLinks.PrivacyPolicyUri));
 
         CommandLogIn = IsLoggedIn.AsObservable().Select(static isLoggedIn => !isLoggedIn).ToReactiveCommand<Unit>(
-            executeAsync: async (_, cancellationToken) => await loginManager.LoginAsync(token: cancellationToken),
+            executeAsync: async (_, cancellationToken) =>
+            {
+                await loginManager.LoginAsync(token: cancellationToken);
+                
+                if (await loginManager.GetIsUserLoggedInAsync())
+                    notificationService.Show("Signed in successfully", ToastNotificationVariant.Success);
+            },
             initialCanExecute: false
         );
 
@@ -82,7 +90,8 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
         return new WelcomeOverlayViewModel(
             osInterop: serviceProvider.GetRequiredService<IOSInterop>(),
             settingsManager: settingsManager,
-            loginManager: serviceProvider.GetRequiredService<ILoginManager>()
+            loginManager: serviceProvider.GetRequiredService<ILoginManager>(),
+            notificationService: serviceProvider.GetRequiredService<IWindowNotificationService>()
         );
     }
 }
