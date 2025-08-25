@@ -3,6 +3,8 @@ using NexusMods.App.UI.Dialog.Enums;
 using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Dialog.Standard;

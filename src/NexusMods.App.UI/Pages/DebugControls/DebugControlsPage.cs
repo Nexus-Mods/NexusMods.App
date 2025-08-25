@@ -1,6 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using NexusMods.Abstractions.Serialization.Attributes;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 
 namespace NexusMods.App.UI.Pages.DebugControls;
@@ -17,7 +19,7 @@ public class DebugControlsPageFactory : APageFactory<IDebugControlsPageViewModel
     
     public override IDebugControlsPageViewModel CreateViewModel(DebugControlsPageContext context)
     {
-        return new DebugControlsPageViewModel(WindowManager, ServiceProvider);
+        return new DebugControlsPageViewModel(WindowManager, ServiceProvider, ServiceProvider.GetRequiredService<IWindowNotificationService>());
     }
 
     public override IEnumerable<PageDiscoveryDetails?> GetDiscoveryDetails(IWorkspaceContext workspaceContext)

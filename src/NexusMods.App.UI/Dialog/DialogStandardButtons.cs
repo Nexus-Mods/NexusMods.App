@@ -1,4 +1,5 @@
-using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 
 namespace NexusMods.App.UI.Dialog;
 

@@ -1,13 +1,11 @@
 using System.Reactive.Disposables;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Labs.Panels;
-using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.ReactiveUI;
-using NexusMods.Abstractions.UI.Extensions;
 using NexusMods.App.UI.Controls;
-using NexusMods.App.UI.Dialog.Enums;
+using NexusMods.UI.Sdk.Dialog;
+using NexusMods.UI.Sdk.Dialog.Enums;
 using R3;
 using ReactiveUI;
 using SerialDisposable = System.Reactive.Disposables.SerialDisposable;
