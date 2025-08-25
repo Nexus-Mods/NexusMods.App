@@ -3003,6 +3003,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding collection - {0}.
+        /// </summary>
+        public static string ToastNotification_Adding_collection____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Adding_collection____0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Applied {0} successfully.
         /// </summary>
         public static string ToastNotification_Applied__0__successfully {
@@ -3062,6 +3071,15 @@ namespace NexusMods.App.UI.Resources {
         public static string ToastNotification_Items_deleted {
             get {
                 return ResourceManager.GetString("ToastNotification_Items_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mod Download started.
+        /// </summary>
+        public static string ToastNotification_Mod_Download_started {
+            get {
+                return ResourceManager.GetString("ToastNotification_Mod_Download_started", resourceCulture);
             }
         }
         

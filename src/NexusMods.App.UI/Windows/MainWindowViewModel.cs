@@ -23,12 +23,14 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Overlays.Generic.MessageBox.Ok;
 using NexusMods.App.UI.Overlays.Updater;
 using NexusMods.App.UI.Pages.CollectionDownload;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Settings;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CLI;
 using NexusMods.CrossPlatform;
 using NexusMods.MnemonicDB.Abstractions;
 using NexusMods.Sdk;
+using NexusMods.UI.Sdk;
 using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -42,6 +44,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
     private readonly IWindowManager _windowManager;
     private readonly IConnection _connection;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IWindowNotificationService _notificationService;
 
     public ReactiveUI.ReactiveCommand<System.Reactive.Unit, bool> BringWindowToFront { get; }
     public ReactiveUI.ReactiveCommand<IStorageProvider, System.Reactive.Unit> RegisterStorageProvider { get; }
@@ -53,11 +56,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
         IOverlayController overlayController,
         ILoginManager loginManager,
         IEventBus eventBus,
-        ISettingsManager settingsManager)
+        ISettingsManager settingsManager,
+        IWindowNotificationService notificationService)
     {
         _serviceProvider = serviceProvider;
         var avaloniaInterop = serviceProvider.GetRequiredService<IAvaloniaInterop>();
         _connection = serviceProvider.GetRequiredService<IConnection>();
+        _notificationService = notificationService;
 
         // NOTE(erri120): can't use DI for VMs that require an active Window because
         // those VMs would be instantiated before this constructor gets called.
@@ -151,6 +156,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     workspaceController.OpenPage(workspaceId, pageData, behavior);
 
                     using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                    
+                    self._notificationService.Show(string.Format(Language.ToastNotification_Adding_collection____0_, message.Revision.Collection.Name));
                 })
                 .DisposeWith(d);
 
@@ -160,6 +167,8 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .Subscribe(this, static (message, self) =>
                 {
                     using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
+                    
+                    self._notificationService.Show(Language.ToastNotification_Mod_Download_started);
                 })
                 .DisposeWith(d);
 
