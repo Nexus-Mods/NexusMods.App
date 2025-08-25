@@ -165,16 +165,16 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
             executeAsync: async (_, _) =>
             {
                 var items = CollectionDownloader.GetItems(revisionMetadata, CollectionDownloader.ItemType.Required);
-                await InstallCollectionJob.Create(
+                var group = await InstallCollectionJob.Create(
                     serviceProvider,
                     targetLoadout,
                     source: libraryFile,
                     revisionMetadata,
                     items: items
                 );
-                
-                if (CollectionDownloader.IsFullyInstalled(items, connection.Db))
-                    _notificationService.ShowToast(Language.ToastNotification_Collection_installed);
+
+                if (CollectionDownloader.IsFullyInstalled(items, group.AsCollectionGroup(), connection.Db))
+                    _notificationService.ShowToast(Language.ToastNotification_Collection_installed, ToastNotificationVariant.Success);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false

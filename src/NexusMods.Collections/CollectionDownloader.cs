@@ -243,9 +243,9 @@ public class CollectionDownloader
         return items.All(download => GetStatus(download, db).IsDownloaded());
     }
     
-    public static bool IsFullyInstalled(CollectionDownload.ReadOnly[] items, IDb db)
+    public static bool IsFullyInstalled(CollectionDownload.ReadOnly[] items, Optional<CollectionGroup.ReadOnly> collectionGroup, IDb db)
     {
-        return items.All(download => GetStatus(download, db).IsInstalled(out _));
+        return items.All(download => GetStatus(download, collectionGroup, db).IsInstalled(out _));
     }
 
     [Flags, PublicAPI]
