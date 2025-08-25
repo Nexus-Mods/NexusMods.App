@@ -1,8 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
-using NexusMods.App.UI.Dialog;
 using NexusMods.UI.Sdk;
+using NexusMods.UI.Sdk.Dialog;
 
 namespace NexusMods.App.UI.Notifications;
 
