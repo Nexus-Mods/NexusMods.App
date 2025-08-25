@@ -1172,4 +1172,7 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="ToastNotification_Mods_removed" xml:space="preserve">
         <value>Mods removed</value>
     </data>
+    <data name="ToastNotification_Installed_to__0_" xml:space="preserve">
+        <value>Installed to {0}</value>
+    </data>
 </root>

@@ -27,6 +27,7 @@ using NexusMods.App.UI.Overlays;
 using NexusMods.App.UI.Pages.Library;
 using NexusMods.App.UI.Pages.LibraryPage.Collections;
 using NexusMods.App.UI.Resources;
+using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.Collections;
@@ -847,6 +848,9 @@ After asking design, we're choosing to simply open the mod page for now.
             body: (i, innerCancellationToken) => InstallLibraryItem(items[i], _loadout, targetLoadoutGroup, innerCancellationToken, useAdvancedInstaller),
             cancellationToken: cancellationToken
         );
+        
+        var targetCollection = LoadoutItem.Load(db, targetLoadoutGroup);
+        _notificationService.Show(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
     }
 
     private LibraryItemId[] GetSelectedIds()
@@ -891,6 +895,9 @@ After asking design, we're choosing to simply open the mod page for now.
         try
         {
             await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
+            
+            var targetCollection  = LoadoutItem.Load(_connection.Db, targetLoadoutGroup);
+            _notificationService.Show(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
         }
         catch (OperationCanceledException)
         {
