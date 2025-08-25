@@ -3066,6 +3066,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mod updated - {0}.
+        /// </summary>
+        public static string ToastNotification_Mod_updated____0_ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Mod_updated____0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mods removed.
         /// </summary>
         public static string ToastNotification_Mods_removed {

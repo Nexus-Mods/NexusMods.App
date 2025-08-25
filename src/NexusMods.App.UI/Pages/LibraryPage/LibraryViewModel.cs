@@ -600,6 +600,9 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                             NewItem = newLibraryItem,
                             InstallResult = result,
                         });
+
+                        if (result == LibraryItemReplacementResult.Success)
+                            _notificationService.Show(string.Format(Language.ToastNotification_Mod_updated____0_, newLibraryItem.Name), ToastNotificationVariant.Success);
                     }
                 }
             }

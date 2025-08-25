@@ -1190,4 +1190,7 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="ToastNotification_Draft_revision_uploaded_successfully" xml:space="preserve">
         <value>Draft revision uploaded successfully</value>
     </data>
+    <data name="ToastNotification_Mod_updated____0_" xml:space="preserve">
+        <value>Mod updated - {0}</value>
+    </data>
 </root>
