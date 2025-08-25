@@ -4,6 +4,7 @@ using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusMods.Abstractions.Jobs;
+using NexusMods.Abstractions.Library.Models;
 using NexusMods.Abstractions.NexusModsLibrary;
 using NexusMods.Abstractions.NexusWebApi;
 using NexusMods.Abstractions.NexusWebApi.DTOs;
@@ -170,15 +171,15 @@ public partial class NexusModsLibrary
     /// <summary>
     /// Checks whether the file has already been downloaded.
     /// </summary>
-    public async ValueTask<bool> IsAlreadyDownloaded(NXMModUrl url, CancellationToken cancellationToken)
+    public async ValueTask<(bool, NexusModsLibraryItem.ReadOnly[])> IsAlreadyDownloaded(NXMModUrl url, CancellationToken cancellationToken)
     {
         var gameId = _mappingCache[GameDomain.From(url.Game)];
 
         var modPage = await GetOrAddModPage(url.ModId, gameId, cancellationToken);
         var file = await GetOrAddFile(url.FileId, modPage, cancellationToken);
 
-        var libraryItems = NexusModsLibraryItem.FindByFileMetadata(file.Db, file);
-        return libraryItems.Count != 0;
+        var foundItems = NexusModsLibraryItem.FindByFileMetadata(file.Db, file);
+        return (foundItems.Count != 0, foundItems.ToArray());
     }
 
     /// <summary>

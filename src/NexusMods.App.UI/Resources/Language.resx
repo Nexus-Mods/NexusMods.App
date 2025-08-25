@@ -1194,7 +1194,7 @@ Keep the downloaded files in your library in case you want to retry the installa
         <value>Mod updated - {0}</value>
     </data>
     <data name="ToastNotification_Adding_collection____0_" xml:space="preserve">
-        <value>Adding collection - {0}</value>
+        <value>Collection added successfully - {0}</value>
     </data>
     <data name="ToastNotification_Mod_Download_started" xml:space="preserve">
         <value>Mod Download started</value>

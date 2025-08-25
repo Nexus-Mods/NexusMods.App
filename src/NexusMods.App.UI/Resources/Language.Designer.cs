@@ -3003,7 +3003,7 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adding collection - {0}.
+        ///   Looks up a localized string similar to Collection added successfully - {0}.
         /// </summary>
         public static string ToastNotification_Adding_collection____0_ {
             get {

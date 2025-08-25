@@ -131,7 +131,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .DisposeWith(d);
 
             eventBus
-                .ObserveMessages<CliMessages.AddedCollection>()
+                .ObserveMessages<CliMessages.CollectionAddSucceeded>()
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (message, self) =>
                 {
@@ -156,13 +156,16 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     workspaceController.OpenPage(workspaceId, pageData, behavior);
 
                     using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
-                    
-                    self._notificationService.Show(string.Format(Language.ToastNotification_Adding_collection____0_, message.Revision.Collection.Name));
+
+                    self._notificationService.Show(
+                        string.Format(Language.ToastNotification_Adding_collection____0_, message.Revision.Collection.Name),
+                        ToastNotificationVariant.Success
+                    );
                 })
                 .DisposeWith(d);
 
             eventBus
-                .ObserveMessages<CliMessages.AddedDownload>()
+                .ObserveMessages<CliMessages.ModDownloadStarted>()
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (message, self) =>
                 {
