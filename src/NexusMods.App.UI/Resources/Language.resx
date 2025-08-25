@@ -1166,4 +1166,10 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="ToastNotification_Signed_in_successfully" xml:space="preserve">
         <value>Signed in successfully</value>
     </data>
+    <data name="ToastNotification_Items_deleted" xml:space="preserve">
+        <value>Items deleted</value>
+    </data>
+    <data name="ToastNotification_Mods_removed" xml:space="preserve">
+        <value>Mods removed</value>
+    </data>
 </root>

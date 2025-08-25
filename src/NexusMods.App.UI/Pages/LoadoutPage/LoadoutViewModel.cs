@@ -547,7 +547,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     await libraryService.RemoveLinkedItemsFromLoadout(ids);
                     
-                    _notificationService.Show("Mods removed");
+                    _notificationService.Show(Language.ToastNotification_Mods_removed);
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,
