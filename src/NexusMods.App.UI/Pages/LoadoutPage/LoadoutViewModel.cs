@@ -254,6 +254,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 {
                     _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
+                    
+                    _notificationService.Show(Language.ToastNotification_Draft_revision_uploaded_successfully, ToastNotificationVariant.Success);
                 }, maxSequential: 1, configureAwait: false
             );
 

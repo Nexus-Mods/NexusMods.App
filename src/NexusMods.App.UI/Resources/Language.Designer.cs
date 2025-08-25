@@ -3039,6 +3039,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Draft revision uploaded successfully.
+        /// </summary>
+        public static string ToastNotification_Draft_revision_uploaded_successfully {
+            get {
+                return ResourceManager.GetString("ToastNotification_Draft_revision_uploaded_successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Installed to {0}.
         /// </summary>
         public static string ToastNotification_Installed_to__0_ {
