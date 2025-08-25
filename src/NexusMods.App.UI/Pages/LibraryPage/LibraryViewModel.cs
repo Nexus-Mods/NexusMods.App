@@ -602,7 +602,7 @@ public class LibraryViewModel : APageViewModel<ILibraryViewModel>, ILibraryViewM
                         });
 
                         if (result == LibraryItemReplacementResult.Success)
-                            _notificationService.Show(string.Format(Language.ToastNotification_Mod_updated____0_, newLibraryItem.Name), ToastNotificationVariant.Success);
+                            _notificationService.ShowToast(string.Format(Language.ToastNotification_Mod_updated____0_, newLibraryItem.Name), ToastNotificationVariant.Success);
                     }
                 }
             }
@@ -754,7 +754,7 @@ After asking design, we're choosing to simply open the mod page for now.
         var toRemove = ids.Select(id => LibraryItem.Load(_connection.Db, id)).ToArray();
         await LibraryItemRemover.RemoveAsync(_connection, _serviceProvider.GetRequiredService<IOverlayController>(), _libraryService, toRemove);
 
-        _notificationService.Show(Language.ToastNotification_Items_deleted);
+        _notificationService.ShowToast(Language.ToastNotification_Items_deleted);
     }
     
     private async ValueTask HandleHideUpdatesMessage(HideUpdatesMessage hideUpdatesMessage, CancellationToken cancellationToken)
@@ -853,7 +853,7 @@ After asking design, we're choosing to simply open the mod page for now.
         );
         
         var targetCollection = LoadoutItem.Load(db, targetLoadoutGroup);
-        _notificationService.Show(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
+        _notificationService.ShowToast(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
     }
 
     private LibraryItemId[] GetSelectedIds()
@@ -900,7 +900,7 @@ After asking design, we're choosing to simply open the mod page for now.
             await _libraryService.InstallItem(libraryItem, loadout, parent: targetLoadoutGroup, installer: useAdvancedInstaller ? _advancedInstaller : null);
             
             var targetCollection  = LoadoutItem.Load(_connection.Db, targetLoadoutGroup);
-            _notificationService.Show(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
+            _notificationService.ShowToast(string.Format(Language.ToastNotification_Installed_to__0_, targetCollection.Name));
         }
         catch (OperationCanceledException)
         {

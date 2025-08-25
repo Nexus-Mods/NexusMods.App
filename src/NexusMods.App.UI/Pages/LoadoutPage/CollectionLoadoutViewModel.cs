@@ -129,7 +129,7 @@ public class CollectionLoadoutViewModel : APageViewModel<ICollectionLoadoutViewM
                 
                 await tx.Commit();
                 
-                notificationService.Show(Language.ToastNotification_Collection_removed);
+                notificationService.ShowToast(Language.ToastNotification_Collection_removed);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false

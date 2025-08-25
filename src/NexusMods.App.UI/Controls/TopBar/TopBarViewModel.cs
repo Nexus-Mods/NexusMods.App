@@ -242,7 +242,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
         await _loginManager.LoginAsync();
         
         if (await _loginManager.GetIsUserLoggedInAsync())
-            _notificationService.Show(Language.ToastNotification_Signed_in_successfully, ToastNotificationVariant.Success);
+            _notificationService.ShowToast(Language.ToastNotification_Signed_in_successfully, ToastNotificationVariant.Success);
             
     }
 

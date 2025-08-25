@@ -48,7 +48,7 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
                 await loginManager.LoginAsync(token: cancellationToken);
                 
                 if (await loginManager.GetIsUserLoggedInAsync())
-                    notificationService.Show(Language.ToastNotification_Signed_in_successfully, ToastNotificationVariant.Success);
+                    notificationService.ShowToast(Language.ToastNotification_Signed_in_successfully, ToastNotificationVariant.Success);
             },
             initialCanExecute: false
         );

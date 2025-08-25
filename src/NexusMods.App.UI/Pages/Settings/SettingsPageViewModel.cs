@@ -68,7 +68,7 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
                 viewModel.InteractionControlViewModel.ValueContainer.Update(settingsManager);
             }
             
-            notificationService.Show(Language.ToastNotification_Settings_saved, ToastNotificationVariant.Success);
+            notificationService.ShowToast(Language.ToastNotification_Settings_saved, ToastNotificationVariant.Success);
         }, this.WhenAnyValue(vm => vm.HasAnyValueChanged));
 
         CancelCommand = ReactiveCommand.Create(() =>

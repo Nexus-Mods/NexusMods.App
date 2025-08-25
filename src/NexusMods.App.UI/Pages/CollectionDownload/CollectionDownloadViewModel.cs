@@ -174,7 +174,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 );
                 
                 if (CollectionDownloader.IsFullyInstalled(items, connection.Db))
-                    _notificationService.Show(Language.ToastNotification_Collection_installed);
+                    _notificationService.ShowToast(Language.ToastNotification_Collection_installed);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false
@@ -201,7 +201,7 @@ public sealed class CollectionDownloadViewModel : APageViewModel<ICollectionDown
                 await collectionDownloader.DeleteCollectionLoadoutGroup(_revision, cancellationToken: CancellationToken.None);
                 await collectionDownloader.DeleteRevision(_revision);
                 
-                _notificationService.Show(Language.ToastNotification_Collection_deleted);
+                _notificationService.ShowToast(Language.ToastNotification_Collection_deleted);
             },
             awaitOperation: AwaitOperation.Drop,
             configureAwait: false,

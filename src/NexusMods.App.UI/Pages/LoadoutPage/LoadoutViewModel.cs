@@ -252,18 +252,18 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadDraftRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
-                    _notificationService.Show(Language.ToastNotification_Uploading_draft_collection_revision___);
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_draft_collection_revision___);
                     
                     _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
                     
-                    _notificationService.Show(Language.ToastNotification_Draft_revision_uploaded_successfully, ToastNotificationVariant.Success);
+                    _notificationService.ShowToast(Language.ToastNotification_Draft_revision_uploaded_successfully, ToastNotificationVariant.Success);
                 }, maxSequential: 1, configureAwait: false
             );
 
             CommandUploadAndPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
-                    _notificationService.Show(Language.ToastNotification_Uploading_new_collection_revision___);
+                    _notificationService.ShowToast(Language.ToastNotification_Uploading_new_collection_revision___);
                     
                     _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
@@ -357,7 +357,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                             _ => throw new ArgumentOutOfRangeException(),
                         };
 
-                        _notificationService.Show(
+                        _notificationService.ShowToast(
                             string.Format(Language.ToastNotification_Collection_status_changed_to__0__, newStatus),
                             ToastNotificationVariant.Success
                         );
@@ -425,7 +425,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                 await CollectionCreator.DeleteCollectionGroup(connection: _connection, managedCollectionGroup: collectionGroupId.Value, cancellationToken: cancellationToken);
                 CommandOpenLibraryPage?.Execute(NavigationInformation.From(OpenPageBehaviorType.ReplaceTab));
                 
-                _notificationService.Show(Language.ToastNotification_Collection_removed);
+                _notificationService.ShowToast(Language.ToastNotification_Collection_removed);
             });
         }
         else
@@ -570,7 +570,7 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
                     await libraryService.RemoveLinkedItemsFromLoadout(ids);
                     
-                    _notificationService.Show(Language.ToastNotification_Mods_removed);
+                    _notificationService.ShowToast(Language.ToastNotification_Mods_removed);
                 },
                 awaitOperation: AwaitOperation.Sequential,
                 initialCanExecute: false,

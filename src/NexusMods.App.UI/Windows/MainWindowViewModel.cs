@@ -138,7 +138,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 {
                     using var disposable = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
                     
-                    self._notificationService.Show(Language.ToastNotification_Adding_new_Collection_to_Library);
+                    self._notificationService.ShowToast(Language.ToastNotification_Adding_new_Collection_to_Library);
                 })
                 .DisposeWith(d);
             
@@ -167,7 +167,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     var behavior = workspaceController.GetDefaultOpenPageBehavior(pageData, NavigationInput.Default);
                     workspaceController.OpenPage(workspaceId, pageData, behavior);
 
-                    self._notificationService.Show(
+                    self._notificationService.ShowToast(
                         string.Format(Language.ToastNotification_Adding_collection____0_, message.Revision.Collection.Name),
                         ToastNotificationVariant.Success
                     );
@@ -182,13 +182,13 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     switch (message.Reason)
                     {
                         case FailureReason.GameNotManaged gameNotManaged:
-                            self._notificationService.Show(
+                            self._notificationService.ShowToast(
                                 string.Format(Language.ToastNotification_Collection_Add_failed___0__is_not_a_managed_game, gameNotManaged.Game),
                                 ToastNotificationVariant.Failure  
                             );
                             return;
                         case FailureReason.Unknown unknown:
-                            self._notificationService.Show(
+                            self._notificationService.ShowToast(
                                 Language.ToastNotification_Collection_Add_failed__An_unknown_error_occurred,
                                 ToastNotificationVariant.Failure
                             );
@@ -204,7 +204,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 {
                     using var _ = self.BringWindowToFront.Execute(System.Reactive.Unit.Default).Subscribe();
                     
-                    self._notificationService.Show(Language.ToastNotification_Mod_Download_started);
+                    self._notificationService.ShowToast(Language.ToastNotification_Mod_Download_started);
                 })
                 .DisposeWith(d);
             
@@ -213,7 +213,7 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                 .ObserveOnUIThreadDispatcher()
                 .Subscribe(this, static (message, self) =>
                 {
-                    self._notificationService.Show(
+                    self._notificationService.ShowToast(
                         string.Format(Language.ToastNotification_Mod_Download_Completed____0_, message.LibraryItem.Name),
                         ToastNotificationVariant.Success
                     );
@@ -228,25 +228,25 @@ public class MainWindowViewModel : AViewModel<IMainWindowViewModel>, IMainWindow
                     switch (message.Reason)
                     {
                         case FailureReason.NotLoggedIn:
-                            self._notificationService.Show(
+                            self._notificationService.ShowToast(
                                 Language.ToastNotification_Download_failed__User_is_not_logged_in,
                                 ToastNotificationVariant.Failure
                             );
                             return;
                         case FailureReason.AlreadyExists alreadyExists:
-                            self._notificationService.Show(
+                            self._notificationService.ShowToast(
                                 string.Format(Language.ToastNotification_Download_skipped__file_already_exists____0__, alreadyExists.Name),
                                 ToastNotificationVariant.Neutral
                             );
                             return;
                         case FailureReason.GameNotManaged gameNotManaged:
-                            self._notificationService.Show(
+                            self._notificationService.ShowToast(
                                 string.Format(Language.ToastNotification_Download_failed__game_is_not_managed____0_, gameNotManaged.Game),
                                 ToastNotificationVariant.Failure
                             );
                             return;
                         case FailureReason.Unknown:
-                            self._notificationService.Show(
+                            self._notificationService.ShowToast(
                                 Language.ToastNotification_Download_failed__An_unknown_error_occurred,
                                 ToastNotificationVariant.Failure
                             );
