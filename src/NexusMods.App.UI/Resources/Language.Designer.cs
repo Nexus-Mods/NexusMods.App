@@ -3003,6 +3003,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applied {0} successfully.
+        /// </summary>
+        public static string ToastNotification_Applied__0__successfully {
+            get {
+                return ResourceManager.GetString("ToastNotification_Applied__0__successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Installed to {0}.
         /// </summary>
         public static string ToastNotification_Installed_to__0_ {
