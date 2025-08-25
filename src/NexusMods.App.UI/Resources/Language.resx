@@ -1178,4 +1178,7 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="ToastNotification_Applied__0__successfully" xml:space="preserve">
         <value>Applied {0} successfully</value>
     </data>
+    <data name="ToastNotification_Collection_removed" xml:space="preserve">
+        <value>Collection removed</value>
+    </data>
 </root>
