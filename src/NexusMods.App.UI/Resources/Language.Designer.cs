@@ -3012,6 +3012,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection deleted.
+        /// </summary>
+        public static string ToastNotification_Collection_deleted {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_deleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Collection removed.
         /// </summary>
         public static string ToastNotification_Collection_removed {
