@@ -44,7 +44,7 @@ public class DebugControlsPageViewModel : APageViewModel<IDebugControlsPageViewM
         {
             windowNotificationService1?.Show(
                 "This is an info toast notification",
-                NotificationType.Information
+                ToastNotificationVariant.Neutral
             );
         });
         

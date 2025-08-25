@@ -21,5 +21,33 @@ public interface IWindowNotificationService
     /// <param name="onClick">an Action to be run when the notification is clicked, defaults to dismiss</param>
     /// <param name="onClose">an Action to be run when the notification is closed</param>
     /// <returns>False if unable to access window object to display notification to, true otherwise</returns>
-    bool Show(string message, NotificationType type, TimeSpan? expiration = null, Action? onClick = null, Action? onClose = null);
+    bool Show(string message, ToastNotificationVariant type, TimeSpan? expiration = null, Action? onClick = null, Action? onClose = null);
+    
+}
+
+/// <summary>
+/// Types of toast notifications
+/// </summary>
+public enum ToastNotificationVariant
+{
+    /// <summary>
+    /// Used for informative updates that don’t indicate success or failure.
+    /// Examples: “Download started”, “External changes detected”.
+    /// Actions: May include an optional “View” or “Open” action.
+    /// </summary>
+    Neutral,
+    
+    /// <summary>
+    /// Used when an operation completes successfully.
+    /// Examples: “Download complete”, “Collection installed”.
+    /// Actions: May include an optional “View” or “Open” action.
+    /// </summary>
+    Success,
+    
+    /// <summary>
+    /// Used when an operation fails or cannot proceed.
+    /// Examples: “Download failed”, “Insufficient disk space”.
+    /// Actions: Where possible, include a direct recovery option like “Retry” or “Fix now”.
+    /// </summary>
+    Failure,
 }

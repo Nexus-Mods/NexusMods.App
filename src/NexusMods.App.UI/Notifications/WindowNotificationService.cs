@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
+using NexusMods.App.UI.Dialog;
 using NexusMods.UI.Sdk;
 
 namespace NexusMods.App.UI.Notifications;
@@ -9,6 +10,10 @@ public class WindowNotificationService : IWindowNotificationService
 {
     private WindowNotificationManager? _notificationManager;
 
+    /// <summary>
+    /// Lazy initialization, as main window may not available at creation time
+    /// </summary>
+    /// <returns></returns>
     private WindowNotificationManager? GetNotificationManager()
     {
         if (_notificationManager != null)
@@ -31,7 +36,7 @@ public class WindowNotificationService : IWindowNotificationService
     
     public bool Show(
         string message, 
-        NotificationType type, 
+        ToastNotificationVariant type = ToastNotificationVariant.Neutral,
         TimeSpan? expiration = null, 
         Action? onClick = null, 
         Action? onClose = null)
@@ -39,10 +44,12 @@ public class WindowNotificationService : IWindowNotificationService
         var manager = GetNotificationManager();
         if (manager == null) return false;
         
+        // TODO: Use ToastNotificationVariant
+        
         var notification = new Notification(
             null,
             message,
-            type,
+            NotificationType.Information,
             expiration ?? TimeSpan.FromSeconds(5),
             onClick,
             onClose);
@@ -51,4 +58,30 @@ public class WindowNotificationService : IWindowNotificationService
         
         return true;
     }
+
+    public bool Show(
+        string message,
+        ToastNotificationVariant type = ToastNotificationVariant.Neutral,
+        TimeSpan? expiration = null,
+        DialogButtonDefinition[]? buttonDefinitions = null,
+        Action<ButtonDefinitionId>? buttonHandler = null)
+    {
+        var manager = GetNotificationManager();
+        if (manager == null) return false;
+        
+        // TODO: Use ToastNotificationVariant
+        // TODO: Use buttons and handler
+        
+        var notification = new Notification(
+            null,
+            message,
+            NotificationType.Information,
+            expiration ?? TimeSpan.FromSeconds(5));
+        
+        manager.Show(notification);
+        
+        return true;
+    }
 }
+
+
