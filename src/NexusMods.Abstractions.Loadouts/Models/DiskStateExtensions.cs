@@ -56,17 +56,4 @@ public static class DiskStateExtensions
         return DiskStateAsOf(metadata, TxId.From(tx.Id.Value));
     }
 
-    /// <summary>
-    /// Load the disk state of the game as of the last applied loadout
-    /// </summary>
-    public static Entities<DiskStateEntry.ReadOnly> GetLastAppliedDiskState(this GameInstallMetadata.ReadOnly metadata)
-    {
-        // No previously applied loadout, return an empty state
-        if (!metadata.Contains(GameInstallMetadata.LastSyncedLoadout))
-        {
-            return new(new EntityIds { Data = new byte[sizeof(uint)] }, metadata.Db);
-        }
-
-        return metadata.DiskStateAsOf(metadata.LastSyncedLoadoutTransaction);
-    }
 }
