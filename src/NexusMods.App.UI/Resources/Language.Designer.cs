@@ -430,6 +430,24 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Listed.
+        /// </summary>
+        public static string CollectionStatus_Listed {
+            get {
+                return ResourceManager.GetString("CollectionStatus_Listed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlisted.
+        /// </summary>
+        public static string CollectionStatus_Unlisted {
+            get {
+                return ResourceManager.GetString("CollectionStatus_Unlisted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new.
         /// </summary>
         public static string CreateNewLoadoutCarViewTexBlock {
@@ -3075,6 +3093,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection status changed to {0} .
+        /// </summary>
+        public static string ToastNotification_Collection_status_changed_to__0__ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Collection_status_changed_to__0__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download failed: An unknown error occurred.
         /// </summary>
         public static string ToastNotification_Download_failed__An_unknown_error_occurred {
@@ -3188,6 +3215,24 @@ namespace NexusMods.App.UI.Resources {
         public static string ToastNotification_Signed_in_successfully {
             get {
                 return ResourceManager.GetString("ToastNotification_Signed_in_successfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploading draft collection revision....
+        /// </summary>
+        public static string ToastNotification_Uploading_draft_collection_revision___ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Uploading_draft_collection_revision___", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uploading new collection revision....
+        /// </summary>
+        public static string ToastNotification_Uploading_new_collection_revision___ {
+            get {
+                return ResourceManager.GetString("ToastNotification_Uploading_new_collection_revision___", resourceCulture);
             }
         }
         

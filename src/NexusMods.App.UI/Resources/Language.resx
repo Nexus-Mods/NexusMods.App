@@ -1223,4 +1223,19 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="ToastNotification_Download_failed__An_unknown_error_occurred" xml:space="preserve">
         <value>Download failed: An unknown error occurred</value>
     </data>
+    <data name="ToastNotification_Uploading_new_collection_revision___" xml:space="preserve">
+        <value>Uploading new collection revision...</value>
+    </data>
+    <data name="ToastNotification_Collection_status_changed_to__0__" xml:space="preserve">
+        <value>Collection status changed to {0} </value>
+    </data>
+    <data name="CollectionStatus_Listed" xml:space="preserve">
+        <value>Listed</value>
+    </data>
+    <data name="CollectionStatus_Unlisted" xml:space="preserve">
+        <value>Unlisted</value>
+    </data>
+    <data name="ToastNotification_Uploading_draft_collection_revision___" xml:space="preserve">
+        <value>Uploading draft collection revision...</value>
+    </data>
 </root>

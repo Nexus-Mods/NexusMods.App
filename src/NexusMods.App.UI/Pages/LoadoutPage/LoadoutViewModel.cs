@@ -252,6 +252,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadDraftRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.Show(Language.ToastNotification_Uploading_draft_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadDraftRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
                     
@@ -261,6 +263,8 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
 
             CommandUploadAndPublishRevision = IsCollectionUploaded.ToReactiveCommand<Unit>(async (unit, cancellationToken) =>
                 {
+                    _notificationService.Show(Language.ToastNotification_Uploading_new_collection_revision___);
+                    
                     _ = await CollectionCreator.UploadAndPublishRevision(serviceProvider, collectionGroupId.Value.Value, cancellationToken);
                     HasOutstandingChanges.Value = false;
 
@@ -340,9 +344,24 @@ public class LoadoutViewModel : APageViewModel<ILoadoutViewModel>, ILoadoutViewM
                         ? Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed
                         : Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted;
 
-                    _ = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
+                    var result = await CollectionCreator.ChangeCollectionStatus(serviceProvider, collectionGroupId.Value.Value, CollectionStatus.Value,
                         cancellationToken
                     );
+                    
+                    if (result.TryGetData(out var data))
+                    {
+                        var newStatus = data switch
+                        {
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Listed => Language.CollectionStatus_Listed,
+                            Abstractions.NexusModsLibrary.Models.CollectionStatus.Unlisted => Language.CollectionStatus_Unlisted,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        };
+
+                        _notificationService.Show(
+                            string.Format(Language.ToastNotification_Collection_status_changed_to__0__, newStatus),
+                            ToastNotificationVariant.Success
+                        );
+                    }
                 }, configureAwait: false
             );
 
