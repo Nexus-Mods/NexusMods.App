@@ -84,6 +84,7 @@ public class SynchronizerService : ISynchronizerService
         await _jobMonitor.Begin(new SynchronizeLoadoutJob(loadoutId),
             async ctx =>
             {
+                var job = ctx.Definition;
                 await _semaphore.WaitAsync();
                 try
                 {
@@ -96,7 +97,7 @@ public class SynchronizerService : ISynchronizerService
                     var gameState = GetOrAddGameState(loadout.InstallationInstance.GameMetadataId);
                     using var _2 = gameState.WithLock();
 
-                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout);
+                    await loadout.InstallationInstance.GetGame().Synchronizer.Synchronize(loadout, job);
                 }
                 finally
                 {

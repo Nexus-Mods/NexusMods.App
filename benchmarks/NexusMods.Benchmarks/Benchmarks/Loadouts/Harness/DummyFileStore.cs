@@ -22,7 +22,7 @@ public class DummyFileStore : IFileStore
         return Task.CompletedTask;
     }
 
-    public Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
+    public Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default, Action<(int Current, int Max)>? progress = null)
     {
         return Task.CompletedTask;
     }

@@ -1,4 +1,3 @@
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using DynamicData;
@@ -17,8 +16,12 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.MnemonicDB.Abstractions;
+using R3;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Observable = System.Reactive.Linq.Observable;
+using ReactiveCommand = ReactiveUI.ReactiveCommand;
+using Unit = System.Reactive.Unit;
 
 namespace NexusMods.App.UI.LeftMenu.Items;
 
@@ -34,11 +37,13 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
     [Reactive] private bool CanApply { get; set; } = true;
     [Reactive] public bool IsApplying { get; private set; }
 
-    public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
-    public ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
+    public ReactiveUI.ReactiveCommand<Unit, Unit> ApplyCommand { get; }
+    public ReactiveUI.ReactiveCommand<NavigationInformation, Unit> ShowApplyDiffCommand { get; }
 
     [Reactive] public bool IsProcessing { get; private set; }
     [Reactive] public string ApplyButtonText { get; private set; } = Language.ApplyControlViewModel__APPLY;
+
+    [Reactive] public string ProcessingText { get; private set; } = "";
     [Reactive] public bool IsLaunchButtonEnabled { get; private set; } = true;
 
     public ILaunchButtonViewModel LaunchButtonViewModel { get; }
@@ -83,9 +88,8 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                 var isProcessingObservable = _jobMonitor.HasActiveJob<ProcessLoadoutChangesJob>(job => job.LoadoutId.Equals(loadoutId))
                     .Prepend(false);
                 
-                var loadoutStatuses = Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
-                    .Switch()
-                    .Prepend(LoadoutSynchronizerState.Pending);
+                var loadoutStatuses = Observable.Prepend(Observable.FromAsync(() => _syncService.StatusForLoadout(_loadoutId))
+                        .Switch(), LoadoutSynchronizerState.Pending);
 
                 var gameStatuses = _syncService.StatusForGame(_gameMetadataId)
                     .Prepend(GameSynchronizerState.Idle);
@@ -126,6 +130,18 @@ public class ApplyControlViewModel : AViewModel<IApplyControlViewModel>, IApplyC
                     .Subscribe(isApplying => IsApplying = isApplying)
                     .DisposeWith(disposables);
                 
+                _jobMonitor.ObserveActiveJobs<SynchronizeLoadoutJob>()
+                    .Prepend(ChangeSet<IJob, JobId>.Empty)
+                    .QueryWhenChanged(jobs =>
+                        {
+                            if (jobs.Items.FirstOrDefault()?.Definition is SynchronizeLoadoutJob sJob && sJob.LoadoutId == loadoutId)
+                                return sJob.StatusMessage.AsSystemObservable();;
+                            return new BindableReactiveProperty<string>(value: "NONE").AsSystemObservable();
+                        }
+                    ).Switch()
+                    .OnUI()
+                    .Subscribe(status => ProcessingText = status)
+                    .DisposeWith(disposables);
             }
         );
     }
