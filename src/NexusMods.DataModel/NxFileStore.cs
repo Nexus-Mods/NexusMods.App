@@ -157,7 +157,7 @@ public class NxFileStore : IFileStore
     }
     
     /// <inheritdoc />
-    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default)
+    public async Task ExtractFiles(IEnumerable<(Hash Hash, AbsolutePath Dest)> files, CancellationToken token = default, Action<(int Current, int Max)>? progressUpdater = null)
     {
         using var lck = _lock.ReadLock();
 
@@ -207,9 +207,12 @@ public class NxFileStore : IFileStore
             }
         });
 
+        var groupIdx = 0;
         // Extract from all source archives.
         foreach (var group in groupedFiles)
         {
+            groupIdx++;
+            progressUpdater?.Invoke((groupIdx, groupedFiles.Count));
             await using var file = group.Key.Read();
             var provider = new FromStreamProvider(file);
             var unpacker = new NxUnpacker(provider);

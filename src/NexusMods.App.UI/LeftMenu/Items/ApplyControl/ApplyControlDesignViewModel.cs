@@ -22,6 +22,8 @@ public class ApplyControlDesignViewModel : AViewModel<IApplyControlViewModel>, I
     public bool IsProcessing { get; } = false;
     public string ApplyButtonText { get; } = Language.ApplyControlViewModel__APPLY;
 
+    public string ProcessingText { get; } = "PROCESSING TEXT";
+
     public ApplyControlDesignViewModel()
     {
         ShowApplyDiffCommand = ReactiveCommand.Create<NavigationInformation>(_ => { });

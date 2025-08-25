@@ -8,6 +8,20 @@ namespace NexusMods.Abstractions.Loadouts.Synchronizers;
 /// any changes in the game folder will be added to the loadout,
 /// and any new changes in the loadout will be applied to the game folder.
 /// </summary>
-/// <param name="LoadoutId"></param>
-public record SynchronizeLoadoutJob(LoadoutId LoadoutId) : IJobDefinition<Unit>;
+public record SynchronizeLoadoutJob(LoadoutId LoadoutId, BindableReactiveProperty<string> StatusMessage) : IJobDefinition<Unit>
+{
+    public SynchronizeLoadoutJob(LoadoutId loadoutId) : this(loadoutId, new BindableReactiveProperty<string>()) {}
+    
+    public void SetStatus(string message)
+    {
+        try
+        {
+            StatusMessage.Value = message;
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+}
     

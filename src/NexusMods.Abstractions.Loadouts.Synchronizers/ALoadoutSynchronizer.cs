@@ -418,7 +418,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout)
+    public async Task<Loadout.ReadOnly> RunActions(Dictionary<GamePath, SyncNode> syncTree, Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null)
     {
         using var _ = await _lock.LockAsync();
         using var tx = Connection.BeginTransaction();
@@ -435,22 +435,27 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                     break;
 
                 case Actions.BackupFile:
+                    job?.SetStatus("Backing up files");
                     await ActionBackupNewFiles(loadout.InstallationInstance, syncTree);
                     break;
 
                 case Actions.IngestFromDisk:
+                    job?.SetStatus("Adding external changes");
                     ActionIngestFromDisk(syncTree, loadout, tx, ref overridesGroup);
                     break;
 
                 case Actions.DeleteFromDisk:
-                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId, foldersWithDeletedFiles);
+                    job?.SetStatus("Deleting files");
+                    ActionDeleteFromDisk(syncTree, register, tx, gameMetadataId, foldersWithDeletedFiles, job);
                     break;
 
                 case Actions.ExtractToDisk:
-                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId);
+                    job?.SetStatus("Extracting files");
+                    await ActionExtractToDisk(syncTree, register, tx, gameMetadataId, job);
                     break;
 
                 case Actions.AddReifiedDelete:
+                    job?.SetStatus("Updating deleted files");
                     ActionAddReifiedDelete(syncTree, loadout, tx, ref overridesGroup);
                     break;
 
@@ -467,6 +472,8 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
+        job?.SetStatus("Recording changes");
+        
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadout, loadout.Id);
         tx.Add(gameMetadataId, GameInstallMetadata.LastSyncedLoadoutTransaction, EntityId.From(tx.ThisTxId.Value));
         tx.Add(gameMetadataId, GameInstallMetadata.LastScannedDiskStateTransaction, EntityId.From(tx.ThisTxId.Value));
@@ -734,7 +741,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         }
     }
 
-    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId)
+    private async Task ActionExtractToDisk(Dictionary<GamePath, SyncNode> groupings, IGameLocationsRegister register, ITransaction tx, EntityId gameMetadataId, SynchronizeLoadoutJob? job = null)
     {
         List<(Hash Hash, AbsolutePath Path)> toExtract = [];
         
@@ -754,7 +761,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         
         if (toExtract.Count > 0)
         {
-            await _fileStore.ExtractFiles(toExtract, CancellationToken.None);
+            await _fileStore.ExtractFiles(toExtract, CancellationToken.None, UpdateStatus);
 
             var isUnix = _os.IsUnix();
             foreach (var (gamePath, node) in groupings)
@@ -800,6 +807,12 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
                 resolvedPath.SetUnixFileMode(currentMode | UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
             }
         }
+
+        void UpdateStatus((int Current, int Max) progress)
+        {
+            var (current, max) = progress;
+            job?.SetStatus($"({current}/{max}) Extracting files");
+        }
     }
 
     private void ActionDeleteFromDisk(
@@ -807,13 +820,23 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
         IGameLocationsRegister register,
         ITransaction tx,
         GameInstallMetadataId gameMetadataId,
-        HashSet<GamePath> foldersWithDeletedFiles)
+        HashSet<GamePath> foldersWithDeletedFiles,
+        SynchronizeLoadoutJob? job = null)
     {
+        var itemIndex = 0;
+        
+        var deleteFileCount = groupings.Sum(static x => x.Value.Actions.HasFlag(Actions.DeleteFromDisk) ? 1 : 0);
+        
         // Delete files from disk
         foreach (var (path, node) in groupings)
         {
             if (!node.Actions.HasFlag(Actions.DeleteFromDisk))
                 continue;
+
+            if (itemIndex % 1000f == 0)
+                job?.SetStatus($"({itemIndex}/{deleteFileCount}) Deleting files");
+            itemIndex++;
+            
             var resolvedPath = register.GetResolvedPath(path);
             resolvedPath.Delete();
 
@@ -910,7 +933,7 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
     }
 
     /// <inheritdoc />
-    public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    public virtual async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job = null)
     {
         loadout = loadout.Rebase();
         // If we are swapping loadouts, then we need to synchronize the previous loadout first to ingest
@@ -926,9 +949,10 @@ public class ALoadoutSynchronizer : ILoadoutSynchronizer
             }
         }
 
+        job?.SetStatus("Collecting files");
         var tree = await BuildSyncTree(loadout);
         ProcessSyncTree(tree);
-        return await RunActions(tree, loadout);
+        return await RunActions(tree, loadout, job);
     }
 
     public async Task<GameInstallMetadata.ReadOnly> RescanFiles(GameInstallation gameInstallation, bool ignoreModifiedDates)

@@ -51,9 +51,9 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         ArchivePcEp1Folder,
     ];
 
-    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout)
+    public override async Task<Loadout.ReadOnly> Synchronize(Loadout.ReadOnly loadout, SynchronizeLoadoutJob? job)
     {
-        loadout = await base.Synchronize(loadout);
+        loadout = await base.Synchronize(loadout, job);
         if (!MissingRedModEmitter.HasRedMods(loadout, out _, out var numRedModDirs)) return loadout;
         if (!MissingRedModEmitter.HasRedModToolInstalled(loadout, out _))
         {
@@ -62,7 +62,7 @@ public class Cyberpunk2077Synchronizer : ALoadoutSynchronizer
         }
 
         await _redModTool.Execute(loadout, CancellationToken.None);
-        return await base.Synchronize(loadout);
+        return await base.Synchronize(loadout, job);
     }
 
 
