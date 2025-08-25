@@ -3003,6 +3003,15 @@ namespace NexusMods.App.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings saved.
+        /// </summary>
+        public static string ToastNotification_Settings_saved {
+            get {
+                return ResourceManager.GetString("ToastNotification_Settings_saved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Account settings.
         /// </summary>
         public static string TopBar_AccountSettings {

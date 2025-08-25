@@ -13,6 +13,7 @@ using NexusMods.App.UI.Resources;
 using NexusMods.App.UI.Windows;
 using NexusMods.App.UI.WorkspaceSystem;
 using NexusMods.CrossPlatform.Process;
+using NexusMods.UI.Sdk;
 using NexusMods.UI.Sdk.Icons;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -36,7 +37,8 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
     public SettingsPageViewModel(
         IServiceProvider serviceProvider,
         ISettingsManager settingsManager,
-        IWindowManager windowManager) : base(windowManager)
+        IWindowManager windowManager,
+        IWindowNotificationService notificationService) : base(windowManager)
     {
         _serviceProvider = serviceProvider;
 
@@ -65,6 +67,8 @@ public class SettingsPageViewModel : APageViewModel<ISettingsPageViewModel>, ISe
             {
                 viewModel.InteractionControlViewModel.ValueContainer.Update(settingsManager);
             }
+            
+            notificationService.Show(Language.ToastNotification_Settings_saved, ToastNotificationVariant.Success);
         }, this.WhenAnyValue(vm => vm.HasAnyValueChanged));
 
         CancelCommand = ReactiveCommand.Create(() =>

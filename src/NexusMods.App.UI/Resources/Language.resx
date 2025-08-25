@@ -1160,4 +1160,7 @@ Keep the downloaded files in your library in case you want to retry the installa
     <data name="Library_DeleteItem_Text" xml:space="preserve">
         <value>Delete</value>
     </data>
+    <data name="ToastNotification_Settings_saved" xml:space="preserve">
+        <value>Settings saved</value>
+    </data>
 </root>
